@@ -176,7 +176,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
               tabindex="-1"
               slot="next"
             ></ha-icon-button-next>
-            <calendar-month></calendar-month>
+            <calendar-month dir=${this.dir}></calendar-month>
           </calendar-range>
           ${
             this.timePicker

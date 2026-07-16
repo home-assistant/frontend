@@ -20,18 +20,16 @@ class HaRelativeTime extends ReactiveElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
-  private _interval?: number;
+  private _timeout?: number;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._clearInterval();
+    this._clearTimeout();
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this.datetime) {
-      this._startInterval();
-    }
+    this._updateRelative();
   }
 
   protected createRenderRoot() {
@@ -40,31 +38,19 @@ class HaRelativeTime extends ReactiveElement {
 
   protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
-    if (changedProps.has("datetime")) {
-      if (this.datetime) {
-        this._startInterval();
-      } else {
-        this._clearInterval();
-      }
-    }
     this._updateRelative();
   }
 
-  private _clearInterval(): void {
-    if (this._interval) {
-      window.clearInterval(this._interval);
-      this._interval = undefined;
+  private _clearTimeout(): void {
+    if (this._timeout) {
+      window.clearTimeout(this._timeout);
+      this._timeout = undefined;
     }
   }
 
-  private _startInterval(): void {
-    this._clearInterval();
-
-    // update every 60 seconds
-    this._interval = window.setInterval(() => this._updateRelative(), 60000);
-  }
-
   private _updateRelative(): void {
+    this._clearTimeout();
+
     if (!this._i18n) {
       return;
     }
@@ -73,23 +59,33 @@ class HaRelativeTime extends ReactiveElement {
       this.textContent = this._i18n.localize(
         "ui.components.relative_time.never"
       );
-    } else {
-      const date =
-        typeof this.datetime === "string"
-          ? parseISO(this.datetime)
-          : this.datetime;
-
-      const relTime = relativeTime(
-        date,
-        this._i18n.locale,
-        undefined,
-        true,
-        this.format
-      );
-      this.textContent = this.capitalize
-        ? capitalizeFirstLetter(relTime)
-        : relTime;
+      return;
     }
+
+    const date =
+      typeof this.datetime === "string"
+        ? parseISO(this.datetime)
+        : this.datetime;
+
+    const relTime = relativeTime(
+      date,
+      this._i18n.locale,
+      undefined,
+      true,
+      this.format
+    );
+    this.textContent = this.capitalize
+      ? capitalizeFirstLetter(relTime)
+      : relTime;
+
+    // Keep the relative time counting up on its own. Refresh every second
+    // while the difference is still measured in seconds, otherwise every
+    // minute.
+    const secondsDiff = Math.abs(Date.now() - date.getTime()) / 1000;
+    this._timeout = window.setTimeout(
+      () => this._updateRelative(),
+      secondsDiff < 60 ? 1000 : 60000
+    );
   }
 }
 

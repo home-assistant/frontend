@@ -272,7 +272,7 @@ export interface ZWaveJSNodeConfigParam {
   property: number;
   property_key: number | null;
   endpoint: number;
-  value: any;
+  value: number | null;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
 }

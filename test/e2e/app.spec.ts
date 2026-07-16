@@ -7,6 +7,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import type { MoreInfoView } from "../../src/dialogs/more-info/const";
 import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+import { e2ePanelRouteAssertions } from "./app/src/ha-test-panels";
 
 /**
  * Each More info view renders one root element inside the dialog, plus one or
@@ -61,6 +62,59 @@ const MORE_INFO_VIEW_ELEMENTS: {
   },
 ];
 
+const URL_NORMALIZATION_ASSERTIONS: {
+  name: string;
+  path: string;
+  element: string;
+  url: RegExp;
+  action?: (page: Page) => Promise<void>;
+}[] = [
+  {
+    name: "keeps the todo panel when adding the selected entity query",
+    path: "/todo",
+    element: "ha-panel-todo",
+    url: /\/\?entity_id=todo\.shopping_list#\/todo$/,
+  },
+  {
+    name: "keeps the history panel when removing the back query",
+    path: "/?back=1#/history",
+    element: "ha-panel-history, history-panel",
+    url: /\/#\/history$/,
+  },
+  {
+    name: "keeps the logbook panel when removing the back query",
+    path: "/?back=1#/logbook",
+    element: "ha-panel-logbook",
+    url: /\/#\/logbook$/,
+  },
+  {
+    name: "keeps the lovelace panel when adding the edit query",
+    path: "/lovelace",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/\?edit=1#\/lovelace\/home$/,
+    action: (page) => setLovelaceEditMode(page, true),
+  },
+  {
+    name: "keeps the lovelace panel when removing the edit query",
+    path: "/lovelace",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/#\/lovelace\/home$/,
+    action: async (page) => {
+      await setLovelaceEditMode(page, true);
+      await expect(page).toHaveURL(/\/\?edit=1#\/lovelace\/home$/, {
+        timeout: SHELL_TIMEOUT,
+      });
+      await setLovelaceEditMode(page, false);
+    },
+  },
+];
+
+interface E2ELovelaceRoot extends HTMLElement {
+  lovelace?: {
+    setEditMode: (editMode: boolean) => void;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -78,6 +132,35 @@ async function goToPanel(page: Page, path: string) {
   await page.waitForSelector("ha-test", { state: "attached" });
   // Wait for the app to finish initialising (hassConnected sets panels)
   await page.waitForFunction(() => Boolean((window as any).__mockHass));
+}
+
+async function setLovelaceEditMode(page: Page, editMode: boolean) {
+  await page
+    .locator("hui-root")
+    .first()
+    .waitFor({ state: "attached", timeout: QUICK_TIMEOUT });
+  await page
+    .locator("hui-root")
+    .first()
+    .evaluate(async (el: Element, value) => {
+      const root = el as E2ELovelaceRoot;
+      const start = performance.now();
+      await new Promise<void>((resolve, reject) => {
+        const check = () => {
+          if (root.lovelace?.setEditMode) {
+            resolve();
+            return;
+          }
+          if (performance.now() - start > 2000) {
+            reject(new Error("Lovelace edit mode action was not available"));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+      root.lovelace!.setEditMode(value);
+    }, editMode);
 }
 
 // ---------------------------------------------------------------------------
@@ -205,48 +288,33 @@ test.describe("App shell", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Panel navigation", () => {
-  test("navigates to lovelace dashboard", async ({ page }) => {
-    await goToPanel(page, "/lovelace");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
+  for (const [path, element] of e2ePanelRouteAssertions) {
+    test(`renders registered panel ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
     });
-  });
+  }
+});
 
-  test("navigates to energy panel", async ({ page }) => {
-    await goToPanel(page, "/energy");
-    await expect(
-      page.locator("ha-panel-energy, energy-view").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
+test.describe("Panel URL normalization", () => {
+  for (const {
+    name,
+    path,
+    element,
+    url,
+    action,
+  } of URL_NORMALIZATION_ASSERTIONS) {
+    test(name, async ({ page }) => {
+      await goToPanel(page, path);
+      await action?.(page);
+      await expect(page).toHaveURL(url, { timeout: SHELL_TIMEOUT });
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
     });
-  });
-
-  test("navigates to map panel", async ({ page }) => {
-    await goToPanel(page, "/map");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to history panel", async ({ page }) => {
-    await goToPanel(page, "/history");
-    await expect(
-      page.locator("ha-panel-history, history-panel").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to profile panel", async ({ page }) => {
-    await goToPanel(page, "/profile");
-    await expect(
-      page.locator("ha-panel-profile, ha-config-user-profile").first()
-    ).toBeAttached({ timeout: PANEL_TIMEOUT });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -415,6 +483,7 @@ test.describe("Theming", () => {
       () =>
         (document.querySelector("ha-test") as any)?.hass?.themes?.darkMode ===
         true,
+      undefined,
       { timeout: QUICK_TIMEOUT }
     );
   });
@@ -431,6 +500,7 @@ test.describe("Theming", () => {
         getComputedStyle(document.documentElement)
           .getPropertyValue("--primary-color")
           .trim() !== "",
+      undefined,
       { timeout: QUICK_TIMEOUT }
     );
 
@@ -451,6 +521,96 @@ test.describe("Theming", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Config panel", () => {
+  const DASHBOARD_LINKS = [
+    { href: "/config/integrations", label: "Devices & services" },
+    { href: "/config/automation", label: "Automations & scenes" },
+    { href: "/config/areas", label: "Areas, labels & zones" },
+    { href: "/config/apps", label: "Apps" },
+    { href: "/config/lovelace/dashboards", label: "Dashboards" },
+    { href: "/config/voice-assistants", label: "Voice assistants" },
+    { href: "/config/matter", label: "Matter" },
+    { href: "/config/zha", label: "Zigbee" },
+    { href: "/config/zwave_js", label: "Z-Wave" },
+    { href: "/knx", label: "KNX" },
+    { href: "/config/thread", label: "Thread" },
+    { href: "/config/bluetooth", label: "Bluetooth" },
+    { href: "/config/infrared", label: "Infrared" },
+    { href: "/config/radio-frequency", label: "Radio frequency" },
+    { href: "/insteon", label: "Insteon" },
+    { href: "/config/tags", label: "Tags" },
+    { href: "/config/person", label: "People" },
+    { href: "/config/system", label: "System" },
+    { href: "/config/tools", label: "Tools" },
+    { href: "/config/info", label: "About" },
+  ];
+
+  const CONFIG_ROUTES: { path: string; element: string }[] = [
+    { path: "/config/integrations", element: "ha-config-integrations" },
+    { path: "/config/devices", element: "ha-config-devices" },
+    { path: "/config/entities", element: "ha-config-entities" },
+    { path: "/config/helpers", element: "ha-config-helpers" },
+    { path: "/config/areas", element: "ha-config-areas" },
+    { path: "/config/apps", element: "ha-config-apps" },
+    { path: "/config/app", element: "ha-config-app-dashboard" },
+    { path: "/config/automation", element: "ha-config-automation" },
+    { path: "/config/backup", element: "ha-config-backup" },
+    { path: "/config/scene", element: "ha-config-scene" },
+    { path: "/config/script", element: "ha-config-script" },
+    { path: "/config/blueprint", element: "ha-config-blueprint" },
+    { path: "/config/cloud", element: "ha-config-cloud" },
+    { path: "/config/energy", element: "ha-config-energy" },
+    { path: "/config/hardware", element: "ha-config-hardware" },
+    { path: "/config/labs", element: "ha-config-labs" },
+    { path: "/config/lovelace", element: "ha-config-lovelace" },
+    { path: "/config/person", element: "ha-config-person" },
+    { path: "/config/storage", element: "ha-config-section-storage" },
+    { path: "/config/tags", element: "ha-config-tags" },
+    { path: "/config/users", element: "ha-config-users" },
+    { path: "/config/voice-assistants", element: "ha-config-voice-assistants" },
+    { path: "/config/system", element: "ha-config-system-navigation" },
+    { path: "/config/info", element: "ha-config-info" },
+    { path: "/config/logs", element: "ha-config-logs" },
+    { path: "/config/general", element: "ha-config-section-general" },
+    { path: "/config/updates", element: "ha-config-section-updates" },
+    { path: "/config/repairs", element: "ha-config-repairs-dashboard" },
+    { path: "/config/analytics", element: "ha-config-section-analytics" },
+    { path: "/config/ai-tasks", element: "ha-config-section-ai-tasks" },
+    { path: "/config/labels", element: "ha-config-labels" },
+    { path: "/config/zone", element: "ha-config-zone" },
+    { path: "/config/network", element: "ha-config-section-network" },
+    {
+      path: "/config/application_credentials",
+      element: "ha-config-application-credentials",
+    },
+    { path: "/config/bluetooth", element: "bluetooth-config-dashboard-router" },
+    { path: "/config/dhcp", element: "dhcp-config-panel" },
+    { path: "/config/infrared", element: "infrared-config-dashboard-router" },
+    { path: "/config/matter", element: "matter-config-panel" },
+    { path: "/config/mqtt", element: "mqtt-config-panel" },
+    {
+      path: "/config/radio-frequency",
+      element: "radio-frequency-config-dashboard-router",
+    },
+    { path: "/config/ssdp", element: "ssdp-config-panel" },
+    { path: "/config/thread", element: "thread-config-panel" },
+    { path: "/config/zeroconf", element: "zeroconf-config-panel" },
+    { path: "/config/zha", element: "zha-config-dashboard-router" },
+    { path: "/config/zwave_js", element: "zwave_js-config-router" },
+  ];
+
+  const NESTED_CONFIG_ROUTES: { path: string; element: string }[] = [
+    {
+      path: "/config/integrations/dashboard",
+      element: "ha-config-integrations-dashboard",
+    },
+    {
+      path: "/config/devices/dashboard",
+      element: "ha-config-devices-dashboard",
+    },
+    { path: "/config/areas/dashboard", element: "ha-config-areas-dashboard" },
+    { path: "/config/backup/settings", element: "ha-config-backup-settings" },
+  ];
+
   test("config panel loads without JS errors", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
@@ -466,4 +626,39 @@ test.describe("Config panel", () => {
     );
     expect(realErrors).toHaveLength(0);
   });
+
+  test("dashboard renders key settings links", async ({ page }) => {
+    await goToPanel(page, "/config");
+
+    const dashboard = page.locator("ha-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    for (const { href, label } of DASHBOARD_LINKS) {
+      const link = dashboard.getByRole("link", {
+        name: new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`),
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await expect(link).toHaveAttribute("href", href, {
+        timeout: QUICK_TIMEOUT,
+      });
+    }
+  });
+
+  for (const { path, element } of CONFIG_ROUTES) {
+    test(`renders ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
+
+  for (const { path, element } of NESTED_CONFIG_ROUTES) {
+    test(`renders ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
 });

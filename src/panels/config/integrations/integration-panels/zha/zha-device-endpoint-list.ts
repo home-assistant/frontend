@@ -1,5 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -183,7 +183,7 @@ export class ZHADeviceEndpointList extends LitElement {
             ? html`
                 <ha-icon-button
                   slot="end"
-                  .path=${mdiOpenInNew}
+                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
@@ -211,7 +211,7 @@ export class ZHADeviceEndpointList extends LitElement {
             ? html`
                 <ha-icon-button
                   slot="end"
-                  .path=${mdiOpenInNew}
+                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"

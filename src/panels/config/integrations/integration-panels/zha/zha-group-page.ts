@@ -227,10 +227,6 @@ export class ZHAGroupPage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        hass-subpage {
-          --app-header-text-color: var(--sidebar-icon-color);
-        }
-
         .container {
           box-sizing: border-box;
           max-width: 720px;

@@ -117,10 +117,14 @@ export interface SetZwaveUserParams {
   user_type?: string;
   credential_rule?: string;
   active?: boolean;
+  credential_type?: ZwaveCredentialType;
+  credential_slot?: number;
+  credential_data?: string;
 }
 
 export interface SetZwaveUserResult {
   user_id: number;
+  credential_slot?: number | null;
 }
 
 export interface SetZwaveCredentialParams {

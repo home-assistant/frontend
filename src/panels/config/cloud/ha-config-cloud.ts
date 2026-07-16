@@ -8,8 +8,20 @@ import type { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
 import "./account/cloud-account";
 import "./login/cloud-login-panel";
 
-const LOGGED_IN_URLS = ["account", "google-assistant", "alexa"];
-const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];
+const LOGGED_IN_URLS = [
+  "account",
+  "remote",
+  "backup",
+  "voice-assistants",
+  "companion",
+  "webrtc",
+  "webhooks",
+] as const;
+
+const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"] as const;
+
+type CloudPage =
+  (typeof LOGGED_IN_URLS)[number] | (typeof NOT_LOGGED_IN_URLS)[number];
 
 @customElement("ha-config-cloud")
 class HaConfigCloud extends HassRouterPage {
@@ -30,10 +42,10 @@ class HaConfigCloud extends HassRouterPage {
     // Guard the different pages based on if we're logged in.
     beforeRender: (page: string) => {
       if (this.cloudStatus.logged_in) {
-        if (!LOGGED_IN_URLS.includes(page)) {
+        if (!LOGGED_IN_URLS.some((url) => url === page)) {
           return "account";
         }
-      } else if (!NOT_LOGGED_IN_URLS.includes(page)) {
+      } else if (!NOT_LOGGED_IN_URLS.some((url) => url === page)) {
         return "login";
       }
       return undefined;
@@ -53,7 +65,31 @@ class HaConfigCloud extends HassRouterPage {
       account: {
         tag: "cloud-account",
       },
-    },
+      remote: {
+        tag: "cloud-remote-pref",
+        load: () => import("./account/cloud-remote-pref"),
+      },
+      backup: {
+        tag: "cloud-backup-pref",
+        load: () => import("./account/cloud-backup-pref"),
+      },
+      "voice-assistants": {
+        tag: "cloud-tts-pref",
+        load: () => import("./account/cloud-tts-pref"),
+      },
+      companion: {
+        tag: "cloud-companion-pref",
+        load: () => import("./account/cloud-companion-pref"),
+      },
+      webrtc: {
+        tag: "cloud-ice-servers-pref",
+        load: () => import("./account/cloud-ice-servers-pref"),
+      },
+      webhooks: {
+        tag: "cloud-webhooks",
+        load: () => import("./account/cloud-webhooks"),
+      },
+    } satisfies Record<CloudPage, RouterOptions["routes"][string]>,
   };
 
   @state() private _flashMessage = "";
@@ -105,7 +141,7 @@ class HaConfigCloud extends HassRouterPage {
     if (
       this.cloudStatus &&
       !this.cloudStatus.logged_in &&
-      LOGGED_IN_URLS.includes(this._currentPage)
+      LOGGED_IN_URLS.some((url) => url === this._currentPage)
     ) {
       return;
     }
