@@ -75,25 +75,28 @@ interface ClockDatePartSectionData {
 
 /**
  * Filters out sections whose group already has a value in `value`, so only
- * one non-separator value per group can be selected in the picker. The item
- * at `excludeIndex` (the one being edited) is ignored so its own group stays
- * selectable. The separator group is always kept.
+ * one non-separator value per group can be selected in the picker. The whole
+ * group of the item at `excludeIndex` (the one being edited) stays
+ * selectable, even if that group has more than one value in `value` (e.g. a
+ * pre-existing config authored outside the picker via YAML).
+ * The separator group is always kept.
  */
 export const getAvailableClockDatePartSections = (
   sections: ClockDatePartSectionData[],
   value: string[],
   excludeIndex?: number
 ): ClockDatePartSectionData[] => {
+  const editedItem = excludeIndex != null ? value[excludeIndex] : undefined;
+  const editedSection = editedItem
+    ? getClockDatePartSection(editedItem as ClockCardDatePart)
+    : undefined;
+
   const usedSections = new Set<ClockDatePartSection>();
 
-  value.forEach((item, idx) => {
-    if (idx === excludeIndex) {
-      return;
-    }
-
+  value.forEach((item) => {
     const section = getClockDatePartSection(item as ClockCardDatePart);
 
-    if (section !== "separator") {
+    if (section !== "separator" && section !== editedSection) {
       usedSections.add(section);
     }
   });

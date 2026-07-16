@@ -57,6 +57,27 @@ describe("getAvailableClockDatePartSections", () => {
     ]);
   });
 
+  it("keeps the edited item's group visible even when a duplicate of that group exists elsewhere", () => {
+    const value = ["day-numeric", "day-2-digit", "month-long"];
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value, 0);
+    expect(result.map((sectionData) => sectionData.id)).toEqual([
+      "day",
+      "year",
+      "weekday",
+      "separator",
+    ]);
+  });
+
+  it("does not crash and keeps normal filtering when excludeIndex is out of range", () => {
+    const value = ["day-numeric", "month-long"];
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value, 5);
+    expect(result.map((sectionData) => sectionData.id)).toEqual([
+      "year",
+      "weekday",
+      "separator",
+    ]);
+  });
+
   it("never hides the separator section, even with multiple separators used", () => {
     const value = [
       "separator-dash",
