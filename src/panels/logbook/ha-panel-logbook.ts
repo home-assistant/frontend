@@ -1,4 +1,9 @@
-import { mdiDownload, mdiRefresh } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiFilterRemove,
+  mdiRefresh,
+} from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -17,7 +22,11 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/date-picker/ha-date-range-picker";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
@@ -29,6 +38,11 @@ import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { csvDownload, csvSafeString } from "../../util/csv";
+
+interface LogbookState {
+  time: { range: [Date, Date] };
+  targetPickerValue: HassServiceTarget;
+}
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -57,14 +71,7 @@ export class HaPanelLogbook extends LitElement {
 
   public constructor() {
     super();
-
-    const start = new Date();
-    start.setHours(start.getHours() - 1, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 2, 0, 0, 0);
-
-    this._time = { range: [start, end] };
+    this._time = this._defaultState.time;
   }
 
   protected render() {
@@ -76,16 +83,29 @@ export class HaPanelLogbook extends LitElement {
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
         <ha-icon-button
           slot="actionItems"
-          @click=${this._refreshLogbook}
-          .path=${mdiRefresh}
-          .label=${this.hass!.localize("ui.common.refresh")}
+          @click=${this._resetLogbook}
+          .disabled=${this._isDefaultState()}
+          .path=${mdiFilterRemove}
+          .label=${this.hass.localize("ui.common.reset")}
         ></ha-icon-button>
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._downloadData}
-          .path=${mdiDownload}
-          .label=${this.hass.localize("ui.panel.logbook.download_data")}
-        ></ha-icon-button>
+
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-dropdown-item value="refresh">
+            ${this.hass.localize("ui.common.refresh")}
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="download">
+            ${this.hass.localize("ui.panel.logbook.download_data")}
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="content">
           <div class="filters">
@@ -239,8 +259,48 @@ export class HaPanelLogbook extends LitElement {
     );
   }
 
+  private get _defaultState(): LogbookState {
+    const start = new Date();
+    start.setHours(start.getHours() - 1, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(end.getHours() + 2, 0, 0, 0);
+
+    return {
+      time: { range: [start, end] },
+      targetPickerValue: {},
+    };
+  }
+
+  private _isDefaultState(): boolean {
+    return deepEqual(
+      { time: this._time, targetPickerValue: this._targetPickerValue },
+      this._defaultState
+    );
+  }
+
+  private _resetLogbook() {
+    const defaultState = this._defaultState;
+    this._time = defaultState.time;
+    this._targetPickerValue = defaultState.targetPickerValue;
+    this._storedTargetPickerValue = undefined;
+    navigate("/logbook", { replace: true });
+  }
+
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
+  }
+
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "download":
+        this._downloadData();
+        break;
+      case "refresh":
+        this._refreshLogbook();
+        break;
+    }
   }
 
   private _downloadData() {

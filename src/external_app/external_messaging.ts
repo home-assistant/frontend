@@ -123,6 +123,10 @@ interface EMOutgoingMessageConnectionStatus extends EMMessage {
   payload: { event: string };
 }
 
+interface EMOutgoingMessageFrontendLoaded extends EMMessage {
+  type: "frontend/loaded"; // Fired once the launch screen is removed (connected and essential data loaded)
+}
+
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
   type: "config_screen/show";
 }
@@ -201,6 +205,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
   | EMOutgoingMessageConnectionStatus
+  | EMOutgoingMessageFrontendLoaded
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop

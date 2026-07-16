@@ -321,11 +321,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
       const floorAreas = emptyFloors
         ? undefined
-        : this._floorAreas.map((floor, index) =>
-            index === 0 && !floor.id
-              ? this._renderAreas(
-                  entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                )
+        : this._floorAreas.map((floor, index) => {
+            const floorEntry = entries[floor.id || `floor${TARGET_SEPARATOR}`];
+            return index === 0 && !floor.id
+              ? this._renderAreas(floorEntry.areas!)
               : this._renderItem(
                   !floor.id
                     ? this._i18n.localize(
@@ -335,19 +334,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   floor.id || `floor${TARGET_SEPARATOR}`,
                   !floor.id,
                   !!floor.id && this._getSelectedTargetId(value) === floor.id,
-                  !entries[floor.id || `floor${TARGET_SEPARATOR}`].open &&
-                    !!Object.keys(
-                      entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                    ).length,
-                  entries[floor.id || `floor${TARGET_SEPARATOR}`].open,
+                  !floorEntry.open && !!Object.keys(floorEntry.areas!).length,
+                  floorEntry.open,
                   this._renderFloorIcon(floor as FloorNestedComboBoxItem),
-                  entries[floor.id || `floor${TARGET_SEPARATOR}`].open
-                    ? this._renderAreas(
-                        entries[floor.id || `floor${TARGET_SEPARATOR}`].areas!
-                      )
+                  floorEntry.open
+                    ? this._renderAreas(floorEntry.areas!)
                     : undefined
-                )
-          );
+                );
+          });
 
       return html`<ha-section-title
           >${this._i18n.localize(
@@ -511,81 +505,69 @@ export default class HaAutomationAddFromTarget extends LitElement {
       const items: TemplateResult[] = [];
 
       if (unassignedEntitiesLength) {
-        const open = entries[`device${TARGET_SEPARATOR}`].open;
+        const entry = entries[`device${TARGET_SEPARATOR}`];
         items.push(
           this._renderItem(
             this._i18n.localize("ui.components.target-picker.type.entities"),
             `device${TARGET_SEPARATOR}`,
             true,
             false,
-            !open,
-            open,
+            !entry.open,
+            entry.open,
             undefined,
-            entries[`device${TARGET_SEPARATOR}`].open
-              ? this._renderDomains(
-                  entries[`device${TARGET_SEPARATOR}`].devices!,
-                  "entity_"
-                )
+            entry.open
+              ? this._renderDomains(entry.devices!, "entity_")
               : undefined
           )
         );
       }
 
       if (unassignedHelpersLength) {
-        const open = entries[`helper${TARGET_SEPARATOR}`].open;
+        const entry = entries[`helper${TARGET_SEPARATOR}`];
         items.push(
           this._renderItem(
             this._i18n.localize("ui.panel.config.automation.editor.helpers"),
             `helper${TARGET_SEPARATOR}`,
             true,
             false,
-            !open,
-            open,
+            !entry.open,
+            entry.open,
             undefined,
-            entries[`helper${TARGET_SEPARATOR}`].open
-              ? this._renderDomains(
-                  entries[`helper${TARGET_SEPARATOR}`].devices!,
-                  "helper_"
-                )
+            entry.open
+              ? this._renderDomains(entry.devices!, "helper_")
               : undefined
           )
         );
       }
 
       if (unassignedDevicesLength) {
-        const open = entries[`area${TARGET_SEPARATOR}`].open;
+        const entry = entries[`area${TARGET_SEPARATOR}`];
         items.push(
           this._renderItem(
             this._i18n.localize("ui.components.target-picker.type.devices"),
             `area${TARGET_SEPARATOR}`,
             true,
             false,
-            !open,
-            open,
+            !entry.open,
+            entry.open,
             undefined,
-            entries[`area${TARGET_SEPARATOR}`].open
-              ? this._renderDevices(entries[`area${TARGET_SEPARATOR}`].devices!)
-              : undefined
+            entry.open ? this._renderDevices(entry.devices!) : undefined
           )
         );
       }
 
       if (unassignedServicesLength) {
-        const open = entries[`service${TARGET_SEPARATOR}`].open;
+        const entry = entries[`service${TARGET_SEPARATOR}`];
         items.push(
           this._renderItem(
             this._i18n.localize("ui.panel.config.automation.editor.services"),
             `service${TARGET_SEPARATOR}`,
             true,
             false,
-            !open,
-            open,
+            !entry.open,
+            entry.open,
             undefined,
-            entries[`service${TARGET_SEPARATOR}`].open
-              ? this._renderDevices(
-                  entries[`service${TARGET_SEPARATOR}`].devices!
-                )
-              : undefined
+            entry.open ? this._renderDevices(entry.devices!) : undefined
           )
         );
       }

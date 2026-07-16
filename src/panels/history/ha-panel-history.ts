@@ -128,19 +128,13 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
-        ${
-          entitiesSelected
-            ? html`
-                <ha-icon-button
-                  slot="actionItems"
-                  @click=${this._removeAll}
-                  .disabled=${this._isLoading}
-                  .path=${mdiFilterRemove}
-                  .label=${this.hass.localize("ui.panel.history.remove_all")}
-                ></ha-icon-button>
-              `
-            : ""
-        }
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._removeAll}
+          .disabled=${this._isLoading || !entitiesSelected}
+          .path=${mdiFilterRemove}
+          .label=${this.hass.localize("ui.panel.history.remove_all")}
+        ></ha-icon-button>
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
