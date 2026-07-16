@@ -1,39 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  applyDefaultColor,
-  migrateStateColorConfig,
-} from "../../../../src/panels/lovelace/common/entity-color-config";
-
-describe("migrateStateColorConfig", () => {
-  it("converts state_color true to color state", () => {
-    expect(migrateStateColorConfig({ state_color: true })).toEqual({
-      color: "state",
-    });
-  });
-
-  it("converts state_color false to color none", () => {
-    expect(migrateStateColorConfig({ state_color: false })).toEqual({
-      color: "none",
-    });
-  });
-
-  it("keeps an explicit color over state_color", () => {
-    expect(
-      migrateStateColorConfig({ state_color: true, color: "red" })
-    ).toEqual({ color: "red" });
-  });
-
-  it("keeps custom elements untouched", () => {
-    const config = { type: "custom:foo", state_color: true };
-    expect(migrateStateColorConfig(config)).toBe(config);
-  });
-
-  it("returns the same object when there is nothing to migrate", () => {
-    const config = { color: "red" };
-    expect(migrateStateColorConfig(config)).toBe(config);
-  });
-});
+import { applyDefaultColor } from "../../../../src/panels/lovelace/common/entity-color-config";
 
 describe("applyDefaultColor", () => {
   interface TestEntityConfig {

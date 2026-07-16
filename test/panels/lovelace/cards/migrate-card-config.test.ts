@@ -110,6 +110,18 @@ describe("migrateEntitiesCardConfig", () => {
     });
   });
 
+  it("keeps an explicit color over the legacy state_color", () => {
+    expect(
+      migrateEntitiesCardConfig({
+        type: "entities",
+        entities: [{ entity: "switch.ac", state_color: true, color: "red" }],
+      } as unknown as EntitiesCardConfig)
+    ).toEqual({
+      type: "entities",
+      entities: [{ entity: "switch.ac", color: "red" }],
+    });
+  });
+
   it("keeps state_color on custom rows untouched", () => {
     const customRow = {
       entity: "sensor.power",
