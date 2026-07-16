@@ -1,8 +1,6 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
 
 export interface HassioHomeAssistantInfo {
   arch: SupervisorArch;
@@ -77,10 +75,6 @@ export type HassioPanelInfo = PanelInfo<
     }
 >;
 
-export interface CreateSessionResponse {
-  session: string;
-}
-
 export interface SupervisorOptions {
   channel?: "beta" | "dev" | "stable";
   diagnostics?: boolean;
@@ -88,99 +82,57 @@ export interface SupervisorOptions {
 }
 
 export const reloadSupervisor = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/supervisor/reload",
-      method: "post",
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/reload`);
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/supervisor/reload",
+    method: "post",
+  });
 };
 
 export const restartSupervisor = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/supervisor/restart",
-      method: "post",
-      timeout: null,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/restart`);
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/supervisor/restart",
+    method: "post",
+    timeout: null,
+  });
 };
 
 export const updateSupervisor = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/supervisor/update",
-      method: "post",
-      timeout: null,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>("POST", `hassio/supervisor/update`);
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/supervisor/update",
+    method: "post",
+    timeout: null,
+  });
 };
 
 export const fetchHassioHomeAssistantInfo = async (
   hass: HomeAssistant
-): Promise<HassioHomeAssistantInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/core/info",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
-      "GET",
-      "hassio/core/info"
-    )
-  );
-};
+): Promise<HassioHomeAssistantInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/core/info",
+    method: "get",
+  });
 
 export const fetchHassioSupervisorInfo = async (
   hass: HomeAssistant
-): Promise<HassioSupervisorInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/supervisor/info",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioSupervisorInfo>>(
-      "GET",
-      "hassio/supervisor/info"
-    )
-  );
-};
+): Promise<HassioSupervisorInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/supervisor/info",
+    method: "get",
+  });
 
 export const fetchHassioInfo = async (
   hass: HomeAssistant
-): Promise<HassioInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/info",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioInfo>>("GET", "hassio/info")
-  );
-};
+): Promise<HassioInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/info",
+    method: "get",
+  });
 
 export const fetchHassioBoots = async (hass: HomeAssistant) =>
   hass.callApi<HassioResponse<HassioBoots>>("GET", `hassio/host/logs/boots`);
@@ -263,21 +215,12 @@ export const setSupervisorOption = async (
   hass: HomeAssistant,
   data: SupervisorOptions
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/supervisor/options",
-      method: "post",
-      data,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    "hassio/supervisor/options",
-    data
-  );
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/supervisor/options",
+    method: "post",
+    data,
+  });
 };
 
 export const coreLatestLogsUrl = "/api/hassio/core/logs/latest";

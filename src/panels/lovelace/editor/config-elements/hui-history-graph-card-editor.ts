@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -260,9 +261,10 @@ export class HuiHistoryGraphCardEditor
     const domain = computeDomain(entityId);
     const isNumberDomain =
       domain === "counter" || domain === "number" || domain === "input_number";
-    const stateObj = this.hass!.states[entityId];
+    const stateObj = this.hass!.states[entityId] as HassEntity | undefined;
     const attributes = stateObj?.attributes;
-    return !isNumericFromAttributes(attributes) && !isNumberDomain;
+    const isNumeric = attributes ? isNumericFromAttributes(attributes) : false;
+    return !isNumeric && !isNumberDomain;
   };
 
   // remove "color" option when needed
