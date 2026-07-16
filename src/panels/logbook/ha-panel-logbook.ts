@@ -1,4 +1,4 @@
-import { mdiRefresh } from "@mdi/js";
+import { mdiDownload, mdiRefresh } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -26,6 +26,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { fileDownload } from "../../util/file_download";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -76,6 +78,12 @@ export class HaPanelLogbook extends LitElement {
           @click=${this._refreshLogbook}
           .path=${mdiRefresh}
           .label=${this.hass!.localize("ui.common.refresh")}
+        ></ha-icon-button>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._downloadData}
+          .path=${mdiDownload}
+          .label=${this.hass.localize("ui.panel.logbook.download_data")}
         ></ha-icon-button>
 
         <div class="content">
@@ -232,6 +240,68 @@ export class HaPanelLogbook extends LitElement {
 
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
+  }
+
+  private _downloadData() {
+    const data =
+      this.shadowRoot!.querySelector("ha-logbook")?.getEntries() || [];
+
+    if (data.length === 0) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.logbook.download_data_error"),
+        text: this.hass.localize("ui.panel.logbook.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
+    const headers = [
+      "time",
+      "entity_id",
+      "state",
+      "event_type",
+      "context_id",
+      "context_user_id",
+      "context_event_type",
+      "context_domain",
+      "context_service",
+      "context_entity_id",
+      "context_state",
+      "context_source",
+    ];
+    const csv: string[] = [headers.join(",").concat("\n")];
+
+    function safeState(s: string | undefined): string {
+      if (!s) return "";
+      return /,|"/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+    }
+
+    for (const d of data) {
+      const time = new Date(d.when * 1000).toISOString();
+      csv.push(
+        [
+          time,
+          d.entity_id || "",
+          safeState(d.state),
+          d.attributes?.event_type || "",
+          d.context_id || "",
+          d.context_user_id || "",
+          d.context_event_type || "",
+          d.context_domain || "",
+          d.context_service || "",
+          d.context_entity_id || "",
+          safeState(d.context_state),
+          d.context_source || "",
+        ]
+          .join(",")
+          .concat("\n")
+      );
+    }
+    const blob = new Blob(csv, {
+      type: "text/csv",
+    });
+    const url = window.URL.createObjectURL(blob);
+    fileDownload(url, "activity.csv");
   }
 
   static get styles() {
