@@ -73,6 +73,40 @@ interface ClockDatePartSectionData {
   items: PickerComboBoxItem[];
 }
 
+/**
+ * Filters out sections whose group already has a value in `value`, so only
+ * one non-separator value per group can be selected in the picker. The whole
+ * group of the item at `excludeIndex` (the one being edited) stays
+ * selectable, even if that group has more than one value in `value` (e.g. a
+ * pre-existing config authored outside the picker via YAML).
+ * The separator group is always kept.
+ */
+export const getAvailableClockDatePartSections = (
+  sections: ClockDatePartSectionData[],
+  value: string[],
+  excludeIndex?: number
+): ClockDatePartSectionData[] => {
+  const editedItem = excludeIndex != null ? value[excludeIndex] : undefined;
+  const editedSection = editedItem
+    ? getClockDatePartSection(editedItem as ClockCardDatePart)
+    : undefined;
+
+  const usedSections = new Set<ClockDatePartSection>();
+
+  value.forEach((item) => {
+    const section = getClockDatePartSection(item as ClockCardDatePart);
+
+    if (section !== "separator" && section !== editedSection) {
+      usedSections.add(section);
+    }
+  });
+
+  return sections.filter(
+    (sectionData) =>
+      sectionData.id === "separator" || !usedSections.has(sectionData.id)
+  );
+};
+
 interface ClockDatePartValueItem {
   key: string;
   item: string;
@@ -103,12 +137,17 @@ export class HaClockDateFormatPicker extends LitElement {
 
   @query("ha-generic-picker", true) private _picker?: HaGenericPicker;
 
-  private _editIndex?: number;
+  @state() private _editIndex?: number;
 
   protected render() {
     const value = this._value;
     const valueItems = this._getValueItems(value);
     const sections = this._buildSections();
+    const pickerSections = getAvailableClockDatePartSections(
+      sections,
+      value,
+      this._editIndex
+    );
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -117,8 +156,8 @@ export class HaClockDateFormatPicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}
-        .sections=${this._getSectionHeaders(sections)}
-        .getItems=${this._getItems(sections)}
+        .sections=${this._getSectionHeaders(pickerSections)}
+        .getItems=${this._getItems(pickerSections)}
         @value-changed=${this._pickerValueChanged}
       >
         <div slot="field" class="container">
