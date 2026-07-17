@@ -120,6 +120,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this.render = this.renderHass;
       this.update = super.update;
       removeLaunchScreen();
+      this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
     }
     super.update(changedProps);
   }
