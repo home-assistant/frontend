@@ -9,6 +9,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
+import { isFieldHidden } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -229,10 +230,11 @@ class StepFlowForm extends LitElement {
     ) =>
       schema.every(
         (field) =>
-          (!field.required || !["", undefined].includes(data[field.name])) &&
-          (field.type !== "expandable" ||
-            (!field.required && data[field.name] === undefined) ||
-            checkAllRequiredFields(field.schema, data[field.name]))
+          isFieldHidden(field, data) ||
+          ((!field.required || !["", undefined].includes(data[field.name])) &&
+            (field.type !== "expandable" ||
+              (!field.required && data[field.name] === undefined) ||
+              checkAllRequiredFields(field.schema, data[field.name])))
       );
 
     const allRequiredInfoFilledIn =
@@ -260,6 +262,10 @@ class StepFlowForm extends LitElement {
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);
+      if (field && isFieldHidden(field, stepData)) {
+        // Hidden fields are not part of the submitted config
+        return;
+      }
       const selector = (field as HaFormSelector)?.selector ?? {};
       const read_only = (
         Object.values(selector)[0] as { read_only?: boolean } | null | undefined
