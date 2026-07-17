@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/tag/tag";
 import { consume } from "@lit/context";
 import {
+  mdiAlertOutline,
   mdiDevices,
   mdiHome,
   mdiLabel,
@@ -9,6 +10,7 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../common/color/compute-color";
 import { hex2rgb } from "../../common/color/convert-color";
@@ -19,6 +21,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { slugify } from "../../common/string/slugify";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
+import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { TargetType } from "../../data/target";
@@ -39,6 +42,9 @@ export class HaTargetPickerValueChip extends LitElement {
 
   @property({ attribute: "item-id" }) public itemId!: string;
 
+  @property({ attribute: false })
+  public compositeSplits?: DeviceCompositeSplits;
+
   @state() private _domainName?: string;
 
   @state() private _iconImg?: string;
@@ -51,38 +57,67 @@ export class HaTargetPickerValueChip extends LitElement {
     const { name, iconPath, fallbackIconPath, stateObject, color } =
       this._itemData(this.type, this.itemId);
 
+    const split =
+      this.type === "device" && !this.hass.devices?.[this.itemId]
+        ? this.compositeSplits?.[this.itemId]
+        : undefined;
+    const replaced = !!split;
+    const primaryDevice =
+      (split?.primary_id && this.hass.devices?.[split.primary_id]) || undefined;
+    // Show the replaced reference using the primary replacement device's name.
+    const replacedName = primaryDevice
+      ? computeDeviceNameDisplay(
+          primaryDevice,
+          this.hass.localize,
+          this.hass.states
+        )
+      : undefined;
+
     return html`
       <wa-tag
         pill
         with-remove
-        class=${this.type}
+        class=${classMap({ [this.type]: true, replaced })}
         style=${color ? `--color: rgb(${color});` : ""}
         @wa-remove=${this._removeItem}
       >
         <div class="icon">
           ${
-            iconPath
-              ? html`<ha-icon .icon=${iconPath}></ha-icon>`
-              : this._iconImg
-                ? html`<img
-                    alt=${this._domainName || ""}
-                    width="24"
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    src=${this._iconImg}
-                  />`
-                : fallbackIconPath
-                  ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                  : stateObject
-                    ? html`<ha-state-icon
-                        .stateObj=${stateObject}
-                      ></ha-state-icon>`
-                    : nothing
+            replaced
+              ? html`<ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>`
+              : iconPath
+                ? html`<ha-icon .icon=${iconPath}></ha-icon>`
+                : this._iconImg
+                  ? html`<img
+                      alt=${this._domainName || ""}
+                      width="24"
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      src=${this._iconImg}
+                    />`
+                  : fallbackIconPath
+                    ? html`<ha-svg-icon
+                        .path=${fallbackIconPath}
+                      ></ha-svg-icon>`
+                    : stateObject
+                      ? html`<ha-state-icon
+                          .stateObj=${stateObject}
+                        ></ha-state-icon>`
+                      : nothing
           }
         </div>
-        <span class="name"> ${name} </span>
+        <span class="name">
+          ${
+            replaced
+              ? replacedName ||
+                this.hass.localize(
+                  "ui.components.target-picker.replaced_device"
+                )
+              : name
+          }
+        </span>
         ${
-          this.type === "entity"
+          this.type === "entity" || replaced
             ? nothing
             : html`<ha-tooltip .for="expand-${slugify(this.itemId)}"
                   >${this.hass.localize(
@@ -125,7 +160,7 @@ export class HaTargetPickerValueChip extends LitElement {
     if (type === "device") {
       const device = this.hass.devices?.[itemId];
 
-      if (device.primary_config_entry) {
+      if (device?.primary_config_entry) {
         this._getDeviceDomain(device.primary_config_entry);
       }
 
@@ -239,6 +274,11 @@ export class HaTargetPickerValueChip extends LitElement {
       border-color: var(--color);
       --background-color: var(--color);
       --icon-primary-color: var(--primary-text-color);
+    }
+    wa-tag.replaced {
+      border-color: var(--ha-color-border-warning-normal, var(--warning-color));
+      --background-color: var(--warning-color);
+      color: var(--ha-color-on-warning-normal, var(--warning-color));
     }
 
     .name {

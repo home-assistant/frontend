@@ -791,6 +791,9 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
+        "replaced_device": "Replaced device",
+        "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
+        "replace_device": "Replace",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
@@ -910,7 +913,18 @@
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
         "placeholder": "Select a device",
-        "unknown": "Unknown device selected"
+        "unknown": "Unknown device selected",
+        "device_replaced": "Device replaced",
+        "device_replaced_count": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
+        "device_replaced_by_one": "This device was replaced by {device}.",
+        "device_replaced_by_multiple": "This device was replaced by {count} devices.",
+        "device_replaced_no_match": "This device was replaced, but none of the replacement devices are available here.",
+        "replace_device": "Replace",
+        "replaced_dialog": {
+          "title": "Replace device",
+          "description": "This device was replaced by multiple devices. Choose which one to use.",
+          "recommended": "Recommended"
+        }
       },
       "category-picker": {
         "clear": "Clear",
