@@ -219,34 +219,24 @@ export class HaDevicePicker extends LitElement {
   private _valueRenderer = memoizeOne(
     (
       configEntriesLookup: Record<string, ConfigEntry>,
-      compositeSplits: DeviceCompositeSplits | undefined
+      replacementName: string | undefined
     ) =>
       (value: string) => {
         const deviceId = value;
         const device = this.hass.devices[deviceId];
 
         if (!device) {
-          const split = compositeSplits?.[deviceId];
-          if (split) {
-            // Show the primary replacement device's name, falling back to the
-            // first still-existing split device if the primary was deleted.
-            const replacementDevice =
-              (split.primary_id && this.hass.devices[split.primary_id]) ||
-              split.split_ids
-                .map((id) => this.hass.devices[id])
-                .find((dev) => dev);
-            const primaryName = replacementDevice
-              ? computeDeviceName(replacementDevice)
-              : this.hass.localize(
-                  "ui.components.device-picker.device_replaced"
-                );
+          // When the device was replaced and a replacement is available, show
+          // the replacement device's name. Otherwise fall back to the normal
+          // "not found" display of the raw id.
+          if (replacementName) {
             return html`
               <ha-svg-icon
                 slot="start"
                 style="color: var(--warning-color)"
                 .path=${mdiAlertOutline}
               ></ha-svg-icon>
-              <span slot="headline">${primaryName}</span>
+              <span slot="headline">${replacementName}</span>
             `;
           }
           return html`<span slot="headline">${deviceId}</span>`;
@@ -335,16 +325,30 @@ export class HaDevicePicker extends LitElement {
       this.placeholder ??
       this.hass.localize("ui.components.device-picker.placeholder");
 
-    const valueRenderer = this._valueRenderer(
-      this._configEntryLookup,
-      this._compositeSplits
-    );
-
     const replacement = this._getReplacement(
       this.value,
       this.hass.devices,
       this._compositeSplits,
       this._getItems()
+    );
+
+    // Only treat the value as "replaced" when there is an available
+    // replacement device; otherwise fall back to normal "not found" behavior.
+    const canReplace = !!replacement?.candidates.length;
+    const replacementName = canReplace
+      ? computeDeviceName(
+          this.hass.devices[
+            replacement!.primaryId &&
+            replacement!.candidates.includes(replacement!.primaryId)
+              ? replacement!.primaryId
+              : replacement!.candidates[0]
+          ]
+        )
+      : undefined;
+
+    const valueRenderer = this._valueRenderer(
+      this._configEntryLookup,
+      replacementName
     );
 
     return html`
@@ -377,7 +381,7 @@ export class HaDevicePicker extends LitElement {
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
-      ${replacement ? this._renderReplacedAlert(replacement) : nothing}
+      ${canReplace ? this._renderReplacedAlert(replacement!) : nothing}
     `;
   }
 
@@ -386,18 +390,6 @@ export class HaDevicePicker extends LitElement {
     primaryId: string | null;
   }) {
     const { candidates } = replacement;
-
-    if (!candidates.length) {
-      // The device was split, but none of the split devices match this
-      // picker's filters. Nothing to replace it with here.
-      return html`
-        <ha-alert alert-type="warning">
-          ${this.hass.localize(
-            "ui.components.device-picker.device_replaced_no_match"
-          )}
-        </ha-alert>
-      `;
-    }
 
     const replacementName =
       candidates.length === 1

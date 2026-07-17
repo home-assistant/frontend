@@ -914,11 +914,9 @@
         "no_area": "No area",
         "placeholder": "Select a device",
         "unknown": "Unknown device selected",
-        "device_replaced": "Device replaced",
         "device_replaced_count": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
         "device_replaced_by_one": "This device was replaced by {device}.",
         "device_replaced_by_multiple": "This device was replaced by {count} devices.",
-        "device_replaced_no_match": "This device was replaced, but none of the replacement devices are available here.",
         "replace_device": "Replace",
         "replaced_dialog": {
           "title": "Replace device",
