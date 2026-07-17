@@ -250,7 +250,14 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       // The check re-runs on the next reconnect; ignore transient failures.
       return;
     }
-    if (!httpConfig.pending || this._httpPendingDialogOpen) {
+    // Only prompt for an active trial. A pending config with an error was
+    // already reverted/failed and is kept only for display in the config form,
+    // so it must not pop the confirm/revert dialog.
+    if (
+      !httpConfig.pending ||
+      httpConfig.pending.error ||
+      this._httpPendingDialogOpen
+    ) {
       return;
     }
     this._httpPendingDialogOpen = true;
