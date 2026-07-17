@@ -11566,6 +11566,11 @@
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
+      },
+      "logbook": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
+        "download_data_error": "[%key:ui::panel::history::download_data_error%]",
+        "error_no_data": "No activity for the selected target in the selected time range."
       }
     },
     "tips": {
