@@ -138,7 +138,9 @@ export class HaTargetPickerItemRow extends LitElement {
       this.type === "device" && notFound
         ? this._getReplacement(this.itemId)
         : undefined;
-    const replaced = !!replacement;
+    // Only surface the "replaced" state when there is at least one available
+    // replacement device to migrate to. If every replacement device was
+    // deleted (or filtered out), fall back to the plain "not found" state.
     const canMigrate = !!replacement?.candidates.length;
 
     const showEntities = this.type !== "entity" && !notFound;
@@ -187,13 +189,13 @@ export class HaTargetPickerItemRow extends LitElement {
         }
       </div>
 
-      <div slot="headline">${replacement?.name || name}</div>
+      <div slot="headline">${(canMigrate && replacement?.name) || name}</div>
       ${
         notFound || (context && !this.hideContext)
           ? html`<span slot="supporting-text"
               >${
                 notFound
-                  ? replaced
+                  ? canMigrate
                     ? this.hass.localize(
                         "ui.components.target-picker.device_replaced",
                         { count: replacement!.candidates.length }
@@ -764,10 +766,12 @@ export class HaTargetPickerItemRow extends LitElement {
       );
     });
     // Display the replaced reference using the primary replacement device's
-    // name instead of the removed composite device id.
-    const primaryDevice =
-      (split.primary_id && this.hass.devices[split.primary_id]) || undefined;
-    const name = primaryDevice ? computeDeviceName(primaryDevice) : undefined;
+    // name instead of the removed composite device id. Fall back to the first
+    // available candidate if the primary device itself was deleted.
+    const nameDevice =
+      (split.primary_id && this.hass.devices[split.primary_id]) ||
+      (candidates.length ? this.hass.devices[candidates[0]] : undefined);
+    const name = nameDevice ? computeDeviceName(nameDevice) : undefined;
     return { candidates, name };
   }
 

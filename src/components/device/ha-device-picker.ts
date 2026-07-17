@@ -228,11 +228,15 @@ export class HaDevicePicker extends LitElement {
         if (!device) {
           const split = compositeSplits?.[deviceId];
           if (split) {
-            const primaryDevice = split.primary_id
-              ? this.hass.devices[split.primary_id]
-              : undefined;
-            const primaryName = primaryDevice
-              ? computeDeviceName(primaryDevice)
+            // Show the primary replacement device's name, falling back to the
+            // first still-existing split device if the primary was deleted.
+            const replacementDevice =
+              (split.primary_id && this.hass.devices[split.primary_id]) ||
+              split.split_ids
+                .map((id) => this.hass.devices[id])
+                .find((dev) => dev);
+            const primaryName = replacementDevice
+              ? computeDeviceName(replacementDevice)
               : this.hass.localize(
                   "ui.components.device-picker.device_replaced"
                 );

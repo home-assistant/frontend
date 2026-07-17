@@ -62,12 +62,18 @@ export class HaTargetPickerValueChip extends LitElement {
         ? this.compositeSplits?.[this.itemId]
         : undefined;
     const replaced = !!split;
-    const primaryDevice =
-      (split?.primary_id && this.hass.devices?.[split.primary_id]) || undefined;
-    // Show the replaced reference using the primary replacement device's name.
-    const replacedName = primaryDevice
+    // Show the replaced reference using the primary replacement device's name,
+    // falling back to the first still-existing split device if the primary
+    // device itself was deleted.
+    const replacementDevice = split
+      ? (split.primary_id && this.hass.devices?.[split.primary_id]) ||
+        split.split_ids
+          .map((id) => this.hass.devices?.[id])
+          .find((device) => device)
+      : undefined;
+    const replacedName = replacementDevice
       ? computeDeviceNameDisplay(
-          primaryDevice,
+          replacementDevice,
           this.hass.localize,
           this.hass.states
         )
