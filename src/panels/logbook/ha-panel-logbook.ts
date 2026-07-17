@@ -1,9 +1,15 @@
-import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiDownload,
+  mdiFilterRemove,
+  mdiRefresh,
+} from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fromUnixTime } from "date-fns";
 import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -18,6 +24,9 @@ import {
 } from "../../common/url/search-params";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/date-picker/ha-date-range-picker";
+import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
@@ -27,6 +36,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { csvDownload, csvSafeString } from "../../util/csv";
 
 interface LogbookState {
   time: { range: [Date, Date] };
@@ -77,12 +88,24 @@ export class HaPanelLogbook extends LitElement {
           .path=${mdiFilterRemove}
           .label=${this.hass.localize("ui.common.reset")}
         ></ha-icon-button>
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._refreshLogbook}
-          .path=${mdiRefresh}
-          .label=${this.hass!.localize("ui.common.refresh")}
-        ></ha-icon-button>
+
+        <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+
+          <ha-dropdown-item value="refresh">
+            ${this.hass.localize("ui.common.refresh")}
+            <ha-svg-icon slot="icon" .path=${mdiRefresh}></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item value="download">
+            ${this.hass.localize("ui.panel.logbook.download_data")}
+            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <div class="content">
           <div class="filters">
@@ -266,6 +289,67 @@ export class HaPanelLogbook extends LitElement {
 
   private _refreshLogbook() {
     this.shadowRoot!.querySelector("ha-logbook")?.refresh();
+  }
+
+  private async _handleMenuAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    switch (action) {
+      case "download":
+        this._downloadData();
+        break;
+      case "refresh":
+        this._refreshLogbook();
+        break;
+    }
+  }
+
+  private _downloadData() {
+    const data =
+      this.shadowRoot!.querySelector("ha-logbook")?.getEntries() || [];
+
+    if (data.length === 0) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.logbook.download_data_error"),
+        text: this.hass.localize("ui.panel.logbook.error_no_data"),
+        warning: true,
+      });
+      return;
+    }
+
+    const headers = [
+      "time",
+      "entity_id",
+      "state",
+      "event_type",
+      "context_id",
+      "context_user_id",
+      "context_event_type",
+      "context_domain",
+      "context_service",
+      "context_entity_id",
+      "context_state",
+      "context_source",
+    ];
+    const csv: string[][] = [headers];
+
+    for (const d of data) {
+      const time = fromUnixTime(d.when).toISOString();
+      csv.push([
+        time,
+        d.entity_id || "",
+        csvSafeString(d.state),
+        csvSafeString(d.attributes?.event_type),
+        d.context_id || "",
+        d.context_user_id || "",
+        csvSafeString(d.context_event_type),
+        d.context_domain || "",
+        d.context_service || "",
+        d.context_entity_id || "",
+        csvSafeString(d.context_state),
+        d.context_source || "",
+      ]);
+    }
+    csvDownload(csv, "activity.csv");
   }
 
   static get styles() {

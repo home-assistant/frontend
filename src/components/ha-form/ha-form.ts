@@ -1,11 +1,12 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
+import { isFieldHidden } from "./conditions";
 import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
 const LOAD_ELEMENTS = {
@@ -98,7 +99,11 @@ export class HaForm extends LitElement implements HaFormElement {
     let isValid = true;
     let firstInvalidElement: HTMLElement | undefined;
 
-    this.schema.forEach((item, index) => {
+    const visibleSchema = this.schema.filter(
+      (item) => !isFieldHidden(item, this.data)
+    );
+
+    visibleSchema.forEach((item, index) => {
       const element = elements[index];
       if (!element) {
         return;
@@ -164,6 +169,10 @@ export class HaForm extends LitElement implements HaFormElement {
             : ""
         }
         ${this.schema.map((item) => {
+          if (isFieldHidden(item, this.data)) {
+            return nothing;
+          }
+
           const error = getError(this.error, item);
           const warning = getWarning(this.warning, item);
 

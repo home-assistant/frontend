@@ -1486,6 +1486,7 @@
         "auto_revert": "Settings will automatically revert in {time}.",
         "reverted": "Home Assistant reverted the HTTP server settings.",
         "changes_label": "Changed settings:",
+        "not_set": "Not set",
         "confirm": "Confirm",
         "revert": "Revert",
         "close": "Close",
@@ -8679,6 +8680,10 @@
             "description": "Configure how Home Assistant serves its web interface. Saving restarts Home Assistant.",
             "save": "Save",
             "save_no_changes": "Nothing changed — no restart needed.",
+            "save_error": "Could not save the HTTP configuration.",
+            "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
+            "invalid_host": "Enter a valid IP address.",
+            "invalid_network": "Enter a valid IP address or network.",
             "save_confirm": {
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
@@ -8690,7 +8695,7 @@
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
               "ip_banning": "IP banning",
-              "advanced": "Advanced"
+              "advanced": "More options"
             },
             "fields": {
               "server_port": "Server port",
@@ -11566,6 +11571,11 @@
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
+      },
+      "logbook": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
+        "download_data_error": "[%key:ui::panel::history::download_data_error%]",
+        "error_no_data": "No activity for the selected target in the selected time range."
       }
     },
     "tips": {
