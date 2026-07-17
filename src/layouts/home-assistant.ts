@@ -119,8 +119,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
-      removeLaunchScreen();
-      this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+      // Apps with a native splash screen keep covering the frontend until
+      // frontend/loaded, so the launch screen stays up (invisibly) until the
+      // first panel has rendered and partial-panel-resolver removes it.
+      if (!this.hass.auth.external?.config.hasNativeSplashscreen) {
+        removeLaunchScreen();
+        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+      }
     }
     super.update(changedProps);
   }

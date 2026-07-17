@@ -220,7 +220,13 @@ class PartialPanelResolver extends HassRouterPage {
     ) {
       await this.rebuild();
       await this.pageRendered;
-      removeLaunchScreen();
+      if (
+        removeLaunchScreen(
+          !!this.hass.auth.external?.config.hasNativeSplashscreen
+        )
+      ) {
+        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+      }
     }
   }
 }
