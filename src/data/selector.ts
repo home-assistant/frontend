@@ -531,6 +531,10 @@ export interface StringSelector {
     placeholder?: string;
     autocomplete?: string;
     multiple?: true;
+    // Regular expression the value must match (HTML `pattern`); with `multiple`
+    // every entry is validated. `validation_message` is shown when it fails.
+    pattern?: string;
+    validation_message?: string;
   } | null;
 }
 
