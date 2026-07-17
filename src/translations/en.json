@@ -8681,7 +8681,7 @@
             "save": "Save",
             "save_no_changes": "Nothing changed — no restart needed.",
             "save_error": "Could not save the HTTP configuration.",
-            "port_warning": "Changing the server port breaks the connection for the Home Assistant mobile apps and other clients until you update the port in their settings.",
+            "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
             "invalid_host": "Enter a valid IP address.",
             "invalid_network": "Enter a valid IP address or network.",
             "save_confirm": {
