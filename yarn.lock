@@ -2867,13 +2867,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:9.3.13":
-  version: 9.3.13
-  resolution: "@formatjs/intl-numberformat@npm:9.3.13"
+"@formatjs/intl-numberformat@npm:9.3.14":
+  version: 9.3.14
+  resolution: "@formatjs/intl-numberformat@npm:9.3.14"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.7"
-    "@formatjs/intl-localematcher": "npm:0.8.12"
-  checksum: 10/59530d3aec0411a2dae8f2113829b969dceec3ec4a59032cc985ef1b9cebec6d406fbe4dd44ac69e905b4f3b3edb333d61f728a5610fc1e1e132e4bdcb2436aa
+    "@formatjs/intl-localematcher": "npm:0.8.13"
+  checksum: 10/7ba06936b41674cdcfa2aabc05a1dac5defbbb57a790bf8e3eb97d930750b0ec5ba715124cb3661d54015072f6877cbece5d92fa5e2ab98ba32d096c99432140
   languageName: node
   linkType: hard
 
@@ -9982,7 +9982,7 @@ __metadata:
     "@formatjs/intl-getcanonicallocales": "npm:3.2.11"
     "@formatjs/intl-listformat": "npm:8.3.13"
     "@formatjs/intl-locale": "npm:5.3.10"
-    "@formatjs/intl-numberformat": "npm:9.3.13"
+    "@formatjs/intl-numberformat": "npm:9.3.14"
     "@formatjs/intl-pluralrules": "npm:6.3.13"
     "@formatjs/intl-relativetimeformat": "npm:12.3.13"
     "@fullcalendar/core": "npm:6.1.21"
