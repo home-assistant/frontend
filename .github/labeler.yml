@@ -1,3 +1,11 @@
+Agents:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/AGENTS.md"
+          - .agents/**
+          - .claude/**
+          - .github/copilot-instructions.md
+
 Build:
   - changed-files:
       - any-glob-to-any-file:
