@@ -8,6 +8,13 @@ import "../ha-expansion-panel";
 import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
 
+const TYPE_PLURAL: Record<TargetTypeFloorless, string> = {
+  entity: "entities",
+  device: "devices",
+  area: "areas",
+  label: "labels",
+};
+
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -60,11 +67,11 @@ export class HaTargetPickerItemGroup extends LitElement {
     >
       <div slot="header" class="heading">
         ${this.hass.localize(
-          `ui.components.target-picker.selected.${this.type}`,
-          {
-            count,
-          }
+          `ui.components.target-picker.type.${TYPE_PLURAL[this.type]}`
         )}
+        ${
+          this.collapsed ? html`<span class="count">(${count})</span>` : nothing
+        }
       </div>
       <ha-list-base>
         ${Object.entries(this.items).map(([type, items]) =>
@@ -105,6 +112,10 @@ export class HaTargetPickerItemGroup extends LitElement {
       display: flex;
       justify-content: space-between;
       min-height: unset;
+    }
+    .count {
+      color: var(--secondary-text-color);
+      font-weight: var(--ha-font-weight-normal);
     }
   `;
 }
