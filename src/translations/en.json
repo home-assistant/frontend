@@ -5192,6 +5192,8 @@
               "all_entities": "All entities",
               "none_entities": "No entities",
               "template": "Template",
+              "device_replaced": "Replaced device",
+              "device_replaced_description": "This device was replaced by one or more new devices. Update this automation to use them.",
               "types": {
                 "entity": "[%key:ui::components::target-picker::type::entities%]",
                 "device": "[%key:ui::components::target-picker::type::devices%]",

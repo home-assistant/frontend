@@ -81,7 +81,7 @@ const compositeSplitsCache = new WeakMap<
 >();
 
 export const fetchDeviceCompositeSplits = (
-  hass: HomeAssistant
+  hass: Pick<HomeAssistant, "connection" | "callWS">
 ): Promise<DeviceCompositeSplits> => {
   const conn = hass.connection;
 
