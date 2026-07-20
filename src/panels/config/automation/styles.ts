@@ -269,6 +269,7 @@ export const overflowStyles = css`
     white-space: nowrap;
   }
   .overflow-label .shortcut {
+    direction: ltr;
     --mdc-icon-size: 12px;
     display: inline-flex;
     flex-direction: row;

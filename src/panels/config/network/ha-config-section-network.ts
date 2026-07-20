@@ -8,6 +8,7 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-next";
 import type { HomeAssistant, Route } from "../../../types";
+import "./ha-config-http-form";
 import "./ha-config-network";
 import "./ha-config-url-form";
 import "./supervisor-hostname";
@@ -42,6 +43,7 @@ class HaConfigSectionNetwork extends LitElement {
               : ""
           }
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
+          <ha-config-http-form .hass=${this.hass}></ha-config-http-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
           ${
             NETWORK_BROWSERS.some((component) =>
@@ -92,6 +94,7 @@ class HaConfigSectionNetwork extends LitElement {
     supervisor-hostname,
     supervisor-network,
     ha-config-url-form,
+    ha-config-http-form,
     ha-config-network,
     .discovery-card {
       display: block;

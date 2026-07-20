@@ -794,6 +794,8 @@ class HaLogbookEntry extends LitElement {
           position: absolute;
           top: -1px;
           right: -1px;
+          inset-inline-end: -1px;
+          inset-inline-start: initial;
           z-index: 2;
           width: 9px;
           height: 9px;
@@ -911,8 +913,15 @@ class HaLogbookEntry extends LitElement {
              off. */
           flex: 0 0 auto;
           max-width: 60%;
+<<<<<<< HEAD
           overflow-wrap: anywhere;
           text-align: right;
+=======
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: end;
+>>>>>>> origin/dev
         }
 
         .arrow {

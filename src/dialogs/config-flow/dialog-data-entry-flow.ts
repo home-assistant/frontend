@@ -17,6 +17,7 @@ import {
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -74,7 +75,10 @@ declare global {
 }
 
 @customElement("dialog-data-entry-flow")
-class DataEntryFlowDialog extends LitElement {
+class DataEntryFlowDialog extends DirtyStateProviderMixin<
+  Record<string, unknown>,
+  "form"
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DataEntryFlowDialogParams;
@@ -99,6 +103,8 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _createEntryHasPendingUpdates = false;
 
+  @state() private _flowHasProgressed = false;
+
   private _formStepRef = createRef<FormStepElement>();
 
   private _abortStepRef = createRef<AbortStepElement>();
@@ -108,6 +114,8 @@ class DataEntryFlowDialog extends LitElement {
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
+    this._initDirtyTracking({ type: "deep" });
+    this._flowHasProgressed = Boolean(params.continueFlowId);
     this._params = params;
     this._instance = instance++;
     this._open = true;
@@ -175,7 +183,7 @@ class DataEntryFlowDialog extends LitElement {
       return;
     }
 
-    this._processStep(step);
+    this._processStep(step, this._flowHasProgressed);
     this._loading = undefined;
   }
 
@@ -213,6 +221,7 @@ class DataEntryFlowDialog extends LitElement {
 
     this._loading = undefined;
     this._step = undefined;
+    this._flowHasProgressed = false;
     this._params = undefined;
     this._handler = undefined;
     if (this._unsubDataEntryFlowProgress) {
@@ -334,7 +343,7 @@ class DataEntryFlowDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this._preventScrimClose}
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
       >
@@ -484,6 +493,18 @@ class DataEntryFlowDialog extends LitElement {
     `;
   }
 
+  private get _preventScrimClose(): boolean {
+    return (
+      this.isDirtyState ||
+      this._flowHasProgressed ||
+      this._loading !== undefined ||
+      this._formStepLoading ||
+      this._createEntryHasPendingUpdates ||
+      this._step?.type === "external" ||
+      this._step?.type === "progress"
+    );
+  }
+
   private _renderFooter() {
     if (!this._step || this._loading) {
       return nothing;
@@ -588,13 +609,15 @@ class DataEntryFlowDialog extends LitElement {
   }
 
   private async _processStep(
-    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
+    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>,
+    flowHasProgressed = true
   ): Promise<void> {
     if (step === undefined) {
       this.closeDialog();
       return;
     }
 
+    this._flowHasProgressed ||= flowHasProgressed;
     const delayedLoading = setTimeout(() => {
       // only show loading for slow steps to avoid flickering
       this._loading = "loading_step";
@@ -615,11 +638,11 @@ class DataEntryFlowDialog extends LitElement {
       clearTimeout(delayedLoading);
       this._loading = undefined;
     }
-
     this._step = undefined;
     this._formStepLoading = false;
     this._createEntryHasPendingUpdates = false;
     await this.updateComplete;
+    this._initDirtyTracking({ type: "deep" });
     this._step = _step;
     if (
       (_step.type === "create_entry" || _step.type === "abort") &&

@@ -181,6 +181,8 @@ export interface RestoreBackupParams {
   restore_homeassistant?: boolean;
 }
 
+export type CloudBackupHealth = "success" | "failed" | "old" | "none";
+
 export const fetchBackupConfig = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
 
@@ -314,8 +316,60 @@ export const CORE_LOCAL_AGENT = "backup.local";
 export const HASSIO_LOCAL_AGENT = "hassio.local";
 export const CLOUD_AGENT = "cloud.cloud";
 
+// How many hours a scheduled automatic backup may be behind before it reads as
+// overdue, so a few hours of scheduler lag (or a daylight saving shift) doesn't
+// show a warning.
+export const BACKUP_OVERDUE_MARGIN_HOURS = 3;
+
 export const isLocalAgent = (agentId: string) =>
   [CORE_LOCAL_AGENT, HASSIO_LOCAL_AGENT].includes(agentId);
+
+export const getLastCloudBackup = (
+  backups?: BackupContent[]
+): BackupContent | undefined =>
+  backups
+    ?.filter((backup) => CLOUD_AGENT in backup.agents)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+export const cloudBackupEnabled = (backupConfig?: BackupConfig): boolean =>
+  !!backupConfig?.automatic_backups_configured &&
+  backupConfig.create_backup.agent_ids.includes(CLOUD_AGENT);
+
+const BACKUP_OVERDUE_MARGIN_MS = BACKUP_OVERDUE_MARGIN_HOURS * 60 * 60 * 1000;
+
+export const cloudBackupHealth = (
+  backupConfig?: BackupConfig
+): CloudBackupHealth => {
+  if (!cloudBackupEnabled(backupConfig)) {
+    return "none";
+  }
+
+  const completed = backupConfig?.last_completed_automatic_backup
+    ? new Date(backupConfig.last_completed_automatic_backup).getTime()
+    : 0;
+
+  const attempted = backupConfig?.last_attempted_automatic_backup
+    ? new Date(backupConfig.last_attempted_automatic_backup).getTime()
+    : 0;
+
+  if (!completed && !attempted) {
+    return "none";
+  }
+
+  if (attempted > completed) {
+    return "failed";
+  }
+
+  const next =
+    backupConfig?.next_automatic_backup &&
+    new Date(backupConfig.next_automatic_backup).getTime();
+
+  if (next && next < Date.now() - BACKUP_OVERDUE_MARGIN_MS) {
+    return "old";
+  }
+
+  return "success";
+};
 
 export const isNetworkMountAgent = (agentId: string) => {
   const [domain, name] = agentId.split(".");

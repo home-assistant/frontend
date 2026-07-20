@@ -64,6 +64,23 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
 
   if (__DEMO__) {
+    if (path.includes("#")) {
+      if (replace) {
+        mainWindow.history.replaceState(
+          mainWindow.history.state?.root
+            ? { root: true }
+            : (options?.data ?? null),
+          "",
+          path
+        );
+      } else {
+        mainWindow.history.pushState(options?.data ?? null, "", path);
+      }
+      fireEvent(mainWindow, "location-changed", {
+        replace,
+      });
+      return true;
+    }
     if (replace) {
       mainWindow.history.replaceState(
         mainWindow.history.state?.root

@@ -42,5 +42,36 @@ Dependencies:
 GitHub Actions:
   - changed-files:
       - any-glob-to-any-file:
+          - .github/actions/**
           - .github/workflows/**
           - .github/*.yml
+
+"Tests: E2E":
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/e2e/**
+
+"Tests: App":
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/e2e/app.spec.ts
+          - test/e2e/app/**
+          - test/e2e/playwright.app.config.ts
+
+"Tests: Demo":
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/e2e/demo.spec.ts
+          - test/e2e/playwright.demo.config.ts
+
+"Tests: Design":
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/e2e/gallery.spec.ts
+          - test/e2e/playwright.gallery.config.ts
+
+"Tests: Unit":
+  - changed-files:
+      - any-glob-to-any-file:
+          - test/*.ts
+          - "test/!(e2e)/**"

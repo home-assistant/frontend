@@ -169,6 +169,49 @@ describe("zwave_js-credentials", () => {
       );
       expect(result.user_id).toBe(1);
     });
+
+    it("creates a new user with a credential and returns the slot", async () => {
+      // Omitting user_id makes set_user create a new user and write the
+      // credential in one call, returning the allocated credential_slot.
+      const hass = setUserResponse({ user_id: 1, credential_slot: 1 });
+
+      const result = await setZwaveUser(hass, ENTITY_ID, {
+        user_name: "Alice",
+        user_type: "general",
+        active: true,
+        credential_type: "pin_code",
+        credential_data: "1234",
+      });
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "set_user",
+        {
+          user_name: "Alice",
+          user_type: "general",
+          active: true,
+          credential_type: "pin_code",
+          credential_data: "1234",
+        },
+        { entity_id: ENTITY_ID },
+        false,
+        true
+      );
+      expect(result).toEqual({ user_id: 1, credential_slot: 1 });
+    });
+
+    it("propagates errors from callService", async () => {
+      const hass = {
+        callService: vi.fn().mockRejectedValue(new Error("No slots")),
+      } as unknown as HomeAssistant;
+
+      await expect(
+        setZwaveUser(hass, ENTITY_ID, {
+          credential_type: "pin_code",
+          credential_data: "1234",
+        })
+      ).rejects.toThrow("No slots");
+    });
   });
 
   describe("deleteZwaveUser", () => {

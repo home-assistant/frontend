@@ -1,0 +1,23 @@
+name: Build frontend target
+description: Run a gulp build target
+
+inputs:
+  target:
+    description: gulp target to run
+    required: true
+  github-token:
+    description: GitHub token for fetching nightly translations; omit to build English-only
+    default: ""
+  is-test:
+    description: Set IS_TEST for the build (skips source maps and compression)
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Build ${{ inputs.target }}
+      shell: bash
+      run: ./node_modules/.bin/gulp ${{ inputs.target }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        IS_TEST: ${{ inputs.is-test }}

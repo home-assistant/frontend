@@ -74,6 +74,8 @@ class HaConfigBackupOverview extends LitElement {
 
   @state() private _config?: BackupConfig;
 
+  private _searchParms = new URLSearchParams(window.location.search);
+
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
@@ -204,7 +206,9 @@ class HaConfigBackupOverview extends LitElement {
 
     return html`
       <hass-subpage
-        back-path="/config/system"
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config/system"
+        }
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
@@ -229,24 +233,27 @@ class HaConfigBackupOverview extends LitElement {
         <div class="content">
           ${
             this.info && Object.keys(this.info.agent_errors).length
-              ? html`${Object.entries(this.info.agent_errors).map(
-                  ([agentId, error]) =>
-                    html`<ha-alert
-                      alert-type="error"
-                      .title=${this.hass.localize(
-                        "ui.panel.config.backup.overview.agent_error",
-                        {
-                          name: computeBackupAgentName(
-                            this.hass.localize,
-                            agentId,
-                            this.agents
-                          ),
-                        }
-                      )}
-                    >
-                      ${error}
-                    </ha-alert>`
-                )}`
+              ? html`
+                  ${Object.entries(this.info.agent_errors).map(
+                    ([agentId, error]) => html`
+                      <ha-alert
+                        alert-type="error"
+                        .title=${this.hass.localize(
+                          "ui.panel.config.backup.overview.agent_error",
+                          {
+                            name: computeBackupAgentName(
+                              this.hass.localize,
+                              agentId,
+                              this.agents
+                            ),
+                          }
+                        )}
+                      >
+                        ${error}
+                      </ha-alert>
+                    `
+                  )}
+                `
               : nothing
           }
           ${

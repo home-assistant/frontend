@@ -382,6 +382,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         }
         this._updateHass({ config });
         this.checkDataBaseMigration();
+        this.checkHttpPendingConfig();
       });
     }
 

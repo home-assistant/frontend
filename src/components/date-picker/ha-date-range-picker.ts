@@ -4,7 +4,7 @@ import { mdiCalendar } from "@mdi/js";
 import "cally";
 import { isThisYear } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
@@ -26,6 +26,8 @@ import "../ha-icon-button-prev";
 import "../ha-textarea";
 import type { HaTextArea } from "../ha-textarea";
 import "./date-range-picker";
+import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import { translationMetadata } from "../../resources/translations-metadata";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
@@ -110,17 +112,28 @@ export class HaDateRangePicker extends LitElement {
 
     this._handleResize();
     window.addEventListener("resize", this._handleResize);
+  }
 
-    const rangeKeys = this.extendedPresets
-      ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
-      : RANGE_KEYS;
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
-    this._ranges = {};
-    rangeKeys.forEach((key) => {
-      this._ranges![
-        this._i18n.localize(`ui.components.date-range-picker.ranges.${key}`)
-      ] = calcDateRange(this._i18n.locale, this._hassConfig, key);
-    });
+    if (
+      changedProps.has("_i18n") ||
+      changedProps.has("_hassConfig") ||
+      changedProps.has("extendedPresets")
+    ) {
+      const rangeKeys = this.extendedPresets
+        ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
+        : RANGE_KEYS;
+
+      const ranges: DateRangePickerRanges = {};
+      rangeKeys.forEach((key) => {
+        ranges[
+          this._i18n.localize(`ui.components.date-range-picker.ranges.${key}`)
+        ] = calcDateRange(this._i18n.locale, this._hassConfig, key);
+      });
+      this._ranges = ranges;
+    }
   }
 
   public open(): void {
@@ -239,8 +252,13 @@ export class HaDateRangePicker extends LitElement {
     if (!this._opened) {
       return nothing;
     }
+    const dir = emitRTLDirection(
+      computeRTL(this._i18n.locale.language, translationMetadata.translations)
+    );
+
     return html`
       <date-range-picker
+        dir=${dir}
         .ranges=${this.ranges === false ? false : this.ranges || this._ranges}
         .startDate=${this.startDate}
         .endDate=${this.endDate}
