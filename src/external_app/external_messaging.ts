@@ -124,7 +124,7 @@ interface EMOutgoingMessageConnectionStatus extends EMMessage {
 }
 
 interface EMOutgoingMessageFrontendLoaded extends EMMessage {
-  type: "frontend/loaded"; // Fired once the launch screen is removed; with hasNativeSplashscreen this is after the first panel has rendered
+  type: "frontend/loaded"; // Fired once the launch screen is removed; with hasSplashscreen this is after the first panel has rendered
 }
 
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
@@ -371,7 +371,7 @@ export interface ExternalConfig {
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
-  hasNativeSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
+  hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }
 
 export interface ExternalEntityAddToAction {
