@@ -3453,10 +3453,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:16.2.0":
-  version: 16.2.0
-  resolution: "@lokalise/node-api@npm:16.2.0"
-  checksum: 10/97df66b02e0703ba578002c6c8276dfde091ada2c5a125d0a07489b0365f07d4a792478aeba4bffa4a7d94a6eb0d602b96d4bf7cfb60b66d431e4fedd5f7cdfa
+"@lokalise/node-api@npm:16.3.0":
+  version: 16.3.0
+  resolution: "@lokalise/node-api@npm:16.3.0"
+  checksum: 10/9902033459cd3abb6dd0ad2846a4c464144caf890433456c2b966500201b6b692f751e9e23e925f968f9501f431ea6bbc07fdfb59f367fd6f3351d6bb7ae67bd
   languageName: node
   linkType: hard
 
@@ -9991,7 +9991,7 @@ __metadata:
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
     "@lit/task": "npm:1.0.3"
-    "@lokalise/node-api": "npm:16.2.0"
+    "@lokalise/node-api": "npm:16.3.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
     "@material/web": "npm:2.4.1"
