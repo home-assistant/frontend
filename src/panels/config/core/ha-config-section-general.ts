@@ -68,18 +68,22 @@ class HaConfigSectionGeneral extends LitElement {
         .header=${this.hass.localize("ui.panel.config.core.caption")}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          ${!canEdit
-            ? html`
-                <ha-alert>
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.edit_requires_storage"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
+          ${
+            !canEdit
+              ? html`
+                  <ha-alert>
+                    ${this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.edit_requires_storage"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
           ${this._renderHomeNameCard(canEdit)}
           ${this._renderLocationCard(canEdit)}
           ${this._renderRegionalSettingsCard(canEdit)}
@@ -132,23 +136,24 @@ class HaConfigSectionGeneral extends LitElement {
           "ui.panel.config.core.section.core.location_card.header"
         )}
       >
-        ${hasHomeZone
-          ? html`
-              <div class="card-content">
-                <ha-map
-                  .hass=${this.hass}
-                  .entities=${["zone.home"]}
-                  .zoom=${14}
-                  .autoFit=${true}
-                  .fitZones=${true}
-                  .themeMode=${"auto"}
-                  .renderPassive=${false}
-                  .interactiveZones=${false}
-                  class="map-preview"
-                ></ha-map>
-              </div>
-            `
-          : nothing}
+        ${
+          hasHomeZone
+            ? html`
+                <div class="card-content">
+                  <ha-map
+                    .entities=${["zone.home"]}
+                    .zoom=${14}
+                    .autoFit=${true}
+                    .fitZones=${true}
+                    .themeMode=${"auto"}
+                    .renderPassive=${false}
+                    .interactiveZones=${false}
+                    class="map-preview"
+                  ></ha-map>
+                </div>
+              `
+            : nothing
+        }
         <div class="card-actions">
           <ha-button
             appearance="filled"
@@ -174,7 +179,6 @@ class HaConfigSectionGeneral extends LitElement {
       >
         <div class="card-content">
           <ha-timezone-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.time_zone"
             )}
@@ -191,9 +195,9 @@ class HaConfigSectionGeneral extends LitElement {
             name="elevation"
             type="number"
             .disabled=${disabled}
-            .value=${this._elevation !== undefined
-              ? String(this._elevation)
-              : ""}
+            .value=${
+              this._elevation !== undefined ? String(this._elevation) : ""
+            }
             @change=${this._handleChange}
           >
             <span slot="end"
@@ -211,7 +215,6 @@ class HaConfigSectionGeneral extends LitElement {
             <div class="unit-system-options">
               <ha-select-box
                 name="unit_system"
-                .hass=${this.hass}
                 .value=${this._unitSystem}
                 .disabled=${disabled}
                 @value-changed=${this._unitSystemChanged}
@@ -237,31 +240,33 @@ class HaConfigSectionGeneral extends LitElement {
                 ]}
               >
               </ha-select-box>
-              ${this._unitSystem !== this._configuredUnitSystem()
-                ? html`
-                    <ha-checkbox
-                      .checked=${this._updateUnits}
-                      .disabled=${this._submittingRegional}
-                      @change=${this._updateUnitsChanged}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.core.section.core.core_config.update_units_label"
-                      )}
-                      <div slot="hint">
+              ${
+                this._unitSystem !== this._configuredUnitSystem()
+                  ? html`
+                      <ha-checkbox
+                        .checked=${this._updateUnits}
+                        .disabled=${this._submittingRegional}
+                        @change=${this._updateUnitsChanged}
+                      >
                         ${this.hass.localize(
-                          "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                          "ui.panel.config.core.section.core.core_config.update_units_label"
                         )}
-                        ${this.hass.localize(
-                          "ui.panel.config.core.section.core.core_config.update_units_text_2"
-                        )}
-                        <br /><br />
-                        ${this.hass.localize(
-                          "ui.panel.config.core.section.core.core_config.update_units_text_3"
-                        )}
-                      </div>
-                    </ha-checkbox>
-                  `
-                : nothing}
+                        <div slot="hint">
+                          ${this.hass.localize(
+                            "ui.panel.config.core.section.core.core_config.update_units_text_1"
+                          )}
+                          ${this.hass.localize(
+                            "ui.panel.config.core.section.core.core_config.update_units_text_2"
+                          )}
+                          <br /><br />
+                          ${this.hass.localize(
+                            "ui.panel.config.core.section.core.core_config.update_units_text_3"
+                          )}
+                        </div>
+                      </ha-checkbox>
+                    `
+                  : nothing
+              }
             </div>
           </div>
           <div>

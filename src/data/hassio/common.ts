@@ -17,9 +17,6 @@ export interface HassioStats {
   network_tx: number;
 }
 
-export const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
-  response.data;
-
 export const extractApiErrorMessage = (error: any): string =>
   typeof error === "object"
     ? typeof error.body === "object"

@@ -22,35 +22,30 @@ jobs:
     if: github.event_name != 'push' || github.ref_name != 'master'
     environment:
       name: Demo Development
-      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
+      url: ${{ steps.deploy.outputs.unique_deploy_url }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: dev
           persist-credentials: false
 
-      - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
 
       - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/build
+        with:
+          target: build-demo
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        run: |
-          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: demo/dist
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_DEMO_DEV_SITE_ID }}
 
   deploy_master:
     runs-on: ubuntu-latest
@@ -58,32 +53,27 @@ jobs:
     if: github.event_name == 'push' && github.ref_name == 'master'
     environment:
       name: Demo Production
-      url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
+      url: ${{ steps.deploy.outputs.netlify_url }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: master
           persist-credentials: false
 
-      - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
 
       - name: Build Demo
-        run: ./node_modules/.bin/gulp build-demo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/build
+        with:
+          target: build-demo
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        run: |
-          npx -y netlify-cli@23.7.3 deploy --dir=demo/dist --prod
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_DEMO_SITE_ID }}
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: demo/dist
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_DEMO_SITE_ID }}

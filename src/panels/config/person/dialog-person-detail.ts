@@ -13,6 +13,7 @@ import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/input/ha-input";
 import "../../../components/item/ha-row-item";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -44,8 +45,20 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
+interface PersonFormState {
+  name: string;
+  picture: string | null;
+  userId: string | undefined;
+  deviceTrackers: string[];
+  isAdmin: boolean | undefined;
+  localOnly: boolean | undefined;
+}
+
 @customElement("dialog-person-detail")
-class DialogPersonDetail extends LitElement implements HassDialog {
+class DialogPersonDetail
+  extends DirtyStateProviderMixin<PersonFormState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -104,7 +117,19 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._picture = null;
     }
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): PersonFormState {
+    return {
+      name: this._name,
+      picture: this._picture,
+      userId: this._userId,
+      deviceTrackers: this._deviceTrackers,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    };
   }
 
   public closeDialog() {
@@ -134,10 +159,12 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
-        header-title=${this._params.entry
-          ? this._params.entry.name
-          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        .preventScrimClose=${this.isDirtyState}
+        header-title=${
+          this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")
+        }
         @closed=${this._dialogClosed}
       >
         <div>
@@ -177,96 +204,107 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               <ha-switch
                 slot="end"
                 @change=${this._allowLoginChanged}
-                ?disabled=${this._user &&
-                (this._user.id === this.hass.user?.id ||
-                  this._user.system_generated ||
-                  this._user.is_owner)}
+                ?disabled=${
+                  this._user &&
+                  (this._user.id === this.hass.user?.id ||
+                    this._user.system_generated ||
+                    this._user.is_owner)
+                }
                 .checked=${this._userId}
               ></ha-switch>
             </ha-row-item>
 
             ${this._renderUserFields()}
-            ${this._deviceTrackersAvailable(this.hass)
-              ? html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_intro"
-                    )}
-                  </p>
-                  <ha-entities-picker
-                    .hass=${this.hass}
-                    .value=${this._deviceTrackers}
-                    .includeDomains=${includeDomains}
-                    .pickedEntityLabel=${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_picked"
-                    )}
-                    .pickEntityLabel=${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_pick"
-                    )}
-                    @value-changed=${this._deviceTrackersChanged}
-                  >
-                  </ha-entities-picker>
-                `
-              : html`
-                  <p>
-                    ${this.hass!.localize(
-                      "ui.panel.config.person.detail.no_device_tracker_available_intro"
-                    )}
-                  </p>
-                  <ul>
-                    <li>
-                      <a
-                        href=${documentationUrl(
-                          this.hass,
-                          "/integrations/#presence-detection"
-                        )}
-                        target="_blank"
-                        rel="noreferrer"
-                        >${this.hass!.localize(
-                          "ui.panel.config.person.detail.link_presence_detection_integrations"
-                        )}</a
-                      >
-                    </li>
-                    <li>
-                      <a @click=${this.closeDialog} href="/config/integrations">
-                        ${this.hass!.localize(
-                          "ui.panel.config.person.detail.link_integrations_page"
-                        )}</a
-                      >
-                    </li>
-                  </ul>
-                `}
+            ${
+              this._deviceTrackersAvailable(this.hass)
+                ? html`
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_intro"
+                      )}
+                    </p>
+                    <ha-entities-picker
+                      .value=${this._deviceTrackers}
+                      .includeDomains=${includeDomains}
+                      .pickedEntityLabel=${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_picked"
+                      )}
+                      .pickEntityLabel=${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_pick"
+                      )}
+                      @value-changed=${this._deviceTrackersChanged}
+                    >
+                    </ha-entities-picker>
+                  `
+                : html`
+                    <p>
+                      ${this.hass!.localize(
+                        "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                      )}
+                    </p>
+                    <ul>
+                      <li>
+                        <a
+                          href=${documentationUrl(
+                            this.hass,
+                            "/integrations/#presence-detection"
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass!.localize(
+                            "ui.panel.config.person.detail.link_presence_detection_integrations"
+                          )}</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          @click=${this.closeDialog}
+                          href="/config/integrations"
+                        >
+                          ${this.hass!.localize(
+                            "ui.panel.config.person.detail.link_integrations_page"
+                          )}</a
+                        >
+                      </li>
+                    </ul>
+                  `
+            }
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._params.entry
-            ? html`
-                <ha-button
+          ${
+            this._params.entry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${
+                      (this._user && this._user.is_owner) || this._submitting
+                    }
+                  >
+                    ${this.hass!.localize("ui.panel.config.person.detail.delete")}
+                  </ha-button>
+                `
+              : html`<ha-button
                   slot="secondaryAction"
-                  variant="danger"
                   appearance="plain"
-                  @click=${this._deleteEntry}
-                  .disabled=${(this._user && this._user.is_owner) ||
-                  this._submitting}
+                  @click=${this.closeDialog}
                 >
-                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-                </ha-button>
-              `
-            : html`<ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this.closeDialog}
-              >
-                ${this.hass!.localize("ui.common.cancel")}
-              </ha-button>`}
+                  ${this.hass!.localize("ui.common.cancel")}
+                </ha-button>`
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${nameInvalid || this._submitting || !this.isDirtyState}
           >
-            ${this._params.entry
-              ? this.hass!.localize("ui.common.save")
-              : this.hass!.localize("ui.common.add")}
+            ${
+              this._params.entry
+                ? this.hass!.localize("ui.common.save")
+                : this.hass!.localize("ui.common.add")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -277,56 +315,64 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     const user = this._user;
     if (!user) return nothing;
     return html`
-      ${!user.system_generated
-        ? html`
-            <ha-row-item>
-              <span slot="headline"
-                >${this.hass.localize(
-                  "ui.panel.config.person.detail.username"
-                )}</span
-              >
-              <span slot="supporting-text">${user.username}</span>
-              ${this.hass.user?.is_owner
-                ? html`
-                    <ha-icon-button
-                      slot="end"
-                      .path=${mdiPencil}
-                      @click=${this._changeUsername}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.person.detail.change_username"
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
-                : nothing}
-            </ha-row-item>
-          `
-        : nothing}
-      ${!user.system_generated && this.hass.user?.is_owner
-        ? html`
-            <ha-row-item>
-              <span slot="headline"
-                >${this.hass.localize(
-                  "ui.panel.config.person.detail.password"
-                )}</span
-              >
-              <span slot="supporting-text">************</span>
-              ${this.hass.user?.is_owner
-                ? html`
-                    <ha-icon-button
-                      slot="end"
-                      .path=${mdiPencil}
-                      @click=${this._changePassword}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.person.detail.change_password"
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
-                : nothing}
-            </ha-row-item>
-          `
-        : nothing}
+      ${
+        !user.system_generated
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.panel.config.person.detail.username"
+                  )}</span
+                >
+                <span slot="supporting-text">${user.username}</span>
+                ${
+                  this.hass.user?.is_owner
+                    ? html`
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiPencil}
+                          @click=${this._changeUsername}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.person.detail.change_username"
+                          )}
+                        >
+                        </ha-icon-button>
+                      `
+                    : nothing
+                }
+              </ha-row-item>
+            `
+          : nothing
+      }
+      ${
+        !user.system_generated && this.hass.user?.is_owner
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.panel.config.person.detail.password"
+                  )}</span
+                >
+                <span slot="supporting-text">************</span>
+                ${
+                  this.hass.user?.is_owner
+                    ? html`
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiPencil}
+                          @click=${this._changePassword}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.person.detail.change_password"
+                          )}
+                        >
+                        </ha-icon-button>
+                      `
+                    : nothing
+                }
+              </ha-row-item>
+            `
+          : nothing
+      }
       <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
@@ -367,14 +413,17 @@ class DialogPersonDetail extends LitElement implements HassDialog {
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private _localOnlyChanged(ev): void {
     this._localOnly = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _allowLoginChanged(ev): Promise<void> {
@@ -393,6 +442,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
             this._localOnly = user.local_only;
+            this._updateDirtyState(this._currentState());
           }
         },
         name: this._name,
@@ -421,17 +471,20 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._user = undefined;
       this._isAdmin = undefined;
       this._localOnly = undefined;
+      this._updateDirtyState(this._currentState());
     }
   }
 
   private _deviceTrackersChanged(ev: ValueChangedEvent<string[]>) {
     this._error = undefined;
     this._deviceTrackers = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _changePassword() {
@@ -527,6 +580,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         await this._params!.createEntry?.(values);
         this._personExists = true;
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";

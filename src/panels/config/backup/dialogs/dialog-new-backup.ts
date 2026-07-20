@@ -3,11 +3,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-list";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-md-list-item";
+import "../../../../components/ha-icon-next";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -52,7 +52,7 @@ class DialogNewBackup extends LitElement implements HassDialog {
         )}
         @closed=${this._dialogClosed}
       >
-        <ha-md-list
+        <ha-list-base
           innerRole="listbox"
           itemRoles="option"
           .innerAriaLabel=${this.hass.localize(
@@ -60,9 +60,8 @@ class DialogNewBackup extends LitElement implements HassDialog {
           )}
           rootTabbable
         >
-          <ha-md-list-item
+          <ha-list-item-button
             @click=${this._automatic}
-            type="button"
             .disabled=${!this._params.config.create_backup.password}
           >
             <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
@@ -77,8 +76,8 @@ class DialogNewBackup extends LitElement implements HassDialog {
               )}
             </span>
             <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>
-          <ha-md-list-item @click=${this._manual} type="button">
+          </ha-list-item-button>
+          <ha-list-item-button @click=${this._manual}>
             <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
             <span slot="headline">
               ${this.hass.localize(
@@ -91,8 +90,8 @@ class DialogNewBackup extends LitElement implements HassDialog {
               )}
             </span>
             <ha-icon-next slot="end"></ha-icon-next>
-          </ha-md-list-item>
-        </ha-md-list>
+          </ha-list-item-button>
+        </ha-list-base>
       </ha-dialog>
     `;
   }
@@ -114,10 +113,6 @@ class DialogNewBackup extends LitElement implements HassDialog {
       css`
         ha-dialog {
           --dialog-content-padding: 0;
-        }
-
-        ha-md-list {
-          background: none;
         }
         ha-icon-next {
           width: 24px;

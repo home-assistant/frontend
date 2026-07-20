@@ -1,10 +1,13 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
@@ -12,8 +15,13 @@ import {
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { CallWS, HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-combo-box-item";
 import "../ha-generic-picker";
+import {
+  DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -46,13 +54,14 @@ export abstract class HaDeviceAutomationPicker<
   }
 
   private _localizeDeviceAutomation: (
-    hass: HomeAssistant,
+    localize: LocalizeFunc,
+    states: HassEntities,
     entityRegistry: EntityRegistryEntry[],
     automation: T
   ) => string;
 
   private _fetchDeviceAutomations: (
-    hass: HomeAssistant,
+    callWS: CallWS,
     deviceId: string
   ) => Promise<T[]>;
 
@@ -102,6 +111,7 @@ export abstract class HaDeviceAutomationPicker<
       .disabled=${!this._automations || this._automations.length === 0}
       .getItems=${this._getItems(value, this._automations)}
       @value-changed=${this._automationChanged}
+      .rowRenderer=${this._rowRenderer}
       .valueRenderer=${this._valueRenderer}
       .unknownItemText=${this.hass.localize(
         "ui.panel.config.devices.automation.actions.unknown_action"
@@ -127,7 +137,8 @@ export abstract class HaDeviceAutomationPicker<
 
       const automationListItems = automations.map((automation, idx) => {
         const primary = this._localizeDeviceAutomation(
-          this.hass,
+          this.hass.localize,
+          this.hass.states,
           this._entityReg,
           automation
         );
@@ -156,13 +167,25 @@ export abstract class HaDeviceAutomationPicker<
     }
   );
 
+  // Device automation labels (entity name + subtype) are often longer than the
+  // field, so let the option wrap onto multiple lines instead of truncating.
+  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
+    html`<ha-combo-box-item type="button" compact multiline>
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+    </ha-combo-box-item>`;
+
   private _valueRenderer: PickerValueRenderer = (value: string) => {
     const automation = this._automations?.find(
       (a, idx) => value === `${a.device_id}_${idx}`
     );
 
     const text = automation
-      ? this._localizeDeviceAutomation(this.hass, this._entityReg, automation)
+      ? this._localizeDeviceAutomation(
+          this.hass.localize,
+          this.hass.states,
+          this._entityReg,
+          automation
+        )
       : value === NO_AUTOMATION_KEY
         ? this.NO_AUTOMATION_TEXT
         : value;
@@ -172,9 +195,9 @@ export abstract class HaDeviceAutomationPicker<
 
   private async _updateDeviceInfo() {
     this._automations = this.deviceId
-      ? (await this._fetchDeviceAutomations(this.hass, this.deviceId)).sort(
-          sortDeviceAutomations
-        )
+      ? (
+          await this._fetchDeviceAutomations(this.hass.callWS, this.deviceId)
+        ).sort(sortDeviceAutomations)
       : // No device, clear the list of automations
         [];
 

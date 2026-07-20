@@ -50,28 +50,30 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       <ha-icon .icon=${this._config.icon}></ha-icon>
       <div class="flex">
         <div class="name">${this._config.name}</div>
-        ${this._noHTTPS
-          ? html` Cast requires HTTPS `
-          : this._castManager === undefined
-            ? nothing
-            : this._castManager === null
-              ? html` Cast API unavailable `
-              : this._castManager.castState === "NO_DEVICES_AVAILABLE"
-                ? html` No devices found `
-                : html`
-                    <div class="controls">
-                      <google-cast-launcher></google-cast-launcher>
-                      <ha-button
-                        @click=${this._sendLovelace}
-                        class=${classMap({ inactive: !active })}
-                        appearance="plain"
-                        size="small"
-                        .disabled=${!this._castManager.status}
-                      >
-                        SHOW
-                      </ha-button>
-                    </div>
-                  `}
+        ${
+          this._noHTTPS
+            ? html` Cast requires HTTPS `
+            : this._castManager === undefined
+              ? nothing
+              : this._castManager === null
+                ? html` Cast API unavailable `
+                : this._castManager.castState === "NO_DEVICES_AVAILABLE"
+                  ? html` No devices found `
+                  : html`
+                      <div class="controls">
+                        <google-cast-launcher></google-cast-launcher>
+                        <ha-button
+                          @click=${this._sendLovelace}
+                          class=${classMap({ inactive: !active })}
+                          appearance="plain"
+                          size="s"
+                          .disabled=${!this._castManager.status}
+                        >
+                          SHOW
+                        </ha-button>
+                      </div>
+                    `
+        }
       </div>
     `;
   }

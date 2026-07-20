@@ -27,17 +27,19 @@ export class DashboardCard extends LitElement {
             <p>${this.description}</p>
           </div>
         </div>
-        ${this.img
-          ? html`
-              <div class="preview">
-                <img
-                  alt=${this.alt || this.name}
-                  loading="lazy"
-                  src=${this.img}
-                />
-              </div>
-            `
-          : nothing}
+        ${
+          this.img
+            ? html`
+                <div class="preview">
+                  <img
+                    alt=${this.alt || this.name}
+                    loading="lazy"
+                    src=${this.img}
+                  />
+                </div>
+              `
+            : nothing
+        }
         <ha-ripple></ha-ripple>
       </div>
     `;

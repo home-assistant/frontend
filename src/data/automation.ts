@@ -40,8 +40,7 @@ export interface AutomationEntity extends HassEntityBase {
 }
 
 export type AutomationConfig =
-  | ManualAutomationConfig
-  | BlueprintAutomationConfig;
+  ManualAutomationConfig | BlueprintAutomationConfig;
 
 export interface ManualAutomationConfig {
   id?: string;
@@ -95,6 +94,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  note?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -179,7 +179,7 @@ export interface PersistentNotificationTrigger extends BaseTrigger {
 
 export interface ZoneTrigger extends BaseTrigger {
   trigger: "zone";
-  entity_id: string;
+  entity_id: string | string[];
   zone: string;
   event: "enter" | "leave";
 }
@@ -240,6 +240,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  note?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -329,7 +330,14 @@ export interface AutomationElementGroupCollection {
 
 export type AutomationElementGroup = Record<
   string,
-  { icon?: string; members?: AutomationElementGroup }
+  {
+    icon?: string;
+    members?: AutomationElementGroup;
+    // Backend element domains (e.g. "calendar", "sun") whose triggers/conditions
+    // are bundled into this group instead of appearing as their own dynamic
+    // domain group.
+    domains?: string[];
+  }
 >;
 
 export type LegacyCondition =
@@ -375,7 +383,7 @@ export const expandConditionWithShorthand = (
 };
 
 export const triggerAutomationActions = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entityId: string
 ) => {
   hass.callService("automation", "trigger", {
@@ -407,12 +415,22 @@ export const saveAutomationConfig = (
   config: AutomationConfig
 ) => hass.callApi<undefined>("POST", `config/automation/config/${id}`, config);
 
+/**
+ * Accumulates whether a deprecated config option was migrated while
+ * normalizing an automation or script config. Used to surface an alert
+ * offering to save the migrated configuration.
+ */
+export interface AutomationMigrationReport {
+  deprecated: boolean;
+}
+
 export const normalizeAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
 >(
-  config: T
+  config: T,
+  report?: AutomationMigrationReport
 ): T => {
-  config = migrateAutomationConfig(config);
+  config = migrateAutomationConfig(config, report);
 
   // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
@@ -429,7 +447,8 @@ export const normalizeAutomationConfig = <
 export const migrateAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
 >(
-  config: T
+  config: T,
+  report?: AutomationMigrationReport
 ) => {
   if ("trigger" in config) {
     if (!("triggers" in config)) {
@@ -451,29 +470,30 @@ export const migrateAutomationConfig = <
   }
 
   if (config.triggers) {
-    config.triggers = migrateAutomationTrigger(config.triggers);
+    config.triggers = migrateAutomationTrigger(config.triggers, report);
   }
 
   if (config.actions) {
-    config.actions = migrateAutomationAction(config.actions);
+    config.actions = migrateAutomationAction(config.actions, report);
   }
 
   return config;
 };
 
 export const migrateAutomationTrigger = (
-  trigger: Trigger | Trigger[]
+  trigger: Trigger | Trigger[],
+  report?: AutomationMigrationReport
 ): Trigger | Trigger[] => {
   if (!trigger) {
     return trigger;
   }
 
   if (Array.isArray(trigger)) {
-    return trigger.map(migrateAutomationTrigger) as Trigger[];
+    return trigger.map((t) => migrateAutomationTrigger(t, report)) as Trigger[];
   }
 
   if ("triggers" in trigger && trigger.triggers) {
-    trigger.triggers = migrateAutomationTrigger(trigger.triggers);
+    trigger.triggers = migrateAutomationTrigger(trigger.triggers, report);
   }
 
   if ("platform" in trigger) {
@@ -483,6 +503,25 @@ export const migrateAutomationTrigger = (
     }
     delete trigger.platform;
   }
+
+  if ("options" in trigger) {
+    if (trigger.options && "behavior" in trigger.options) {
+      // Deprecated behavior values renamed in 2026; the backend raises a repair
+      // when they are still used, so flag the migration to offer saving.
+      if (trigger.options.behavior === "any") {
+        trigger.options.behavior = "each";
+        if (report) {
+          report.deprecated = true;
+        }
+      } else if (trigger.options.behavior === "last") {
+        trigger.options.behavior = "all";
+        if (report) {
+          report.deprecated = true;
+        }
+      }
+    }
+  }
+
   return trigger;
 };
 
@@ -607,6 +646,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editNote: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -668,6 +708,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  note?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

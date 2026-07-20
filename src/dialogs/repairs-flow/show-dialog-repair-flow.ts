@@ -90,15 +90,17 @@ export const showRepairsFlowDialog = (
         );
 
         return html`${renderIssueDescription(hass, issue)}
-        ${description
-          ? html`
-              <ha-markdown
-                breaks
-                allow-svg
-                .content=${description}
-              ></ha-markdown>
-            `
-          : step.reason}`;
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  breaks
+                  allow-svg
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : step.reason
+        }`;
       },
 
       renderShowFormStepHeader(hass, step) {
@@ -129,15 +131,17 @@ export const showRepairsFlowDialog = (
           mergePlaceholders(issue, step)
         );
         return html`${renderIssueDescription(hass, issue)}
-        ${description
-          ? html`
-              <ha-markdown
-                allow-svg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : nothing}`;
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allow-svg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : nothing
+        }`;
       },
 
       renderShowFormStepFieldLabel(hass, step, field, options) {
@@ -157,9 +161,11 @@ export const showRepairsFlowDialog = (
           mergePlaceholders(issue, step)
         );
         return html`${renderIssueDescription(hass, issue)}
-        ${description
-          ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
-          : nothing}`;
+        ${
+          description
+            ? html`<ha-markdown breaks .content=${description}></ha-markdown>`
+            : nothing
+        }`;
       },
 
       renderShowFormStepFieldError(hass, step, error) {
@@ -231,15 +237,17 @@ export const showRepairsFlowDialog = (
           }.fix_flow.progress.${step.progress_action}`,
           mergePlaceholders(issue, step)
         );
-        return html`${renderIssueDescription(hass, issue)}${description
-          ? html`
-              <ha-markdown
-                allow-svg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : nothing}`;
+        return html`${renderIssueDescription(hass, issue)}${
+          description
+            ? html`
+                <ha-markdown
+                  allow-svg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : nothing
+        }`;
       },
 
       renderMenuHeader(hass, step) {
@@ -270,15 +278,17 @@ export const showRepairsFlowDialog = (
           mergePlaceholders(issue, step)
         );
         return html`${renderIssueDescription(hass, issue)}
-        ${description
-          ? html`
-              <ha-markdown
-                allow-svg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : nothing}`;
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allow-svg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : nothing
+        }`;
       },
 
       renderMenuOption(hass, step, option) {

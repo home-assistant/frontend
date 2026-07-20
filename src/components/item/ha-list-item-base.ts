@@ -38,6 +38,9 @@ export class HaListItemBase extends HaRowItem {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (!this.hasAttribute("ha-list-item")) {
+      this.setAttribute("ha-list-item", "");
+    }
     if (!this.hasAttribute("role")) {
       this.setAttribute("role", this.defaultRole);
     }

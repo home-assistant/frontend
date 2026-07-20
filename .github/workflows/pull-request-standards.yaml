@@ -1,0 +1,38 @@
+name: Pull request standards
+
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] -- safe: reads PR metadata from event payload only, checks out base repo scripts only, never PR head code
+    types:
+      - opened
+      - edited
+      - reopened
+      - ready_for_review
+    branches:
+      - dev
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check pull request follows contribution standards
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # To label and comment on pull requests
+    steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Check pull request standards
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { default: checkStandards } = await import(
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mjs`
+            );
+            await checkStandards({ github, context, core });

@@ -40,6 +40,8 @@ import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
+import { stateContentHasTimestamp } from "../../../../state-display/state-display";
+import { timeFormatConfigStruct } from "../../components/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -60,6 +62,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    time_format: optional(timeFormatConfigStruct),
   })
 );
 
@@ -89,7 +92,7 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean
+      showTimeFormat: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -140,21 +143,25 @@ export class HuiTileCardEditor
                 },
               ],
             },
-            ...(!hideState
-              ? ([
-                  {
-                    name: "state_content",
-                    selector: {
-                      ui_state_content: {
-                        allow_context: true,
-                      },
-                    },
-                    context: {
-                      filter_entity: "entity",
-                    },
-                  },
-                ] as const satisfies readonly HaFormSchema[])
-              : []),
+            {
+              name: "state_content",
+              hidden: { field: "hide_state", value: true },
+              selector: {
+                ui_state_content: {
+                  allow_context: true,
+                },
+              },
+              context: {
+                filter_entity: "entity",
+              },
+            },
+            {
+              name: "time_format",
+              hidden: !showTimeFormat,
+              selector: {
+                ui_time_format: {},
+              },
+            },
             {
               name: "content_layout",
               required: true,
@@ -271,11 +278,15 @@ export class HuiTileCardEditor
 
     const entityId = this._config!.entity;
 
-    const schema = this._schema(
-      this.hass.localize,
-      entityId,
-      this._config.hide_state ?? false
-    );
+    const showTimeFormat =
+      !this._config.hide_state &&
+      stateContentHasTimestamp(
+        entityId,
+        this.hass.states[entityId],
+        this._config.state_content
+      );
+
+    const schema = this._schema(this.hass.localize, entityId, showTimeFormat);
 
     const vertical = this._config.vertical ?? false;
 
@@ -319,19 +330,21 @@ export class HuiTileCardEditor
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-card-features-editor>
-          ${hasCompatibleFeatures && hasFeatures
-            ? html`
-                <ha-form
-                  class="features-form"
-                  .hass=${this.hass}
-                  .data=${data}
-                  .schema=${featuresSchema}
-                  .computeLabel=${this._computeLabelCallback}
-                  .computeHelper=${this._computeHelperCallback}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `
-            : nothing}
+          ${
+            hasCompatibleFeatures && hasFeatures
+              ? html`
+                  <ha-form
+                    class="features-form"
+                    .hass=${this.hass}
+                    .data=${data}
+                    .schema=${featuresSchema}
+                    .computeLabel=${this._computeLabelCallback}
+                    .computeHelper=${this._computeHelperCallback}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `
+              : nothing
+          }
         </div>
       </ha-expansion-panel>
     `;

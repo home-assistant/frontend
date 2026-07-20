@@ -303,6 +303,43 @@ class HuiEnergySankeyCard
       }
       deviceNodes.push(node);
     });
+
+    // Add untracked consumption nodes for parent devices whose sub-devices
+    // don't account for the parent's full consumption
+    const parentDeviceIds = new Set(Object.values(parentLinks));
+    parentDeviceIds.forEach((parentId) => {
+      const parentNode = deviceNodes.find((node) => node.id === parentId);
+      if (!parentNode) {
+        return;
+      }
+      const childrenSum = deviceNodes.reduce(
+        (sum, node) =>
+          parentLinks[node.id] === parentId ? sum + node.value : sum,
+        0
+      );
+      const untracked = parentNode.value - childrenSum;
+      if (untracked > 0) {
+        const untrackedNodeId = `untracked_${parentId}`;
+        deviceNodes.push({
+          id: untrackedNodeId,
+          label: this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+          ),
+          value: untracked,
+          color: computedStyle
+            .getPropertyValue("--state-unavailable-color")
+            .trim(),
+          index: 4,
+        });
+        parentLinks[untrackedNodeId] = parentId;
+        links.push({
+          source: parentId,
+          target: untrackedNodeId,
+          value: untracked,
+        });
+      }
+    });
+
     const devicesWithoutParent = deviceNodes.filter(
       (node) => !parentLinks[node.id]
     );
@@ -421,26 +458,26 @@ class HuiEnergySankeyCard
         })}
       >
         <div class="card-content">
-          ${hasData
-            ? html`<ha-sankey-chart
-                .hass=${this.hass}
-                .data=${{ nodes, links }}
-                .vertical=${vertical}
-                .valueFormatter=${this._valueFormatter}
-                @node-click=${this._handleNodeClick}
-              ></ha-sankey-chart>`
-            : html`${this.hass.localize(
-                "ui.panel.lovelace.cards.energy.no_data_period"
-              )}`}
+          ${
+            hasData
+              ? html`<ha-sankey-chart
+                  .hass=${this.hass}
+                  .data=${{ nodes, links }}
+                  .vertical=${vertical}
+                  .valueFormatter=${this._valueFormatter}
+                  @node-click=${this._handleNodeClick}
+                ></ha-sankey-chart>`
+              : html`${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.no_data_period"
+                )}`
+          }
         </div>
       </ha-card>
     `;
   }
 
   private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
-      kWh</div>`;
+    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     const { node } = ev.detail;

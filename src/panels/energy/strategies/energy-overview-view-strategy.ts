@@ -1,20 +1,26 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import type { GridSourceTypeEnergyPreference } from "../../../data/energy";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
+import type { EnergyViewStrategyConfig } from "./energy-cards";
+import { hasWaterSource, isEnergyCardVisible } from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
-    _config: LovelaceStrategyConfig,
+    _config: EnergyViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+    const hidden = _config.hidden_cards;
 
     const view: LovelaceViewConfig = {
       type: "sections",
@@ -48,32 +54,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return view;
     }
 
-    const hasGrid = prefs.energy_sources.find(
-      (source): source is GridSourceTypeEnergyPreference =>
-        source.type === "grid" &&
-        (!!source.stat_energy_from || !!source.stat_energy_to)
-    );
-    const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
-    const hasBattery = prefs.energy_sources.some(
-      (source) => source.type === "battery"
-    );
-    const hasSolar = prefs.energy_sources.some(
-      (source) => source.type === "solar"
-    );
-    const hasWaterSources = prefs.energy_sources.some(
-      (source) => source.type === "water"
-    );
-    const hasWaterDevices = prefs.device_consumption_water?.length;
-    const hasPowerSources = prefs.energy_sources.find((source) => {
-      if (source.type === "solar" && source.stat_rate) return true;
-      if (source.type === "battery" && source.stat_rate) return true;
-      if (source.type === "grid") {
-        return !!source.stat_rate || !!source.power_config;
-      }
-      return false;
-    });
-
-    if (hasGrid || hasBattery || hasSolar) {
+    if (isEnergyCardVisible("overview", "energy-distribution", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -88,7 +69,9 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (prefs.energy_sources.length) {
+    if (
+      isEnergyCardVisible("overview", "energy-sources-table", prefs, hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -104,7 +87,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasPowerSources) {
+    if (isEnergyCardVisible("overview", "power-sources-graph", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -120,7 +103,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGrid || hasBattery) {
+    if (isEnergyCardVisible("overview", "energy-usage-graph", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -135,7 +118,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGas) {
+    if (isEnergyCardVisible("overview", "energy-gas-graph", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -150,11 +133,11 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWaterSources || hasWaterDevices) {
+    if (isEnergyCardVisible("overview", "energy-water-graph", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
-          hasWaterSources
+          hasWaterSource(prefs)
             ? {
                 title: hass.localize(
                   "ui.panel.energy.cards.energy_water_graph_title"

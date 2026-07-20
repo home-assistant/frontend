@@ -1,5 +1,6 @@
 import { createContext } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -10,10 +11,14 @@ import type {
   HomeAssistantRegistries,
   HomeAssistantUI,
 } from "../../types";
+import type { RelatedIdSets } from "../../common/search/related-context";
+import type { ConditionDescriptions } from "../condition";
 import type { ConfigEntry } from "../config_entries";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import type { DomainManifestLookup } from "../integration";
 import type { LabelRegistryEntry } from "../label/label_registry";
+import type { ItemType } from "../search";
+import type { TriggerDescriptions } from "../trigger";
 
 /**
  * Entity, device, area, and floor registries
@@ -94,6 +99,11 @@ export const areasContext = createContext<HomeAssistant["areas"]>("areas");
  */
 export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
 
+/**
+ * Whether the main Home Assistant viewport is using the narrow layout.
+ */
+export const narrowViewportContext = createContext<boolean>("narrowViewport");
+
 // #region lazy-contexts
 
 /**
@@ -122,6 +132,19 @@ export const configEntriesContext =
  */
 export const manifestsContext =
   createContext<DomainManifestLookup>("manifests");
+
+/**
+ * Lazy loaded trigger platform descriptions, keyed by trigger key.
+ */
+export const triggerDescriptionsContext = createContext<TriggerDescriptions>(
+  "triggerDescriptions"
+);
+
+/**
+ * Lazy loaded condition platform descriptions, keyed by condition key.
+ */
+export const conditionDescriptionsContext =
+  createContext<ConditionDescriptions>("conditionDescriptions");
 
 // #endregion lazy-contexts
 
@@ -162,3 +185,59 @@ export const panelsContext = createContext<HomeAssistant["panels"]>("panels");
 export const authContext = createContext<HomeAssistant["auth"]>("auth");
 
 // #endregion deprecated-contexts
+
+// #region related-context
+
+export interface RelatedContextItem {
+  itemType: ItemType;
+  itemId: string;
+}
+
+/**
+ * Resolved related entities/devices/areas for the current page context.
+ * Set by `RelatedContextProvider` when a page fires `hass-related-context`.
+ * Cleared on navigation.
+ */
+export const relatedContext = createContext<RelatedIdSets | undefined>(
+  "related"
+);
+
+declare global {
+  interface HASSDomEvents {
+    "hass-related-context": RelatedContextItem | undefined;
+  }
+  interface HTMLElementEventMap {
+    "hass-related-context": HASSDomEvent<RelatedContextItem | undefined>;
+  }
+}
+
+/**
+ * Set the related context to an entity (or clear it when no entity), so nearby
+ * pickers float relevant entities.
+ * @param node - The node to fire the event on.
+ * @param context - The context to set, or undefined to clear.
+ */
+export const fireRelatedContext = (
+  node: HTMLElement,
+  context: RelatedContextItem | undefined
+): void => {
+  fireEvent(node, "hass-related-context", context);
+};
+
+/**
+ * Set the related context to an entity (or clear it when no entity), so nearby
+ * pickers float relevant entities. Fired by editors.
+ * @param node - The node to fire the event on.
+ * @param entityId - The entity to set, or undefined to clear.
+ */
+export const fireEntityRelatedContext = (
+  node: HTMLElement,
+  entityId: string | undefined
+): void => {
+  fireRelatedContext(
+    node,
+    entityId ? { itemType: "entity", itemId: entityId } : undefined
+  );
+};
+
+// #endregion related-context

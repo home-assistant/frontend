@@ -73,6 +73,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static getDefaultConfig(): Partial<TileCardConfig> {
+    return {
+      features_position: "bottom",
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
@@ -264,6 +270,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .stateObj=${stateObj}
             .hass=${this.hass}
             .content=${this._config.state_content}
+            .timeFormat=${this._config.time_format}
           >
           </state-display>
         `;
@@ -306,34 +313,40 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             data-state=${ifDefined(stateObj?.state)}
             class=${classMap({ image: hasImage })}
           >
-            ${hasImage
-              ? nothing
-              : html`
-                  <ha-state-icon
-                    slot="icon"
-                    .icon=${this._config.icon}
-                    .stateObj=${stateObj}
-                  ></ha-state-icon>
-                `}
+            ${
+              hasImage
+                ? nothing
+                : html`
+                    <ha-state-icon
+                      slot="icon"
+                      .icon=${this._config.icon}
+                      .stateObj=${stateObj}
+                    ></ha-state-icon>
+                  `
+            }
             ${renderTileBadge(stateObj, this.hass)}
           </ha-tile-icon>
           <ha-tile-info slot="info">
             <span slot="primary" class="primary">${name}</span>
-            ${stateDisplay
-              ? html`<span slot="secondary">${stateDisplay}</span>`
-              : nothing}
+            ${
+              stateDisplay
+                ? html`<span slot="secondary">${stateDisplay}</span>`
+                : nothing
+            }
           </ha-tile-info>
-          ${features.length > 0
-            ? html`
-                <hui-card-features
-                  slot="features"
-                  .hass=${this.hass}
-                  .context=${this._featureContext}
-                  .color=${this._config.color}
-                  .features=${features}
-                ></hui-card-features>
-              `
-            : nothing}
+          ${
+            features.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features"
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
         </ha-tile-container>
       </ha-card>
     `;

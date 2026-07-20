@@ -101,62 +101,70 @@ export class HaConfigAppsInstalled extends LitElement {
           </ha-input-search>
         </div>
         <div class="content">
-          ${addons.length === 0
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <button class="link" @click=${this._openStore}>
-                      ${this.hass.localize(
-                        "ui.panel.config.apps.installed.no_apps"
-                      )}
-                    </button>
-                  </div>
-                </ha-card>
-              `
-            : addons.map(
-                (addon) => html`
-                  <ha-card
-                    role="button"
-                    tabindex="0"
-                    outlined
-                    .addon=${addon}
-                    @click=${this._addonTapped}
-                    aria-label=${getAppDisplayName(addon.name, addon.stage)}
-                  >
+          ${
+            addons.length === 0
+              ? html`
+                  <ha-card outlined>
                     <div class="card-content">
-                      <supervisor-apps-card-content
-                        .hass=${this.hass}
-                        .title=${addon.name}
-                        .stage=${addon.stage}
-                        .description=${addon.description}
-                        available
-                        .tags=${this._getAppTags(addon)}
-                        .state=${addon.state}
-                        .icon=${addon.update_available
-                          ? mdiArrowUpBoldCircle
-                          : mdiPuzzle}
-                        .iconTitle=${addon.state !== "started"
-                          ? this.hass.localize(
-                              "ui.panel.config.apps.installed.app_stopped"
-                            )
-                          : addon.update_available
-                            ? this.hass.localize(
-                                "ui.panel.config.apps.installed.app_update_available"
-                              )
-                            : this.hass.localize(
-                                "ui.panel.config.apps.installed.app_running"
-                              )}
-                        .iconImage=${addon.icon
-                          ? `/api/hassio/addons/${addon.slug}/icon`
-                          : undefined}
-                      ></supervisor-apps-card-content>
+                      <button class="link" @click=${this._openStore}>
+                        ${this.hass.localize(
+                          "ui.panel.config.apps.installed.no_apps"
+                        )}
+                      </button>
                     </div>
                   </ha-card>
                 `
-              )}
+              : addons.map(
+                  (addon) => html`
+                    <ha-card
+                      role="button"
+                      tabindex="0"
+                      outlined
+                      .addon=${addon}
+                      @click=${this._addonTapped}
+                      aria-label=${getAppDisplayName(addon.name, addon.stage)}
+                    >
+                      <div class="card-content">
+                        <supervisor-apps-card-content
+                          .hass=${this.hass}
+                          .title=${addon.name}
+                          .stage=${addon.stage}
+                          .description=${addon.description}
+                          available
+                          .tags=${this._getAppTags(addon)}
+                          .state=${addon.state}
+                          .icon=${
+                            addon.update_available
+                              ? mdiArrowUpBoldCircle
+                              : mdiPuzzle
+                          }
+                          .iconTitle=${
+                            addon.state !== "started"
+                              ? this.hass.localize(
+                                  "ui.panel.config.apps.installed.app_stopped"
+                                )
+                              : addon.update_available
+                                ? this.hass.localize(
+                                    "ui.panel.config.apps.installed.app_update_available"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.apps.installed.app_running"
+                                  )
+                          }
+                          .iconImage=${
+                            addon.icon
+                              ? `/api/hassio/addons/${addon.slug}/icon`
+                              : undefined
+                          }
+                        ></supervisor-apps-card-content>
+                      </div>
+                    </ha-card>
+                  `
+                )
+          }
         </div>
 
-        <ha-button size="large" href="/config/apps/available">
+        <ha-button size="l" href="/config/apps/available">
           <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
         </ha-button>
@@ -261,15 +269,22 @@ export class HaConfigAppsInstalled extends LitElement {
       }
 
       .search {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 56px;
         position: sticky;
         top: 0;
         z-index: 2;
+        background-color: var(--primary-background-color);
+        padding: 0 var(--ha-space-4);
+        box-sizing: border-box;
+        border-bottom: 1px solid var(--divider-color);
       }
 
       ha-input-search {
-        padding: var(--ha-space-3) var(--ha-space-2);
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        flex: 1;
+        min-width: 0;
       }
 
       .content {
@@ -295,7 +310,7 @@ export class HaConfigAppsInstalled extends LitElement {
         cursor: pointer;
       }
 
-      ha-button[size="large"] {
+      ha-button[size="l"] {
         position: fixed;
         right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
         bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));

@@ -335,7 +335,8 @@ const tryDescribeAction = <T extends ActionType>(
       );
     }
     const localized = localizeDeviceAutomationAction(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );

@@ -35,6 +35,7 @@ import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
+import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
@@ -79,6 +80,14 @@ const computeAreaCard = (
 
 @customElement("home-overview-view-strategy")
 export class HomeOverviewViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+    "panels",
+  ];
+
   static async generate(
     config: HomeOverviewViewStrategyConfig,
     hass: HomeAssistant
@@ -474,7 +483,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:home-assistant",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.home.welcome_title"
@@ -521,8 +529,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        | LovelaceSectionRawConfig
-        | undefined
+        LovelaceSectionRawConfig | undefined
       )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 

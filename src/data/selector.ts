@@ -80,8 +80,10 @@ export type Selector =
   | TTSVoiceSelector
   | SerialPortSelector
   | UiActionSelector
+  | UiClockDateFormatSelector
   | UiColorSelector
   | UiStateContentSelector
+  | UiTimeFormatSelector
   | BackupLocationSelector;
 
 export interface ActionSelector {
@@ -125,13 +127,12 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
-export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
 
 export type AutomationBehaviorConditionMode = "all" | "any";
 
 export type AutomationBehavior =
-  | AutomationBehaviorTriggerMode
-  | AutomationBehaviorConditionMode;
+  AutomationBehaviorTriggerMode | AutomationBehaviorConditionMode;
 
 export interface AutomationBehaviorSelector {
   automation_behavior: {
@@ -265,6 +266,10 @@ interface EntitySelectorFilter {
   unit_of_measurement?: string | readonly string[];
 }
 
+interface EntitySelectorEntityFilter extends EntitySelectorFilter {
+  device?: DeviceSelectorFilter;
+}
+
 export interface EntitySelectorExtraOption {
   id: string;
   primary: string;
@@ -280,7 +285,7 @@ export interface EntitySelector {
     multiple?: boolean;
     include_entities?: string[];
     exclude_entities?: string[];
-    filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    filter?: EntitySelectorEntityFilter | readonly EntitySelectorEntityFilter[];
     reorder?: boolean;
     extra_options?: EntitySelectorExtraOption[];
   } | null;
@@ -530,6 +535,10 @@ export interface StringSelector {
     placeholder?: string;
     autocomplete?: string;
     multiple?: true;
+    // Regular expression the value must match (HTML `pattern`); with `multiple`
+    // every entry is validated. `validation_message` is shown when it fails.
+    pattern?: string;
+    validation_message?: string;
   } | null;
 }
 
@@ -577,6 +586,10 @@ export interface UiActionSelector {
   } | null;
 }
 
+export interface UiClockDateFormatSelector {
+  ui_clock_date_format: {} | null;
+}
+
 export interface UiColorExtraOption {
   value: string;
   label: string;
@@ -599,6 +612,10 @@ export interface UiStateContentSelector {
     allow_name?: boolean;
     allow_context?: boolean;
   } | null;
+}
+
+export interface UiTimeFormatSelector {
+  ui_time_format: {} | null;
 }
 
 export interface EntityNameSelector {
@@ -658,7 +675,9 @@ export const expandLabelTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -724,7 +743,9 @@ export const expandAreaTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -747,7 +768,9 @@ export const expandDeviceTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       newEntities.push(entity.entity_id);
@@ -788,7 +811,9 @@ export const areaMeetsTargetSelector = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources
+        entitySources,
+        hass.entities,
+        hass.devices
       )
     ) {
       return true;
@@ -836,14 +861,22 @@ export const deviceMeetsTargetSelector = (
 export const entityMeetsTargetSelector = (
   entity: HassEntity | undefined,
   targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  entitySources?: EntitySources,
+  entities?: HomeAssistant["entities"],
+  devices?: HomeAssistant["devices"]
 ): boolean => {
   if (!entity) {
     return false;
   }
   if (targetSelector.target?.entity) {
     return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
-      filterSelectorEntities(filterEntity, entity, entitySources)
+      filterSelectorEntities(
+        filterEntity,
+        entity,
+        entitySources,
+        entities,
+        devices
+      )
     );
   }
   return true;
@@ -882,9 +915,12 @@ export const filterSelectorDevices = (
 };
 
 export const filterSelectorEntities = (
-  filterEntity: EntitySelectorFilter,
+  filterEntity: EntitySelectorEntityFilter,
   entity: HassEntity,
-  entitySources?: EntitySources
+  entitySources?: EntitySources,
+  entityRegistry?: HomeAssistant["entities"],
+  devices?: HomeAssistant["devices"],
+  deviceIntegrationLookup?: Record<string, Set<string>>
 ): boolean => {
   const {
     domain: filterDomain,
@@ -892,6 +928,7 @@ export const filterSelectorEntities = (
     supported_features: filterSupportedFeature,
     unit_of_measurement: filterUnitOfMeasurement,
     integration: filterIntegration,
+    device: filterDevice,
   } = filterEntity;
 
   if (filterDomain) {
@@ -934,6 +971,24 @@ export const filterSelectorEntities = (
         ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
         : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
+      return false;
+    }
+  }
+
+  if (filterDevice) {
+    if (!entityRegistry || !devices) {
+      return false;
+    }
+
+    const deviceId = entityRegistry[entity.entity_id]?.device_id;
+    if (!deviceId) {
+      return false;
+    }
+    const device = devices[deviceId];
+    if (!device) {
+      return false;
+    }
+    if (!filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)) {
       return false;
     }
   }
@@ -1007,7 +1062,7 @@ export const handleLegacyDeviceSelector = (
 export const computeCreateDomains = (
   selector: EntitySelector | TargetSelector
 ): undefined | string[] => {
-  let entityFilters: EntitySelectorFilter[] | undefined;
+  let entityFilters: EntitySelectorEntityFilter[] | undefined;
 
   if ("target" in selector) {
     entityFilters = ensureArray(selector.target?.entity);
@@ -1025,6 +1080,7 @@ export const computeCreateDomains = (
     !entityFilter.integration &&
     !entityFilter.device_class &&
     !entityFilter.supported_features &&
+    !entityFilter.device &&
     entityFilter.domain
       ? ensureArray(entityFilter.domain).filter((domain) =>
           isHelperDomain(domain)

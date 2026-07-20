@@ -29,10 +29,7 @@ export const DEFAULT_CREDENTIAL_MIN_LENGTH = 4;
 export const DEFAULT_CREDENTIAL_MAX_LENGTH = 10;
 
 export type CredentialErrorCode =
-  | "required"
-  | "length"
-  | "pin_digits_only"
-  | "";
+  "required" | "length" | "pin_digits_only" | "";
 
 export const enterableCredentialTypes = (
   capabilities: ZwaveCredentialCapabilities
@@ -120,10 +117,14 @@ export interface SetZwaveUserParams {
   user_type?: string;
   credential_rule?: string;
   active?: boolean;
+  credential_type?: ZwaveCredentialType;
+  credential_slot?: number;
+  credential_data?: string;
 }
 
 export interface SetZwaveUserResult {
   user_id: number;
+  credential_slot?: number | null;
 }
 
 export interface SetZwaveCredentialParams {

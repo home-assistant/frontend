@@ -1,29 +1,38 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
 import "../../../components/ha-relative-time";
+import { apiContext } from "../../../data/context";
 import { triggerAutomationActions } from "../../../data/automation";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi } from "../../../types";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
     return html`
       <hr />
       <div class="flex">
-        <div>${this.hass.localize("ui.card.automation.last_triggered")}:</div>
+        <div>${this._localize("ui.card.automation.last_triggered")}:</div>
         <ha-relative-time
-          .hass=${this.hass}
           .datetime=${this.stateObj.attributes.last_triggered}
           capitalize
         ></ha-relative-time>
@@ -32,18 +41,18 @@ class MoreInfoAutomation extends LitElement {
       <div class="actions">
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           @click=${this._runActions}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
-          ${this.hass.localize("ui.card.automation.trigger")}
+          ${this._localize("ui.card.automation.trigger")}
         </ha-button>
       </div>
     `;
   }
 
   private _runActions() {
-    triggerAutomationActions(this.hass, this.stateObj!.entity_id);
+    triggerAutomationActions(this._api, this.stateObj!.entity_id);
   }
 
   static styles = css`

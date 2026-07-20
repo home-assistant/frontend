@@ -99,25 +99,29 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}
         </h4>
         <ul class="entitylist">
-          ${this._debugInfo.entities.length
-            ? this._renderEntities()
-            : html`
-                ${this.hass!.localize(
-                  "ui.dialogs.mqtt_device_debug_info.no_entity_debug_info"
-                )}
-              `}
+          ${
+            this._debugInfo.entities.length
+              ? this._renderEntities()
+              : html`
+                  ${this.hass!.localize(
+                    "ui.dialogs.mqtt_device_debug_info.no_entity_debug_info"
+                  )}
+                `
+          }
         </ul>
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.triggers")}
         </h4>
         <ul class="triggerlist">
-          ${this._debugInfo.triggers.length
-            ? this._renderTriggers()
-            : html`
-                ${this.hass!.localize(
-                  "ui.dialogs.mqtt_device_debug_info.no_trigger_debug_info"
-                )}
-              `}
+          ${
+            this._debugInfo.triggers.length
+              ? this._renderTriggers()
+              : html`
+                  ${this.hass!.localize(
+                    "ui.dialogs.mqtt_device_debug_info.no_trigger_debug_info"
+                  )}
+                `
+          }
         </ul>
         <ha-dialog-footer slot="footer">
           <ha-button slot="primaryAction" @click=${this._close}>

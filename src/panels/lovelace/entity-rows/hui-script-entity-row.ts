@@ -47,33 +47,41 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.state === "on"
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              variant="danger"
-              @click=${this._cancelScript}
-            >
-              ${stateObj.attributes.mode !== "single" &&
-              stateObj.attributes.current &&
-              stateObj.attributes.current > 0
-                ? this.hass.localize("ui.card.script.cancel_multiple", {
-                    number: stateObj.attributes.current,
-                  })
-                : this.hass.localize("ui.card.script.cancel")}
-            </ha-button>`
-          : nothing}
-        ${stateObj.state === "off" || stateObj.attributes.max
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._runScript}
-              .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
-            >
-              ${this._config.action_name ||
-              this.hass!.localize("ui.card.script.run")}
-            </ha-button>`
-          : nothing}
+        ${
+          stateObj.state === "on"
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                variant="danger"
+                @click=${this._cancelScript}
+              >
+                ${
+                  stateObj.attributes.mode !== "single" &&
+                  stateObj.attributes.current &&
+                  stateObj.attributes.current > 0
+                    ? this.hass.localize("ui.card.script.cancel_multiple", {
+                        number: stateObj.attributes.current,
+                      })
+                    : this.hass.localize("ui.card.script.cancel")
+                }
+              </ha-button>`
+            : nothing
+        }
+        ${
+          stateObj.state === "off" || stateObj.attributes.max
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._runScript}
+                .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
+              >
+                ${
+                  this._config.action_name ||
+                  this.hass!.localize("ui.card.script.run")
+                }
+              </ha-button>`
+            : nothing
+        }
       </hui-generic-entity-row>
     `;
   }

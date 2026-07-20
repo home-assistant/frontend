@@ -492,9 +492,9 @@ export class VoiceAssistantsExpose extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config"
+        }
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
         .columns=${this._columns(
@@ -532,60 +532,64 @@ export class VoiceAssistantsExpose extends LitElement {
         id="entity_id"
         has-fab
       >
-        ${this._selectedEntities.length
-          ? html`
-              <div class="header-btns" slot="selection-bar">
-                ${!this.narrow
-                  ? html`
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        @click=${this._exposeSelected}
-                        >${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.expose"
-                        )}</ha-button
-                      >
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        @click=${this._unexposeSelected}
-                        >${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}</ha-button
-                      >
-                    `
-                  : html`
-                      <ha-icon-button
-                        id="expose-button"
-                        @click=${this._exposeSelected}
-                        .path=${mdiPlusBoxMultiple}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.expose"
-                        )}
-                      ></ha-icon-button>
-                      <ha-tooltip for="expose-button" placement="left">
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.expose"
-                        )}
-                      </ha-tooltip>
-                      <ha-tooltip for="unexpose-button" placement="left">
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}
-                      </ha-tooltip>
-                      <ha-icon-button
-                        id="unexpose-button"
-                        @click=${this._unexposeSelected}
-                        .path=${mdiCloseBoxMultiple}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}
-                      ></ha-icon-button>
-                    `}
-              </div>
-            `
-          : ""}
-        <ha-button slot="fab" size="large" @click=${this._addEntry}>
+        ${
+          this._selectedEntities.length
+            ? html`
+                <div class="header-btns" slot="selection-bar">
+                  ${
+                    !this.narrow
+                      ? html`
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            @click=${this._exposeSelected}
+                            >${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.expose"
+                            )}</ha-button
+                          >
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            @click=${this._unexposeSelected}
+                            >${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.unexpose"
+                            )}</ha-button
+                          >
+                        `
+                      : html`
+                          <ha-icon-button
+                            id="expose-button"
+                            @click=${this._exposeSelected}
+                            .path=${mdiPlusBoxMultiple}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.expose"
+                            )}
+                          ></ha-icon-button>
+                          <ha-tooltip for="expose-button" placement="left">
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.expose"
+                            )}
+                          </ha-tooltip>
+                          <ha-tooltip for="unexpose-button" placement="left">
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.unexpose"
+                            )}
+                          </ha-tooltip>
+                          <ha-icon-button
+                            id="unexpose-button"
+                            @click=${this._unexposeSelected}
+                            .path=${mdiCloseBoxMultiple}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.voice_assistants.expose.unexpose"
+                            )}
+                          ></ha-icon-button>
+                        `
+                  }
+                </div>
+              `
+            : ""
+        }
+        <ha-button slot="fab" size="l" @click=${this._addEntry}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.voice_assistants.expose.add")}
         </ha-button>

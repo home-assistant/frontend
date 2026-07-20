@@ -65,62 +65,68 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.components.siren.advanced_controls"
-        )}
+        header-title=${this.hass.localize("ui.components.siren.more_controls")}
         @closed=${this._dialogClosed}
       >
         <div>
           <div class="options">
-            ${supportsTones
-              ? html`
-                  <ha-select
-                    .label=${this.hass.localize("ui.components.siren.tone")}
-                    @selected=${this._handleToneChange}
-                    .value=${this._tone}
-                    .options=${Object.entries(
-                      this._stateObj!.attributes.available_tones
-                    ).map(([toneId, toneName]) => ({
-                      value: Array.isArray(
+            ${
+              supportsTones
+                ? html`
+                    <ha-select
+                      .label=${this.hass.localize("ui.components.siren.tone")}
+                      @selected=${this._handleToneChange}
+                      .value=${this._tone}
+                      .options=${Object.entries(
                         this._stateObj!.attributes.available_tones
-                      )
-                        ? toneName
-                        : toneId,
-                      label: toneName,
-                    }))}
-                  >
-                  </ha-select>
-                `
-              : nothing}
-            ${supportsVolume
-              ? html`
-                  <ha-input
-                    type="number"
-                    .label=${this.hass.localize("ui.components.siren.volume")}
-                    .value=${this._volume ? `${this._volume * 100}` : undefined}
-                    @change=${this._handleVolumeChange}
-                    .min=${0}
-                    .max=${100}
-                    .step=${1}
-                  >
-                    <span slot="end">%</span>
-                  </ha-input>
-                `
-              : nothing}
-            ${supportsDuration
-              ? html`
-                  <ha-input
-                    type="number"
-                    .label=${this.hass.localize("ui.components.siren.duration")}
-                    .value=${this._duration !== undefined
-                      ? this._duration.toString()
-                      : undefined}
-                    @change=${this._handleDurationChange}
-                  >
-                    <span slot="end">s</span>
-                  </ha-input>
-                `
-              : nothing}
+                      ).map(([toneId, toneName]) => ({
+                        value: Array.isArray(
+                          this._stateObj!.attributes.available_tones
+                        )
+                          ? toneName
+                          : toneId,
+                        label: toneName,
+                      }))}
+                    >
+                    </ha-select>
+                  `
+                : nothing
+            }
+            ${
+              supportsVolume
+                ? html`
+                    <ha-input
+                      type="number"
+                      .label=${this.hass.localize("ui.components.siren.volume")}
+                      .value=${this._volume ? `${this._volume * 100}` : undefined}
+                      @change=${this._handleVolumeChange}
+                      .min=${0}
+                      .max=${100}
+                      .step=${1}
+                    >
+                      <span slot="end">%</span>
+                    </ha-input>
+                  `
+                : nothing
+            }
+            ${
+              supportsDuration
+                ? html`
+                    <ha-input
+                      type="number"
+                      .label=${this.hass.localize("ui.components.siren.duration")}
+                      .value=${
+                        this._duration !== undefined
+                          ? this._duration.toString()
+                          : undefined
+                      }
+                      @change=${this._handleDurationChange}
+                    >
+                      <span slot="end">s</span>
+                    </ha-input>
+                  `
+                : nothing
+            }
           </div>
           <div class="controls">
             <ha-control-button

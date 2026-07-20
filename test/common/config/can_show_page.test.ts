@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   canShowPage,
   isLoadedIntegration,
-  isNotLoadedIntegration,
   isCore,
 } from "../../../src/common/config/can_show_page";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
@@ -47,28 +46,6 @@ describe("isLoadedIntegration", () => {
     } as unknown as HomeAssistant;
     const page = { component: "other_component" } as unknown as PageNavigation;
     expect(isLoadedIntegration(hass, page)).toBe(false);
-  });
-});
-
-describe("isNotLoadedIntegration", () => {
-  it("should return true if the integration is not loaded", () => {
-    const hass = {
-      config: { components: ["test_component"] },
-    } as unknown as HomeAssistant;
-    const page = {
-      not_component: "other_component",
-    } as unknown as PageNavigation;
-    expect(isNotLoadedIntegration(hass, page)).toBe(true);
-  });
-
-  it("should return false if the integration is loaded", () => {
-    const hass = {
-      config: { components: ["test_component"] },
-    } as unknown as HomeAssistant;
-    const page = {
-      not_component: "test_component",
-    } as unknown as PageNavigation;
-    expect(isNotLoadedIntegration(hass, page)).toBe(false);
   });
 });
 

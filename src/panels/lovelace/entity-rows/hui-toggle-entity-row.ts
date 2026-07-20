@@ -53,18 +53,17 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .catchInteraction=${!showToggle}
       >
-        ${showToggle
-          ? html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-entity-toggle>
-            `
-          : html`
-              <div class="text-content">
-                ${this.hass.formatEntityState(stateObj)}
-              </div>
-            `}
+        ${
+          showToggle
+            ? html`
+                <ha-entity-toggle .stateObj=${stateObj}></ha-entity-toggle>
+              `
+            : html`
+                <div class="text-content">
+                  ${this.hass.formatEntityState(stateObj)}
+                </div>
+              `
+        }
       </hui-generic-entity-row>
     `;
   }

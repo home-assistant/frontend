@@ -54,7 +54,7 @@ export enum RecurrenceRange {
   THISANDFUTURE = "THISANDFUTURE",
 }
 
-export const enum CalendarEntityFeature {
+export enum CalendarEntityFeature {
   CREATE_EVENT = 1,
   DELETE_EVENT = 2,
   UPDATE_EVENT = 4,
@@ -256,6 +256,7 @@ export const normalizeSubscriptionEventData = (
     dtstart: eventStart,
     dtend: eventEnd,
     description: eventData.description ?? undefined,
+    location: eventData.location ?? undefined,
     uid: eventData.uid ?? undefined,
     recurrence_id: eventData.recurrence_id ?? undefined,
     rrule: eventData.rrule ?? undefined,

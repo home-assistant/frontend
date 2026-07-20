@@ -13,6 +13,28 @@ export interface NetworkInfo {
   supervisor_internet: boolean;
 }
 
+interface SupervisorJob {
+  name: string;
+  reference: string | null;
+  uuid: string;
+  progress: number; // float, 0–100
+  stage: string | null;
+  done: boolean;
+  errors: {
+    type: string;
+    message: string;
+    stage: string | null;
+  }[];
+  created: string; // ISO datetime string
+  extra: Record<string, unknown> | null;
+  child_jobs: SupervisorJob[];
+}
+
+export interface SupervisorJobInfo {
+  ignore_conditions: string[];
+  jobs: SupervisorJob[];
+}
+
 export const ALTERNATIVE_DNS_SERVERS: {
   ipv4: string[];
   ipv6: string[];
@@ -55,6 +77,15 @@ export async function getSupervisorNetworkInfo(): Promise<NetworkInfo> {
     fetch("/supervisor-api/network/info")
   );
   return responseData?.data;
+}
+
+export async function getSupervisorJobsInfo(): Promise<
+  HassioResponse<SupervisorJobInfo>
+> {
+  const responseData = await handleFetchPromise<
+    HassioResponse<SupervisorJobInfo>
+  >(fetch("/supervisor-api/jobs/info"));
+  return responseData;
 }
 
 export const setSupervisorNetworkDns = async (

@@ -135,8 +135,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @state()
   private _bodyScrolled = false;
 
-  private _escapePressed = false;
-
   public connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
@@ -174,32 +172,48 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         @wa-after-show=${this._handleAfterShow}
         @wa-after-hide=${this._handleAfterHide}
       >
-        ${!this.withoutHeader
-          ? html`<slot name="header">
-              <ha-dialog-header
-                .subtitlePosition=${this.headerSubtitlePosition}
-                .showBorder=${this._bodyScrolled}
-              >
-                <slot name="headerNavigationIcon" slot="navigationIcon">
-                  <ha-icon-button
-                    data-dialog="close"
-                    .label=${this._i18n?.localize?.("ui.common.close") ??
-                    "Close"}
-                    .path=${mdiClose}
-                  ></ha-icon-button>
-                </slot>
-                ${this.headerTitle !== undefined
-                  ? html`<span slot="title" class="title" id="ha-dialog-title">
-                      ${this.headerTitle}
-                    </span>`
-                  : html`<slot name="headerTitle" slot="title"></slot>`}
-                ${this.headerSubtitle !== undefined
-                  ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-                  : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
-                <slot name="headerActionItems" slot="actionItems"></slot>
-              </ha-dialog-header>
-            </slot>`
-          : nothing}
+        ${
+          !this.withoutHeader
+            ? html`<slot name="header">
+                <ha-dialog-header
+                  .subtitlePosition=${this.headerSubtitlePosition}
+                  .showBorder=${this._bodyScrolled}
+                >
+                  <slot name="headerNavigationIcon" slot="navigationIcon">
+                    <ha-icon-button
+                      data-dialog="close"
+                      .label=${
+                        this._i18n?.localize?.("ui.common.close") ?? "Close"
+                      }
+                      .path=${mdiClose}
+                    ></ha-icon-button>
+                  </slot>
+                  ${
+                    this.headerTitle !== undefined
+                      ? html`<span
+                          slot="title"
+                          class="title"
+                          id="ha-dialog-title"
+                        >
+                          ${this.headerTitle}
+                        </span>`
+                      : html`<slot name="headerTitle" slot="title"></slot>`
+                  }
+                  ${
+                    this.headerSubtitle !== undefined
+                      ? html`<span slot="subtitle"
+                          >${this.headerSubtitle}</span
+                        >`
+                      : html`<slot
+                          name="headerSubtitle"
+                          slot="subtitle"
+                        ></slot>`
+                  }
+                  <slot name="headerActionItems" slot="actionItems"></slot>
+                </ha-dialog-header>
+              </slot>`
+            : nothing
+        }
         <div class="content-wrapper">
           <div class="body ha-scrollbar" @scroll=${this._handleBodyScroll}>
             <slot></slot>
@@ -290,7 +304,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
-      this._escapePressed = true;
       if (this.preventScrimClose) {
         ev.preventDefault();
       }
@@ -300,13 +313,23 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleHide(ev: DialogHideEvent) {
-    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
-
-    if (this.preventScrimClose && this._escapePressed && sourceIsDialog) {
-      ev.preventDefault();
+    // Ignore wa-hide events bubbling up from nested overlays (pickers,
+    // popovers, bottom sheets, nested dialogs); only handle this dialog's own
+    // hide, like the sibling wa-* handlers above.
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
     }
 
-    this._escapePressed = false;
+    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
+
+    // A dialog-sourced hide (Escape, native cancel, or scrim) while the host
+    // still wants the dialog open is a user dismissal, not a programmatic
+    // close. Block it when closing must be guarded, regardless of where focus
+    // currently is — e.g. after a picker overlay took focus and dropped it
+    // outside the dialog, the Escape keydown never reaches this element.
+    if (this.preventScrimClose && sourceIsDialog && this.open) {
+      ev.preventDefault();
+    }
   }
 
   static get styles() {

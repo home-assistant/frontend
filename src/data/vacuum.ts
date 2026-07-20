@@ -15,7 +15,7 @@ export type VacuumEntityState =
   | "returning"
   | "error";
 
-export const enum VacuumEntityFeature {
+export enum VacuumEntityFeature {
   TURN_ON = 1,
   TURN_OFF = 2,
   PAUSE = 4,

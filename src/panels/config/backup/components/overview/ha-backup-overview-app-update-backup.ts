@@ -4,9 +4,9 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import {
   getSupervisorUpdateConfig,
   type SupervisorUpdateConfig,
@@ -73,11 +73,8 @@ class HaBackupOverviewAppUpdateBackup extends LitElement {
           )}
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
-              href="/config/backup/app-update-backups"
-            >
+          <ha-list-nav>
+            <ha-list-item-button href="/config/backup/app-update-backups">
               <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
               <div slot="headline">${this._appUpdateBackupDescription()}</div>
               <div slot="supporting-text">
@@ -86,8 +83,8 @@ class HaBackupOverviewAppUpdateBackup extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -105,11 +102,6 @@ class HaBackupOverviewAppUpdateBackup extends LitElement {
           padding-left: 0;
           padding-right: 0;
           padding-top: 0;
-        }
-
-        ha-md-list {
-          padding-top: 0;
-          padding-bottom: 0;
         }
       `,
     ];

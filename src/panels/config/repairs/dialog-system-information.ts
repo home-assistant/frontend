@@ -145,87 +145,99 @@ class DialogSystemInformation extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._resolutionInfo
-            ? html`${this._resolutionInfo.unhealthy.length
-                ? html`<ha-alert alert-type="error">
-                    ${this.hass.localize("ui.dialogs.unhealthy.title")}
-                    <ha-button
-                      appearance="plain"
-                      size="small"
-                      variant="danger"
-                      slot="action"
-                      @click=${this._unhealthyDialog}
-                    >
-                      ${this.hass.localize("ui.panel.config.common.learn_more")}
-                    </ha-button></ha-alert
-                  >`
-                : ""}
-              ${this._resolutionInfo.unsupported.length
-                ? html`<ha-alert alert-type="warning">
-                    ${this.hass.localize("ui.dialogs.unsupported.title")}
-                    <ha-button
-                      appearance="plain"
-                      size="small"
-                      variant="warning"
-                      slot="action"
-                      @click=${this._unsupportedDialog}
-                    >
-                      ${this.hass.localize("ui.panel.config.common.learn_more")}
-                    </ha-button>
-                  </ha-alert>`
-                : ""} `
-            : ""}
+          ${
+            this._resolutionInfo
+              ? html`${
+                  this._resolutionInfo.unhealthy.length
+                    ? html`<ha-alert alert-type="error">
+                        ${this.hass.localize("ui.dialogs.unhealthy.title")}
+                        <ha-button
+                          appearance="plain"
+                          size="s"
+                          variant="danger"
+                          slot="action"
+                          @click=${this._unhealthyDialog}
+                        >
+                          ${this.hass.localize("ui.panel.config.common.learn_more")}
+                        </ha-button></ha-alert
+                      >`
+                    : ""
+                }
+                ${
+                  this._resolutionInfo.unsupported.length
+                    ? html`<ha-alert alert-type="warning">
+                        ${this.hass.localize("ui.dialogs.unsupported.title")}
+                        <ha-button
+                          appearance="plain"
+                          size="s"
+                          variant="warning"
+                          slot="action"
+                          @click=${this._unsupportedDialog}
+                        >
+                          ${this.hass.localize("ui.panel.config.common.learn_more")}
+                        </ha-button>
+                      </ha-alert>`
+                    : ""
+                } `
+              : ""
+          }
 
           <div>${sections}</div>
 
-          ${!this._coreStats && !this._supervisorStats
-            ? ""
-            : html`
-                <div>
-                  ${this._coreStats
-                    ? html`
-                        <h3>
-                          ${this.hass.localize(
-                            "ui.panel.config.system_health.core_stats"
-                          )}
-                        </h3>
-                        <ha-metric
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.system_health.cpu_usage"
-                          )}
-                          .value=${this._coreStats.cpu_percent}
-                        ></ha-metric>
-                        <ha-metric
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.system_health.ram_usage"
-                          )}
-                          .value=${this._coreStats.memory_percent}
-                        ></ha-metric>
-                      `
-                    : ""}
-                  ${this._supervisorStats
-                    ? html`
-                        <h3>
-                          ${this.hass.localize(
-                            "ui.panel.config.system_health.supervisor_stats"
-                          )}
-                        </h3>
-                        <ha-metric
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.system_health.cpu_usage"
-                          )}
-                          .value=${this._supervisorStats.cpu_percent}
-                        ></ha-metric>
-                        <ha-metric
-                          .heading=${this.hass.localize(
-                            "ui.panel.config.system_health.ram_usage"
-                          )}
-                          .value=${this._supervisorStats.memory_percent}
-                        ></ha-metric>
-                      `
-                    : ""}
-                </div>
-              `}
+          ${
+            !this._coreStats && !this._supervisorStats
+              ? ""
+              : html`
+                  <div>
+                    ${
+                      this._coreStats
+                        ? html`
+                            <h3>
+                              ${this.hass.localize(
+                                "ui.panel.config.system_health.core_stats"
+                              )}
+                            </h3>
+                            <ha-metric
+                              .heading=${this.hass.localize(
+                                "ui.panel.config.system_health.cpu_usage"
+                              )}
+                              .value=${this._coreStats.cpu_percent}
+                            ></ha-metric>
+                            <ha-metric
+                              .heading=${this.hass.localize(
+                                "ui.panel.config.system_health.ram_usage"
+                              )}
+                              .value=${this._coreStats.memory_percent}
+                            ></ha-metric>
+                          `
+                        : ""
+                    }
+                    ${
+                      this._supervisorStats
+                        ? html`
+                            <h3>
+                              ${this.hass.localize(
+                                "ui.panel.config.system_health.supervisor_stats"
+                              )}
+                            </h3>
+                            <ha-metric
+                              .heading=${this.hass.localize(
+                                "ui.panel.config.system_health.cpu_usage"
+                              )}
+                              .value=${this._supervisorStats.cpu_percent}
+                            ></ha-metric>
+                            <ha-metric
+                              .heading=${this.hass.localize(
+                                "ui.panel.config.system_health.ram_usage"
+                              )}
+                              .value=${this._supervisorStats.memory_percent}
+                            ></ha-metric>
+                          `
+                        : ""
+                    }
+                  </div>
+                `
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button slot="primaryAction" @click=${this._copyInfo}>
@@ -254,9 +266,11 @@ class DialogSystemInformation extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  ${this.hass.localize(
-                    `ui.dialogs.unsupported.reasons.${reason}`
-                  ) || reason}
+                  ${
+                    this.hass.localize(
+                      `ui.dialogs.unsupported.reasons.${reason}`
+                    ) || reason
+                  }
                 </a>
               </li>
             `
@@ -283,9 +297,11 @@ class DialogSystemInformation extends LitElement {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  ${this.hass.localize(
-                    `ui.dialogs.unhealthy.reasons.${reason}`
-                  ) || reason}
+                  ${
+                    this.hass.localize(
+                      `ui.dialogs.unhealthy.reasons.${reason}`
+                    ) || reason
+                  }
                 </a>
               </li>
             `
@@ -310,32 +326,32 @@ class DialogSystemInformation extends LitElement {
         const keys: TemplateResult[] = [];
 
         for (const key of Object.keys(domainInfo.info)) {
+          const infoValue = domainInfo.info[key];
           let value: unknown;
 
-          if (
-            domainInfo.info[key] &&
-            typeof domainInfo.info[key] === "object"
-          ) {
-            const info = domainInfo.info[key] as SystemCheckValueObject;
+          if (infoValue && typeof infoValue === "object") {
+            const info = infoValue as SystemCheckValueObject;
 
             if (info.type === "pending") {
               value = html` <ha-spinner size="small"></ha-spinner> `;
             } else if (info.type === "failed") {
               value = html`
-                <span class="error">${info.error}</span>${!info.more_info
-                  ? ""
-                  : html`
-                      –
-                      <a
-                        href=${info.more_info}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.info.system_health.more_info"
-                        )}
-                      </a>
-                    `}
+                <span class="error">${info.error}</span>${
+                  !info.more_info
+                    ? ""
+                    : html`
+                        –
+                        <a
+                          href=${info.more_info}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.info.system_health.more_info"
+                          )}
+                        </a>
+                      `
+                }
               `;
             } else if (info.type === "date") {
               value = formatDateTime(
@@ -345,15 +361,17 @@ class DialogSystemInformation extends LitElement {
               );
             }
           } else {
-            value = domainInfo.info[key];
+            value = infoValue;
           }
 
           keys.push(html`
             <tr>
               <td>
-                ${this.hass.localize(
-                  `component.${domain}.system_health.info.${key}`
-                ) || key}
+                ${
+                  this.hass.localize(
+                    `component.${domain}.system_health.info.${key}`
+                  ) || key
+                }
               </td>
               <td>${value}</td>
             </tr>
@@ -363,20 +381,22 @@ class DialogSystemInformation extends LitElement {
           sections.push(html`
             <div class="card-header">
               <h3>${domainToName(this.hass.localize, domain)}</h3>
-              ${!domainInfo.manage_url
-                ? ""
-                : html`
-                    <ha-button
-                      appearance="plain"
-                      size="small"
-                      class="manage"
-                      href=${domainInfo.manage_url}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.info.system_health.manage"
-                      )}
-                    </ha-button>
-                  `}
+              ${
+                !domainInfo.manage_url
+                  ? ""
+                  : html`
+                      <ha-button
+                        appearance="plain"
+                        size="s"
+                        class="manage"
+                        href=${domainInfo.manage_url}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.info.system_health.manage"
+                        )}
+                      </ha-button>
+                    `
+              }
             </div>
           `);
         }
@@ -409,10 +429,11 @@ class DialogSystemInformation extends LitElement {
       ];
 
       for (const key of Object.keys(domainInfo.info)) {
+        const infoValue = domainInfo.info[key];
         let value: unknown;
 
-        if (domainInfo.info[key] && typeof domainInfo.info[key] === "object") {
-          const info = domainInfo.info[key] as SystemCheckValueObject;
+        if (infoValue && typeof infoValue === "object") {
+          const info = infoValue as SystemCheckValueObject;
 
           if (info.type === "pending") {
             value = "pending";
@@ -426,7 +447,7 @@ class DialogSystemInformation extends LitElement {
             );
           }
         } else {
-          value = domainInfo.info[key];
+          value = infoValue;
         }
         if (first) {
           parts.push(`${key} | ${value}\n-- | --`);

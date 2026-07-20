@@ -160,15 +160,17 @@ class DialogNewAutomation extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div class="content-wrapper">
-          ${processedBlueprints.length > 5
-            ? html`<ha-input-search
-                appearance="outlined"
-                autofocus
-                .value=${this._filter}
-                .placeholder=${this.hass.localize("ui.common.search")}
-                @input=${this._handleSearchChange}
-              ></ha-input-search>`
-            : nothing}
+          ${
+            processedBlueprints.length > 5
+              ? html`<ha-input-search
+                  appearance="outlined"
+                  autofocus
+                  .value=${this._filter}
+                  .placeholder=${this.hass.localize("ui.common.search")}
+                  @input=${this._handleSearchChange}
+                ></ha-input-search>`
+              : nothing
+          }
           <ha-list>
             <ha-list-item
               hasmeta
@@ -193,100 +195,108 @@ class DialogNewAutomation extends LitElement {
           </ha-list>
           <div class="blueprints-container">
             <div class="blueprints-list ha-scrollbar">
-              ${this._loadingBlueprints
-                ? html`<div class="spinner">
-                    <ha-spinner></ha-spinner>
-                  </div>`
-                : html`
-                    <ha-list>
-                      ${filteredBlueprints.map(
-                        (blueprint) => html`
-                          <ha-list-item
-                            hasmeta
-                            twoline
-                            graphic="icon"
-                            @request-selected=${this._blueprint}
-                            .path=${blueprint.path}
-                          >
-                            <ha-svg-icon
-                              slot="graphic"
-                              .path=${SOURCE_TYPE_ICONS[blueprint.sourceType]}
-                            ></ha-svg-icon>
-                            ${blueprint.name}
-                            <span slot="secondary">
-                              ${blueprint.author
-                                ? this.hass.localize(
-                                    `ui.panel.config.${this._mode}.dialog_new.blueprint_source.author`,
-                                    { author: blueprint.author }
-                                  )
-                                : this.hass.localize(
-                                    `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
-                                  )}
-                            </span>
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-list-item>
-                        `
-                      )}
-                    </ha-list>
-                    ${processedBlueprints.length === 0
-                      ? html`
-                          <a
-                            href=${documentationUrl(
-                              this.hass,
-                              "/get-blueprints"
-                            )}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                            class="item"
-                          >
-                            <ha-list-item hasmeta twoline graphic="icon">
+              ${
+                this._loadingBlueprints
+                  ? html`<div class="spinner">
+                      <ha-spinner></ha-spinner>
+                    </div>`
+                  : html`
+                      <ha-list>
+                        ${filteredBlueprints.map(
+                          (blueprint) => html`
+                            <ha-list-item
+                              hasmeta
+                              twoline
+                              graphic="icon"
+                              @request-selected=${this._blueprint}
+                              .path=${blueprint.path}
+                            >
                               <ha-svg-icon
                                 slot="graphic"
-                                .path=${mdiWeb}
+                                .path=${SOURCE_TYPE_ICONS[blueprint.sourceType]}
                               ></ha-svg-icon>
-                              ${this.hass.localize(
-                                `ui.panel.config.${this._mode}.dialog_new.create_blueprint`
-                              )}
+                              ${blueprint.name}
                               <span slot="secondary">
-                                ${this.hass.localize(
-                                  `ui.panel.config.${this._mode}.dialog_new.create_blueprint_description`
-                                )}
+                                ${
+                                  blueprint.author
+                                    ? this.hass.localize(
+                                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.author`,
+                                        { author: blueprint.author }
+                                      )
+                                    : this.hass.localize(
+                                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
+                                      )
+                                }
                               </span>
-                              <ha-svg-icon
-                                slot="meta"
-                                path=${mdiOpenInNew}
-                              ></ha-svg-icon>
+                              <ha-icon-next slot="meta"></ha-icon-next>
                             </ha-list-item>
-                          </a>
-                        `
-                      : filteredBlueprints.length === 0
-                        ? html`
-                            <div class="empty-search">
-                              ${this.hass.localize(
-                                `ui.panel.config.${this._mode}.dialog_new.no_blueprints_match_search`
-                              )}
-                            </div>
                           `
-                        : nothing}
-                    ${processedBlueprints.length > 0
-                      ? html`
-                          <ha-tip .hass=${this.hass}>
-                            <a
-                              href=${documentationUrl(
-                                this.hass,
-                                "/get-blueprints"
-                              )}
-                              target="_blank"
-                              rel="noreferrer noopener"
-                            >
-                              ${this.hass.localize(
-                                `ui.panel.config.${this._mode}.dialog_new.discover_blueprint_tip`
-                              )}
-                            </a>
-                          </ha-tip>
-                        `
-                      : nothing}
-                  `}
+                        )}
+                      </ha-list>
+                      ${
+                        processedBlueprints.length === 0
+                          ? html`
+                              <a
+                                href=${documentationUrl(
+                                  this.hass,
+                                  "/get-blueprints"
+                                )}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                class="item"
+                              >
+                                <ha-list-item hasmeta twoline graphic="icon">
+                                  <ha-svg-icon
+                                    slot="graphic"
+                                    .path=${mdiWeb}
+                                  ></ha-svg-icon>
+                                  ${this.hass.localize(
+                                    `ui.panel.config.${this._mode}.dialog_new.create_blueprint`
+                                  )}
+                                  <span slot="secondary">
+                                    ${this.hass.localize(
+                                      `ui.panel.config.${this._mode}.dialog_new.create_blueprint_description`
+                                    )}
+                                  </span>
+                                  <ha-svg-icon
+                                    slot="meta"
+                                    path=${mdiOpenInNew}
+                                  ></ha-svg-icon>
+                                </ha-list-item>
+                              </a>
+                            `
+                          : filteredBlueprints.length === 0
+                            ? html`
+                                <div class="empty-search">
+                                  ${this.hass.localize(
+                                    `ui.panel.config.${this._mode}.dialog_new.no_blueprints_match_search`
+                                  )}
+                                </div>
+                              `
+                            : nothing
+                      }
+                      ${
+                        processedBlueprints.length > 0
+                          ? html`
+                              <ha-tip>
+                                <a
+                                  href=${documentationUrl(
+                                    this.hass,
+                                    "/get-blueprints"
+                                  )}
+                                  target="_blank"
+                                  rel="noreferrer noopener"
+                                >
+                                  ${this.hass.localize(
+                                    `ui.panel.config.${this._mode}.dialog_new.discover_blueprint_tip`
+                                  )}
+                                </a>
+                              </ha-tip>
+                            `
+                          : nothing
+                      }
+                    `
+              }
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   LocalizeFunc,
@@ -168,6 +169,9 @@ export class HaSelectorSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public required = true;
 
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
+
   private _yamlMode = false;
 
   protected shouldUpdate(changedProps: PropertyValues<this>) {
@@ -177,49 +181,49 @@ export class HaSelectorSelector extends LitElement {
     return true;
   }
 
-  private _schema = memoizeOne(
-    (choice: string, localize: LocalizeFunc) =>
-      [
-        {
-          name: "type",
-          required: true,
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: Object.keys(SELECTOR_SCHEMAS)
-                .concat("manual")
-                .map((key) => ({
-                  label:
-                    localize(
-                      `ui.components.selectors.selector.types.${key}` as LocalizeKeys
-                    ) || key,
-                  value: key,
-                })),
-            },
+  private _schema = memoizeOne((choice: string, localize: LocalizeFunc) => {
+    const schemas = SELECTOR_SCHEMAS[choice];
+    return [
+      {
+        name: "type",
+        required: true,
+        selector: {
+          select: {
+            mode: "dropdown",
+            options: Object.keys(SELECTOR_SCHEMAS)
+              .concat("manual")
+              .map((key) => ({
+                label:
+                  localize(
+                    `ui.components.selectors.selector.types.${key}` as LocalizeKeys
+                  ) || key,
+                value: key,
+              })),
           },
         },
-        ...(choice === "manual"
-          ? ([
+      },
+      ...(choice === "manual"
+        ? ([
+            {
+              name: "manual",
+              selector: { object: {} },
+            },
+          ] as const)
+        : []),
+      ...(schemas
+        ? schemas.length > 1
+          ? [
               {
-                name: "manual",
-                selector: { object: {} },
+                name: "",
+                type: "expandable",
+                title: localize("ui.components.selectors.selector.options"),
+                schema: schemas,
               },
-            ] as const)
-          : []),
-        ...(SELECTOR_SCHEMAS[choice]
-          ? SELECTOR_SCHEMAS[choice].length > 1
-            ? [
-                {
-                  name: "",
-                  type: "expandable",
-                  title: localize("ui.components.selectors.selector.options"),
-                  schema: SELECTOR_SCHEMAS[choice],
-                },
-              ]
-            : SELECTOR_SCHEMAS[choice]
-          : []),
-      ] as const
-  );
+            ]
+          : schemas
+        : []),
+    ] as const;
+  });
 
   protected render() {
     let data;
@@ -236,7 +240,7 @@ export class HaSelectorSelector extends LitElement {
       };
     }
 
-    const schema = this._schema(type, this.hass.localize);
+    const schema = this._schema(type, this._localize!);
 
     return html`<div>
       <p>${this.label ? this.label : ""}</p>
@@ -290,7 +294,7 @@ export class HaSelectorSelector extends LitElement {
   }
 
   private _computeLabelCallback = (schema: any): string =>
-    this.hass.localize(
+    this._localize!(
       `ui.components.selectors.selector.${schema.name}` as LocalizeKeys
     ) || schema.name;
 

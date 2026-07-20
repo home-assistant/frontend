@@ -242,16 +242,20 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         })}
         @click=${this._openMoreInfo}
       >
-        ${mediaArt
-          ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
-          : ""}
+        ${
+          mediaArt
+            ? html`<img alt="" src=${this.hass.hassUrl(mediaArt)} />`
+            : ""
+        }
         <div class="media-info">
           <hui-marquee
-            .text=${mediaTitleClean ||
-            mediaDescription ||
-            (stateObj.state !== "playing" && stateObj.state !== "on"
-              ? this.hass.localize(`ui.card.media_player.nothing_playing`)
-              : "")}
+            .text=${
+              mediaTitleClean ||
+              mediaDescription ||
+              (stateObj.state !== "playing" && stateObj.state !== "on"
+                ? this.hass.localize(`ui.card.media_player.nothing_playing`)
+                : "")
+            }
             .active=${this._marqueeActive}
             @mouseover=${this._marqueeMouseOver}
             @mouseleave=${this._marqueeMouseLeave}
@@ -262,73 +266,86 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         </div>
       </div>
       <div
-        class="controls-progress ${stateObj.state === "buffering"
-          ? "buffering"
-          : ""}"
+        class="controls-progress ${
+          stateObj.state === "buffering" ? "buffering" : ""
+        }"
       >
-        ${stateObj.state === "buffering"
-          ? html`<ha-spinner></ha-spinner> `
-          : html`
-              <div class="controls">
-                ${controls === undefined
-                  ? ""
-                  : controls.map(
-                      (control) => html`
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            `ui.card.media_player.${control.action}`
-                          )}
-                          .path=${control.icon}
-                          action=${control.action}
-                          @click=${this._handleControlClick}
-                        >
-                        </ha-icon-button>
-                      `
-                    )}
-              </div>
-              ${stateObj.attributes.media_duration === Infinity
-                ? nothing
-                : this.narrow
-                  ? html`<ha-slider
-                      class="progress-slider"
-                      min="0"
-                      max=${stateObj.attributes.media_duration || 0}
-                      step="1"
-                      .value=${getCurrentProgress(stateObj)}
-                      .withTooltip=${false}
-                      size="small"
-                      aria-label=${this.hass.localize(
-                        "ui.card.media_player.track_position"
-                      )}
-                      ?disabled=${isBrowser ||
-                      !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
-                      @change=${this._handleMediaSeekChanged}
-                    ></ha-slider>`
-                  : html`
-                      <div class="progress">
-                        <div id="CurrentProgress"></div>
-                        <ha-slider
+        ${
+          stateObj.state === "buffering"
+            ? html`<ha-spinner></ha-spinner> `
+            : html`
+                <div class="controls">
+                  ${
+                    controls === undefined
+                      ? ""
+                      : controls.map(
+                          (control) => html`
+                            <ha-icon-button
+                              .label=${this.hass.localize(
+                                `ui.card.media_player.${control.action}`
+                              )}
+                              .path=${control.icon}
+                              action=${control.action}
+                              @click=${this._handleControlClick}
+                            >
+                            </ha-icon-button>
+                          `
+                        )
+                  }
+                </div>
+                ${
+                  stateObj.attributes.media_duration === Infinity
+                    ? nothing
+                    : this.narrow
+                      ? html`<ha-slider
                           class="progress-slider"
                           min="0"
                           max=${stateObj.attributes.media_duration || 0}
                           step="1"
                           .value=${getCurrentProgress(stateObj)}
                           .withTooltip=${false}
-                          size="small"
+                          size="s"
                           aria-label=${this.hass.localize(
                             "ui.card.media_player.track_position"
                           )}
-                          ?disabled=${isBrowser ||
-                          !supportsFeature(
-                            stateObj,
-                            MediaPlayerEntityFeature.SEEK
-                          )}
+                          ?disabled=${
+                            isBrowser ||
+                            !supportsFeature(
+                              stateObj,
+                              MediaPlayerEntityFeature.SEEK
+                            )
+                          }
                           @change=${this._handleMediaSeekChanged}
-                        ></ha-slider>
-                        <div>${mediaDuration}</div>
-                      </div>
-                    `}
-            `}
+                        ></ha-slider>`
+                      : html`
+                          <div class="progress">
+                            <div id="CurrentProgress"></div>
+                            <ha-slider
+                              class="progress-slider"
+                              min="0"
+                              max=${stateObj.attributes.media_duration || 0}
+                              step="1"
+                              .value=${getCurrentProgress(stateObj)}
+                              .withTooltip=${false}
+                              size="s"
+                              aria-label=${this.hass.localize(
+                                "ui.card.media_player.track_position"
+                              )}
+                              ?disabled=${
+                                isBrowser ||
+                                !supportsFeature(
+                                  stateObj,
+                                  MediaPlayerEntityFeature.SEEK
+                                )
+                              }
+                              @change=${this._handleMediaSeekChanged}
+                            ></ha-slider>
+                            <div>${mediaDuration}</div>
+                          </div>
+                        `
+                }
+              `
+        }
       </div>
       ${this._renderChoosePlayer(stateObj, this._volumeValue)}
     `;
@@ -394,11 +411,13 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           computeEntityPickerDisplay(this.hass, stateObj);
                         return html`<div class="player-label">
                           <div>${primary}</div>
-                          ${secondary
-                            ? html`<div class="player-secondary">
-                                ${secondary}
-                              </div>`
-                            : nothing}
+                          ${
+                            secondary
+                              ? html`<div class="player-secondary">
+                                  ${secondary}
+                                </div>`
+                              : nothing
+                          }
                         </div>`;
                       })()
                     : this.entityId

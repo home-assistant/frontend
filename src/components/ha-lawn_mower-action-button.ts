@@ -1,10 +1,13 @@
+import { consume, type ContextType } from "@lit/context";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext, formattersContext } from "../data/context";
 import "./ha-button";
 import type { LawnMowerEntity, LawnMowerEntityState } from "../data/lawn_mower";
 import { LawnMowerEntityFeature } from "../data/lawn_mower";
-import type { HomeAssistant } from "../types";
 
 interface LawnMowerAction {
   action: string;
@@ -39,13 +42,19 @@ const LAWN_MOWER_ACTIONS: Partial<
 
 @customElement("ha-lawn_mower-action-button")
 class HaLawnMowerActionButton extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj!: LawnMowerEntity;
 
   public render() {
-    const state = this.stateObj.state;
-    const action = LAWN_MOWER_ACTIONS[state];
+    const action = LAWN_MOWER_ACTIONS[this.stateObj.state];
 
     if (action && supportsFeature(this.stateObj, action.feature)) {
       return html`
@@ -53,16 +62,16 @@ class HaLawnMowerActionButton extends LitElement {
           appearance="plain"
           @click=${this.callService}
           .service=${action.service}
-          size="small"
+          size="s"
         >
-          ${this.hass.localize(`ui.card.lawn_mower.actions.${action.action}`)}
+          ${this._localize(`ui.card.lawn_mower.actions.${action.action}`)}
         </ha-button>
       `;
     }
 
     return html`
       <ha-button appearance="plain" disabled>
-        ${this.hass.formatEntityState(this.stateObj)}
+        ${this._formatters?.formatEntityState(this.stateObj)}
       </ha-button>
     `;
   }
@@ -71,7 +80,7 @@ class HaLawnMowerActionButton extends LitElement {
     ev.stopPropagation();
     const stateObj = this.stateObj;
     const service = ev.target.service;
-    this.hass.callService("lawn_mower", service, {
+    this._api.callService("lawn_mower", service, {
       entity_id: stateObj.entity_id,
     });
   }

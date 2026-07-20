@@ -5,7 +5,7 @@ import {
   mdiListBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
@@ -15,7 +15,6 @@ import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/media-player/ha-media-manage-button";
 import "../../components/media-player/ha-media-player-browse";
@@ -93,30 +92,27 @@ class PanelMediaBrowser extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._navigateIds.length > 1
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
+        ${
+          this._navigateIds.length > 1
+            ? html`
+                <ha-icon-button-arrow-prev
+                  slot="navigationIcon"
+                  @click=${this._goBack}
+                ></ha-icon-button-arrow-prev>
+              `
+            : nothing
+        }
         <h1 class="page-title" slot="title">
-          ${!this._currentItem
-            ? this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )
-            : this._currentItem.title}
+          ${
+            !this._currentItem
+              ? this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )
+              : this._currentItem.title
+          }
         </h1>
         <ha-media-manage-button
           slot="actionItems"
-          .hass=${this.hass}
           .currentItem=${this._currentItem}
           @media-refresh=${this._refreshMedia}
         ></ha-media-manage-button>
@@ -128,27 +124,27 @@ class PanelMediaBrowser extends LitElement {
           ></ha-icon-button>
           <ha-dropdown-item
             value="auto"
-            class=${this._preferredLayout === "auto"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "auto" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.auto")}
             <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
           </ha-dropdown-item>
           <ha-dropdown-item
             value="grid"
-            class=${this._preferredLayout === "grid"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "grid" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.grid")}
             <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
           </ha-dropdown-item>
           <ha-dropdown-item
             value="list"
-            class=${this._preferredLayout === "list"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "list" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.list")}
             <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>
@@ -378,7 +374,7 @@ class PanelMediaBrowser extends LitElement {
           position: fixed;
           bottom: var(--safe-area-inset-bottom, 0px);
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -386,7 +382,7 @@ class PanelMediaBrowser extends LitElement {
         }
         :host([narrow]) ha-bar-media-player {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)

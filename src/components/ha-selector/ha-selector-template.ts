@@ -76,29 +76,33 @@ export class HaTemplateSelector extends LitElement {
 
   protected render() {
     return html`
-      ${this.warn
-        ? html`<ha-alert alert-type="warning"
-            >${this.hass.localize(
-              "ui.components.selectors.template.yaml_warning",
-              { string: this.warn }
-            )}
-            <br />
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href=${documentationUrl(
-                this.hass,
-                "/docs/configuration/templating/"
-              )}
+      ${
+        this.warn
+          ? html`<ha-alert alert-type="warning"
               >${this.hass.localize(
-                "ui.components.selectors.template.learn_more"
-              )}</a
-            ></ha-alert
-          >`
-        : nothing}
-      ${this.label
-        ? html`<p>${this.label}${this.required ? "*" : ""}</p>`
-        : nothing}
+                "ui.components.selectors.template.yaml_warning",
+                { string: this.warn }
+              )}
+              <br />
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/templating/"
+                )}
+                >${this.hass.localize(
+                  "ui.components.selectors.template.learn_more"
+                )}</a
+              ></ha-alert
+            >`
+          : nothing
+      }
+      ${
+        this.label
+          ? html`<p>${this.label}${this.required ? "*" : ""}</p>`
+          : nothing
+      }
       <ha-code-editor
         mode="jinja2"
         .value=${this.value}
@@ -114,20 +118,25 @@ export class HaTemplateSelector extends LitElement {
         dir="ltr"
         linewrap
       ></ha-code-editor>
-      ${this._test && this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : this._test && this._templateResult
-          ? html`<pre class="rendered">
-${typeof this._templateResult.result === "object"
-                ? JSON.stringify(this._templateResult.result, null, 2)
-                : this._templateResult.result}</pre
+      ${
+        this._test && this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : this._test && this._templateResult
+            ? html`<pre class="rendered">
+${
+  typeof this._templateResult.result === "object"
+    ? JSON.stringify(this._templateResult.result, null, 2)
+    : this._templateResult.result
+}</pre>`
+            : nothing
+      }
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
             >`
-          : nothing}
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+          : nothing
+      }
     `;
   }
 

@@ -133,14 +133,18 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
 
     return html`
       <div class="section">
-        ${label
-          ? html`<div class="section-header">
-              ${floor
-                ? html`<ha-floor-icon .floor=${floor}></ha-floor-icon>`
-                : nothing}
-              <span class="section-name">${label}</span>
-            </div>`
-          : nothing}
+        ${
+          label
+            ? html`<div class="section-header">
+                ${
+                  floor
+                    ? html`<ha-floor-icon .floor=${floor}></ha-floor-icon>`
+                    : nothing
+                }
+                <span class="section-name">${label}</span>
+              </div>`
+            : nothing
+        }
         <div class="area-grid">
           ${section.areaIds.map((areaId) => this._renderAreaCard(areaId))}
         </div>
@@ -161,13 +165,17 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
         data-area-id=${areaId}
         @click=${this._toggleArea}
       >
-        ${isSelected
-          ? html`<span class="badge">${selectionIndex + 1}</span>`
-          : nothing}
+        ${
+          isSelected
+            ? html`<span class="badge">${selectionIndex + 1}</span>`
+            : nothing
+        }
         <div class="area-icon">
-          ${area.icon
-            ? html`<ha-icon .icon=${area.icon}></ha-icon>`
-            : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`}
+          ${
+            area.icon
+              ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+              : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`
+          }
         </div>
         <div class="area-name">${computeAreaName(area)}</div>
       </div>
@@ -210,23 +218,25 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
                   : "ui.dialogs.more_info_control.vacuum.no_areas_text_non_admin"
               )}
             </p>
-            ${this.hass.user?.is_admin
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    size="small"
-                    @click=${this._openSegmentMapping}
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiCogOutline}
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.vacuum.configure"
-                    )}
-                  </ha-button>
-                `
-              : nothing}
+            ${
+              this.hass.user?.is_admin
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      size="s"
+                      @click=${this._openSegmentMapping}
+                    >
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiCogOutline}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.dialogs.more_info_control.vacuum.configure"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
           </div>
         </div>
       `;
@@ -254,9 +264,11 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
           ${this.hass.localize(
             "ui.dialogs.more_info_control.vacuum.start_cleaning_areas"
           )}
-          ${this._selectedAreaIds.length > 0
-            ? ` (${this._selectedAreaIds.length})`
-            : nothing}
+          ${
+            this._selectedAreaIds.length > 0
+              ? ` (${this._selectedAreaIds.length})`
+              : nothing
+          }
         </ha-button>
       </div>
     `;

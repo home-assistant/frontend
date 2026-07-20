@@ -60,6 +60,17 @@ export const computeAttributeValueToParts = (
     return [{ type: "value", value: localize("state.default.unknown") }];
   }
 
+  // Device class attribute, return the integration's translated name
+  if (attribute === "device_class" && typeof attributeValue === "string") {
+    const domain = computeStateDomain(stateObj);
+    const deviceClassName = localize(
+      `component.${domain}.entity_component.${attributeValue}.name`
+    );
+    if (deviceClassName) {
+      return [{ type: "value", value: deviceClassName }];
+    }
+  }
+
   // Number value, return formatted number
   if (typeof attributeValue === "number") {
     const domain = computeStateDomain(stateObj);
@@ -71,8 +82,7 @@ export const computeAttributeValueToParts = (
       : formatNumber(attributeValue, locale);
 
     let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
-      | string
-      | undefined;
+      string | undefined;
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
@@ -145,8 +155,7 @@ export const computeAttributeValueToParts = (
   const domain = computeDomain(entityId);
   const deviceClass = stateObj.attributes.device_class;
   const registryEntry = entities[entityId] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   const translationKey = registryEntry?.translation_key;
 
   const formattedValue =

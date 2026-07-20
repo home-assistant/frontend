@@ -1,54 +1,78 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { getEntityLocation } from "../../../common/entity/get_entity_location";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
 import "../../../components/map/ha-map";
+import { configContext, statesContext } from "../../../data/context";
 import { showZoneEditor } from "../../../data/zone";
-import type { HomeAssistant } from "../../../types";
+import type { CurrentUser, HomeAssistantConfig } from "../../../types";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
 
   private _entityArray = memoizeOne((entityId: string) => [entityId]);
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
+    const location = getEntityLocation(this.stateObj, this._states);
+    const hasOwnCoordinates =
+      typeof this.stateObj.attributes.latitude === "number" &&
+      typeof this.stateObj.attributes.longitude === "number";
+
     return html`
-      ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
-        ? html`
-            <ha-map
-              .hass=${this.hass}
-              .entities=${this._entityArray(this.stateObj.entity_id)}
-              auto-fit
-            ></ha-map>
-          `
-        : ""}
-      ${!__DEMO__ &&
-      this.hass.user?.is_admin &&
-      this.stateObj.attributes.latitude &&
-      this.stateObj.attributes.longitude
-        ? html`
-            <div class="actions">
-              <ha-button
-                appearance="plain"
-                size="small"
-                @click=${this._handleAction}
-              >
-                ${this.hass.localize(
-                  "ui.dialogs.more_info_control.person.create_zone"
-                )}
-              </ha-button>
-            </div>
-          `
-        : ""}
+      ${
+        location
+          ? html`
+              <ha-map
+                .entities=${this._entityArray(this.stateObj.entity_id)}
+                auto-fit
+              ></ha-map>
+            `
+          : ""
+      }
+      ${
+        !__DEMO__ && this._user?.is_admin && hasOwnCoordinates
+          ? html`
+              <div class="actions">
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  @click=${this._handleAction}
+                >
+                  ${this._localize(
+                    "ui.dialogs.more_info_control.person.create_zone"
+                  )}
+                </ha-button>
+              </div>
+            `
+          : ""
+      }
     `;
   }
 

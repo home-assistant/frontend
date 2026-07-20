@@ -79,8 +79,7 @@ export class DialogLabsPreviewFeatureEnable
   }
 
   private _computeCreateBackupTexts():
-    | { title: string; description?: string }
-    | undefined {
+    { title: string; description?: string } | undefined {
     if (
       !this._backupConfig ||
       !this._backupConfig.automatic_backups_configured ||
@@ -150,31 +149,37 @@ export class DialogLabsPreviewFeatureEnable
         @closed=${this._dialogClosed}
       >
         <p>
-          ${this.hass.localize(
-            `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
-          ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")}
+          ${
+            this.hass.localize(
+              `component.${this._params.preview_feature.domain}.preview_features.${this._params.preview_feature.preview_feature}.enable_confirmation`
+            ) || this.hass.localize("ui.panel.config.labs.enable_confirmation")
+          }
         </p>
-        ${createBackupTexts
-          ? html`
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">${createBackupTexts.title}</span>
-                  ${createBackupTexts.description
-                    ? html`
-                        <span slot="supporting-text">
-                          ${createBackupTexts.description}
-                        </span>
-                      `
-                    : nothing}
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
-            `
-          : nothing}
+        ${
+          createBackupTexts
+            ? html`
+                <ha-md-list>
+                  <ha-md-list-item>
+                    <span slot="headline">${createBackupTexts.title}</span>
+                    ${
+                      createBackupTexts.description
+                        ? html`
+                            <span slot="supporting-text">
+                              ${createBackupTexts.description}
+                            </span>
+                          `
+                        : nothing
+                    }
+                    <ha-switch
+                      slot="end"
+                      .checked=${this._createBackup}
+                      @change=${this._createBackupChanged}
+                    ></ha-switch>
+                  </ha-md-list-item>
+                </ha-md-list>
+              `
+            : nothing
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"

@@ -85,63 +85,65 @@ export class EnergyDeviceSettingsWater extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-          ${this.preferences.device_consumption_water.length > 0
-            ? html`
-                <div class="items-container">
-                  <ha-sortable
-                    handle-selector=".handle"
-                    @item-moved=${this._itemMoved}
-                  >
-                    <div class="devices">
-                      ${repeat(
-                        this.preferences.device_consumption_water,
-                        (device) => device.stat_consumption,
-                        (device, index) => html`
-                          <div class="row" .device=${device}>
-                            <div class="handle">
-                              <ha-svg-icon
-                                .path=${mdiDragHorizontalVariant}
-                              ></ha-svg-icon>
-                            </div>
-                            <span class="content"
-                              >${device.name ||
-                              getStatisticLabel(
-                                this.hass,
-                                device.stat_consumption,
-                                this.statsMetadata?.[device.stat_consumption]
-                              )}</span
-                            >
-                            ${this._renderIssueIndicator(
-                              this.validationResult?.device_consumption_water[
+          ${
+            this.preferences.device_consumption_water.length > 0
+              ? html`
+                  <div class="items-container">
+                    <ha-sortable
+                      handle-selector=".handle"
+                      @item-moved=${this._itemMoved}
+                    >
+                      <div class="devices">
+                        ${repeat(
+                          this.preferences.device_consumption_water,
+                          (device) => device.stat_consumption,
+                          (device, index) => html`
+                            <div class="row" .device=${device}>
+                              <div class="handle">
+                                <ha-svg-icon
+                                  .path=${mdiDragHorizontalVariant}
+                                ></ha-svg-icon>
+                              </div>
+                              <span class="content"
+                                >${
+                                  device.name ||
+                                  getStatisticLabel(
+                                    this.hass,
+                                    device.stat_consumption,
+                                    this.statsMetadata?.[
+                                      device.stat_consumption
+                                    ]
+                                  )
+                                }</span
+                              >
+                              ${this._renderIssueIndicator(
+                                this.validationResult?.device_consumption_water[
+                                  index
+                                ],
                                 index
-                              ],
-                              index
-                            )}
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.edit")}
-                              @click=${this._editDevice}
-                              .path=${mdiPencil}
-                            ></ha-icon-button>
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              @click=${this._deleteDevice}
-                              .device=${device}
-                              .path=${mdiDelete}
-                            ></ha-icon-button>
-                          </div>
-                        `
-                      )}
-                    </div>
-                  </ha-sortable>
-                </div>
-              `
-            : ""}
+                              )}
+                              <ha-icon-button
+                                .label=${this.hass.localize("ui.common.edit")}
+                                @click=${this._editDevice}
+                                .path=${mdiPencil}
+                              ></ha-icon-button>
+                              <ha-icon-button
+                                .label=${this.hass.localize("ui.common.delete")}
+                                @click=${this._deleteDevice}
+                                .device=${device}
+                                .path=${mdiDelete}
+                              ></ha-icon-button>
+                            </div>
+                          `
+                        )}
+                      </div>
+                    </ha-sortable>
+                  </div>
+                `
+              : ""
+          }
           <div class="row">
-            <ha-button
-              @click=${this._addDevice}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addDevice} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption_water.add_device"

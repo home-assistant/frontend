@@ -1,4 +1,3 @@
-/* global require, module, __dirname */
 const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
@@ -48,6 +47,12 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
+  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
+  const litDisableDevModeLoader = path.join(
+    __dirname,
+    "lit-disable-dev-mode-loader.cjs"
+  );
   return {
     name,
     mode: isProdBuild ? "production" : "development",
@@ -67,25 +72,42 @@ const createRspackConfig = ({
         {
           test: /\.m?js$|\.ts$/,
           exclude: /node_modules[\\/]core-js/,
-          use: (info) => [
-            {
-              loader: "babel-loader",
-              options: {
-                ...bundle.babelOptions({
-                  latestBuild,
-                  isProdBuild,
-                  isTestBuild,
-                  sw: info.issuerLayer === "sw",
-                }),
-                cacheDirectory: !isProdBuild,
-                cacheCompression: false,
+          use: (info) =>
+            [
+              {
+                loader: "babel-loader",
+                options: {
+                  ...bundle.babelOptions({
+                    latestBuild,
+                    isTestBuild,
+                    sw: info.issuerLayer === "sw",
+                  }),
+                  cacheDirectory: !isProdBuild,
+                  cacheCompression: false,
+                },
               },
-            },
-            {
-              loader: "builtin:swc-loader",
-              options: bundle.swcOptions(),
-            },
-          ],
+              // Minify lit html/svg/css tagged template literals for production.
+              // Must run after swc (TS/decorators stripped, but templates kept at
+              // ES2021) and before babel — otherwise the legacy build lowers
+              // html`` to _taggedTemplateLiteral() calls that can no longer be
+              // matched, leaving legacy templates unminified.
+              isProdBuild && {
+                loader: path.join(
+                  __dirname,
+                  "minify-template-literals-loader.cjs"
+                ),
+              },
+              !latestBuild &&
+                info.resource.startsWith(
+                  `${litHtmlDevelopmentRoot}${path.sep}`
+                ) && {
+                  loader: litDisableDevModeLoader,
+                },
+              {
+                loader: "builtin:swc-loader",
+                options: bundle.swcOptions(),
+              },
+            ].filter(Boolean),
           resolve: {
             fullySpecified: false,
           },
@@ -132,6 +154,47 @@ const createRspackConfig = ({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
+      // Babel can miscompile Lit's pre-minified runtime when downleveling to
+      // ES5. Compile lit-html from its development sources for legacy builds,
+      // then let the normal production minifier handle the final bundle.
+      !latestBuild &&
+        new rspack.NormalModuleReplacementPlugin(
+          /^(?:lit-html(?:\/.*)?|\.{1,2}\/.*\.js)$/,
+          (resource) => {
+            if (resource.request === "lit-html") {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                "lit-html.js"
+              );
+              return;
+            }
+            if (resource.request.startsWith("lit-html/")) {
+              if (resource.request.startsWith("lit-html/development/")) {
+                return;
+              }
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                resource.request.slice("lit-html/".length)
+              );
+              return;
+            }
+            if (
+              resource.context.startsWith(`${litHtmlRoot}${path.sep}`) &&
+              resource.context !== litHtmlDevelopmentRoot &&
+              !resource.context.startsWith(
+                `${litHtmlDevelopmentRoot}${path.sep}`
+              )
+            ) {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                path.relative(
+                  litHtmlRoot,
+                  path.resolve(resource.context, resource.request)
+                )
+              );
+            }
+          }
+        ),
       new rspack.DefinePlugin(
         bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
       ),
@@ -338,6 +401,11 @@ const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
 const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
 
+const createE2eTestAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+  createRspackConfig(
+    bundle.config.e2eTestApp({ isProdBuild, latestBuild, isStatsBuild })
+  );
+
 module.exports = {
   createAppConfig,
   createDemoConfig,
@@ -345,4 +413,5 @@ module.exports = {
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,
+  createE2eTestAppConfig,
 };

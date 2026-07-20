@@ -1,4 +1,5 @@
 import { mdiWaterBoiler } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -13,6 +14,13 @@ import type {
   WaterHeaterOperationModesCardFeatureConfig,
 } from "./types";
 
+const supportsWaterHeaterOperationModesCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "water_heater";
+};
+
 export const supportsWaterHeaterOperationModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -21,8 +29,7 @@ export const supportsWaterHeaterOperationModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "water_heater";
+  return supportsWaterHeaterOperationModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-water-heater-operation-modes-card-feature")
@@ -48,14 +55,13 @@ class HuiWaterHeaterOperationModeCardFeature
   protected readonly _serviceAction = "set_operation_mode";
 
   protected get _label(): string {
-    return this.hass!.localize("ui.card.water_heater.mode");
+    return this._localize("ui.card.water_heater.mode");
   }
 
   protected readonly _defaultStyle = "icons";
 
   protected get _controlSelectStyle():
-    | Record<string, string | undefined>
-    | undefined {
+    Record<string, string | undefined> | undefined {
     if (!this._stateObj) {
       return undefined;
     }
@@ -83,7 +89,7 @@ class HuiWaterHeaterOperationModeCardFeature
   }
 
   protected _getOptions() {
-    if (!this._stateObj || !this.hass) {
+    if (!this._stateObj) {
       return [];
     }
 
@@ -95,16 +101,15 @@ class HuiWaterHeaterOperationModeCardFeature
     return filterModes(orderedModes, this._config?.operation_modes).map(
       (mode) => ({
         value: mode,
-        label: this.hass!.formatEntityState(this._stateObj!, mode),
+        label: this._formatters.formatEntityState(this._stateObj!, mode),
       })
     );
   }
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsWaterHeaterOperationModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsWaterHeaterOperationModesCardFeatureFromState(this._stateObj)
     );
   }
 }

@@ -56,14 +56,16 @@ export class HaConfigFlowCard extends LitElement {
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title ?? ""}
       >
-        ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
-        this.flow.context.unique_id
-          ? html`<ha-button appearance="plain" @click=${this._ignoreFlow}
-              >${this.hass.localize(
-                "ui.panel.config.integrations.ignore.ignore"
-              )}</ha-button
-            >`
-          : nothing}
+        ${
+          DISCOVERY_SOURCES.includes(this.flow.context.source) &&
+          this.flow.context.unique_id
+            ? html`<ha-button appearance="plain" @click=${this._ignoreFlow}
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.ignore.ignore"
+                )}</ha-button
+              >`
+            : nothing
+        }
         <ha-button
           @click=${this._continueFlow}
           variant=${attention ? "danger" : "brand"}
@@ -75,78 +77,96 @@ export class HaConfigFlowCard extends LitElement {
               : "ui.common.add"
           )}
         </ha-button>
-        ${this.flow.context.configuration_url || this.manifest || attention
-          ? html`<ha-dropdown
-              slot="header-button"
-              placement="bottom-end"
-              @wa-select=${this._handleDropdownSelect}
-            >
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-              ></ha-icon-button>
-              ${this.flow.context.configuration_url
-                ? html`<a
-                    href=${this.flow.context.configuration_url.replace(
-                      /^homeassistant:\/\//,
-                      "/"
-                    )}
-                    rel="noreferrer"
-                    target=${this.flow.context.configuration_url.startsWith(
-                      "homeassistant://"
-                    )
-                      ? "_self"
-                      : "_blank"}
-                  >
-                    <ha-dropdown-item>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.open_configuration_url"
-                      )}
-                      <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
-                      <ha-svg-icon
-                        slot="details"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </ha-dropdown-item>
-                  </a>`
-                : nothing}
-              ${this.manifest
-                ? html`<a
-                    href=${this.manifest.is_built_in
-                      ? documentationUrl(
-                          this.hass,
-                          `/integrations/${this.manifest.domain}`
-                        )
-                      : this.manifest.documentation}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <ha-dropdown-item>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.documentation"
-                      )}
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiBookshelf}
-                      ></ha-svg-icon>
-                      <ha-svg-icon
-                        slot="details"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </ha-dropdown-item>
-                  </a>`
-                : nothing}
-              ${attention
-                ? html`<ha-dropdown-item variant="danger" value="delete">
-                    <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.delete"
-                    )}
-                  </ha-dropdown-item>`
-                : nothing}
-            </ha-dropdown>`
-          : nothing}
+        ${
+          this.flow.context.configuration_url || this.manifest || attention
+            ? html`<ha-dropdown
+                slot="header-button"
+                placement="bottom-end"
+                @wa-select=${this._handleDropdownSelect}
+              >
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                ></ha-icon-button>
+                ${
+                  this.flow.context.configuration_url
+                    ? html`<a
+                        href=${this.flow.context.configuration_url.replace(
+                          /^homeassistant:\/\//,
+                          "/"
+                        )}
+                        rel="noreferrer"
+                        target=${
+                          this.flow.context.configuration_url.startsWith(
+                            "homeassistant://"
+                          )
+                            ? "_self"
+                            : "_blank"
+                        }
+                      >
+                        <ha-dropdown-item>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.open_configuration_url"
+                          )}
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${mdiCog}
+                          ></ha-svg-icon>
+                          <ha-svg-icon
+                            slot="details"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>
+                        </ha-dropdown-item>
+                      </a>`
+                    : nothing
+                }
+                ${
+                  this.manifest
+                    ? html`<a
+                        href=${
+                          this.manifest.is_built_in
+                            ? documentationUrl(
+                                this.hass,
+                                `/integrations/${this.manifest.domain}`
+                              )
+                            : this.manifest.documentation
+                        }
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        <ha-dropdown-item>
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.documentation"
+                          )}
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${mdiBookshelf}
+                          ></ha-svg-icon>
+                          <ha-svg-icon
+                            slot="details"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>
+                        </ha-dropdown-item>
+                      </a>`
+                    : nothing
+                }
+                ${
+                  attention
+                    ? html`<ha-dropdown-item variant="danger" value="delete">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiDelete}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.delete"
+                        )}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+              </ha-dropdown>`
+            : nothing
+        }
       </ha-integration-action-card>
     `;
   }

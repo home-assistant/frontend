@@ -9,10 +9,10 @@ import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
-import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import "../../../../components/chart/ha-chart-tooltip-marker";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
@@ -30,8 +30,9 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import "../../../../components/ha-card";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
 import "../../../../components/ha-icon-button";
@@ -160,19 +161,21 @@ export class HuiEnergyDevicesGraphCard
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${modes.length > 1
-            ? html`
-                <ha-icon-button
-                  .path=${this._chartType === "pie"
-                    ? mdiChartBar
-                    : mdiChartDonut}
-                  .label=${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
-                  )}
-                  @click=${this._handleChartTypeChange}
-                ></ha-icon-button>
-              `
-            : nothing}
+          ${
+            modes.length > 1
+              ? html`
+                  <ha-icon-button
+                    .path=${
+                      this._chartType === "pie" ? mdiChartBar : mdiChartDonut
+                    }
+                    .label=${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
+                    )}
+                    @click=${this._handleChartTypeChange}
+                  ></ha-icon-button>
+                `
+              : nothing
+          }
         </div>
         <div
           class="content ${classMap({
@@ -189,33 +192,39 @@ export class HuiEnergyDevicesGraphCard
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
+            click-label-for-more-info
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
+            @legend-label-click=${this._handleLegendLabelClick}
           ></ha-chart-base>
         </div>
       </ha-card>
     `;
   }
 
-  private _renderTooltip(params: any) {
-    const deviceName = filterXSS(this._getDeviceName(params.name));
-    const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
+  private _renderTooltip = (params: any) => {
+    const deviceName = this._getDeviceName(params.name);
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
-    return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
-  }
+    return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
+      <ha-chart-tooltip-marker
+        .color=${String(params.color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${params.seriesName}:
+      <div style="direction:ltr; display: inline;">${value}</div>`;
+  };
 
   private _createOptions = memoizeOne(
     (
       data: (BarSeriesOption | PieSeriesOption)[],
       chartType: "bar" | "pie",
       legendData: typeof this._legendData
-    ): ECOption => {
-      const options: ECOption = {
+    ): HaECOption => {
+      const options: HaECOption = {
         grid: {
           top: 5,
           left: 5,
@@ -225,7 +234,7 @@ export class HuiEnergyDevicesGraphCard
         },
         tooltip: {
           show: true,
-          formatter: this._renderTooltip.bind(this),
+          formatter: this._renderTooltip,
         },
         xAxis: { show: false },
         yAxis: { show: false },
@@ -539,11 +548,20 @@ export class HuiEnergyDevicesGraphCard
       chartData.splice(this._config.max_devices);
     }
 
-    this._legendData = chartData.map((d) => ({
-      ...d,
-      name: this._getDeviceName(d.name),
-      value: `${formatNumber(d.value[0], this.hass.locale)} kWh`,
-    }));
+    this._legendData = chartData.map((d) => {
+      const id = (d as any).id as string;
+      return {
+        ...d,
+        name: this._getDeviceName(d.name),
+        value: `${formatNumber(d.value[0], this.hass.locale)} kWh`,
+        // Untracked is synthetic and external statistics aren't real entities,
+        // so their labels can't open more-info; fall back to toggling visibility.
+        noLabelClick:
+          id === "untracked" ||
+          isExternalStatistic(id) ||
+          !(id in this.hass.states),
+      };
+    });
     // filter out hidden stats in place
     for (let i = chartData.length - 1; i >= 0; i--) {
       if (this._hiddenStats.includes((chartData[i] as any).id)) {
@@ -552,8 +570,11 @@ export class HuiEnergyDevicesGraphCard
     }
 
     if (compareData) {
+      const compareById = new Map(
+        chartDataCompare.map((d2) => [(d2 as any).id as string, d2] as const)
+      );
       datasets[1].data = chartData.map((d) =>
-        chartDataCompare.find((d2) => (d2 as any).id === d.id)
+        compareById.get(d.id)
       ) as typeof chartDataCompare;
     }
 
@@ -575,12 +596,26 @@ export class HuiEnergyDevicesGraphCard
       e.detail.event?.target?.type === "tspan" // label
     ) {
       const id = (e.detail.data as any).id as string;
-      if (id !== "untracked") {
+      if (
+        id !== "untracked" &&
+        !isExternalStatistic(id) &&
+        this.hass.states[id]
+      ) {
         fireEvent(this, "hass-more-info", {
           entityId: id,
         });
       }
     }
+  }
+
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const entityId = ev.detail.id;
+    if (isExternalStatistic(entityId) || !this.hass.states[entityId]) {
+      return;
+    }
+    fireEvent(this, "hass-more-info", { entityId });
   }
 
   private _handleChartTypeChange(): void {

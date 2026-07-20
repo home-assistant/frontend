@@ -1,10 +1,17 @@
 import { consume, type ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
+import { uid } from "../../common/util/uid";
 import { internationalizationContext } from "../../data/context";
 import { haStyle } from "../../resources/styles";
 import "../ha-button";
@@ -49,6 +56,13 @@ class HaInputMulti extends LitElement {
 
   @property() public autocomplete?: string;
 
+  /** Regular expression each entry is validated against (HTML `pattern`). */
+  @property() public pattern?: string;
+
+  /** Message shown on an entry when it fails `pattern` validation. */
+  @property({ attribute: "validation-message" })
+  public validationMessage?: string;
+
   @property({ attribute: "add-label" }) public addLabel?: string;
 
   @property({ attribute: "remove-label" }) public removeLabel?: string;
@@ -69,6 +83,37 @@ class HaInputMulti extends LitElement {
 
   @query("ha-input[data-last]") private _lastInput?: HaInput;
 
+  @queryAll("ha-input") private _inputs?: NodeListOf<HaInput>;
+
+  // Stable key per row, kept in sync with `value`. Because items are plain
+  // strings we cannot use a WeakMap (as the object-based sortable lists do),
+  // so we track keys in a parallel array. Keys stay fixed while a row is
+  // edited (preserving input focus) and travel with the row when reordered.
+  @state() private _keys: string[] = [];
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("value") && this._keys.length !== this._items.length) {
+      // Reconcile keys when `value` is (re)set from outside, reusing existing
+      // keys and minting new ones for added rows. Internal add/remove/reorder
+      // keep `_keys` in sync themselves, so this is skipped in those cases.
+      this._keys = Array.from(
+        { length: this._items.length },
+        (_, i) => this._keys[i] ?? uid()
+      );
+    }
+  }
+
+  public reportValidity(): boolean {
+    let valid = true;
+    this._inputs?.forEach((input) => {
+      if (!input.reportValidity()) {
+        valid = false;
+      }
+    });
+    return valid;
+  }
+
   protected render() {
     return html`
       <ha-sortable
@@ -80,7 +125,7 @@ class HaInputMulti extends LitElement {
         <div class="items">
           ${repeat(
             this._items,
-            (item, index) => `${item}-${index}`,
+            (_item, index) => this._keys[index],
             (item, index) => {
               const indexSuffix = `${this.itemIndex ? ` ${index + 1}` : ""}`;
               return html`
@@ -89,6 +134,9 @@ class HaInputMulti extends LitElement {
                     .type=${this.inputType}
                     .autocomplete=${this.autocomplete}
                     .disabled=${this.disabled}
+                    .pattern=${this.pattern}
+                    .validationMessage=${this.validationMessage}
+                    .autoValidate=${this.pattern !== undefined}
                     dialogInitialFocus=${index}
                     .index=${index}
                     class="flex-auto"
@@ -99,58 +147,72 @@ class HaInputMulti extends LitElement {
                     @change=${this._editItem}
                     @keydown=${this._keyDown}
                   >
-                    ${this.inputPrefix
-                      ? html`<span slot="start">${this.inputPrefix}</span>`
-                      : nothing}
-                    ${this.inputSuffix
-                      ? html`<span slot="end">${this.inputSuffix}</span>`
-                      : nothing}
+                    ${
+                      this.inputPrefix
+                        ? html`<span slot="start">${this.inputPrefix}</span>`
+                        : nothing
+                    }
+                    ${
+                      this.inputSuffix
+                        ? html`<span slot="end">${this.inputSuffix}</span>`
+                        : nothing
+                    }
                   </ha-input>
                   <ha-icon-button
                     .disabled=${this.disabled}
                     .index=${index}
                     slot="navigationIcon"
-                    .label=${this.removeLabel ??
-                    this._i18n?.localize("ui.common.remove") ??
-                    "Remove"}
+                    .label=${
+                      this.removeLabel ??
+                      this._i18n?.localize("ui.common.remove") ??
+                      "Remove"
+                    }
                     @click=${this._removeItem}
                     .path=${mdiDeleteOutline}
                   ></ha-icon-button>
-                  ${this.sortable
-                    ? html`<ha-svg-icon
-                        class="handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>`
-                    : nothing}
+                  ${
+                    this.sortable
+                      ? html`<ha-svg-icon
+                          class="handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>`
+                      : nothing
+                  }
                 </div>
               `;
             }
           )}
         </div>
       </ha-sortable>
-      <div class="layout horizontal">
+      <div class="layout horizontal add-row">
         <ha-button
-          size="small"
+          size="s"
           appearance="filled"
           @click=${this._addItem}
-          .disabled=${this.disabled ||
-          (this.max != null && this._items.length >= this.max)}
+          .disabled=${
+            this.disabled ||
+            (this.max != null && this._items.length >= this.max)
+          }
         >
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-          ${this.addLabel ??
-          (this.label
-            ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
-                item: this.label,
-              })
-            : this._i18n?.localize("ui.common.add")) ??
-          "Add"}
+          ${
+            this.addLabel ??
+            (this.label
+              ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
+                  item: this.label,
+                })
+              : this._i18n?.localize("ui.common.add")) ??
+            "Add"
+          }
         </ha-button>
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 
@@ -162,6 +224,7 @@ class HaInputMulti extends LitElement {
     if (this.max != null && this._items.length >= this.max) {
       return;
     }
+    this._keys = [...this._keys, uid()];
     const items = [...this._items, ""];
     this._fireChanged(items);
     await this.updateComplete;
@@ -194,11 +257,17 @@ class HaInputMulti extends LitElement {
     const items = [...this._items];
     const [moved] = items.splice(oldIndex, 1);
     items.splice(newIndex, 0, moved);
+    // Move the row's key with it so its DOM (and identity) is preserved.
+    const keys = [...this._keys];
+    const [movedKey] = keys.splice(oldIndex, 1);
+    keys.splice(newIndex, 0, movedKey);
+    this._keys = keys;
     this._fireChanged(items);
   }
 
   private async _removeItem(ev: Event) {
     const index = (ev.target as any).index;
+    this._keys = this._keys.filter((_, i) => i !== index);
     const items = [...this._items];
     items.splice(index, 1);
     this._fireChanged(items);
@@ -216,6 +285,9 @@ class HaInputMulti extends LitElement {
         .row {
           margin-bottom: 8px;
           --ha-input-padding-bottom: 0;
+        }
+        .add-row:has(+ ha-input-helper-text) {
+          margin-bottom: var(--ha-space-1);
         }
         ha-icon-button {
           display: block;

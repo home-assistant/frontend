@@ -353,7 +353,6 @@ export class DemoEntityState extends LitElement {
           title: "Icon",
           template: (entry) => html`
             <state-badge
-              .hass=${hass}
               .stateObj=${entry.stateObj}
               .stateColor=${true}
             ></state-badge>
@@ -372,7 +371,6 @@ export class DemoEntityState extends LitElement {
               hass.localize,
               entry.stateObj,
               hass.locale,
-              [], // numericDeviceClasses
               hass.config,
               hass.entities
             )}`,

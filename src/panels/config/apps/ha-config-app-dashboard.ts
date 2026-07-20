@@ -135,7 +135,6 @@ class HaConfigAppDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${route}
         .tabs=${addonTabs}
         back-path=${this._fromStore ? "/config/apps/available" : "/config/apps"}

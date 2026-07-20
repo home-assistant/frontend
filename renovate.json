@@ -11,7 +11,7 @@
     "group:recommended",
     "security:minimumReleaseAgeNpm"
   ],
-  "enabledManagers": ["npm", "nvm"],
+  "enabledManagers": ["npm", "nvm", "custom.regex"],
   "postUpdateOptions": ["yarnDedupeHighest"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
@@ -49,6 +49,15 @@
       "datasourceTemplate": "custom.ha-core-python",
       "versioningTemplate": "python",
       "extractVersionTemplate": "^(?<version>\\d+\\.\\d+)"
+    },
+    {
+      "description": "Keep actionlint used in CI up to date",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/actionlint\\.yaml$/"],
+      "matchStrings": ["ACTIONLINT_VERSION: (?<currentValue>\\S+)"],
+      "depNameTemplate": "rhysd/actionlint",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
     }
   ],
   "packageRules": [
@@ -77,6 +86,11 @@
       "description": "Group date-fns with dependent timezone package",
       "groupName": "date-fns",
       "matchPackageNames": ["date-fns", "date-fns-tz"]
+    },
+    {
+      "description": "Group formatjs monorepo package",
+      "groupName": "formatjs",
+      "matchPackageNames": ["@formatjs/**"]
     }
   ]
 }

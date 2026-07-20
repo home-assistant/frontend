@@ -32,26 +32,21 @@ class HassSubpage extends LitElement {
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
-          ${this.mainPage || history.state?.root
-            ? html`
-                <ha-menu-button
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `
-            : this.backPath
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    href=${this.backPath}
-                    .hass=${this.hass}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
-                    @click=${this._backTapped}
-                  ></ha-icon-button-arrow-prev>
-                `}
+          ${
+            this.mainPage || history.state?.root
+              ? html`<ha-menu-button></ha-menu-button>`
+              : this.backPath
+                ? html`
+                    <ha-icon-button-arrow-prev
+                      href=${this.backPath}
+                    ></ha-icon-button-arrow-prev>
+                  `
+                : html`
+                    <ha-icon-button-arrow-prev
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
+          }
 
           <div class="main-title">
             <slot name="header">${this.header}</slot>

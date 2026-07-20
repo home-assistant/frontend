@@ -170,6 +170,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
 
+  @property({ attribute: "sidebar-title" }) public sidebarTitle =
+    "Home Assistant";
+
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _updatesCount = 0;
@@ -336,18 +339,20 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         hasHold: true,
       })}
     >
-      ${!this.narrow
-        ? html`
-            <ha-icon-button
-              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-              .path=${this.hass.dockedSidebar === "docked"
-                ? mdiMenuOpen
-                : mdiMenu}
-              @action=${this._toggleSidebar}
-            ></ha-icon-button>
-          `
-        : ""}
-      <div class="title">Home Assistant</div>
+      ${
+        !this.narrow
+          ? html`
+              <ha-icon-button
+                .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+                .path=${
+                  this.hass.dockedSidebar === "docked" ? mdiMenuOpen : mdiMenu
+                }
+                @action=${this._toggleSidebar}
+              ></ha-icon-button>
+            `
+          : nothing
+      }
+      <div class="title">${this.sidebarTitle}</div>
     </div>`;
   }
 
@@ -362,16 +367,28 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       >`;
 
     if (!this._panelOrder || !this._hiddenPanels) {
-      return html`
-        <ha-fade-in .delay=${500}>
-          <ha-spinner size="small"></ha-spinner>
-        </ha-fade-in>
+      return html`<div class="panels-list">
+        <div class="wrapper">
+          ${renderList(
+            html`<slot name="main-navigation">
+              <ha-fade-in .delay=${500}>
+                <ha-spinner size="small"></ha-spinner>
+              </ha-fade-in>
+            </slot>`,
+            "before-spacer",
+            true
+          )}
+          ${this.renderScrollableFades()}
+        </div>
+        ${this._renderSpacer()}
         ${renderList(
-          html`${this._renderFixedPanels(selectedPanel)}`,
+          html`<slot name="fixed-navigation">
+            ${this._renderFixedPanels(selectedPanel)}
+          </slot>`,
           "after-spacer",
           false
         )}
-      `;
+      </div>`;
     }
 
     const defaultPanel = getDefaultPanelUrlPath(this.hass);
@@ -388,7 +405,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-      this._renderPanels(beforeSpacer, selectedPanel),
+      html`<slot name="main-navigation">
+        ${this._renderPanels(beforeSpacer, selectedPanel)}
+      </slot>`,
       "before-spacer",
       true
     )}
@@ -396,10 +415,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       </div>
       ${this._renderSpacer()}
       ${renderList(
-      html`
+      html`<slot name="fixed-navigation">
           ${this._renderPanels(afterSpacer, selectedPanel)}
           ${this._renderFixedPanels(selectedPanel)}
-        `,
+        </slot>`,
       "after-spacer",
       false
     )}
@@ -435,14 +454,18 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         id="sidebar-panel-${urlPath}"
         class=${classMap({ selected: isSelected })}
       >
-        ${iconPath
-          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
-          : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
+        ${
+          iconPath
+            ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+            : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+        }
         <span class="item-text" slot="headline">${title}</span>
       </ha-list-item-button>
-      ${!this.alwaysExpand && title
-        ? this._renderToolTip(`sidebar-panel-${urlPath}`, title)
-        : nothing}
+      ${
+        !this.alwaysExpand && title
+          ? this._renderToolTip(`sidebar-panel-${urlPath}`, title)
+          : nothing
+      }
     `;
   }
 
@@ -462,30 +485,36 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         id="sidebar-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-        ${this._updatesCount > 0 || this._issuesCount > 0
-          ? html`
-              <span class="badge" slot="start">
-                ${this._updatesCount + this._issuesCount}
-              </span>
-            `
-          : nothing}
+        ${
+          this._updatesCount > 0 || this._issuesCount > 0
+            ? html`
+                <span class="badge" slot="start">
+                  ${this._updatesCount + this._issuesCount}
+                </span>
+              `
+            : nothing
+        }
         <span class="item-text" slot="headline"
           >${this.hass.localize("panel.config")}</span
         >
-        ${this._updatesCount > 0 || this._issuesCount > 0
-          ? html`
-              <span class="badge" slot="end"
-                >${this._updatesCount + this._issuesCount}</span
-              >
-            `
-          : nothing}
+        ${
+          this._updatesCount > 0 || this._issuesCount > 0
+            ? html`
+                <span class="badge" slot="end"
+                  >${this._updatesCount + this._issuesCount}</span
+                >
+              `
+            : nothing
+        }
       </ha-list-item-button>
-      ${!this.alwaysExpand
-        ? this._renderToolTip(
-            "sidebar-config",
-            this.hass.localize("panel.config")
-          )
-        : nothing}
+      ${
+        !this.alwaysExpand
+          ? this._renderToolTip(
+              "sidebar-config",
+              this.hass.localize("panel.config")
+            )
+          : nothing
+      }
     `;
   }
 
@@ -501,24 +530,30 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         id="sidebar-notifications"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
-        ${notificationCount > 0
-          ? html`
-              <span class="badge" slot="start"> ${notificationCount} </span>
-            `
-          : nothing}
+        ${
+          notificationCount > 0
+            ? html`
+                <span class="badge" slot="start"> ${notificationCount} </span>
+              `
+            : nothing
+        }
         <span class="item-text" slot="headline"
           >${this.hass.localize("ui.notification_drawer.title")}</span
         >
-        ${notificationCount > 0
-          ? html`<span class="badge" slot="end">${notificationCount}</span>`
-          : nothing}
+        ${
+          notificationCount > 0
+            ? html`<span class="badge" slot="end">${notificationCount}</span>`
+            : nothing
+        }
       </ha-list-item-button>
-      ${!this.alwaysExpand
-        ? this._renderToolTip(
-            "sidebar-notifications",
-            this.hass.localize("ui.notification_drawer.title")
-          )
-        : nothing}
+      ${
+        !this.alwaysExpand
+          ? this._renderToolTip(
+              "sidebar-notifications",
+              this.hass.localize("ui.notification_drawer.title")
+            )
+          : nothing
+      }
     `;
   }
 
@@ -539,18 +574,16 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           rtl: isRTL,
         })}
       >
-        <ha-user-badge
-          slot="start"
-          .user=${this.hass.user}
-          .hass=${this.hass}
-        ></ha-user-badge>
+        <ha-user-badge slot="start" .user=${this.hass.user}></ha-user-badge>
         <span class="item-text" slot="headline"
-          >${this.hass.user ? this.hass.user.name : ""}</span
+          >${this.hass.user ? this.hass.user.name : nothing}</span
         >
       </ha-list-item-button>
-      ${!this.alwaysExpand && this.hass.user
-        ? this._renderToolTip("sidebar-profile", this.hass.user.name)
-        : nothing}
+      ${
+        !this.alwaysExpand && this.hass.user
+          ? this._renderToolTip("sidebar-profile", this.hass.user.name)
+          : nothing
+      }
     `;
   }
 
@@ -568,12 +601,14 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           ${this.hass.localize("ui.sidebar.external_app_configuration")}
         </span>
       </ha-list-item-button>
-      ${!this.alwaysExpand
-        ? this._renderToolTip(
-            "sidebar-external-config",
-            this.hass.localize("ui.sidebar.external_app_configuration")
-          )
-        : nothing}
+      ${
+        !this.alwaysExpand
+          ? this._renderToolTip(
+              "sidebar-external-config",
+              this.hass.localize("ui.sidebar.external_app_configuration")
+            )
+          : nothing
+      }
     `;
   }
 
@@ -669,7 +704,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left, 0px));
+          width: calc(
+            var(--ha-sidebar-expanded-width, 256px) +
+              var(--safe-area-inset-left, 0px)
+          );
         }
         :host([narrow][expanded]) .menu {
           width: 100%;
@@ -752,7 +790,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           color: var(--sidebar-text-color);
         }
         :host([expanded]) ha-list-item-button {
-          width: 248px;
+          width: var(--ha-sidebar-expanded-item-width, 248px);
         }
         :host([narrow][expanded]) ha-list-item-button {
           width: calc(240px - var(--safe-area-inset-left, 0px));

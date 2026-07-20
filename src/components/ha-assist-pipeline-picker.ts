@@ -66,8 +66,10 @@ export class HaAssistPipelinePicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.pipeline-picker.pipeline")}
+        .label=${
+          this.label ||
+          this.hass!.localize("ui.components.pipeline-picker.pipeline")
+        }
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}

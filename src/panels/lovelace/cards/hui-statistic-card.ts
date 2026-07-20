@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
@@ -203,8 +206,14 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         : "") ||
       getStatisticLabel(this.hass, this._config.entity, this._metadata);
 
+    const interactive = !isExternalStatistic(this._config.entity);
+
     return html`
-      <ha-card @click=${this._handleClick} tabindex="0">
+      <ha-card
+        @click=${interactive ? this._handleClick : nothing}
+        .tabIndex=${interactive ? 0 : -1}
+        ?interactive=${interactive}
+      >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
           <div class="icon">
@@ -216,19 +225,26 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         </div>
         <div class="info">
           <span class="value"
-            >${this._value === undefined
-              ? ""
-              : this._value === null
-                ? "?"
-                : formatNumber(this._value, this.hass.locale)}</span
+            >${
+              this._value === undefined
+                ? ""
+                : this._value === null
+                  ? "?"
+                  : formatNumber(
+                      this._value,
+                      this.hass.locale,
+                      getNumberFormatOptions(
+                        undefined,
+                        this.hass.entities[this._config.entity]
+                      )
+                    )
+            }</span
           >
           <span class="measurement"
-            >${this._config.unit ||
-            getDisplayUnit(
-              this.hass,
-              this._config.entity,
-              this._metadata
-            )}</span
+            >${
+              this._config.unit ||
+              getDisplayUnit(this.hass, this._config.entity, this._metadata)
+            }</span
           >
         </div>
         ${this._footerElement}
@@ -238,7 +254,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     // Side Effect used to update footer hass while keeping optimizations
-    if (this._footerElement) {
+    if (this._footerElement && "hass" in this._footerElement) {
       this._footerElement.hass = this.hass;
     }
     if (
@@ -262,8 +278,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldConfig = changedProps.get("_config") as
-      | StatisticCardConfig
-      | undefined;
+      StatisticCardConfig | undefined;
 
     if (this.hass) {
       const useDateSelect = this._useEnergyDateSelect();
@@ -310,8 +325,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityCardConfig
-      | undefined;
+      EntityCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -398,8 +412,10 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          cursor: pointer;
           outline: none;
+        }
+        ha-card[interactive] {
+          cursor: pointer;
         }
 
         .header {
@@ -410,7 +426,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
         .name {
           color: var(--secondary-text-color);
-          line-height: var(--ha-line-height-expanded);
+          line-height: 40px;
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
@@ -424,12 +440,17 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         }
 
         .info {
+          display: flex;
+          align-items: baseline;
           padding: 0px 16px 16px;
           margin-top: -4px;
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .info > * {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: var(--ha-line-height-expanded);
         }
 
         .value {

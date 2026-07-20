@@ -57,7 +57,7 @@ import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 
 type ConfigTranslationKey = FlattenObjectKeys<
@@ -174,9 +174,11 @@ export class HaConfigLabels extends LitElement {
           ? undefined
           : (label) => html`
               <div>${label.name}</div>
-              ${label.description
-                ? html`<div class="secondary">${label.description}</div>`
-                : nothing}
+              ${
+                label.description
+                  ? html`<div class="secondary">${label.description}</div>`
+                  : nothing
+              }
             `,
       },
       description: {
@@ -275,7 +277,7 @@ export class HaConfigLabels extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-button slot="fab" size="large" @click=${this._addLabel}>
+        <ha-button slot="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </ha-button>

@@ -7,6 +7,11 @@ export class HaComboBoxItem extends HaMdListItem {
   @property({ type: Boolean, reflect: true, attribute: "border-top" })
   public borderTop = false;
 
+  // Allow the headline/supporting text to wrap onto multiple lines instead of
+  // truncating with an ellipsis. Off by default to preserve single-line rows.
+  @property({ type: Boolean, reflect: true })
+  public multiline = false;
+
   static override styles = [
     ...haMdListStyles,
     css`
@@ -40,6 +45,10 @@ export class HaComboBoxItem extends HaMdListItem {
         line-height: var(--ha-line-height-normal);
         font-size: var(--ha-font-size-s);
         white-space: nowrap;
+      }
+      :host([multiline]) [slot="headline"],
+      :host([multiline]) [slot="supporting-text"] {
+        white-space: normal;
       }
       ::slotted(state-badge),
       ::slotted(img) {

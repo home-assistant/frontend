@@ -60,22 +60,24 @@ export class DialogManageCloudhook extends LitElement {
       >
         <div>
           <p>
-            ${!cloudhook.managed
-              ? html`
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"
-                  )}
-                `
-              : html`
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.dialog_cloudhook.info_disable_webhook"
-                  )}
-                  <button class="link" @click=${this._disableWebhook}>
+            ${
+              cloudhook.managed
+                ? html`
                     ${this.hass!.localize(
-                      "ui.panel.config.cloud.dialog_cloudhook.link_disable_webhook"
-                    )}</button
-                  >.
-                `}
+                      "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"
+                    )}
+                  `
+                : html`
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.dialog_cloudhook.info_disable_webhook"
+                    )}
+                    <button class="link" @click=${this._disableWebhook}>
+                      ${this.hass!.localize(
+                        "ui.panel.config.cloud.dialog_cloudhook.link_disable_webhook"
+                      )}</button
+                    >.
+                  `
+            }
           </p>
 
           <ha-input-copy

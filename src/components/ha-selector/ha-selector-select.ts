@@ -1,13 +1,20 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit/context";
 import { ensureArray } from "../../common/array/ensure-array";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { internationalizationContext } from "../../data/context";
 import type { SelectOption, SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { FrontendLocaleData } from "../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
@@ -24,6 +31,13 @@ import "../radio/ha-radio-option";
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: SelectSelector;
 
@@ -75,11 +89,7 @@ export class HaSelectSelector extends LitElement {
 
     if (this.selector.select?.sort) {
       options.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.label,
-          b.label,
-          this.hass.locale.language
-        )
+        caseInsensitiveStringCompare(a.label, b.label, this._locale.language)
       );
     }
 
@@ -96,7 +106,6 @@ export class HaSelectSelector extends LitElement {
           .value=${this.value as string | undefined}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
-          .hass=${this.hass}
         ></ha-select-box>
         ${this._renderHelper()}
       `;
@@ -156,49 +165,56 @@ export class HaSelectSelector extends LitElement {
         !this.value || this.value === "" ? [] : ensureArray(this.value);
 
       return html`
-        ${value?.length
-          ? html`
-              <ha-sortable
-                no-style
-                .disabled=${!this.selector.select.reorder}
-                @item-moved=${this._itemMoved}
-                handle-selector="button.primary.action"
-              >
-                <ha-chip-set>
-                  ${repeat(
-                    value,
-                    (item) => item,
-                    (item, idx) => {
-                      const label =
-                        options.find((option) => option.value === item)
-                          ?.label || item;
-                      return html`
-                        <ha-input-chip
-                          .idx=${idx}
-                          @remove=${this._removeItem}
-                          .label=${label}
-                          selected
-                        >
-                          ${this.selector.select?.reorder
-                            ? html`
-                                <ha-svg-icon
-                                  slot="icon"
-                                  .path=${mdiDragHorizontalVariant}
-                                ></ha-svg-icon>
-                              `
-                            : nothing}
-                          ${options.find((option) => option.value === item)
-                            ?.label || item}
-                        </ha-input-chip>
-                      `;
-                    }
-                  )}
-                </ha-chip-set>
-              </ha-sortable>
-            `
-          : nothing}
+        ${
+          value?.length
+            ? html`
+                <ha-sortable
+                  no-style
+                  .disabled=${!this.selector.select.reorder}
+                  @item-moved=${this._itemMoved}
+                  handle-selector="button.primary.action"
+                >
+                  <ha-chip-set>
+                    ${repeat(
+                      value,
+                      (item) => item,
+                      (item, idx) => {
+                        const label =
+                          options.find((option) => option.value === item)
+                            ?.label || item;
+                        return html`
+                          <ha-input-chip
+                            .idx=${idx}
+                            @remove=${this._removeItem}
+                            .label=${label}
+                            selected
+                          >
+                            ${
+                              this.selector.select?.reorder
+                                ? html`
+                                    <ha-svg-icon
+                                      slot="icon"
+                                      .path=${mdiDragHorizontalVariant}
+                                    ></ha-svg-icon>
+                                  `
+                                : nothing
+                            }
+                            ${
+                              options.find((option) => option.value === item)
+                                ?.label || item
+                            }
+                          </ha-input-chip>
+                        `;
+                      }
+                    )}
+                  </ha-chip-set>
+                </ha-sortable>
+              `
+            : nothing
+        }
 
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -215,6 +231,7 @@ export class HaSelectSelector extends LitElement {
     if (this.selector.select?.custom_value) {
       return html`
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
@@ -231,9 +248,11 @@ export class HaSelectSelector extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${["string", "number"].includes(typeof this.value)
-          ? (this.value as string | number)
-          : ""}
+        .value=${
+          ["string", "number"].includes(typeof this.value)
+            ? (this.value as string | number)
+            : ""
+        }
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}

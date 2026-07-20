@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
@@ -6,6 +7,23 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import {
+  apiContext,
+  areasContext,
+  configContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  servicesContext,
+  statesContext,
+  uiContext,
+} from "../data/context";
+import { updateHassGroups } from "../data/context/updateContext";
+import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   DateFormat,
@@ -15,11 +33,17 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, Resources, ValuePart } from "../types";
+import type {
+  HomeAssistant,
+  Resources,
+  ThemeSettings,
+  ValuePart,
+} from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
+import { ENTITY_COMPONENT_ICONS } from "./entity_component_icons";
 import { getEntity } from "./entities/registry";
 import type { EntityInput } from "./entities/types";
 
@@ -32,6 +56,12 @@ type MockRestCallback = (
   path: string,
   parameters: Record<string, any> | undefined
 ) => any;
+
+interface MockGetIconsMessage {
+  type: "frontend/get_icons";
+  category: IconCategory;
+  integration?: string;
+}
 
 export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
@@ -49,8 +79,19 @@ export interface MockHomeAssistant extends HomeAssistant {
     ) => Awaited<ReturnType<T>>
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
+  // Register a loader that is run (once) the first time an unmocked WS command
+  // or REST path matching `shouldLoad` is received, allowing mocks to be
+  // code-split into a dynamically imported chunk. The loader registers the
+  // missing mocks; the command is then retried.
+  mockLazyLoad(
+    shouldLoad: (commandOrPath: string) => boolean,
+    loader: () => Promise<unknown>
+  );
   mockEvent(event);
-  mockTheme(theme: Record<string, string> | null);
+  mockTheme(
+    theme: Record<string, string> | null,
+    selectedTheme?: ThemeSettings
+  );
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
@@ -69,15 +110,97 @@ export interface MockHomeAssistant extends HomeAssistant {
 export const provideHass = (
   elements,
   overrideData: Partial<HomeAssistant> = {},
-  setHassProperty = false
+  setHassProperty = false,
+  // Provide the grouped Lit contexts (registries, internationalization, api,
+  // connection, ui, config, formatters) that the real app's root element
+  // provides via `contextMixin`. On by default so that any standalone hass root
+  // (e.g. a gallery demo) automatically feeds context-consuming components the
+  // same way the real app does, instead of each demo wiring up a partial set by
+  // hand. Pass `false` for hosts that already provide these contexts themselves
+  // via `contextMixin` (the full app shell — `ha-demo`, `ha-test`), to avoid
+  // registering duplicate providers on the same element.
+  provideContexts = true
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.
   const baseEl = () => elements[0];
   const hass = (): MockHomeAssistant => baseEl().hass;
 
+  const contextProviders = provideContexts
+    ? {
+        registries: new ContextProvider(baseEl(), {
+          context: registriesContext,
+        }),
+        internationalization: new ContextProvider(baseEl(), {
+          context: internationalizationContext,
+        }),
+        api: new ContextProvider(baseEl(), { context: apiContext }),
+        connection: new ContextProvider(baseEl(), {
+          context: connectionContext,
+        }),
+        ui: new ContextProvider(baseEl(), { context: uiContext }),
+        config: new ContextProvider(baseEl(), { context: configContext }),
+        formatters: new ContextProvider(baseEl(), {
+          context: formattersContext,
+        }),
+      }
+    : undefined;
+
+  // The individual (non-grouped) contexts that contextMixin also provides.
+  // Components such as ha-area-picker / ha-entity-picker consume these directly
+  // (e.g. `Object.values(areas)`), so they must be provided alongside the
+  // grouped contexts or those components throw once they render.
+  const singleContextProviders = provideContexts
+    ? {
+        states: new ContextProvider(baseEl(), { context: statesContext }),
+        services: new ContextProvider(baseEl(), { context: servicesContext }),
+        entities: new ContextProvider(baseEl(), { context: entitiesContext }),
+        devices: new ContextProvider(baseEl(), { context: devicesContext }),
+        areas: new ContextProvider(baseEl(), { context: areasContext }),
+        floors: new ContextProvider(baseEl(), { context: floorsContext }),
+      }
+    : undefined;
+
+  const updateContextProviders = (newHass: HomeAssistant) => {
+    if (contextProviders) {
+      (
+        Object.keys(contextProviders) as (keyof typeof contextProviders)[]
+      ).forEach((group) => {
+        const provider = contextProviders[group];
+        provider.setValue(
+          (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+            newHass,
+            provider.value
+          )
+        );
+      });
+    }
+    if (singleContextProviders) {
+      (
+        Object.keys(
+          singleContextProviders
+        ) as (keyof typeof singleContextProviders)[]
+      ).forEach((key) => {
+        (singleContextProviders[key] as ContextProvider<any>).setValue(
+          newHass[key]
+        );
+      });
+    }
+  };
+
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
+
+  // Optional loader to lazily register mocks on first matching unmocked command.
+  let lazyMatcher: ((commandOrPath: string) => boolean) | undefined;
+  let lazyLoader: (() => Promise<unknown>) | undefined;
+  let lazyLoaderPromise: Promise<unknown> | undefined;
+  const ensureLazyLoaded = () => {
+    if (!lazyLoaderPromise) {
+      lazyLoaderPromise = lazyLoader!();
+    }
+    return lazyLoaderPromise;
+  };
   const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
   let localResources: Resources = {};
@@ -147,8 +270,7 @@ export const provideHass = (
       hass().entities,
       hass().devices,
       hass().areas,
-      hass().floors,
-      [] // numericDeviceClasses
+      hass().floors
     );
     hass().updateHass({
       formatEntityState,
@@ -230,7 +352,11 @@ export const provideHass = (
         }
       },
       sendMessagePromise: async (msg) => {
-        const callback = wsCommands[msg.type];
+        let callback = wsCommands[msg.type];
+        if (!callback && lazyMatcher?.(msg.type)) {
+          await ensureLazyLoaded();
+          callback = wsCommands[msg.type];
+        }
         return callback
           ? callback(msg, hass())
           : Promise.reject({
@@ -239,7 +365,11 @@ export const provideHass = (
             });
       },
       subscribeMessage: async (onChange, msg) => {
-        const callback = wsCommands[msg.type];
+        let callback = wsCommands[msg.type];
+        if (!callback && lazyMatcher?.(msg.type)) {
+          await ensureLazyLoaded();
+          callback = wsCommands[msg.type];
+        }
         return callback
           ? callback(msg, hass(), onChange)
           : Promise.reject({
@@ -335,9 +465,16 @@ export const provideHass = (
       }
     },
     async callApi(method, path, parameters) {
-      const response = restResponses.find(([resPath]) =>
-        typeof resPath === "string" ? path === resPath : resPath.test(path)
-      );
+      const findResponse = () =>
+        restResponses.find(([resPath]) =>
+          typeof resPath === "string" ? path === resPath : resPath.test(path)
+        );
+
+      let response = findResponse();
+      if (!response && lazyMatcher?.(path)) {
+        await ensureLazyLoaded();
+        response = findResponse();
+      }
 
       return response
         ? response[1](hass(), method, path, parameters)
@@ -355,6 +492,7 @@ export const provideHass = (
       elements.forEach((el) => {
         el.hass = newHass;
       });
+      updateContextProviders(newHass);
     },
     updateStates,
     updateTranslations,
@@ -367,27 +505,41 @@ export const provideHass = (
     mockWS(type, callback) {
       wsCommands[type] = callback;
     },
+    mockLazyLoad(shouldLoad, loader) {
+      lazyMatcher = shouldLoad;
+      lazyLoader = loader;
+    },
     mockAPI,
     mockEvent(event) {
-      (eventListeners[event] || []).forEach((fn) => fn(event));
+      (eventListeners[event] || []).forEach((fn) => {
+        fn(event);
+      });
     },
-    mockTheme(theme) {
+    mockTheme(theme, selectedTheme) {
       invalidateThemeCache();
+      selectedTheme ??= {
+        theme: theme ? "fake-data" : "default",
+        dark: false,
+      };
+      const themeName = selectedTheme.theme;
+      const darkMode =
+        selectedTheme.dark ??
+        matchMedia("(prefers-color-scheme: dark)").matches;
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
+        selectedTheme,
         themes: {
           ...hass().themes,
-          themes: {
-            mock: theme as any,
-          },
+          darkMode,
+          theme: themeName,
+          themes: theme ? { [themeName]: theme as any } : {},
         },
       });
-      const { themes, selectedTheme } = hass();
+      const { themes } = hass();
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme!.theme,
-        { dark: false },
+        themeName,
+        { ...selectedTheme, dark: darkMode },
         true
       );
     },
@@ -412,8 +564,16 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
+    formatEntityName: (stateObj, type) =>
+      typeof type === "string"
+        ? type
+        : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     ...overrideData,
   };
+
+  hassObj.mockWS("frontend/get_icons", ({ category }: MockGetIconsMessage) => ({
+    resources: category === "entity_component" ? ENTITY_COMPONENT_ICONS : {},
+  }));
 
   // Set hass if required
   if (setHassProperty) {

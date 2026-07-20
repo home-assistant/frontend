@@ -109,26 +109,30 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         })}
       >
         <div
-          class="time-wrapper ${this._config.clock_size
-            ? `size-${this._config.clock_size}`
-            : ""}"
+          class="time-wrapper ${
+            this._config.clock_size ? `size-${this._config.clock_size}` : ""
+          }"
         >
-          ${this._config.title !== undefined
-            ? html`<div class="time-title">${this._config.title}</div>`
-            : nothing}
-          ${this._config.clock_style === "analog"
-            ? html`
-                <hui-clock-card-analog
-                  .hass=${this.hass}
-                  .config=${this._config}
-                ></hui-clock-card-analog>
-              `
-            : html`
-                <hui-clock-card-digital
-                  .hass=${this.hass}
-                  .config=${this._config}
-                ></hui-clock-card-digital>
-              `}
+          ${
+            this._config.title !== undefined
+              ? html`<div class="time-title">${this._config.title}</div>`
+              : nothing
+          }
+          ${
+            this._config.clock_style === "analog"
+              ? html`
+                  <hui-clock-card-analog
+                    .hass=${this.hass}
+                    .config=${this._config}
+                  ></hui-clock-card-analog>
+                `
+              : html`
+                  <hui-clock-card-digital
+                    .hass=${this.hass}
+                    .config=${this._config}
+                  ></hui-clock-card-digital>
+                `
+          }
         </div>
       </ha-card>
     `;

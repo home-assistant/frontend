@@ -1,13 +1,24 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/"
+    # Dependabot only scans .github/workflows by default; composite actions
+    # under .github/actions must be listed explicitly to stay updated.
+    # https://github.com/dependabot/dependabot-core/issues/6704
+    directories:
+      - "/"
+      - "/.github/actions/setup"
+      - "/.github/actions/build"
+      - "/.github/actions/netlify-deploy"
     schedule:
       interval: weekly
       time: "06:00"
     cooldown:
       default-days: 7
     open-pull-requests-limit: 10
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action/*"
     labels:
       - Dependencies
       - GitHub Actions

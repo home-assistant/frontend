@@ -65,11 +65,7 @@ export class HaCardConditionUser extends LitElement {
               hasMeta
               .selected=${selectedUsers.includes(user.id)}
             >
-              <ha-user-badge
-                slot="graphic"
-                .hass=${this.hass}
-                .user=${user}
-              ></ha-user-badge>
+              <ha-user-badge slot="graphic" .user=${user}></ha-user-badge>
               <span>${user.name}</span>
             </ha-check-list-item>
           `

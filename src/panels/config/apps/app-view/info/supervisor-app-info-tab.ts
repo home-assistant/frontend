@@ -31,7 +31,6 @@ class SupervisorAppInfoDashboard extends LitElement {
         <supervisor-app-info
           .narrow=${this.narrow}
           .route=${this.route}
-          .hass=${this.hass}
           .addon=${this.addon}
           .controlEnabled=${this.controlEnabled}
         ></supervisor-app-info>

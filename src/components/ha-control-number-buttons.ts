@@ -151,9 +151,11 @@ export class HaControlNumberButton extends LitElement {
           @keydown=${this._handleKeyDown}
         >
           ${value}
-          ${unit && !this._hideUnit.value
-            ? html`<span class="unit">${unit}</span>`
-            : nothing}
+          ${
+            unit && !this._hideUnit.value
+              ? html`<span class="unit">${unit}</span>`
+              : nothing
+          }
         </div>
         <button
           class="button minus"
@@ -161,8 +163,9 @@ export class HaControlNumberButton extends LitElement {
           tabindex="-1"
           aria-label="decrement"
           @click=${this._handleMinusButton}
-          .disabled=${this.disabled ||
-          (this.min != null && this._value <= this.min)}
+          .disabled=${
+            this.disabled || (this.min != null && this._value <= this.min)
+          }
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </button>
@@ -172,8 +175,9 @@ export class HaControlNumberButton extends LitElement {
           tabindex="-1"
           aria-label="increment"
           @click=${this._handlePlusButton}
-          .disabled=${this.disabled ||
-          (this.max != null && this._value >= this.max)}
+          .disabled=${
+            this.disabled || (this.max != null && this._value >= this.max)
+          }
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
         </button>

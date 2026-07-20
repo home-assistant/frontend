@@ -1,7 +1,7 @@
 import { ensureArray } from "../common/array/ensure-array";
 import type { HomeAssistant } from "../types";
 
-export const enum ConversationEntityFeature {
+export enum ConversationEntityFeature {
   CONTROL = 1,
 }
 
@@ -38,19 +38,14 @@ interface IntentResultError extends IntentResultBase {
   response_type: "error";
   data: {
     code:
-      | "no_intent_match"
-      | "no_valid_targets"
-      | "failed_to_handle"
-      | "unknown";
+      "no_intent_match" | "no_valid_targets" | "failed_to_handle" | "unknown";
   };
 }
 
 export interface ConversationResult {
   conversation_id: string | null;
   response:
-    | IntentResultActionDone
-    | IntentResultQueryAnswer
-    | IntentResultError;
+    IntentResultActionDone | IntentResultQueryAnswer | IntentResultError;
   continue_conversation: boolean;
 }
 

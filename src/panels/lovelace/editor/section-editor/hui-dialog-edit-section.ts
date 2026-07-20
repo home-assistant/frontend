@@ -30,6 +30,7 @@ import {
 } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -53,7 +54,7 @@ const TABS = ["tab-settings", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-section")
 export class HuiDialogEditSection
-  extends LitElement
+  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(LitElement)
   implements HassDialog<EditSectionDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -96,6 +97,7 @@ export class HuiDialogEditSection
     this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
     ]);
+    this._initDirtyTracking({ type: "deep" }, this._config);
   }
 
   public closeDialog() {
@@ -159,7 +161,7 @@ export class HuiDialogEditSection
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -201,25 +203,27 @@ export class HuiDialogEditSection
               )}
             </ha-dropdown-item>
           </ha-dropdown>
-          ${!this._yamlMode
-            ? html`
-                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                  ${TABS.map(
-                    (tab) => html`
-                      <ha-tab-group-tab
-                        slot="nav"
-                        .panel=${tab}
-                        .active=${this._currTab === tab}
-                      >
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
-                        )}
-                      </ha-tab-group-tab>
-                    `
-                  )}
-                </ha-tab-group>
-              `
-            : nothing}
+          ${
+            !this._yamlMode
+              ? html`
+                  <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                    ${TABS.map(
+                      (tab) => html`
+                        <ha-tab-group-tab
+                          slot="nav"
+                          .panel=${tab}
+                          .active=${this._currTab === tab}
+                        >
+                          ${this.hass!.localize(
+                            `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
+                          )}
+                        </ha-tab-group-tab>
+                      `
+                    )}
+                  </ha-tab-group>
+                `
+              : nothing
+          }
         </ha-dialog-header>
         ${content}
         <ha-dialog-footer slot="footer">
@@ -231,7 +235,11 @@ export class HuiDialogEditSection
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
 
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            ?disabled=${!this.isDirtyState}
+          >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
@@ -242,6 +250,7 @@ export class HuiDialogEditSection
   private _configChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this._config = ev.detail.value;
+    this._updateDirtyState(this._config!);
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
@@ -399,6 +408,7 @@ export class HuiDialogEditSection
       return;
     }
     this._config = ev.detail.value;
+    this._updateDirtyState(this._config!);
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -423,6 +433,7 @@ export class HuiDialogEditSection
     );
 
     this._params.saveConfig(newConfig);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

@@ -210,19 +210,21 @@ export class HuiViewHeader extends LitElement {
     const hasBadges = this.badges.length > 0;
 
     return html`
-      ${editMode
-        ? html`
-            <div class="actions-container">
-              <div class="actions">
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.edit")}
-                  @click=${this._configure}
-                  .path=${mdiPencil}
-                ></ha-icon-button>
+      ${
+        editMode
+          ? html`
+              <div class="actions-container">
+                <div class="actions">
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.edit")}
+                    @click=${this._configure}
+                    .path=${mdiPencil}
+                  ></ha-icon-button>
+                </div>
               </div>
-            </div>
-          `
-        : nothing}
+            `
+          : nothing
+      }
       <div class="container ${editMode ? "edit-mode" : ""}">
         <div
           class="layout ${classMap({
@@ -233,52 +235,56 @@ export class HuiViewHeader extends LitElement {
             "has-badges": hasBadges,
           })}"
         >
-          ${card || editMode
-            ? html`
-                <div class="heading">
-                  ${editMode
-                    ? card
-                      ? html`
-                          <hui-card-edit-mode
-                            @ll-edit-card=${this._editCard}
-                            @ll-delete-card=${this._deleteCard}
-                            .hass=${this.hass}
-                            .lovelace=${this.lovelace!}
-                            .path=${[0]}
-                            no-duplicate
-                            no-move
-                          >
-                            ${card}
-                          </hui-card-edit-mode>
-                        `
-                      : html`
-                          <button class="add" @click=${this._addCard}>
-                            <ha-ripple></ha-ripple>
-                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                            ${this.hass.localize(
-                              "ui.panel.lovelace.editor.edit_view_header.add_title"
-                            )}
-                          </button>
-                        `
-                    : card}
-                </div>
-              `
-            : nothing}
-          ${this.lovelace && (editMode || this.badges.length > 0)
-            ? html`
-                <div
-                  class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
-                >
-                  <hui-view-badges
-                    .badges=${this.badges}
-                    .hass=${this.hass}
-                    .lovelace=${this.lovelace!}
-                    .viewIndex=${this.viewIndex!}
-                    .showAddLabel=${this.badges.length === 0}
-                  ></hui-view-badges>
-                </div>
-              `
-            : nothing}
+          ${
+            card || editMode
+              ? html`
+                  <div class="heading">
+                    ${
+                      editMode
+                        ? card
+                          ? html`
+                              <hui-card-edit-mode
+                                @ll-edit-card=${this._editCard}
+                                @ll-delete-card=${this._deleteCard}
+                                .lovelace=${this.lovelace!}
+                                .path=${[0]}
+                                no-duplicate
+                                no-move
+                              >
+                                ${card}
+                              </hui-card-edit-mode>
+                            `
+                          : html`
+                              <button class="add" @click=${this._addCard}>
+                                <ha-ripple></ha-ripple>
+                                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                                ${this.hass.localize(
+                                  "ui.panel.lovelace.editor.edit_view_header.add_title"
+                                )}
+                              </button>
+                            `
+                        : card
+                    }
+                  </div>
+                `
+              : nothing
+          }
+          ${
+            this.lovelace && (editMode || this.badges.length > 0)
+              ? html`
+                  <div
+                    class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
+                  >
+                    <hui-view-badges
+                      .badges=${this.badges}
+                      .lovelace=${this.lovelace!}
+                      .viewIndex=${this.viewIndex!}
+                      .showAddLabel=${this.badges.length === 0}
+                    ></hui-view-badges>
+                  </div>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;

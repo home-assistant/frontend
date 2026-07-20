@@ -7,6 +7,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -16,7 +17,9 @@ import type {
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 
 @customElement("dialog-schedule-block-info")
-class DialogScheduleBlockInfo extends LitElement {
+class DialogScheduleBlockInfo extends DirtyStateProviderMixin<ScheduleBlockInfo>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: Record<string, string>;
@@ -41,7 +44,7 @@ class DialogScheduleBlockInfo extends LitElement {
       selector: { time: { no_second: true } },
     },
     {
-      name: "advanced_settings",
+      name: "more_options",
       type: "expandable" as const,
       flatten: true,
       expanded: expand,
@@ -60,6 +63,7 @@ class DialogScheduleBlockInfo extends LitElement {
     this._error = undefined;
     this._data = params.block;
     this._expand = !!params.block?.data;
+    this._initDirtyTracking({ type: "deep" }, this._data);
     this._open = true;
   }
 
@@ -84,6 +88,7 @@ class DialogScheduleBlockInfo extends LitElement {
         header-title=${this.hass!.localize(
           "ui.dialogs.helper_settings.schedule.edit_schedule_block"
         )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
@@ -106,7 +111,11 @@ class DialogScheduleBlockInfo extends LitElement {
           >
             ${this.hass!.localize("ui.common.delete")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._updateBlock}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._updateBlock}
+            .disabled=${!this.isDirtyState}
+          >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
@@ -117,6 +126,7 @@ class DialogScheduleBlockInfo extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
     this._data = ev.detail.value;
+    this._updateDirtyState(ev.detail.value);
   }
 
   private _updateBlock() {
@@ -147,9 +157,9 @@ class DialogScheduleBlockInfo extends LitElement {
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.end");
       case "data":
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.data");
-      case "advanced_settings":
+      case "more_options":
         return this.hass!.localize(
-          "ui.dialogs.helper_settings.generic.advanced_settings"
+          "ui.dialogs.helper_settings.generic.more_options"
         );
     }
     return "";

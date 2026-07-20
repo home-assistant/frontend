@@ -2,8 +2,6 @@ import memoizeOne from "memoize-one";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-card";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-button";
 import "./ha-backup-data-picker";
 import type { HomeAssistant } from "../../../../types";
@@ -26,8 +24,7 @@ class HaBackupDetailsRestore extends LitElement {
   public haRequired = false;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
-    | "page-onboarding.restore"
-    | "config.backup" = "config.backup";
+    "page-onboarding.restore" | "config.backup" = "config.backup";
 
   @state() private _selectedData?: BackupData;
 
@@ -119,22 +116,6 @@ class HaBackupDetailsRestore extends LitElement {
     .card-actions {
       display: flex;
       justify-content: flex-end;
-    }
-    ha-md-list {
-      background: none;
-      padding: 0;
-    }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-list-item-two-line-container-height: 64px;
-    }
-    ha-md-list-item [slot="supporting-text"] {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      gap: var(--ha-space-2);
-      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

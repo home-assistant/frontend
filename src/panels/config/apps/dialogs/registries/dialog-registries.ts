@@ -10,9 +10,16 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import { addHassioDockerRegistry } from "../../../../../data/hassio/docker";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { RegistryDialogParams } from "./show-dialog-registries";
+
+interface RegistryInput {
+  registry?: string;
+  username?: string;
+  password?: string;
+}
 
 const SCHEMA = [
   {
@@ -33,16 +40,14 @@ const SCHEMA = [
 ] as const;
 
 @customElement("dialog-apps-registries")
-class AppsRegistriesDialog extends LitElement {
+class AppsRegistriesDialog extends DirtyStateProviderMixin<RegistryInput>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogParams?: RegistryDialogParams;
 
-  @state() private _input: {
-    registry?: string;
-    username?: string;
-    password?: string;
-  } = {};
+  @state() private _input: RegistryInput = {};
 
   @state() private _open = false;
 
@@ -52,6 +57,7 @@ class AppsRegistriesDialog extends LitElement {
     this._dialogParams = dialogParams;
     this._open = true;
     this._input = {};
+    this._initDirtyTracking({ type: "deep" }, this._input);
     await this.updateComplete;
   }
 
@@ -75,6 +81,7 @@ class AppsRegistriesDialog extends LitElement {
         header-title=${this.hass.localize(
           "ui.panel.config.apps.registries.add_title"
         )}
+        .preventScrimClose=${this.isDirtyState}
       >
         <ha-form
           autofocus
@@ -94,9 +101,11 @@ class AppsRegistriesDialog extends LitElement {
           </ha-button>
           <ha-button
             slot="primaryAction"
-            ?disabled=${!this._input.registry ||
-            !this._input.username ||
-            !this._input.password}
+            ?disabled=${
+              !this._input.registry ||
+              !this._input.username ||
+              !this._input.password
+            }
             .loading=${this._submitting}
             @click=${this._addRegistry}
           >
@@ -112,6 +121,7 @@ class AppsRegistriesDialog extends LitElement {
 
   private _valueChanged(ev: CustomEvent) {
     this._input = ev.detail.value;
+    this._updateDirtyState(this._input);
   }
 
   private async _addRegistry(): Promise<void> {
@@ -125,6 +135,7 @@ class AppsRegistriesDialog extends LitElement {
     try {
       await addHassioDockerRegistry(this.hass, data);
       this._dialogParams?.registryAdded?.();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       showAlertDialog(this, {

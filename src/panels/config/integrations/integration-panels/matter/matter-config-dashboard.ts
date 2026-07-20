@@ -91,7 +91,7 @@ export class MatterConfigDashboard extends LitElement {
           ${this._renderNavigationCard()}
         </div>
 
-        <ha-button slot="fab" href="/config/matter/add" size="large">
+        <ha-button slot="fab" href="/config/matter/add" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.matter.panel.add_device")}
         </ha-button>
@@ -198,22 +198,27 @@ export class MatterConfigDashboard extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
-            ${isComponentLoaded(this.hass.config, "thread")
-              ? html`<ha-md-list-item type="link" href="/config/thread">
-                  <ha-svg-icon slot="start" .path=${THREAD_ICON}></ha-svg-icon>
-                  <div slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.panel.thread_panel"
-                    )}
-                  </div>
-                  <div slot="supporting-text">
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.panel.thread_panel_description"
-                    )}
-                  </div>
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>`
-              : nothing}
+            ${
+              isComponentLoaded(this.hass.config, "thread")
+                ? html`<ha-md-list-item type="link" href="/config/thread">
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${THREAD_ICON}
+                    ></ha-svg-icon>
+                    <div slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.panel.thread_panel"
+                      )}
+                    </div>
+                    <div slot="supporting-text">
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.panel.thread_panel_description"
+                      )}
+                    </div>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-md-list-item>`
+                : nothing
+            }
           </ha-md-list>
         </div>
       </ha-card>

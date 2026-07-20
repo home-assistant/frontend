@@ -23,7 +23,7 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
 import { storage } from "../../../common/decorators/storage";
@@ -195,7 +195,7 @@ export class HaConfigUsers extends LitElement {
         has-fab
         clickable
       >
-        <ha-button slot="fab" size="large" @click=${this._addUser}>
+        <ha-button slot="fab" size="l" @click=${this._addUser}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.users.picker.add_user")}
         </ha-button>

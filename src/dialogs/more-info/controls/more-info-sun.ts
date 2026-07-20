@@ -1,18 +1,42 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-relative-time";
-import type { HomeAssistant } from "../../../types";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 
 @customElement("more-info-sun")
 class MoreInfoSun extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
+
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._i18n || !this.stateObj) {
       return nothing;
     }
 
@@ -27,24 +51,25 @@ class MoreInfoSun extends LitElement {
           <div class="row">
             <div class="key">
               <span
-                >${item === "ris"
-                  ? this.hass.localize(
-                      "ui.dialogs.more_info_control.sun.rising"
-                    )
-                  : this.hass.localize(
-                      "ui.dialogs.more_info_control.sun.setting"
-                    )}</span
+                >${
+                  item === "ris"
+                    ? this._i18n.localize(
+                        "ui.dialogs.more_info_control.sun.rising"
+                      )
+                    : this._i18n.localize(
+                        "ui.dialogs.more_info_control.sun.setting"
+                      )
+                }</span
               >
               <ha-relative-time
-                .hass=${this.hass}
                 .datetime=${item === "ris" ? risingDate : settingDate}
               ></ha-relative-time>
             </div>
             <div class="value">
               ${formatTime(
                 item === "ris" ? risingDate : settingDate,
-                this.hass.locale,
-                this.hass.config
+                this._i18n.locale,
+                this._config
               )}
             </div>
           </div>
@@ -52,18 +77,24 @@ class MoreInfoSun extends LitElement {
       )}
       <div class="row">
         <div class="key">
-          ${this.hass.localize("ui.dialogs.more_info_control.sun.elevation")}
+          ${this._i18n.localize("ui.dialogs.more_info_control.sun.elevation")}
         </div>
         <div class="value">
-          ${this.hass.formatEntityAttributeValue(this.stateObj, "elevation")}
+          ${this._formatters.formatEntityAttributeValue(
+            this.stateObj,
+            "elevation"
+          )}
         </div>
       </div>
       <div class="row">
         <div class="key">
-          ${this.hass.localize("ui.dialogs.more_info_control.sun.azimuth")}
+          ${this._i18n.localize("ui.dialogs.more_info_control.sun.azimuth")}
         </div>
         <div class="value">
-          ${this.hass.formatEntityAttributeValue(this.stateObj, "azimuth")}
+          ${this._formatters.formatEntityAttributeValue(
+            this.stateObj,
+            "azimuth"
+          )}
         </div>
       </div>
     `;

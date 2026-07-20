@@ -107,17 +107,15 @@ export class HaDevicePicker extends LitElement {
       excludeDevices?: string[],
       value?: string
     ) =>
-      getDevices(
-        this.hass,
-        configEntryLookup,
+      getDevices(this.hass, configEntryLookup, {
         includeDomains,
         excludeDomains,
         includeDeviceClasses,
         deviceFilter,
         entityFilter,
         excludeDevices,
-        value
-      )
+        value,
+      })
   );
 
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {
@@ -167,22 +165,24 @@ export class HaDevicePicker extends LitElement {
         : undefined;
 
       return html`
-        ${configEntry
-          ? html`<img
-              slot="start"
-              alt=""
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              src=${brandsUrl(
-                {
-                  domain: configEntry.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
-            />`
-          : nothing}
+        ${
+          configEntry
+            ? html`<img
+                slot="start"
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl(
+                  {
+                    domain: configEntry.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+              />`
+            : nothing
+        }
         <span slot="headline">${primary}</span>
         <span slot="supporting-text">${secondary}</span>
       `;
@@ -191,36 +191,42 @@ export class HaDevicePicker extends LitElement {
 
   private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
     <ha-combo-box-item type="button">
-      ${item.domain
-        ? html`
-            <img
-              slot="start"
-              alt=""
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              src=${brandsUrl(
-                {
-                  domain: item.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
-            />
-          `
-        : nothing}
+      ${
+        item.domain
+          ? html`
+              <img
+                slot="start"
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl(
+                  {
+                    domain: item.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+              />
+            `
+          : nothing
+      }
 
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.domain_name
-        ? html`
-            <div slot="trailing-supporting-text" class="domain">
-              ${item.domain_name}
-            </div>
-          `
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
+      ${
+        item.domain_name
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${item.domain_name}
+              </div>
+            `
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

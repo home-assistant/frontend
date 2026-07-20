@@ -101,15 +101,9 @@ export class HaLabelsPicker extends LitElement {
       language: string
     ) =>
       value
-        ?.map(
-          (id) =>
-            labels?.find((label) => label.label_id === id) || {
-              label_id: id,
-              name: id,
-              color: "rgba(var(--rgb-primary-text-color), 0.15)",
-            }
-        )
-        .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+        ?.map((id) => labels?.find((label) => label.label_id === id))
+        .filter((label): label is LabelRegistryEntry => label !== undefined)
+        .sort((a, b) => stringCompare(a.name, b.name, language))
         .map((label) => ({
           ...label,
           style: getLabelColorStyle(label.color),
@@ -134,44 +128,48 @@ export class HaLabelsPicker extends LitElement {
         @value-changed=${this._labelChanged}
       >
         <ha-chip-set>
-          ${labels?.length
-            ? repeat(
-                labels,
-                (label) => label?.label_id,
-                (label) => {
-                  if (!label) return nothing;
-                  const elementId = "label-" + label.label_id;
-                  return html`
-                    <ha-tooltip
-                      .for=${elementId}
-                      .disabled=${!label.description?.trim()}
-                    >
-                      ${label.description}
-                    </ha-tooltip>
-                    <ha-input-chip
-                      .item=${label}
-                      .id=${elementId}
-                      @remove=${this._removeItem}
-                      @click=${this._openDetail}
-                      .disabled=${this.disabled}
-                      .label=${label.name}
-                      selected
-                      style=${label.style}
-                    >
-                      ${label.icon
-                        ? html`<ha-icon
-                            slot="icon"
-                            .icon=${label.icon}
-                          ></ha-icon>`
-                        : nothing}
-                    </ha-input-chip>
-                  `;
-                }
-              )
-            : nothing}
+          ${
+            labels?.length
+              ? repeat(
+                  labels,
+                  (label) => label?.label_id,
+                  (label) => {
+                    if (!label) return nothing;
+                    const elementId = "label-" + label.label_id;
+                    return html`
+                      <ha-tooltip
+                        .for=${elementId}
+                        .disabled=${!label.description?.trim()}
+                      >
+                        ${label.description}
+                      </ha-tooltip>
+                      <ha-input-chip
+                        .item=${label}
+                        .id=${elementId}
+                        @remove=${this._removeItem}
+                        @click=${this._openDetail}
+                        .disabled=${this.disabled}
+                        .label=${label.name}
+                        selected
+                        style=${label.style}
+                      >
+                        ${
+                          label.icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${label.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
+                      </ha-input-chip>
+                    `;
+                  }
+                )
+              : nothing
+          }
           <ha-button
             id="picker"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._openPicker}
             .disabled=${this.disabled}

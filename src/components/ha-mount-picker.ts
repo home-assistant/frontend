@@ -89,9 +89,11 @@ class HaMountPicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.mount-picker.mount")
-          : this.label}
+        .label=${
+          this.label === undefined && this.hass
+            ? this.hass.localize("ui.components.mount-picker.mount")
+            : this.label
+        }
         .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}

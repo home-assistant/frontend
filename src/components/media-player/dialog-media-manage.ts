@@ -105,144 +105,158 @@ class DialogMediaManage extends LitElement {
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header slot="header">
-          ${!(this._uploading || this._deleting)
-            ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
-                <ha-icon-button
-                  data-dialog="close"
-                  .label=${this.hass?.localize("ui.common.close") ?? "Close"}
-                  .path=${mdiClose}
-                ></ha-icon-button
-              ></slot>`
-            : nothing}
+          ${
+            !(this._uploading || this._deleting)
+              ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
+                  <ha-icon-button
+                    data-dialog="close"
+                    .label=${this.hass?.localize("ui.common.close") ?? "Close"}
+                    .path=${mdiClose}
+                  ></ha-icon-button
+                ></slot>`
+              : nothing
+          }
           <h1 class="title" slot="title" id="dialog-box-title">
             ${this.hass.localize(
               "ui.components.media-browser.file_management.title"
             )}
           </h1>
-          ${this._selected.size === 0
-            ? html`<ha-media-upload-button
-                .hass=${this.hass}
-                .currentItem=${this._params.currentItem}
-                @uploading=${this._startUploading}
-                @media-refresh=${this._doneUploading}
-                slot="actionItems"
-              ></ha-media-upload-button>`
-            : html`<ha-button
-                variant="danger"
-                slot="actionItems"
-                .disabled=${this._deleting}
-                @click=${this._handleDelete}
-              >
-                <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
-                ${this.hass.localize(
-                  `ui.components.media-browser.file_management.${
-                    this._deleting ? "deleting" : "delete"
-                  }`,
-                  { count: this._selected.size }
-                )}
-              </ha-button>`}
-        </ha-dialog-header>
-        ${!this._currentItem
-          ? html`
-              <div class="refresh">
-                <ha-spinner></ha-spinner>
-              </div>
-            `
-          : !this._filteredChildren.length
-            ? html`<div class="no-items">
-                <p>
+          ${
+            this._selected.size === 0
+              ? html`<ha-media-upload-button
+                  .hass=${this.hass}
+                  .currentItem=${this._params.currentItem}
+                  @uploading=${this._startUploading}
+                  @media-refresh=${this._doneUploading}
+                  slot="actionItems"
+                ></ha-media-upload-button>`
+              : html`<ha-button
+                  variant="danger"
+                  slot="actionItems"
+                  .disabled=${this._deleting}
+                  @click=${this._handleDelete}
+                >
+                  <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
                   ${this.hass.localize(
-                    "ui.components.media-browser.file_management.no_items"
+                    `ui.components.media-browser.file_management.${
+                      this._deleting ? "deleting" : "delete"
+                    }`,
+                    { count: this._selected.size }
                   )}
-                </p>
-                ${this._currentItem?.children?.length
-                  ? html`<span class="folders"
-                      >${this.hass.localize(
-                        "ui.components.media-browser.file_management.folders_not_supported"
-                      )}</span
-                    >`
-                  : ""}
-              </div>`
-            : html`
-                <div class="buttons" slot="footer">
-                  <ha-button
-                    appearance="filled"
-                    @click=${this._handleDeselectAll}
-                    .disabled=${this._selected.size === 0}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiCheckboxBlankOutline}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.components.media-browser.file_management.deselect_all`
-                    )}
-                  </ha-button>
-                  <ha-button
-                    appearance="filled"
-                    @click=${this._handleSelectAll}
-                    .disabled=${this._selected.size ===
-                    this._filteredChildren.length}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiCheckboxMarkedOutline}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.components.media-browser.file_management.select_all`
-                    )}
-                  </ha-button>
+                </ha-button>`
+          }
+        </ha-dialog-header>
+        ${
+          !this._currentItem
+            ? html`
+                <div class="refresh">
+                  <ha-spinner></ha-spinner>
                 </div>
-                <ha-list multi @selected=${this._handleSelected}>
-                  ${repeat(
-                    this._filteredChildren,
-                    (item) => item.media_content_id,
-                    (item) => {
-                      const icon = html`
-                        <ha-svg-icon
-                          slot="graphic"
-                          .path=${MediaClassBrowserSettings[
-                            item.media_class === "directory"
-                              ? item.children_media_class || item.media_class
-                              : item.media_class
-                          ].icon}
-                        ></ha-svg-icon>
-                      `;
-                      return html`
-                        <ha-check-list-item
-                          ${animate({
-                            id: item.media_content_id,
-                            skipInitial: true,
-                          })}
-                          graphic="icon"
-                          .disabled=${this._uploading || this._deleting}
-                          .selected=${this._selected.has(fileIndex++)}
-                          .item=${item}
-                        >
-                          ${icon} ${item.title}
-                        </ha-check-list-item>
-                      `;
-                    }
-                  )}
-                </ha-list>
-              `}
-        ${isComponentLoaded(this.hass.config, "hassio")
-          ? html`<ha-tip .hass=${this.hass}>
-              ${this.hass.localize(
-                "ui.components.media-browser.file_management.tip_media_storage",
-                {
-                  storage: html`<a
-                    href="/config/storage"
-                    @click=${this.closeDialog}
-                  >
+              `
+            : !this._filteredChildren.length
+              ? html`<div class="no-items">
+                  <p>
                     ${this.hass.localize(
-                      "ui.components.media-browser.file_management.tip_storage_panel"
-                    )}</a
-                  >`,
-                }
-              )}
-            </ha-tip>`
-          : nothing}
+                      "ui.components.media-browser.file_management.no_items"
+                    )}
+                  </p>
+                  ${
+                    this._currentItem?.children?.length
+                      ? html`<span class="folders"
+                          >${this.hass.localize(
+                            "ui.components.media-browser.file_management.folders_not_supported"
+                          )}</span
+                        >`
+                      : ""
+                  }
+                </div>`
+              : html`
+                  <div class="buttons" slot="footer">
+                    <ha-button
+                      appearance="filled"
+                      @click=${this._handleDeselectAll}
+                      .disabled=${this._selected.size === 0}
+                    >
+                      <ha-svg-icon
+                        .path=${mdiCheckboxBlankOutline}
+                        slot="start"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.components.media-browser.file_management.deselect_all`
+                      )}
+                    </ha-button>
+                    <ha-button
+                      appearance="filled"
+                      @click=${this._handleSelectAll}
+                      .disabled=${
+                        this._selected.size === this._filteredChildren.length
+                      }
+                    >
+                      <ha-svg-icon
+                        .path=${mdiCheckboxMarkedOutline}
+                        slot="start"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.components.media-browser.file_management.select_all`
+                      )}
+                    </ha-button>
+                  </div>
+                  <ha-list multi @selected=${this._handleSelected}>
+                    ${repeat(
+                      this._filteredChildren,
+                      (item) => item.media_content_id,
+                      (item) => {
+                        const icon = html`
+                          <ha-svg-icon
+                            slot="graphic"
+                            .path=${
+                              MediaClassBrowserSettings[
+                                item.media_class === "directory"
+                                  ? item.children_media_class ||
+                                    item.media_class
+                                  : item.media_class
+                              ].icon
+                            }
+                          ></ha-svg-icon>
+                        `;
+                        return html`
+                          <ha-check-list-item
+                            ${animate({
+                              id: item.media_content_id,
+                              skipInitial: true,
+                            })}
+                            graphic="icon"
+                            .disabled=${this._uploading || this._deleting}
+                            .selected=${this._selected.has(fileIndex++)}
+                            .item=${item}
+                          >
+                            ${icon} ${item.title}
+                          </ha-check-list-item>
+                        `;
+                      }
+                    )}
+                  </ha-list>
+                `
+        }
+        ${
+          isComponentLoaded(this.hass.config, "hassio")
+            ? html`<ha-tip>
+                ${this.hass.localize(
+                  "ui.components.media-browser.file_management.tip_media_storage",
+                  {
+                    storage: html`<a
+                      href="/config/storage"
+                      @click=${this.closeDialog}
+                    >
+                      ${this.hass.localize(
+                        "ui.components.media-browser.file_management.tip_storage_panel"
+                      )}</a
+                    >`,
+                  }
+                )}
+              </ha-tip>`
+            : nothing
+        }
       </ha-dialog>
     `;
   }

@@ -43,6 +43,8 @@ import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
 import "../card-features/hui-bar-gauge-card-feature";
+import "../card-features/hui-precipitation-forecast-card-feature";
+import "../card-features/hui-temperature-forecast-card-feature";
 import "../card-features/hui-trend-graph-card-feature";
 
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
@@ -87,10 +89,12 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
+  "precipitation-forecast",
   "select-options",
   "trend-graph",
   "target-humidity",
   "target-temperature",
+  "temperature-forecast",
   "toggle",
   "update-actions",
   "vacuum-commands",

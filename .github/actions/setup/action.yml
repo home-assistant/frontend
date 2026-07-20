@@ -1,0 +1,23 @@
+name: Setup Node and install
+description: Set up Node from .nvmrc and install yarn dependencies
+
+inputs:
+  immutable:
+    description: Pass --immutable to yarn install
+    default: "true"
+  cache:
+    description: Enable the yarn cache in setup-node
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version-file: ".nvmrc"
+        cache: ${{ inputs.cache == 'true' && 'yarn' || '' }}
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn install ${{ inputs.immutable == 'true' && '--immutable' || '' }}

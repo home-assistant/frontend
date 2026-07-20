@@ -51,9 +51,11 @@ export class HaBackupAddonsPicker extends LitElement {
                 .label=${item.name}
                 .version=${this.hideVersion ? undefined : item.version}
                 .iconPath=${item.iconPath || mdiPuzzle}
-                .imageUrl=${this.addons?.find((a) => a.slug === item.slug)?.icon
-                  ? `/api/hassio/addons/${item.slug}/icon`
-                  : undefined}
+                .imageUrl=${
+                  this.addons?.find((a) => a.slug === item.slug)?.icon
+                    ? `/api/hassio/addons/${item.slug}/icon`
+                    : undefined
+                }
               >
               </ha-backup-formfield-label>
             </ha-checkbox>

@@ -1,0 +1,42 @@
+name: Lint workflow files
+
+on:
+  push:
+    branches:
+      - dev
+      - master
+    paths:
+      - ".github/actions/**"
+      - ".github/workflows/**"
+  pull_request:
+    branches:
+      - dev
+      - master
+    paths:
+      - ".github/actions/**"
+      - ".github/workflows/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: Check workflow files
+    runs-on: ubuntu-latest
+    env:
+      # renovate: datasource=github-releases depName=rhysd/actionlint
+      ACTIONLINT_VERSION: 1.7.12
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Run actionlint
+        run: |
+          curl -sSfL "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+            | tar -xz actionlint
+          ./actionlint -color

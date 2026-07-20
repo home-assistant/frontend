@@ -7,9 +7,9 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { BackupAgent, BackupConfig } from "../../../../../data/backup";
 import {
   BackupScheduleRecurrence,
@@ -213,11 +213,8 @@ class HaBackupBackupsSummary extends LitElement {
           )}
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
-              href="/config/backup/settings#schedule"
-            >
+          <ha-list-nav>
+            <ha-list-item-button href="/config/backup/settings#schedule">
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <div slot="headline">
                 ${this._scheduleDescription(this.config)}
@@ -228,18 +225,20 @@ class HaBackupBackupsSummary extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="link" href="/config/backup/settings#data">
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/backup/settings#data">
               <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
-                ${this._showDbOption &&
-                this.config.create_backup.include_database
-                  ? this.hass.localize(
-                      "ui.panel.config.backup.overview.settings.data_settings_history"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.backup.overview.settings.data_settings_only"
-                    )}
+                ${
+                  this._showDbOption &&
+                  this.config.create_backup.include_database
+                    ? this.hass.localize(
+                        "ui.panel.config.backup.overview.settings.data_settings_history"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.backup.overview.settings.data_settings_only"
+                      )
+                }
               </div>
               <div slot="supporting-text">
                 ${this.hass.localize(
@@ -247,30 +246,29 @@ class HaBackupBackupsSummary extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            ${isHassio
-              ? html`
-                  <ha-md-list-item
-                    type="link"
-                    href="/config/backup/settings#data"
-                  >
-                    <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
-                    <div slot="headline">
-                      ${this._addonsDescription(this.config)}
-                    </div>
-                    <div slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.overview.settings.apps"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>
-                `
-              : nothing}
-            <ha-md-list-item
-              type="link"
-              href="/config/backup/settings#locations"
-            >
+            </ha-list-item-button>
+            ${
+              isHassio
+                ? html`
+                    <ha-list-item-button href="/config/backup/settings#data">
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiPuzzle}
+                      ></ha-svg-icon>
+                      <div slot="headline">
+                        ${this._addonsDescription(this.config)}
+                      </div>
+                      <div slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.overview.settings.apps"
+                        )}
+                      </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
+                  `
+                : nothing
+            }
+            <ha-list-item-button href="/config/backup/settings#locations">
               <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
               <div slot="headline">
                 ${this._locationsDescription(this.config)}
@@ -281,8 +279,8 @@ class HaBackupBackupsSummary extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
         <div class="card-actions">
           <ha-button @click=${this._configure} appearance="filled">
@@ -320,6 +318,9 @@ class HaBackupBackupsSummary extends LitElement {
           padding-left: 0;
           padding-right: 0;
           padding-bottom: 0;
+        }
+        ha-list-item-button::part(start) {
+          color: var(--ha-color-text-secondary);
         }
       `,
     ];

@@ -81,13 +81,15 @@ export default class HaAutomationSidebarCard extends ScrollableFadeMixin(
             </ha-dropdown>
           </slot>
         </ha-dialog-header>
-        ${this.warnings
-          ? html`<ha-automation-editor-warning
-              .localize=${this.hass.localize}
-              .warnings=${this.warnings}
-            >
-            </ha-automation-editor-warning>`
-          : nothing}
+        ${
+          this.warnings
+            ? html`<ha-automation-editor-warning
+                .localize=${this.hass.localize}
+                .warnings=${this.warnings}
+              >
+              </ha-automation-editor-warning>`
+            : nothing
+        }
         <div class="card-content ha-scrollbar">
           <slot></slot>
           ${this.renderScrollableFades(this.isWide)}

@@ -77,9 +77,9 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-subpage
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config/system"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config/system"
+        }
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}
@@ -99,16 +99,18 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
               ${this.hass.localize("ui.panel.config.repairs.show_ignored")}
             </ha-dropdown-item>
             <wa-divider></wa-divider>
-            ${isComponentLoaded(this.hass.config, "system_health") ||
-            isComponentLoaded(this.hass.config, "hassio")
-              ? html`
-                  <ha-dropdown-item value="system_information">
-                    ${this.hass.localize(
-                      "ui.panel.config.repairs.system_information"
-                    )}
-                  </ha-dropdown-item>
-                `
-              : nothing}
+            ${
+              isComponentLoaded(this.hass.config, "system_health") ||
+              isComponentLoaded(this.hass.config, "hassio")
+                ? html`
+                    <ha-dropdown-item value="system_information">
+                      ${this.hass.localize(
+                        "ui.panel.config.repairs.system_information"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
             <ha-dropdown-item value="integration_startup_time">
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
@@ -119,26 +121,28 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         <div class="content">
           <ha-card outlined>
             <div class="card-content">
-              ${issues.length
-                ? html`
-                    <div class="title" role="heading" aria-level="2">
-                      ${this.hass.localize("ui.panel.config.repairs.title", {
-                        count: issues.length,
-                      })}
-                    </div>
-                    <ha-config-repairs
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .repairsIssues=${issues}
-                    ></ha-config-repairs>
-                  `
-                : html`
-                    <div class="no-repairs">
-                      ${this.hass.localize(
-                        "ui.panel.config.repairs.no_repairs"
-                      )}
-                    </div>
-                  `}
+              ${
+                issues.length
+                  ? html`
+                      <div class="title" role="heading" aria-level="2">
+                        ${this.hass.localize("ui.panel.config.repairs.title", {
+                          count: issues.length,
+                        })}
+                      </div>
+                      <ha-config-repairs
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .repairsIssues=${issues}
+                      ></ha-config-repairs>
+                    `
+                  : html`
+                      <div class="no-repairs">
+                        ${this.hass.localize(
+                          "ui.panel.config.repairs.no_repairs"
+                        )}
+                      </div>
+                    `
+              }
             </div>
           </ha-card>
         </div>

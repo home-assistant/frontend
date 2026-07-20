@@ -1,4 +1,5 @@
 import { mdiFan } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +13,14 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
+const supportsClimateFanModesCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "climate" &&
+    supportsFeature(stateObj, ClimateEntityFeature.FAN_MODE)
+  );
+};
+
 export const supportsClimateFanModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -20,11 +29,7 @@ export const supportsClimateFanModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "climate" &&
-    supportsFeature(stateObj, ClimateEntityFeature.FAN_MODE)
-  );
+  return supportsClimateFanModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-climate-fan-modes-card-feature")
@@ -63,9 +68,8 @@ class HuiClimateFanModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsClimateFanModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsClimateFanModesCardFeatureFromState(this._stateObj)
     );
   }
 }

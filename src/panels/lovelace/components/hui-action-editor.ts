@@ -155,7 +155,7 @@ export class HuiActionEditor extends LitElement {
         this.defaultAction
           ? ` (${this.hass!.localize(
               `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
-            ).toLowerCase()})`
+            )})`
           : ""
       }`,
     };
@@ -178,62 +178,72 @@ export class HuiActionEditor extends LitElement {
           ]}
         >
         </ha-select>
-        ${this.tooltipText
-          ? html`
-              <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
-            `
-          : nothing}
+        ${
+          this.tooltipText
+            ? html`
+                <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
+              `
+            : nothing
+        }
       </div>
-      ${this.config?.action === "navigate"
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .schema=${this._navigateSchema(
-                this.context?.entity_id,
-                this.context?.area_id
-              )}
-              .data=${this.config}
-              .computeLabel=${this._computeFormLabel}
-              @value-changed=${this._formValueChanged}
-            >
-            </ha-form>
-          `
-        : nothing}
-      ${this.config?.action === "url"
-        ? html`
-            <ha-input
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.url_path"
-              )}
-              .value=${this._url_path}
-              .configValue=${"url_path"}
-              @input=${this._valueChanged}
-            ></ha-input>
-          `
-        : nothing}
-      ${this.config?.action === "call-service" ||
-      this.config?.action === "perform-action"
-        ? html`
-            <ha-service-control
-              .hass=${this.hass}
-              .value=${this._serviceAction(this.config)}
-              narrow
-              @value-changed=${this._serviceValueChanged}
-            ></ha-service-control>
-          `
-        : nothing}
-      ${this.config?.action === "assist"
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .schema=${ASSIST_SCHEMA}
-              .data=${this.config}
-              .computeLabel=${this._computeFormLabel}
-              @value-changed=${this._formValueChanged}
-            >
-            </ha-form>
-          `
-        : nothing}
+      ${
+        this.config?.action === "navigate"
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .schema=${this._navigateSchema(
+                  this.context?.entity_id,
+                  this.context?.area_id
+                )}
+                .data=${this.config}
+                .computeLabel=${this._computeFormLabel}
+                @value-changed=${this._formValueChanged}
+              >
+              </ha-form>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "url"
+          ? html`
+              <ha-input
+                .label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.action-editor.url_path"
+                )}
+                .value=${this._url_path}
+                .configValue=${"url_path"}
+                @input=${this._valueChanged}
+              ></ha-input>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "call-service" ||
+        this.config?.action === "perform-action"
+          ? html`
+              <ha-service-control
+                .hass=${this.hass}
+                .value=${this._serviceAction(this.config)}
+                narrow
+                @value-changed=${this._serviceValueChanged}
+              ></ha-service-control>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "assist"
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .schema=${ASSIST_SCHEMA}
+                .data=${this.config}
+                .computeLabel=${this._computeFormLabel}
+                @value-changed=${this._formValueChanged}
+              >
+              </ha-form>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -58,19 +58,21 @@ export class HaDurationInput extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="row">
-        ${this.allowNegative
-          ? html`
-              <ha-button-toggle-group
-                size="small"
-                .buttons=${[
-                  { label: "+", iconPath: mdiPlusThick, value: "+" },
-                  { label: "-", iconPath: mdiMinusThick, value: "-" },
-                ]}
-                .active=${this._negative ? "-" : "+"}
-                @value-changed=${this._negativeChanged}
-              ></ha-button-toggle-group>
-            `
-          : nothing}
+        ${
+          this.allowNegative
+            ? html`
+                <ha-button-toggle-group
+                  size="s"
+                  .buttons=${[
+                    { label: "+", iconPath: mdiPlusThick, value: "+" },
+                    { label: "-", iconPath: mdiMinusThick, value: "-" },
+                  ]}
+                  .active=${this._negative ? "-" : "+"}
+                  @value-changed=${this._negativeChanged}
+                ></ha-button-toggle-group>
+              `
+            : nothing
+        }
         <ha-base-time-input
           .label=${this.label}
           .helper=${this.helper}

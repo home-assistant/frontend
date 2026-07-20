@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -16,11 +16,18 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button-prev";
-import "../../../components/ha-list";
-import "../../../components/ha-spinner";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-virtualized";
+import type {
+  HaListVirtualized,
+  HaListVirtualizedItem,
+} from "../../../components/list/ha-list-virtualized";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   DISCOVERY_SOURCES,
@@ -46,16 +53,17 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import { haStyleDialog } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import type { HaIntegrationListItem } from "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
 
-export interface IntegrationListItem {
+export interface IntegrationListItem extends HaListVirtualizedItem {
   name: string;
   domain: string;
   config_flow?: boolean;
@@ -99,6 +107,8 @@ class AddIntegrationDialog extends LitElement {
   @state() private _open = false;
 
   @state() private _narrow = false;
+
+  @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
   private _width?: number;
 
@@ -185,8 +195,9 @@ class AddIntegrationDialog extends LitElement {
       (!this._width || !this._height)
     ) {
       // Store the width and height so that when we search, box doesn't jump
-      const boundingRect =
-        this.shadowRoot!.querySelector("ha-list")?.getBoundingClientRect();
+      const boundingRect = this.shadowRoot!.querySelector(
+        "ha-list-virtualized"
+      )?.getBoundingClientRect();
       this._width = boundingRect?.width;
       this._height = boundingRect?.height;
     }
@@ -206,6 +217,8 @@ class AddIntegrationDialog extends LitElement {
         discoveredFlowsCount > 0
           ? [
               {
+                id: "_discovered",
+                interactive: true,
                 name: localize(
                   "ui.panel.config.integrations.discovered_devices",
                   { count: discoveredFlowsCount }
@@ -222,6 +235,8 @@ class AddIntegrationDialog extends LitElement {
         (domain) => components.includes(domain)
       )
         .map((domain) => ({
+          id: `device_${domain}`,
+          interactive: true,
           name: localize(`ui.panel.config.integrations.add_${domain}_device`),
           domain,
           config_flow: true,
@@ -262,6 +277,8 @@ class AddIntegrationDialog extends LitElement {
             return;
           }
           integrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             config_flow: supportedIntegration.config_flow,
@@ -278,6 +295,8 @@ class AddIntegrationDialog extends LitElement {
         ) {
           // Brand
           integrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             iot_standards: integration.iot_standards,
@@ -295,6 +314,8 @@ class AddIntegrationDialog extends LitElement {
         } else if (filter && "integration_type" in integration) {
           // Integration without a config flow
           yamlIntegrations.push({
+            id: domain,
+            interactive: true,
             domain,
             name: integration.name || domainToName(localize, domain),
             config_flow: integration.config_flow,
@@ -320,6 +341,8 @@ class AddIntegrationDialog extends LitElement {
           ignoreDiacritics: true,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
+          id: domain,
+          interactive: true,
           domain,
           name: integration.name || domainToName(localize, domain),
           config_flow: integration.config_flow,
@@ -394,19 +417,23 @@ class AddIntegrationDialog extends LitElement {
       header-title=${headerTitle}
       @closed=${this._dialogClosed}
     >
-      ${showingBrandView
-        ? html`
-            ${!this._openedDirectly
-              ? html`
-                  <ha-icon-button-prev
-                    slot="headerNavigationIcon"
-                    @click=${this._prevClicked}
-                  ></ha-icon-button-prev>
-                `
-              : nothing}
-            ${this._renderBrandView(pickedIntegration, flowsInProgress)}
-          `
-        : this._renderAll(integrations)}
+      ${
+        showingBrandView
+          ? html`
+              ${
+                !this._openedDirectly
+                  ? html`
+                      <ha-icon-button-prev
+                        slot="headerNavigationIcon"
+                        @click=${this._prevClicked}
+                      ></ha-icon-button-prev>
+                    `
+                  : nothing
+              }
+              ${this._renderBrandView(pickedIntegration, flowsInProgress)}
+            `
+          : this._renderAll(integrations)
+      }
     </ha-dialog>`;
   }
 
@@ -517,6 +544,7 @@ class AddIntegrationDialog extends LitElement {
         }
         if (supportIntegration) {
           this._handleIntegrationPicked({
+            id: integration.supported_by,
             domain: integration.supported_by,
             name:
               supportIntegration.name ||
@@ -543,35 +571,26 @@ class AddIntegrationDialog extends LitElement {
         .placeholder=${this.hass.localize(
           "ui.panel.config.integrations.search_brand"
         )}
-        @keypress=${this._maybeSubmit}
+        @keydown=${this._maybeSubmit}
       ></ha-input-search>
-      ${integrations
-        ? html`<ha-list ?autofocus=${this._narrow}>
-            <lit-virtualizer
-              scroller
-              tabindex="-1"
-              class="ha-scrollbar"
+      ${
+        integrations
+          ? html`<ha-list-virtualized
+              .rows=${integrations}
+              .rowRenderer=${this._renderRow}
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow
                   ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
                   : "500px",
               })}
-              @click=${this._integrationPicked}
-              @keypress=${this._handleKeyPress}
-              .items=${integrations}
-              .keyFunction=${this._keyFunction}
-              .renderItem=${this._renderRow}
             >
-            </lit-virtualizer>
-          </ha-list>`
-        : html`<div class="flex center">
-            <ha-spinner></ha-spinner>
-          </div>`} `;
+            </ha-list-virtualized>`
+          : html`<div class="flex center">
+              <ha-spinner></ha-spinner>
+            </div>`
+      }`;
   }
-
-  private _keyFunction = (integration: IntegrationListItem) =>
-    integration.domain;
 
   private _renderRow = (integration: IntegrationListItem) => {
     if (!integration) {
@@ -579,9 +598,8 @@ class AddIntegrationDialog extends LitElement {
     }
     return html`
       <ha-integration-list-item
-        .hass=${this.hass}
+        @click=${this._integrationPicked}
         .integration=${integration}
-        tabindex="0"
       >
       </ha-integration-list-item>
     `;
@@ -647,19 +665,13 @@ class AddIntegrationDialog extends LitElement {
     this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _integrationPicked(ev) {
-    const listItem = ev.target.closest("ha-integration-list-item");
-    if (!listItem) {
+  private _integrationPicked = (ev: Event) => {
+    const listItem = ev.currentTarget as HaIntegrationListItem;
+    if (!listItem?.integration) {
       return;
     }
     this._handleIntegrationPicked(listItem.integration);
-  }
-
-  private _handleKeyPress(ev) {
-    if (ev.key === "Enter") {
-      this._integrationPicked(ev);
-    }
-  }
+  };
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
     if (integration.supported_by) {
@@ -761,7 +773,6 @@ class AddIntegrationDialog extends LitElement {
 
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
       navigateToResult: this._navigateToResult,
     });
@@ -782,6 +793,11 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private _maybeSubmit(ev: KeyboardEvent) {
+    if (ev.key === "ArrowDown" && this._listElement) {
+      ev.preventDefault();
+      this._listElement.focus();
+      return;
+    }
     if (ev.key !== "Enter") {
       return;
     }
@@ -803,7 +819,6 @@ class AddIntegrationDialog extends LitElement {
   }
 
   static styles = [
-    haStyleScrollbar,
     haStyleDialog,
     css`
       ha-dialog {
@@ -831,14 +846,8 @@ class AddIntegrationDialog extends LitElement {
       ha-spinner {
         margin: 24px 0;
       }
-      ha-list {
+      ha-list-virtualized {
         position: relative;
-      }
-      lit-virtualizer {
-        contain: size layout !important;
-      }
-      ha-integration-list-item {
-        width: 100%;
       }
     `,
   ];

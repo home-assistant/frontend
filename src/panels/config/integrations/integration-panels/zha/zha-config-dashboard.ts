@@ -13,6 +13,8 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { navigate } from "../../../../../common/navigate";
 import { animationStyles } from "../../../../../resources/theme/animations.globals";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -21,6 +23,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -66,20 +69,46 @@ class ZHAConfigDashboard extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    if (this.hass) {
-      this.hass.loadBackendTranslation("config_panel", "zha", false);
-      this._fetchConfigEntry();
-      this._fetchConfiguration();
-      this._fetchDevicesAndGroups();
+    if (!this.hass) {
+      return;
     }
+    if (!isComponentLoaded(this.hass.config, "zha")) {
+      navigate("/config/integrations", { replace: true });
+      return;
+    }
+    this.hass.loadBackendTranslation("config_panel", "zha", false);
+    this._load();
+  }
+
+  private async _load(): Promise<void> {
+    await this._fetchConfigEntry();
+    if (!this._configEntry) {
+      return;
+    }
+    this._fetchConfiguration();
+    this._fetchDevicesAndGroups();
   }
 
   protected render(): TemplateResult {
-    const devices = this._configEntry
-      ? Object.values(this.hass.devices).filter((device) =>
-          device.config_entries.includes(this._configEntry!.entry_id)
-        )
-      : [];
+    if (!this._configEntry) {
+      return html`
+        <hass-subpage
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+          back-path="/config"
+        >
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </hass-subpage>
+      `;
+    }
+
+    const configEntry = this._configEntry;
+    const devices = Object.values(this.hass.devices).filter((device) =>
+      device.config_entries.includes(configEntry.entry_id)
+    );
     const deviceCount = devices.length;
 
     let entityCount = 0;
@@ -105,7 +134,7 @@ class ZHAConfigDashboard extends LitElement {
         </div>
 
         <a href="/config/zha/add" slot="fab">
-          <ha-button size="large">
+          <ha-button size="l">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.zha.add_device")}
           </ha-button>
@@ -117,9 +146,11 @@ class ZHAConfigDashboard extends LitElement {
   private _renderNetworkStatus(deviceOnline: boolean, totalDevices: number) {
     return html`
       <ha-card class="content network-status">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <div class="card-content">
           <div class="heading">
             <div class="icon ${deviceOnline ? "success" : "error"}">
@@ -138,12 +169,14 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </small>
               <small class="offline">
-                ${this._asyncDataLoaded && this._offlineDevices > 0
-                  ? html`(${this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.devices_offline",
-                      { count: this._offlineDevices }
-                    )})`
-                  : nothing}
+                ${
+                  this._asyncDataLoaded && this._offlineDevices > 0
+                    ? html`(${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.devices_offline",
+                        { count: this._offlineDevices }
+                      )})`
+                    : nothing
+                }
               </small>
             </div>
             <img
@@ -215,18 +248,22 @@ class ZHAConfigDashboard extends LitElement {
               ></ha-svg-icon>
               <div
                 slot="headline"
-                class=${this._asyncDataLoaded && this._totalGroups !== undefined
-                  ? "fade-in"
-                  : ""}
+                class=${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? "fade-in"
+                    : ""
+                }
               >
-                ${this._asyncDataLoaded && this._totalGroups !== undefined
-                  ? this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.group_count",
-                      { count: this._totalGroups }
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.zha.groups.groups.caption"
-                    )}
+                ${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.group_count",
+                        { count: this._totalGroups }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.zha.groups.groups.caption"
+                      )
+                }
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -286,9 +323,11 @@ class ZHAConfigDashboard extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
                   <div slot="headline">
-                    ${this.hass.localize(
-                      `component.zha.config_panel.${section}.title`
-                    ) || section}
+                    ${
+                      this.hass.localize(
+                        `component.zha.config_panel.${section}.title`
+                      ) || section
+                    }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>
@@ -319,7 +358,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._createAndDownloadBackup}
               >
                 <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
@@ -342,7 +381,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._openOptionFlow}
               >
                 ${this.hass.localize(
@@ -463,6 +502,12 @@ class ZHAConfigDashboard extends LitElement {
           margin-top: var(--ha-space-6);
         }
 
+        .loading {
+          display: flex;
+          justify-content: center;
+          padding: var(--ha-space-12);
+        }
+
         ha-md-list {
           background: none;
           padding: 0;
@@ -472,7 +517,7 @@ class ZHAConfigDashboard extends LitElement {
           --md-item-overflow: visible;
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 
