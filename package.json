@@ -77,7 +77,7 @@
     "@lit/task": "1.0.3",
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch",
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
-    "@material/web": "2.4.1",
+    "@material/web": "2.5.0",
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
     "@replit/codemirror-indentation-markers": "6.5.3",

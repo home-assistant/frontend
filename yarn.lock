@@ -3417,7 +3417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/context@npm:1.1.6":
+"@lit/context@npm:1.1.6, @lit/context@npm:^1.1.6":
   version: 1.1.6
   resolution: "@lit/context@npm:1.1.6"
   dependencies:
@@ -3753,13 +3753,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/web@npm:2.4.1":
-  version: 2.4.1
-  resolution: "@material/web@npm:2.4.1"
+"@material/web@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@material/web@npm:2.5.0"
   dependencies:
+    "@lit/context": "npm:^1.1.6"
     lit: "npm:^2.8.0 || ^3.0.0"
     tslib: "npm:^2.4.0"
-  checksum: 10/6f9afeb28faa7d9720228cd3f46d15116b6f8dce6e61ebebf4acb0e720389724d5aa9e31f612bfa24afc5d49f283efd4660337e3d4d7379aec6b4286a01eba71
+  checksum: 10/3864bce2034413e2f712ee663bbaf3db2ae24af30f758ea7f6b66b7a7756671e868b197ad8d2aa371439b664ad0e0db6c587981fe589a22322b6ccbb2f28fa2e
   languageName: node
   linkType: hard
 
@@ -9994,7 +9995,7 @@ __metadata:
     "@lokalise/node-api": "npm:16.3.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
-    "@material/web": "npm:2.4.1"
+    "@material/web": "npm:2.5.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
     "@octokit/auth-oauth-device": "npm:8.0.3"
