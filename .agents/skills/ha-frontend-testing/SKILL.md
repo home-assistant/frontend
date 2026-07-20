@@ -33,13 +33,13 @@ For focused type feedback on one file, use editor diagnostics instead of a file-
 
 `yarn dev` builds and watches the app, served by a running Home Assistant core configured through `development_repo`.
 
-`yarn dev:serve` also serves locally and supports `-c` for the core URL and `-p` for the port. Default local serving port is 8124.
+`yarn dev:serve` also serves locally and supports `-c` for the core URL and `-p` for the port. The default is 8124, or 8123 in a devcontainer.
 
 Dev server commands support `--background`, `--status`, `--stop`, and `--logs [--follow]`.
 
 ## Playwright E2E
 
-Each suite has its own dev server port. Playwright reuses an existing server locally when the port is already running; otherwise it performs a slow full build. The rspack watcher recompiles on save, so reruns should not need a restart.
+Each suite has its own dev server port. Playwright reuses an existing server locally when its configured URL responds; otherwise it performs a slow full build. When a development watcher is being reused, rspack recompiles on save and reruns should not need a restart.
 
 Start the relevant suite server, then run that suite:
 
@@ -49,7 +49,7 @@ Start the relevant suite server, then run that suite:
 | Demo    | `yarn dev:demo` on 8090         | `yarn test:e2e:demo`    |
 | Gallery | `yarn dev:gallery` on 8100      | `yarn test:e2e:gallery` |
 
-Server reuse and `--stop` use the `/__ha_dev_status` health check, so starting or stopping twice is harmless.
+The custom development wrappers use `/__ha_dev_status` to identify and manage their own suites. Playwright server reuse checks the configured URL instead. Wrapper start and stop operations are idempotent for a matching suite and reject an unrelated process occupying the port.
 
 Use `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three suites. Run suites directly; piping through output truncation hides progress and failures.
 

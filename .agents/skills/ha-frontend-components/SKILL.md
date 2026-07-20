@@ -22,7 +22,8 @@ fireEvent(this, "show-dialog", {
 Dialog implementation requirements:
 
 - Use `ha-dialog`.
-- Implement `HassDialog<T>`.
+- Use `DialogMixin`, which implements `HassDialogNext<T>`, for new dialogs. See `src/dialogs/dialog-mixin.ts`.
+- Existing dialogs may implement the legacy `HassDialog<T>` interface from `src/dialogs/make-dialog-manager.ts`.
 - Use `@state() private _open = false` to control visibility.
 - Set `_open = true` in `showDialog()` and `_open = false` in `closeDialog()`.
 - Return `nothing` while required params are absent.
