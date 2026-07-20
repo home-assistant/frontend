@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { isFieldHidden } from "../../../src/components/ha-form/conditions";
+import {
+  getHiddenFields,
+  isFieldHidden,
+} from "../../../src/components/ha-form/conditions";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
 
 const field = (hidden: HaFormSchema["hidden"]): HaFormSchema =>
@@ -130,5 +133,34 @@ describe("isFieldHidden", () => {
     expect(isFieldHidden(field({ field: "a", value: 1 }), undefined)).toBe(
       false
     );
+  });
+});
+
+describe("getHiddenFields", () => {
+  const named = (name: string, hidden?: HaFormSchema["hidden"]): HaFormSchema =>
+    ({ name, selector: { text: {} }, hidden }) as HaFormSchema;
+
+  it("collects the fields whose condition matches", () => {
+    const schema = [
+      named("mode"),
+      named("token", { field: "mode", value: "simple" }),
+    ];
+    expect([...getHiddenFields(schema, { mode: "simple" })]).toEqual(["token"]);
+    expect([...getHiddenFields(schema, { mode: "advanced" })]).toEqual([]);
+  });
+
+  it("treats a hidden field as absent to the other conditions", () => {
+    // "token" is hidden, so its value must not satisfy the condition on "extra"
+    const schema = [
+      named("mode"),
+      named("token", { field: "mode", value: "simple" }),
+      named("extra", { field: "token", operator: "not_exists" }),
+    ];
+    expect([
+      ...getHiddenFields(schema, { mode: "simple", token: "stale" }),
+    ]).toEqual(["token", "extra"]);
+    expect([
+      ...getHiddenFields(schema, { mode: "advanced", token: "kept" }),
+    ]).toEqual([]);
   });
 });

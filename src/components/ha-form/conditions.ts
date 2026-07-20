@@ -71,3 +71,26 @@ export const isFieldHidden = (
   const conditions = Array.isArray(hidden) ? hidden : [hidden];
   return conditions.every((condition) => evaluateCondition(condition, data));
 };
+
+// A hidden field holds no value, so it reads as absent to the conditions of the
+// other fields. Visibility is resolved until it is stable.
+export const getHiddenFields = (
+  schema: readonly HaFormSchema[],
+  data: HaFormDataContainer | undefined
+): Set<string> => {
+  const hidden = new Set<string>();
+  const evalData: HaFormDataContainer = { ...(data ?? {}) };
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const field of schema) {
+      if (hidden.has(field.name) || !isFieldHidden(field, evalData)) {
+        continue;
+      }
+      hidden.add(field.name);
+      delete evalData[field.name];
+      changed = true;
+    }
+  }
+  return hidden;
+};
