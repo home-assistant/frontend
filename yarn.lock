@@ -2896,12 +2896,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:6.1.21":
-  version: 6.1.21
-  resolution: "@fullcalendar/core@npm:6.1.21"
-  dependencies:
-    preact: "npm:~10.12.1"
-  checksum: 10/8e4519f45df0391926a252d69030e8b2e516adcc17ec5bae385623431e3aa2bf80ce07b2849b868e9d532b6207313a8b2b29ac5621a60ffc0ddf0ecc8757cb25
+"@fullcalendar/core@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@fullcalendar/core@npm:7.0.0"
+  peerDependencies:
+    "@full-ui/headless-calendar": 7.0.0
+    temporal-polyfill: ^1.0.1
+  checksum: 10/4cc553299480fc0c1f21896a2f0006967eed44f5871ab6e23ade9ecd154ef230aca6d2c496ea4cb8d34970c563bffbaa3e8392f20f7c6671216211da12df3123
   languageName: node
   linkType: hard
 
@@ -9976,7 +9977,7 @@ __metadata:
     "@formatjs/intl-numberformat": "npm:9.3.14"
     "@formatjs/intl-pluralrules": "npm:6.3.13"
     "@formatjs/intl-relativetimeformat": "npm:12.3.13"
-    "@fullcalendar/core": "npm:6.1.21"
+    "@fullcalendar/core": "npm:7.0.0"
     "@fullcalendar/daygrid": "npm:6.1.21"
     "@fullcalendar/interaction": "npm:6.1.21"
     "@fullcalendar/list": "npm:6.1.21"
@@ -12954,13 +12955,6 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10/f51162887cd683afc02fa6c1f06b6485ebc18c62eec7dc2841c8fe0a0c4b53b9a834cc26aa1a233e87f0e3a10179db916a276464c0ee1d00354d1670ebc32953
-  languageName: node
-  linkType: hard
-
-"preact@npm:~10.12.1":
-  version: 10.12.1
-  resolution: "preact@npm:10.12.1"
-  checksum: 10/412bbe8eae0c73e8b30f4992a1bfe965460ea724b5bce1ebfb2dabf2d1a8dee2894b893ecd4e7cb2039f43d8a63d06af4508a606ca3baac17a01ac38e263efd4
   languageName: node
   linkType: hard
 
