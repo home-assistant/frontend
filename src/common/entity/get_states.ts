@@ -89,7 +89,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
     device_class: [
       "battery",
       "battery_charging",
-      "co",
+      "carbon_monoxide",
       "cold",
       "connectivity",
       "door",
@@ -227,7 +227,12 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "voltage",
       "volume_flow_rate",
     ],
-    state_class: ["measurement", "total", "total_increasing"],
+    state_class: [
+      "measurement",
+      "measurement_angle",
+      "total",
+      "total_increasing",
+    ],
   },
   switch: {
     device_class: ["outlet", "switch"],
