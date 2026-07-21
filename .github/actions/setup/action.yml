@@ -18,6 +18,10 @@ runs:
         node-version-file: ".nvmrc"
         cache: ${{ inputs.cache == 'true' && 'yarn' || '' }}
 
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
+
     - name: Install dependencies
       shell: bash
       run: yarn install ${{ inputs.immutable == 'true' && '--immutable' || '' }}

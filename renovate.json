@@ -58,6 +58,17 @@
       "depNameTemplate": "rhysd/actionlint",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "description": "Keep Playwright CI container image up to date",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/e2e\\.yaml$/"],
+      "matchStrings": [
+        "mcr\\.microsoft\\.com/playwright:(?<currentValue>v\\d+\\.\\d+\\.\\d+-noble)"
+      ],
+      "depNameTemplate": "mcr.microsoft.com/playwright",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>noble)$"
     }
   ],
   "packageRules": [
@@ -91,6 +102,11 @@
       "description": "Group formatjs monorepo package",
       "groupName": "formatjs",
       "matchPackageNames": ["@formatjs/**"]
+    },
+    {
+      "description": "Group Playwright package and CI container updates",
+      "groupName": "Playwright",
+      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"]
     }
   ]
 }

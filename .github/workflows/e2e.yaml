@@ -38,8 +38,9 @@ jobs:
       - name: Build demo
         uses: ./.github/actions/build
         with:
-          target: build-demo
+          target: build-demo-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
 
       - name: Upload demo build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -65,8 +66,9 @@ jobs:
       - name: Build e2e test app
         uses: ./.github/actions/build
         with:
-          target: build-e2e-test-app
+          target: build-e2e-test-app-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
 
       - name: Upload e2e test app build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -103,15 +105,27 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
-  # ── Run Playwright tests locally against Chromium ──────────────────────────
-  e2e-local:
-    name: E2E (local Chromium)
-    needs: [build-demo, build-e2e-test-app, build-gallery]
+  # ── Run Playwright tests against Chromium ──────────────────────────────────
+  e2e-demo:
+    name: E2E demo (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    needs:
+      - build-demo
     runs-on: ubuntu-latest
-    # Fail fast if anything hangs. The whole suite should take < 15 minutes on
-    # Chromium; anything longer is almost certainly an install or webServer
-    # hang.
-    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --user 1001 --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex:
+          - 1
+          - 2
+        shardTotal:
+          - 2
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -121,29 +135,55 @@ jobs:
       - name: Setup Node and install
         uses: ./.github/actions/setup
 
-      # Resolve the installed Playwright version so the browser cache tracks
-      # Playwright itself, not every unrelated dependency bump.
-      - name: Resolve Playwright version
-        id: playwright-version
-        run: echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
-
-      # Cache the downloaded browser build keyed on the installed Playwright
-      # version, so re-runs skip the ~170 MB download unless Playwright changes.
-      - name: Cache Playwright browsers
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
-
-      - name: Install Playwright browsers
-        run: yarn playwright install --with-deps chromium
-        timeout-minutes: 10
-
       - name: Download demo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: demo-dist
           path: demo/dist/
+
+      - name: Run Playwright demo tests
+        run: yarn test:e2e:demo --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        timeout-minutes: 15
+
+      - name: Upload demo blob report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: blob-report-demo-${{ matrix.shardIndex }}
+          path: test/e2e/reports/demo/
+          if-no-files-found: warn
+          retention-days: 3
+
+  e2e-app:
+    name: E2E app (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    needs:
+      - build-e2e-test-app
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --user 1001 --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex:
+          - 1
+          - 2
+          - 3
+          - 4
+        shardTotal:
+          - 4
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
 
       - name: Download e2e test app build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -151,30 +191,77 @@ jobs:
           name: e2e-test-app-dist
           path: test/e2e/app/dist/
 
+      - name: Run Playwright app tests
+        run: yarn test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        timeout-minutes: 15
+
+      - name: Upload app blob report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: blob-report-app-${{ matrix.shardIndex }}
+          path: test/e2e/reports/app/
+          if-no-files-found: warn
+          retention-days: 3
+
+  e2e-gallery:
+    name: E2E gallery (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    needs:
+      - build-gallery
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --user 1001 --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex:
+          - 1
+          - 2
+          - 3
+          - 4
+        shardTotal:
+          - 4
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
       - name: Download gallery build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: gallery-dist
           path: gallery/dist/
 
-      - name: Run Playwright tests (local)
-        run: yarn test:e2e
+      - name: Run Playwright gallery tests
+        run: yarn test:e2e:gallery --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
-      - name: Upload blob report
+      - name: Upload gallery blob report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: blob-report-local
-          path: test/e2e/reports/
+          name: blob-report-gallery-${{ matrix.shardIndex }}
+          path: test/e2e/reports/gallery/
+          if-no-files-found: warn
           retention-days: 3
 
-  # ── Merge local blob reports and post PR comment ───────────────────────────
   report:
     name: Report
-    needs: [e2e-local]
+    needs:
+      - e2e-demo
+      - e2e-app
+      - e2e-gallery
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ always() }}
     permissions:
       contents: read
       pull-requests: write
@@ -187,12 +274,26 @@ jobs:
       - name: Setup Node and install
         uses: ./.github/actions/setup
 
-      - name: Download blob report (local)
+      - name: Download demo blob reports
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         continue-on-error: true
         with:
-          name: blob-report-local
-          path: test/e2e/reports/
+          pattern: blob-report-demo-*
+          path: test/e2e/reports/demo/
+
+      - name: Download app blob reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          pattern: blob-report-app-*
+          path: test/e2e/reports/app/
+
+      - name: Download gallery blob reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        continue-on-error: true
+        with:
+          pattern: blob-report-gallery-*
+          path: test/e2e/reports/gallery/
 
       - name: Stage blobs for merge
         run: node test/e2e/collect-blob-reports.mjs
@@ -209,7 +310,11 @@ jobs:
           retention-days: 14
 
       - name: Post report to PR
-        if: github.event_name == 'pull_request' && needs.e2e-local.result == 'failure'
+        if: >-
+          github.event_name == 'pull_request' &&
+          (needs.e2e-demo.result == 'failure' ||
+          needs.e2e-app.result == 'failure' ||
+          needs.e2e-gallery.result == 'failure')
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
@@ -217,3 +322,19 @@ jobs:
               `${process.env.GITHUB_WORKSPACE}/test/e2e/post-report-comment.mjs`
             );
             await postReportComment({ github, context, core });
+
+      - name: Check suite results
+        run: |
+          failed=0
+          for suite in \
+            "demo:${{ needs.e2e-demo.result }}" \
+            "app:${{ needs.e2e-app.result }}" \
+            "gallery:${{ needs.e2e-gallery.result }}"; do
+            name="${suite%%:*}"
+            result="${suite#*:}"
+            echo "E2E ${name}: ${result}"
+            if [ "$result" != "success" ]; then
+              failed=1
+            fi
+          done
+          exit "$failed"

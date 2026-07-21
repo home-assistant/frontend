@@ -225,6 +225,16 @@ gulp.task(
   )
 );
 
+gulp.task(
+  "gen-pages-demo-prod-e2e",
+  genPagesProdTask(
+    DEMO_PAGE_ENTRIES,
+    paths.demo_dir,
+    paths.demo_output_root,
+    paths.demo_output_latest
+  )
+);
+
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
 gulp.task(
