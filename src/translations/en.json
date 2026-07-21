@@ -2511,7 +2511,11 @@
       "new_version_available": "A new version of the frontend is available.",
       "reload": "Reload",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
-      "theme_preferences_unavailable": "Unable to load user profile theme settings."
+      "theme_preferences_unavailable": "Unable to load user profile theme settings.",
+      "onboarding_survey": {
+        "message": "Hello there! 👋 You've been using Home Assistant for a little while now. We'd love to hear what you think. Just one quick minute!",
+        "action": "Take survey"
+      }
     },
     "sidebar": {
       "external_app_configuration": "App settings",

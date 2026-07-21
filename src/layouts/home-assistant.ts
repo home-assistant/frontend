@@ -20,6 +20,7 @@ import {
   removeLaunchScreen,
   renderLaunchScreenInfoBox,
 } from "../util/launch-screen";
+import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -58,6 +59,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _databaseMigration?: boolean;
 
   private _httpPendingDialogOpen = false;
+
+  private _onboardingSurveyChecked = false;
 
   private _panelUrl: string;
 
@@ -107,6 +110,17 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       oldHass?.user !== this.hass.user
     ) {
       this.checkHttpPendingConfig();
+    }
+    if (
+      changedProps.has("hass") &&
+      !this._onboardingSurveyChecked &&
+      this.hass?.user &&
+      this.hass.systemData
+    ) {
+      this._onboardingSurveyChecked = true;
+      if (!__DEMO__) {
+        checkOnboardingSurveyToast(this, this.hass);
+      }
     }
   }
 
