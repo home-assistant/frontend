@@ -34,7 +34,7 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
   private _schema = memoizeOne(
-    (maxColumns: number, backgroundEnabled: boolean, localize: LocalizeFunc) =>
+    (maxColumns: number, localize: LocalizeFunc) =>
       [
         {
           name: "column_span",
@@ -50,48 +50,45 @@ export class HuiDialogEditSection extends LitElement {
           name: "background_enabled",
           selector: { boolean: {} },
         },
-        ...(backgroundEnabled
-          ? ([
-              {
-                name: "background",
-                type: "expandable",
-                flatten: true,
-                expanded: true,
-                iconPath: mdiPalette,
-                schema: [
-                  {
-                    name: "background_color",
-                    selector: {
-                      ui_color: {
-                        extra_options: [
-                          {
-                            value: "default",
-                            label: localize(
-                              "ui.panel.lovelace.editor.edit_section.settings.background_color_default"
-                            ),
-                            display_color:
-                              "var(--ha-section-background-color, var(--secondary-background-color))",
-                          },
-                        ],
-                      },
+        {
+          name: "background",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          hidden: { field: "background_enabled", value: false },
+          iconPath: mdiPalette,
+          schema: [
+            {
+              name: "background_color",
+              selector: {
+                ui_color: {
+                  extra_options: [
+                    {
+                      value: "default",
+                      label: localize(
+                        "ui.panel.lovelace.editor.edit_section.settings.background_color_default"
+                      ),
+                      display_color:
+                        "var(--ha-section-background-color, var(--secondary-background-color))",
                     },
-                  },
-                  {
-                    name: "background_opacity",
-                    selector: {
-                      number: {
-                        min: 0,
-                        max: 100,
-                        step: 1,
-                        unit_of_measurement: "%",
-                        mode: "slider",
-                      },
-                    },
-                  },
-                ],
+                  ],
+                },
               },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
+            },
+            {
+              name: "background_opacity",
+              selector: {
+                number: {
+                  min: 0,
+                  max: 100,
+                  step: 1,
+                  unit_of_measurement: "%",
+                  mode: "slider",
+                },
+              },
+            },
+          ],
+        },
         {
           name: "theme",
           selector: {
@@ -116,7 +113,6 @@ export class HuiDialogEditSection extends LitElement {
 
     const schema = this._schema(
       this.viewConfig.max_columns || 4,
-      backgroundEnabled,
       this.hass.localize
     );
 

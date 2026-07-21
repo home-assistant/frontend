@@ -80,7 +80,7 @@ export class HuiGaugeCardEditor
   }
 
   private _schema = memoizeOne(
-    (showSeverity: boolean, entityId?: string) =>
+    (entityId?: string) =>
       [
         {
           name: "entity",
@@ -132,28 +132,25 @@ export class HuiGaugeCardEditor
             { name: "show_severity", selector: { boolean: {} } },
           ],
         },
-        ...(showSeverity
-          ? ([
-              {
-                name: "severity",
-                type: "grid",
-                schema: [
-                  {
-                    name: "green",
-                    selector: { number: { mode: "box", step: "any" } },
-                  },
-                  {
-                    name: "yellow",
-                    selector: { number: { mode: "box", step: "any" } },
-                  },
-                  {
-                    name: "red",
-                    selector: { number: { mode: "box", step: "any" } },
-                  },
-                ],
-              },
-            ] as const)
-          : []),
+        {
+          name: "severity",
+          type: "grid",
+          hidden: { field: "show_severity", value: false },
+          schema: [
+            {
+              name: "green",
+              selector: { number: { mode: "box", step: "any" } },
+            },
+            {
+              name: "yellow",
+              selector: { number: { mode: "box", step: "any" } },
+            },
+            {
+              name: "red",
+              selector: { number: { mode: "box", step: "any" } },
+            },
+          ],
+        },
         {
           name: "interactions",
           type: "expandable",
@@ -197,10 +194,7 @@ export class HuiGaugeCardEditor
       return nothing;
     }
 
-    const schema = this._schema(
-      this._config!.severity !== undefined,
-      this._config!.entity
-    );
+    const schema = this._schema(this._config!.entity);
     const data = {
       show_severity: this._config!.severity !== undefined,
       ...this._config,

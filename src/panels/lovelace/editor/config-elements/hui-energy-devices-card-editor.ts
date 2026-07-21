@@ -61,38 +61,44 @@ export class HuiEnergyDevicesCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((localize: LocalizeFunc, type: string) => {
+  private _schema = memoizeOne((localize: LocalizeFunc) => {
     const schema: HaFormSchema[] = [
       { name: "title", selector: { text: {} } },
       {
         name: "",
         type: "grid",
         schema: [
-          ...(type === "energy-devices-graph"
-            ? ([
-                {
-                  name: "modes",
-                  required: false,
-                  selector: {
-                    select: {
-                      multiple: true,
-                      mode: "list",
-                      options: chartModeOpts.map((mode) => ({
-                        value: mode,
-                        label: localize(
-                          `ui.panel.lovelace.editor.card.energy-devices-graph.mode_options.${mode}`
-                        ),
-                      })),
-                    },
-                  },
-                },
-                {
-                  name: "hide_compound_stats",
-                  required: false,
-                  selector: { boolean: {} },
-                },
-              ] as HaFormSchema[])
-            : []),
+          {
+            name: "modes",
+            required: false,
+            hidden: {
+              field: "type",
+              operator: "not_eq",
+              value: "energy-devices-graph",
+            },
+            selector: {
+              select: {
+                multiple: true,
+                mode: "list",
+                options: chartModeOpts.map((mode) => ({
+                  value: mode,
+                  label: localize(
+                    `ui.panel.lovelace.editor.card.energy-devices-graph.mode_options.${mode}`
+                  ),
+                })),
+              },
+            },
+          },
+          {
+            name: "hide_compound_stats",
+            required: false,
+            hidden: {
+              field: "type",
+              operator: "not_eq",
+              value: "energy-devices-graph",
+            },
+            selector: { boolean: {} },
+          },
           {
             name: "max_devices",
             required: false,
@@ -114,7 +120,7 @@ export class HuiEnergyDevicesCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize, this._config.type);
+    const schema = this._schema(this.hass.localize);
 
     const data = {
       ...this._config,

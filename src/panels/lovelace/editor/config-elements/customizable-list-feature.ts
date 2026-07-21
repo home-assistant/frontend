@@ -2,13 +2,11 @@ import type { HaFormSchema } from "../../../../components/ha-form/types";
 
 interface CustomizableListSchemaParams {
   field: string;
-  customize: boolean;
   options: { value: string; label: string }[];
 }
 
 export const customizableListSchema = ({
   field,
-  customize,
   options,
 }: CustomizableListSchemaParams) =>
   [
@@ -16,21 +14,18 @@ export const customizableListSchema = ({
       name: "customize",
       selector: { boolean: {} },
     },
-    ...(customize
-      ? ([
-          {
-            name: field,
-            selector: {
-              select: {
-                mode: "list",
-                reorder: true,
-                multiple: true,
-                options,
-              },
-            },
-          },
-        ] as const satisfies readonly HaFormSchema[])
-      : []),
+    {
+      name: field,
+      hidden: { field: "customize", value: false },
+      selector: {
+        select: {
+          mode: "list",
+          reorder: true,
+          multiple: true,
+          options,
+        },
+      },
+    },
   ] as const satisfies readonly HaFormSchema[];
 
 // `customize` is form-only and never stored in the config.

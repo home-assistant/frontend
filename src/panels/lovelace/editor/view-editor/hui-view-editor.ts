@@ -44,7 +44,7 @@ export class HuiViewEditor extends LitElement {
   private _suggestedPath = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, viewType: string) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "type",
@@ -87,41 +87,42 @@ export class HuiViewEditor extends LitElement {
             boolean: {},
           },
         },
-        ...(viewType === SECTIONS_VIEW_LAYOUT
-          ? ([
-              {
-                name: "section_specifics",
-                type: "expandable",
-                flatten: true,
-                expanded: true,
-                schema: [
-                  {
-                    name: "max_columns",
-                    selector: {
-                      number: {
-                        min: 1,
-                        max: 10,
-                        mode: "slider",
-                        slider_ticks: true,
-                      },
-                    },
-                  },
-                  {
-                    name: "dense_section_placement",
-                    selector: {
-                      boolean: {},
-                    },
-                  },
-                  {
-                    name: "top_margin",
-                    selector: {
-                      boolean: {},
-                    },
-                  },
-                ],
+        {
+          name: "section_specifics",
+          type: "expandable",
+          flatten: true,
+          expanded: true,
+          hidden: {
+            field: "type",
+            operator: "not_eq",
+            value: SECTIONS_VIEW_LAYOUT,
+          },
+          schema: [
+            {
+              name: "max_columns",
+              selector: {
+                number: {
+                  min: 1,
+                  max: 10,
+                  mode: "slider",
+                  slider_ticks: true,
+                },
               },
-            ] as const satisfies HaFormSchema[])
-          : []),
+            },
+            {
+              name: "dense_section_placement",
+              selector: {
+                boolean: {},
+              },
+            },
+            {
+              name: "top_margin",
+              selector: {
+                boolean: {},
+              },
+            },
+          ],
+        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -138,7 +139,7 @@ export class HuiViewEditor extends LitElement {
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize, this._type);
+    const schema = this._schema(this.hass.localize);
 
     const data = {
       ...this._config,

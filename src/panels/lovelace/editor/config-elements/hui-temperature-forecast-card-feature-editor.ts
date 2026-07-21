@@ -38,15 +38,10 @@ export class HuiTemperatureForecastCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (
-      stateObj: HassEntity | undefined,
-      forecastType: ForecastResolution,
-      localize: HomeAssistant["localize"]
-    ) => {
+    (stateObj: HassEntity | undefined, localize: HomeAssistant["localize"]) => {
       const supportedTypes = stateObj
         ? getSupportedForecastTypes(stateObj)
         : [];
-      const isHourly = forecastType === "hourly";
       return [
         {
           name: "forecast_type",
@@ -67,17 +62,22 @@ export class HuiTemperatureForecastCardFeatureEditor
             },
           },
         },
-        isHourly
-          ? {
-              name: "hours_to_show",
-              default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { min: 1, mode: "box" } },
-            }
-          : {
-              name: "days_to_show",
-              default: DEFAULT_DAYS_TO_SHOW,
-              selector: { number: { min: 1, mode: "box" } },
-            },
+        {
+          name: "hours_to_show",
+          default: DEFAULT_HOURS_TO_SHOW,
+          hidden: {
+            field: "forecast_type",
+            operator: "not_eq",
+            value: "hourly",
+          },
+          selector: { number: { min: 1, mode: "box" } },
+        },
+        {
+          name: "days_to_show",
+          default: DEFAULT_DAYS_TO_SHOW,
+          hidden: { field: "forecast_type", value: "hourly" },
+          selector: { number: { min: 1, mode: "box" } },
+        },
         {
           name: "color",
           selector: {
@@ -117,7 +117,7 @@ export class HuiTemperatureForecastCardFeatureEditor
         : { days_to_show: this._config.days_to_show ?? DEFAULT_DAYS_TO_SHOW }),
     };
 
-    const schema = this._schema(stateObj, resolvedType, this.hass.localize);
+    const schema = this._schema(stateObj, this.hass.localize);
 
     return html`
       <ha-form

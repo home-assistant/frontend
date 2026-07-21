@@ -74,11 +74,7 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      stateObj: HassEntity | undefined,
-      customizeModes: boolean
-    ) => {
+    (localize: LocalizeFunc, stateObj: HassEntity | undefined) => {
       const d = this.descriptor;
       const styleListId = d.styleListI18nFeatureId ?? d.i18nFeatureId;
       return [
@@ -103,25 +99,20 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
             boolean: {},
           },
         },
-        ...(customizeModes
-          ? ([
-              {
-                name: d.modeField,
-                selector: {
-                  select: {
-                    reorder: true,
-                    multiple: true,
-                    options: d
-                      .getAvailableModesOrdered(stateObj)
-                      .map((mode) => ({
-                        value: mode,
-                        label: d.getModeLabel(this.hass!, stateObj, mode),
-                      })),
-                  },
-                },
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
+        {
+          name: d.modeField,
+          hidden: { field: "customize_modes", value: false },
+          selector: {
+            select: {
+              reorder: true,
+              multiple: true,
+              options: d.getAvailableModesOrdered(stateObj).map((mode) => ({
+                value: mode,
+                label: d.getModeLabel(this.hass!, stateObj, mode),
+              })),
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[];
     }
   );
@@ -143,11 +134,7 @@ export abstract class HuiEntityModesCardFeatureEditorBase<
       customize_modes: this._config[modeField as keyof TConfig] !== undefined,
     };
 
-    const schema = this._schema(
-      this.hass.localize,
-      stateObj,
-      data.customize_modes
-    );
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form

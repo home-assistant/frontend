@@ -37,11 +37,7 @@ export class HuiAlarmModesCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      stateObj: HassEntity | undefined,
-      customizeModes: boolean
-    ) =>
+    (localize: LocalizeFunc, stateObj: HassEntity | undefined) =>
       [
         {
           name: "customize_modes",
@@ -49,27 +45,24 @@ export class HuiAlarmModesCardFeatureEditor
             boolean: {},
           },
         },
-        ...(customizeModes
-          ? ([
-              {
-                name: "modes",
-                selector: {
-                  select: {
-                    multiple: true,
-                    reorder: true,
-                    options: stateObj
-                      ? supportedAlarmModes(stateObj).map((mode) => ({
-                          value: mode,
-                          label: `${localize(
-                            `ui.panel.lovelace.editor.features.types.alarm-modes.modes_list.${mode}`
-                          )}`,
-                        }))
-                      : [],
-                  },
-                },
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
+        {
+          name: "modes",
+          hidden: { field: "customize_modes", value: false },
+          selector: {
+            select: {
+              multiple: true,
+              reorder: true,
+              options: stateObj
+                ? supportedAlarmModes(stateObj).map((mode) => ({
+                    value: mode,
+                    label: `${localize(
+                      `ui.panel.lovelace.editor.features.types.alarm-modes.modes_list.${mode}`
+                    )}`,
+                  }))
+                : [],
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -87,11 +80,7 @@ export class HuiAlarmModesCardFeatureEditor
       ? this.hass.states[this.context?.entity_id]
       : undefined;
 
-    const schema = this._schema(
-      this.hass.localize,
-      stateObj,
-      data.customize_modes
-    );
+    const schema = this._schema(this.hass.localize, stateObj);
 
     return html`
       <ha-form
