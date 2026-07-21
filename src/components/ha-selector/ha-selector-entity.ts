@@ -2,8 +2,12 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { ConfigEntry } from "../../data/config_entries";
+import { getConfigEntries } from "../../data/config_entries";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { EntitySelector } from "../../data/selector";
@@ -23,6 +27,8 @@ export class HaEntitySelector extends LitElement {
 
   @state() private _entitySources?: EntitySources;
 
+  @state() private _configEntries?: ConfigEntry[];
+
   @property() public value?: any;
 
   @property() public label?: string;
@@ -37,12 +43,38 @@ export class HaEntitySelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
-  private _hasIntegration(selector: EntitySelector) {
-    return (
-      selector.entity?.filter &&
-      ensureArray(selector.entity.filter).some((filter) => filter.integration)
-    );
-  }
+  private _deviceIntegrationLookup = memoizeOne(
+    (
+      entitySources: EntitySources,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      configEntries?: ConfigEntry[]
+    ) =>
+      getDeviceIntegrationLookup(
+        entitySources,
+        Object.values(entities),
+        Object.values(devices),
+        configEntries
+      )
+  );
+
+  // Which async data the current filter needs to be evaluated: a top-level or
+  // device `integration` filter needs entity sources, and a `device.integration`
+  // filter additionally needs config entries (the device integration lookup is
+  // built from both).
+  private _dataNeeds = memoizeOne((selector: EntitySelector) => {
+    const filters = selector.entity?.filter
+      ? ensureArray(selector.entity.filter)
+      : [];
+    return {
+      entitySources: filters.some(
+        (f) => f.integration || f.device?.integration
+      ),
+      configEntries: filters.some((f) => f.device?.integration),
+    };
+  });
+
+  private _fetchedConfigEntries = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
@@ -57,7 +89,11 @@ export class HaEntitySelector extends LitElement {
   }
 
   protected render() {
-    if (this._hasIntegration(this.selector) && !this._entitySources) {
+    const needs = this._dataNeeds(this.selector);
+    if (
+      (needs.entitySources && !this._entitySources) ||
+      (needs.configEntries && !this._configEntries)
+    ) {
       return nothing;
     }
 
@@ -96,15 +132,37 @@ export class HaEntitySelector extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
-    if (
-      changedProps.has("selector") &&
-      this._hasIntegration(this.selector) &&
-      !this._entitySources
-    ) {
+
+    // The connection changed (e.g. reconnect); refetch config entries.
+    const oldHass = changedProps.get("hass");
+    if (oldHass && oldHass.connection !== this.hass.connection) {
+      this._fetchedConfigEntries = false;
+      this._configEntries = undefined;
+    }
+
+    const needs = this._dataNeeds(this.selector);
+
+    if (needs.entitySources && !this._entitySources) {
       fetchEntitySourcesWithCache(this.hass).then((sources) => {
         this._entitySources = sources;
       });
     }
+
+    if (needs.configEntries && !this._fetchedConfigEntries) {
+      this._fetchedConfigEntries = true;
+      getConfigEntries(this.hass)
+        .then((entries) => {
+          this._configEntries = entries;
+        })
+        .catch(() => {
+          // Fall back to no entries so the picker still renders. We keep
+          // `_fetchedConfigEntries` set so the failed fetch is not retried on
+          // every re-render; the connection-change handler above retries on
+          // reconnect.
+          this._configEntries = [];
+        });
+    }
+
     if (changedProps.has("selector")) {
       this._createDomains = computeCreateDomains(this.selector);
     }
@@ -114,8 +172,25 @@ export class HaEntitySelector extends LitElement {
     if (!this.selector?.entity?.filter) {
       return true;
     }
+    const deviceIntegrationLookup =
+      this._entitySources && this._dataNeeds(this.selector).configEntries
+        ? this._deviceIntegrationLookup(
+            this._entitySources,
+            this.hass.entities,
+            this.hass.devices,
+            this._configEntries
+          )
+        : undefined;
+
     return ensureArray(this.selector.entity.filter).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices,
+        deviceIntegrationLookup
+      )
     );
   };
 }

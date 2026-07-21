@@ -86,6 +86,11 @@
       "description": "Group date-fns with dependent timezone package",
       "groupName": "date-fns",
       "matchPackageNames": ["date-fns", "date-fns-tz"]
+    },
+    {
+      "description": "Group formatjs monorepo package",
+      "groupName": "formatjs",
+      "matchPackageNames": ["@formatjs/**"]
     }
   ]
 }

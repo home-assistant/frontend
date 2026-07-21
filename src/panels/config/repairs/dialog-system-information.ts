@@ -326,13 +326,11 @@ class DialogSystemInformation extends LitElement {
         const keys: TemplateResult[] = [];
 
         for (const key of Object.keys(domainInfo.info)) {
+          const infoValue = domainInfo.info[key];
           let value: unknown;
 
-          if (
-            domainInfo.info[key] &&
-            typeof domainInfo.info[key] === "object"
-          ) {
-            const info = domainInfo.info[key] as SystemCheckValueObject;
+          if (infoValue && typeof infoValue === "object") {
+            const info = infoValue as SystemCheckValueObject;
 
             if (info.type === "pending") {
               value = html` <ha-spinner size="small"></ha-spinner> `;
@@ -363,7 +361,7 @@ class DialogSystemInformation extends LitElement {
               );
             }
           } else {
-            value = domainInfo.info[key];
+            value = infoValue;
           }
 
           keys.push(html`
@@ -431,10 +429,11 @@ class DialogSystemInformation extends LitElement {
       ];
 
       for (const key of Object.keys(domainInfo.info)) {
+        const infoValue = domainInfo.info[key];
         let value: unknown;
 
-        if (domainInfo.info[key] && typeof domainInfo.info[key] === "object") {
-          const info = domainInfo.info[key] as SystemCheckValueObject;
+        if (infoValue && typeof infoValue === "object") {
+          const info = infoValue as SystemCheckValueObject;
 
           if (info.type === "pending") {
             value = "pending";
@@ -448,7 +447,7 @@ class DialogSystemInformation extends LitElement {
             );
           }
         } else {
-          value = domainInfo.info[key];
+          value = infoValue;
         }
         if (first) {
           parts.push(`${key} | ${value}\n-- | --`);

@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { TimezoneSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-timezone-picker";
 
 @customElement("ha-selector-timezone")
 export class HaTimezoneSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: TimezoneSelector;
 
   @property() public value?: string;
@@ -23,7 +20,6 @@ export class HaTimezoneSelector extends LitElement {
   protected render() {
     return html`
       <ha-timezone-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

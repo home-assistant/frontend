@@ -305,6 +305,10 @@ export class HaServiceControl extends LitElement {
     ) {
       return null;
     }
+    const isPrimaryEntity = (entityId: string) => {
+      const entity = this.hass.entities[entityId];
+      return !entity?.entity_category && !entity?.hidden;
+    };
     const targetEntities =
       ensureArray(
         value?.target?.entity_id || value?.data?.entity_id
@@ -333,11 +337,7 @@ export class HaServiceControl extends LitElement {
           targetSelector
         );
         targetDevices.push(...expanded.devices);
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(primaryEntities);
         targetAreas.push(...expanded.areas);
       });
@@ -362,11 +362,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
         targetDevices.push(...expanded.devices);
       });
@@ -379,11 +375,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
       });
     }
@@ -903,7 +895,13 @@ export class HaServiceControl extends LitElement {
         }
         if (targetEntities.length) {
           targetEntities = targetEntities.filter((entity) =>
-            entityMeetsTargetSelector(this.hass.states[entity], targetSelector)
+            entityMeetsTargetSelector(
+              this.hass.states[entity],
+              targetSelector,
+              undefined,
+              this.hass.entities,
+              this.hass.devices
+            )
           );
         }
         target = {
