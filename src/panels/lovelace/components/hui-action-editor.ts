@@ -137,25 +137,9 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
-  private _actions = memoizeOne(
-    (
-      actions: UiAction[],
-      context?: ActionRelatedContext,
-      action?: string
-    ): UiAction[] => {
-      if (
-        !context?.entity_id ||
-        !actions.includes("toggle") ||
-        action === "toggle"
-      ) {
-        return actions;
-      }
-      const hass = this.hass!;
-      const stateObj = hass.states[context.entity_id];
-      const canToggle = stateObj
-        ? canToggleState(hass, stateObj)
-        : canToggleDomain(hass, computeDomain(context.entity_id));
-      return canToggle ? actions : actions.filter((a) => a !== "toggle");
+  private _filterToggleAction = memoizeOne(
+    (actions: UiAction[]): UiAction[] => {
+      return actions.filter((a) => a !== "toggle");
     }
   );
 
@@ -166,11 +150,21 @@ export class HuiActionEditor extends LitElement {
 
     let action = this.config?.action || (this.required ? "" : "default");
 
-    const actions = this._actions(
-      this.actions ?? DEFAULT_ACTIONS,
-      this.context,
-      action
-    );
+    let actions = this.actions ?? DEFAULT_ACTIONS;
+
+    if (
+      this.context?.entity_id &&
+      action !== "toggle" &&
+      actions.includes("toggle")
+    ) {
+      const stateObj = this.hass.states[this.context.entity_id];
+      const canToggle = stateObj
+        ? canToggleState(this.hass, stateObj)
+        : canToggleDomain(this.hass, computeDomain(this.context.entity_id));
+      if (!canToggle) {
+        actions = this._filterToggleAction(actions);
+      }
+    }
 
     if (action === "call-service") {
       action = "perform-action";
