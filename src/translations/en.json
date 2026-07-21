@@ -348,6 +348,7 @@
           "temperature": "Temperature",
           "visibility": "Visibility",
           "wind_speed": "Wind speed",
+          "wind_gust_speed": "Wind gust speed",
           "precipitation": "Precipitation"
         },
         "cardinal_direction": {
