@@ -125,5 +125,17 @@ describe("canToggleDomain", () => {
         "custom_component"
       )
     );
+    assert.isFalse(
+      canToggleDomain(
+        {
+          services: {
+            custom_component: {
+              turn_on: null,
+            },
+          },
+        } as unknown as HomeAssistant,
+        "custom_component"
+      )
+    );
   });
 });
