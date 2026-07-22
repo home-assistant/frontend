@@ -1,3 +1,4 @@
+/* global module, require */
 // rspack/webpack loader that minifies the HTML, SVG, and CSS inside lit
 // tagged template literals using `minify-literals` (html-minifier-next +
 // lightningcss). Replaces the unmaintained babel-plugin-template-html-minifier.
@@ -10,7 +11,8 @@
 
 const remapping = require("@ampproject/remapping");
 
-// Map to cache loader promises per environment (e.g., 'modern', 'legacy')
+// minify-literals is ESM-only, so load it via dynamic import from this CJS loader.
+// Also map to cache loader promises per environment (e.g., 'modern', 'legacy')
 const loaderInitPromises = new Map();
 const initLoader = (browserslistEnv) => {
   if (!loaderInitPromises.has(browserslistEnv)) {
@@ -42,7 +44,10 @@ const initLoader = (browserslistEnv) => {
 };
 
 // HTML options mirror the previous babel-plugin-template-html-minifier config
-// (html-minifier-next is option-compatible with html-minifier-terser).
+// (html-minifier-next is option-compatible with html-minifier-terser). CSS in
+// css`` templates and inline <style> is handled by minify-literals'
+// lightningcss. We pass in the targets from browserslist so lightningcss
+// can minify CSS appropriately for the build environment.
 //
 // `keepClosingSlash` is required for `svg`` templates: SVG elements such as
 // `<path />` and `<circle />` are not void elements in HTML, so dropping the
