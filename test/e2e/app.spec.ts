@@ -124,41 +124,7 @@ test.describe("Quick search", () => {
   test("starts an Assist conversation with the search query", async ({
     page,
   }) => {
-    await goToPanel(page, "/lovelace");
-
-    await page.evaluate(() => {
-      const pipeline = {
-        id: "test-pipeline",
-        name: "Test Assist",
-        language: "en",
-        conversation_engine: "conversation.home_assistant",
-        conversation_language: "en",
-        stt_engine: null,
-        stt_language: null,
-        tts_engine: null,
-        tts_language: null,
-        tts_voice: null,
-        wake_word_entity: null,
-        wake_word_id: null,
-      };
-
-      window.__mockHass.updateHass({
-        config: {
-          ...window.__mockHass.config,
-          components: [...window.__mockHass.config.components, "conversation"],
-        },
-        enableShortcuts: true,
-      });
-      window.__mockHass.mockWS("assist_pipeline/pipeline/list", () => ({
-        pipelines: [pipeline],
-        preferred_pipeline: pipeline.id,
-      }));
-      window.__mockHass.mockWS("assist_pipeline/pipeline/get", () => pipeline);
-      window.__mockHass.mockWS("assist_pipeline/run", (message) => {
-        (window as any).__assistRun = message;
-        return () => undefined;
-      });
-    });
+    await goToPanel(page, "/?scenario=quick-search-assist#/lovelace");
 
     await page.keyboard.press("Control+K");
 
@@ -181,7 +147,7 @@ test.describe("Quick search", () => {
     });
 
     await expect
-      .poll(() => page.evaluate(() => (window as any).__assistRun))
+      .poll(() => page.evaluate(() => window.__assistRun))
       .toMatchObject({
         type: "assist_pipeline/run",
         start_stage: "intent",
