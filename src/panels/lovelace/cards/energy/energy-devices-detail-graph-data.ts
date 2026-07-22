@@ -521,7 +521,7 @@ export function generateEnergyDevicesDetailGraphData(
     true,
     generateFillBuckets(datasets, start, end, getSuggestedPeriod(start, end))
   );
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   return {
     chartData: datasets,
