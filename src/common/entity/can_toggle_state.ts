@@ -3,7 +3,7 @@ import type { HomeAssistant } from "../../types";
 import { canToggleDomain } from "./can_toggle_domain";
 import { computeStateDomain } from "./compute_state_domain";
 import { supportsFeature } from "./supports-feature";
-import { ClimateEntityFeature } from "../../data/climate";
+import { SPECIAL_TOGGLE_ACTIONS } from "./get_toggle_action";
 
 export const canToggleState = (hass: HomeAssistant, stateObj: HassEntity) => {
   const domain = computeStateDomain(stateObj);
@@ -26,10 +26,12 @@ export const canToggleState = (hass: HomeAssistant, stateObj: HassEntity) => {
     return false;
   }
 
-  if (domain === "climate") {
-    return (
-      supportsFeature(stateObj, ClimateEntityFeature.TURN_ON) &&
-      supportsFeature(stateObj, ClimateEntityFeature.TURN_OFF)
+  if (
+    domain in SPECIAL_TOGGLE_ACTIONS &&
+    SPECIAL_TOGGLE_ACTIONS[domain].feature
+  ) {
+    return SPECIAL_TOGGLE_ACTIONS[domain].feature.every((f) =>
+      supportsFeature(stateObj, f)
     );
   }
 
