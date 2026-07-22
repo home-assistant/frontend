@@ -138,7 +138,6 @@ export class HuiDialogEditSection
         case "tab-settings":
           content = html`
             <hui-section-settings-editor
-              .hass=${this.hass}
               .config=${this._config}
               .viewConfig=${this._viewConfig}
               @value-changed=${this._configChanged}

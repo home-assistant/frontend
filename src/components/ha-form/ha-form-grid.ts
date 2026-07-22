@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
+import { isFieldHidden } from "./conditions";
 import "./ha-form";
 import type { HaForm } from "./ha-form";
 import type {
@@ -68,19 +69,21 @@ export class HaFormGrid extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.schema.schema.map(
-        (item) => html`
-          <ha-form
-            .hass=${this.hass}
-            .data=${this.data}
-            .schema=${[item]}
-            .disabled=${this.disabled}
-            .computeLabel=${this.computeLabel}
-            .computeHelper=${this.computeHelper}
-            .localizeValue=${this.localizeValue}
-          ></ha-form>
-        `
-      )}
+      ${this.schema.schema
+        .filter((item) => !isFieldHidden(item, this.data))
+        .map(
+          (item) => html`
+            <ha-form
+              .hass=${this.hass}
+              .data=${this.data}
+              .schema=${[item]}
+              .disabled=${this.disabled}
+              .computeLabel=${this.computeLabel}
+              .computeHelper=${this.computeHelper}
+              .localizeValue=${this.localizeValue}
+            ></ha-form>
+          `
+        )}
     `;
   }
 

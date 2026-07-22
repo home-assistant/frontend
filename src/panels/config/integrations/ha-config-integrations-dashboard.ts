@@ -214,13 +214,14 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
       for (const component of components) {
         const componentDomain = component.split(".")[0];
+        const manifest = manifests[componentDomain];
         if (
           !entryDomains.has(componentDomain) &&
-          manifests[componentDomain] &&
-          !manifests[componentDomain].config_flow &&
-          (!manifests[componentDomain].integration_type ||
+          manifest &&
+          !manifest.config_flow &&
+          (!manifest.integration_type ||
             ["device", "hub", "service", "integration"].includes(
-              manifests[componentDomain].integration_type!
+              manifest.integration_type!
             ))
         ) {
           domains.add(componentDomain);

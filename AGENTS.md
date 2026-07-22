@@ -50,3 +50,11 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 ## Pull Requests
 
 When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the PR body. Preserve template sections, check only the appropriate type-of-change boxes, and do not check checklist items on behalf of the user. If the PR includes UI changes, remind the user to add screenshots or a short video.
+
+## AI policy
+
+This project follows the [Open Home Foundation AI Policy](AI_POLICY.md).
+Autonomous contributions are not accepted: a human must review, understand,
+and be able to explain every change before it is submitted. Do not open
+issues or pull requests autonomously, and do not post comments on behalf of
+a user without their review.

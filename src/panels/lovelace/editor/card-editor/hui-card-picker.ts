@@ -274,18 +274,14 @@ export class HuiCardPicker extends LitElement {
     const usedEntities = computeUsedEntities(this.lovelace);
     const unusedEntities = calcUnusedEntities(this.hass, usedEntities);
 
-    this._usedEntities = [...usedEntities].filter(
-      (eid) =>
-        this.hass!.states[eid] &&
-        this.hass!.states[eid].state !== UNAVAILABLE &&
-        this.hass!.states[eid].state !== UNKNOWN
-    );
-    this._unusedEntities = [...unusedEntities].filter(
-      (eid) =>
-        this.hass!.states[eid] &&
-        this.hass!.states[eid].state !== UNAVAILABLE &&
-        this.hass!.states[eid].state !== UNKNOWN
-    );
+    const isAvailable = (eid: string) => {
+      const stateObj = this.hass!.states[eid];
+      return (
+        stateObj && stateObj.state !== UNAVAILABLE && stateObj.state !== UNKNOWN
+      );
+    };
+    this._usedEntities = [...usedEntities].filter(isAvailable);
+    this._unusedEntities = [...unusedEntities].filter(isAvailable);
 
     this._loadCards();
   }

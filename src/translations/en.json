@@ -348,6 +348,7 @@
           "temperature": "Temperature",
           "visibility": "Visibility",
           "wind_speed": "Wind speed",
+          "wind_gust_speed": "Wind gust speed",
           "precipitation": "Precipitation"
         },
         "cardinal_direction": {
@@ -1486,6 +1487,7 @@
         "auto_revert": "Settings will automatically revert in {time}.",
         "reverted": "Home Assistant reverted the HTTP server settings.",
         "changes_label": "Changed settings:",
+        "not_set": "Not set",
         "confirm": "Confirm",
         "revert": "Revert",
         "close": "Close",
@@ -2024,9 +2026,12 @@
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
-        "aliases_description": "Aliases are alternative names to call your entity. Only supported by Assist and Google Assistant.",
+        "aliases_description": "Aliases are the names voice assistants use for this entity.",
+        "aliases_description_assist": "Assist uses all aliases equally.",
+        "aliases_description_alexa": "Amazon Alexa uses only the first alias.",
+        "aliases_description_google": "Google Assistant uses the first alias as the main name and the rest as alternatives.",
         "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
-        "entity_name_alias_description": "Default name. Disable it if you want your voice assistants to ignore it and just use aliases.",
+        "entity_name_alias_description": "Default name. When enabled, it is used as the first alias.",
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
@@ -2507,7 +2512,11 @@
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
       "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
-      "theme_preferences_unavailable": "Unable to load user profile theme settings."
+      "theme_preferences_unavailable": "Unable to load user profile theme settings.",
+      "onboarding_survey": {
+        "message": "Hello there! 👋 You've been using Home Assistant for a little while now. We'd love to hear what you think. Just one quick minute!",
+        "action": "Take survey"
+      }
     },
     "sidebar": {
       "external_app_configuration": "App settings",
@@ -8679,6 +8688,10 @@
             "description": "Configure how Home Assistant serves its web interface. Saving restarts Home Assistant.",
             "save": "Save",
             "save_no_changes": "Nothing changed — no restart needed.",
+            "save_error": "Could not save the HTTP configuration.",
+            "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
+            "invalid_host": "Enter a valid IP address.",
+            "invalid_network": "Enter a valid IP address or network.",
             "save_confirm": {
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
@@ -8690,7 +8703,7 @@
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
               "ip_banning": "IP banning",
-              "advanced": "Advanced"
+              "advanced": "More options"
             },
             "fields": {
               "server_port": "Server port",
@@ -10140,6 +10153,33 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
+              "date": {
+                "label": "Date",
+                "description": "Select and order the date parts. Add a separator to control punctuation.",
+                "sections": {
+                  "weekday": "Weekday",
+                  "day": "Day",
+                  "month": "Month",
+                  "year": "Year",
+                  "separator": "Separator"
+                },
+                "parts": {
+                  "weekday-short": "Short",
+                  "weekday-long": "Long",
+                  "day-numeric": "Numeric",
+                  "day-2-digit": "2-digit",
+                  "month-short": "Short",
+                  "month-long": "Long",
+                  "month-numeric": "Numeric",
+                  "month-2-digit": "2-digit",
+                  "year-2-digit": "2-digit",
+                  "year-numeric": "Full",
+                  "separator-dash": "Dash",
+                  "separator-slash": "Slash",
+                  "separator-dot": "Dot",
+                  "separator-new-line": "New line"
+                }
+              },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
@@ -11539,6 +11579,11 @@
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
+      },
+      "logbook": {
+        "download_data": "[%key:ui::panel::history::download_data%]",
+        "download_data_error": "[%key:ui::panel::history::download_data_error%]",
+        "error_no_data": "No activity for the selected target in the selected time range."
       }
     },
     "tips": {

@@ -1,12 +1,27 @@
+// A range smaller than this fraction of the axis magnitude is floating-point
+// noise (e.g. from summed statistics), not real precision.
+const NEGLIGIBLE_RANGE_RATIO = 1e-10;
+
 // Derive the number of decimal digits to use for Y-axis labels from the
 // observed data range. We mirror how ECharts sizes its ticks: it splits the
 // range into ~5 intervals (its default `splitNumber`) and rounds that raw
 // interval to a "nice" 1/2/3/5×10ⁿ value, then reports the decimals that nice
 // interval needs. This matches the precision ECharts actually renders, so
 // labels are neither truncated to identical values nor padded with extra zeros.
-export function computeYAxisFractionDigits(min: number, max: number): number {
-  const range = max - min;
+export function computeYAxisFractionDigits(
+  min: number,
+  max: number,
+  // Bar axes render from 0, so union the extent with 0 to match.
+  includeZero = false
+): number {
+  const lo = includeZero ? Math.min(min, 0) : min;
+  const hi = includeZero ? Math.max(max, 0) : max;
+  const range = hi - lo;
   if (!Number.isFinite(range) || range <= 0) return 1;
+  // A near-zero range is fp noise; deriving digits from it would pad the labels
+  // with a tail of zeros (e.g. "0.20000000000000"), so treat it as flat.
+  const magnitude = Math.max(Math.abs(lo), Math.abs(hi));
+  if (range <= magnitude * NEGLIGIBLE_RANGE_RATIO) return 1;
   const rawInterval = range / 5;
   const exponent = Math.floor(Math.log10(rawInterval));
   const mantissa = rawInterval / 10 ** exponent; // in [1, 10)
@@ -38,9 +53,7 @@ const resolveYAxisBound = (
 export function createYAxisPrecisionBounds(options: {
   min?: YAxisBound;
   max?: YAxisBound;
-  // Axes without `scale: true` (e.g. bar charts) stay anchored at 0, so the
-  // rendered ticks span from 0 even when the data does not. Union the extent
-  // with 0 to match the labels ECharts actually draws.
+  // Set for bar axes anchored at 0, so precision reflects the 0-based range.
   includeZero?: boolean;
   onFractionDigits: (digits: number) => void;
 }): {
@@ -52,13 +65,11 @@ export function createYAxisPrecisionBounds(options: {
     min: (values) => {
       const resolvedMin = resolveYAxisBound(min, values);
       const resolvedMax = resolveYAxisBound(max, values);
-      let extentMin = resolvedMin ?? values.min;
-      let extentMax = resolvedMax ?? values.max;
-      if (includeZero) {
-        extentMin = Math.min(extentMin, 0);
-        extentMax = Math.max(extentMax, 0);
-      }
-      onFractionDigits(computeYAxisFractionDigits(extentMin, extentMax));
+      const extentMin = resolvedMin ?? values.min;
+      const extentMax = resolvedMax ?? values.max;
+      onFractionDigits(
+        computeYAxisFractionDigits(extentMin, extentMax, includeZero)
+      );
       return resolvedMin;
     },
     max: (values) => resolveYAxisBound(max, values),

@@ -171,7 +171,6 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
           content = html`
             <hui-view-editor
               .isNew=${this._params.viewIndex === undefined}
-              .hass=${this.hass}
               .config=${this._config}
               @view-config-changed=${this._viewConfigChanged}
             ></hui-view-editor>

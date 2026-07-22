@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { getE2EWorkers } from "./playwright-workers";
 
 // Port 8090 matches the `develop_demo` dev server (rspack-dev-server-demo).
 // This means running `demo/script/develop_demo` and then `yarn test:e2e:local`
@@ -16,8 +17,10 @@ export default defineConfig({
   expect: { timeout: 15_000 },
 
   retries: process.env.CI ? 1 : 0,
+  fullyParallel: true,
+  workers: getE2EWorkers(),
 
-  outputDir: "test-results",
+  outputDir: "test-results/demo",
   reporter: [["list"], ["blob", { outputDir: "reports/demo" }]],
 
   use: {

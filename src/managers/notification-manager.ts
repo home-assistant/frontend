@@ -20,6 +20,7 @@ export interface ShowToastParams {
     | { translationKey: LocalizeKeys; args?: Record<string, string | number> };
   action?: ToastActionParams;
   secondaryAction?: ToastActionParams;
+  dismiss?: () => void;
   duration?: number;
   dismissable?: boolean;
   bottomOffset?: number;
@@ -78,7 +79,10 @@ class NotificationManager extends LitElement {
     this._toast?.show();
   }
 
-  private _toastClosed(_ev: HASSDomEvent<ToastClosedEventDetail>) {
+  private _toastClosed(ev: HASSDomEvent<ToastClosedEventDetail>) {
+    if (ev.detail.reason === "dismiss") {
+      this._parameters?.dismiss?.();
+    }
     this._parameters = undefined;
   }
 

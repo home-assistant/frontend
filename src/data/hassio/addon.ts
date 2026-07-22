@@ -140,7 +140,7 @@ export interface HassioAddonSetOptionParams {
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
   await hass.callWS({
     type: "supervisor/api",
-    endpoint: "/addons/reload",
+    endpoint: "/store/reload",
     method: "post",
   });
 };

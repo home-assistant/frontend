@@ -21,6 +21,21 @@ export interface HttpConfigState {
   revert_at: string | null;
 }
 
+export const HTTP_CONFIG_FIELDS: (keyof HttpConfig)[] = [
+  "server_port",
+  "server_host",
+  "ssl_certificate",
+  "ssl_key",
+  "ssl_peer_certificate",
+  "ssl_profile",
+  "cors_allowed_origins",
+  "use_x_forwarded_for",
+  "trusted_proxies",
+  "use_x_frame_options",
+  "ip_ban_enabled",
+  "login_attempts_threshold",
+];
+
 export interface SaveHttpConfigResult {
   restart: boolean;
 }

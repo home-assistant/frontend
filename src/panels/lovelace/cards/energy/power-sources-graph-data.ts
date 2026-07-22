@@ -226,21 +226,24 @@ export function generatePowerSourcesGraphData(
 
   // Draw in reverse order so 0 value lines are overwritten
   ["solar", "battery", "grid"].forEach((key, i) => {
-    if (seriesData[key]) {
-      pushSeries(key, seriesData[key].positive, "positive", 3 - i);
+    const series = seriesData[key];
+    if (series) {
+      pushSeries(key, series.positive, "positive", 3 - i);
     }
   });
 
   // Draw in reverse order but above positive series
   ["battery", "grid"].forEach((key, i) => {
-    if (seriesData[key]) {
-      pushSeries(key, seriesData[key].negative, "negative", 4 - i);
+    const series = seriesData[key];
+    if (series) {
+      pushSeries(key, series.negative, "negative", 4 - i);
     }
   });
 
   Object.keys(statIds).forEach((key) => {
-    if (seriesData[key]) {
-      const { colorHex, rgb } = seriesData[key];
+    const series = seriesData[key];
+    if (series) {
+      const { colorHex, rgb } = series;
 
       legendData!.push({
         id: key,
@@ -258,7 +261,7 @@ export function generatePowerSourcesGraphData(
   const end = energyData.end || endOfToday();
 
   const chartData = fillLineGaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
   // fillLineGaps ensures all datasets share the same x values, so iterate the
