@@ -2,9 +2,11 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
+  array,
   assert,
   assign,
   boolean,
+  defaulted,
   enums,
   object,
   optional,
@@ -16,30 +18,20 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { DateCardConfig } from "../../cards/types";
-import { DEFAULT_DATE_FORMAT } from "../../cards/hui-date-card-helpers";
+import { CLOCK_CARD_DATE_PARTS } from "../../cards/clock/clock-date-format";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
-
-const DATE_FORMATS = [
-  "weekday_day",
-  "long",
-  "short",
-  "numeric",
-  "very_short",
-  "weekday_very_short_date",
-  "weekday_short_date",
-] as const;
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
     date_size: optional(enums(["small", "medium", "large"] as const)),
-    date_format: optional(enums(DATE_FORMATS)),
+    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
     time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     no_background: optional(boolean()),
   })
@@ -74,16 +66,9 @@ export class HuiDateCardEditor
         },
         {
           name: "date_format",
+          required: false,
           selector: {
-            select: {
-              mode: "dropdown",
-              options: DATE_FORMATS.map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.date.date_formats.${value}`
-                ),
-              })),
-            },
+            ui_clock_date_format: {},
           },
         },
         { name: "no_background", selector: { boolean: {} } },
@@ -91,10 +76,10 @@ export class HuiDateCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _data = memoizeOne((config: DateCardConfig) => ({
+  private _data = memoizeOne((config: DateCardConfig): DateCardConfig => ({
     date_size: "small",
-    date_format: DEFAULT_DATE_FORMAT,
     no_background: false,
+    date_format: [],
     ...config,
   }));
 
@@ -114,13 +99,20 @@ export class HuiDateCardEditor
         .data=${this._data(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+  private _valueChanged(ev: ValueChangedEvent<DateCardConfig>): void {
+    const config = ev.detail.value;
+
+    if (!config.date_format || config.date_format.length === 0) {
+      delete config.date_format;
+    }
+
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
@@ -146,6 +138,19 @@ export class HuiDateCardEditor
       case "time_zone":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.date.time_zone"
+        );
+      default:
+        return undefined;
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "date_format":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.date.date_format_description"
         );
       default:
         return undefined;

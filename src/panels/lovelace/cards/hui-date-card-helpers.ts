@@ -3,38 +3,16 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../../data/translation";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import {
-  formatDate,
-  formatDateNumeric,
-  formatDateShort,
-  formatDateVeryShort,
-  formatDateWeekdayDay,
-  formatDateWeekdayShortDate,
-  formatDateWeekdayVeryShortDate,
-} from "../../../common/datetime/format_date";
-import type { DateCardConfig } from "./types";
+  formatClockCardDate,
+  getClockCardDateConfig,
+} from "./clock/clock-date-format";
+import type { ClockCardDatePart, DateCardConfig } from "./types";
 
-type DateFormatter = (
-  dateObj: Date,
-  locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) => string;
-
-export const DATE_CARD_FORMATTERS: Record<
-  NonNullable<DateCardConfig["date_format"]>,
-  DateFormatter
-> = {
-  weekday_day: formatDateWeekdayDay,
-  long: formatDate,
-  short: formatDateShort,
-  numeric: formatDateNumeric,
-  very_short: formatDateVeryShort,
-  weekday_very_short_date: formatDateWeekdayVeryShortDate,
-  weekday_short_date: formatDateWeekdayShortDate,
-};
-
-export const DEFAULT_DATE_FORMAT: NonNullable<DateCardConfig["date_format"]> =
-  "weekday_day";
+const DEFAULT_DATE_FORMAT_PARTS: ClockCardDatePart[] = [
+  "weekday-long",
+  "day-numeric",
+  "month-long",
+];
 
 /**
  * Resolves the actual IANA time zone the card should display, honoring a
@@ -49,9 +27,9 @@ export const computeResolvedTimeZone = (
   cardConfig.time_zone || resolveTimeZone(locale.time_zone, config.time_zone);
 
 /**
- * Formats "now" per the card's configured date_format, passing a card-level
- * time_zone override straight through to the formatter rather than faking
- * locale/config to influence resolveTimeZone.
+ * Formats "now" per the card's configured date_format tokens (same token
+ * system as the Clock card), falling back to default when no valid
+ * tokens are configured.
  */
 export const computeDateText = (
   dateObj: Date,
@@ -59,11 +37,15 @@ export const computeDateText = (
   config: HassConfig,
   cardConfig: DateCardConfig
 ): string => {
-  const formatter =
-    DATE_CARD_FORMATTERS[cardConfig.date_format ?? DEFAULT_DATE_FORMAT] ??
-    DATE_CARD_FORMATTERS[DEFAULT_DATE_FORMAT];
+  const { parts } = getClockCardDateConfig(cardConfig);
+  const timeZone = computeResolvedTimeZone(locale, config, cardConfig);
 
-  return formatter(dateObj, locale, config, cardConfig.time_zone);
+  return formatClockCardDate(
+    dateObj,
+    { parts: parts.length ? parts : DEFAULT_DATE_FORMAT_PARTS },
+    locale.language,
+    timeZone
+  );
 };
 
 /**

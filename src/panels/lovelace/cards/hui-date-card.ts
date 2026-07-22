@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
+import { shallowEqual } from "../../../common/util/shallow-equal";
 import type { HomeAssistant } from "../../../types";
 import type {
   LovelaceCard,
@@ -100,7 +101,7 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     const relevantConfigChanged =
       changedProps.has("_config") &&
       (oldConfig?.time_zone !== this._config?.time_zone ||
-        oldConfig?.date_format !== this._config?.date_format);
+        !shallowEqual(oldConfig?.date_format, this._config?.date_format));
 
     if (localeChanged || relevantConfigChanged) {
       this._scheduleMidnightRefresh();

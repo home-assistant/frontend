@@ -8,25 +8,16 @@ import { resolveTimeZone } from "./resolve-time-zone";
 export const formatDateWeekdayDay = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) =>
-  formatDateWeekdayDayMem(locale, config.time_zone, timeZoneOverride).format(
-    dateObj
-  );
+  config: HassConfig
+) => formatDateWeekdayDayMem(locale, config.time_zone).format(dateObj);
 
 const formatDateWeekdayDayMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "long",
       month: "long",
       day: "numeric",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -34,22 +25,16 @@ const formatDateWeekdayDayMem = memoizeOne(
 export const formatDate = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) => formatDateMem(locale, config.time_zone, timeZoneOverride).format(dateObj);
+  config: HassConfig
+) => formatDateMem(locale, config.time_zone).format(dateObj);
 
 const formatDateMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       year: "numeric",
       month: "long",
       day: "numeric",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -57,25 +42,16 @@ const formatDateMem = memoizeOne(
 export const formatDateShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) =>
-  formatDateShortMem(locale, config.time_zone, timeZoneOverride).format(
-    dateObj
-  );
+  config: HassConfig
+) => formatDateShortMem(locale, config.time_zone).format(dateObj);
 
 const formatDateShortMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       year: "numeric",
       month: "short",
       day: "numeric",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -83,14 +59,9 @@ const formatDateShortMem = memoizeOne(
 export const formatDateNumeric = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
+  config: HassConfig
 ) => {
-  const formatter = formatDateNumericMem(
-    locale,
-    config.time_zone,
-    timeZoneOverride
-  );
+  const formatter = formatDateNumericMem(locale, config.time_zone);
 
   if (
     locale.date_format === DateFormat.language ||
@@ -123,15 +94,10 @@ export const formatDateNumeric = (
 };
 
 const formatDateNumericMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) => {
+  (locale: FrontendLocaleData, serverTimeZone: string) => {
     const localeString =
       locale.date_format === DateFormat.system ? undefined : locale.language;
-    const timeZone =
-      timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone);
+    const timeZone = resolveTimeZone(locale.time_zone, serverTimeZone);
 
     return new Intl.DateTimeFormat(localeString, {
       year: "numeric",
@@ -146,24 +112,15 @@ const formatDateNumericMem = memoizeOne(
 export const formatDateVeryShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) =>
-  formatDateVeryShortMem(locale, config.time_zone, timeZoneOverride).format(
-    dateObj
-  );
+  config: HassConfig
+) => formatDateVeryShortMem(locale, config.time_zone).format(dateObj);
 
 const formatDateVeryShortMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       day: "numeric",
       month: "short",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -262,27 +219,17 @@ const formatDateWeekdayShortMem = memoizeOne(
 export const formatDateWeekdayVeryShortDate = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
+  config: HassConfig
 ) =>
-  formatDateWeekdayVeryShortDateMem(
-    locale,
-    config.time_zone,
-    timeZoneOverride
-  ).format(dateObj);
+  formatDateWeekdayVeryShortDateMem(locale, config.time_zone).format(dateObj);
 
 const formatDateWeekdayVeryShortDateMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "short",
       month: "short",
       day: "numeric",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 
@@ -290,28 +237,17 @@ const formatDateWeekdayVeryShortDateMem = memoizeOne(
 export const formatDateWeekdayShortDate = (
   dateObj: Date,
   locale: FrontendLocaleData,
-  config: HassConfig,
-  timeZoneOverride?: string
-) =>
-  formatDateWeekdayShortDateMem(
-    locale,
-    config.time_zone,
-    timeZoneOverride
-  ).format(dateObj);
+  config: HassConfig
+) => formatDateWeekdayShortDateMem(locale, config.time_zone).format(dateObj);
 
 const formatDateWeekdayShortDateMem = memoizeOne(
-  (
-    locale: FrontendLocaleData,
-    serverTimeZone: string,
-    timeZoneOverride?: string
-  ) =>
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "short",
       month: "short",
       day: "numeric",
       year: "numeric",
-      timeZone:
-        timeZoneOverride ?? resolveTimeZone(locale.time_zone, serverTimeZone),
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
     })
 );
 

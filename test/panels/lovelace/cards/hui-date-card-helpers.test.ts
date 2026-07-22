@@ -1,7 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  DATE_CARD_FORMATTERS,
-  DEFAULT_DATE_FORMAT,
   computeResolvedTimeZone,
   computeDateText,
   computeMsUntilMidnight,
@@ -14,7 +12,7 @@ import {
   TimeZone,
 } from "../../../../src/data/translation";
 import { demoConfig } from "../../../../src/fake_data/demo_config";
-import type { DateCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { ClockCardDatePart } from "../../../../src/panels/lovelace/cards/types";
 
 const locale = {
   language: "en",
@@ -26,29 +24,6 @@ const locale = {
 };
 
 const dateObj = new Date(2017, 10, 18, 11, 12, 13, 1400);
-
-describe("DEFAULT_DATE_FORMAT", () => {
-  it("defaults to weekday_day", () => {
-    expect(DEFAULT_DATE_FORMAT).toBe("weekday_day");
-  });
-});
-
-describe("DATE_CARD_FORMATTERS", () => {
-  it("has an entry for every supported date_format value", () => {
-    const expectedKeys: NonNullable<DateCardConfig["date_format"]>[] = [
-      "weekday_day",
-      "long",
-      "short",
-      "numeric",
-      "very_short",
-      "weekday_very_short_date",
-      "weekday_short_date",
-    ];
-    expect(Object.keys(DATE_CARD_FORMATTERS).sort()).toEqual(
-      [...expectedKeys].sort()
-    );
-  });
-});
 
 describe("computeResolvedTimeZone", () => {
   it("uses the card's time_zone override when set", () => {
@@ -72,124 +47,80 @@ describe("computeResolvedTimeZone", () => {
 });
 
 describe("computeDateText", () => {
-  it("formats using the weekday_day formatter by default", () => {
+  it("falls back to weekday-long + day-numeric + month-long when date_format is unset", () => {
     expect(computeDateText(dateObj, locale, demoConfig, { type: "date" })).toBe(
-      "Saturday, November 18"
+      "Saturday 18 November"
     );
   });
 
-  it("formats using the long formatter", () => {
+  it("falls back to the same default when date_format is an empty array", () => {
     expect(
       computeDateText(dateObj, locale, demoConfig, {
         type: "date",
-        date_format: "long",
+        date_format: [],
       })
-    ).toBe("November 18, 2017");
+    ).toBe("Saturday 18 November");
   });
 
-  it("formats using the short formatter", () => {
+  it("formats using configured tokens in the given order, honoring separators", () => {
     expect(
       computeDateText(dateObj, locale, demoConfig, {
         type: "date",
-        date_format: "short",
+        date_format: [
+          "month-long",
+          "day-numeric",
+          "separator-dot",
+          "year-numeric",
+        ],
       })
-    ).toBe("Nov 18, 2017");
+    ).toBe("November 18.2017");
   });
 
-  it("formats using the numeric formatter", () => {
+  it("formats using a single token", () => {
     expect(
       computeDateText(dateObj, locale, demoConfig, {
         type: "date",
-        date_format: "numeric",
+        date_format: ["year-numeric"],
       })
-    ).toBe("11/18/2017");
+    ).toBe("2017");
   });
 
-  it("formats using the very_short formatter", () => {
+  it("filters out unknown/invalid tokens and falls back to the default when nothing valid remains", () => {
     expect(
       computeDateText(dateObj, locale, demoConfig, {
         type: "date",
-        date_format: "very_short",
+        date_format: ["not_a_real_token"] as unknown as ClockCardDatePart[],
       })
-    ).toBe("Nov 18");
-  });
-
-  it("formats using the weekday_very_short_date formatter", () => {
-    expect(
-      computeDateText(dateObj, locale, demoConfig, {
-        type: "date",
-        date_format: "weekday_very_short_date",
-      })
-    ).toBe("Sat, Nov 18");
-  });
-
-  it("formats using the weekday_short_date formatter", () => {
-    expect(
-      computeDateText(dateObj, locale, demoConfig, {
-        type: "date",
-        date_format: "weekday_short_date",
-      })
-    ).toBe("Sat, Nov 18, 2017");
+    ).toBe("Saturday 18 November");
   });
 
   it("respects a card-level time_zone override", () => {
     // demoConfig.time_zone is "America/Los_Angeles"; forcing a zone far enough
-    // east flips the calendar day for this UTC instant.
+    // east/west flips the calendar day for this UTC instant.
     const utcDateObj = new Date(Date.UTC(2017, 10, 18, 4, 0, 0));
+    const dateFormat: ClockCardDatePart[] = [
+      "year-numeric",
+      "separator-dash",
+      "month-long",
+      "separator-dash",
+      "day-numeric",
+    ];
+
     expect(
       computeDateText(utcDateObj, locale, demoConfig, {
         type: "date",
-        date_format: "long",
+        date_format: dateFormat,
         time_zone: "Pacific/Auckland",
       })
-    ).toBe("November 18, 2017");
+    ).toBe("2017-November-18");
+
     expect(
       computeDateText(utcDateObj, locale, demoConfig, {
         type: "date",
-        date_format: "long",
+        date_format: dateFormat,
         time_zone: "Etc/GMT+12",
       })
-    ).toBe("November 17, 2017");
-  });
-
-  it("falls back to the default formatter for an unknown/invalid date_format", () => {
-    const invalidConfig = {
-      type: "date",
-      date_format: "not_a_real_format",
-    } as unknown as DateCardConfig;
-
-    expect(() =>
-      computeDateText(dateObj, locale, demoConfig, invalidConfig)
-    ).not.toThrow();
-    expect(computeDateText(dateObj, locale, demoConfig, invalidConfig)).toBe(
-      computeDateText(dateObj, locale, demoConfig, { type: "date" })
-    );
-  });
-
-  it("reuses the memoized Intl.DateTimeFormat across repeated calls without a time_zone override", () => {
-    const realDateTimeFormat = Intl.DateTimeFormat;
-    // vitest requires a `function` (not an arrow function) here to mock a
-    // constructor invoked with `new`.
-    // eslint-disable-next-line prefer-arrow-callback
-    const spy = vi.spyOn(Intl, "DateTimeFormat").mockImplementation(function (
-      ...args: ConstructorParameters<typeof Intl.DateTimeFormat>
-    ) {
-      return new realDateTimeFormat(...args);
-    });
-    try {
-      computeDateText(dateObj, locale, demoConfig, {
-        type: "date",
-        date_format: "long",
-      });
-      const callsAfterFirst = spy.mock.calls.length;
-      computeDateText(dateObj, locale, demoConfig, {
-        type: "date",
-        date_format: "long",
-      });
-      expect(spy.mock.calls.length).toBe(callsAfterFirst);
-    } finally {
-      spy.mockRestore();
-    }
+    ).toBe("2017-November-17");
   });
 });
 

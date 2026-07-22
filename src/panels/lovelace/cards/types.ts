@@ -472,14 +472,7 @@ export interface DateCardConfig extends LovelaceCardConfig {
   type: "date";
   title?: string;
   date_size?: "small" | "medium" | "large";
-  date_format?:
-    | "weekday_day"
-    | "long"
-    | "short"
-    | "numeric"
-    | "very_short"
-    | "weekday_very_short_date"
-    | "weekday_short_date";
+  date_format?: ClockCardDatePart[];
   time_zone?: string;
   no_background?: boolean;
 }
