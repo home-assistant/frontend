@@ -66,7 +66,11 @@ module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
 
   initLoader(env)
     .then(({ minifyHTMLLiterals, lightningcssTargets }) => {
-      console.log("Targets:", JSON.stringify(lightningcssTargets));
+      console.log(
+        "Targets %s for %s:",
+        JSON.stringify(lightningcssTargets),
+        this.resourcePath
+      );
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
