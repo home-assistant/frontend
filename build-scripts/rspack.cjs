@@ -96,6 +96,9 @@ const createRspackConfig = ({
                   __dirname,
                   "minify-template-literals-loader.cjs"
                 ),
+                options: {
+                  env: latestBuild ? "modern" : "legacy",
+                },
               },
               !latestBuild &&
                 info.resource.startsWith(
