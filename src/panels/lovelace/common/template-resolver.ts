@@ -11,10 +11,16 @@ import type { CollectedTemplate } from "./resolve-config-templates";
 import {
   applyConfigTemplates,
   collectConfigTemplates,
+  OMIT_TEMPLATE_FIELD,
   pathKey,
 } from "./resolve-config-templates";
 
 export type TemplatableConfig = Record<string, any> & { type?: string };
+
+// Cards that render their own config as a template (with their own variables /
+// strict settings) are excluded from the generic resolver to avoid resolving
+// the same template twice.
+const SELF_RENDERING_TYPES = new Set<string>(["markdown"]);
 
 // Remembers the last rendered value for a (config, template) pair so switching
 // views or reconnecting shows the resolved value instantly instead of a flash
@@ -145,10 +151,14 @@ export class TemplateResolver implements ReactiveController {
     this._values = new Map();
     // Custom cards (`custom:`) are left untouched: many ship their own template
     // engine (e.g. Mushroom, button-card), so pre-resolving their strings would
-    // change their meaning. They can opt in to templating on their own terms.
-    const isCustom = !!this._config?.type && isCustomType(this._config.type);
+    // change their meaning. Self-rendering cards (markdown) are skipped too, to
+    // avoid resolving the same template twice. Both can template on their own
+    // terms.
+    const type = this._config?.type;
+    const skip =
+      !!type && (isCustomType(type) || SELF_RENDERING_TYPES.has(type));
     this._templates =
-      this._config && !isCustom && hasTemplate(this._config)
+      this._config && !skip && hasTemplate(this._config)
         ? collectConfigTemplates(this._config)
         : [];
     this._configHash = this._templates.length ? hash(this._config) : undefined;
@@ -178,13 +188,6 @@ export class TemplateResolver implements ReactiveController {
       if (!this._subscriptions.has(source)) {
         this._subscribe(source);
       }
-    }
-
-    if (!this.ready && this._timeout === undefined) {
-      this._timeout = window.setTimeout(() => {
-        this._timeout = undefined;
-        this._recompute(true);
-      }, BUILD_TIMEOUT);
     }
   }
 
@@ -282,15 +285,25 @@ export class TemplateResolver implements ReactiveController {
           this._values.get(template.template)
         );
       } else if (force) {
-        // Best-effort on timeout: leave the raw template string in place.
-        results.set(pathKey(template.path), template.template);
+        // Timeout with no value (e.g. a template error): drop the field rather
+        // than leave a raw `{{ }}` string in a type-validating field.
+        results.set(pathKey(template.path), OMIT_TEMPLATE_FIELD);
       }
     }
     this.resolvedConfig = applyConfigTemplates(this._config, results);
 
-    if (this.ready && this._timeout !== undefined) {
-      window.clearTimeout(this._timeout);
-      this._timeout = undefined;
+    if (this.ready) {
+      if (this._timeout !== undefined) {
+        window.clearTimeout(this._timeout);
+        this._timeout = undefined;
+      }
+    } else if (this._timeout === undefined && this._connected) {
+      // Safety net: build with best-effort values if some template never
+      // resolves (e.g. a genuine error) instead of waiting forever.
+      this._timeout = window.setTimeout(() => {
+        this._timeout = undefined;
+        this._recompute(true);
+      }, BUILD_TIMEOUT);
     }
 
     this._onChange();

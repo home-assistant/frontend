@@ -216,6 +216,12 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     if (!config) {
       return;
     }
+    // Keep the visibility condition context in sync with a resolved entity
+    // (e.g. `entity: "{{ ... }}"`), not the raw template string.
+    this._conditionContext = {
+      ...this._conditionContext,
+      entity_id: getConfigEntityId(config),
+    };
     if (!this._element) {
       this._loadElement(config);
       return;

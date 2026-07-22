@@ -53,6 +53,36 @@ describe("TemplateResolver", () => {
     expect(captured).toHaveLength(0);
   });
 
+  it("skips self-rendering cards (markdown renders its own content)", () => {
+    const r = new TemplateResolver(fakeHost(), vi.fn());
+    r.hostConnected();
+    const config = { type: "markdown", content: "{{ states('sensor.x') }}" };
+    r.setInput(config, fakeHass(), false);
+    expect(r.ready).toBe(true);
+    expect(r.resolvedConfig).toBe(config);
+    expect(captured).toHaveLength(0);
+  });
+
+  it("omits a field that never resolves once the build timeout fires", () => {
+    vi.useFakeTimers();
+    try {
+      const r = new TemplateResolver(fakeHost(), vi.fn());
+      r.hostConnected();
+      r.setInput(
+        { type: "gauge", entity: "sensor.p", max: "{{ broken }}" },
+        fakeHass(),
+        false
+      );
+      expect(r.ready).toBe(false);
+      vi.advanceTimersByTime(3000);
+      expect(r.ready).toBe(true);
+      expect("max" in r.resolvedConfig!).toBe(false); // dropped, not raw
+      expect(r.resolvedConfig!.entity).toBe("sensor.p");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("subscribes, stays not-ready until rendered, then resolves", () => {
     const onChange = vi.fn();
     const r = new TemplateResolver(fakeHost(), onChange);

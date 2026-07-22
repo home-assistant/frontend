@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   collectConfigTemplates,
   applyConfigTemplates,
+  OMIT_TEMPLATE_FIELD,
   pathKey,
 } from "../../../../src/panels/lovelace/common/resolve-config-templates";
 
@@ -96,13 +97,23 @@ describe("collectConfigTemplates", () => {
     ]);
   });
 
-  it("delegates picture-elements `elements` and card `features`", () => {
+  it("resolves native picture-elements and features inline, halting at custom", () => {
     const config = {
       type: "picture-elements",
-      elements: [{ type: "state-label", entity: "{{ x }}" }],
-      features: [{ type: "custom:foo", label: "{{ y }}" }],
+      elements: [
+        { type: "state-label", entity: "{{ x }}" },
+        { type: "custom:foo", label: "{{ ignored }}" },
+      ],
+      features: [{ type: "target-temperature", label: "{{ y }}" }],
     };
-    expect(collectConfigTemplates(config)).toEqual([]);
+    const found = collectConfigTemplates(config).map((f) => ({
+      path: f.path.join("."),
+      template: f.template,
+    }));
+    expect(found).toEqual([
+      { path: "elements.0.entity", template: "{{ x }}" },
+      { path: "features.0.label", template: "{{ y }}" },
+    ]);
   });
 
   it("resolves native entity rows but skips custom rows at any level", () => {
@@ -187,6 +198,26 @@ describe("applyConfigTemplates", () => {
     const config = { type: "tile", name: "static" };
     const resolved = applyConfigTemplates(config, new Map());
     expect(resolved).toBe(config);
+  });
+
+  it("omits a field whose result is OMIT_TEMPLATE_FIELD without mutating source", () => {
+    const config = {
+      type: "gauge",
+      entity: "sensor.p",
+      min: "{{ broken }}",
+      max: "{{ 100 }}",
+    };
+    const raw = structuredClone(config);
+    const resolved = applyConfigTemplates(
+      config,
+      new Map<string, unknown>([
+        [pathKey(["min"]), OMIT_TEMPLATE_FIELD],
+        [pathKey(["max"]), 100],
+      ])
+    );
+    expect("min" in resolved).toBe(false); // dropped, not left as raw template
+    expect(resolved.max).toBe(100);
+    expect(config).toEqual(raw); // source untouched
   });
 
   it("round-trips: collect -> render -> apply, parent field only", () => {
