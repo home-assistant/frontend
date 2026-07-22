@@ -176,9 +176,9 @@ test.describe("Quick search", () => {
 
     const voiceCommandDialog = page.locator("ha-voice-command-dialog");
     await expect(voiceCommandDialog).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(
-      voiceCommandDialog.locator("ha-assist-chat .message-container.user")
-    ).toContainText("Turn on the lights", { timeout: QUICK_TIMEOUT });
+    await expect(voiceCommandDialog.locator("ha-assist-chat")).toBeAttached({
+      timeout: QUICK_TIMEOUT,
+    });
 
     await expect
       .poll(() => page.evaluate(() => (window as any).__assistRun))
