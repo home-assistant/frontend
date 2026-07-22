@@ -175,14 +175,14 @@ describe("getOnboardingSurveyUrl", () => {
         onboarded_version: "2026.7.0",
         onboarded_date: "2026-07-14T12:00:00.000Z",
       }),
-      "https://www.home-assistant.io/surveys/onboarding?version=2026.7.0"
+      "https://ohf.to/ha/surveys/onboarding?version=2026.7.0"
     );
   });
 
   it("omits a missing version param", () => {
     assert.strictEqual(
       getOnboardingSurveyUrl({}),
-      "https://www.home-assistant.io/surveys/onboarding"
+      "https://ohf.to/ha/surveys/onboarding"
     );
   });
 });
