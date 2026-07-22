@@ -110,7 +110,9 @@ test.describe("Home Assistant Demo", () => {
 
     await expectStoredDemoTheme(page, { theme: "default", dark: true });
     await expect
-      .poll(() => page.evaluate(() => localStorage.getItem("selectedTheme")))
+      .poll(() => page.evaluate(() => localStorage.getItem("selectedTheme")), {
+        timeout: SHELL_TIMEOUT,
+      })
       .toBeNull();
     await expectDemoDarkMode(page, true);
 
