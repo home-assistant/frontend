@@ -2,43 +2,43 @@ import { describe, expect, it } from "vitest";
 
 import {
   getHiddenFields,
-  isFieldHidden,
+  isFieldVisible,
 } from "../../../src/components/ha-form/conditions";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
 
-const field = (hidden: HaFormSchema["hidden"]): HaFormSchema =>
-  ({ name: "field", selector: { text: {} }, hidden }) as HaFormSchema;
+const field = (visible: HaFormSchema["visible"]): HaFormSchema =>
+  ({ name: "field", selector: { text: {} }, visible }) as HaFormSchema;
 
-describe("isFieldHidden", () => {
-  it("shows a field without a hidden condition", () => {
-    expect(isFieldHidden(field(undefined), { a: 1 })).toBe(false);
+describe("isFieldVisible", () => {
+  it("shows a field without a visible condition", () => {
+    expect(isFieldVisible(field(undefined), { a: 1 })).toBe(true);
   });
 
-  it("honors a boolean hidden", () => {
-    expect(isFieldHidden(field(true), {})).toBe(true);
-    expect(isFieldHidden(field(false), {})).toBe(false);
+  it("honors a boolean visible", () => {
+    expect(isFieldVisible(field(true), {})).toBe(true);
+    expect(isFieldVisible(field(false), {})).toBe(false);
   });
 
   describe("operators", () => {
     it("eq (default) matches equal values", () => {
-      expect(isFieldHidden(field({ field: "a", value: 1 }), { a: 1 })).toBe(
+      expect(isFieldVisible(field({ field: "a", value: 1 }), { a: 1 })).toBe(
         true
       );
-      expect(isFieldHidden(field({ field: "a", value: 1 }), { a: 2 })).toBe(
+      expect(isFieldVisible(field({ field: "a", value: 1 }), { a: 2 })).toBe(
         false
       );
     });
 
     it("not_eq matches different values", () => {
       const schema = field({ field: "a", operator: "not_eq", value: 1 });
-      expect(isFieldHidden(schema, { a: 2 })).toBe(true);
-      expect(isFieldHidden(schema, { a: 1 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 2 })).toBe(true);
+      expect(isFieldVisible(schema, { a: 1 })).toBe(false);
     });
 
     it("in matches membership", () => {
       const schema = field({ field: "a", operator: "in", value: ["x", "y"] });
-      expect(isFieldHidden(schema, { a: "y" })).toBe(true);
-      expect(isFieldHidden(schema, { a: "z" })).toBe(false);
+      expect(isFieldVisible(schema, { a: "y" })).toBe(true);
+      expect(isFieldVisible(schema, { a: "z" })).toBe(false);
     });
 
     it("not_in matches non-membership", () => {
@@ -47,22 +47,22 @@ describe("isFieldHidden", () => {
         operator: "not_in",
         value: ["x", "y"],
       });
-      expect(isFieldHidden(schema, { a: "z" })).toBe(true);
-      expect(isFieldHidden(schema, { a: "x" })).toBe(false);
+      expect(isFieldVisible(schema, { a: "z" })).toBe(true);
+      expect(isFieldVisible(schema, { a: "x" })).toBe(false);
     });
 
     it("exists matches a defined non-empty value", () => {
       const schema = field({ field: "a", operator: "exists" });
-      expect(isFieldHidden(schema, { a: "x" })).toBe(true);
-      expect(isFieldHidden(schema, { a: "" })).toBe(false);
-      expect(isFieldHidden(schema, {})).toBe(false);
+      expect(isFieldVisible(schema, { a: "x" })).toBe(true);
+      expect(isFieldVisible(schema, { a: "" })).toBe(false);
+      expect(isFieldVisible(schema, {})).toBe(false);
     });
 
     it("not_exists matches a missing or empty value", () => {
       const schema = field({ field: "a", operator: "not_exists" });
-      expect(isFieldHidden(schema, {})).toBe(true);
-      expect(isFieldHidden(schema, { a: null } as any)).toBe(true);
-      expect(isFieldHidden(schema, { a: "x" })).toBe(false);
+      expect(isFieldVisible(schema, {})).toBe(true);
+      expect(isFieldVisible(schema, { a: null } as any)).toBe(true);
+      expect(isFieldVisible(schema, { a: "x" })).toBe(false);
     });
   });
 
@@ -75,8 +75,8 @@ describe("isFieldHidden", () => {
           { field: "b", value: 2 },
         ],
       });
-      expect(isFieldHidden(schema, { a: 1, b: 2 })).toBe(true);
-      expect(isFieldHidden(schema, { a: 1, b: 9 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 1, b: 2 })).toBe(true);
+      expect(isFieldVisible(schema, { a: 1, b: 9 })).toBe(false);
     });
 
     it("or requires any condition", () => {
@@ -87,8 +87,8 @@ describe("isFieldHidden", () => {
           { field: "b", value: 2 },
         ],
       });
-      expect(isFieldHidden(schema, { a: 9, b: 2 })).toBe(true);
-      expect(isFieldHidden(schema, { a: 9, b: 9 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 9, b: 2 })).toBe(true);
+      expect(isFieldVisible(schema, { a: 9, b: 9 })).toBe(false);
     });
 
     it("not negates its conditions", () => {
@@ -96,8 +96,8 @@ describe("isFieldHidden", () => {
         condition: "not",
         conditions: [{ field: "a", value: 1 }],
       });
-      expect(isFieldHidden(schema, { a: 2 })).toBe(true);
-      expect(isFieldHidden(schema, { a: 1 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 2 })).toBe(true);
+      expect(isFieldVisible(schema, { a: 1 })).toBe(false);
     });
 
     it("nests combinators", () => {
@@ -114,9 +114,9 @@ describe("isFieldHidden", () => {
           },
         ],
       });
-      expect(isFieldHidden(schema, { a: 1, b: 9, c: 3 })).toBe(true);
-      expect(isFieldHidden(schema, { a: 1, b: 9, c: 9 })).toBe(false);
-      expect(isFieldHidden(schema, { a: 9, b: 2, c: 3 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 1, b: 9, c: 3 })).toBe(true);
+      expect(isFieldVisible(schema, { a: 1, b: 9, c: 9 })).toBe(false);
+      expect(isFieldVisible(schema, { a: 9, b: 2, c: 3 })).toBe(false);
     });
   });
 
@@ -125,25 +125,28 @@ describe("isFieldHidden", () => {
       { field: "a", value: 1 },
       { field: "b", value: 2 },
     ]);
-    expect(isFieldHidden(schema, { a: 1, b: 2 })).toBe(true);
-    expect(isFieldHidden(schema, { a: 1, b: 9 })).toBe(false);
+    expect(isFieldVisible(schema, { a: 1, b: 2 })).toBe(true);
+    expect(isFieldVisible(schema, { a: 1, b: 9 })).toBe(false);
   });
 
   it("handles missing data", () => {
-    expect(isFieldHidden(field({ field: "a", value: 1 }), undefined)).toBe(
+    expect(isFieldVisible(field({ field: "a", value: 1 }), undefined)).toBe(
       false
     );
   });
 });
 
 describe("getHiddenFields", () => {
-  const named = (name: string, hidden?: HaFormSchema["hidden"]): HaFormSchema =>
-    ({ name, selector: { text: {} }, hidden }) as HaFormSchema;
+  const named = (
+    name: string,
+    visible?: HaFormSchema["visible"]
+  ): HaFormSchema =>
+    ({ name, selector: { text: {} }, visible }) as HaFormSchema;
 
-  it("collects the fields whose condition matches", () => {
+  it("collects the fields that are not visible", () => {
     const schema = [
       named("mode"),
-      named("token", { field: "mode", value: "simple" }),
+      named("token", { field: "mode", value: "advanced" }),
     ];
     expect([...getHiddenFields(schema, { mode: "simple" })]).toEqual(["token"]);
     expect([...getHiddenFields(schema, { mode: "advanced" })]).toEqual([]);
@@ -153,8 +156,8 @@ describe("getHiddenFields", () => {
     // "token" is hidden, so its value must not satisfy the condition on "extra"
     const schema = [
       named("mode"),
-      named("token", { field: "mode", value: "simple" }),
-      named("extra", { field: "token", operator: "not_exists" }),
+      named("token", { field: "mode", value: "advanced" }),
+      named("extra", { field: "token", operator: "exists" }),
     ];
     expect([
       ...getHiddenFields(schema, { mode: "simple", token: "stale" }),
