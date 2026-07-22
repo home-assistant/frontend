@@ -1,9 +1,9 @@
-import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
+import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles.cssresult.js";
 import { FilterChip } from "@material/web/chips/internal/filter-chip";
-import { styles } from "@material/web/chips/internal/filter-styles";
-import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
-import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
+import { styles } from "@material/web/chips/internal/filter-styles.cssresult.js";
+import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles.cssresult.js";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
+import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles.cssresult.js";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 
