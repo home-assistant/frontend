@@ -67,6 +67,7 @@ import {
   type QuickBarParams,
   type QuickBarSection,
 } from "./show-dialog-quick-bar";
+import { supportsQuickBarAskAssist } from "./supports-quick-bar-ask-assist";
 
 const SEPARATOR = "________";
 
@@ -617,7 +618,14 @@ export class QuickBar extends LitElement {
       }
 
       const prompt = filter?.trim();
-      if (prompt && isComponentLoaded(this.hass.config, "conversation")) {
+      if (
+        prompt &&
+        supportsQuickBarAskAssist(
+          isComponentLoaded(this.hass.config, "conversation"),
+          !!this.hass.auth.external?.config.hasAssist,
+          !!this.hass.auth.external?.config.hasAssistPrompt
+        )
+      ) {
         items.push({
           id: "ask-assist",
           primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {

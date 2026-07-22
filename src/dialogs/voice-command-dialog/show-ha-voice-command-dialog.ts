@@ -22,6 +22,12 @@ export const showVoiceCommandDialog = (
         pipeline_id: dialogParams.pipeline_id,
         // Start listening by default for app
         start_listening: dialogParams.start_listening ?? true,
+        ...(hass.auth.external.config.hasAssistPrompt
+          ? {
+              prompt: dialogParams.prompt,
+              submit: dialogParams.submit ?? false,
+            }
+          : {}),
       },
     });
     return;
