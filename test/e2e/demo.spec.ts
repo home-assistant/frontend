@@ -8,6 +8,7 @@ import {
   trackPageErrors,
 } from "./helpers";
 import {
+  DEMO_THEME_STORAGE_KEY,
   activateDemoSidebarPanel,
   demoCardSelector,
   expectDemoDarkMode,
@@ -73,10 +74,10 @@ test.describe("Home Assistant Demo", () => {
       page,
     }) => {
       await page.emulateMedia({ colorScheme });
-      await page.addInitScript(() => {
-        localStorage.removeItem("demo_theme");
+      await page.addInitScript((storageKey) => {
+        localStorage.removeItem(storageKey);
         localStorage.removeItem("selectedTheme");
-      });
+      }, DEMO_THEME_STORAGE_KEY);
 
       await loadDemo(page);
       await expectDemoDarkMode(page, false);
@@ -88,17 +89,17 @@ test.describe("Home Assistant Demo", () => {
   test("theme selection persists without offering migration", async ({
     page,
   }) => {
-    await page.addInitScript(() => {
+    await page.addInitScript((storageKey) => {
       if (sessionStorage.getItem("theme_test_seeded")) {
         return;
       }
       sessionStorage.setItem("theme_test_seeded", "true");
-      localStorage.removeItem("demo_theme");
+      localStorage.removeItem(storageKey);
       localStorage.setItem(
         "selectedTheme",
         JSON.stringify({ theme: "default", dark: false })
       );
-    });
+    }, DEMO_THEME_STORAGE_KEY);
 
     await loadDemo(page, "/#/profile/general");
 

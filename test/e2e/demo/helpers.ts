@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import type { ThemeSettings } from "../../../src/types";
 import { NAVIGATION_TIMEOUT, SHELL_TIMEOUT } from "../helpers";
 
-const DEMO_THEME_STORAGE_KEY = "demo_theme";
+export const DEMO_THEME_STORAGE_KEY = "demo_theme";
 
 export const demoCardSelector = [
   "hui-tile-card",
