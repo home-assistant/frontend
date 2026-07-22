@@ -67,11 +67,11 @@ import {
   type QuickBarParams,
   type QuickBarSection,
 } from "./show-dialog-quick-bar";
-import { supportsQuickBarAskAssist } from "./supports-quick-bar-ask-assist";
 
 const SEPARATOR = "________";
 
 interface AssistComboBoxItem extends PickerComboBoxItem {
+  action: "assist";
   assistPrompt: string;
 }
 
@@ -427,7 +427,6 @@ export class QuickBar extends LitElement {
       firstItem === undefined ||
       secondItem === undefined ||
       typeof firstItem === "string" ||
-      "assistPrompt" in firstItem ||
       (typeof secondItem === "string" && secondItem !== "padding") ||
       (firstIndex === 0 && lastIndex === itemsCount - 1)
     ) {
@@ -470,6 +469,23 @@ export class QuickBar extends LitElement {
       section?: QuickBarSection
     ) => {
       const items: (string | QuickBarComboBoxItem)[] = [];
+      const prompt = filter?.trim();
+      const assistItem =
+        prompt &&
+        (!section || section === "command") &&
+        isComponentLoaded(this.hass.config, "conversation") &&
+        (!this.hass.auth.external?.config.hasAssist ||
+          this.hass.auth.external.config.hasAssistPrompt)
+          ? ({
+              id: "ask-assist",
+              action: "assist",
+              primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {
+                query: prompt,
+              }),
+              icon_path: mdiCommentProcessingOutline,
+              assistPrompt: prompt,
+            } satisfies AssistComboBoxItem)
+          : undefined;
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -494,10 +510,12 @@ export class QuickBar extends LitElement {
         items.push(...navigateItems);
       }
 
-      if (this.hass.user?.is_admin && (!section || section === "command")) {
-        let commandItems = this._generateActionCommandsMemoized(this.hass).sort(
-          this._sortBySortingLabel
-        );
+      if (!section || section === "command") {
+        let commandItems = this.hass.user?.is_admin
+          ? this._generateActionCommandsMemoized(this.hass).sort(
+              this._sortBySortingLabel
+            )
+          : [];
 
         if (filter) {
           commandItems = this._filterGroup(
@@ -507,12 +525,15 @@ export class QuickBar extends LitElement {
           ) as ActionCommandComboBoxItem[];
         }
 
-        if (!section && commandItems.length) {
+        if (!section && (commandItems.length || assistItem)) {
           // show group title
           items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
         }
 
         items.push(...commandItems);
+        if (assistItem) {
+          items.push(assistItem);
+        }
       }
 
       if (!section || section === "entity") {
@@ -615,25 +636,6 @@ export class QuickBar extends LitElement {
         }
 
         items.push(...areaItems);
-      }
-
-      const prompt = filter?.trim();
-      if (
-        prompt &&
-        supportsQuickBarAskAssist(
-          isComponentLoaded(this.hass.config, "conversation"),
-          !!this.hass.auth.external?.config.hasAssist,
-          !!this.hass.auth.external?.config.hasAssistPrompt
-        )
-      ) {
-        items.push({
-          id: "ask-assist",
-          primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {
-            query: prompt,
-          }),
-          icon_path: mdiCommentProcessingOutline,
-          assistPrompt: prompt,
-        } satisfies AssistComboBoxItem);
       }
 
       return items;
