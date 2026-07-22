@@ -1,8 +1,8 @@
 import { AssistChip } from "@material/web/chips/internal/assist-chip";
-import { styles } from "@material/web/chips/internal/assist-styles";
+import { styles } from "@material/web/chips/internal/assist-styles.cssresult.js";
 
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
-import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
+import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles.cssresult.js";
 
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
