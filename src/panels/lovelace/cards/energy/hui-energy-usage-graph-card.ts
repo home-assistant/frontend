@@ -461,7 +461,7 @@ export class HuiEnergyUsageGraphCard
         getSuggestedPeriod(this._start, this._end)
       )
     );
-    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);

@@ -43,6 +43,23 @@ describe("computeYAxisFractionDigits", () => {
     expect(computeYAxisFractionDigits(1.5, 1.5)).toBe(1);
   });
 
+  it("treats a floating-point-noise range as flat (issue #53180)", () => {
+    expect(computeYAxisFractionDigits(0.3, 0.3 + 1e-16)).toBe(1);
+    expect(computeYAxisFractionDigits(0.2, 0.20000000000004547)).toBe(1);
+    expect(computeYAxisFractionDigits(1_000_000, 1_000_000.00001)).toBe(1);
+  });
+
+  it("keeps precision for a genuinely narrow, non-noise range", () => {
+    expect(computeYAxisFractionDigits(1e-6, 3e-6)).toBe(7);
+  });
+
+  it("unions the extent with zero for anchored (bar) axes", () => {
+    expect(computeYAxisFractionDigits(0.3, 0.3, true)).toBe(2);
+    expect(
+      computeYAxisFractionDigits(0.29999999999999993, 0.3000000000000001, true)
+    ).toBe(2);
+  });
+
   it("falls back to one decimal when range is non-finite", () => {
     expect(computeYAxisFractionDigits(Infinity, -Infinity)).toBe(1);
     expect(computeYAxisFractionDigits(NaN, 1)).toBe(1);
@@ -111,5 +128,13 @@ describe("createYAxisPrecisionBounds", () => {
     // Small visible max close to zero -> more decimals
     min({ min: 0.02, max: 0.05 });
     expect(onFractionDigits).toHaveBeenLastCalledWith(2);
+  });
+
+  it("does not over-pad when the visible extent collapses to noise", () => {
+    const onFractionDigits = vi.fn();
+    const { min } = createYAxisPrecisionBounds({ onFractionDigits });
+
+    min({ min: 0.3, max: 0.3 + 1e-15 });
+    expect(onFractionDigits).toHaveBeenLastCalledWith(1);
   });
 });
