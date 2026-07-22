@@ -1,0 +1,36 @@
+name: Prepare dependencies
+description: Install and cache the complete dependency tree
+
+runs:
+  using: composite
+  steps:
+    - name: Check for complete dependency tree
+      id: dependencies
+      continue-on-error: true
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          .yarn/install-state.gz
+        key: >-
+          node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+          hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
+        lookup-only: true
+
+    - name: Setup Node and install
+      if: steps.dependencies.outputs.cache-hit != 'true'
+      uses: ./.github/actions/setup
+      with:
+        cache: false
+
+    - name: Save complete dependency tree
+      if: steps.dependencies.outputs.cache-hit != 'true'
+      continue-on-error: true
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          .yarn/install-state.gz
+        key: >-
+          node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+          hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
