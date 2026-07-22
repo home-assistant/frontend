@@ -34,20 +34,18 @@ export class HuiLawnMowerCommandsCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (stateObj: HassEntity | undefined, customize: boolean) =>
-      customizableListSchema({
-        field: "commands",
-        customize,
-        options: LAWN_MOWER_COMMANDS.filter(
-          (command) => stateObj && supportsLawnMowerCommand(stateObj, command)
-        ).map((command) => ({
-          value: command,
-          label: this.hass!.localize(
-            `ui.panel.lovelace.editor.features.types.lawn-mower-commands.commands_list.${command}`
-          ),
-        })),
-      })
+  private _schema = memoizeOne((stateObj: HassEntity | undefined) =>
+    customizableListSchema({
+      field: "commands",
+      options: LAWN_MOWER_COMMANDS.filter(
+        (command) => stateObj && supportsLawnMowerCommand(stateObj, command)
+      ).map((command) => ({
+        value: command,
+        label: this.hass!.localize(
+          `ui.panel.lovelace.editor.features.types.lawn-mower-commands.commands_list.${command}`
+        ),
+      })),
+    })
   );
 
   protected render() {
@@ -60,7 +58,7 @@ export class HuiLawnMowerCommandsCardFeatureEditor
       : undefined;
 
     const data = customizableListData(this._config, "commands");
-    const schema = this._schema(stateObj, data.customize);
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form

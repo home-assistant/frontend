@@ -37,20 +37,18 @@ export class HuiVacuumCommandsCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (stateObj: HassEntity | undefined, customize: boolean) =>
-      customizableListSchema({
-        field: "commands",
-        customize,
-        options: VACUUM_COMMANDS.filter(
-          (command) => stateObj && supportsVacuumCommand(stateObj, command)
-        ).map((command) => ({
-          value: command,
-          label: this.hass!.localize(
-            `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
-          ),
-        })),
-      })
+  private _schema = memoizeOne((stateObj: HassEntity | undefined) =>
+    customizableListSchema({
+      field: "commands",
+      options: VACUUM_COMMANDS.filter(
+        (command) => stateObj && supportsVacuumCommand(stateObj, command)
+      ).map((command) => ({
+        value: command,
+        label: this.hass!.localize(
+          `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
+        ),
+      })),
+    })
   );
 
   protected render() {
@@ -63,7 +61,7 @@ export class HuiVacuumCommandsCardFeatureEditor
       : undefined;
 
     const data = customizableListData(this._config, "commands");
-    const schema = this._schema(stateObj, data.customize);
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form

@@ -6,7 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import { isFieldHidden } from "./conditions";
+import { getHiddenFields } from "./conditions";
 import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
 
 const LOAD_ELEMENTS = {
@@ -99,8 +99,9 @@ export class HaForm extends LitElement implements HaFormElement {
     let isValid = true;
     let firstInvalidElement: HTMLElement | undefined;
 
+    const hiddenFields = getHiddenFields(this.schema, this.data);
     const visibleSchema = this.schema.filter(
-      (item) => !isFieldHidden(item, this.data)
+      (item) => !hiddenFields.has(item.name)
     );
 
     visibleSchema.forEach((item, index) => {
@@ -157,6 +158,8 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
+    const renderHiddenFields = getHiddenFields(this.schema, this.data);
+
     return html`
       <div class="root" part="root">
         ${
@@ -169,7 +172,7 @@ export class HaForm extends LitElement implements HaFormElement {
             : ""
         }
         ${this.schema.map((item) => {
-          if (isFieldHidden(item, this.data)) {
+          if (renderHiddenFields.has(item.name)) {
             return nothing;
           }
 

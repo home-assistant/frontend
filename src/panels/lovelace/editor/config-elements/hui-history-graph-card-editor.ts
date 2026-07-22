@@ -102,11 +102,11 @@ const SCHEMA = [
   {
     name: "fit_y_data",
     required: false,
-    hidden: {
-      condition: "and",
+    visible: {
+      condition: "or",
       conditions: [
-        { field: "min_y_axis", operator: "not_exists" },
-        { field: "max_y_axis", operator: "not_exists" },
+        { field: "min_y_axis", operator: "exists" },
+        { field: "max_y_axis", operator: "exists" },
       ],
     },
     selector: { boolean: {} },
