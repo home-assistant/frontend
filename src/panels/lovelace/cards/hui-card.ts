@@ -9,6 +9,7 @@ import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-m
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import { getConfigEntityId } from "../common/get-config-entity-id";
+import { TemplateResolver } from "../common/template-resolver";
 import { checkConditionsMet } from "../common/validate-condition";
 import { tryCreateCardElement } from "../create-element/create-card-element";
 import { createErrorCardElement } from "../create-element/create-element-base";
@@ -35,11 +36,27 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
 
   private _elementConfig?: LovelaceCardConfig;
 
+  // Resolves any Jinja templates in the card config before it reaches the inner
+  // card element. Zero-cost pass-through when the config has no templates.
+  private _resolver = new TemplateResolver(this, () =>
+    this._applyResolvedConfig()
+  );
+
+  // The config with templates resolved (falls back to the raw config when there
+  // is nothing to resolve). Only ever fed to the inner element, never surfaced
+  // to the editor, so raw templates can never be lost.
+  private get _effectiveConfig(): LovelaceCardConfig | undefined {
+    return (this._resolver.resolvedConfig ?? this.config) as
+      LovelaceCardConfig | undefined;
+  }
+
   public load() {
     if (!this.config) {
       throw new Error("Cannot build card without config");
     }
-    this._loadElement(this.config);
+    // Feeding the resolver drives `_applyResolvedConfig`, which builds the inner
+    // element as soon as the (possibly templated) config is ready.
+    this._resolver.setInput(this.config, this.hass, this.preview);
   }
 
   private _element?: LovelaceCard;
@@ -170,15 +187,49 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
+    if (
+      changedProps.has("config") ||
+      changedProps.has("hass") ||
+      changedProps.has("preview")
+    ) {
+      // Drives `_applyResolvedConfig`, which builds/updates the inner element.
+      this._resolver.setInput(this.config, this.hass, this.preview);
+    }
+
     if (changedProps.has("config")) {
       this._conditionContext = {
         ...this._conditionContext,
-        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+        entity_id: this._effectiveConfig
+          ? getConfigEntityId(this._effectiveConfig)
+          : undefined,
       };
     }
+  }
 
+  // Called by the template resolver whenever the resolved config changes (and
+  // synchronously from `setInput`). Owns building vs updating the inner element.
+  private _applyResolvedConfig() {
+    if (!this._resolver.ready) {
+      return;
+    }
+    const config = this._effectiveConfig;
+    if (!config) {
+      return;
+    }
     if (!this._element) {
-      this.load();
+      this._loadElement(config);
+      return;
+    }
+    if (config === this._elementConfig) {
+      return;
+    }
+    // Rebuild the card if the type changed or if we are in preview mode.
+    const typeChanged =
+      config.type !== this._elementConfig?.type || this.preview;
+    if (typeChanged) {
+      this._loadElement(config);
+    } else {
+      this._updateElement(config);
     }
   }
 
@@ -186,19 +237,6 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     super.update(changedProps);
 
     if (this._element) {
-      if (changedProps.has("config")) {
-        const elementConfig = this._elementConfig;
-        if (this.config !== elementConfig && this.config) {
-          const typeChanged =
-            this.config?.type !== elementConfig?.type || this.preview;
-          // Rebuild the card if the type of the card has changed or if we are in preview mode
-          if (typeChanged || this.preview) {
-            this._loadElement(this.config);
-          } else {
-            this._updateElement(this.config);
-          }
-        }
-      }
       if (changedProps.has("hass")) {
         try {
           if (this.hass) {

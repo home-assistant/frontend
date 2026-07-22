@@ -7,6 +7,7 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { getConfigEntityId } from "../common/get-config-entity-id";
+import { TemplateResolver } from "../common/template-resolver";
 import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
@@ -31,11 +32,22 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
 
   private _elementConfig?: LovelaceBadgeConfig;
 
+  // Resolves any Jinja templates in the badge config before it reaches the inner
+  // badge element. Zero-cost pass-through when the config has no templates.
+  private _resolver = new TemplateResolver(this, () =>
+    this._applyResolvedConfig()
+  );
+
+  private get _effectiveConfig(): LovelaceBadgeConfig | undefined {
+    return (this._resolver.resolvedConfig ?? this.config) as
+      LovelaceBadgeConfig | undefined;
+  }
+
   public load() {
     if (!this.config) {
       throw new Error("Cannot build badge without config");
     }
-    this._loadElement(this.config);
+    this._resolver.setInput(this.config, this.hass, this.preview);
   }
 
   private _element?: LovelaceBadge;
@@ -102,15 +114,47 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
+    if (
+      changedProps.has("config") ||
+      changedProps.has("hass") ||
+      changedProps.has("preview")
+    ) {
+      // Drives `_applyResolvedConfig`, which builds/updates the inner element.
+      this._resolver.setInput(this.config, this.hass, this.preview);
+    }
+
     if (changedProps.has("config")) {
       this._conditionContext = {
         ...this._conditionContext,
-        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+        entity_id: this._effectiveConfig
+          ? getConfigEntityId(this._effectiveConfig)
+          : undefined,
       };
     }
+  }
 
+  // Called by the template resolver whenever the resolved config changes (and
+  // synchronously from `setInput`). Owns building vs updating the inner element.
+  private _applyResolvedConfig() {
+    if (!this._resolver.ready) {
+      return;
+    }
+    const config = this._effectiveConfig;
+    if (!config) {
+      return;
+    }
     if (!this._element) {
-      this.load();
+      this._loadElement(config);
+      return;
+    }
+    if (config === this._elementConfig) {
+      return;
+    }
+    const typeChanged = config.type !== this._elementConfig?.type;
+    if (typeChanged) {
+      this._loadElement(config);
+    } else {
+      this._updateElement(config);
     }
   }
 
@@ -118,17 +162,6 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     super.update(changedProps);
 
     if (this._element) {
-      if (changedProps.has("config")) {
-        const elementConfig = this._elementConfig;
-        if (this.config !== elementConfig && this.config) {
-          const typeChanged = this.config?.type !== elementConfig?.type;
-          if (typeChanged) {
-            this._loadElement(this.config);
-          } else {
-            this._updateElement(this.config);
-          }
-        }
-      }
       if (changedProps.has("hass")) {
         try {
           if (this.hass) {
