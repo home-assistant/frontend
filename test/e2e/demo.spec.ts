@@ -104,9 +104,7 @@ test.describe("Home Assistant Demo", () => {
 
     const themeRow = page.locator("ha-pick-theme-row");
     await expect(themeRow).toBeVisible({ timeout: PANEL_TIMEOUT });
-    await expect(
-      themeRow.getByRole("button", { name: "Migrate", exact: true })
-    ).toHaveCount(0);
+    await expect(themeRow.locator(":scope > ha-settings-row")).toHaveCount(0);
 
     await themeRow.locator('ha-radio-option[value="dark"]').click();
 
