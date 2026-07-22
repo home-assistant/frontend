@@ -59,6 +59,11 @@ const stackOrder = {
   to_grid: 2,
   used_solar: 3,
   used_battery: 4,
+  // Grid consumption must stay on top of the positive stack, with solar and
+  // battery self-consumption below it. Give it an explicit order so it no
+  // longer depends on the dataset count / insertion order (see #53197).
+  from_grid: 5,
+  used_grid: 5,
 };
 
 @customElement("hui-energy-usage-graph-card")
