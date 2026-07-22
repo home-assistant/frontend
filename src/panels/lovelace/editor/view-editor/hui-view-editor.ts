@@ -93,9 +93,8 @@ export class HuiViewEditor extends LitElement {
           type: "expandable",
           flatten: true,
           expanded: true,
-          hidden: {
+          visible: {
             field: "type",
-            operator: "not_eq",
             value: SECTIONS_VIEW_LAYOUT,
           },
           schema: [

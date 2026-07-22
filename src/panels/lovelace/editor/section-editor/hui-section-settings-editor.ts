@@ -56,7 +56,7 @@ export class HuiDialogEditSection extends LitElement {
           type: "expandable",
           flatten: true,
           expanded: true,
-          hidden: { field: "background_enabled", value: false },
+          visible: { field: "background_enabled", value: true },
           iconPath: mdiPalette,
           schema: [
             {
