@@ -1,8 +1,8 @@
-import { CameraEntityFeature } from "../../data/camera";
-import { ClimateEntityFeature } from "../../data/climate";
-import { CoverEntityFeature } from "../../data/cover";
-import { MediaPlayerEntityFeature } from "../../data/media-player";
-import { SirenEntityFeature } from "../../data/siren";
+import { CameraEntityFeature } from "../../data/feature/camera_entity_feature";
+import { ClimateEntityFeature } from "../../data/feature/climate_entity_feature";
+import { CoverEntityFeature } from "../../data/feature/cover_entity_feature";
+import { MediaPlayerEntityFeature } from "../../data/feature/media-player_entity_feature";
+import { SirenEntityFeature } from "../../data/feature/siren_entity_feature";
 
 // These are domains which have nonstandard 'toggle' behavior.
 // Otherwise, any domain with a turn_on and turn_off service may be toggled.
