@@ -35,7 +35,6 @@ describe("canToggleDomain", () => {
           services: {
             cover: {
               open_cover: null,
-              close_cover: null,
             },
           },
         } as unknown as HomeAssistant,
@@ -63,7 +62,6 @@ describe("canToggleDomain", () => {
           services: {
             lock: {
               lock: null,
-              unlock: null,
             },
           },
         } as unknown as HomeAssistant,

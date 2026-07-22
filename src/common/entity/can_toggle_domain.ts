@@ -7,6 +7,5 @@ export const canToggleDomain = (hass: HomeAssistant, domain: string) => {
     return false;
   }
   const actionOn = getToggleAction(domain, true);
-  const actionOff = getToggleAction(domain, false);
-  return actionOn in services && actionOff in services;
+  return actionOn in services;
 };
