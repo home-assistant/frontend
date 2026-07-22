@@ -1,6 +1,11 @@
 name: Prepare dependencies
 description: Install and cache the complete dependency tree
 
+inputs:
+  node-modules-cache-key:
+    description: Prefix for the shared node_modules cache key
+    default: node-modules-v1
+
 runs:
   using: composite
   steps:
@@ -13,7 +18,7 @@ runs:
           node_modules
           .yarn/install-state.gz
         key: >-
-          node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+          ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
         lookup-only: true
 
@@ -32,5 +37,5 @@ runs:
           node_modules
           .yarn/install-state.gz
         key: >-
-          node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+          ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
