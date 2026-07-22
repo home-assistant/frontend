@@ -120,6 +120,79 @@ test.describe("App shell", () => {
   });
 });
 
+test.describe("Quick search", () => {
+  test("starts an Assist conversation with the search query", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/lovelace");
+
+    await page.evaluate(() => {
+      const pipeline = {
+        id: "test-pipeline",
+        name: "Test Assist",
+        language: "en",
+        conversation_engine: "conversation.home_assistant",
+        conversation_language: "en",
+        stt_engine: null,
+        stt_language: null,
+        tts_engine: null,
+        tts_language: null,
+        tts_voice: null,
+        wake_word_entity: null,
+        wake_word_id: null,
+      };
+
+      window.__mockHass.updateHass({
+        config: {
+          ...window.__mockHass.config,
+          components: [...window.__mockHass.config.components, "conversation"],
+        },
+        enableShortcuts: true,
+      });
+      window.__mockHass.mockWS("assist_pipeline/pipeline/list", () => ({
+        pipelines: [pipeline],
+        preferred_pipeline: pipeline.id,
+      }));
+      window.__mockHass.mockWS("assist_pipeline/pipeline/get", () => pipeline);
+      window.__mockHass.mockWS("assist_pipeline/run", (message) => {
+        (window as any).__assistRun = message;
+        return () => undefined;
+      });
+    });
+
+    await page.keyboard.press("Control+K");
+
+    const quickBar = page.locator("ha-quick-bar");
+    await expect(quickBar).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await quickBar
+      .locator("ha-input-search >> input")
+      .fill("Turn on the lights");
+
+    const assistItem = quickBar
+      .locator(".combo-box-row")
+      .filter({ hasText: "Ask Assist: Turn on the lights" });
+    await expect(assistItem).toBeVisible({ timeout: QUICK_TIMEOUT });
+    await assistItem.click();
+
+    const voiceCommandDialog = page.locator("ha-voice-command-dialog");
+    await expect(voiceCommandDialog).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(
+      voiceCommandDialog.locator("ha-assist-chat .message-container.user")
+    ).toContainText("Turn on the lights", { timeout: QUICK_TIMEOUT });
+
+    await expect
+      .poll(() => page.evaluate(() => (window as any).__assistRun))
+      .toMatchObject({
+        type: "assist_pipeline/run",
+        start_stage: "intent",
+        input: { text: "Turn on the lights" },
+        end_stage: "intent",
+        pipeline: "test-pipeline",
+        conversation_id: null,
+      });
+  });
+});
+
 defineRouteSmokeTests(appRouteSmokeGroups);
 
 // ---------------------------------------------------------------------------
