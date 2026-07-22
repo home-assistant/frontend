@@ -70,7 +70,7 @@ module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
-        lightningcss: {
+        css: {
           targets: lightningcssTargets,
         },
       });
