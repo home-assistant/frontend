@@ -381,11 +381,7 @@ export class HuiCalendarCard
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card");
-    if (!card) {
-      return;
-    }
-    this._narrow = card.offsetWidth < 870;
+    this._narrow = this.offsetWidth < 870;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -394,12 +390,7 @@ export class HuiCalendarCard
         debounce(() => this._measureCard(), 250, false)
       );
     }
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+    this._resizeObserver.observe(this);
   }
 
   static styles = css`

@@ -640,6 +640,7 @@ export class HAFullCalendar extends LitElement {
           right: 0;
           bottom: 0;
           top: 0;
+          --ha-button-box-shadow: none;
         }
 
         #calendar {
