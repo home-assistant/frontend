@@ -62,16 +62,19 @@ module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const options = this.getOptions() || {};
   const env = options.env;
 
+  console.log("Minifying template literals for %s build", env);
+
   initLoader(env)
-    .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
+    .then(({ minifyHTMLLiterals, lightningcssTargets }) => {
+      console.log("Targets:", JSON.stringify(lightningcssTargets));
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
         lightningcss: {
           targets: lightningcssTargets,
         },
-      })
-    )
+      });
+    })
     .then((result) => {
       if (!result) {
         // No tagged templates changed; pass through untouched (incl. incoming map).
