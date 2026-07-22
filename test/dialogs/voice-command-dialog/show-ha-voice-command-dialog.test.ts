@@ -31,36 +31,7 @@ describe("showVoiceCommandDialog", () => {
     });
   });
 
-  it("passes a submitted prompt to supported native Assist", () => {
-    const fireMessage = vi.fn();
-    const hass = {
-      auth: {
-        external: {
-          config: { hasAssist: true, hasAssistPrompt: true },
-          fireMessage,
-        },
-      },
-    } as unknown as HomeAssistant;
-
-    showVoiceCommandDialog(element, hass, {
-      pipeline_id: "last_used",
-      start_listening: false,
-      prompt: "Turn on the lights",
-      submit: true,
-    });
-
-    expect(fireMessage).toHaveBeenCalledWith({
-      type: "assist/show",
-      payload: {
-        pipeline_id: "last_used",
-        start_listening: false,
-        prompt: "Turn on the lights",
-        submit: true,
-      },
-    });
-  });
-
-  it("keeps the native Assist payload compatible when prompts are unsupported", () => {
+  it("keeps the native Assist payload compatible", () => {
     const fireMessage = vi.fn();
     const hass = {
       auth: {

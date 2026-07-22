@@ -474,8 +474,7 @@ export class QuickBar extends LitElement {
         prompt &&
         (!section || section === "command") &&
         isComponentLoaded(this.hass.config, "conversation") &&
-        (!this.hass.auth.external?.config.hasAssist ||
-          this.hass.auth.external.config.hasAssistPrompt)
+        !this.hass.auth.external?.config.hasAssist
           ? ({
               id: "ask-assist",
               action: "assist",

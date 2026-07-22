@@ -148,8 +148,6 @@ interface EMOutgoingMessageAssistShow extends EMMessage {
   payload?: {
     pipeline_id: "preferred" | "last_used" | string;
     start_listening: boolean;
-    prompt?: string;
-    submit?: boolean;
   };
 }
 
@@ -368,7 +366,6 @@ export interface ExternalConfig {
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
-  hasAssistPrompt?: boolean;
   hasBarCodeScanner?: number;
   canSetupImprov?: boolean;
   appVersion?: string;
