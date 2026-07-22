@@ -57,11 +57,20 @@ describe("collectConfigTemplates", () => {
 
   it("collects templates inside arrays by index", () => {
     const config = {
-      type: "custom:foo",
+      type: "logbook",
       labels: ["static", "{{ now() }}", "also static"],
     };
     const found = collectConfigTemplates(config);
     expect(found).toEqual([{ path: ["labels", 1], template: "{{ now() }}" }]);
+  });
+
+  it("treats a custom-typed root config as fully opaque", () => {
+    const config = {
+      type: "custom:foo",
+      labels: ["static", "{{ now() }}"],
+      name: "{{ x }}",
+    };
+    expect(collectConfigTemplates(config)).toEqual([]);
   });
 
   it("DELEGATES nested child card configs (does not resolve them at parent)", () => {
@@ -94,6 +103,24 @@ describe("collectConfigTemplates", () => {
       features: [{ type: "custom:foo", label: "{{ y }}" }],
     };
     expect(collectConfigTemplates(config)).toEqual([]);
+  });
+
+  it("resolves native entity rows but skips custom rows at any level", () => {
+    const config = {
+      type: "entities",
+      entities: [
+        { entity: "light.a", name: "{{ states('sensor.native') }}" },
+        { type: "custom:my-row", name: "{{ states('sensor.custom') }}" },
+      ],
+    };
+    const found = collectConfigTemplates(config);
+    // native row's name is collected; the custom row is left entirely opaque
+    expect(found).toEqual([
+      {
+        path: ["entities", 0, "name"],
+        template: "{{ states('sensor.native') }}",
+      },
+    ]);
   });
 });
 
