@@ -59,6 +59,8 @@ const stackOrder = {
   to_grid: 2,
   used_solar: 3,
   used_battery: 4,
+  from_grid: 5,
+  used_grid: 5,
 };
 
 @customElement("hui-energy-usage-graph-card")
