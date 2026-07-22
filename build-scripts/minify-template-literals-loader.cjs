@@ -11,18 +11,21 @@
 
 const remapping = require("@ampproject/remapping");
 
-// minify-literals and lightningcss are ESM-only, so load them via dynamic import.
-let loaderInitPromise;
-const initLoader = () => {
-  if (!loaderInitPromise) {
-    loaderInitPromise = Promise.all([
+// Map to cache loader promises per environment (e.g., 'modern', 'legacy')
+const loaderInitPromises = new Map();
+
+const initLoader = (env) => {
+  if (!loaderInitPromises.has(env)) {
+    const promise = Promise.all([
       import("minify-literals"),
       import("browserslist"),
       import("lightningcss"),
     ]).then(([minifyModule, browserslistModule, lightningcssModule]) => {
       const browserslist = browserslistModule.default;
       const { browserslistToTargets } = lightningcssModule;
-      const rawTargets = browserslist();
+
+      // Request raw targets for the specific environment passed from rspack.cjs
+      const rawTargets = browserslist(null, { env });
       const lightningcssTargets = browserslistToTargets(rawTargets);
 
       return {
@@ -30,8 +33,10 @@ const initLoader = () => {
         lightningcssTargets,
       };
     });
+
+    loaderInitPromises.set(env, promise);
   }
-  return loaderInitPromise;
+  return loaderInitPromises.get(env);
 };
 
 // HTML options mirror the previous babel-plugin-template-html-minifier config
@@ -53,7 +58,11 @@ const htmlOptions = {
 module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const callback = this.async();
 
-  initLoader()
+  // Read the environment from options (with fallback if unspecified)
+  const options = this.getOptions() || {};
+  const env = options.env;
+
+  initLoader(env)
     .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
