@@ -43,6 +43,16 @@ describe("TemplateResolver", () => {
     expect(captured).toHaveLength(0);
   });
 
+  it("leaves custom cards untouched (they own their template engine)", () => {
+    const r = new TemplateResolver(fakeHost(), vi.fn());
+    r.hostConnected();
+    const config = { type: "custom:mushroom-template-card", name: "{{ x }}" };
+    r.setInput(config, fakeHass(), false);
+    expect(r.ready).toBe(true);
+    expect(r.resolvedConfig).toBe(config);
+    expect(captured).toHaveLength(0);
+  });
+
   it("subscribes, stays not-ready until rendered, then resolves", () => {
     const onChange = vi.fn();
     const r = new TemplateResolver(fakeHost(), onChange);

@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import hash from "object-hash";
 import { hasTemplate } from "../../../common/string/has-template";
+import { isCustomType } from "../../../data/lovelace_custom_cards";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
@@ -81,6 +82,13 @@ export class TemplateResolver implements ReactiveController {
   /** True when there is nothing to resolve, or every template has a value. */
   public ready = true;
 
+  /**
+   * True when the last change came from a rendered template value (a backend
+   * tick) rather than a raw config edit. Lets the host avoid a full element
+   * rebuild in the editor preview when only a resolved value changed.
+   */
+  public updatedFromValues = false;
+
   constructor(host: ReactiveControllerHost, onChange: () => void) {
     host.addController(this);
     this._onChange = onChange;
@@ -135,8 +143,12 @@ export class TemplateResolver implements ReactiveController {
   private _recollect(): void {
     this._unsubscribeAll();
     this._values = new Map();
+    // Custom cards (`custom:`) are left untouched: many ship their own template
+    // engine (e.g. Mushroom, button-card), so pre-resolving their strings would
+    // change their meaning. They can opt in to templating on their own terms.
+    const isCustom = !!this._config?.type && isCustomType(this._config.type);
     this._templates =
-      this._config && hasTemplate(this._config)
+      this._config && !isCustom && hasTemplate(this._config)
         ? collectConfigTemplates(this._config)
         : [];
     this._configHash = this._templates.length ? hash(this._config) : undefined;
@@ -200,7 +212,7 @@ export class TemplateResolver implements ReactiveController {
           this._values.set(source, value);
           valueCache.set(this._cacheKey(source), value);
           if (changed) {
-            this._recompute();
+            this._recompute(false, true);
           }
         },
         {
@@ -243,7 +255,8 @@ export class TemplateResolver implements ReactiveController {
     }
   }
 
-  private _recompute(force = false): void {
+  private _recompute(force = false, fromValues = false): void {
+    this.updatedFromValues = fromValues;
     if (this._templates.length === 0 || !this._config) {
       this.ready = true;
       this.resolvedConfig = this._config;

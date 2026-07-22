@@ -223,10 +223,12 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     if (config === this._elementConfig) {
       return;
     }
-    // Rebuild the card if the type changed or if we are in preview mode.
-    const typeChanged =
-      config.type !== this._elementConfig?.type || this.preview;
-    if (typeChanged) {
+    // Rebuild when the type changed, or in preview mode for a real config edit.
+    // A template value tick in preview only re-runs setConfig, so editing the
+    // dashboard while entities change state does not thrash the element.
+    const typeChanged = config.type !== this._elementConfig?.type;
+    const previewEdit = this.preview && !this._resolver.updatedFromValues;
+    if (typeChanged || previewEdit) {
       this._loadElement(config);
     } else {
       this._updateElement(config);
