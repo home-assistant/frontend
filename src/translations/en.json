@@ -1495,6 +1495,7 @@
         "revert_error": "Failed to revert the configuration: {error}"
       },
       "quick-bar": {
+        "ask_assist": "Ask Assist: {query}",
         "commands_title": "Commands",
         "navigate_title": "Navigate",
         "commands": {
