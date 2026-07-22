@@ -1,0 +1,33 @@
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+
+      - name: Skip nightly translations
+        run: echo "SKIP_FETCH_NIGHTLY_TRANSLATIONS=1" >> "$GITHUB_ENV"
+
+      - name: Build resources
+        run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data gather-gallery-pages
+
+      - name: Install Playwright Chromium
+        run: yarn playwright install --with-deps chromium
