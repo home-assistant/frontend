@@ -113,9 +113,8 @@ export class HuiClockCardEditor
         },
         {
           name: "time_format",
-          hidden: {
+          visible: {
             field: "clock_style",
-            operator: "not_eq",
             value: "digital",
           },
           selector: {
@@ -132,7 +131,7 @@ export class HuiClockCardEditor
         },
         {
           name: "border",
-          hidden: { field: "clock_style", operator: "not_eq", value: "analog" },
+          visible: { field: "clock_style", value: "analog" },
           description: {
             suffix: localize(
               `ui.panel.lovelace.editor.card.clock.border.description`
@@ -145,7 +144,7 @@ export class HuiClockCardEditor
         },
         {
           name: "ticks",
-          hidden: { field: "clock_style", operator: "not_eq", value: "analog" },
+          visible: { field: "clock_style", value: "analog" },
           description: {
             suffix: localize(
               `ui.panel.lovelace.editor.card.clock.ticks.description`
@@ -169,13 +168,10 @@ export class HuiClockCardEditor
         },
         {
           name: "seconds_motion",
-          hidden: {
-            condition: "or",
-            conditions: [
-              { field: "clock_style", operator: "not_eq", value: "analog" },
-              { field: "show_seconds", operator: "not_eq", value: true },
-            ],
-          },
+          visible: [
+            { field: "clock_style", value: "analog" },
+            { field: "show_seconds", value: true },
+          ],
           description: {
             suffix: localize(
               `ui.panel.lovelace.editor.card.clock.seconds_motion.description`
@@ -199,13 +195,10 @@ export class HuiClockCardEditor
         },
         {
           name: "face_style",
-          hidden: {
-            condition: "or",
-            conditions: [
-              { field: "clock_style", operator: "not_eq", value: "analog" },
-              { field: "ticks", value: "none" },
-            ],
-          },
+          visible: [
+            { field: "clock_style", value: "analog" },
+            { field: "ticks", operator: "not_eq", value: "none" },
+          ],
           description: {
             suffix: localize(
               `ui.panel.lovelace.editor.card.clock.face_style.description`
