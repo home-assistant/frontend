@@ -1,4 +1,3 @@
-/* global module, require */
 // rspack/webpack loader that minifies the HTML, SVG, and CSS inside lit
 // tagged template literals using `minify-literals` (html-minifier-next +
 // lightningcss). Replaces the unmaintained babel-plugin-template-html-minifier.
@@ -13,30 +12,33 @@ const remapping = require("@ampproject/remapping");
 
 // Map to cache loader promises per environment (e.g., 'modern', 'legacy')
 const loaderInitPromises = new Map();
+const initLoader = (browserslistEnv) => {
+  if (!loaderInitPromises.has(browserslistEnv)) {
+    loaderInitPromises.set(
+      browserslistEnv,
+      Promise.all([
+        import("minify-literals"),
+        import("browserslist"),
+        import("lightningcss"),
+      ]).then(([minifyModule, browserslistModule, lightningcssModule]) => {
+        const browserslist = browserslistModule.default;
+        const { browserslistToTargets } = lightningcssModule;
+        const rawTargets = browserslist(null, { env: browserslistEnv });
+        if (!rawTargets.length) {
+          throw new Error(
+            `No browsers resolved for browserslist environment "${browserslistEnv}"`
+          );
+        }
+        const lightningcssTargets = browserslistToTargets(rawTargets);
 
-const initLoader = (env) => {
-  if (!loaderInitPromises.has(env)) {
-    const promise = Promise.all([
-      import("minify-literals"),
-      import("browserslist"),
-      import("lightningcss"),
-    ]).then(([minifyModule, browserslistModule, lightningcssModule]) => {
-      const browserslist = browserslistModule.default;
-      const { browserslistToTargets } = lightningcssModule;
-
-      // Request raw targets for the specific environment passed from rspack.cjs
-      const rawTargets = browserslist(null, { env });
-      const lightningcssTargets = browserslistToTargets(rawTargets);
-
-      return {
-        minifyHTMLLiterals: minifyModule.minifyHTMLLiterals,
-        lightningcssTargets,
-      };
-    });
-
-    loaderInitPromises.set(env, promise);
+        return {
+          minifyHTMLLiterals: minifyModule.minifyHTMLLiterals,
+          lightningcssTargets,
+        };
+      })
+    );
   }
-  return loaderInitPromises.get(env);
+  return loaderInitPromises.get(browserslistEnv);
 };
 
 // HTML options mirror the previous babel-plugin-template-html-minifier config
@@ -57,28 +59,18 @@ const htmlOptions = {
 
 module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const callback = this.async();
+  const { browserslistEnv } = this.getOptions();
 
-  // Read the environment from options (with fallback if unspecified)
-  const options = this.getOptions() || {};
-  const env = options.env;
-
-  console.log("Minifying template literals for %s build", env);
-
-  initLoader(env)
-    .then(({ minifyHTMLLiterals, lightningcssTargets }) => {
-      console.log(
-        "Targets %s for %s:",
-        JSON.stringify(lightningcssTargets),
-        this.resourcePath
-      );
+  initLoader(browserslistEnv)
+    .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
         css: {
           targets: lightningcssTargets,
         },
-      });
-    })
+      })
+    )
     .then((result) => {
       if (!result) {
         // No tagged templates changed; pass through untouched (incl. incoming map).
