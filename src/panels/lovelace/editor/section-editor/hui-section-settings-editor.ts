@@ -2,7 +2,6 @@ import { mdiPalette } from "@mdi/js";
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -16,6 +15,7 @@ import {
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
 
 interface SettingsData {
   column_span?: number;
@@ -27,8 +27,7 @@ interface SettingsData {
 
 @customElement("hui-section-settings-editor")
 export class HuiDialogEditSection extends LitElement {
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
@@ -114,11 +113,12 @@ export class HuiDialogEditSection extends LitElement {
 
     const schema = this._schema(
       this.viewConfig.max_columns || 4,
-      this._localize
+      this.hass.localize
     );
 
     return html`
       <ha-form
+        .hass=${this.hass}
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabel}
@@ -131,14 +131,14 @@ export class HuiDialogEditSection extends LitElement {
   private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
-    this._localize(
+    this.hass.localize(
       `ui.panel.lovelace.editor.edit_section.settings.${schema.name}`
     );
 
   private _computeHelper = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
-    this._localize(
+    this.hass.localize(
       `ui.panel.lovelace.editor.edit_section.settings.${schema.name}_helper`
     ) || "";
 

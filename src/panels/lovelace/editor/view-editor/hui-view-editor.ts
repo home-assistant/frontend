@@ -1,7 +1,6 @@
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -11,6 +10,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
 import {
   MASONRY_VIEW_LAYOUT,
   SECTIONS_VIEW_LAYOUT,
@@ -33,8 +33,7 @@ const INTEGER_REGEX = /^[0-9]+$/;
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public isNew = false;
 
@@ -93,10 +92,7 @@ export class HuiViewEditor extends LitElement {
           type: "expandable",
           flatten: true,
           expanded: true,
-          visible: {
-            field: "type",
-            value: SECTIONS_VIEW_LAYOUT,
-          },
+          visible: { field: "type", value: SECTIONS_VIEW_LAYOUT },
           schema: [
             {
               name: "max_columns",
@@ -135,6 +131,12 @@ export class HuiViewEditor extends LitElement {
   }
 
   protected render() {
+    if (!this.hass) {
+      return nothing;
+    }
+
+    const schema = this._schema(this.hass.localize);
+
     const data = {
       ...this._config,
       type: this._type,
@@ -150,8 +152,9 @@ export class HuiViewEditor extends LitElement {
 
     return html`
       <ha-form
+        .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this._localize)}
+        .schema=${schema}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         .computeError=${this._computeError}
@@ -201,14 +204,14 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _computeError = (error: string) =>
-    this._localize(`ui.panel.lovelace.editor.edit_view.${error}`) || error;
+    this.hass.localize(`ui.panel.lovelace.editor.edit_view.${error}`) || error;
 
   private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
       case "path":
-        return this._localize("ui.panel.lovelace.editor.card.generic.url");
+        return this.hass!.localize("ui.panel.lovelace.editor.card.generic.url");
       case "type":
       case "show_icon_and_title":
       case "subview":
@@ -216,11 +219,11 @@ export class HuiViewEditor extends LitElement {
       case "dense_section_placement":
       case "top_margin":
       case "section_specifics":
-        return this._localize(
+        return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}`
         );
       default:
-        return this._localize(
+        return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
     }
@@ -235,7 +238,7 @@ export class HuiViewEditor extends LitElement {
       case "subview":
       case "dense_section_placement":
       case "top_margin":
-        return this._localize(
+        return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}_helper`
         );
 
