@@ -1,5 +1,5 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
   array,
@@ -12,13 +12,14 @@ import {
   optional,
   string,
 } from "superstruct";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { ValueChangedEvent } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { DateCardConfig } from "../../cards/types";
 import { DATE_FORMAT_PARTS } from "../../cards/date-format";
@@ -42,7 +43,8 @@ export class HuiDateCardEditor
   extends LitElement
   implements LovelaceCardEditor
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _config?: DateCardConfig;
 
@@ -89,15 +91,14 @@ export class HuiDateCardEditor
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
     return html`
       <ha-form
-        .hass=${this.hass}
         .data=${this._data(this._config)}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(this._localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -120,25 +121,17 @@ export class HuiDateCardEditor
   ) => {
     switch (schema.name) {
       case "title":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.title"
-        );
+        return this._localize("ui.panel.lovelace.editor.card.generic.title");
       case "date_size":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.date.date_size"
-        );
+        return this._localize("ui.panel.lovelace.editor.card.date.date_size");
       case "date_format":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.date.date_format"
-        );
+        return this._localize("ui.panel.lovelace.editor.card.date.date_format");
       case "no_background":
-        return this.hass!.localize(
+        return this._localize(
           "ui.panel.lovelace.editor.card.date.no_background"
         );
       case "time_zone":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.date.time_zone"
-        );
+        return this._localize("ui.panel.lovelace.editor.card.date.time_zone");
       default:
         return undefined;
     }
@@ -149,7 +142,7 @@ export class HuiDateCardEditor
   ) => {
     switch (schema.name) {
       case "date_format":
-        return this.hass!.localize(
+        return this._localize(
           "ui.panel.lovelace.editor.card.date.date_format_description"
         );
       default:
