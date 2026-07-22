@@ -26,6 +26,7 @@ jobs:
         uses: ./.github/actions/setup
         with:
           node-modules-cache: true
+
       - name: Skip fetching nightly translations
         run: echo "SKIP_FETCH_NIGHTLY_TRANSLATIONS=1" >> "$GITHUB_ENV"
 
