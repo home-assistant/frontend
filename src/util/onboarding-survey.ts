@@ -14,7 +14,7 @@ const SURVEY_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 1 month
 // version-specific (the version is passed as a query parameter instead), so
 // beta/dev installs should not be routed to rc./next. like documentationUrl
 // would.
-const SURVEY_URL = "https://www.home-assistant.io/surveys/onboarding";
+const SURVEY_URL = "https://ohf.to/ha/surveys/onboarding";
 
 export const shouldShowOnboardingSurvey = (
   user: CurrentUser | undefined,
