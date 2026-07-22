@@ -2,13 +2,10 @@ import { TZDate } from "@date-fns/tz";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../../data/translation";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
-import {
-  formatClockCardDate,
-  getClockCardDateConfig,
-} from "./clock/clock-date-format";
-import type { ClockCardDatePart, DateCardConfig } from "./types";
+import { formatDateFromParts, getDateFormatConfig } from "./date-format";
+import type { DateCardConfig, DateFormatPart } from "./types";
 
-const DEFAULT_DATE_FORMAT_PARTS: ClockCardDatePart[] = [
+const DEFAULT_DATE_FORMAT_PARTS: DateFormatPart[] = [
   "weekday-long",
   "day-numeric",
   "month-long",
@@ -37,10 +34,10 @@ export const computeDateText = (
   config: HassConfig,
   cardConfig: DateCardConfig
 ): string => {
-  const { parts } = getClockCardDateConfig(cardConfig);
+  const { parts } = getDateFormatConfig(cardConfig);
   const timeZone = computeResolvedTimeZone(locale, config, cardConfig);
 
-  return formatClockCardDate(
+  return formatDateFromParts(
     dateObj,
     { parts: parts.length ? parts : DEFAULT_DATE_FORMAT_PARTS },
     locale.language,

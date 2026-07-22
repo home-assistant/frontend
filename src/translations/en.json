@@ -9625,6 +9625,32 @@
             "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
             "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]"
           },
+          "date_format": {
+            "description": "Select and order the date parts. Add a separator to control punctuation.",
+            "sections": {
+              "weekday": "Weekday",
+              "day": "Day",
+              "month": "Month",
+              "year": "Year",
+              "separator": "Separator"
+            },
+            "parts": {
+              "weekday-short": "Short",
+              "weekday-long": "Long",
+              "day-numeric": "Numeric",
+              "day-2-digit": "2-digit",
+              "month-short": "Short",
+              "month-long": "Long",
+              "month-numeric": "Numeric",
+              "month-2-digit": "2-digit",
+              "year-2-digit": "2-digit",
+              "year-numeric": "Full",
+              "separator-dash": "Dash",
+              "separator-slash": "Slash",
+              "separator-dot": "Dot",
+              "separator-new-line": "New line"
+            }
+          },
           "card": {
             "alarm-panel": {
               "name": "Alarm panel",
@@ -10151,33 +10177,8 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "date": {
-                "label": "Date",
-                "description": "Select and order the date parts. Add a separator to control punctuation.",
-                "sections": {
-                  "weekday": "Weekday",
-                  "day": "Day",
-                  "month": "Month",
-                  "year": "Year",
-                  "separator": "Separator"
-                },
-                "parts": {
-                  "weekday-short": "Short",
-                  "weekday-long": "Long",
-                  "day-numeric": "Numeric",
-                  "day-2-digit": "2-digit",
-                  "month-short": "Short",
-                  "month-long": "Long",
-                  "month-numeric": "Numeric",
-                  "month-2-digit": "2-digit",
-                  "year-2-digit": "2-digit",
-                  "year-numeric": "Full",
-                  "separator-dash": "Dash",
-                  "separator-slash": "Slash",
-                  "separator-dot": "Dot",
-                  "separator-new-line": "New line"
-                }
-              },
+              "date_format": "Date",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::date_format::description%]",
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
@@ -10254,7 +10255,7 @@
                 "large": "Large"
               },
               "date_format": "Date format",
-              "date_format_description": "[%key:ui::panel::lovelace::editor::card::clock::date::description%]",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::date_format::description%]",
               "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
               "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
             },
