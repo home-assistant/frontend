@@ -89,27 +89,29 @@ export class HuiGenericEntityRowEditor
       return nothing;
     }
 
-    const entity = this._config.entity;
-    const domain = entity ? computeDomain(entity) : "";
-    const simpleEntity =
-      (DOMAIN_TO_ELEMENT_TYPE[domain] ||
-        DOMAIN_TO_ELEMENT_TYPE["_domain_not_found"]) === "simple";
-    const showTimeFormat =
-      (this._config.secondary_info &&
-        stateContentHasTimestamp(
-          entity,
-          this.hass.states[entity],
-          this._config.secondary_info
-        )) ||
-      (simpleEntity
-        ? TIMESTAMP_STATE_DOMAINS.has(domain)
-        : domain === "event" ||
-          (domain === "sensor" &&
-            SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
-              this.hass.states[entity]?.attributes.device_class
-            )));
-
-    const schema = this.schema || this._schema(showTimeFormat);
+    let schema = this.schema;
+    if (!schema) {
+      const entity = this._config.entity;
+      const domain = entity ? computeDomain(entity) : "";
+      const simpleEntity =
+        (DOMAIN_TO_ELEMENT_TYPE[domain] ||
+          DOMAIN_TO_ELEMENT_TYPE["_domain_not_found"]) === "simple";
+      const showTimeFormat =
+        (this._config.secondary_info &&
+          stateContentHasTimestamp(
+            entity,
+            this.hass.states[entity],
+            this._config.secondary_info
+          )) ||
+        (simpleEntity
+          ? TIMESTAMP_STATE_DOMAINS.has(domain)
+          : domain === "event" ||
+            (domain === "sensor" &&
+              SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+                this.hass.states[entity]?.attributes.device_class
+              )));
+      schema = this._schema(showTimeFormat);
+    }
 
     return html`
       <ha-form
