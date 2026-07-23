@@ -101,7 +101,7 @@ test.describe("Home Assistant Demo", () => {
       );
     }, DEMO_THEME_STORAGE_KEY);
 
-    await loadDemo(page, "/#/profile/general");
+    await loadDemo(page, "/#/profile/dashboard");
 
     const themeRow = page.locator("ha-pick-theme-row");
     await expect(themeRow).toBeVisible({ timeout: PANEL_TIMEOUT });
@@ -121,7 +121,7 @@ test.describe("Home Assistant Demo", () => {
     await expectStoredDemoTheme(page, { theme: "default", dark: true });
     await expectDemoDarkMode(page, true);
 
-    await loadDemo(page, "/#/profile/general");
+    await loadDemo(page, "/#/profile/dashboard");
     await expect(themeRow).toBeVisible({ timeout: PANEL_TIMEOUT });
     await expect(
       themeRow.locator('ha-radio-option[value="dark"]')
