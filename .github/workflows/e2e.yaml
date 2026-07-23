@@ -22,9 +22,8 @@ permissions:
   contents: read
 
 jobs:
-  # ── Build the demo once and share it across test jobs via artifact ──────────
-  build-demo:
-    name: Build demo
+  prepare-dependencies:
+    name: Prepare dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
@@ -32,8 +31,44 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Prepare dependencies
+        uses: ./.github/actions/prepare-dependencies
+
+  prepare-container-dependencies:
+    name: Prepare container dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      options: --user 1001
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Prepare dependencies
+        uses: ./.github/actions/prepare-dependencies
+        with:
+          node-modules-cache-key: node-modules-container-v1
+
+  # ── Build the demo once and share it across test jobs via artifact ──────────
+  build-demo:
+    name: Build demo
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
 
       - name: Build demo
         uses: ./.github/actions/build
@@ -53,6 +88,7 @@ jobs:
   # ── Build the e2e test app and share it via artifact ────────────────────────
   build-e2e-test-app:
     name: Build e2e test app
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
@@ -60,8 +96,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
 
       - name: Build e2e test app
         uses: ./.github/actions/build
@@ -81,6 +119,7 @@ jobs:
   # ── Build the gallery and share it via artifact ─────────────────────────────
   build-gallery:
     name: Build gallery
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
@@ -88,8 +127,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
 
       - name: Build gallery
         uses: ./.github/actions/build
@@ -110,6 +151,7 @@ jobs:
     name: E2E demo (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     needs:
       - build-demo
+      - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
@@ -132,8 +174,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
+          node-modules-cache-key: node-modules-container-v1
 
       - name: Download demo build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -158,6 +203,7 @@ jobs:
     name: E2E app (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     needs:
       - build-e2e-test-app
+      - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
@@ -182,8 +228,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
+          node-modules-cache-key: node-modules-container-v1
 
       - name: Download e2e test app build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -208,6 +257,7 @@ jobs:
     name: E2E gallery (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
     needs:
       - build-gallery
+      - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
@@ -232,8 +282,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
+          node-modules-cache-key: node-modules-container-v1
 
       - name: Download gallery build
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -271,8 +324,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
 
       - name: Download demo blob reports
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
