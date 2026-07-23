@@ -5,7 +5,7 @@ description: Home Assistant frontend gallery structure, pages, demos, content, a
 
 # HA Frontend Gallery
 
-Use this skill for all work under `gallery/`. Follow the repository-wide Home Assistant frontend, TypeScript, Lit, accessibility, and copy standards in the root instructions alongside this gallery-specific guidance.
+Use this skill for all work under `gallery/`. Follow the persistent repository guidance in `AGENTS.md` and load the matching specialist skills alongside this gallery-specific guidance.
 
 ## Quick Reference
 
@@ -88,10 +88,10 @@ Use markdown pages for explanations, design guidance, API notes, and copy standa
 - Use fenced code blocks with a language tag for copyable examples.
 - Keep examples short and focused on the behavior being documented.
 - Prefer real component names and attributes over prose-only descriptions.
-- Use Home Assistant terminology from the root instructions.
+- Use Home Assistant terminology from `ha-frontend-user-facing-text`.
 - For remove/delete and add/create wording, follow `gallery/src/pages/misc/remove-delete-add-create.markdown`.
 
-Gallery markdown is documentation content and is not localized with `localize`. If demo code creates production UI strings, keep those strings aligned with the root localization and copy guidance.
+Gallery markdown is documentation content and is not localized with `localize`. If demo code creates production UI strings, follow the localization and copy guidance in `ha-frontend-user-facing-text`.
 
 ## Demo Components
 
@@ -110,7 +110,7 @@ The gallery ESLint config allows `console` for gallery diagnostics. Do not copy 
 
 ## Content Standards
 
-The root copy standards still apply: use American English, sentence case, active voice, inclusive language, direct user-focused wording, and consistent Home Assistant terminology.
+Follow the detailed copy standards in `ha-frontend-user-facing-text`: use American English, sentence case, active voice, inclusive language, direct user-focused wording, and consistent Home Assistant terminology.
 
 - Use `Home Assistant` in full, not `HA` or `HASS`.
 - Use `integration` instead of `component` for product concepts.
