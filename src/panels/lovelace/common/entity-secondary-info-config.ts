@@ -11,6 +11,7 @@ const SUBSTITUTIONS = {
   "last-triggered": "last_triggered",
   position: "current_position",
   "tilt-position": "current_tilt_position",
+  area: "area_name",
 };
 
 export const migrateSecondaryInfoConfig = <T extends LegacySecondaryInfoConfig>(
