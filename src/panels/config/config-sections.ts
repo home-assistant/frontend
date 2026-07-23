@@ -22,6 +22,7 @@ import {
   mdiPuzzle,
   mdiRadioTower,
   mdiRemote,
+  mdiRenameOutline,
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
@@ -492,6 +493,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
+      adminOnly: true,
+    },
+    {
+      path: "/config/naming",
+      translationKey: "naming",
+      iconPath: mdiRenameOutline,
+      iconColor: "#24a5cb",
+      core: true,
       adminOnly: true,
     },
     {
