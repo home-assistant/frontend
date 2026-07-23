@@ -10052,7 +10052,7 @@ __metadata:
     rrule: "npm:2.8.1"
     rspack-manifest-plugin: "npm:5.2.2"
     serve: "npm:14.2.6"
-    sinon: "npm:22.0.0"
+    sinon: "npm:22.1.0"
     sortablejs: "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
@@ -13879,15 +13879,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:22.0.0":
-  version: 22.0.0
-  resolution: "sinon@npm:22.0.0"
+"sinon@npm:22.1.0":
+  version: 22.1.0
+  resolution: "sinon@npm:22.1.0"
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
     "@sinonjs/fake-timers": "npm:^15.4.0"
     "@sinonjs/samsam": "npm:^10.0.2"
     diff: "npm:^9.0.0"
-  checksum: 10/5d0a692c2f1cc463b86d18a57e8db80e1a7f5829252edfc4d11162a555e4d005bf03698549d7cf9ad65f79b7e77a4f87534b4c76220bb81a1ec5e2b30be19929
+  checksum: 10/f49455cc9613c80765350a39cc2868ce238c35c5ba738e9075a5113f81951a616850e5ebbe77e19f8494ed24780b6a5d3496300cb1b76c12020f77adc72e0232
   languageName: node
   linkType: hard
 
