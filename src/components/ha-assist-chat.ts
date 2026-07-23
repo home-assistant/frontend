@@ -57,6 +57,16 @@ interface AssistMessage {
   error?: boolean;
 }
 
+export const initialPromptToSubmit = (
+  prompt: string | undefined,
+  submit: boolean
+): string | undefined => (submit ? prompt?.trim() || undefined : undefined);
+
+export const assistPipelineChanged = (
+  previous: AssistPipeline | undefined,
+  current: AssistPipeline | undefined
+): boolean => previous?.id !== current?.id;
+
 @customElement("ha-assist-chat")
 export class HaAssistChat extends LitElement {
   @property({ attribute: false }) public pipeline?: AssistPipeline;
@@ -66,6 +76,12 @@ export class HaAssistChat extends LitElement {
 
   @property({ attribute: false })
   public startListening?: boolean;
+
+  @property({ attribute: false })
+  public initialPrompt?: string;
+
+  @property({ attribute: false })
+  public submitInitialPrompt = false;
 
   @query("#message-input") private _messageInput!: HaInput;
 
@@ -99,6 +115,8 @@ export class HaAssistChat extends LitElement {
 
   private _conversationId: string | null = null;
 
+  private _initialPromptSubmitted = false;
+
   private _audioRecorder?: AudioRecorder;
 
   private _audioBuffer?: Int16Array[];
@@ -108,7 +126,11 @@ export class HaAssistChat extends LitElement {
   private _stt_binary_handler_id?: number | null;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
-    if (!this.hasUpdated || changedProperties.has("pipeline")) {
+    if (
+      !this.hasUpdated ||
+      (changedProperties.has("pipeline") &&
+        assistPipelineChanged(changedProperties.get("pipeline"), this.pipeline))
+    ) {
       this._conversation = [
         {
           who: "hass",
@@ -137,6 +159,20 @@ export class HaAssistChat extends LitElement {
     super.updated(changedProps);
     if (changedProps.has("_conversation")) {
       this._scrollMessagesBottom();
+    }
+    if (
+      !this._initialPromptSubmitted &&
+      (changedProps.has("initialPrompt") ||
+        changedProps.has("submitInitialPrompt"))
+    ) {
+      const prompt = initialPromptToSubmit(
+        this.initialPrompt,
+        this.submitInitialPrompt
+      );
+      if (prompt) {
+        this._initialPromptSubmitted = true;
+        this._processText(prompt);
+      }
     }
   }
 

@@ -112,7 +112,9 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
   show_name?: boolean;
   show_icon?: boolean;
 }
@@ -126,7 +128,9 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
@@ -330,7 +334,9 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
   time_format?: TimestampRenderingFormat;
 }
 
@@ -342,7 +348,9 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: (string | GlanceConfigEntity)[];
   columns?: number;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export interface HumidifierCardConfig extends LovelaceCardConfig {

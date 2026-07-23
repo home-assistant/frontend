@@ -7,6 +7,7 @@ import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
+import { showNumberSlider } from "../../../data/number";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -75,12 +76,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${
-          stateObj.attributes.mode === "slider" ||
-          (stateObj.attributes.mode === "auto" &&
-            (Number(stateObj.attributes.max) -
-              Number(stateObj.attributes.min)) /
-              Number(stateObj.attributes.step) <=
-              256)
+          showNumberSlider(stateObj)
             ? html`
                 <div class="flex">
                   <ha-slider
