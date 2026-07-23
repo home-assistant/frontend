@@ -7,6 +7,8 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
+  mdiArrowDown,
+  mdiArrowUp,
   mdiPlaylistEdit,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -184,6 +186,15 @@ export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: VisibilityCondition;
+
+  @property({ type: Number }) public index = 0;
+
+  @property({ type: Boolean }) public first = false;
+
+  @property({ type: Boolean }) public last = false;
+
+  @property({ attribute: false }) public sortableData?:
+    Condition | LegacyCondition;
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -575,6 +586,7 @@ export class HaCardConditionEditor extends LitElement {
                   )
             }
           </ha-automation-row-event-chip>
+          <slot name="drag-handle" slot="icons"></slot>
           <ha-dropdown
             slot="icons"
             @wa-select=${this._handleAction}
@@ -617,6 +629,18 @@ export class HaCardConditionEditor extends LitElement {
             <ha-dropdown-item value="cut">
               ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
               <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
+            </ha-dropdown-item>
+
+            <ha-dropdown-item value="move_up" .disabled=${this.first}>
+              ${this.hass.localize("ui.panel.config.automation.editor.move_up")}
+              <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon>
+            </ha-dropdown-item>
+
+            <ha-dropdown-item value="move_down" .disabled=${this.last}>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.move_down"
+              )}
+              <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon>
             </ha-dropdown-item>
 
             <ha-dropdown-item
@@ -720,6 +744,12 @@ export class HaCardConditionEditor extends LitElement {
         return;
       case "cut":
         this._cutCondition();
+        return;
+      case "move_up":
+        fireEvent(this, "move-up");
+        return;
+      case "move_down":
+        fireEvent(this, "move-down");
         return;
       case "toggle_yaml":
         this._yamlMode = !this._yamlMode;
