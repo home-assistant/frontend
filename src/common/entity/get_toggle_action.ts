@@ -17,7 +17,7 @@ export const SPECIAL_TOGGLE_ACTIONS: Record<string, SpecialToggleAction> = {
   button: {
     on: "press",
   },
-  CameraEntityFeature: {
+  camera: {
     on: "turn_on",
     off: "turn_off",
     feature: [CameraEntityFeature.ON_OFF],
