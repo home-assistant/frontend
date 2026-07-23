@@ -31,7 +31,10 @@ import {
 } from "../../../../../data/matter";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { createMatterNetworkChartData } from "./matter-network-data";
+import {
+  createMatterNetworkChartData,
+  HOME_ASSISTANT_NODE_ID,
+} from "./matter-network-data";
 
 const UPDATE_THROTTLE_TIME = 5000;
 
@@ -225,6 +228,9 @@ export class MatterNetworkVisualization extends LitElement {
   }
 
   private _getNodeName(id: string): string {
+    if (id === HOME_ASSISTANT_NODE_ID) {
+      return "Home Assistant";
+    }
     const node = this._getTopologyNode(id);
     if (!node) {
       return id;
@@ -354,6 +360,9 @@ export class MatterNetworkVisualization extends LitElement {
         >${lines}`;
     }
     const { id } = data as { id: string };
+    if (id === HOME_ASSISTANT_NODE_ID) {
+      return html`<b>Home Assistant</b>`;
+    }
     const node = this._getTopologyNode(id);
     if (!node) {
       return nothing;

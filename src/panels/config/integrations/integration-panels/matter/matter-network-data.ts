@@ -11,14 +11,19 @@ import type {
 } from "../../../../../data/matter";
 import type { HomeAssistant } from "../../../../../types";
 
-const CATEGORY_BORDER_ROUTER = 0;
-const CATEGORY_ROUTER = 1;
-const CATEGORY_END_DEVICE = 2;
-const CATEGORY_WIFI_AP = 3;
-const CATEGORY_OFFLINE = 4;
-const CATEGORY_UNKNOWN = 5;
+const CATEGORY_HOME_ASSISTANT = 0;
+const CATEGORY_BORDER_ROUTER = 1;
+const CATEGORY_ROUTER = 2;
+const CATEGORY_END_DEVICE = 3;
+const CATEGORY_WIFI_AP = 4;
+const CATEGORY_OFFLINE = 5;
+const CATEGORY_UNKNOWN = 6;
 
 const ROUTER_ROLES = new Set(["leader", "router", "reed"]);
+
+// HA is not a Matter node; the frontend synthesizes it as the graph root.
+export const HOME_ASSISTANT_NODE_ID = "ha";
+const HOME_ASSISTANT_LABEL = "Home Assistant";
 
 // 0 is never returned: a falsy link value re-enables the direction arrow
 // in ha-network-graph
@@ -120,6 +125,7 @@ export function createMatterNetworkChartData(
 
   const categoryColors = [
     style.getPropertyValue("--primary-color"),
+    style.getPropertyValue("--deep-purple-color"),
     style.getPropertyValue("--cyan-color"),
     style.getPropertyValue("--teal-color"),
     style.getPropertyValue("--indigo-color"),
@@ -127,6 +133,11 @@ export function createMatterNetworkChartData(
     style.getPropertyValue("--disabled-color"),
   ];
   const categories = [
+    {
+      name: HOME_ASSISTANT_LABEL,
+      symbol: "roundRect",
+      itemStyle: { color: categoryColors[CATEGORY_HOME_ASSISTANT] },
+    },
     {
       name: hass.localize("ui.panel.config.matter.visualization.border_router"),
       symbol: "roundRect",
@@ -166,7 +177,19 @@ export function createMatterNetworkChartData(
   );
   const multiNetwork = threadNetworks.size > 1;
 
-  const nodes: NetworkNode[] = [];
+  const nodes: NetworkNode[] = [
+    {
+      id: HOME_ASSISTANT_NODE_ID,
+      name: HOME_ASSISTANT_LABEL,
+      category: CATEGORY_HOME_ASSISTANT,
+      value: 4,
+      symbol: "roundRect",
+      symbolSize: 45,
+      polarDistance: 0,
+      fixed: true,
+      itemStyle: { color: categoryColors[CATEGORY_HOME_ASSISTANT] },
+    },
+  ];
   const nodeCategories = new Map<string, number>();
   topology.nodes.forEach((node) => {
     const category = getTopologyNodeCategory(node);
@@ -248,6 +271,67 @@ export function createMatterNetworkChartData(
         isHub(nodeCategories.get(source)!) || isHub(nodeCategories.get(target)!)
       ),
     });
+  });
+
+  const haLink = (target: string): NetworkLink => ({
+    source: HOME_ASSISTANT_NODE_ID,
+    target,
+    value: 0,
+    symbol: "none",
+    lineStyle: {
+      width: 3,
+      color: categoryColors[CATEGORY_HOME_ASSISTANT],
+    },
+  });
+
+  // HA reaches the mesh through the border routers and Wi-Fi access points
+  const hubIds = topology.nodes
+    .filter((node) => node.kind === "border_router" || node.kind === "wifi_ap")
+    .map((node) => node.id);
+  hubIds.forEach((id) => links.push(haLink(id)));
+
+  // any node group without a border router / AP is linked straight to HA so
+  // it never floats free (HA has a direct operational path to every node)
+  const adjacency = new Map<string, Set<string>>();
+  topology.nodes.forEach((node) => adjacency.set(node.id, new Set()));
+  links.forEach((link) => {
+    if (link.source === HOME_ASSISTANT_NODE_ID) {
+      return;
+    }
+    adjacency.get(link.source)?.add(link.target);
+    adjacency.get(link.target)?.add(link.source);
+  });
+  const hubIdSet = new Set(hubIds);
+  const visited = new Set<string>();
+  topology.nodes.forEach((startNode) => {
+    if (visited.has(startNode.id)) {
+      return;
+    }
+    const component: string[] = [];
+    const queue = [startNode.id];
+    visited.add(startNode.id);
+    while (queue.length) {
+      const id = queue.shift()!;
+      component.push(id);
+      adjacency.get(id)?.forEach((next) => {
+        if (!visited.has(next)) {
+          visited.add(next);
+          queue.push(next);
+        }
+      });
+    }
+    if (component.some((id) => hubIdSet.has(id))) {
+      return;
+    }
+    const candidates = component.filter(
+      (id) => nodeCategories.get(id) !== CATEGORY_UNKNOWN
+    );
+    const representative = (candidates.length ? candidates : component).sort(
+      (a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0)
+    )[0];
+    if (representative) {
+      links.push(haLink(representative));
+    }
   });
 
   // keep the strongest link of every node in the force layout so

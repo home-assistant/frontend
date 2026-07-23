@@ -67,36 +67,37 @@ describe("strengthToScale", () => {
 
 describe("getTopologyNodeCategory", () => {
   it("maps kinds and roles to categories", () => {
+    // category 0 is reserved for the synthesized Home Assistant root node
     expect(
       getTopologyNodeCategory(node({ id: "br", kind: "border_router" }))
-    ).toBe(0);
-    expect(getTopologyNodeCategory(node({ id: "1", role: "leader" }))).toBe(1);
-    expect(getTopologyNodeCategory(node({ id: "2", role: "router" }))).toBe(1);
-    expect(getTopologyNodeCategory(node({ id: "3", role: "reed" }))).toBe(1);
+    ).toBe(1);
+    expect(getTopologyNodeCategory(node({ id: "1", role: "leader" }))).toBe(2);
+    expect(getTopologyNodeCategory(node({ id: "2", role: "router" }))).toBe(2);
+    expect(getTopologyNodeCategory(node({ id: "3", role: "reed" }))).toBe(2);
     expect(getTopologyNodeCategory(node({ id: "4", role: "end_device" }))).toBe(
-      2
+      3
     );
     expect(
       getTopologyNodeCategory(node({ id: "5", role: "sleepy_end_device" }))
-    ).toBe(2);
+    ).toBe(3);
     expect(
       getTopologyNodeCategory(
         node({ id: "6", network_type: "wifi", role: "station" })
       )
-    ).toBe(2);
+    ).toBe(3);
     expect(
       getTopologyNodeCategory(
         node({ id: "ap_112233445566", kind: "wifi_ap", network_type: "wifi" })
       )
-    ).toBe(3);
+    ).toBe(4);
     expect(
       getTopologyNodeCategory(
         node({ id: "7", role: "router", available: false })
       )
-    ).toBe(4);
+    ).toBe(5);
     expect(
       getTopologyNodeCategory(node({ id: "unknown_1", kind: "thread_unknown" }))
-    ).toBe(5);
+    ).toBe(6);
   });
 });
 
@@ -174,21 +175,28 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    expect(data.categories).toHaveLength(6);
-    expect(data.nodes).toHaveLength(3);
+    expect(data.categories).toHaveLength(7);
+    // Home Assistant root + the 3 topology nodes
+    expect(data.nodes).toHaveLength(4);
+
+    const ha = data.nodes[0];
+    expect(ha.id).toBe("ha");
+    expect(ha.category).toBe(0);
+    expect(ha.fixed).toBe(true);
+    expect(ha.polarDistance).toBe(0);
 
     const leader = data.nodes.find((n) => n.id === "1")!;
     expect(leader.name).toBe("Leader plug");
     expect(leader.context).toBe("Living room");
-    expect(leader.category).toBe(1);
+    expect(leader.category).toBe(2);
     expect(leader.itemStyle?.borderWidth).toBe(2);
 
     const endDevice = data.nodes.find((n) => n.id === "2")!;
-    expect(endDevice.category).toBe(2);
+    expect(endDevice.category).toBe(3);
     expect(endDevice.itemStyle?.borderWidth).toBeUndefined();
 
     const borderRouter = data.nodes.find((n) => n.id === "br_1")!;
-    expect(borderRouter.category).toBe(0);
+    expect(borderRouter.category).toBe(1);
     expect(borderRouter.symbol).toBe("roundRect");
 
     const meshLink = data.links.find(
@@ -197,6 +205,13 @@ describe("createMatterNetworkChartData", () => {
     expect(meshLink.value).toBe(3);
     expect(meshLink.reverseValue).toBe(3);
     expect(meshLink.lineStyle?.type).toBe("solid");
+
+    // HA anchors to the border router (the mesh's infrastructure), not to
+    // the individual routers hanging off it
+    const haLink = data.links.find((l) => l.source === "ha")!;
+    expect(haLink.target).toBe("br_1");
+    expect(haLink.symbol).toBe("none");
+    expect(data.links.filter((l) => l.source === "ha")).toHaveLength(1);
   });
 
   it("marks asymmetric links dashed and keeps one-way arrows", () => {
@@ -330,8 +345,66 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    expect(data.nodes).toHaveLength(1);
-    expect(data.links).toHaveLength(0);
+    // Home Assistant root + the single topology node
+    expect(data.nodes).toHaveLength(2);
+    // the bogus connection is skipped; the lone node is anchored to HA
+    expect(data.links).toHaveLength(1);
+    expect(data.links[0].source).toBe("ha");
+    expect(data.links[0].target).toBe("1");
+  });
+
+  it("anchors unconnected routers directly to Home Assistant", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({ id: "1", node_id: 1, role: "router" }),
+        node({ id: "2", node_id: 2, role: "router" }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    const haTargets = data.links
+      .filter((l) => l.source === "ha")
+      .map((l) => l.target)
+      .sort();
+    expect(haTargets).toEqual(["1", "2"]);
+  });
+
+  it("routes HA through the Wi-Fi access point, not the stations", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({
+            id: "ap_112233445566",
+            kind: "wifi_ap",
+            network_type: "wifi",
+          }),
+          node({ id: "7", node_id: 7, network_type: "wifi", role: "station" }),
+          node({ id: "8", node_id: 8, network_type: "wifi", role: "station" }),
+        ],
+        [
+          connection({
+            source: "7",
+            target: "ap_112233445566",
+            network: "wifi",
+            source_to_target: { strength: "strong", rssi: -55 },
+          }),
+          connection({
+            source: "8",
+            target: "ap_112233445566",
+            network: "wifi",
+            source_to_target: { strength: "medium", rssi: -70 },
+          }),
+        ]
+      ),
+      mockHass(),
+      element
+    );
+
+    const haTargets = data.links
+      .filter((l) => l.source === "ha")
+      .map((l) => l.target);
+    expect(haTargets).toEqual(["ap_112233445566"]);
   });
 
   it("adds the network name to the context when there are multiple networks", () => {
