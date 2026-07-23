@@ -84,7 +84,6 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:home-assistant",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.original-states.empty_state_title"

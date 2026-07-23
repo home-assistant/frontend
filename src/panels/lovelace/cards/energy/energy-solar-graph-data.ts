@@ -146,7 +146,7 @@ export function generateEnergySolarGraphData(
     end,
     compareStart,
     compareEnd,
-    yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax),
+    yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax, true),
   };
 }
 

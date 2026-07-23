@@ -33,7 +33,6 @@ const HIDDEN_ATTRIBUTES = [
   "battery_level",
   "code_arm_required",
   "code_format",
-  "color_modes",
   "device_class",
   "editable",
   "effect_list",

@@ -157,8 +157,6 @@ export class HuiStatisticsGraphCardEditor
       localize: LocalizeFunc,
       statisticIds: string[] | undefined,
       metaDatas: StatisticsMetaData[] | undefined,
-      showFitOption: boolean,
-      hiddenLegend: boolean,
       enableDateSelect: boolean
     ) => {
       const units = new Set<string>();
@@ -291,15 +289,18 @@ export class HuiStatisticsGraphCardEditor
                   required: false,
                   selector: { number: { mode: "box", step: "any" } },
                 },
-                ...(showFitOption
-                  ? [
-                      {
-                        name: "fit_y_data",
-                        required: false,
-                        selector: { boolean: {} },
-                      },
-                    ]
-                  : []),
+                {
+                  name: "fit_y_data",
+                  required: false,
+                  visible: {
+                    condition: "or",
+                    conditions: [
+                      { field: "min_y_axis", operator: "exists" },
+                      { field: "max_y_axis", operator: "exists" },
+                    ],
+                  },
+                  selector: { boolean: {} },
+                },
                 {
                   name: "logarithmic_scale",
                   required: false,
@@ -310,15 +311,16 @@ export class HuiStatisticsGraphCardEditor
                   required: false,
                   selector: { boolean: {} },
                 },
-                ...(!hiddenLegend
-                  ? [
-                      {
-                        name: "expand_legend",
-                        required: false,
-                        selector: { boolean: {} },
-                      },
-                    ]
-                  : []),
+                {
+                  name: "expand_legend",
+                  required: false,
+                  visible: {
+                    field: "hide_legend",
+                    operator: "not_eq",
+                    value: true,
+                  },
+                  selector: { boolean: {} },
+                },
               ],
             },
           ],
@@ -397,9 +399,6 @@ export class HuiStatisticsGraphCardEditor
       this.hass.localize,
       this._configEntities,
       this._metaDatas,
-      this._config!.min_y_axis !== undefined ||
-        this._config!.max_y_axis !== undefined,
-      !!this._config!.hide_legend,
       !!this._config!.energy_date_selection
     );
     const configured_stat_types = this._config!.stat_types

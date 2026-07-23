@@ -2,8 +2,10 @@ import { getTimeZones, timeZonesNames } from "@vvo/tzdb";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
@@ -52,7 +54,8 @@ export const getTimezoneOptions = (): PickerComboBoxItem[] => {
 
 @customElement("ha-timezone-picker")
 export class HaTimeZonePicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property() public value?: string;
 
@@ -82,15 +85,14 @@ export class HaTimeZonePicker extends LitElement {
   protected render() {
     const label =
       this.label ??
-      (this.hass?.localize("ui.components.timezone-picker.time_zone") ||
+      (this._localize("ui.components.timezone-picker.time_zone") ||
         "Time zone");
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
-          this.hass?.localize("ui.components.timezone-picker.no_timezones") ||
+          this._localize("ui.components.timezone-picker.no_timezones") ||
           "No time zones available"
         }
         .label=${label}
@@ -124,9 +126,10 @@ export class HaTimeZonePicker extends LitElement {
 
   private _notFoundLabel = (search: string) => {
     const term = html`<b>'${search}'</b>`;
-    return this.hass
-      ? this.hass.localize("ui.components.timezone-picker.no_match", { term })
-      : html`No time zones found for ${term}`;
+    return (
+      this._localize("ui.components.timezone-picker.no_match", { term }) ||
+      html`No time zones found for ${term}`
+    );
   };
 }
 

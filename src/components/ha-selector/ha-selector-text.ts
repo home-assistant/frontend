@@ -28,6 +28,10 @@ export class HaTextSelector extends LitElement {
 
   @query("ha-input, ha-textarea") private _input?: HTMLInputElement;
 
+  @query("ha-input-multi") private _inputMulti?: {
+    reportValidity: () => boolean;
+  };
+
   public async focus() {
     await this.updateComplete;
     this._input?.focus();
@@ -35,7 +39,7 @@ export class HaTextSelector extends LitElement {
 
   public reportValidity(): boolean {
     if (this.selector.text?.multiple) {
-      return true;
+      return this._inputMulti?.reportValidity() ?? true;
     }
     return this._input?.reportValidity() ?? true;
   }
@@ -52,6 +56,8 @@ export class HaTextSelector extends LitElement {
           .inputPrefix=${this.selector.text?.prefix}
           .helper=${this.helper}
           .autocomplete=${this.selector.text?.autocomplete}
+          .pattern=${this.selector.text?.pattern}
+          .validationMessage=${this.selector.text?.validation_message}
           @value-changed=${this._handleChange}
         >
         </ha-input-multi>
@@ -80,6 +86,9 @@ export class HaTextSelector extends LitElement {
       .hint=${this.helper}
       .disabled=${this.disabled}
       .type=${this.selector.text?.type}
+      .pattern=${this.selector.text?.pattern}
+      .validationMessage=${this.selector.text?.validation_message}
+      .autoValidate=${this.selector.text?.pattern !== undefined}
       @input=${this._handleChange}
       @change=${this._handleChange}
       .label=${this.label || ""}

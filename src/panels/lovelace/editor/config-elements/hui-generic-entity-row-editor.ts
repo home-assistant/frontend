@@ -59,13 +59,28 @@ export class HuiGenericEntityRowEditor
           context: { entity: "entity" },
         },
         {
-          name: "icon",
-          selector: {
-            icon: {},
-          },
-          context: {
-            icon_entity: "entity",
-          },
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "icon",
+              selector: {
+                icon: {},
+              },
+              context: {
+                icon_entity: "entity",
+              },
+            },
+            {
+              name: "color",
+              selector: {
+                ui_color: {
+                  include_state: true,
+                  include_none: true,
+                },
+              },
+            },
+          ],
         },
         {
           name: "secondary_info",

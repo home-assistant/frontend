@@ -7,6 +7,7 @@ import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
+import { showNumberSlider } from "../data/number";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -46,8 +47,6 @@ class StateCardNumber extends LitElement {
   }
 
   protected render() {
-    const range = this.stateObj.attributes.max - this.stateObj.attributes.min;
-
     return html`
       <state-info
         .hass=${this.hass}
@@ -55,8 +54,7 @@ class StateCardNumber extends LitElement {
         .inDialog=${this.inDialog}
       ></state-info>
       ${
-        this.stateObj.attributes.mode === "slider" ||
-        (this.stateObj.attributes.mode === "auto" && range <= 256)
+        showNumberSlider(this.stateObj)
           ? html`
               <div class="flex">
                 <ha-slider

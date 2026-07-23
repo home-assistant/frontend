@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { getE2EWorkers } from "./playwright-workers";
 
 const APP_PORT = 8095;
 const APP_BASE_URL = `http://localhost:${APP_PORT}`;
@@ -11,8 +12,10 @@ export default defineConfig({
   expect: { timeout: 15_000 },
 
   retries: process.env.CI ? 1 : 0,
+  fullyParallel: true,
+  workers: getE2EWorkers(),
 
-  outputDir: "test-results",
+  outputDir: "test-results/app",
   reporter: [["list"], ["blob", { outputDir: "reports/app" }]],
 
   use: {
