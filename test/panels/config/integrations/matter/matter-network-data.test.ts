@@ -1,0 +1,360 @@
+import { describe, expect, it } from "vitest";
+
+import type {
+  MatterNetworkTopology,
+  MatterNetworkTopologyConnection,
+  MatterNetworkTopologyNode,
+} from "../../../../../src/data/matter";
+import {
+  createMatterNetworkChartData,
+  getTopologyNodeCategory,
+  getTopologyNodeName,
+  strengthToScale,
+} from "../../../../../src/panels/config/integrations/integration-panels/matter/matter-network-data";
+import type { HomeAssistant } from "../../../../../src/types";
+
+const mockHass = (
+  devices: Record<string, Partial<HomeAssistant["devices"][string]>> = {},
+  areas: Record<string, Partial<HomeAssistant["areas"][string]>> = {}
+): HomeAssistant =>
+  ({
+    localize: (key: string) => key.split(".").pop(),
+    devices,
+    areas,
+  }) as unknown as HomeAssistant;
+
+const node = (
+  overrides: Partial<MatterNetworkTopologyNode> & { id: string }
+): MatterNetworkTopologyNode => ({
+  kind: "matter",
+  network_type: "thread",
+  ...overrides,
+});
+
+const connection = (
+  overrides: Partial<MatterNetworkTopologyConnection> & {
+    source: string;
+    target: string;
+  }
+): MatterNetworkTopologyConnection => ({
+  network: "thread",
+  strength: "strong",
+  ...overrides,
+});
+
+const topology = (
+  nodes: MatterNetworkTopologyNode[],
+  connections: MatterNetworkTopologyConnection[] = []
+): MatterNetworkTopology => ({
+  collected_at: 1767888000000,
+  nodes,
+  connections,
+});
+
+const element = document.createElement("div");
+document.body.appendChild(element);
+
+describe("strengthToScale", () => {
+  it("never returns a falsy value so the graph arrow stays suppressed", () => {
+    expect(strengthToScale("strong")).toBe(4);
+    expect(strengthToScale("medium")).toBe(3);
+    expect(strengthToScale("weak")).toBe(2);
+    expect(strengthToScale("none")).toBe(1);
+    expect(strengthToScale(undefined)).toBe(1);
+    expect(strengthToScale(null)).toBe(1);
+  });
+});
+
+describe("getTopologyNodeCategory", () => {
+  it("maps kinds and roles to categories", () => {
+    expect(
+      getTopologyNodeCategory(node({ id: "br", kind: "border_router" }))
+    ).toBe(0);
+    expect(getTopologyNodeCategory(node({ id: "1", role: "leader" }))).toBe(1);
+    expect(getTopologyNodeCategory(node({ id: "2", role: "router" }))).toBe(1);
+    expect(getTopologyNodeCategory(node({ id: "3", role: "reed" }))).toBe(1);
+    expect(getTopologyNodeCategory(node({ id: "4", role: "end_device" }))).toBe(
+      2
+    );
+    expect(
+      getTopologyNodeCategory(node({ id: "5", role: "sleepy_end_device" }))
+    ).toBe(2);
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "6", network_type: "wifi", role: "station" })
+      )
+    ).toBe(2);
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "ap_112233445566", kind: "wifi_ap", network_type: "wifi" })
+      )
+    ).toBe(3);
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "7", role: "router", available: false })
+      )
+    ).toBe(4);
+    expect(
+      getTopologyNodeCategory(node({ id: "unknown_1", kind: "thread_unknown" }))
+    ).toBe(5);
+  });
+});
+
+describe("getTopologyNodeName", () => {
+  it("prefers the HA device name", () => {
+    const hass = mockHass({
+      dev1: { name_by_user: "Living room plug", name: "Plug" },
+    });
+    expect(
+      getTopologyNodeName(
+        node({ id: "1", node_id: 1, ha_device_id: "dev1" }),
+        hass
+      )
+    ).toBe("Living room plug");
+  });
+
+  it("falls back to wire metadata for external nodes", () => {
+    const hass = mockHass();
+    expect(
+      getTopologyNodeName(
+        node({ id: "br_1", kind: "border_router", vendor_name: "Apple" }),
+        hass
+      )
+    ).toBe("Apple");
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "ap_112233445566",
+          kind: "wifi_ap",
+          network_type: "wifi",
+          network_name: "MyWiFi",
+        }),
+        hass
+      )
+    ).toBe("MyWiFi");
+    expect(
+      getTopologyNodeName(
+        node({ id: "unknown_1", kind: "thread_unknown" }),
+        hass
+      )
+    ).toBe("unknown_device");
+  });
+});
+
+describe("createMatterNetworkChartData", () => {
+  it("maps a thread mesh with a border router", () => {
+    const hass = mockHass(
+      { dev1: { name: "Leader plug", area_id: "living" } },
+      { living: { name: "Living room" } }
+    );
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, ha_device_id: "dev1", role: "leader" }),
+          node({ id: "2", node_id: 2, role: "end_device", available: true }),
+          node({ id: "br_1", kind: "border_router", vendor_name: "Apple" }),
+        ],
+        [
+          connection({
+            source: "1",
+            target: "2",
+            strength: "medium",
+            source_to_target: { strength: "medium", lqi: 2 },
+            target_to_source: { strength: "medium", lqi: 2 },
+          }),
+          connection({
+            source: "1",
+            target: "br_1",
+            source_to_target: { strength: "strong", lqi: 3 },
+            target_to_source: { strength: "strong", lqi: 3 },
+          }),
+        ]
+      ),
+      hass,
+      element
+    );
+
+    expect(data.categories).toHaveLength(6);
+    expect(data.nodes).toHaveLength(3);
+
+    const leader = data.nodes.find((n) => n.id === "1")!;
+    expect(leader.name).toBe("Leader plug");
+    expect(leader.context).toBe("Living room");
+    expect(leader.category).toBe(1);
+    expect(leader.itemStyle?.borderWidth).toBe(2);
+
+    const endDevice = data.nodes.find((n) => n.id === "2")!;
+    expect(endDevice.category).toBe(2);
+    expect(endDevice.itemStyle?.borderWidth).toBeUndefined();
+
+    const borderRouter = data.nodes.find((n) => n.id === "br_1")!;
+    expect(borderRouter.category).toBe(0);
+    expect(borderRouter.symbol).toBe("roundRect");
+
+    const meshLink = data.links.find(
+      (l) => l.source === "1" && l.target === "2"
+    )!;
+    expect(meshLink.value).toBe(3);
+    expect(meshLink.reverseValue).toBe(3);
+    expect(meshLink.lineStyle?.type).toBe("solid");
+  });
+
+  it("marks asymmetric links dashed and keeps one-way arrows", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "2", node_id: 2, role: "router" }),
+          node({ id: "3", node_id: 3, role: "router" }),
+        ],
+        [
+          connection({
+            source: "1",
+            target: "2",
+            source_to_target: { strength: "strong", lqi: 3 },
+            target_to_source: { strength: "weak", lqi: 1 },
+          }),
+          // only observed from node 3's side: 3 → 2
+          connection({
+            source: "2",
+            target: "3",
+            strength: "medium",
+            target_to_source: { strength: "medium", lqi: 2 },
+          }),
+        ]
+      ),
+      mockHass(),
+      element
+    );
+
+    const asymmetric = data.links.find(
+      (l) => l.source === "1" && l.target === "2"
+    )!;
+    expect(asymmetric.lineStyle?.type).toBe("dashed");
+    expect(asymmetric.value).toBe(4);
+    expect(asymmetric.reverseValue).toBe(2);
+
+    // one-way link is flipped so the arrow points the observed direction
+    const oneWay = data.links.find(
+      (l) => l.source === "3" && l.target === "2"
+    )!;
+    expect(oneWay.reverseValue).toBeUndefined();
+    expect(oneWay.symbolSize).toBeGreaterThan(0);
+    expect(oneWay.lineStyle?.type).toBe("dashed");
+  });
+
+  it("suppresses direction arrows on route-table edges", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "2", node_id: 2, role: "router" }),
+        ],
+        [
+          connection({
+            source: "1",
+            target: "2",
+            strength: "none",
+            via_route_table: true,
+            path_cost: 1,
+          }),
+        ]
+      ),
+      mockHass(),
+      element
+    );
+
+    const link = data.links[0];
+    expect(link.value).toBe(1);
+    expect(link.reverseValue).toBe(1);
+    expect(link.lineStyle?.type).toBe("dotted");
+  });
+
+  it("keeps every node attached to the force layout", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "2", node_id: 2, role: "router" }),
+          node({ id: "3", node_id: 3, role: "end_device" }),
+          node({ id: "br_1", kind: "border_router" }),
+        ],
+        [
+          connection({
+            source: "1",
+            target: "br_1",
+            source_to_target: { strength: "strong", lqi: 3 },
+            target_to_source: { strength: "strong", lqi: 3 },
+          }),
+          connection({
+            source: "1",
+            target: "2",
+            strength: "weak",
+            source_to_target: { strength: "weak", lqi: 1 },
+            target_to_source: { strength: "weak", lqi: 1 },
+          }),
+          connection({
+            source: "2",
+            target: "3",
+            strength: "weak",
+            source_to_target: { strength: "weak", lqi: 1 },
+            target_to_source: { strength: "weak", lqi: 1 },
+          }),
+        ]
+      ),
+      mockHass(),
+      element
+    );
+
+    // hub link stays active, and every node has at least one active link
+    const hubLink = data.links.find((l) => l.target === "br_1")!;
+    expect(hubLink.ignoreForceLayout).toBe(false);
+    data.nodes.forEach((n) => {
+      const nodeLinks = data.links.filter(
+        (l) => l.source === n.id || l.target === n.id
+      );
+      expect(
+        nodeLinks.some((l) => !l.ignoreForceLayout),
+        `node ${n.id} has no active link`
+      ).toBe(true);
+    });
+  });
+
+  it("tolerates minimal nodes and skips connections to unknown nodes", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [node({ id: "1" })],
+        [connection({ source: "1", target: "missing" })]
+      ),
+      mockHass(),
+      element
+    );
+
+    expect(data.nodes).toHaveLength(1);
+    expect(data.links).toHaveLength(0);
+  });
+
+  it("adds the network name to the context when there are multiple networks", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "1",
+          node_id: 1,
+          ext_pan_id: "AAA",
+          network_name: "NetA",
+        }),
+        node({
+          id: "2",
+          node_id: 2,
+          ext_pan_id: "BBB",
+          network_name: "NetB",
+        }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    expect(data.nodes.find((n) => n.id === "1")!.context).toBe("NetA");
+    expect(data.nodes.find((n) => n.id === "2")!.context).toBe("NetB");
+  });
+});
