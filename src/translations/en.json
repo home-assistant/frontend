@@ -8693,6 +8693,10 @@
             "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
             "invalid_host": "Enter a valid IP address.",
             "invalid_network": "Enter a valid IP address or network.",
+            "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
+            "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
+            "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
+            "reverted_action": "Review the change",
             "save_confirm": {
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
