@@ -78,18 +78,21 @@ class MoreInfoLawnMower extends LitElement {
     );
   }
 
-  private get _startPauseIcon(): string {
-    if (!this.stateObj) return mdiPlay;
-    return isMowing(this.stateObj) &&
+  private get _showPause(): boolean {
+    if (!this.stateObj) return false;
+    return (
+      isMowing(this.stateObj) &&
       supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
-      ? mdiPause
-      : mdiPlay;
+    );
+  }
+
+  private get _startPauseIcon(): string {
+    return this._showPause ? mdiPause : mdiPlay;
   }
 
   private get _startPauseLabel(): string {
     if (!this.stateObj) return "";
-    return isMowing(this.stateObj) &&
-      supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
+    return this._showPause
       ? this._i18n.localize("ui.dialogs.more_info_control.lawn_mower.pause")
       : this._i18n.localize(
           "ui.dialogs.more_info_control.lawn_mower.start_mowing"
@@ -99,8 +102,11 @@ class MoreInfoLawnMower extends LitElement {
   private get _startPauseDisabled(): boolean {
     if (!this.stateObj) return true;
     if (this.stateObj.state === UNAVAILABLE) return true;
-    if (isMowing(this.stateObj)) return false;
-    return !canStartMowing(this.stateObj);
+    if (this._showPause) return false;
+    return (
+      !supportsFeature(this.stateObj, LawnMowerEntityFeature.START_MOWING) ||
+      !canStartMowing(this.stateObj)
+    );
   }
 
   private _renderBattery() {
@@ -156,7 +162,7 @@ class MoreInfoLawnMower extends LitElement {
   private _handleStartPause() {
     if (!this.stateObj) return;
     forwardHaptic(this, "light");
-    if (isMowing(this.stateObj)) {
+    if (this._showPause) {
       this._api.callService("lawn_mower", "pause", {
         entity_id: this.stateObj.entity_id,
       });
