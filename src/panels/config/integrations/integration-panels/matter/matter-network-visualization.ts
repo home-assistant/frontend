@@ -156,7 +156,9 @@ export class MatterNetworkVisualization extends LitElement {
         .data=${this._formatNetworkData(
           this._topology,
           this.hass.devices,
-          this.hass.areas
+          this.hass.areas,
+          this.hass.themes,
+          this.hass.language
         )}
         .searchableAttributes=${this._getSearchableAttributes}
         .tooltipFormatter=${this._tooltipFormatter}
@@ -208,7 +210,11 @@ export class MatterNetworkVisualization extends LitElement {
     (
       topology: MatterNetworkTopology,
       _devices: HomeAssistant["devices"],
-      _areas: HomeAssistant["areas"]
+      _areas: HomeAssistant["areas"],
+      // node/link colors and labels also depend on the theme and language,
+      // so both take part in the cache key even though they are read via hass
+      _themes: HomeAssistant["themes"],
+      _language: HomeAssistant["language"]
     ) => createMatterNetworkChartData(topology, this.hass, this)
   );
 
@@ -228,9 +234,6 @@ export class MatterNetworkVisualization extends LitElement {
   }
 
   private _getNodeName(id: string): string {
-    if (id === HOME_ASSISTANT_NODE_ID) {
-      return "Home Assistant";
-    }
     const node = this._getTopologyNode(id);
     if (!node) {
       return id;
