@@ -23,6 +23,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import "../../../state-display/state-display";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -162,25 +163,14 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasSecondary
             ? html`
                 <div class="secondary">
-                  ${
-                    this._config.secondary_info === "entity-id"
-                      ? stateObj.entity_id
-                      : this._config.secondary_info === "last-changed"
-                        ? html`
-                            <ha-relative-time
-                              .datetime=${stateObj.last_changed}
-                              capitalize
-                            ></ha-relative-time>
-                          `
-                        : this._config.secondary_info === "last-updated"
-                          ? html`
-                              <ha-relative-time
-                                .datetime=${stateObj.last_updated}
-                                capitalize
-                              ></ha-relative-time>
-                            `
-                          : ""
-                  }
+                  <state-display
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                    .content=${this._config.secondary_info}
+                    .timeFormat=${this._config.time_format}
+                    .name=${name}
+                  >
+                  </state-display>
                 </div>
               `
             : ""
