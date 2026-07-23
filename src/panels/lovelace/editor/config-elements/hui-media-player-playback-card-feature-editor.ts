@@ -38,11 +38,10 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (stateObj: MediaPlayerEntity | undefined, customize: boolean) =>
+    (stateObj: MediaPlayerEntity | undefined) =>
       [
         ...customizableListSchema({
           field: "controls",
-          customize,
           options: MEDIA_PLAYER_PLAYBACK_CONTROLS.filter(
             (control) =>
               stateObj && supportsMediaPlayerPlaybackControl(stateObj, control)
@@ -69,7 +68,7 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
       : undefined;
 
     const data = customizableListData(this._config, "controls");
-    const schema = this._schema(stateObj, data.customize);
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form

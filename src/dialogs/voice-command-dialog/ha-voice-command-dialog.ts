@@ -58,9 +58,11 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _startListening = false;
 
-  public async showDialog(
-    params: Required<VoiceCommandDialogParams>
-  ): Promise<void> {
+  private _prompt?: string;
+
+  private _submitPrompt = false;
+
+  public async showDialog(params: VoiceCommandDialogParams): Promise<void> {
     await this._loadPipelines();
     const pipelinesIds = this._pipelines?.map((pipeline) => pipeline.id) || [];
     if (
@@ -77,7 +79,9 @@ export class HaVoiceCommandDialog extends LitElement {
       this._pipelineId = this._preferredPipeline;
     }
 
-    this._startListening = params.start_listening;
+    this._startListening = params.start_listening ?? false;
+    this._prompt = params.prompt;
+    this._submitPrompt = params.submit ?? false;
     this._dialogOpen = true;
     this._open = true;
   }
@@ -189,6 +193,8 @@ export class HaVoiceCommandDialog extends LitElement {
                     .hass=${this.hass}
                     .pipeline=${this._pipeline}
                     .startListening=${this._startListening}
+                    .initialPrompt=${this._prompt}
+                    .submitInitialPrompt=${this._submitPrompt}
                   >
                   </ha-assist-chat>
                 `

@@ -90,6 +90,7 @@ const MEDIA_BROWSER_ROOT = {
 
 declare global {
   interface Window {
+    __assistRun?: unknown;
     __mockHass: MockHomeAssistant;
   }
 }

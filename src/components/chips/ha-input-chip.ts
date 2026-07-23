@@ -1,8 +1,8 @@
 import { InputChip } from "@material/web/chips/internal/input-chip";
-import { styles } from "@material/web/chips/internal/input-styles";
-import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
-import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
+import { styles } from "@material/web/chips/internal/input-styles.cssresult.js";
+import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles.cssresult.js";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
+import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
