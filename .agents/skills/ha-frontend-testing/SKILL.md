@@ -65,9 +65,9 @@ The app suite uses a stripped-down harness for e2e. Demo and gallery use their n
 
 ## Benchmarks
 
-For chart data transforms such as history, statistics, energy, and downsampling, follow `test/benchmarks/README.md`.
+For chart data transforms such as history, statistics, energy, and downsampling, read and follow the complete workflow in `test/benchmarks/README.md` before making benchmark or optimization changes.
 
-Use seeded fixtures, characterization snapshot tests, and `yarn test:bench` before and after optimization. Optimizations must keep output bit-identical.
+That workflow owns the baseline, noise analysis, guardrails, acceptance thresholds, and reporting requirements. In particular, optimizations must keep output bit-identical; never update snapshots or modify fixtures to make an optimization pass.
 
 ## Verification Selection
 
