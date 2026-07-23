@@ -206,6 +206,9 @@ export interface MediaPlayerItem {
   can_play: boolean;
   can_expand: boolean;
   can_search: boolean;
+  search_media_classes?:
+    | (keyof TranslationDict["ui"]["components"]["media-browser"]["class"])[]
+    | null;
   thumbnail?: string;
   iconPath?: string;
   children?: MediaPlayerItem[];
@@ -223,27 +226,6 @@ export const browseMediaPlayer = (
     entity_id: entityId,
     media_content_id: mediaContentId,
     media_content_type: mediaContentType,
-  });
-
-export interface SearchMediaResult {
-  result: MediaPlayerItem[];
-}
-
-export const searchMediaPlayer = (
-  hass: HomeAssistant,
-  entityId: string,
-  searchQuery: string,
-  mediaContentId?: string,
-  mediaContentType?: string,
-  mediaFilterClasses?: string[]
-): Promise<SearchMediaResult> =>
-  hass.callWS<SearchMediaResult>({
-    type: "media_player/search_media",
-    entity_id: entityId,
-    search_query: searchQuery,
-    media_content_id: mediaContentId,
-    media_content_type: mediaContentType,
-    media_filter_classes: mediaFilterClasses,
   });
 
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {

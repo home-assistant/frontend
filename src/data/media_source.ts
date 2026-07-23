@@ -1,5 +1,5 @@
 import type { HomeAssistant } from "../types";
-import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
+import type { MediaPlayerItem } from "./media-player";
 
 export interface ResolvedMediaSource {
   url: string;
@@ -23,6 +23,10 @@ export const browseLocalMediaPlayer = (
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
+
+export interface SearchMediaResult {
+  result: MediaPlayerItem[];
+}
 
 export const searchMedia = (
   hass: HomeAssistant,

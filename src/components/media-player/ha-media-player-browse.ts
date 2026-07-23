@@ -5,6 +5,7 @@ import {
   mdiArrowUpRight,
   mdiFilterVariant,
   mdiKeyboard,
+  mdiMagnify,
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
@@ -33,7 +34,6 @@ import {
   browseMediaPlayer,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
-  searchMediaPlayer,
 } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
@@ -47,7 +47,6 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import "../chips/ha-assist-chip";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button";
@@ -55,7 +54,6 @@ import "../ha-card";
 import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
-import "../ha-expansion-panel";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
@@ -92,12 +90,6 @@ export interface MediaPlayerItemId {
 const SEARCH_MIN_LENGTH = 2;
 
 type MediaClass = MediaPlayerItem["media_class"];
-
-// The media-class filter offers a fixed, known list of classes. Search is
-// server-side, so the set of available classes can't be derived from results.
-const MEDIA_CLASS_FILTER_OPTIONS = Object.keys(
-  MediaClassBrowserSettings
-) as MediaClass[];
 
 const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_expand: true,
@@ -157,8 +149,6 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _searchRequestId = 0;
 
-  private _debouncedSearch = debounce(() => this._search(), 500);
-
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
@@ -181,7 +171,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
-    this._debouncedSearch.cancel();
   }
 
   public async refresh() {
@@ -373,9 +362,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (
       changedProps.has("_scrolled") ||
       changedProps.has("_currentItem") ||
-      changedProps.has("_searchResults") ||
-      changedProps.has("_searching")
+      changedProps.has("_searchQuery")
     ) {
+      // Re-measure across frames rather than once: the search input (and its
+      // min-length hint) sizes asynchronously, so a single measurement can be
+      // too small and the content would clip under the header.
       this._animateHeaderHeight();
     }
 
@@ -451,19 +442,23 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
-    // The media type filter narrows server-side search results, so only show it
-    // for sources that support search, and never on the root media
-    // sources page, where filtering by media type is not meaningful.
-    const showMediaClassFilter =
+    // Search is available on non-root pages that opt in via can_search, aside
+    // from the manual-entry and TTS pseudo-sources.
+    const showSearch =
       this.navigateIds.length > 1 &&
       !isManualMediaSourceContentId(currentItem.media_content_id) &&
       !isTTSMediaSource(currentItem.media_content_id) &&
       currentItem.can_search;
-    const mediaClassFilterOptions = showMediaClassFilter
-      ? [...MEDIA_CLASS_FILTER_OPTIONS].sort((a, b) =>
-          this._localizeMediaClass(a).localeCompare(this._localizeMediaClass(b))
-        )
-      : [];
+    // The backend reports which media classes are worth filtering by for this
+    // item; without them we still allow searching, just without the filter.
+    const mediaClassFilterOptions =
+      showSearch && currentItem.search_media_classes
+        ? [...currentItem.search_media_classes].sort((a, b) =>
+            this._localizeMediaClass(a).localeCompare(
+              this._localizeMediaClass(b)
+            )
+          )
+        : [];
 
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
@@ -472,7 +467,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     return html`
               ${
-                currentItem.can_play || showMediaClassFilter
+                currentItem.can_play || showSearch
                   ? html`
                       <div
                         class="header ${classMap({
@@ -483,7 +478,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                         @transitionend=${this._setHeaderHeight}
                       >
                         ${
-                          showMediaClassFilter
+                          showSearch
                             ? this._renderSearchRow(
                                 currentItem,
                                 mediaClassFilterOptions
@@ -587,7 +582,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             ${
               this._searching
                 ? html`
-                    <div class="container loading">
+                    <div class="container">
                       <ha-spinner></ha-spinner>
                     </div>
                   `
@@ -731,6 +726,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     currentItem: MediaPlayerItem,
     mediaClassFilterOptions: MediaClass[]
   ): TemplateResult {
+    const canSubmitSearch =
+      this._searchQuery.trim().length >= SEARCH_MIN_LENGTH;
     return html`
       <div class="search-row">
         ${
@@ -754,9 +751,19 @@ export class HaMediaPlayerBrowse extends LitElement {
                   }
                   @input=${this._handleSearchInput}
                   @keydown=${this._handleSearchKeydown}
-                >
-                  ${this._renderMediaClassFilter(mediaClassFilterOptions)}
-                </ha-input-search>
+                ></ha-input-search>
+                ${
+                  mediaClassFilterOptions.length
+                    ? this._renderMediaClassFilter(mediaClassFilterOptions)
+                    : nothing
+                }
+                <ha-icon-button
+                  class="search-button"
+                  .path=${mdiMagnify}
+                  .label=${this.hass.localize("ui.common.search")}
+                  .disabled=${!canSubmitSearch}
+                  @click=${this._search}
+                ></ha-icon-button>
               `
             : nothing
         }
@@ -769,20 +776,19 @@ export class HaMediaPlayerBrowse extends LitElement {
   ): TemplateResult {
     const selectedCount = this._mediaClassFilter.length;
     return html`
-      <div class="media-class-filter" slot="end">
+      <div class="media-class-filter">
         <ha-dropdown
           placement="bottom-end"
           @wa-select=${this._toggleMediaClassFilter}
         >
-          <ha-assist-chip
+          <ha-icon-button
             slot="trigger"
+            class="filter-button ${classMap({ active: selectedCount > 0 })}"
+            .path=${mdiFilterVariant}
             .label=${this.hass.localize(
               "ui.components.media-browser.filter_media_type"
             )}
-            .active=${selectedCount > 0}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
-          </ha-assist-chip>
+          ></ha-icon-button>
           ${mediaClassFilterOptions.map((mediaClass) => {
             const selected = this._mediaClassFilter.includes(mediaClass);
             return html`
@@ -821,10 +827,9 @@ export class HaMediaPlayerBrowse extends LitElement {
       action === "add"
         ? [...this._mediaClassFilter, value]
         : this._mediaClassFilter.filter((mediaClass) => mediaClass !== value);
-    // In search mode, re-run the search so filtering happens server-side.
-    // In browse mode, the render applies the filter to the loaded children.
-    if (this._searchQuery.trim().length >= SEARCH_MIN_LENGTH) {
-      this._debouncedSearch.cancel();
+    // Only refine results already on screen; before a search has run, the
+    // filter is just staged for the next Enter/search-button submission.
+    if (this._searchResults !== undefined) {
       this._search();
     }
   }
@@ -832,29 +837,24 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _handleSearchInput(ev: InputEvent): void {
     const value = (ev.target as HaInputSearch).value ?? "";
     this._searchQuery = value;
-    // Abandon any pending or in-flight search; the new input decides what happens next
-    this._abortSearch();
-    if (value.trim().length >= SEARCH_MIN_LENGTH) {
-      this._debouncedSearch();
-    } else {
-      // Not enough characters to search yet; drop any stale results
-      this._searchResults = undefined;
+    // Searching is explicit (Enter or the search button). Emptying the field —
+    // e.g. via the clear button — returns to the browse view.
+    if (!value) {
+      this._clearSearch();
     }
   }
 
   private _handleSearchKeydown(ev: KeyboardEvent): void {
     if (ev.key === "Enter") {
       ev.preventDefault();
-      this._debouncedSearch.cancel();
       this._search();
     }
   }
 
   private _abortSearch(): void {
-    // Invalidate any in-flight search so a late response is ignored, and stop
-    // any pending debounced search and the loading state.
+    // Invalidate any in-flight search so a late response is ignored, and clear
+    // the loading state.
     this._searchRequestId++;
-    this._debouncedSearch.cancel();
     this._searching = false;
   }
 
@@ -866,8 +866,11 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private async _search(): Promise<void> {
     const searchQuery = this._searchQuery.trim();
-    if (!searchQuery) {
-      this._clearSearch();
+    if (searchQuery.length < SEARCH_MIN_LENGTH) {
+      // Too short to search yet; drop any stale results but keep the input so
+      // the user can keep typing.
+      this._abortSearch();
+      this._searchResults = undefined;
       return;
     }
 
@@ -881,22 +884,12 @@ export class HaMediaPlayerBrowse extends LitElement {
       ? this._mediaClassFilter
       : undefined;
     try {
-      const { result } =
-        this.entityId && this.entityId !== BROWSER_PLAYER
-          ? await searchMediaPlayer(
-              this.hass,
-              this.entityId,
-              searchQuery,
-              navigateId.media_content_id,
-              navigateId.media_content_type,
-              mediaFilterClasses
-            )
-          : await searchMedia(
-              this.hass,
-              navigateId.media_content_id,
-              searchQuery,
-              mediaFilterClasses
-            );
+      const { result } = await searchMedia(
+        this.hass,
+        navigateId.media_content_id,
+        searchQuery,
+        mediaFilterClasses
+      );
       // Ignore the response if a newer search started or we navigated away
       if (requestId !== this._searchRequestId) {
         return;
@@ -1247,20 +1240,11 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         ha-spinner {
-          margin: auto;
+          margin: 40px auto;
         }
 
         .container {
           padding: 16px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .container.loading {
-          padding: 0;
-          flex: 1;
         }
 
         .no-items {
@@ -1288,9 +1272,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .content {
           overflow-y: auto;
           box-sizing: border-box;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
+          height: 100%;
         }
 
         /* HEADER */
@@ -1313,7 +1295,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         .search-row {
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: flex-end;
           gap: var(--ha-space-2);
         }
@@ -1321,6 +1303,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex: 1;
           --ha-input-padding-top: 0;
           --ha-input-padding-bottom: 0;
+        }
+        .search-button {
+          --ha-icon-button-size: 40px;
+          color: var(--secondary-text-color);
         }
         :host([narrow]) .search-row {
           box-sizing: border-box;
@@ -1330,9 +1316,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           position: relative;
           flex: none;
         }
-        .media-class-filter ha-assist-chip {
-          --ha-assist-chip-container-shape: 10px;
-          --ha-assist-chip-container-color: var(--card-background-color);
+        .filter-button {
+          --ha-icon-button-size: 40px;
+          color: var(--secondary-text-color);
+        }
+        .filter-button.active {
+          color: var(--primary-color);
         }
         .filter-badge {
           position: absolute;

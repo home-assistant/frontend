@@ -1194,14 +1194,10 @@
         "pick-media": "Pick media",
         "search": {
           "search_placeholder": "Search {name}",
-          "min_length_hint": "Enter {count} or more characters to search",
+          "min_length_hint": "Enter at least {count} characters to search",
           "no_results": "No results found"
         },
-        "filter_media_type": "Media type",
-        "filters": "Filters",
-        "filter_results": "Filter results",
-        "filter_count": "Showing {shown} of {total}",
-        "clear_filters": "Clear filters",
+        "filter_media_type": "Filter by media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
