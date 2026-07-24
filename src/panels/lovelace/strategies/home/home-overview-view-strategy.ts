@@ -38,7 +38,7 @@ import {
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import { getOtherDevicesEntities } from "./helpers/other-devices-filters";
+import { hasOtherDevicesEntities } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -104,7 +104,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     // Only show the devices tile if the other devices view has content
-    const hasOtherDevices = getOtherDevicesEntities(hass).length > 0;
+    const hasOtherDevices = hasOtherDevicesEntities(hass);
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {

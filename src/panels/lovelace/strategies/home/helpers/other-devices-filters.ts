@@ -1,10 +1,8 @@
 import { ASSIST_ENTITIES } from "../../../../../common/const";
 import { getEntityContext } from "../../../../../common/entity/context/get_entity_context";
 import type { EntityFilter } from "../../../../../common/entity/entity_filter";
-import {
-  findEntities,
-  generateEntityFilter,
-} from "../../../../../common/entity/entity_filter";
+import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { HomeAssistant } from "../../../../../types";
 
 export const OTHER_DEVICES_FILTERS: EntityFilter[] = [
@@ -43,31 +41,22 @@ export interface OtherDeviceEntities {
   entities: string[];
 }
 
-/**
- * The area-less entities the other devices view renders: matched by
- * OTHER_DEVICES_FILTERS, limited to primary entities and grouped by device
- * (entities without a device are not shown). Shared with the home overview
- * so the devices tile is only shown when the view has content.
- */
-export const getOtherDevicesEntities = (
-  hass: HomeAssistant
-): OtherDeviceEntities[] => {
-  const allEntities = Object.keys(hass.states);
-
+// Matches the entities the other devices view renders (area-less primary
+// entities that belong to a device) and returns their device.
+const makeOtherDevicesEntityMatcher = (hass: HomeAssistant) => {
   const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
     generateEntityFilter(hass, filter)
   );
-
-  const otherDevicesEntities = findEntities(allEntities, otherDevicesFilters);
-
   const primaryFilter = generateEntityFilter(hass, {
     entity_category: "none",
   });
-
-  const entitiesByDevice: Record<string, string[]> = {};
-  for (const entityId of otherDevicesEntities) {
+  return (entityId: string): DeviceRegistryEntry | undefined => {
     const stateObj = hass.states[entityId];
-    if (!stateObj || !primaryFilter(entityId)) continue;
+    if (!stateObj) return undefined;
+    if (!otherDevicesFilters.some((filter) => filter(entityId))) {
+      return undefined;
+    }
+    if (!primaryFilter(entityId)) return undefined;
     const { device } = getEntityContext(
       stateObj,
       hass.entities,
@@ -75,9 +64,22 @@ export const getOtherDevicesEntities = (
       hass.areas,
       hass.floors
     );
-    if (!device) {
-      continue;
-    }
+    return device ?? undefined;
+  };
+};
+
+/**
+ * The entities the other devices view renders, grouped by device.
+ */
+export const getOtherDevicesEntities = (
+  hass: HomeAssistant
+): OtherDeviceEntities[] => {
+  const matcher = makeOtherDevicesEntityMatcher(hass);
+
+  const entitiesByDevice: Record<string, string[]> = {};
+  for (const entityId of Object.keys(hass.states)) {
+    const device = matcher(entityId);
+    if (!device) continue;
     if (!(device.id in entitiesByDevice)) {
       entitiesByDevice[device.id] = [];
     }
@@ -88,4 +90,15 @@ export const getOtherDevicesEntities = (
     device_id: deviceId,
     entities: entities,
   }));
+};
+
+/**
+ * Whether the other devices view has any content. Stops at the first
+ * matching entity instead of computing the full device grouping.
+ */
+export const hasOtherDevicesEntities = (hass: HomeAssistant): boolean => {
+  const matcher = makeOtherDevicesEntityMatcher(hass);
+  return Object.keys(hass.states).some(
+    (entityId) => matcher(entityId) !== undefined
+  );
 };
