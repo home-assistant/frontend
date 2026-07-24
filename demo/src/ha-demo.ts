@@ -6,7 +6,7 @@ import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
-import { mockAreaRegistry } from "./stubs/area_registry";
+import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -14,7 +14,7 @@ import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
-import { mockFloorRegistry } from "./stubs/floor_registry";
+import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
@@ -169,9 +169,11 @@ export class HaDemo extends HomeAssistantAppEl {
 
     hass.addEntities(energyEntities());
 
-    // Once config is loaded AND localize, set entities and apply theme.
+    // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
+        setDemoFloors(hass, conf.floors);
+        setDemoAreas(hass, conf.areas);
         hass.addEntities(conf.entities(localize));
         applyDemoTheme(hass, conf.theme);
       }
