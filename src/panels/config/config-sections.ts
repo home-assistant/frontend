@@ -496,8 +496,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/config/naming",
-      translationKey: "naming",
+      path: "/config/entity-id-format",
+      translationKey: "entity_id_format",
       iconPath: mdiRenameOutline,
       iconColor: "#24a5cb",
       core: true,

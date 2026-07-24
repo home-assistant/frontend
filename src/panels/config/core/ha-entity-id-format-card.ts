@@ -59,16 +59,16 @@ export class HaEntityIdFormatCard extends LitElement {
   private _examples = memoizeOne(
     (localize: LocalizeFunc): Record<EntityIdPart, string> => ({
       area: localize(
-        "ui.panel.config.naming.entity_id_format.editor.examples.area"
+        "ui.panel.config.entity_id_format.card.editor.examples.area"
       ),
       device: localize(
-        "ui.panel.config.naming.entity_id_format.editor.examples.device"
+        "ui.panel.config.entity_id_format.card.editor.examples.device"
       ),
       entity: localize(
-        "ui.panel.config.naming.entity_id_format.editor.examples.entity"
+        "ui.panel.config.entity_id_format.card.editor.examples.entity"
       ),
       floor: localize(
-        "ui.panel.config.naming.entity_id_format.editor.examples.floor"
+        "ui.panel.config.entity_id_format.card.editor.examples.floor"
       ),
     })
   );
@@ -78,7 +78,7 @@ export class HaEntityIdFormatCard extends LitElement {
       <ha-card
         outlined
         .header=${this._localize(
-          "ui.panel.config.naming.entity_id_format.header"
+          "ui.panel.config.entity_id_format.card.header"
         )}
       >
         <div class="card-content">
@@ -89,7 +89,7 @@ export class HaEntityIdFormatCard extends LitElement {
           }
           <p class="description">
             ${this._localize(
-              "ui.panel.config.naming.entity_id_format.description"
+              "ui.panel.config.entity_id_format.card.description"
             )}
             <a
               href=${documentationUrl(
@@ -99,7 +99,7 @@ export class HaEntityIdFormatCard extends LitElement {
               target="_blank"
               rel="noreferrer"
               >${this._localize(
-                "ui.panel.config.naming.entity_id_format.learn_more"
+                "ui.panel.config.entity_id_format.card.learn_more"
               )}</a
             >
           </p>
@@ -109,7 +109,7 @@ export class HaEntityIdFormatCard extends LitElement {
                   <ha-entity-id-format-editor
                     .value=${this._format}
                     .label=${this._localize(
-                      "ui.panel.config.naming.entity_id_format.editor.label"
+                      "ui.panel.config.entity_id_format.card.editor.label"
                     )}
                     @value-changed=${this._formatChanged}
                   ></ha-entity-id-format-editor>
@@ -125,7 +125,7 @@ export class HaEntityIdFormatCard extends LitElement {
             .disabled=${!this._format || isDefaultEntityIdFormat(this._format)}
           >
             <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
-            ${this._localize("ui.panel.config.naming.entity_id_format.reset")}
+            ${this._localize("ui.panel.config.entity_id_format.card.reset")}
           </ha-button>
           <ha-progress-button
             appearance="filled"
@@ -147,7 +147,7 @@ export class HaEntityIdFormatCard extends LitElement {
     return html`
       <div class="preview">
         <span class="preview-label">
-          ${this._localize("ui.panel.config.naming.entity_id_format.preview")}
+          ${this._localize("ui.panel.config.entity_id_format.card.preview")}
         </span>
         <code>${EXAMPLE_DOMAIN}.${example}</code>
       </div>

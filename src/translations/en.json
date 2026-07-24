@@ -8632,10 +8632,10 @@
           "caption": "AI tasks",
           "description": "Configure AI suggestions and task preferences"
         },
-        "naming": {
+        "entity_id_format": {
           "caption": "Entity ID format",
           "description": "Manage the format of newly created entity IDs",
-          "entity_id_format": {
+          "card": {
             "header": "Entity ID format for new entities",
             "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
             "learn_more": "Learn more",

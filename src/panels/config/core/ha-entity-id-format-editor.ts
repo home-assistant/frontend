@@ -71,7 +71,7 @@ export class HaEntityIdFormatEditor extends LitElement {
           .value=${this._getPickerValue()}
           @value-changed=${this._pickerValueChanged}
           .searchLabel=${this._localize(
-            "ui.panel.config.naming.entity_id_format.editor.search"
+            "ui.panel.config.entity_id_format.card.editor.search"
           )}
         >
           <div slot="field" class="field">
@@ -128,7 +128,7 @@ export class HaEntityIdFormatEditor extends LitElement {
                           @click=${this._addItem}
                           .disabled=${this.disabled}
                           label=${this._localize(
-                            "ui.panel.config.naming.entity_id_format.editor.add"
+                            "ui.panel.config.entity_id_format.card.editor.add"
                           )}
                           class="add"
                         >

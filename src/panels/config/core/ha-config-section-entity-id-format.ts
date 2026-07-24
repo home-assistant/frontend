@@ -4,8 +4,8 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "./ha-entity-id-format-card";
 
-@customElement("ha-config-section-naming")
-export class HaConfigSectionNaming extends LitElement {
+@customElement("ha-config-section-entity-id-format")
+export class HaConfigSectionEntityIdFormat extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -16,7 +16,9 @@ export class HaConfigSectionNaming extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.naming.caption")}
+        .header=${this.hass.localize(
+          "ui.panel.config.entity_id_format.caption"
+        )}
       >
         <div class="content">
           <ha-entity-id-format-card></ha-entity-id-format-card>
@@ -44,6 +46,6 @@ export class HaConfigSectionNaming extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-section-naming": HaConfigSectionNaming;
+    "ha-config-section-entity-id-format": HaConfigSectionEntityIdFormat;
   }
 }
