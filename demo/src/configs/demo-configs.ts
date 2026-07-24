@@ -24,9 +24,7 @@ export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
 export const demos = Object.keys(demoConfigs);
 
 const initialDemo = () => {
-  const slug = new URLSearchParams(window.location.search)
-    .get("demo")
-    ?.toLowerCase();
+  const slug = new URLSearchParams(window.location.search).get("demo");
   return slug && demos.includes(slug) ? slug : demos[0];
 };
 
@@ -41,11 +39,11 @@ export const setDemoConfig = async (
   lovelace: Lovelace,
   demo: string
 ) => {
-  selectedDemoConfig = demoConfigs[demo]();
-  const config = await selectedDemoConfig;
-  // Only after a successful load, so the set-demo-config error handler can
-  // restore the previous demo.
+  const confProm = demoConfigs[demo]();
+  const config = await confProm;
+
   selectedDemo = demo;
+  selectedDemoConfig = confProm;
 
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
