@@ -15,10 +15,12 @@ import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { apiContext, configContext } from "../../../data/context";
 import {
-  DEFAULT_ENTITY_ID_FORMAT,
   fetchEntityRegistrySettings,
-  isDefaultEntityIdFormat,
   updateEntityRegistrySettings,
+} from "../../../data/entity/entity_registry_settings";
+import {
+  DEFAULT_ENTITY_ID_FORMAT,
+  isDefaultEntityIdFormat,
   type EntityIdFormat,
   type EntityIdPart,
 } from "../../../data/entity_id_format";
@@ -28,8 +30,8 @@ import "./ha-entity-id-format-editor";
 
 const EXAMPLE_DOMAIN = "sensor";
 
-@customElement("ha-entity-id-format-card")
-export class HaEntityIdFormatCard extends LitElement {
+@customElement("ha-config-entity-id-format")
+export class HaConfigEntityIdFormat extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -222,6 +224,6 @@ export class HaEntityIdFormatCard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-entity-id-format-card": HaEntityIdFormatCard;
+    "ha-config-entity-id-format": HaConfigEntityIdFormat;
   }
 }

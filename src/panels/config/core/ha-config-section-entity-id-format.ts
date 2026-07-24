@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "./ha-entity-id-format-card";
+import "./ha-config-entity-id-format";
 
 @customElement("ha-config-section-entity-id-format")
 export class HaConfigSectionEntityIdFormat extends LitElement {
@@ -21,7 +21,7 @@ export class HaConfigSectionEntityIdFormat extends LitElement {
         )}
       >
         <div class="content">
-          <ha-entity-id-format-card></ha-entity-id-format-card>
+          <ha-config-entity-id-format></ha-config-entity-id-format>
         </div>
       </hass-subpage>
     `;
@@ -36,7 +36,7 @@ export class HaConfigSectionEntityIdFormat extends LitElement {
       flex-direction: column;
       gap: var(--ha-space-5);
     }
-    ha-entity-id-format-card {
+    ha-config-entity-id-format {
       max-width: 600px;
       margin: 0 auto;
       width: 100%;
