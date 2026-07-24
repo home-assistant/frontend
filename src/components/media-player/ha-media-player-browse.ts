@@ -87,8 +87,6 @@ export interface MediaPlayerItemId {
   media_content_type?: string | undefined;
 }
 
-const SEARCH_MIN_LENGTH = 2;
-
 type MediaClass = MediaPlayerItem["media_class"];
 
 const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
@@ -359,14 +357,10 @@ export class HaMediaPlayerBrowse extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (
-      changedProps.has("_scrolled") ||
-      changedProps.has("_currentItem") ||
-      changedProps.has("_searchQuery")
-    ) {
-      // Re-measure across frames rather than once: the search input (and its
-      // min-length hint) sizes asynchronously, so a single measurement can be
-      // too small and the content would clip under the header.
+    if (changedProps.has("_scrolled") || changedProps.has("_currentItem")) {
+      // Re-measure across frames rather than once: the search input sizes
+      // asynchronously, so a single measurement can be too small and the
+      // content would clip under the header.
       this._animateHeaderHeight();
     }
 
@@ -726,8 +720,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     currentItem: MediaPlayerItem,
     mediaClassFilterOptions: MediaClass[]
   ): TemplateResult {
-    const canSubmitSearch =
-      this._searchQuery.trim().length >= SEARCH_MIN_LENGTH;
     return html`
       <div class="search-row">
         ${
@@ -741,14 +733,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                     "ui.components.media-browser.search.search_placeholder",
                     { name: currentItem.title }
                   )}
-                  .hint=${
-                    this._searchQuery.trim().length === 1
-                      ? this.hass.localize(
-                          "ui.components.media-browser.search.min_length_hint",
-                          { count: SEARCH_MIN_LENGTH }
-                        )
-                      : ""
-                  }
                   @input=${this._handleSearchInput}
                   @keydown=${this._handleSearchKeydown}
                 ></ha-input-search>
@@ -761,7 +745,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                   class="search-button"
                   .path=${mdiMagnify}
                   .label=${this.hass.localize("ui.common.search")}
-                  .disabled=${!canSubmitSearch}
+                  .disabled=${!this._searchQuery.trim()}
                   @click=${this._search}
                 ></ha-icon-button>
               `
@@ -866,9 +850,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private async _search(): Promise<void> {
     const searchQuery = this._searchQuery.trim();
-    if (searchQuery.length < SEARCH_MIN_LENGTH) {
-      // Too short to search yet; drop any stale results but keep the input so
-      // the user can keep typing.
+    if (!searchQuery) {
+      // Nothing to search; drop any stale results but keep the input.
       this._abortSearch();
       this._searchResults = undefined;
       return;
@@ -1295,7 +1278,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         .search-row {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: flex-end;
           gap: var(--ha-space-2);
         }
