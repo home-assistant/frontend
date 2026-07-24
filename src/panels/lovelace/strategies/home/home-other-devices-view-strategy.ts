@@ -47,6 +47,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     const sections: LovelaceSectionRawConfig[] = [];
 
     const entitiesByDevice: Record<string, string[]> = {};
+    const unassignedEntities: string[] = [];
     for (const entityId of otherDevicesEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
@@ -58,6 +59,7 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
         hass.floors
       );
       if (!device) {
+        unassignedEntities.push(entityId);
         continue;
       }
       if (!(device.id in entitiesByDevice)) {
@@ -72,6 +74,13 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
         entities: entities,
       })
     );
+
+    if (unassignedEntities.length > 0) {
+      devicesEntities.push({
+        device_id: "unassigned",
+        entities: unassignedEntities,
+      });
+    }
 
     const primaryFilter = generateEntityFilter(hass, {
       entity_category: "none",
@@ -88,11 +97,13 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];
-      let heading = "";
+      let heading: string;
       if (device) {
         heading =
           computeDeviceName(device) ||
           hass.localize("ui.panel.lovelace.strategy.home.unnamed_device");
+      } else {
+        heading = hass.localize("ui.panel.lovelace.strategy.home.others");
       }
 
       sections.push({
