@@ -64,6 +64,13 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
 
   if (__DEMO__) {
+    if (!path.startsWith("/") && !path.includes("#")) {
+      // The demo routes with the hash instead of the pathname, so relative
+      // paths are not resolved by the browser like they are with pushState.
+      // Resolve them against the current hash path here.
+      const current = mainWindow.location.hash.substring(1).split("?")[0];
+      path = current.substring(0, current.lastIndexOf("/") + 1) + path;
+    }
     if (path.includes("#")) {
       if (replace) {
         mainWindow.history.replaceState(

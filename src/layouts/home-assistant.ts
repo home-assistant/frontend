@@ -29,8 +29,10 @@ import "./ha-init-page";
 import "./home-assistant-main";
 
 const useHash = __DEMO__;
+// With hash routing, query parameters end up inside the hash, so strip them
+// to keep them out of the route path.
 const curPath = () =>
-  useHash ? location.hash.substring(1) : location.pathname;
+  useHash ? location.hash.substring(1).split("?")[0] : location.pathname;
 
 // Developer tools was renamed to Tools (/config/tools) in 2026.8; it had moved
 // from /developer-tools to /config in 2026.2. Redirect both old locations to
