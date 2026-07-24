@@ -1,6 +1,11 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
+import {
+  findEntities,
+  generateEntityFilter,
+} from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -11,7 +16,7 @@ import type {
   HeadingCardConfig,
 } from "../../cards/types";
 import type { LovelaceStrategyDependency } from "../types";
-import { getOtherDevicesEntities } from "./helpers/other-devices-filters";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
   type: "home-other-devices";
@@ -31,12 +36,55 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
     config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
+    const allEntities = Object.keys(hass.states);
+
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const otherDevicesEntities = findEntities(allEntities, otherDevicesFilters);
+
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const devicesEntities = getOtherDevicesEntities(hass);
+    const entitiesByDevice: Record<string, string[]> = {};
+    for (const entityId of otherDevicesEntities) {
+      const stateObj = hass.states[entityId];
+      if (!stateObj) continue;
+      const { device } = getEntityContext(
+        stateObj,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors
+      );
+      if (!device) {
+        continue;
+      }
+      if (!(device.id in entitiesByDevice)) {
+        entitiesByDevice[device.id] = [];
+      }
+      entitiesByDevice[device.id].push(entityId);
+    }
+
+    const devicesEntities = Object.entries(entitiesByDevice).map(
+      ([deviceId, entities]) => ({
+        device_id: deviceId,
+        entities: entities,
+      })
+    );
+
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
 
     for (const deviceEntities of devicesEntities) {
-      const entities = deviceEntities.entities;
+      if (deviceEntities.entities.length === 0) continue;
+
+      const entities = deviceEntities.entities.filter((e) => primaryFilter(e));
+
+      if (entities.length === 0) {
+        continue;
+      }
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];

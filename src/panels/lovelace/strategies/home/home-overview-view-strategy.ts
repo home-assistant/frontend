@@ -2,6 +2,7 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
   findEntities,
   generateEntityFilter,
@@ -38,7 +39,7 @@ import {
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import { hasOtherDevicesEntities } from "./helpers/other-devices-filters";
+import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -103,8 +104,28 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    // Only show the devices tile if the other devices view has content
-    const hasOtherDevices = hasOtherDevicesEntities(hass);
+    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
+
+    // Only show the devices tile if the other devices view has content: it
+    // only renders area-less primary entities that belong to a device.
+    const hasOtherDevices = allEntities.some(
+      (entityId) =>
+        otherDevicesFilters.some((filter) => filter(entityId)) &&
+        primaryFilter(entityId) &&
+        !!getEntityContext(
+          hass.states[entityId],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        ).device
+    );
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
