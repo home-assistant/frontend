@@ -15,7 +15,7 @@ yarn dev:demo --background  # detached; also supports --status/--stop/--logs
 
 ## Opening a specific demo
 
-The demo contains multiple demo configurations. Select one directly with the `demo` query parameter, e.g. `http://localhost:8090/?demo=<slug>`. The valid slugs are listed in `demoConfigSlugs` in `src/configs/demo-configs.ts`, in the same order as the demo configurations, so "the second demo" means the second slug in that list. An unknown slug falls back to the default (the first entry).
+The demo contains multiple demo configurations. Select one directly with the `demo` query parameter, e.g. `http://localhost:8090/?demo=<slug>`. The valid slugs are defined in `demoConfigs` in `src/configs/demo-configs.ts`, so "the second demo" means the slug of the second entry in that list. An unknown slug falls back to the default (the first entry).
 
 ## Opening a specific page
 

@@ -12,27 +12,38 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   hass.mockTheme(null, getDemoTheme(theme));
 };
 
-export const demoConfigs: (() => Promise<DemoConfig>)[] = [
-  () => import("./sections").then((mod) => mod.demoSections),
-  () => import("./arsaboo").then((mod) => mod.demoArsaboo),
-  () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
-  () => import("./kernehed").then((mod) => mod.demoKernehed),
-  () => import("./jimpower").then((mod) => mod.demoJimpower),
-];
-
-// URL slugs matching the order of demoConfigs, so a specific demo can be
-// opened directly via e.g. /?demo=arsaboo
-const demoConfigSlugs = [
-  "sections",
-  "arsaboo",
-  "teachingbirds",
-  "kernehed",
-  "jimpower",
+// The slug allows opening a demo directly via e.g. /?demo=arsaboo
+export const demoConfigs: {
+  slug: string;
+  load: () => Promise<DemoConfig>;
+}[] = [
+  {
+    slug: "sections",
+    load: () => import("./sections").then((mod) => mod.demoSections),
+  },
+  {
+    slug: "arsaboo",
+    load: () => import("./arsaboo").then((mod) => mod.demoArsaboo),
+  },
+  {
+    slug: "teachingbirds",
+    load: () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
+  },
+  {
+    slug: "kernehed",
+    load: () => import("./kernehed").then((mod) => mod.demoKernehed),
+  },
+  {
+    slug: "jimpower",
+    load: () => import("./jimpower").then((mod) => mod.demoJimpower),
+  },
 ];
 
 const initialDemoConfigIndex = () => {
   const slug = new URLSearchParams(window.location.search).get("demo");
-  const index = slug ? demoConfigSlugs.indexOf(slug.toLowerCase()) : -1;
+  const index = slug
+    ? demoConfigs.findIndex((conf) => conf.slug === slug.toLowerCase())
+    : -1;
   return index === -1 ? 0 : index;
 };
 
@@ -40,14 +51,14 @@ const initialDemoConfigIndex = () => {
 export let selectedDemoConfigIndex = initialDemoConfigIndex();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
-  demoConfigs[selectedDemoConfigIndex]();
+  demoConfigs[selectedDemoConfigIndex].load();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
   lovelace: Lovelace,
   index: number
 ) => {
-  const confProm = demoConfigs[index]();
+  const confProm = demoConfigs[index].load();
   const config = await confProm;
 
   selectedDemoConfigIndex = index;
