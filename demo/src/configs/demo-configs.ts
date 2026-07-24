@@ -23,28 +23,29 @@ export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
 
 export const demos = Object.keys(demoConfigs);
 
-const initialDemoConfigIndex = () => {
-  const slug = new URLSearchParams(window.location.search).get("demo");
-  const index = slug ? demos.indexOf(slug.toLowerCase()) : -1;
-  return index === -1 ? 0 : index;
+const initialDemo = () => {
+  const slug = new URLSearchParams(window.location.search)
+    .get("demo")
+    ?.toLowerCase();
+  return slug && demos.includes(slug) ? slug : demos[0];
 };
 
 // eslint-disable-next-line import-x/no-mutable-exports
-export let selectedDemoConfigIndex = initialDemoConfigIndex();
+export let selectedDemo = initialDemo();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
-  demoConfigs[demos[selectedDemoConfigIndex]]();
+  demoConfigs[selectedDemo]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
   lovelace: Lovelace,
-  index: number
+  demo: string
 ) => {
-  selectedDemoConfig = demoConfigs[demos[index]]();
+  selectedDemoConfig = demoConfigs[demo]();
   const config = await selectedDemoConfig;
   // Only after a successful load, so the set-demo-config error handler can
-  // restore the previous demo from this index.
-  selectedDemoConfigIndex = index;
+  // restore the previous demo.
+  selectedDemo = demo;
 
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
