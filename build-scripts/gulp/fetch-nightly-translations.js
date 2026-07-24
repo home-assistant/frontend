@@ -147,11 +147,6 @@ async function fetchTranslations(currentArtifact) {
   if (!latestArtifact) {
     throw Error("Latest nightly workflow run has no translations artifact");
   }
-  writings.push(
-    createExtractDir.then(
-      writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2))
-    )
-  );
 
   // Remove the current translations
   const deleteCurrent = Promise.all(writings).then(
@@ -177,6 +172,11 @@ async function fetchTranslations(currentArtifact) {
   await new Promise((resolve, reject) => {
     extractStream.on("close", resolve).on("error", reject);
   });
+
+  // Record the artifact only after successful extraction, so a failed fetch
+  // is retried by the next build instead of being considered current.
+  await createExtractDir;
+  await writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2));
 }
 
 gulp.task(
