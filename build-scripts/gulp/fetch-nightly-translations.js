@@ -52,6 +52,23 @@ gulp.task("fetch-nightly-translations", async function () {
     currentArtifact = null;
   }
 
+  try {
+    await fetchTranslations(currentArtifact);
+  } catch (err) {
+    // Local builds should work offline or without valid GitHub credentials,
+    // so fall back to English only. CI must fail instead of silently
+    // building without translations.
+    if (process.env.CI) {
+      throw err;
+    }
+    console.warn(
+      "Failed to fetch nightly translations, continuing with English only:",
+      err.message
+    );
+  }
+});
+
+async function fetchTranslations(currentArtifact) {
   // To store file writing promises
   const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
   const writings = [];
@@ -160,7 +177,7 @@ gulp.task("fetch-nightly-translations", async function () {
   await new Promise((resolve, reject) => {
     extractStream.on("close", resolve).on("error", reject);
   });
-});
+}
 
 gulp.task(
   "setup-and-fetch-nightly-translations",
