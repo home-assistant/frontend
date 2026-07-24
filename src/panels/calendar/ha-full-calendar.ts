@@ -1,10 +1,10 @@
 import { TZDate } from "@date-fns/tz";
-import type { CalendarOptions } from "@fullcalendar/core";
-import { Calendar } from "@fullcalendar/core";
-import allLocales from "@fullcalendar/core/locales-all";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
+import type { CalendarOptions } from "fullcalendar";
+import { Calendar } from "fullcalendar";
+import allLocales from "fullcalendar/locales-all";
+import dayGridPlugin from "fullcalendar/daygrid";
+import interactionPlugin from "fullcalendar/interaction";
+import listPlugin from "fullcalendar/list";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiPlus,
@@ -273,17 +273,17 @@ export class HAFullCalendar extends LitElement {
   }
 
   private async _loadCalendar(initialView: FullCalendarView) {
-    const luxonPlugin =
+    const luxonFormatPlugin =
       this.hass.locale.time_zone === TimeZone.local
         ? undefined
-        : (await import("@fullcalendar/luxon3")).default;
+        : (await import("@fullcalendar/format-luxon3")).default;
 
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       plugins:
         this.hass.locale.time_zone === TimeZone.local
           ? defaultFullCalendarConfig.plugins
-          : [...defaultFullCalendarConfig.plugins!, luxonPlugin!],
+          : [...defaultFullCalendarConfig.plugins!, luxonFormatPlugin!],
       locale: this.hass.language,
       timeZone:
         this.hass.locale.time_zone === TimeZone.local
