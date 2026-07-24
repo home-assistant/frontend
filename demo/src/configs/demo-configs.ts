@@ -20,8 +20,24 @@ export const demoConfigs: (() => Promise<DemoConfig>)[] = [
   () => import("./jimpower").then((mod) => mod.demoJimpower),
 ];
 
+// URL slugs matching the order of demoConfigs, so a specific demo can be
+// opened directly via e.g. /?demo=arsaboo
+const demoConfigSlugs = [
+  "sections",
+  "arsaboo",
+  "teachingbirds",
+  "kernehed",
+  "jimpower",
+];
+
+const initialDemoConfigIndex = () => {
+  const slug = new URLSearchParams(window.location.search).get("demo");
+  const index = slug ? demoConfigSlugs.indexOf(slug.toLowerCase()) : -1;
+  return index === -1 ? 0 : index;
+};
+
 // eslint-disable-next-line import-x/no-mutable-exports
-export let selectedDemoConfigIndex = 0;
+export let selectedDemoConfigIndex = initialDemoConfigIndex();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
   demoConfigs[selectedDemoConfigIndex]();
