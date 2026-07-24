@@ -38,7 +38,7 @@ import {
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
-import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
+import { getOtherDevicesEntities } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
@@ -103,11 +103,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
-    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
+    // Only show the devices tile if the other devices view has content
+    const hasOtherDevices = getOtherDevicesEntities(hass).length > 0;
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -140,13 +137,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
-    if (home.areas.length > 0 || entitiesWithoutAreas.length > 0) {
+    if (home.areas.length > 0 || hasOtherDevices) {
       const cards: LovelaceCardConfig[] = [];
       for (const areaId of home.areas) {
         cards.push(computeAreaCard(areaId, hass));
       }
 
-      if (entitiesWithoutAreas.length > 0) {
+      if (hasOtherDevices) {
         cards.push({
           type: "tile",
           entity: "zone.home", // zone entity to represent unassigned area as it always exists
