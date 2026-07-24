@@ -113,7 +113,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   private _nextConfig() {
     this._updateConfig(
-      selectedDemoConfigIndex < demoConfigs.length - 1
+      selectedDemoConfigIndex < Object.keys(demoConfigs).length - 1
         ? selectedDemoConfigIndex + 1
         : 0
     );

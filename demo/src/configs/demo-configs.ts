@@ -12,37 +12,19 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   hass.mockTheme(null, getDemoTheme(theme));
 };
 
-// The slug allows opening a demo directly via e.g. /?demo=arsaboo
-export const demoConfigs: {
-  slug: string;
-  load: () => Promise<DemoConfig>;
-}[] = [
-  {
-    slug: "sections",
-    load: () => import("./sections").then((mod) => mod.demoSections),
-  },
-  {
-    slug: "arsaboo",
-    load: () => import("./arsaboo").then((mod) => mod.demoArsaboo),
-  },
-  {
-    slug: "teachingbirds",
-    load: () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
-  },
-  {
-    slug: "kernehed",
-    load: () => import("./kernehed").then((mod) => mod.demoKernehed),
-  },
-  {
-    slug: "jimpower",
-    load: () => import("./jimpower").then((mod) => mod.demoJimpower),
-  },
-];
+export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
+  sections: () => import("./sections").then((mod) => mod.demoSections),
+  arsaboo: () => import("./arsaboo").then((mod) => mod.demoArsaboo),
+  teachingbirds: () =>
+    import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
+  kernehed: () => import("./kernehed").then((mod) => mod.demoKernehed),
+  jimpower: () => import("./jimpower").then((mod) => mod.demoJimpower),
+};
 
 const initialDemoConfigIndex = () => {
   const slug = new URLSearchParams(window.location.search).get("demo");
   const index = slug
-    ? demoConfigs.findIndex((conf) => conf.slug === slug.toLowerCase())
+    ? Object.keys(demoConfigs).indexOf(slug.toLowerCase())
     : -1;
   return index === -1 ? 0 : index;
 };
@@ -51,14 +33,14 @@ const initialDemoConfigIndex = () => {
 export let selectedDemoConfigIndex = initialDemoConfigIndex();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
-  demoConfigs[selectedDemoConfigIndex].load();
+  Object.values(demoConfigs)[selectedDemoConfigIndex]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
   lovelace: Lovelace,
   index: number
 ) => {
-  const confProm = demoConfigs[index].load();
+  const confProm = Object.values(demoConfigs)[index]();
   const config = await confProm;
 
   selectedDemoConfigIndex = index;
