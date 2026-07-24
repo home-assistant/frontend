@@ -21,11 +21,11 @@ export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
   jimpower: () => import("./jimpower").then((mod) => mod.demoJimpower),
 };
 
+export const demos = Object.keys(demoConfigs);
+
 const initialDemoConfigIndex = () => {
   const slug = new URLSearchParams(window.location.search).get("demo");
-  const index = slug
-    ? Object.keys(demoConfigs).indexOf(slug.toLowerCase())
-    : -1;
+  const index = slug ? demos.indexOf(slug.toLowerCase()) : -1;
   return index === -1 ? 0 : index;
 };
 
@@ -33,18 +33,18 @@ const initialDemoConfigIndex = () => {
 export let selectedDemoConfigIndex = initialDemoConfigIndex();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
-  Object.values(demoConfigs)[selectedDemoConfigIndex]();
+  demoConfigs[demos[selectedDemoConfigIndex]]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
   lovelace: Lovelace,
   index: number
 ) => {
-  const confProm = Object.values(demoConfigs)[index]();
-  const config = await confProm;
-
+  selectedDemoConfig = demoConfigs[demos[index]]();
+  const config = await selectedDemoConfig;
+  // Only after a successful load, so the set-demo-config error handler can
+  // restore the previous demo from this index.
   selectedDemoConfigIndex = index;
-  selectedDemoConfig = confProm;
 
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());

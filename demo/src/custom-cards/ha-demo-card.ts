@@ -13,7 +13,7 @@ import type {
   LovelaceCard,
 } from "../../../src/panels/lovelace/types";
 import {
-  demoConfigs,
+  demos,
   selectedDemoConfig,
   selectedDemoConfigIndex,
 } from "../configs/demo-configs";
@@ -113,7 +113,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   private _nextConfig() {
     this._updateConfig(
-      selectedDemoConfigIndex < Object.keys(demoConfigs).length - 1
+      selectedDemoConfigIndex < demos.length - 1
         ? selectedDemoConfigIndex + 1
         : 0
     );
