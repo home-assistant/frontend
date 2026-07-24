@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceAreaSuggestion } from "../../common/entity/compute_device_area_suggestion";
 import {
   computeDeviceName,
   computeDeviceNameDisplay,
@@ -72,6 +73,10 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("devices")) {
+      this._suggestDeviceUpdates();
+    }
+
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
       return;
     }
@@ -100,6 +105,32 @@ class StepFlowCreateEntry extends LitElement {
       showVoiceAssistantSetupDialog(this, {
         deviceId: this.devices[0].id,
       });
+    }
+  }
+
+  private _suggestDeviceUpdates() {
+    if (!this.hass || !this.devices?.length) {
+      return;
+    }
+    const areas = Object.values(this.hass.areas);
+    const updates = { ...this._deviceUpdate };
+    let changed = false;
+    for (const device of this.devices) {
+      if (device.id in updates || device.name_by_user) {
+        continue;
+      }
+      const suggestion = computeDeviceAreaSuggestion(
+        computeDeviceName(device),
+        device.area_id,
+        areas
+      );
+      if (suggestion) {
+        updates[device.id] = suggestion;
+        changed = true;
+      }
+    }
+    if (changed) {
+      this._deviceUpdate = updates;
     }
   }
 
