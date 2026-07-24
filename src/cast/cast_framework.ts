@@ -17,7 +17,6 @@ export const castApiAvailable = () => {
     el.id = "cast";
     document.body.append(el);
 
-    // Resolve as unavailable when the SDK cannot be loaded (e.g. offline).
     loadJS(
       "https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"
     ).catch(() => resolve(false));
