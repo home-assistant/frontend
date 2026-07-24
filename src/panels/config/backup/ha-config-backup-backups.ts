@@ -145,6 +145,10 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
+    // Re-apply the type filter from the URL when the page is (re)displayed,
+    // e.g. when navigating back to a cached instance of this page with a
+    // different `type` query param.
+    this._setFiltersFromUrl();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
   }
