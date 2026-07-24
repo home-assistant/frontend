@@ -141,7 +141,7 @@ export class HaChooseSelector extends LitElement {
   }
 
   private _value(choice?: string): any {
-    if (!this.value) {
+    if (this.value === undefined) {
       return undefined;
     }
     return typeof this.value === "object"
