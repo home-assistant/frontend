@@ -58,7 +58,6 @@ interface UpdateGroup {
 
 const SYSTEM_KEY = "__system__";
 const APPS_KEY = "__apps__";
-const INTEGRATIONS_KEY = "__integrations__";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -417,7 +416,6 @@ class HaConfigSectionUpdates extends LitElement {
       const systemEntities: UpdateEntity[] = [];
       const appEntities: UpdateEntity[] = [];
       const byDomain = new Map<string, UpdateEntity[]>();
-      const otherIntegrationEntities: UpdateEntity[] = [];
 
       for (const entity of entities) {
         if (isSystemUpdate(entity)) {
@@ -426,13 +424,10 @@ class HaConfigSectionUpdates extends LitElement {
         }
         const domain =
           entitySources?.[entity.entity_id]?.domain ??
-          entityRegistry[entity.entity_id]?.platform;
+          entityRegistry[entity.entity_id]?.platform ??
+          "unknown";
         if (domain === "hassio") {
           appEntities.push(entity);
-          continue;
-        }
-        if (!domain) {
-          otherIntegrationEntities.push(entity);
           continue;
         }
         if (!byDomain.has(domain)) {
@@ -441,21 +436,17 @@ class HaConfigSectionUpdates extends LitElement {
         byDomain.get(domain)!.push(entity);
       }
 
-      const multiInstanceGroups: UpdateGroup[] = [];
+      const integrationGroups: UpdateGroup[] = [];
       byDomain.forEach((entries, domain) => {
-        if (entries.length >= 2) {
-          multiInstanceGroups.push({
-            key: domain,
-            title: domainToName(localize, domain),
-            entities: entries,
-            showUpdateAll: true,
-          });
-        } else {
-          otherIntegrationEntities.push(...entries);
-        }
+        integrationGroups.push({
+          key: domain,
+          title: domainToName(localize, domain),
+          entities: entries,
+          showUpdateAll: entries.length > 1,
+        });
       });
 
-      multiInstanceGroups.sort((a, b) =>
+      integrationGroups.sort((a, b) =>
         caseInsensitiveStringCompare(a.title, b.title, language)
       );
 
@@ -470,16 +461,7 @@ class HaConfigSectionUpdates extends LitElement {
         });
       }
 
-      groups.push(...multiInstanceGroups);
-
-      if (otherIntegrationEntities.length) {
-        groups.push({
-          key: INTEGRATIONS_KEY,
-          title: localize("ui.panel.config.updates.group_integrations"),
-          entities: otherIntegrationEntities,
-          showUpdateAll: true,
-        });
-      }
+      groups.push(...integrationGroups);
 
       if (appEntities.length) {
         groups.push({
