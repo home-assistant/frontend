@@ -1,6 +1,8 @@
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
+import { setDemoAreas } from "../stubs/area_registry";
 import { energyEntities } from "../stubs/entities";
+import { setDemoFloors } from "../stubs/floor_registry";
 import { getDemoTheme } from "../stubs/frontend";
 import type { DemoConfig, DemoTheme } from "./types";
 
@@ -37,6 +39,8 @@ export const setDemoConfig = async (
   selectedDemoConfigIndex = index;
   selectedDemoConfig = confProm;
 
+  setDemoFloors(hass, config.floors);
+  setDemoAreas(hass, config.areas);
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
   lovelace.saveConfig(config.lovelace(hass.localize));

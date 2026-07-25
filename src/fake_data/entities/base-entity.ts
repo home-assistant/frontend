@@ -27,6 +27,8 @@ export class MockBaseEntity {
 
   public state: string;
 
+  public areaId?: string;
+
   public baseAttributes: EntityAttributes;
 
   public attributes: EntityAttributes;
@@ -47,6 +49,7 @@ export class MockBaseEntity {
     this.domain = domain;
     this.objectId = objectId;
     this.state = input.state;
+    this.areaId = input.area_id;
     this.lastChanged = randomTime();
     this.lastUpdated = randomTime();
 

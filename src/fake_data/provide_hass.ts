@@ -299,6 +299,7 @@ export const provideHass = (
         icon: undefined,
         platform: "demo",
         labels: [],
+        area_id: ent.areaId,
       } satisfies EntityRegistryDisplayEntry;
     });
     if (replace) {

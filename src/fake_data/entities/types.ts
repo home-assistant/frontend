@@ -10,7 +10,10 @@ export type EntityAttributes = HassEntityAttributeBase & Record<string, any>;
 export type EntityInput = Pick<
   HassEntity,
   "entity_id" | "state" | "attributes"
->;
+> & {
+  /** Area the entity is assigned to in the mocked entity registry */
+  area_id?: string;
+};
 
 /**
  * The hass mock object interface, kept intentionally loose
