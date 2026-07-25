@@ -81,13 +81,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _sidebarScrollTop = 0;
 
   private _columnsController = new ResizeController(this, {
-    callback: () => {
-      const totalWidth = this.clientWidth;
-      const container = this.shadowRoot!.querySelector(".container");
+    callback: (entries) => {
+      const totalWidth = entries[0]?.contentRect.width;
 
-      if (!totalWidth || !container) return 1;
+      if (!totalWidth) return 1;
 
       const style = getComputedStyle(this);
+      const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
       const paddingLeft = parsePx(containerStyle.paddingLeft);
@@ -101,8 +101,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const columns = Math.floor(
         (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
       );
-      const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-      return clamp(columns, 1, maxColumns);
+      return Math.max(columns, 1);
     },
   });
 
@@ -147,20 +146,22 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
-    }
-    if (changedProperties.has("_config")) {
-      // The view element is reused between views, so the column count has to
-      // be recomputed for the max columns of the new config
-      this._columnsController.handleChanges([]);
     }
     this._updateMaxColumnCount();
   }
 
   private _updateMaxColumnCount(): void {
-    const maxColumnCount = this._columnsController.value ?? 1;
+    // The column count is clamped here instead of in the resize callback, so
+    // that it follows the config of the view the element is currently used for
+    const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
+    const maxColumnCount = clamp(
+      this._columnsController.value ?? 1,
+      1,
+      maxColumns
+    );
 
     if (maxColumnCount !== this._maxColumns) {
       this._maxColumns = maxColumnCount;
