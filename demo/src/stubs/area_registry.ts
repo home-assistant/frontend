@@ -12,8 +12,12 @@ export interface DemoArea {
 
 let areas: AreaRegistryEntry[] = [];
 
-export const mockAreaRegistry = (hass: MockHomeAssistant) => {
+export const mockAreaRegistry = (
+  hass: MockHomeAssistant,
+  data: DemoArea[] = []
+) => {
   hass.mockWS("config/area_registry/list", () => areas);
+  setDemoAreas(hass, data);
 };
 
 /** Set the areas of the currently loaded demo config. */

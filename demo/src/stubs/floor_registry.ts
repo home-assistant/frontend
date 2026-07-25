@@ -10,8 +10,12 @@ export interface DemoFloor {
 
 let floors: FloorRegistryEntry[] = [];
 
-export const mockFloorRegistry = (hass: MockHomeAssistant) => {
+export const mockFloorRegistry = (
+  hass: MockHomeAssistant,
+  data: DemoFloor[] = []
+) => {
   hass.mockWS("config/floor_registry/list", () => floors);
+  setDemoFloors(hass, data);
 };
 
 /** Set the floors of the currently loaded demo config. */
