@@ -130,6 +130,8 @@ export class MockBaseEntity {
       "entity_picture",
       "assumed_state",
       "device_class",
+      "state_class",
+      "unit_of_measurement",
       "supported_features",
     ]) {
       if (key in attrs) {
