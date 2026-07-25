@@ -221,17 +221,50 @@ class HaLogbookEntry extends LitElement {
     renderedTime: TemplateResult | string
   ) {
     return html`<span class="trailing">
-      ${
-        cause
-          ? html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
-              <span class="cause-badge" id="cause-badge"
-                >${this._renderCauseIcon(cause)}</span
-              >`
-          : nothing
-      }
+      ${cause ? this._renderCauseBadge(cause) : nothing}
       ${traceLink ? this._renderTraceLink(traceLink) : nothing}
       ${this._renderTimeChip(renderedTime)}
     </span>`;
+  }
+
+  private _renderCauseBadge(cause: LogbookCause) {
+    const tooltip = html`<ha-tooltip for="cause-badge"
+      >${cause.name}</ha-tooltip
+    >`;
+    if (cause.entityId) {
+      return html`${tooltip}<button
+          class="link cause-badge"
+          id="cause-badge"
+          @click=${this._entityClicked}
+          .entityId=${cause.entityId}
+          aria-label=${cause.name}
+        >
+          ${this._renderCauseIcon(cause)}
+        </button>`;
+    }
+    if (cause.type === "integration" && cause.brandDomain) {
+      return html`${tooltip}<button
+          class="link cause-badge"
+          id="cause-badge"
+          @click=${this._integrationClicked}
+          .brandDomain=${cause.brandDomain}
+          aria-label=${cause.name}
+        >
+          ${this._renderCauseIcon(cause)}
+        </button>`;
+    }
+    return html`${tooltip}<span class="cause-badge" id="cause-badge"
+        >${this._renderCauseIcon(cause)}</span
+      >`;
+  }
+
+  private _integrationClicked(ev: Event) {
+    const domain = (ev.currentTarget as any).brandDomain;
+    if (!domain) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    navigate(`/config/integrations/integration/${domain}`);
+    fireEvent(this, "closed");
   }
 
   private _renderTraceLink(traceLink: string) {
@@ -949,6 +982,19 @@ class HaLogbookEntry extends LitElement {
         .cause-badge {
           display: inline-flex;
           align-items: center;
+        }
+
+        button.cause-badge {
+          padding: 0;
+          border: none;
+          background: none;
+          color: inherit;
+          font: inherit;
+          cursor: pointer;
+        }
+
+        button.cause-badge:hover {
+          opacity: 0.75;
         }
 
         ha-relative-time {
