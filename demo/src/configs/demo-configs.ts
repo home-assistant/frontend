@@ -43,6 +43,13 @@ export const setDemoConfig = async (
   setDemoAreas(hass, config.areas);
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
+
+  // Let the new registries and entities reach the dashboard before saving the
+  // config, so dashboard strategies generate against them
+  await new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
   lovelace.saveConfig(config.lovelace(hass.localize));
   applyDemoTheme(hass, config.theme);
 };
