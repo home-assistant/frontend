@@ -12,8 +12,21 @@ export interface DemoArea {
 
 let areas: AreaRegistryEntry[] = [];
 
-export const mockAreaRegistry = (hass: MockHomeAssistant) => {
+const setAreas = (hass: MockHomeAssistant, data: AreaRegistryEntry[]) => {
+  areas = data;
+  const areasById: Record<string, AreaRegistryEntry> = {};
+  areas.forEach((area) => {
+    areasById[area.area_id] = area;
+  });
+  hass.updateHass({ areas: areasById });
+};
+
+export const mockAreaRegistry = (
+  hass: MockHomeAssistant,
+  data: AreaRegistryEntry[] = []
+) => {
   hass.mockWS("config/area_registry/list", () => areas);
+  setAreas(hass, data);
 };
 
 /** Set the areas of the currently loaded demo config. */
@@ -21,22 +34,20 @@ export const setDemoAreas = (
   hass: MockHomeAssistant,
   demoAreas: DemoArea[] = []
 ) => {
-  areas = demoAreas.map((area) => ({
-    area_id: area.area_id,
-    name: area.name,
-    floor_id: area.floor_id ?? null,
-    icon: area.icon ?? null,
-    temperature_entity_id: area.temperature_entity_id ?? null,
-    humidity_entity_id: area.humidity_entity_id ?? null,
-    aliases: [],
-    labels: [],
-    picture: null,
-    created_at: 0,
-    modified_at: 0,
-  }));
-  const areasById: Record<string, AreaRegistryEntry> = {};
-  areas.forEach((area) => {
-    areasById[area.area_id] = area;
-  });
-  hass.updateHass({ areas: areasById });
+  setAreas(
+    hass,
+    demoAreas.map((area) => ({
+      area_id: area.area_id,
+      name: area.name,
+      floor_id: area.floor_id ?? null,
+      icon: area.icon ?? null,
+      temperature_entity_id: area.temperature_entity_id ?? null,
+      humidity_entity_id: area.humidity_entity_id ?? null,
+      aliases: [],
+      labels: [],
+      picture: null,
+      created_at: 0,
+      modified_at: 0,
+    }))
+  );
 };

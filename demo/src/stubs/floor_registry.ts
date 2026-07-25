@@ -10,8 +10,21 @@ export interface DemoFloor {
 
 let floors: FloorRegistryEntry[] = [];
 
-export const mockFloorRegistry = (hass: MockHomeAssistant) => {
+const setFloors = (hass: MockHomeAssistant, data: FloorRegistryEntry[]) => {
+  floors = data;
+  const floorsById: Record<string, FloorRegistryEntry> = {};
+  floors.forEach((floor) => {
+    floorsById[floor.floor_id] = floor;
+  });
+  hass.updateHass({ floors: floorsById });
+};
+
+export const mockFloorRegistry = (
+  hass: MockHomeAssistant,
+  data: FloorRegistryEntry[] = []
+) => {
   hass.mockWS("config/floor_registry/list", () => floors);
+  setFloors(hass, data);
 };
 
 /** Set the floors of the currently loaded demo config. */
@@ -19,18 +32,16 @@ export const setDemoFloors = (
   hass: MockHomeAssistant,
   demoFloors: DemoFloor[] = []
 ) => {
-  floors = demoFloors.map((floor) => ({
-    floor_id: floor.floor_id,
-    name: floor.name,
-    level: floor.level ?? null,
-    icon: floor.icon ?? null,
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
-  }));
-  const floorsById: Record<string, FloorRegistryEntry> = {};
-  floors.forEach((floor) => {
-    floorsById[floor.floor_id] = floor;
-  });
-  hass.updateHass({ floors: floorsById });
+  setFloors(
+    hass,
+    demoFloors.map((floor) => ({
+      floor_id: floor.floor_id,
+      name: floor.name,
+      level: floor.level ?? null,
+      icon: floor.icon ?? null,
+      aliases: [],
+      created_at: 0,
+      modified_at: 0,
+    }))
+  );
 };
