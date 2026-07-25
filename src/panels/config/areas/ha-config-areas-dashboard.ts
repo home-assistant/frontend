@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
@@ -18,6 +19,7 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import {
@@ -41,6 +43,7 @@ import {
   reorderAreaRegistryEntries,
   updateAreaRegistryEntry,
 } from "../../../data/area/area_registry";
+import { narrowViewportContext } from "../../../data/context";
 import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
   createFloorRegistryEntry,
@@ -85,6 +88,9 @@ export class HaConfigAreasDashboard extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _hierarchy?: AreasFloorHierarchy;
+
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow!: ContextType<typeof narrowViewportContext>;
 
   private _searchParms = new URLSearchParams(window.location.search);
 
@@ -181,7 +187,7 @@ export class HaConfigAreasDashboard extends LitElement {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <div class="container">
+        <div class=${classMap({ container: true, narrow: this._narrow })}>
           <div class="floors">
             ${this._hierarchy.floors.map(({ areas, id }) => {
               const floor = this.hass.floors[id];
@@ -731,42 +737,40 @@ export class HaConfigAreasDashboard extends LitElement {
       overflow-wrap: anywhere;
     }
 
-    @media (max-width: 600px) {
-      .areas {
-        grid-template-columns: 1fr;
-      }
-      .areas > * {
-        max-width: none;
-      }
-      ha-card {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        align-items: center;
-        column-gap: var(--ha-space-4);
-        padding: var(--ha-space-2);
-        padding-inline-start: var(--ha-space-4);
-      }
-      .picture {
-        grid-row: span 2;
-        height: 40px;
-        width: 40px;
-        border-radius: var(--ha-border-radius-md);
-        overflow: hidden;
-      }
-      .placeholder {
-        --mdc-icon-size: 24px;
-      }
-      .card-header {
-        min-width: 0;
-        padding: 0;
-        font-size: var(--ha-font-size-l);
-        line-height: var(--ha-line-height-normal);
-      }
-      .card-content {
-        min-height: 0;
-        padding: 0;
-        margin-top: 0;
-      }
+    .container.narrow .areas {
+      grid-template-columns: repeat(auto-fill, minmax(min(336px, 100%), 1fr));
+    }
+    .container.narrow .areas > * {
+      max-width: none;
+    }
+    .container.narrow ha-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      column-gap: var(--ha-space-4);
+      padding: var(--ha-space-2);
+      padding-inline-start: var(--ha-space-4);
+    }
+    .container.narrow .picture {
+      grid-row: span 2;
+      height: 40px;
+      width: 40px;
+      border-radius: var(--ha-border-radius-md);
+      overflow: hidden;
+    }
+    .container.narrow .placeholder {
+      --mdc-icon-size: 24px;
+    }
+    .container.narrow .card-header {
+      min-width: 0;
+      padding: 0;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-normal);
+    }
+    .container.narrow .card-content {
+      min-height: 0;
+      padding: 0;
+      margin-top: 0;
     }
   `;
 }
