@@ -80,20 +80,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _sidebarScrollTop = 0;
 
-  private _totalWidth = 0;
-
   private _columnsController = new ResizeController(this, {
-    callback: (entries) => {
-      // Without entries we are recomputing for a new config, so reuse the
-      // last observed width
-      const totalWidth = entries[0]?.contentRect.width ?? this._totalWidth;
+    callback: () => {
+      const totalWidth = this.clientWidth;
+      const container = this.shadowRoot!.querySelector(".container");
 
-      if (!totalWidth) return 1;
-
-      this._totalWidth = totalWidth;
+      if (!totalWidth || !container) return 1;
 
       const style = getComputedStyle(this);
-      const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
       const paddingLeft = parsePx(containerStyle.paddingLeft);
