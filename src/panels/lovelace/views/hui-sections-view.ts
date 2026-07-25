@@ -80,11 +80,17 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _sidebarScrollTop = 0;
 
+  private _totalWidth = 0;
+
   private _columnsController = new ResizeController(this, {
     callback: (entries) => {
-      const totalWidth = entries[0]?.contentRect.width;
+      // Without entries we are recomputing for a new config, so reuse the
+      // last observed width
+      const totalWidth = entries[0]?.contentRect.width ?? this._totalWidth;
 
       if (!totalWidth) return 1;
+
+      this._totalWidth = totalWidth;
 
       const style = getComputedStyle(this);
       const container = this.shadowRoot!.querySelector(".container")!;
@@ -147,9 +153,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<this>): void {
+  willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
+    }
+    if (changedProperties.has("_config")) {
+      // The view element is reused between views, so the column count has to
+      // be recomputed for the max columns of the new config
+      this._columnsController.handleChanges([]);
     }
     this._updateMaxColumnCount();
   }
