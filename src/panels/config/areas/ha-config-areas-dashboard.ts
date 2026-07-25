@@ -730,6 +730,44 @@ export class HaConfigAreasDashboard extends LitElement {
       align-items: center;
       overflow-wrap: anywhere;
     }
+
+    @media (max-width: 600px) {
+      .areas {
+        grid-template-columns: 1fr;
+      }
+      .areas > * {
+        max-width: none;
+      }
+      ha-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        column-gap: var(--ha-space-4);
+        padding: var(--ha-space-2);
+        padding-inline-start: var(--ha-space-4);
+      }
+      .picture {
+        grid-row: span 2;
+        height: 40px;
+        width: 40px;
+        border-radius: var(--ha-border-radius-md);
+        overflow: hidden;
+      }
+      .placeholder {
+        --mdc-icon-size: 24px;
+      }
+      .card-header {
+        min-width: 0;
+        padding: 0;
+        font-size: var(--ha-font-size-l);
+        line-height: var(--ha-line-height-normal);
+      }
+      .card-content {
+        min-height: 0;
+        padding: 0;
+        margin-top: 0;
+      }
+    }
   `;
 }
 
