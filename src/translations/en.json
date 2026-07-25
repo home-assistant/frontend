@@ -2510,8 +2510,8 @@
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
-      "new_version_available": "A new version of the frontend is available.",
-      "reload": "Reload",
+      "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
+      "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
       "onboarding_survey": {
