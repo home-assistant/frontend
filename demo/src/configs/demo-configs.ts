@@ -1,3 +1,4 @@
+import { navigate } from "../../../src/common/navigate";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { setDemoAreas } from "../stubs/area_registry";
@@ -16,6 +17,7 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
 
 export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
   sections: () => import("./sections").then((mod) => mod.demoSections),
+  home: () => import("./home").then((mod) => mod.demoHome),
   arsaboo: () => import("./arsaboo").then((mod) => mod.demoArsaboo),
   teachingbirds: () =>
     import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
@@ -58,6 +60,8 @@ export const setDemoConfig = async (
     setTimeout(resolve, 0);
   });
 
-  lovelace.saveConfig(config.lovelace(hass.localize));
+  await lovelace.saveConfig(config.lovelace(hass.localize));
+  // The view of the previous demo might not exist in the new one
+  navigate(`/${hass.panelUrl}?demo=${demo}`, { replace: true });
   applyDemoTheme(hass, config.theme);
 };
