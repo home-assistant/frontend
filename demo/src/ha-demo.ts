@@ -16,6 +16,7 @@ import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
@@ -76,7 +77,8 @@ export class HaDemo extends HomeAssistantAppEl {
     // The cloud account page only fetches backup config and the webhook count
     // when those integrations are loaded. Enable them here (demo only) so the
     // mocked backup/config/info and webhook/list are queried. usage_prediction
-    // is needed for common-controls sections in strategy dashboards.
+    // is needed for common-controls sections in strategy dashboards. hassio
+    // gates the apps panel, which otherwise redirects to its explainer page.
     hass.updateHass({
       config: {
         ...hass.config,
@@ -85,6 +87,7 @@ export class HaDemo extends HomeAssistantAppEl {
           "backup",
           "webhook",
           "usage_prediction",
+          "hassio",
         ],
       },
     });
@@ -112,6 +115,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockHassioSupervisor(hass);
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
