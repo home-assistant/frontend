@@ -153,39 +153,45 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
       <ha-card class=${classMap({ "no-background": no_background ?? false })}>
         <div class="countdown-wrapper">
           ${title ? html`<div class="countdown-title">${title}</div>` : nothing}
-          ${expired
-            ? html`<div class="expired-label">Reached</div>`
-            : html`
-                <div class="countdown-display">
-                  ${days > 0
-                    ? html`
-                        <div class="unit">
-                          <span class="value">${days}</span>
-                          <span class="label">days</span>
-                        </div>
-                        <div class="separator">:</div>
-                      `
-                    : nothing}
-                  <div class="unit">
-                    <span class="value">${this._pad(hours)}</span>
-                    <span class="label">hr</span>
+          ${
+            expired
+              ? html`<div class="expired-label">Reached</div>`
+              : html`
+                  <div class="countdown-display">
+                    ${
+                    days > 0
+                      ? html`
+                          <div class="unit">
+                            <span class="value">${days}</span>
+                            <span class="label">days</span>
+                          </div>
+                          <div class="separator">:</div>
+                        `
+                      : nothing
+                  }
+                    <div class="unit">
+                      <span class="value">${this._pad(hours)}</span>
+                      <span class="label">hr</span>
+                    </div>
+                    <div class="separator">:</div>
+                    <div class="unit">
+                      <span class="value">${this._pad(minutes)}</span>
+                      <span class="label">min</span>
+                    </div>
+                    ${
+                    show_seconds
+                      ? html`
+                          <div class="separator">:</div>
+                          <div class="unit">
+                            <span class="value">${this._pad(seconds)}</span>
+                            <span class="label">sec</span>
+                          </div>
+                        `
+                      : nothing
+                  }
                   </div>
-                  <div class="separator">:</div>
-                  <div class="unit">
-                    <span class="value">${this._pad(minutes)}</span>
-                    <span class="label">min</span>
-                  </div>
-                  ${show_seconds
-                    ? html`
-                        <div class="separator">:</div>
-                        <div class="unit">
-                          <span class="value">${this._pad(seconds)}</span>
-                          <span class="label">sec</span>
-                        </div>
-                      `
-                    : nothing}
-                </div>
-              `}
+                `
+          }
         </div>
       </ha-card>
     `;
