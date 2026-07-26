@@ -32,6 +32,22 @@ describe("downSampleLineData", () => {
     expect(downSampleLineData(points, 100)).toBe(points);
   });
 
+  it("returns input unchanged when maxDetails is zero", () => {
+    const points = generatePoints(11, 720);
+    expect(downSampleLineData(points, 0)).toBe(points);
+    expect(
+      downSampleLineData(points, 0, points[0][0], points[points.length - 1][0])
+    ).toBe(points);
+  });
+
+  it("returns input unchanged when all points share the same x", () => {
+    const points: [number, number][] = Array.from({ length: 20 }, (_, i) => [
+      FIXED_EPOCH_MS,
+      i,
+    ]);
+    expect(downSampleLineData(points, 5)).toBe(points);
+  });
+
   it("skips points with non-finite coordinates", () => {
     const points = generatePoints(2, 200);
     points[10] = [points[10][0], NaN];
