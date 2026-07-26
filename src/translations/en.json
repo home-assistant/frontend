@@ -11252,6 +11252,7 @@
         "cards": {
           "demo": {
             "demo_by": "by {name}",
+            "interactive_demo": "Interactive demo",
             "next_demo": "Next demo",
             "introduction": "Welcome home! You've reached the Home Assistant demo where we showcase the best UIs created by our community.",
             "learn_more": "Learn more about Home Assistant"
