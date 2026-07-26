@@ -85,7 +85,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
                 <ha-area-picker
                   .curValue=${area}
                   .noAdd=${this.noAdd}
-                  .hass=${this.hass}
                   .value=${area}
                   .label=${this.pickedAreaLabel}
                   .includeDomains=${this.includeDomains}
@@ -96,14 +95,16 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
                   .disabled=${this.disabled}
                   @value-changed=${this._areaChanged}
                 ></ha-area-picker>
-                ${this.reorder
-                  ? html`
-                      <ha-svg-icon
-                        class="area-handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `
-                  : nothing}
+                ${
+                  this.reorder
+                    ? html`
+                        <ha-svg-icon
+                          class="area-handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
+                      `
+                    : nothing
+                }
               </div>
             `
           )}
@@ -112,7 +113,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
       <div>
         <ha-area-picker
           .noAdd=${this.noAdd}
-          .hass=${this.hass}
           .label=${this.pickAreaLabel}
           .helper=${this.helper}
           .includeDomains=${this.includeDomains}

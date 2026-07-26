@@ -1,6 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { ShortcutItem } from "./home_shortcuts";
 
+export interface SurveyInteraction {
+  date: string;
+  action: "opened" | "dismissed";
+}
+
 export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
   default_panel?: string;
@@ -16,6 +21,9 @@ export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
   onboarded_date?: string;
+  surveys?: {
+    onboarding?: SurveyInteraction;
+  };
 }
 
 export interface HomeFrontendSystemData {
@@ -26,6 +34,13 @@ export interface HomeFrontendSystemData {
   shortcuts?: ShortcutItem[];
 }
 
+export interface EnergyFrontendSystemData {
+  // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
+  // hidden. An absent key or array means nothing is hidden (all cards visible),
+  // so cards added in the future are shown by default.
+  hidden_cards?: string[];
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -34,6 +49,7 @@ declare global {
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
     home: HomeFrontendSystemData;
+    energy: EnergyFrontendSystemData;
   }
 }
 

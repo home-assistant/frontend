@@ -51,47 +51,55 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
         })}
       >
         <div class="container">
-          ${this._config.icon
-            ? html`
-                <ha-icon
-                  class="card-icon"
-                  .icon=${this._config.icon}
-                  style=${styleMap({
-                    color: this._config.icon_color
-                      ? computeCssColor(this._config.icon_color)
-                      : undefined,
-                  })}
-                ></ha-icon>
-              `
-            : nothing}
+          ${
+            this._config.icon
+              ? html`
+                  <ha-icon
+                    class="card-icon"
+                    .icon=${this._config.icon}
+                    style=${styleMap({
+                      color: this._config.icon_color
+                        ? computeCssColor(this._config.icon_color)
+                        : undefined,
+                    })}
+                  ></ha-icon>
+                `
+              : nothing
+          }
           ${this._config.title ? html`<h1>${this._config.title}</h1>` : nothing}
-          ${this._config.content
-            ? html`<p>${this._config.content}</p>`
-            : nothing}
-          ${this._config.buttons?.length
-            ? html`
-                <div class="buttons">
-                  ${this._config.buttons.map(
-                    (button, index) => html`
-                      <ha-button
-                        .index=${index}
-                        @click=${this._handleButtonAction}
-                        appearance=${ifDefined(button.appearance)}
-                        variant=${ifDefined(button.variant)}
-                      >
-                        ${button.icon
-                          ? html`<ha-icon
-                              slot="start"
-                              .icon=${button.icon}
-                            ></ha-icon>`
-                          : nothing}
-                        ${button.text}
-                      </ha-button>
-                    `
-                  )}
-                </div>
-              `
-            : nothing}
+          ${
+            this._config.content
+              ? html`<p>${this._config.content}</p>`
+              : nothing
+          }
+          ${
+            this._config.buttons?.length
+              ? html`
+                  <div class="buttons">
+                    ${this._config.buttons.map(
+                      (button, index) => html`
+                        <ha-button
+                          .index=${index}
+                          @click=${this._handleButtonAction}
+                          appearance=${ifDefined(button.appearance)}
+                          variant=${ifDefined(button.variant)}
+                        >
+                          ${
+                            button.icon
+                              ? html`<ha-icon
+                                  slot="start"
+                                  .icon=${button.icon}
+                                ></ha-icon>`
+                              : nothing
+                          }
+                          ${button.text}
+                        </ha-button>
+                      `
+                    )}
+                  </div>
+                `
+              : nothing
+          }
         </div>
       </ha-card>
     `;

@@ -192,23 +192,25 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"
                     >${dashboard.title}</span
                   >
-                  ${dashboard.default
-                    ? html`
-                        <ha-svg-icon
-                          .id="default-icon-${dashboard.title}"
-                          style="flex-shrink:0;"
-                          .path=${mdiHomeCircleOutline}
-                        ></ha-svg-icon>
-                        <ha-tooltip
-                          .for="default-icon-${dashboard.title}"
-                          placement="right"
-                        >
-                          ${this.hass.localize(
-                            `ui.panel.config.lovelace.dashboards.default_dashboard`
-                          )}
-                        </ha-tooltip>
-                      `
-                    : nothing}
+                  ${
+                    dashboard.default
+                      ? html`
+                          <ha-svg-icon
+                            .id="default-icon-${dashboard.title}"
+                            style="flex-shrink:0;"
+                            .path=${mdiHomeCircleOutline}
+                          ></ha-svg-icon>
+                          <ha-tooltip
+                            .for="default-icon-${dashboard.title}"
+                            placement="right"
+                          >
+                            ${this.hass.localize(
+                              `ui.panel.config.lovelace.dashboards.default_dashboard`
+                            )}
+                          </ha-tooltip>
+                        `
+                      : nothing
+                  }
                 </span>
               `,
         },
@@ -230,9 +232,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
         sortable: true,
         filterable: true,
         template: (dashboard) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-          ) || dashboard.mode}
+          ${
+            this.hass.localize(
+              `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+            ) || dashboard.mode
+          }
         `,
       };
       if (dashboards.some((dashboard) => dashboard.filename)) {
@@ -440,7 +444,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
-        <ha-button slot="fab" size="large" @click=${this._addDashboard}>
+        <ha-button slot="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"

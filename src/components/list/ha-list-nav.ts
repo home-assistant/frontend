@@ -30,7 +30,7 @@ export class HaListNav extends HaListBase {
       part="nav"
       aria-label=${ifDefined(this.ariaLabel ?? undefined)}
     >
-      <div part="base" class="base" role="list">
+      <div part="base" class="base ha-scrollbar" role="list">
         <slot></slot>
       </div>
     </nav>`;

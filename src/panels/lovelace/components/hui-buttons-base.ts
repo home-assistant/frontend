@@ -68,19 +68,20 @@ export class HuiButtonsBase extends LitElement {
               tabindex="0"
               .label=${name}
             >
-              ${entityConf.show_icon !== false
-                ? html`
-                    <state-badge
-                      title=${computeTooltip(this.hass, entityConf)}
-                      .hass=${this.hass}
-                      .stateObj=${stateObj}
-                      .overrideIcon=${entityConf.icon}
-                      .overrideImage=${entityConf.image}
-                      .stateColor=${true}
-                      slot="icon"
-                    ></state-badge>
-                  `
-                : ""}
+              ${
+                entityConf.show_icon !== false
+                  ? html`
+                      <state-badge
+                        title=${computeTooltip(this.hass, entityConf)}
+                        .stateObj=${stateObj}
+                        .overrideIcon=${entityConf.icon}
+                        .overrideImage=${entityConf.image}
+                        .stateColor=${true}
+                        slot="icon"
+                      ></state-badge>
+                    `
+                  : ""
+              }
             </ha-assist-chip>
           `;
         })}

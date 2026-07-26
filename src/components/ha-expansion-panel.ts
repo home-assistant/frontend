@@ -107,6 +107,7 @@ export class HaExpansionPanel extends LitElement {
     }
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+
     this._container.style.overflow = "hidden";
 
     if (newExpanded) {

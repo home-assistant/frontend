@@ -86,120 +86,140 @@ export class HaMediaSelector extends LitElement {
     }
 
     return html`
-      ${this._hasAccept ||
-      (this._contextEntities && this._contextEntities.length <= 1)
-        ? nothing
-        : html`
-            <ha-entity-picker
-              .hass=${this.hass}
-              .value=${entityId}
-              .label=${this.label ||
-              this.hass.localize(
-                "ui.components.selectors.media.pick_media_player"
-              )}
-              .disabled=${this.disabled}
-              .helper=${this.helper}
-              .required=${this.required}
-              .hideClearIcon=${!!this._contextEntities}
-              .includeDomains=${INCLUDE_DOMAINS}
-              .includeEntities=${this._contextEntities}
-              .allowCustomEntity=${!this._contextEntities}
-              @value-changed=${this._entityChanged}
-            ></ha-entity-picker>
-          `}
-      ${!supportsBrowse
-        ? html`
-            ${this.label ? html`<label>${this.label}</label>` : nothing}
-            <ha-alert>
-              ${this.hass.localize(
-                "ui.components.selectors.media.browse_not_supported"
-              )}
-            </ha-alert>
-            <ha-form
-              .hass=${this.hass}
-              .data=${this.value || EMPTY_FORM}
-              .schema=${MANUAL_SCHEMA}
-              .computeLabel=${this._computeLabelCallback}
-              .computeHelper=${this._computeHelperCallback}
-            ></ha-form>
-          `
-        : html`${this.label ? html`<label>${this.label}</label>` : nothing}
-            <ha-card
-              outlined
-              tabindex="0"
-              role="button"
-              aria-label=${!this.value?.media_content_id
-                ? this.hass.localize("ui.components.selectors.media.pick_media")
-                : this.value.metadata?.title || this.value.media_content_id}
-              @click=${this._pickMedia}
-              @keydown=${this._handleKeyDown}
-              class=${this.disabled || (!entityId && !this._hasAccept)
-                ? "disabled"
-                : ""}
-            >
-              <div class="content-container">
-                <div class="thumbnail">
-                  ${this.value?.metadata?.thumbnail
-                    ? html`
-                        <div
-                          class="${classMap({
-                            "centered-image":
-                              !!this.value.metadata.media_class &&
-                              ["app", "directory"].includes(
-                                this.value.metadata.media_class
-                              ),
-                          })}
-                          image"
-                        >
-                          <ha-media-browser-thumbnail
-                            .hass=${this.hass}
-                            .url=${this.value.metadata.thumbnail}
-                          ></ha-media-browser-thumbnail>
-                        </div>
-                      `
-                    : html`
-                        <div class="icon-holder image">
-                          <ha-svg-icon
-                            class="folder"
-                            .path=${!this.value?.media_content_id
-                              ? mdiPlus
-                              : this.value?.metadata?.media_class
-                                ? MediaClassBrowserSettings[
-                                    this.value.metadata.media_class ===
-                                    "directory"
-                                      ? this.value.metadata
-                                          .children_media_class ||
-                                        this.value.metadata.media_class
-                                      : this.value.metadata.media_class
-                                  ].icon
-                                : mdiPlayBox}
-                          ></ha-svg-icon>
-                        </div>
-                      `}
-                </div>
-                <div class="title">
-                  ${!this.value?.media_content_id
+      ${
+        this._hasAccept ||
+        (this._contextEntities && this._contextEntities.length <= 1)
+          ? nothing
+          : html`
+              <ha-entity-picker
+                .value=${entityId}
+                .label=${
+                  this.label ||
+                  this.hass.localize(
+                    "ui.components.selectors.media.pick_media_player"
+                  )
+                }
+                .disabled=${this.disabled}
+                .helper=${this.helper}
+                .required=${this.required}
+                .hideClearIcon=${!!this._contextEntities}
+                .includeDomains=${INCLUDE_DOMAINS}
+                .includeEntities=${this._contextEntities}
+                .allowCustomEntity=${!this._contextEntities}
+                @value-changed=${this._entityChanged}
+              ></ha-entity-picker>
+            `
+      }
+      ${
+        !supportsBrowse
+          ? html`
+              ${this.label ? html`<label>${this.label}</label>` : nothing}
+              <ha-alert>
+                ${this.hass.localize(
+                  "ui.components.selectors.media.browse_not_supported"
+                )}
+              </ha-alert>
+              <ha-form
+                .hass=${this.hass}
+                .data=${this.value || EMPTY_FORM}
+                .schema=${MANUAL_SCHEMA}
+                .computeLabel=${this._computeLabelCallback}
+                .computeHelper=${this._computeHelperCallback}
+              ></ha-form>
+            `
+          : html`${this.label ? html`<label>${this.label}</label>` : nothing}
+              <ha-card
+                outlined
+                tabindex="0"
+                role="button"
+                aria-label=${
+                  !this.value?.media_content_id
                     ? this.hass.localize(
                         "ui.components.selectors.media.pick_media"
                       )
-                    : this.value.metadata?.title || this.value.media_content_id}
+                    : this.value.metadata?.title || this.value.media_content_id
+                }
+                @click=${this._pickMedia}
+                @keydown=${this._handleKeyDown}
+                class=${
+                  this.disabled || (!entityId && !this._hasAccept)
+                    ? "disabled"
+                    : ""
+                }
+              >
+                <div class="content-container">
+                  <div class="thumbnail">
+                    ${
+                      this.value?.metadata?.thumbnail
+                        ? html`
+                            <div
+                              class="${classMap({
+                                "centered-image":
+                                  !!this.value.metadata.media_class &&
+                                  ["app", "directory"].includes(
+                                    this.value.metadata.media_class
+                                  ),
+                              })}
+                          image"
+                            >
+                              <ha-media-browser-thumbnail
+                                .hass=${this.hass}
+                                .url=${this.value.metadata.thumbnail}
+                              ></ha-media-browser-thumbnail>
+                            </div>
+                          `
+                        : html`
+                            <div class="icon-holder image">
+                              <ha-svg-icon
+                                class="folder"
+                                .path=${
+                                  !this.value?.media_content_id
+                                    ? mdiPlus
+                                    : this.value?.metadata?.media_class
+                                      ? MediaClassBrowserSettings[
+                                          this.value.metadata.media_class ===
+                                          "directory"
+                                            ? this.value.metadata
+                                                .children_media_class ||
+                                              this.value.metadata.media_class
+                                            : this.value.metadata.media_class
+                                        ].icon
+                                      : mdiPlayBox
+                                }
+                              ></ha-svg-icon>
+                            </div>
+                          `
+                    }
+                  </div>
+                  <div class="title">
+                    ${
+                      !this.value?.media_content_id
+                        ? this.hass.localize(
+                            "ui.components.selectors.media.pick_media"
+                          )
+                        : this.value.metadata?.title ||
+                          this.value.media_content_id
+                    }
+                  </div>
                 </div>
-              </div>
-            </ha-card>
-            ${this.selector.media?.clearable
-              ? html`<div>
-                  <ha-button
-                    appearance="plain"
-                    size="small"
-                    variant="danger"
-                    @click=${this._clearValue}
-                  >
-                    ${this.hass.localize(
-                      "ui.components.picture-upload.clear_picture"
-                    )}
-                  </ha-button>
-                </div>`
-              : nothing}`}
+              </ha-card>
+              ${
+                this.selector.media?.clearable
+                  ? html`<div>
+                      <ha-button
+                        appearance="plain"
+                        size="s"
+                        variant="danger"
+                        @click=${this._clearValue}
+                      >
+                        ${this.hass.localize(
+                          "ui.components.picture-upload.clear_picture"
+                        )}
+                      </ha-button>
+                    </div>`
+                  : nothing
+              }`
+      }
     `;
   }
 

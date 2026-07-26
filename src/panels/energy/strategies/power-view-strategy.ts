@@ -1,49 +1,46 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
+import type { EnergyViewStrategyConfig } from "./energy-cards";
+import {
+  hasGasRateSource,
+  hasPowerDevices,
+  hasPowerSources,
+  hasWaterRateDevices,
+  hasWaterRateSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
-    _config: LovelaceStrategyConfig,
+    _config: EnergyViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+    const hidden = _config.hidden_cards;
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
+      // The "Now" view is real-time; roll its day period over at midnight.
+      midnightRollover: true,
     });
-    await energyCollection.refresh();
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
-
-    const hasPowerSources = prefs?.energy_sources.some((source) => {
-      if (source.type === "solar" && source.stat_rate) return true;
-      if (source.type === "battery" && source.stat_rate) return true;
-      if (source.type === "grid") {
-        return !!source.stat_rate || !!source.power_config;
-      }
-      return false;
-    });
-    const hasPowerDevices = prefs?.device_consumption.some(
-      (device) => device.stat_rate
-    );
-    const hasWaterDevices = prefs?.device_consumption_water.some(
-      (device) => device.stat_rate
-    );
-    const hasWaterSources = prefs?.energy_sources.some(
-      (source) => source.type === "water" && source.stat_rate
-    );
-    const hasGasSources = prefs?.energy_sources.some(
-      (source) => source.type === "gas" && source.stat_rate
-    );
 
     const chartsSection: LovelaceSectionConfig = {
       type: "grid",
@@ -56,24 +53,32 @@ export class PowerViewStrategy extends ReactiveElement {
       sections: [chartsSection],
     };
 
+    const hasPowerSrc = !!prefs && hasPowerSources(prefs);
+    const hasPowerDev = !!prefs && hasPowerDevices(prefs);
+    const hasWaterDev = !!prefs && hasWaterRateDevices(prefs);
+    const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
+    const hasGasSrc = !!prefs && hasGasRateSource(prefs);
+
     // No sources configured
     if (
       !prefs ||
-      (!hasPowerSources &&
-        !hasPowerDevices &&
-        !hasWaterDevices &&
-        !hasWaterSources &&
-        !hasGasSources)
+      (!hasPowerSrc &&
+        !hasPowerDev &&
+        !hasWaterDev &&
+        !hasWaterSrc &&
+        !hasGasSrc)
     ) {
       return view;
     }
 
-    if (hasPowerSources) {
+    if (hasPowerSrc) {
       badges.push({
         type: "power-total",
         collection_key: collectionKey,
       });
+    }
 
+    if (isEnergyCardVisible("now", "power-sources-graph", prefs, hidden)) {
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
         type: "power-sources-graph",
@@ -84,14 +89,14 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGasSources) {
+    if (hasGasSrc) {
       badges.push({
         type: "gas-total",
         collection_key: collectionKey,
       });
     }
 
-    if (hasWaterSources) {
+    if (hasWaterSrc) {
       badges.push({
         type: "water-total",
         collection_key: collectionKey,
@@ -107,7 +112,7 @@ export class PowerViewStrategy extends ReactiveElement {
       }
     });
 
-    if (hasPowerDevices) {
+    if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption,
         hass,
@@ -125,7 +130,7 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWaterDevices) {
+    if (isEnergyCardVisible("now", "water-flow-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption_water,
         hass,

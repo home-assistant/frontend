@@ -69,27 +69,31 @@ class OnboardingRestoreBackupRestore extends LitElement {
         )}
       </h1>
 
-      ${this.backup.homeassistant_included
-        ? html`<div class="description">
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.confirm_restore_full_backup_text"
-            )}
-          </div>`
-        : html`
-            <ha-alert alert-type="error">
+      ${
+        this.backup.homeassistant_included
+          ? html`<div class="description">
               ${this.localize(
-                "ui.panel.page-onboarding.restore.details.home_assistant_missing"
+                "ui.panel.page-onboarding.restore.confirm_restore_full_backup_text"
               )}
-            </ha-alert>
-          `}
-      ${this.error
-        ? html`<ha-alert
-            alert-type="error"
-            .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
-          >
-            ${this.error}
-          </ha-alert>`
-        : nothing}
+            </div>`
+          : html`
+              <ha-alert alert-type="error">
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.details.home_assistant_missing"
+                )}
+              </ha-alert>
+            `
+      }
+      ${
+        this.error
+          ? html`<ha-alert
+              alert-type="error"
+              .title=${this.localize("ui.panel.page-onboarding.restore.failed")}
+            >
+              ${this.error}
+            </ha-alert>`
+          : nothing
+      }
 
       <ha-row-item>
         <span slot="headline">
@@ -99,102 +103,118 @@ class OnboardingRestoreBackupRestore extends LitElement {
         </span>
         <span slot="supporting-text">${formattedDate}</span>
       </ha-row-item>
-      ${onlyHomeAssistantBackup
-        ? html`<ha-row-item>
-            <span slot="headline">
+      ${
+        onlyHomeAssistantBackup
+          ? html`<ha-row-item>
+              <span slot="headline">
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.details.summary.content"
+                )}
+              </span>
+              <ha-backup-formfield-label
+                slot="supporting-text"
+                .version=${this.backup.homeassistant_version}
+                .label=${this.localize(
+                  `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
+                )}
+              ></ha-backup-formfield-label>
+            </ha-row-item>`
+          : nothing
+      }
+      ${
+        !onlyHomeAssistantBackup
+          ? html`<h2>
+              ${this.localize("ui.panel.page-onboarding.restore.select_type")}
+            </h2>`
+          : nothing
+      }
+      ${
+        this.backup.homeassistant_included &&
+        !this.supervisor &&
+        this.backup.addons.length > 0
+          ? html`<ha-alert class="supervisor-warning">
               ${this.localize(
-                "ui.panel.page-onboarding.restore.details.summary.content"
+                "ui.panel.page-onboarding.restore.details.apps_unsupported"
               )}
-            </span>
-            <ha-backup-formfield-label
-              slot="supporting-text"
-              .version=${this.backup.homeassistant_version}
-              .label=${this.localize(
-                `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
-              )}
-            ></ha-backup-formfield-label>
-          </ha-row-item>`
-        : nothing}
-      ${!onlyHomeAssistantBackup
-        ? html`<h2>
-            ${this.localize("ui.panel.page-onboarding.restore.select_type")}
-          </h2>`
-        : nothing}
-      ${this.backup.homeassistant_included &&
-      !this.supervisor &&
-      this.backup.addons.length > 0
-        ? html`<ha-alert class="supervisor-warning">
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.details.apps_unsupported"
-            )}
-            <ha-button
-              slot="action"
-              href="https://www.home-assistant.io/installation/#advanced-installation-methods"
-              target="_blank"
-              rel="noreferrer noopener"
-              size="small"
-            >
-              ${this.localize(
-                "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
-              )}</ha-button
-            >
-          </ha-alert>`
-        : nothing}
-      ${!onlyHomeAssistantBackup
-        ? html`<ha-backup-data-picker
-            translation-key-panel="page-onboarding.restore"
-            .localize=${this.localize}
-            .data=${this.backup}
-            .value=${this._selectedData}
-            @value-changed=${this._selectedBackupChanged}
-            .requiredItems=${["config"]}
-            .addonsDisabled=${!this.supervisor}
-          ></ha-backup-data-picker>`
-        : nothing}
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
-        : nothing}
-      ${backupProtected
-        ? html`<div class="encryption">
-            <h2>
-              ${this.localize(
-                "ui.panel.page-onboarding.restore.details.restore.encryption.label"
-              )}
-            </h2>
-            <span>
-              ${this.localize(
-                `ui.panel.page-onboarding.restore.details.restore.encryption.description${this.mode === "cloud" ? "_cloud" : ""}`
-              )}
-            </span>
-            <ha-input
-              .disabled=${this._loading}
-              @input=${this._encryptionKeyChanged}
-              .label=${this.localize(
-                "ui.panel.page-onboarding.restore.details.restore.encryption.input_label"
-              )}
-              .value=${this._encryptionKey}
-              @keydown=${this._keyDown}
-              .validationMessage=${this.localize(
-                "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
-              )}
-              .invalid=${this._encryptionKeyWrong}
-            ></ha-input>
-          </div>`
-        : nothing}
+              <ha-button
+                slot="action"
+                href="https://www.home-assistant.io/installation/#advanced-installation-methods"
+                target="_blank"
+                rel="noreferrer noopener"
+                size="s"
+              >
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
+                )}</ha-button
+              >
+            </ha-alert>`
+          : nothing
+      }
+      ${
+        !onlyHomeAssistantBackup
+          ? html`<ha-backup-data-picker
+              translation-key-panel="page-onboarding.restore"
+              .localize=${this.localize}
+              .data=${this.backup}
+              .value=${this._selectedData}
+              @value-changed=${this._selectedBackupChanged}
+              .requiredItems=${["config"]}
+              .addonsDisabled=${!this.supervisor}
+            ></ha-backup-data-picker>`
+          : nothing
+      }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+          : nothing
+      }
+      ${
+        backupProtected
+          ? html`<div class="encryption">
+              <h2>
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.details.restore.encryption.label"
+                )}
+              </h2>
+              <span>
+                ${this.localize(
+                  `ui.panel.page-onboarding.restore.details.restore.encryption.description${this.mode === "cloud" ? "_cloud" : ""}`
+                )}
+              </span>
+              <ha-input
+                .disabled=${this._loading}
+                @input=${this._encryptionKeyChanged}
+                .label=${this.localize(
+                  "ui.panel.page-onboarding.restore.details.restore.encryption.input_label"
+                )}
+                .value=${this._encryptionKey}
+                @keydown=${this._keyDown}
+                .validationMessage=${this.localize(
+                  "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
+                )}
+                .invalid=${this._encryptionKeyWrong}
+              ></ha-input>
+            </div>`
+          : nothing
+      }
 
       <div class="actions${this.mode === "cloud" ? " cloud" : ""}">
-        ${this.mode === "cloud"
-          ? html`<ha-button appearance="plain" @click=${this._signOut}>
-              ${this.localize(
-                "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
-              )}
-            </ha-button>`
-          : nothing}
+        ${
+          this.mode === "cloud"
+            ? html`<ha-button appearance="plain" @click=${this._signOut}>
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
+                )}
+              </ha-button>`
+            : nothing
+        }
         <ha-progress-button
           .progress=${this._loading}
-          .disabled=${this._loading ||
-          (backupProtected && this._encryptionKey === "") ||
-          !this.backup.homeassistant_included}
+          .disabled=${
+            this._loading ||
+            (backupProtected && this._encryptionKey === "") ||
+            !this.backup.homeassistant_included
+          }
           @click=${this._startRestore}
         >
           ${this.localize(

@@ -1,7 +1,8 @@
 import { consume, type ContextType } from "@lit/context";
+import { initialState } from "@lit/task";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { configContext, connectionContext, uiContext } from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
@@ -36,6 +37,30 @@ export class HaDomainIcon extends LitElement {
   @consume({ context: uiContext, subscribe: true })
   private _hassUi?: ContextType<typeof uiContext>;
 
+  private _iconTask = new AsyncValueTask(this, {
+    task: ([icon, connection, config, domain, deviceClass, domainState]) => {
+      if (icon || !connection || !config || !domain) {
+        return initialState;
+      }
+      return domainIcon(
+        connection.connection,
+        config.config,
+        domain,
+        deviceClass,
+        domainState
+      );
+    },
+    args: () =>
+      [
+        this.icon,
+        this._connection,
+        this._hassConfig,
+        this.domain,
+        this.deviceClass,
+        this.state,
+      ] as const,
+  });
+
   protected render() {
     if (this.icon) {
       return html`<ha-icon .icon=${this.icon}></ha-icon>`;
@@ -49,21 +74,12 @@ export class HaDomainIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = domainIcon(
-      this._connection.connection,
-      this._hassConfig.config,
-      this.domain,
-      this.deviceClass,
-      this.state
-    ).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
-      }
-
-      return this._renderFallback();
-    });
-
-    return html`${until(icon)}`;
+    if (!this._iconTask.resolved) {
+      return nothing;
+    }
+    return this._iconTask.value
+      ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`
+      : this._renderFallback();
   }
 
   private _renderFallback() {

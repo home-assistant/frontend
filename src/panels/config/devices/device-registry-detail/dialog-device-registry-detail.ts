@@ -13,12 +13,22 @@ import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
+interface DeviceFormState {
+  nameByUser: string;
+  areaId: string;
+  labels: string[];
+  disabledBy: DeviceRegistryEntry["disabled_by"];
+}
+
 @customElement("dialog-device-registry-detail")
-class DialogDeviceRegistryDetail extends LitElement {
+class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -47,7 +57,17 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._labels = this._params.device.labels || [];
     this._disabledBy = this._params.device.disabled_by;
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): DeviceFormState {
+    return {
+      nameByUser: this._nameByUser,
+      areaId: this._areaId,
+      labels: this._labels,
+      disabledBy: this._disabledBy,
+    };
   }
 
   public closeDialog(): void {
@@ -73,13 +93,15 @@ class DialogDeviceRegistryDetail extends LitElement {
           this.hass.localize,
           this.hass.states
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+              : ""
+          }
           <div class="form">
             <ha-input
               autofocus
@@ -92,7 +114,6 @@ class DialogDeviceRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></ha-input>
             <ha-area-picker
-              .hass=${this.hass}
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
@@ -122,21 +143,23 @@ class DialogDeviceRegistryDetail extends LitElement {
                   )}
                 </div>
                 <div class="secondary">
-                  ${this._disabledBy && this._disabledBy !== "user"
-                    ? this.hass.localize(
-                        "ui.dialogs.device-registry-detail.enabled_cause",
-                        {
-                          type: this.hass.localize(
-                            `ui.dialogs.device-registry-detail.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                          cause: this.hass.localize(
-                            `config_entry.disabled_by.${this._disabledBy}`
-                          ),
-                        }
-                      )
-                    : ""}
+                  ${
+                    this._disabledBy && this._disabledBy !== "user"
+                      ? this.hass.localize(
+                          "ui.dialogs.device-registry-detail.enabled_cause",
+                          {
+                            type: this.hass.localize(
+                              `ui.dialogs.device-registry-detail.type.${
+                                device.entry_type || "device"
+                              }`
+                            ),
+                            cause: this.hass.localize(
+                              `config_entry.disabled_by.${this._disabledBy}`
+                            ),
+                          }
+                        )
+                      : ""
+                  }
                   ${this.hass.localize(
                     "ui.dialogs.device-registry-detail.enabled_description"
                   )}
@@ -158,7 +181,7 @@ class DialogDeviceRegistryDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
           </ha-button>
@@ -170,18 +193,22 @@ class DialogDeviceRegistryDetail extends LitElement {
   private _nameChanged(ev: InputEvent): void {
     this._error = undefined;
     this._nameByUser = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _areaPicked(event: CustomEvent): void {
     this._areaId = event.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _labelsChanged(event: CustomEvent): void {
     this._labels = event.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _disabledByChanged(ev: Event): void {
     this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry(): Promise<void> {
@@ -193,6 +220,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         labels: this._labels || null,
         disabled_by: this._disabledBy || null,
       });
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =

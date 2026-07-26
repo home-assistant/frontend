@@ -27,9 +27,11 @@ import "../input/ha-input";
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button" compact>
     <span slot="headline">${item.primary}</span>
-    ${item.secondary
-      ? html`<span slot="supporting-text">${item.secondary}</span>`
-      : nothing}
+    ${
+      item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing
+    }
   </ha-combo-box-item>
 `;
 
@@ -61,9 +63,7 @@ export class HaEntityNamePicker extends LitElement {
   @property({ attribute: false }) public entityId?: string;
 
   @property({ attribute: false }) public value?:
-    | string
-    | EntityNameItem
-    | EntityNameItem[];
+    string | EntityNameItem | EntityNameItem[];
 
   @property() public label?: string;
 
@@ -117,7 +117,7 @@ export class HaEntityNamePicker extends LitElement {
         <div class="header">
           ${this.label ? html`<label>${this.label}</label>` : nothing}
           <ha-button-toggle-group
-            size="small"
+            size="s"
             .buttons=${modeButtons}
             .active=${this._mode}
             .disabled=${this.disabled}
@@ -125,18 +125,22 @@ export class HaEntityNamePicker extends LitElement {
           ></ha-button-toggle-group>
         </div>
         <div class="content">
-          ${this._mode === "custom"
-            ? this._renderTextInput()
-            : this._renderPicker()}
+          ${
+            this._mode === "custom"
+              ? this._renderTextInput()
+              : this._renderPicker()
+          }
         </div>
       </div>
-      ${this.helper
-        ? html`
-            <ha-input-helper-text .disabled=${this.disabled}>
-              ${this.helper}
-            </ha-input-helper-text>
-          `
-        : nothing}
+      ${
+        this.helper
+          ? html`
+              <ha-input-helper-text .disabled=${this.disabled}>
+                ${this.helper}
+              </ha-input-helper-text>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -210,20 +214,22 @@ export class HaEntityNamePicker extends LitElement {
                   `;
                 }
               )}
-              ${this.disabled
-                ? nothing
-                : html`
-                    <ha-assist-chip
-                      @click=${this._addItem}
-                      .disabled=${this.disabled}
-                      label=${this.hass.localize(
-                        "ui.components.entity.entity-name-picker.add"
-                      )}
-                      class="add"
-                    >
-                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                    </ha-assist-chip>
-                  `}
+              ${
+                this.disabled
+                  ? nothing
+                  : html`
+                      <ha-assist-chip
+                        @click=${this._addItem}
+                        .disabled=${this.disabled}
+                        label=${this.hass.localize(
+                          "ui.components.entity.entity-name-picker.add"
+                        )}
+                        class="add"
+                      >
+                        <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                      </ha-assist-chip>
+                    `
+              }
             </ha-chip-set>
           </ha-sortable>
         </div>

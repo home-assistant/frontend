@@ -17,6 +17,7 @@ import {
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -74,7 +75,10 @@ declare global {
 }
 
 @customElement("dialog-data-entry-flow")
-class DataEntryFlowDialog extends LitElement {
+class DataEntryFlowDialog extends DirtyStateProviderMixin<
+  Record<string, unknown>,
+  "form"
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DataEntryFlowDialogParams;
@@ -99,6 +103,8 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _createEntryHasPendingUpdates = false;
 
+  @state() private _flowHasProgressed = false;
+
   private _formStepRef = createRef<FormStepElement>();
 
   private _abortStepRef = createRef<AbortStepElement>();
@@ -108,6 +114,8 @@ class DataEntryFlowDialog extends LitElement {
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
+    this._initDirtyTracking({ type: "deep" });
+    this._flowHasProgressed = Boolean(params.continueFlowId);
     this._params = params;
     this._instance = instance++;
     this._open = true;
@@ -175,7 +183,7 @@ class DataEntryFlowDialog extends LitElement {
       return;
     }
 
-    this._processStep(step);
+    this._processStep(step, this._flowHasProgressed);
     this._loading = undefined;
   }
 
@@ -213,6 +221,7 @@ class DataEntryFlowDialog extends LitElement {
 
     this._loading = undefined;
     this._step = undefined;
+    this._flowHasProgressed = false;
     this._params = undefined;
     this._handler = undefined;
     if (this._unsubDataEntryFlowProgress) {
@@ -334,7 +343,7 @@ class DataEntryFlowDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this._preventScrimClose}
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
       >
@@ -353,120 +362,147 @@ class DataEntryFlowDialog extends LitElement {
           ${dialogTitle}
         </div>
 
-        ${dialogSubtitle
-          ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
-          : nothing}
-        ${showDocumentationLink && !this._loading && this._step
-          ? html`
-              <a
-                slot="headerActionItems"
-                class="help"
-                href=${this._params.manifest!.is_built_in
-                  ? documentationUrl(
-                      this.hass,
-                      `/integrations/${this._params.manifest!.domain}`
-                    )
-                  : this._params.manifest!.documentation}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircleOutline}
-                >
-                </ha-icon-button
-              ></a>
-            `
-          : nothing}
-        <div>
-          ${this._loading || this._step === null
+        ${
+          dialogSubtitle
+            ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
+            : nothing
+        }
+        ${
+          showDocumentationLink && !this._loading && this._step
             ? html`
-                <step-flow-loading
-                  .flowConfig=${this._params.flowConfig}
-                  .hass=${this.hass}
-                  .loadingReason=${this._loading!}
-                  .handler=${this._handler}
-                  .step=${this._step}
-                ></step-flow-loading>
+                <a
+                  slot="headerActionItems"
+                  class="help"
+                  href=${
+                    this._params.manifest!.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this._params.manifest!.domain}`
+                        )
+                      : this._params.manifest!.documentation
+                  }
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.help")}
+                    .path=${mdiHelpCircleOutline}
+                  >
+                  </ha-icon-button
+                ></a>
               `
-            : this._step === undefined
-              ? // When we are going to next step, we render 1 round of empty
-                // to reset the element.
-                nothing
-              : html`
-                  ${this._step.type === "form"
-                    ? html`
-                        <step-flow-form
-                          ${ref(this._formStepRef)}
-                          autofocus
-                          narrow
-                          .flowConfig=${this._params.flowConfig}
-                          .step=${this._step}
-                          .hass=${this.hass}
-                          @flow-step-footer-state-changed=${this
-                            ._handleFooterStateChanged}
-                        ></step-flow-form>
-                      `
-                    : this._step.type === "external"
-                      ? html`
-                          <step-flow-external
-                            .flowConfig=${this._params.flowConfig}
-                            .step=${this._step}
-                            .hass=${this.hass}
-                          ></step-flow-external>
-                        `
-                      : this._step.type === "abort"
+            : nothing
+        }
+        <div>
+          ${
+            this._loading || this._step === null
+              ? html`
+                  <step-flow-loading
+                    .flowConfig=${this._params.flowConfig}
+                    .hass=${this.hass}
+                    .loadingReason=${this._loading!}
+                    .handler=${this._handler}
+                    .step=${this._step}
+                  ></step-flow-loading>
+                `
+              : this._step === undefined
+                ? // When we are going to next step, we render 1 round of empty
+                  // to reset the element.
+                  nothing
+                : html`
+                    ${
+                      this._step.type === "form"
                         ? html`
-                            <step-flow-abort
-                              ${ref(this._abortStepRef)}
-                              .params=${this._params}
+                            <step-flow-form
+                              ${ref(this._formStepRef)}
+                              autofocus
+                              narrow
+                              .flowConfig=${this._params.flowConfig}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .handler=${this._step.handler}
-                              .domain=${this._params.domain ??
-                              this._step.handler}
-                            ></step-flow-abort>
+                              .domain=${this._params.domain ?? this._step.handler}
+                              @flow-step-footer-state-changed=${
+                                this._handleFooterStateChanged
+                              }
+                            ></step-flow-form>
                           `
-                        : this._step.type === "progress"
+                        : this._step.type === "external"
                           ? html`
-                              <step-flow-progress
+                              <step-flow-external
                                 .flowConfig=${this._params.flowConfig}
                                 .step=${this._step}
                                 .hass=${this.hass}
-                                .progress=${this._progress}
-                              ></step-flow-progress>
+                              ></step-flow-external>
                             `
-                          : this._step.type === "menu"
+                          : this._step.type === "abort"
                             ? html`
-                                <step-flow-menu
-                                  .flowConfig=${this._params.flowConfig}
+                                <step-flow-abort
+                                  ${ref(this._abortStepRef)}
+                                  .params=${this._params}
                                   .step=${this._step}
                                   .hass=${this.hass}
-                                ></step-flow-menu>
+                                  .handler=${this._step.handler}
+                                  .domain=${
+                                    this._params.domain ?? this._step.handler
+                                  }
+                                ></step-flow-abort>
                               `
-                            : html`
-                                <step-flow-create-entry
-                                  ${ref(this._createEntryStepRef)}
-                                  .flowConfig=${this._params.flowConfig}
-                                  .step=${this._step}
-                                  .hass=${this.hass}
-                                  .navigateToResult=${this._params
-                                    .navigateToResult ?? false}
-                                  @flow-step-footer-state-changed=${this
-                                    ._handleFooterStateChanged}
-                                  .devices=${this._devices(
-                                    this._params.flowConfig.showDevices,
-                                    Object.values(this.hass.devices),
-                                    this._step.result?.entry_id,
-                                    this._params.carryOverDevices
-                                  )}
-                                ></step-flow-create-entry>
-                              `}
-                `}
+                            : this._step.type === "progress"
+                              ? html`
+                                  <step-flow-progress
+                                    .flowConfig=${this._params.flowConfig}
+                                    .step=${this._step}
+                                    .hass=${this.hass}
+                                    .progress=${this._progress}
+                                  ></step-flow-progress>
+                                `
+                              : this._step.type === "menu"
+                                ? html`
+                                    <step-flow-menu
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                    ></step-flow-menu>
+                                  `
+                                : html`
+                                    <step-flow-create-entry
+                                      ${ref(this._createEntryStepRef)}
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                      .navigateToResult=${
+                                        this._params.navigateToResult ?? false
+                                      }
+                                      @flow-step-footer-state-changed=${
+                                        this._handleFooterStateChanged
+                                      }
+                                      .devices=${this._devices(
+                                        this._params.flowConfig.showDevices,
+                                        Object.values(this.hass.devices),
+                                        this._step.result?.entry_id,
+                                        this._params.carryOverDevices
+                                      )}
+                                    ></step-flow-create-entry>
+                                  `
+                    }
+                  `
+          }
         </div>
         ${this._renderFooter()}
       </ha-dialog>
     `;
+  }
+
+  private get _preventScrimClose(): boolean {
+    return (
+      this.isDirtyState ||
+      this._flowHasProgressed ||
+      this._loading !== undefined ||
+      this._formStepLoading ||
+      this._createEntryHasPendingUpdates ||
+      this._step?.type === "external" ||
+      this._step?.type === "progress"
+    );
   }
 
   private _renderFooter() {
@@ -573,13 +609,15 @@ class DataEntryFlowDialog extends LitElement {
   }
 
   private async _processStep(
-    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
+    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>,
+    flowHasProgressed = true
   ): Promise<void> {
     if (step === undefined) {
       this.closeDialog();
       return;
     }
 
+    this._flowHasProgressed ||= flowHasProgressed;
     const delayedLoading = setTimeout(() => {
       // only show loading for slow steps to avoid flickering
       this._loading = "loading_step";
@@ -600,11 +638,11 @@ class DataEntryFlowDialog extends LitElement {
       clearTimeout(delayedLoading);
       this._loading = undefined;
     }
-
     this._step = undefined;
     this._formStepLoading = false;
     this._createEntryHasPendingUpdates = false;
     await this.updateComplete;
+    this._initDirtyTracking({ type: "deep" });
     this._step = _step;
     if (
       (_step.type === "create_entry" || _step.type === "abort") &&

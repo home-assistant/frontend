@@ -30,6 +30,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -230,15 +231,38 @@ export class HaCardConditionEditor extends LitElement {
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
-          <ha-svg-icon
+          <div
+            id="condition-icon"
+            class="icon-badge-wrapper"
             slot="leading-icon"
-            class="condition-icon"
-            .path=${ICON_CONDITION[condition.condition]}
-          ></ha-svg-icon>
+          >
+            <ha-svg-icon
+              .path=${ICON_CONDITION[condition.condition]}
+            ></ha-svg-icon>
+            ${
+              hideLiveTest
+                ? nothing
+                : html`<ha-automation-row-live-test
+                    .state=${this._liveTestResult.state}
+                    .label=${this.hass.localize(
+                      `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
+                    )}
+                  ></ha-automation-row-live-test>`
+            }
+          </div>
+          ${
+            !hideLiveTest && this._liveTestResult.message
+              ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+                  >${this._liveTestResult.message}</ha-tooltip
+                >`
+              : nothing
+          }
           <h3 slot="header">
-            ${this.hass.localize(
-              `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
-            ) || condition.condition}
+            ${
+              this.hass.localize(
+                `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
+              ) || condition.condition
+            }
           </h3>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}
@@ -247,26 +271,16 @@ export class HaCardConditionEditor extends LitElement {
             class="event-chip"
             aria-live="polite"
           >
-            ${this._testingResult
-              ? this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_pass"
-                )
-              : this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_error"
-                )}
+            ${
+              this._testingResult
+                ? this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.testing_pass"
+                  )
+                : this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.testing_error"
+                  )
+            }
           </ha-automation-row-event-chip>
-          ${hideLiveTest
-            ? nothing
-            : html`
-                <ha-automation-row-live-test
-                  slot="icons"
-                  .state=${this._liveTestResult.state}
-                  .label=${this.hass.localize(
-                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
-                  )}
-                  .message=${this._liveTestResult.message}
-                ></ha-automation-row-live-test>
-              `}
           <ha-dropdown
             slot="icons"
             @wa-select=${this._handleAction}
@@ -280,15 +294,17 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${isNoEntityCondition(condition.condition, this._noEntity) ||
-            containsNoEntityCondition(condition, this._noEntity)
-              ? nothing
-              : html`<ha-dropdown-item value="test">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.condition-editor.test"
-                  )}
-                  <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
-                </ha-dropdown-item>`}
+            ${
+              isNoEntityCondition(condition.condition, this._noEntity) ||
+              containsNoEntityCondition(condition, this._noEntity)
+                ? nothing
+                : html`<ha-dropdown-item value="test">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.editor.condition-editor.test"
+                    )}
+                    <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+                  </ha-dropdown-item>`
+            }
 
             <ha-dropdown-item value="duplicate">
               ${this.hass.localize(
@@ -327,47 +343,56 @@ export class HaCardConditionEditor extends LitElement {
               <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             </ha-dropdown-item>
           </ha-dropdown>
-          ${!this._uiAvailable
-            ? html`
-                <ha-alert
-                  alert-type="warning"
-                  .title=${this.hass.localize(
-                    "ui.errors.config.editor_not_supported"
-                  )}
-                >
-                  ${this._uiWarnings!.length > 0 &&
-                  this._uiWarnings![0] !== undefined
-                    ? html`
-                        <ul>
-                          ${this._uiWarnings!.map(
-                            (warning) => html`<li>${warning}</li>`
-                          )}
-                        </ul>
-                      `
-                    : nothing}
-                  ${this.hass.localize(
-                    "ui.errors.config.edit_in_yaml_supported"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
-          <div class="content">
-            ${this._yamlMode
+          ${
+            !this._uiAvailable
               ? html`
-                  <ha-yaml-editor
-                    .defaultValue=${this.condition}
-                    @value-changed=${this._onYamlChange}
-                  ></ha-yaml-editor>
-                `
-              : html`
-                  ${dynamicElement(
-                    getConditionClassName(condition.condition, this._noEntity),
-                    {
-                      hass: this.hass,
-                      condition: condition,
+                  <ha-alert
+                    alert-type="warning"
+                    .title=${this.hass.localize(
+                      "ui.errors.config.editor_not_supported"
+                    )}
+                  >
+                    ${
+                      this._uiWarnings!.length > 0 &&
+                      this._uiWarnings![0] !== undefined
+                        ? html`
+                            <ul>
+                              ${this._uiWarnings!.map(
+                                (warning) => html`<li>${warning}</li>`
+                              )}
+                            </ul>
+                          `
+                        : nothing
                     }
-                  )}
-                `}
+                    ${this.hass.localize(
+                      "ui.errors.config.edit_in_yaml_supported"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
+          <div class="content">
+            ${
+              this._yamlMode
+                ? html`
+                    <ha-yaml-editor
+                      .defaultValue=${this.condition}
+                      @value-changed=${this._onYamlChange}
+                    ></ha-yaml-editor>
+                  `
+                : html`
+                    ${dynamicElement(
+                      getConditionClassName(
+                        condition.condition,
+                        this._noEntity
+                      ),
+                      {
+                        hass: this.hass,
+                        condition: condition,
+                      }
+                    )}
+                  `
+            }
           </div>
         </ha-expansion-panel>
       </div>
@@ -479,18 +504,11 @@ export class HaCardConditionEditor extends LitElement {
         --expansion-panel-summary-padding: 0 0 0 8px;
         --expansion-panel-content-padding: 0;
       }
-      .condition-icon {
-        display: none;
-      }
-      @media (min-width: 870px) {
-        .condition-icon {
-          display: inline-block;
-          color: var(--secondary-text-color);
-          opacity: 0.9;
-          margin-right: 8px;
-          margin-inline-end: 8px;
-          margin-inline-start: initial;
-        }
+      .icon-badge-wrapper {
+        display: inline-flex;
+        position: relative;
+        color: var(--secondary-text-color);
+        opacity: 0.9;
       }
       h3 {
         margin: 0;

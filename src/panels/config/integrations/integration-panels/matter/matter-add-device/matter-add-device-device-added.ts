@@ -36,6 +36,8 @@ class MatterAddDeviceDeviceAdded extends LitElement {
 
   @property({ attribute: false }) public mainEntity?: ExtEntityRegistryEntry;
 
+  @property({ attribute: false }) public proposedName?: string;
+
   @state() private _deviceName = "";
 
   @state() private _area: string | undefined;
@@ -49,8 +51,18 @@ class MatterAddDeviceDeviceAdded extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     if (!this._initialized && this.device) {
       this._initialized = true;
-      this._deviceName = computeDeviceName(this.device) ?? "";
+      this._deviceName =
+        this.proposedName || (computeDeviceName(this.device) ?? "");
       this._area = this.device.area_id ?? undefined;
+    } else if (
+      changedProps.has("proposedName") &&
+      this.proposedName &&
+      this.device &&
+      this._deviceName === (computeDeviceName(this.device) ?? "")
+    ) {
+      // proposedName arrived after we initialized, and the user hasn't
+      // changed the name yet — adopt it
+      this._deviceName = this.proposedName;
     }
     if (
       !this._deviceClassInitialized &&
@@ -158,7 +170,9 @@ class MatterAddDeviceDeviceAdded extends LitElement {
               referrerpolicy="no-referrer"
             />
             <div class="device-name">
-              <span>${computeDeviceName(this.device)}</span>
+              <span
+                >${this.proposedName || computeDeviceName(this.device)}</span
+              >
               <span class="secondary">Matter</span>
             </div>
           </div>
@@ -170,56 +184,62 @@ class MatterAddDeviceDeviceAdded extends LitElement {
             @change=${this._deviceNameChanged}
           ></ha-input>
           <ha-area-picker
-            .hass=${this.hass}
             .value=${this._area}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>
-          ${deviceClassOptions && domain
-            ? html`
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.device_class"
-                  )}
-                  .value=${this._deviceClass
-                    ? this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
-                      )
-                    : undefined}
-                  clearable
-                  @selected=${this._deviceClassChanged}
-                >
-                  ${this._deviceClassesSorted(
-                    domain,
-                    deviceClassOptions[0]
-                  ).map(
-                    (entry) => html`
-                      <ha-dropdown-item
-                        .value=${entry.deviceClass}
-                        .selected=${entry.deviceClass === this._deviceClass}
-                      >
-                        ${entry.label}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                  ${deviceClassOptions[0].length && deviceClassOptions[1].length
-                    ? html`<wa-divider></wa-divider>`
-                    : nothing}
-                  ${this._deviceClassesSorted(
-                    domain,
-                    deviceClassOptions[1]
-                  ).map(
-                    (entry) => html`
-                      <ha-dropdown-item
-                        .value=${entry.deviceClass}
-                        .selected=${entry.deviceClass === this._deviceClass}
-                      >
-                        ${entry.label}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                </ha-select>
-              `
-            : nothing}
+          ${
+            deviceClassOptions && domain
+              ? html`
+                  <ha-select
+                    .label=${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.device_class"
+                    )}
+                    .value=${
+                      this._deviceClass
+                        ? this.hass.localize(
+                            `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
+                          )
+                        : undefined
+                    }
+                    clearable
+                    @selected=${this._deviceClassChanged}
+                  >
+                    ${this._deviceClassesSorted(
+                      domain,
+                      deviceClassOptions[0]
+                    ).map(
+                      (entry) => html`
+                        <ha-dropdown-item
+                          .value=${entry.deviceClass}
+                          .selected=${entry.deviceClass === this._deviceClass}
+                        >
+                          ${entry.label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                    ${
+                      deviceClassOptions[0].length &&
+                      deviceClassOptions[1].length
+                        ? html`<wa-divider></wa-divider>`
+                        : nothing
+                    }
+                    ${this._deviceClassesSorted(
+                      domain,
+                      deviceClassOptions[1]
+                    ).map(
+                      (entry) => html`
+                        <ha-dropdown-item
+                          .value=${entry.deviceClass}
+                          .selected=${entry.deviceClass === this._deviceClass}
+                        >
+                          ${entry.label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                  </ha-select>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;

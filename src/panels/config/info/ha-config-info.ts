@@ -13,12 +13,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
@@ -142,24 +140,28 @@ class HaConfigInfo extends LitElement {
                 <span class="version-label">Core</span>
                 <span class="version">${hass.connection.haVersion}</span>
               </li>
-              ${this._hassioInfo
-                ? html`
-                    <li>
-                      <span class="version-label">Supervisor</span>
-                      <span class="version"
-                        >${this._hassioInfo.supervisor}</span
-                      >
-                    </li>
-                  `
-                : nothing}
-              ${this._osInfo
-                ? html`
-                    <li>
-                      <span class="version-label">Operating System</span>
-                      <span class="version">${this._osInfo.version}</span>
-                    </li>
-                  `
-                : nothing}
+              ${
+                this._hassioInfo
+                  ? html`
+                      <li>
+                        <span class="version-label">Supervisor</span>
+                        <span class="version"
+                          >${this._hassioInfo.supervisor}</span
+                        >
+                      </li>
+                    `
+                  : nothing
+              }
+              ${
+                this._osInfo
+                  ? html`
+                      <li>
+                        <span class="version-label">Operating System</span>
+                        <span class="version">${this._osInfo.version}</span>
+                      </li>
+                    `
+                  : nothing
+              }
               <li>
                 <span class="version-label">
                   ${this.hass.localize(
@@ -170,20 +172,22 @@ class HaConfigInfo extends LitElement {
                   ${JS_VERSION}${JS_TYPE !== "modern" ? ` · ${JS_TYPE}` : ""}
                 </span>
               </li>
-              ${this.hass.auth.external?.config.appVersion
-                ? html`
-                    <li>
-                      <span class="version-label"
-                        >${this.hass.localize(
-                          "ui.panel.config.info.external_app_version"
-                        )}</span
-                      >
-                      <span class="version"
-                        >${this.hass.auth.external?.config.appVersion}</span
-                      >
-                    </li>
-                  `
-                : nothing}
+              ${
+                this.hass.auth.external?.config.appVersion
+                  ? html`
+                      <li>
+                        <span class="version-label"
+                          >${this.hass.localize(
+                            "ui.panel.config.info.external_app_version"
+                          )}</span
+                        >
+                        <span class="version"
+                          >${this.hass.auth.external?.config.appVersion}</span
+                        >
+                      </li>
+                    `
+                  : nothing
+              }
             </ul>
           </ha-card>
           <ha-card outlined class="ohf ${isDark ? "dark" : ""}">
@@ -200,8 +204,8 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <ha-md-list>
-              <ha-md-list-item type="button" @click=${this._showShortcuts}>
+            <ha-list-base>
+              <ha-list-item-button @click=${this._showShortcuts}>
                 <div
                   slot="start"
                   class="icon-background"
@@ -209,15 +213,14 @@ class HaConfigInfo extends LitElement {
                 >
                   <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
                 </div>
-                <span
+                <span slot="headline"
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
-              </ha-md-list-item>
+              </ha-list-item-button>
 
               ${PAGES.map(
                 (page) => html`
-                  <ha-md-list-item
-                    type="link"
+                  <ha-list-item-button
                     .href=${documentationUrl(this.hass, page.path)}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -225,35 +228,42 @@ class HaConfigInfo extends LitElement {
                     <div
                       slot="start"
                       class="icon-background"
-                      .style="background-color: ${page.iconColor}"
+                      style=${`background-color: ${page.iconColor};`}
                     >
                       <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
                     </div>
-                    <span>
+                    <span slot="headline">
                       ${this.hass.localize(
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
                     <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                  </ha-md-list-item>
+                  </ha-list-item-button>
                 `
               )}
-            </ha-md-list>
-            ${customUiList.length
-              ? html`
-                  <div class="custom-ui">
-                    ${this.hass.localize("ui.panel.config.info.custom_uis")}
-                    ${customUiList.map(
-                      (item) => html`
-                        <div>
-                          <a href=${item.url} target="_blank"> ${item.name}</a>:
-                          ${item.version}
-                        </div>
-                      `
-                    )}
-                  </div>
-                `
-              : nothing}
+            </ha-list-base>
+            ${
+              customUiList.length
+                ? html`
+                    <div class="custom-ui">
+                      ${this.hass.localize("ui.panel.config.info.custom_uis")}
+                      ${customUiList.map(
+                        (item) => html`
+                          <div>
+                            <a
+                              href=${item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              ${item.name}</a
+                            >: ${item.version}
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>
@@ -391,12 +401,15 @@ class HaConfigInfo extends LitElement {
         .icon-background ha-svg-icon {
           height: 24px;
           width: 24px;
-          display: block;
-          padding: 8px;
           color: #fff;
         }
 
         .icon-background {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
           border-radius: var(--ha-border-radius-circle);
         }
 

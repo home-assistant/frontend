@@ -96,6 +96,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
     entities: string[],
     entitiesFallback: string[]
   ) => LovelaceCardConfig;
+  getDefaultConfig?: () => Partial<LovelaceCardConfig>;
   getConfigElement?: () => LovelaceCardEditor;
   getConfigForm?: () => LovelaceConfigForm;
 }
@@ -106,6 +107,7 @@ export interface LovelaceBadgeConstructor extends Constructor<LovelaceBadge> {
     entities: string[],
     entitiesFallback: string[]
   ) => LovelaceBadgeConfig;
+  getDefaultConfig?: () => Partial<LovelaceBadgeConfig>;
   getConfigElement?: () => LovelaceBadgeEditor;
   getConfigForm?: () => LovelaceConfigForm;
 }

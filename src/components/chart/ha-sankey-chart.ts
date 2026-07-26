@@ -101,18 +101,22 @@ export class HaSankeyChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
+    // Keep numbers and units left-to-right, even in RTL locales.
+    const formattedValue = html`<div style="direction:ltr; display: inline;">
+      ${value}
+    </div>`;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
       return html`<ha-chart-tooltip-marker
           .color=${String(params.color ?? "")}
         ></ha-chart-tooltip-marker>
-        ${node?.label ?? data.id}<br />${value}`;
+        ${node?.label ?? data.id}<br />${formattedValue}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
       return html`${source?.label ?? data.source} →
-        ${target?.label ?? data.target}<br />${value}`;
+        ${target?.label ?? data.target}<br />${formattedValue}`;
     }
     return null;
   };

@@ -46,8 +46,9 @@ class ZWaveJSProvisioned extends LitElement {
             ),
           },
         ]}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._getData(this._provisioningEntries, this._nodeIdToDevice)}
       >

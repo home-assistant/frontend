@@ -1,4 +1,3 @@
-/* global process */
 // Tasks to generate entry HTML
 
 import {
@@ -226,6 +225,16 @@ gulp.task(
   )
 );
 
+gulp.task(
+  "gen-pages-demo-prod-e2e",
+  genPagesProdTask(
+    DEMO_PAGE_ENTRIES,
+    paths.demo_dir,
+    paths.demo_output_root,
+    paths.demo_output_latest
+  )
+);
+
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
 gulp.task(
@@ -266,5 +275,26 @@ gulp.task(
     paths.landingPage_output_root,
     paths.landingPage_output_latest,
     paths.landingPage_output_es5
+  )
+);
+
+const E2E_TEST_APP_PAGE_ENTRIES = { "index.html": ["main"] };
+
+gulp.task(
+  "gen-pages-e2e-test-app-dev",
+  genPagesDevTask(
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root
+  )
+);
+
+gulp.task(
+  "gen-pages-e2e-test-app-prod",
+  genPagesProdTask(
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root,
+    paths.e2eTestApp_output_latest
   )
 );

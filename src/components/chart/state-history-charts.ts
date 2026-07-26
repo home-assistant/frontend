@@ -149,32 +149,36 @@ export class StateHistoryCharts extends LitElement {
     this._chartCount = combinedItems.length;
 
     return html`
-      ${this.virtualize
-        ? html`<div
-            class="container ha-scrollbar"
-            @scroll=${this._saveScrollPos}
-          >
-            <lit-virtualizer
-              scroller
-              class="ha-scrollbar"
-              .items=${combinedItems}
-              .renderItem=${this._renderHistoryItem}
+      ${
+        this.virtualize
+          ? html`<div
+              class="container ha-scrollbar"
+              @scroll=${this._saveScrollPos}
             >
-            </lit-virtualizer>
-          </div>`
-        : html`${combinedItems.map((item, index) =>
-            this._renderHistoryItem(item, index)
-          )}`}
-      ${this.syncCharts && this._hasZoomedCharts
-        ? html`<ha-button
-            size="large"
-            class="reset-button"
-            @click=${this._handleGlobalZoomReset}
-          >
-            <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
-            ${this.hass.localize("ui.components.history_charts.zoom_reset")}
-          </ha-button>`
-        : nothing}
+              <lit-virtualizer
+                scroller
+                class="ha-scrollbar"
+                .items=${combinedItems}
+                .renderItem=${this._renderHistoryItem}
+              >
+              </lit-virtualizer>
+            </div>`
+          : html`${combinedItems.map((item, index) =>
+              this._renderHistoryItem(item, index)
+            )}`
+      }
+      ${
+        this.syncCharts && this._hasZoomedCharts
+          ? html`<ha-button
+              size="l"
+              class="reset-button"
+              @click=${this._handleGlobalZoomReset}
+            >
+              <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
+              ${this.hass.localize("ui.components.history_charts.zoom_reset")}
+            </ha-button>`
+          : nothing
+      }
     `;
   }
 

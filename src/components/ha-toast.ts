@@ -14,10 +14,7 @@ import { popoverSupported } from "../common/feature-detect/support-popover";
 import { nextRender } from "../common/util/render-status";
 
 export type ToastCloseReason =
-  | "dismiss"
-  | "action"
-  | "timeout"
-  | "programmatic";
+  "dismiss" | "action" | "timeout" | "programmatic";
 
 export interface ToastClosedEventDetail {
   reason: ToastCloseReason;
@@ -26,6 +23,8 @@ export interface ToastClosedEventDetail {
 @customElement("ha-toast")
 export class HaToast extends LitElement {
   @property({ attribute: "label-text" }) public labelText = "";
+
+  @property({ attribute: "announce-text" }) public announceText?: string;
 
   @property({ type: Number, attribute: "timeout-ms" }) public timeoutMs = 4000;
 
@@ -193,8 +192,6 @@ export class HaToast extends LitElement {
         style=${styleMap({
           "--ha-toast-bottom-offset": `${this.bottomOffset}px`,
         })}
-        role="status"
-        aria-live="polite"
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
       >
         <span class="message">${this.labelText}</span>
@@ -203,6 +200,14 @@ export class HaToast extends LitElement {
           <slot name="dismiss"></slot>
         </div>
       </div>
+      <span
+        class="assistive-message"
+        role="status"
+        aria-live=${this._active ? "polite" : "off"}
+        aria-atomic="true"
+      >
+        ${this.announceText ?? this.labelText}
+      </span>
     `;
   }
 
@@ -255,6 +260,18 @@ export class HaToast extends LitElement {
     .message {
       flex: 1;
       min-width: 0;
+    }
+
+    .assistive-message {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .actions {

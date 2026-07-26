@@ -14,12 +14,20 @@ import "../../../components/input/ha-input";
 import { internationalizationContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
 
+interface LabelFormState {
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+}
+
 @customElement("dialog-label-detail")
-class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
-  LitElement
+class DialogLabelDetail extends DirtyStateProviderMixin<LabelFormState>()(
+  DialogMixin<LabelDetailDialogParams>(LitElement)
 ) {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -50,6 +58,16 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
       this._color = "";
       this._description = "";
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): LabelFormState {
+    return {
+      name: this._name,
+      icon: this._icon,
+      color: this._color,
+      description: this._description,
+    };
   }
 
   protected render() {
@@ -60,15 +78,19 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
     return html`
       <ha-dialog
         open
-        header-title=${this.params.entry
-          ? this.params.entry.name || this.params.entry.label_id
-          : this._i18n.localize("ui.dialogs.label-detail.new_label")}
-        prevent-scrim-close
+        header-title=${
+          this.params.entry
+            ? this.params.entry.name || this.params.entry.label_id
+            : this._i18n.localize("ui.dialogs.label-detail.new_label")
+        }
+        .preventScrimClose=${this.isDirtyState}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
             <ha-input
               autofocus
@@ -105,35 +127,43 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
         </div>
 
         <ha-dialog-footer slot="footer">
-          ${this.params.entry && this.params.removeEntry
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._deleteEntry}
-                  .disabled=${this._submitting}
-                >
-                  ${this._i18n.localize("ui.common.delete")}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  appearance="plain"
-                  slot="secondaryAction"
-                  @click=${this.closeDialog}
-                >
-                  ${this._i18n.localize("ui.common.cancel")}
-                </ha-button>
-              `}
+          ${
+            this.params.entry && this.params.removeEntry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${this._submitting}
+                  >
+                    ${this._i18n.localize("ui.common.delete")}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    appearance="plain"
+                    slot="secondaryAction"
+                    @click=${this.closeDialog}
+                  >
+                    ${this._i18n.localize("ui.common.cancel")}
+                  </ha-button>
+                `
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting || !this._name}
+            .disabled=${
+              this._submitting ||
+              !this._name ||
+              (!!this.params.entry && !this.isDirtyState)
+            }
           >
-            ${this.params.entry
-              ? this._i18n.localize("ui.common.update")
-              : this._i18n.localize("ui.common.create")}
+            ${
+              this.params.entry
+                ? this._i18n.localize("ui.common.update")
+                : this._i18n.localize("ui.common.create")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -146,6 +176,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -154,6 +185,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
 
     this._error = undefined;
     this[`_${configValue}`] = ev.detail.value || "";
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry() {
@@ -170,6 +202,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
       } else {
         await this.params!.createEntry!(values);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";

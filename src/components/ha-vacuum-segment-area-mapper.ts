@@ -108,7 +108,6 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
         <span class="segment-name">${segment.name}</span>
         <ha-svg-icon class="arrow" .path=${mdiArrowRightThin}></ha-svg-icon>
         <ha-area-picker
-          .hass=${this.hass}
           .value=${mappedAreas}
           .label=${this.hass.localize(
             "ui.dialogs.vacuum_segment_mapping.area_label"

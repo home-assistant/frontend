@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -9,6 +9,10 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import {
+  unitPosition,
+  valueFromParts,
+} from "../../../common/entity/value_parts";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -119,15 +123,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const customUnit = this._config.unit;
     const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
     const stateParts = this.hass.formatEntityStateToParts(stateObj);
-
-    const indexUnit = stateParts.findIndex((part) => part.type === "unit");
-    const indexValue = stateParts.reduceRight(
-      (acc, part, i) => (acc === -1 && part.type === "value" ? i : acc),
-      -1
-    );
-    const reversedOrder = indexUnit !== -1 && indexUnit < indexValue;
+    // The unit is styled separately, so place it before or after the value
+    // following the locale's native order. A custom unit always trails.
+    const unitFirst = !customUnit && unitPosition(stateParts) === "before";
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
@@ -172,34 +173,25 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          <span
-            class=${classMap({
-              value: true,
-              "first-part": !reversedOrder,
-            })}
-            >${"attribute" in this._config
-              ? stateObj.attributes[this._config.attribute!] !== undefined
-                ? html`<ha-attribute-value
-                    hide-unit
-                    .hass=${this.hass}
-                    .stateObj=${stateObj}
-                    .attribute=${this._config.attribute!}
-                  >
-                  </ha-attribute-value>`
-                : this.hass.localize("state.default.unknown")
-              : stateParts
-                  .filter((part) => part.type === "value")
-                  .map((part) => part.value)
-                  .join("")}</span
-          >${unit
-            ? html`<span
-                class=${classMap({
-                  measurement: true,
-                  "first-part": reversedOrder,
-                })}
-                >${unit}</span
-              >`
-            : nothing}
+          ${
+            "attribute" in this._config
+              ? this._renderValueWithUnit(
+                  stateObj.attributes[this._config.attribute!] !== undefined
+                    ? html`<ha-attribute-value
+                        hide-unit
+                        .stateObj=${stateObj}
+                        .attribute=${this._config.attribute!}
+                      ></ha-attribute-value>`
+                    : this.hass.localize("state.default.unknown"),
+                  unit,
+                  false
+                )
+              : this._renderValueWithUnit(
+                  valueFromParts(stateParts),
+                  unit,
+                  unitFirst
+                )
+          }
         </div>
         <div
           class="footer"
@@ -213,6 +205,24 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
+  }
+
+  private _renderValueWithUnit(
+    value: TemplateResult | string,
+    unit: string,
+    unitFirst: boolean
+  ) {
+    return html`<span
+        class=${classMap({ value: true, "first-part": !unitFirst })}
+        >${value}</span
+      >${
+        unit
+          ? html`<span
+              class=${classMap({ measurement: true, "first-part": unitFirst })}
+              >${unit}</span
+            >`
+          : nothing
+      }`;
   }
 
   private _computeColor(stateObj: HassEntity): string | undefined {
@@ -235,7 +245,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Side Effect used to update footer hass while keeping optimizations
-    if (this._footerElement) {
+    if (this._footerElement && "hass" in this._footerElement) {
       this._footerElement.hass = this.hass;
     }
 
@@ -250,8 +260,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityCardConfig
-      | undefined;
+      EntityCardConfig | undefined;
 
     if (
       !oldHass ||

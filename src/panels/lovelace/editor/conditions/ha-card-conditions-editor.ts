@@ -62,8 +62,7 @@ export class HaCardConditionsEditor extends LitElement {
   protected _clipboard?: Condition | LegacyCondition;
 
   @property({ attribute: false }) public conditions!: (
-    | Condition
-    | LegacyCondition
+    Condition | LegacyCondition
   )[];
 
   @state()
@@ -128,25 +127,29 @@ export class HaCardConditionsEditor extends LitElement {
                 "ui.panel.lovelace.editor.condition-editor.add"
               )}
             </ha-button>
-            ${this._clipboard
-              ? html`
-                  <ha-dropdown-item value="paste">
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.editor.edit_card.paste_condition"
-                    )}
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiContentPaste}
-                    ></ha-svg-icon>
-                  </ha-dropdown-item>
-                `
-              : nothing}
+            ${
+              this._clipboard
+                ? html`
+                    <ha-dropdown-item value="paste">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.edit_card.paste_condition"
+                      )}
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiContentPaste}
+                      ></ha-svg-icon>
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
             ${UI_CONDITION.map(
               (condition) => html`
                 <ha-dropdown-item .value=${condition}>
-                  ${this.hass!.localize(
-                    `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
-                  ) || condition}
+                  ${
+                    this.hass!.localize(
+                      `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
+                    ) || condition
+                  }
                   <ha-svg-icon
                     slot="icon"
                     .path=${ICON_CONDITION[condition]}

@@ -1,7 +1,7 @@
 import { mdiClose, mdiViewGridPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -24,6 +24,7 @@ import {
 import type { CardSuggestion } from "../../card-suggestions/types";
 import "./hui-suggestion-card";
 import "./hui-suggestion-entity-tree";
+import type { HuiSuggestionEntityTree } from "./hui-suggestion-entity-tree";
 
 @customElement("hui-suggestion-picker")
 export class HuiSuggestionPicker extends LitElement {
@@ -37,6 +38,14 @@ export class HuiSuggestionPicker extends LitElement {
   @state() private _narrow = false;
 
   private _narrowMql?: MediaQueryList;
+
+  @query("hui-suggestion-entity-tree")
+  private _entityTree?: HuiSuggestionEntityTree;
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    await this._entityTree?.focus();
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -116,16 +125,18 @@ export class HuiSuggestionPicker extends LitElement {
         )}
       </ha-section-title>
       ${this._renderSuggestionsGrid(core)}
-      ${custom.length
-        ? html`
-            <ha-section-title>
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.cardpicker.community_title"
-              )}
-            </ha-section-title>
-            ${this._renderSuggestionsGrid(custom)}
-          `
-        : nothing}
+      ${
+        custom.length
+          ? html`
+              <ha-section-title>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.cardpicker.community_title"
+                )}
+              </ha-section-title>
+              ${this._renderSuggestionsGrid(custom)}
+            `
+          : nothing
+      }
       ${this._renderBrowseCard()}
     `;
   }
@@ -158,17 +169,20 @@ export class HuiSuggestionPicker extends LitElement {
         )}
       </ha-section-title>
       <ha-combo-box-item compact class="selected-entity">
-        ${stateObj
-          ? html`<state-badge
-              slot="start"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></state-badge>`
-          : nothing}
+        ${
+          stateObj
+            ? html`<state-badge
+                slot="start"
+                .stateObj=${stateObj}
+              ></state-badge>`
+            : nothing
+        }
         <span slot="headline">${primary}</span>
-        ${secondary
-          ? html`<span slot="supporting-text">${secondary}</span>`
-          : nothing}
+        ${
+          secondary
+            ? html`<span slot="supporting-text">${secondary}</span>`
+            : nothing
+        }
         <ha-icon-button
           slot="end"
           .label=${this.hass.localize("ui.common.clear")}

@@ -94,25 +94,27 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
       >
         ${this._renderStepContent()}
         <ha-dialog-footer slot="footer">
-          ${this._step === "key"
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._submit}
-                  .disabled=${!this._newEncryptionKey}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.dialogs.set_encryption_key.actions.set"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button slot="primaryAction" @click=${this._done}>
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.dialogs.set_encryption_key.actions.done"
-                  )}
-                </ha-button>
-              `}
+          ${
+            this._step === "key"
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._submit}
+                    .disabled=${!this._newEncryptionKey}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.set_encryption_key.actions.set"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button slot="primaryAction" @click=${this._done}>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.set_encryption_key.actions.done"
+                    )}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -146,7 +148,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
               )}
             </span>
             <ha-button
-              size="small"
+              size="s"
               appearance="plain"
               slot="end"
               @click=${this._download}

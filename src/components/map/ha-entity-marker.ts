@@ -1,15 +1,18 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import type { HomeAssistant } from "../../types";
+import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-state-icon";
 
 @customElement("ha-entity-marker")
 class HaEntityMarker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "entity-id", reflect: true }) public entityId?: string;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
 
   @property({ attribute: "entity-name" }) public entityName?: string;
 
@@ -28,27 +31,29 @@ class HaEntityMarker extends LitElement {
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
       >
-        ${this.entityPicture
-          ? html`<div
-              class="entity-picture"
-              style=${styleMap({
-                "background-image": `url(${this.entityPicture})`,
-              })}
-            ></div>`
-          : this.showIcon && this.entityId
-            ? html`<ha-state-icon
-                .stateObj=${this.hass?.states[this.entityId]}
-              ></ha-state-icon>`
-            : !this.entityUnit
-              ? this.entityName
-              : html`
-                  ${this.entityName}
-                  <span
-                    class="unit"
-                    style="display: ${this.entityUnit ? "initial" : "none"}"
-                    >${this.entityUnit}</span
-                  >
-                `}
+        ${
+          this.entityPicture
+            ? html`<div
+                class="entity-picture"
+                style=${styleMap({
+                  "background-image": `url(${this.entityPicture})`,
+                })}
+              ></div>`
+            : this.showIcon && this.entityId
+              ? html`<ha-state-icon
+                  .stateObj=${this._stateObj}
+                ></ha-state-icon>`
+              : !this.entityUnit
+                ? this.entityName
+                : html`
+                    ${this.entityName}
+                    <span
+                      class="unit"
+                      style="display: ${this.entityUnit ? "initial" : "none"}"
+                      >${this.entityUnit}</span
+                    >
+                  `
+        }
       </div>
     `;
   }

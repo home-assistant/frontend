@@ -32,13 +32,15 @@ class ConfigNetwork extends LitElement {
         header=${this.hass.localize("ui.panel.config.network.network_adapter")}
       >
         <div class="card-content">
-          ${this._error
-            ? html`
-                <ha-alert alert-type="error"
-                  >${this._error.message || this._error.code}</ha-alert
-                >
-              `
-            : ""}
+          ${
+            this._error
+              ? html`
+                  <ha-alert alert-type="error"
+                    >${this._error.message || this._error.code}</ha-alert
+                  >
+                `
+              : ""
+          }
           <p>
             ${this.hass.localize(
               "ui.panel.config.network.network_adapter_info"
@@ -46,7 +48,6 @@ class ConfigNetwork extends LitElement {
           </p>
           <ha-network
             @network-config-changed=${this._configChanged}
-            .hass=${this.hass}
             .networkConfig=${this._networkConfig}
           ></ha-network>
         </div>

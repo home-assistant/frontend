@@ -3,9 +3,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-icon-button";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/map/ha-map";
 import { haStyle } from "../../resources/styles";
@@ -22,26 +22,18 @@ class HaPanelMap extends LitElement {
   protected render() {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.map")}</div>
-        ${!__DEMO__ && this.hass.user?.is_admin
-          ? html`<ha-icon-button
-              slot="actionItems"
-              .label=${this.hass!.localize("ui.panel.map.edit_zones")}
-              .path=${mdiPencil}
-              @click=${this._openZonesEditor}
-            ></ha-icon-button>`
-          : ""}
-        <ha-map
-          .hass=${this.hass}
-          .entities=${this._entities}
-          auto-fit
-          interactive-zones
-        ></ha-map>
+        ${
+          !__DEMO__ && this.hass.user?.is_admin
+            ? html`<ha-icon-button
+                slot="actionItems"
+                .label=${this.hass!.localize("ui.panel.map.edit_zones")}
+                .path=${mdiPencil}
+                @click=${this._openZonesEditor}
+              ></ha-icon-button>`
+            : ""
+        }
+        <ha-map .entities=${this._entities} auto-fit interactive-zones></ha-map>
       </ha-top-app-bar-fixed>
     `;
   }
@@ -64,11 +56,10 @@ class HaPanelMap extends LitElement {
     const personSources = new Set<string>();
     const locationEntities: string[] = [];
     Object.values(this.hass!.states).forEach((entity) => {
-      if (
-        entity.state === "home" ||
-        !("latitude" in entity.attributes) ||
-        !("longitude" in entity.attributes)
-      ) {
+      if (entity.state === "home") {
+        return;
+      }
+      if (!getEntityLocation(entity, this.hass!.states)) {
         return;
       }
       locationEntities.push(entity.entity_id);

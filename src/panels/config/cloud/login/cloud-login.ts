@@ -33,8 +33,7 @@ export class CloudLogin extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
-    | "page-onboarding.restore.ha-cloud"
-    | "config.cloud" = "config.cloud";
+    "page-onboarding.restore.ha-cloud" | "config.cloud" = "config.cloud";
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
@@ -66,9 +65,11 @@ export class CloudLogin extends LitElement {
   private _renderLoginForm() {
     return html`
       <div class="card-content login-form">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-input
           .label=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.email`

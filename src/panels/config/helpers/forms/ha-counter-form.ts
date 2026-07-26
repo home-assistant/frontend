@@ -125,7 +125,7 @@ class HaCounterForm extends LitElement {
         ></ha-input>
         <ha-expansion-panel
           header=${this.hass.localize(
-            "ui.dialogs.helper_settings.generic.advanced_settings"
+            "ui.dialogs.helper_settings.generic.more_options"
           )}
           outlined
         >

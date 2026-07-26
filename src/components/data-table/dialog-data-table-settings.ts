@@ -161,13 +161,15 @@ export class DialogDataTableSettings extends LitElement {
                   graphic="icon"
                   noninteractive
                   >${col.title || col.label || col.key}
-                  ${canMove && isVisible
-                    ? html`<ha-svg-icon
-                        class="handle"
-                        .path=${mdiDragHorizontalVariant}
-                        slot="graphic"
-                      ></ha-svg-icon>`
-                    : nothing}
+                  ${
+                    canMove && isVisible
+                      ? html`<ha-svg-icon
+                          class="handle"
+                          .path=${mdiDragHorizontalVariant}
+                          slot="graphic"
+                        ></ha-svg-icon>`
+                      : nothing
+                  }
                   <ha-icon-button
                     tabindex="0"
                     class="action"

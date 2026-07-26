@@ -17,9 +17,11 @@ class SupervisorAppsState extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.state === "unknown"
-        ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
-        : html` <div class="dot state-${this.state}"></div> `}
+      ${
+        this.state === "unknown"
+          ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
+          : html` <div class="dot state-${this.state}"></div> `
+      }
       <span
         >${this._i18n.localize(
           `ui.panel.config.apps.dashboard.capability.state.${this.state}`
@@ -45,7 +47,6 @@ class SupervisorAppsState extends LitElement {
     }
     .dot.state-started {
       background-color: var(--ha-color-green-80);
-      animation: state-dot-pulse 1.8s infinite;
     }
     .dot.state-startup {
       background-color: var(--ha-color-on-warning-normal);
@@ -55,19 +56,6 @@ class SupervisorAppsState extends LitElement {
     }
     ha-svg-icon {
       --mdc-icon-size: 20px;
-    }
-    @keyframes state-dot-pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-success-color), 0.6);
-      }
-      100% {
-        box-shadow: 0 0 0 6px rgba(var(--rgb-success-color), 0);
-      }
-    }
-    @media (prefers-reduced-motion) {
-      .dot.state-started {
-        animation: none;
-      }
     }
   `;
 }

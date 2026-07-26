@@ -52,28 +52,32 @@ export class HuiUnusedEntities extends LitElement {
 
     return html`
       <div class="container">
-        ${!this.narrow
-          ? html`
-              <ha-card
-                header=${this.hass.localize(
-                  "ui.panel.lovelace.unused_entities.title"
-                )}
-              >
-                <div class="card-content">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.unused_entities.available_entities"
+        ${
+          !this.narrow
+            ? html`
+                <ha-card
+                  header=${this.hass.localize(
+                    "ui.panel.lovelace.unused_entities.title"
                   )}
-                  ${this.lovelace.mode === "storage"
-                    ? html`
-                        <br />${this.hass.localize(
-                          "ui.panel.lovelace.unused_entities.select_to_add"
-                        )}
-                      `
-                    : ""}
-                </div>
-              </ha-card>
-            `
-          : ""}
+                >
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.unused_entities.available_entities"
+                    )}
+                    ${
+                      this.lovelace.mode === "storage"
+                        ? html`
+                            <br />${this.hass.localize(
+                              "ui.panel.lovelace.unused_entities.select_to_add"
+                            )}
+                          `
+                        : ""
+                    }
+                  </div>
+                </ha-card>
+              `
+            : ""
+        }
         <hui-entity-picker-table
           .hass=${this.hass}
           .narrow=${this.narrow}
@@ -86,7 +90,7 @@ export class HuiUnusedEntities extends LitElement {
           selected: this._selectedEntities.length,
         })}"
       >
-        <ha-button size="large" @click=${this._addToLovelaceView}>
+        <ha-button size="l" @click=${this._addToLovelaceView}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
         </ha-button>

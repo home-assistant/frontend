@@ -6,9 +6,7 @@ export interface DataTableFilter {
 export type DataTableFilters = Record<string, DataTableFilter>;
 
 export type DataTableFiltersValue =
-  | string[]
-  | Record<"key" | string, string[]>
-  | undefined;
+  string[] | Record<"key" | string, string[]> | undefined;
 
 export type DataTableFiltersValues = Record<string, DataTableFiltersValue>;
 

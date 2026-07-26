@@ -41,55 +41,58 @@ class ZWaveJSNetworkInfoPage extends LitElement {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.dashboard.network_info_title"
         )}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
         <div class="container">
           <ha-card>
-            ${this._network
-              ? html`<ha-md-list>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.home_id"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${formatHomeIdAsHex(this._network.controller.home_id)}
-                    </span>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.driver_version"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this._network.client.driver_version}
-                    </span>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.server_version"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this._network.client.server_version}
-                    </span>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.server_url"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this._network.client.ws_server_url}
-                    </span>
-                  </ha-md-list-item>
-                </ha-md-list>`
-              : nothing}
+            ${
+              this._network
+                ? html`<ha-md-list>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.home_id"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${formatHomeIdAsHex(this._network.controller.home_id)}
+                      </span>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.driver_version"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this._network.client.driver_version}
+                      </span>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.server_version"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this._network.client.server_version}
+                      </span>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.server_url"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this._network.client.ws_server_url}
+                      </span>
+                    </ha-md-list-item>
+                  </ha-md-list>`
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>

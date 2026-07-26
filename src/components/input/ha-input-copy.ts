@@ -76,9 +76,11 @@ export class HaInputCopy extends LitElement {
         <div class="textfield-container">
           <ha-input
             .type=${this.type}
-            .value=${this._showMasked && this.maskedValue
-              ? this.maskedValue
-              : this.value}
+            .value=${
+              this._showMasked && this.maskedValue
+                ? this.maskedValue
+                : this.value
+            }
             .readonly=${this.readonly}
             .disabled=${this.disabled}
             @click=${this._focusInput}
@@ -86,20 +88,22 @@ export class HaInputCopy extends LitElement {
             .autoValidate=${this.autoValidate}
             .validationMessage=${this.validationMessage}
           >
-            ${this.maskedToggle && this.maskedValue
-              ? html`<ha-icon-button
-                  slot="end"
-                  class="toggle-unmasked"
-                  .label=${this._i18n.localize(
-                    `ui.common.${this._showMasked ? "show" : "hide"}`
-                  )}
-                  @click=${this._toggleMasked}
-                  .path=${this._showMasked ? mdiEye : mdiEyeOff}
-                ></ha-icon-button>`
-              : nothing}
+            ${
+              this.maskedToggle && this.maskedValue
+                ? html`<ha-icon-button
+                    slot="end"
+                    class="toggle-unmasked"
+                    .label=${this._i18n.localize(
+                      `ui.common.${this._showMasked ? "show" : "hide"}`
+                    )}
+                    @click=${this._toggleMasked}
+                    .path=${this._showMasked ? mdiEye : mdiEyeOff}
+                  ></ha-icon-button>`
+                : nothing
+            }
           </ha-input>
         </div>
-        <ha-button @click=${this._copy} appearance="plain" size="small">
+        <ha-button @click=${this._copy} appearance="plain" size="s">
           <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
           ${this.label || this._i18n.localize("ui.common.copy")}
         </ha-button>

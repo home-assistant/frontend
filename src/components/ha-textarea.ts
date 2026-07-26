@@ -146,13 +146,17 @@ export class HaTextArea extends WaInputMixin(LitElement) {
         @wa-invalid=${this._handleInvalid}
         exportparts="base:wa-base, hint:wa-hint, textarea:wa-textarea"
       >
-        ${this.label || hasLabelSlot
-          ? html`<slot name="label" slot="label"
-              >${this.label
-                ? this._renderLabel(this.label, this.required)
-                : nothing}</slot
-            >`
-          : nothing}
+        ${
+          this.label || hasLabelSlot
+            ? html`<slot name="label" slot="label"
+                >${
+                  this.label
+                    ? this._renderLabel(this.label, this.required)
+                    : nothing
+                }</slot
+              >`
+            : nothing
+        }
         <div
           slot="hint"
           class=${classMap({
@@ -161,10 +165,12 @@ export class HaTextArea extends WaInputMixin(LitElement) {
           role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
           aria-live="polite"
         >
-          ${this._invalid || this.invalid
-            ? this.validationMessage || this._textarea?.validationMessage
-            : this.hint ||
-              (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)}
+          ${
+            this._invalid || this.invalid
+              ? this.validationMessage || this._textarea?.validationMessage
+              : this.hint ||
+                (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)
+          }
         </div>
       </wa-textarea>
     `;
@@ -256,6 +262,14 @@ export class HaTextArea extends WaInputMixin(LitElement) {
       :host([resize="auto"]) wa-textarea::part(textarea) {
         max-height: var(--ha-textarea-max-height, 200px);
         overflow-y: auto;
+      }
+
+      /* The size-adjuster shares a grid cell with the textarea and is given an
+         inline height matching the content's scrollHeight. Without capping it
+         too, it inflates the grid row past the max-height and pushes the
+         textarea down instead of scrolling. */
+      :host([resize="auto"]) wa-textarea::part(textarea-adjuster) {
+        max-height: var(--ha-textarea-max-height, 200px);
       }
 
       wa-textarea:hover::part(base),

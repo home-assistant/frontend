@@ -20,7 +20,7 @@ export type HumidifierEntity = HassEntityBase & {
   };
 };
 
-export const enum HumidifierEntityFeature {
+export enum HumidifierEntityFeature {
   MODES = 1,
 }
 

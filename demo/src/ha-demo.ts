@@ -5,17 +5,18 @@ import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { selectedDemoConfig } from "./configs/demo-configs";
-import { mockAreaRegistry } from "./stubs/area_registry";
+import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
+import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
-import { mockConfigEntries } from "./stubs/config_entries";
+import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
-import { mockFloorRegistry } from "./stubs/floor_registry";
+import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
@@ -28,6 +29,35 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
+import { mockUsagePrediction } from "./stubs/usage_prediction";
+import "./cloud/cloud-demo-controls";
+
+// WS command / REST path prefixes whose mocks live in the lazily imported
+// config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
+const CONFIG_PANEL_COMMANDS = [
+  "cloud/",
+  "webhook/list",
+  "validate_config",
+  "config_entries/",
+  "device_automation/",
+  "entity/source",
+  "blueprint/",
+  "homeassistant/expose",
+  "zone/list",
+  "person/list",
+  "network/url",
+  "application_credentials/",
+  "system_health/",
+  "backup/",
+  "automation/config",
+  "script/config",
+  "config/automation/config",
+  "config/script/config",
+  "config/scene/config",
+  "search/related",
+  "tag/list",
+  "assist_pipeline/",
+];
 
 @customElement("ha-demo")
 export class HaDemo extends HomeAssistantAppEl {
@@ -39,7 +69,31 @@ export class HaDemo extends HomeAssistantAppEl {
         this._updateHass(hassUpdate),
     };
 
-    const hass = provideHass(this, initial, true);
+    // `false` for contexts: HomeAssistantAppEl already provides them via
+    // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
+    const hass = provideHass(this, initial, true, false);
+
+    // The cloud account page only fetches backup config and the webhook count
+    // when those integrations are loaded. Enable them here (demo only) so the
+    // mocked backup/config/info and webhook/list are queried. usage_prediction
+    // is needed for common-controls sections in strategy dashboards.
+    hass.updateHass({
+      config: {
+        ...hass.config,
+        components: [
+          ...(hass.config?.components ?? []),
+          "backup",
+          "webhook",
+          "usage_prediction",
+        ],
+      },
+    });
+
+    // Demo-only floating panel to flip the mocked cloud state. Mounted once at
+    // the document level; it shows itself only on the cloud panel.
+    if (!document.querySelector("cloud-demo-controls")) {
+      document.body.appendChild(document.createElement("cloud-demo-controls"));
+    }
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
@@ -61,11 +115,21 @@ export class HaDemo extends HomeAssistantAppEl {
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
-    mockConfigEntries(hass);
+    // Consumed app-wide via the lazy manifests context, so register eagerly.
+    mockIntegration(hass);
+    // Config panel mocks are code-split: the loader runs (and the chunk is
+    // dynamically imported) the first time one of these config-only WS/REST
+    // commands is requested, i.e. when the config panel is opened.
+    hass.mockLazyLoad(
+      (command) => CONFIG_PANEL_COMMANDS.some((p) => command.startsWith(p)),
+      () =>
+        import("./stubs/config-panel").then((mod) => mod.mockConfigPanel(hass))
+    );
     mockAreaRegistry(hass);
-    mockDeviceRegistry(hass);
+    mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
+    mockUsagePrediction(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
@@ -113,13 +177,13 @@ export class HaDemo extends HomeAssistantAppEl {
 
     hass.addEntities(energyEntities());
 
-    // Once config is loaded AND localize, set entities and apply theme.
+    // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
+        setDemoFloors(hass, conf.floors);
+        setDemoAreas(hass, conf.areas);
         hass.addEntities(conf.entities(localize));
-        if (conf.theme) {
-          hass.mockTheme(conf.theme());
-        }
+        applyDemoTheme(hass, conf.theme);
       }
     );
 

@@ -1,0 +1,214 @@
+import {
+  mdiAlertCircleOutline,
+  mdiCheck,
+  mdiCloseCircleOutline,
+  mdiRemote,
+} from "@mdi/js";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
+import type { InfraredDevice } from "../../../../../data/infrared";
+import "../../../../../layouts/hass-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+
+@customElement("infrared-config-dashboard")
+export class InfraredConfigDashboard extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public devices: InfraredDevice[] = [];
+
+  protected render(): TemplateResult {
+    const devices = this.devices;
+    const deviceCount = devices.length;
+    const onlineCount = devices.filter((d) => d.online).length;
+
+    const status =
+      deviceCount === 0
+        ? "offline"
+        : onlineCount === deviceCount
+          ? "online"
+          : "warning";
+    const statusIcon =
+      status === "offline"
+        ? mdiCloseCircleOutline
+        : status === "warning"
+          ? mdiAlertCircleOutline
+          : mdiCheck;
+
+    return html`
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.infrared.title")}
+        back-path="/config"
+      >
+        <div class="container">
+          <ha-card class="content network-status">
+            <div class="card-content">
+              <div class="heading">
+                <div class="icon ${status}">
+                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
+                </div>
+                <div class="details">
+                  ${this.hass.localize(
+                    `ui.panel.config.infrared.status_${status}`
+                  )}<br />
+                  <small>
+                    ${this.hass.localize(
+                      "ui.panel.config.infrared.devices_online_summary",
+                      { online: onlineCount, total: deviceCount }
+                    )}
+                  </small>
+                </div>
+                <ha-svg-icon class="logo" .path=${mdiRemote}></ha-svg-icon>
+              </div>
+            </div>
+          </ha-card>
+
+          <ha-card class="network-card">
+            <div class="card-header">
+              ${this.hass.localize("ui.panel.config.infrared.my_devices")}
+            </div>
+            <div class="card-content network-card-content">
+              <ha-md-list>
+                <ha-md-list-item type="link" href="/config/infrared/devices">
+                  <ha-svg-icon slot="start" .path=${mdiRemote}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.infrared.devices_count",
+                      { count: deviceCount }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+              </ha-md-list>
+            </div>
+          </ha-card>
+        </div>
+      </hass-subpage>
+    `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        .container {
+          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+        }
+
+        ha-card {
+          margin: 0px auto var(--ha-space-4);
+          max-width: 600px;
+        }
+
+        .content {
+          margin-top: var(--ha-space-6);
+        }
+
+        ha-md-list {
+          background: none;
+          padding: 0;
+        }
+
+        .network-card {
+          overflow: hidden;
+        }
+
+        .network-card .card-content {
+          padding: 0;
+        }
+
+        .network-card .card-header {
+          padding-bottom: var(--ha-space-2);
+        }
+
+        .network-status div.heading {
+          display: flex;
+          align-items: center;
+          column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          height: 40px;
+          width: 40px;
+          margin-inline-start: auto;
+          color: var(--secondary-text-color);
+        }
+
+        .network-status div.heading .icon {
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: var(--ha-space-10);
+          height: var(--ha-space-10);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
+        }
+
+        .network-status div.heading .icon.online {
+          --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.warning {
+          --icon-color: var(--warning-color);
+        }
+
+        .network-status div.heading .icon.offline {
+          --icon-color: var(--error-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color, var(--primary-color));
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color, var(--primary-color));
+          width: var(--ha-space-6);
+          height: var(--ha-space-6);
+        }
+
+        .network-status div.heading .details {
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
+        }
+
+        .network-status small {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "infrared-config-dashboard": InfraredConfigDashboard;
+  }
+}

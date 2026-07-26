@@ -119,7 +119,7 @@ export class ZHAGroupsDashboard extends LitElement {
         clickable
         has-fab
       >
-        <ha-button href="/config/zha/group-add" slot="fab" size="large">
+        <ha-button href="/config/zha/group-add" slot="fab" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass!.localize("ui.panel.config.zha.groups.add_group")}
         </ha-button>

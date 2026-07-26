@@ -29,30 +29,36 @@ class StateCardScript extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        ${stateObj.state === "on"
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._cancelScript}
-            >
-              ${stateObj.attributes.mode !== "single" &&
-              (stateObj.attributes.current || 0) > 0
-                ? this.hass.localize("ui.card.script.cancel_multiple", {
-                    number: stateObj.attributes.current,
-                  })
-                : this.hass.localize("ui.card.script.cancel")}
-            </ha-button>`
-          : ""}
-        ${stateObj.state === "off" || stateObj.attributes.max
-          ? html`<ha-button
-              appearance="plain"
-              size="small"
-              @click=${this._runScript}
-              .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
-            >
-              ${this.hass!.localize("ui.card.script.run")}
-            </ha-button>`
-          : ""}
+        ${
+          stateObj.state === "on"
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._cancelScript}
+              >
+                ${
+                  stateObj.attributes.mode !== "single" &&
+                  (stateObj.attributes.current || 0) > 0
+                    ? this.hass.localize("ui.card.script.cancel_multiple", {
+                        number: stateObj.attributes.current,
+                      })
+                    : this.hass.localize("ui.card.script.cancel")
+                }
+              </ha-button>`
+            : ""
+        }
+        ${
+          stateObj.state === "off" || stateObj.attributes.max
+            ? html`<ha-button
+                appearance="plain"
+                size="s"
+                @click=${this._runScript}
+                .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
+              >
+                ${this.hass!.localize("ui.card.script.run")}
+              </ha-button>`
+            : ""
+        }
       </div>
     `;
   }

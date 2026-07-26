@@ -1,9 +1,11 @@
-import timezones from "google-timezones-json";
+import { getTimeZones, timeZonesNames } from "@vvo/tzdb";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
@@ -13,16 +15,47 @@ const SEARCH_KEYS = [
   { name: "secondary", weight: 8 },
 ];
 
-export const getTimezoneOptions = (): PickerComboBoxItem[] =>
-  Object.entries(timezones as Record<string, string>).map(([key, value]) => ({
-    id: key,
-    primary: value,
-    secondary: key,
-  }));
+// @vvo/tzdb is missing the bare "UTC" zone, even though it is a valid IANA
+// identifier and a common server default. Add UTC back so a
+// "UTC" configuration can be selected.
+const ADDITIONAL_TIMEZONES: PickerComboBoxItem[] = [
+  { id: "UTC", primary: "+00:00 UTC", secondary: "UTC" },
+];
+
+export const getTimezoneOptions = (): PickerComboBoxItem[] => {
+  const options: PickerComboBoxItem[] = Array.from(
+    new Map(
+      getTimeZones({ includeUtc: true })
+        .flatMap((timezone) => {
+          const groupArray = Array.isArray(timezone.group)
+            ? timezone.group
+            : [timezone.group];
+          const filteredGroup = groupArray.filter((gName) =>
+            timeZonesNames.includes(gName)
+          );
+
+          return [timezone.name, ...filteredGroup].map((nameString) => ({
+            id: nameString,
+            primary: timezone.rawFormat,
+            secondary: nameString,
+          }));
+        })
+        .map((item) => [item.id, item])
+    ).values()
+  );
+
+  for (const timezone of ADDITIONAL_TIMEZONES) {
+    if (!options.some((option) => option.id === timezone.id)) {
+      options.push(timezone);
+    }
+  }
+  return options;
+};
 
 @customElement("ha-timezone-picker")
 export class HaTimeZonePicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property() public value?: string;
 
@@ -52,16 +85,16 @@ export class HaTimeZonePicker extends LitElement {
   protected render() {
     const label =
       this.label ??
-      (this.hass?.localize("ui.components.timezone-picker.time_zone") ||
+      (this._localize("ui.components.timezone-picker.time_zone") ||
         "Time zone");
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass?.localize(
-          "ui.components.timezone-picker.no_timezones"
-        ) || "No time zones available"}
+        .emptyLabel=${
+          this._localize("ui.components.timezone-picker.no_timezones") ||
+          "No time zones available"
+        }
         .label=${label}
         .helper=${this.helper}
         .placeholder=${this.placeholder}
@@ -93,9 +126,10 @@ export class HaTimeZonePicker extends LitElement {
 
   private _notFoundLabel = (search: string) => {
     const term = html`<b>'${search}'</b>`;
-    return this.hass
-      ? this.hass.localize("ui.components.timezone-picker.no_match", { term })
-      : html`No time zones found for ${term}`;
+    return (
+      this._localize("ui.components.timezone-picker.no_match", { term }) ||
+      html`No time zones found for ${term}`
+    );
   };
 }
 

@@ -41,79 +41,85 @@ export class CloudStepSignup extends LitElement {
         <h1>
           ${this.hass.localize("ui.panel.config.cloud.register.create_account")}
         </h1>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
-        ${this._state === "VERIFY"
-          ? html`<p>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.register.confirm_email",
-                { email: this._email }
-              )}
-            </p>`
-          : html`<ha-input
-                autofocus
-                id="email"
-                name="email"
-                .label=${this.hass.localize(
-                  "ui.panel.config.cloud.register.email_address"
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
+        ${
+          this._state === "VERIFY"
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.register.confirm_email",
+                  { email: this._email }
                 )}
-                .disabled=${this._requestInProgress}
-                type="email"
-                autocomplete="email"
-                required
-                @keydown=${this._keyDown}
-                .validationMessage=${this.hass.localize(
-                  "ui.panel.config.cloud.register.email_error_msg"
-                )}
-              ></ha-input>
-              <ha-input
-                id="password"
-                type="password"
-                password-toggle
-                name="password"
-                .label=${this.hass.localize(
-                  "ui.panel.config.cloud.register.password"
-                )}
-                .disabled=${this._requestInProgress}
-                autocomplete="new-password"
-                minlength="8"
-                required
-                @keydown=${this._keyDown}
-                .validationMessage=${this.hass.localize(
-                  "ui.panel.config.cloud.register.password_error_msg"
-                )}
-              ></ha-input>`}
+              </p>`
+            : html`<ha-input
+                  autofocus
+                  id="email"
+                  name="email"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.cloud.register.email_address"
+                  )}
+                  .disabled=${this._requestInProgress}
+                  type="email"
+                  autocomplete="email"
+                  required
+                  @keydown=${this._keyDown}
+                  .validationMessage=${this.hass.localize(
+                    "ui.panel.config.cloud.register.email_error_msg"
+                  )}
+                ></ha-input>
+                <ha-input
+                  id="password"
+                  type="password"
+                  password-toggle
+                  name="password"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.cloud.register.password"
+                  )}
+                  .disabled=${this._requestInProgress}
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                  @keydown=${this._keyDown}
+                  .validationMessage=${this.hass.localize(
+                    "ui.panel.config.cloud.register.password_error_msg"
+                  )}
+                ></ha-input>`
+        }
       </div>
       <div class="footer side-by-side">
-        ${this._state === "VERIFY"
-          ? html`<ha-button
-                @click=${this._handleResendVerifyEmail}
-                .disabled=${this._requestInProgress}
-                appearance="plain"
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.register.resend_confirm_email"
-                )}</ha-button
-              ><ha-button
-                @click=${this._login}
-                .disabled=${this._requestInProgress}
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.register.clicked_confirm"
-                )}</ha-button
-              >`
-          : html`<ha-button
-                @click=${this._signIn}
-                .disabled=${this._requestInProgress}
-                appearance="plain"
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.login.sign_in"
-                )}</ha-button
-              >
-              <ha-button
-                @click=${this._handleRegister}
-                .disabled=${this._requestInProgress}
-                >${this.hass.localize("ui.common.next")}</ha-button
-              >`}
+        ${
+          this._state === "VERIFY"
+            ? html`<ha-button
+                  @click=${this._handleResendVerifyEmail}
+                  .disabled=${this._requestInProgress}
+                  appearance="plain"
+                  >${this.hass.localize(
+                    "ui.panel.config.cloud.register.resend_confirm_email"
+                  )}</ha-button
+                ><ha-button
+                  @click=${this._login}
+                  .disabled=${this._requestInProgress}
+                  >${this.hass.localize(
+                    "ui.panel.config.cloud.register.clicked_confirm"
+                  )}</ha-button
+                >`
+            : html`<ha-button
+                  @click=${this._signIn}
+                  .disabled=${this._requestInProgress}
+                  appearance="plain"
+                  >${this.hass.localize(
+                    "ui.panel.config.cloud.login.sign_in"
+                  )}</ha-button
+                >
+                <ha-button
+                  @click=${this._handleRegister}
+                  .disabled=${this._requestInProgress}
+                  >${this.hass.localize("ui.common.next")}</ha-button
+                >`
+        }
       </div>`;
   }
 

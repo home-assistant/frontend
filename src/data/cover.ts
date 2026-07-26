@@ -4,19 +4,11 @@ import type {
 } from "home-assistant-js-websocket";
 import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
+import { CoverEntityFeature } from "./feature/cover_entity_feature";
 
-export const enum CoverEntityFeature {
-  OPEN = 1,
-  CLOSE = 2,
-  SET_POSITION = 4,
-  STOP = 8,
-  OPEN_TILT = 16,
-  CLOSE_TILT = 32,
-  STOP_TILT = 64,
-  SET_TILT_POSITION = 128,
-}
+export { CoverEntityFeature };
 
 export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
 
@@ -122,7 +114,7 @@ export interface CoverEntity extends HassEntityBase {
 
 export function computeCoverPositionStateDisplay(
   stateObj: CoverEntity,
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   position?: number
 ) {
   const statePosition = stateActive(stateObj)
@@ -133,7 +125,7 @@ export function computeCoverPositionStateDisplay(
   const currentPosition = position ?? statePosition;
 
   return currentPosition && currentPosition !== 100
-    ? hass.formatEntityAttributeValue(
+    ? formatEntityAttributeValue(
         stateObj,
         // Always use position as it's the same formatting as tilt position
         "current_position",

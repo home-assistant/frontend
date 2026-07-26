@@ -12,6 +12,7 @@ import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import { changeZHANetworkChannel } from "../../../../../data/zha";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
 
@@ -35,9 +36,13 @@ const VALID_CHANNELS = [
   26,
 ];
 
+interface ChangeChannelFormState {
+  newChannel: "auto" | number;
+}
+
 @customElement("dialog-zha-change-channel")
 class DialogZHAChangeChannel
-  extends LitElement
+  extends DirtyStateProviderMixin<ChangeChannelFormState>()(LitElement)
   implements HassDialog<ZHAChangeChannelDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -54,6 +59,7 @@ class DialogZHAChangeChannel
     this._params = params;
     this._newChannel = "auto";
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, { newChannel: "auto" });
   }
 
   public closeDialog(): boolean {
@@ -82,7 +88,7 @@ class DialogZHAChangeChannel
         header-title=${this.hass.localize(
           "ui.panel.config.zha.change_channel_dialog.title"
         )}
-        prevent-scrim-close
+        ?prevent-scrim-close=${this.isDirtyState || this._migrationInProgress}
         @closed=${this._dialogClosed}
       >
         <ha-alert
@@ -154,6 +160,7 @@ class DialogZHAChangeChannel
   private _newChannelChosen(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     this._newChannel = value === "auto" ? "auto" : parseInt(value, 10);
+    this._updateDirtyState({ newChannel: this._newChannel });
   }
 
   private async _changeNetworkChannel(): Promise<void> {
@@ -173,6 +180,7 @@ class DialogZHAChangeChannel
       ),
     });
 
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 }

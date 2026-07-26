@@ -338,7 +338,7 @@ export const runDebugAssistPipeline = (
 };
 
 export const runAssistPipeline = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callback: (event: PipelineRunEvent) => void,
   options: PipelineRunOptions
 ) =>
@@ -379,7 +379,10 @@ export const listAssistPipelines = (hass: HomeAssistant) =>
     type: "assist_pipeline/pipeline/list",
   });
 
-export const getAssistPipeline = (hass: HomeAssistant, pipeline_id?: string) =>
+export const getAssistPipeline = (
+  hass: Pick<HomeAssistant, "callWS">,
+  pipeline_id?: string
+) =>
   hass.callWS<AssistPipeline>({
     type: "assist_pipeline/pipeline/get",
     pipeline_id,

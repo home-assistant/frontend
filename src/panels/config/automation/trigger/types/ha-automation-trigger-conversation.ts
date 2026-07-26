@@ -35,31 +35,36 @@ export class HaConversationTrigger
     const { command } = this.trigger;
     const commands = command ? ensureArray(command) : [];
 
-    return html`${commands.length
-        ? html`${commands.map(
-              (option, index) => html`
-                <ha-input
-                  class="option"
-                  iconTrailing
-                  .index=${index}
-                  .value=${option}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
-                  )}
-                  auto-validate
-                  validateOnInitialRender
-                  pattern=${PATTERN}
-                  @change=${this._updateOption}
-                >
-                  <ha-icon-button
-                    @click=${this._removeOption}
-                    slot="end"
-                    .path=${mdiClose}
-                  ></ha-icon-button>
-                </ha-input>
-              `
-            )} <wa-divider></wa-divider>`
-        : nothing}
+    return html`${
+        commands.length
+          ? html`${commands.map(
+                (option, index) => html`
+                  <ha-input
+                    class="option"
+                    iconTrailing
+                    .index=${index}
+                    .value=${option}
+                    .validationMessage=${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+                    )}
+                    auto-validate
+                    validateOnInitialRender
+                    pattern=${PATTERN}
+                    @change=${this._updateOption}
+                  >
+                    <ha-icon-button
+                      @click=${this._removeOption}
+                      slot="end"
+                      .path=${mdiClose}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.type.conversation.delete"
+                      )}
+                    ></ha-icon-button>
+                  </ha-input>
+                `
+              )} <wa-divider></wa-divider>`
+          : nothing
+      }
       <ha-input
         class="flex-auto"
         id="option_input"
@@ -78,6 +83,9 @@ export class HaConversationTrigger
           @click=${this._addOption}
           slot="end"
           .path=${mdiPlus}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.conversation.add_sentence"
+          )}
         ></ha-icon-button>
       </ha-input>`;
   }

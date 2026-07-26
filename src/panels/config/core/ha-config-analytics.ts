@@ -57,8 +57,10 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     return html`
       <ha-card
         outlined
-        .header=${this.hass.localize("ui.panel.config.analytics.header") ||
-        "Home Assistant analytics"}
+        .header=${
+          this.hass.localize("ui.panel.config.analytics.header") ||
+          "Home Assistant analytics"
+        }
       >
         <div class="card-content">
           ${error ? html`<div class="error">${error}</div>` : nothing}
@@ -79,111 +81,117 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           ></ha-analytics>
         </div>
       </ha-card>
-      ${this._snapshotsLabEnabled
-        ? html`<ha-card
-            outlined
-            .header=${this.hass.localize(
-              "ui.panel.config.analytics.preferences.snapshots.header"
-            )}
-          >
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.analytics.preferences.snapshots.info",
-                  {
-                    data_use_statement: html`<a
-                      href="https://www.openhomefoundation.org/device-database-data-use-statement"
-                      target="_blank"
-                      rel="noreferrer"
-                      >${this.hass.localize(
-                        "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
-                      )}</a
-                    >`,
+      ${
+        this._snapshotsLabEnabled
+          ? html`<ha-card
+              outlined
+              .header=${this.hass.localize(
+                "ui.panel.config.analytics.preferences.snapshots.header"
+              )}
+            >
+              <div class="card-content">
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.analytics.preferences.snapshots.info",
+                    {
+                      data_use_statement: html`<a
+                        href="https://www.openhomefoundation.org/device-database-data-use-statement"
+                        target="_blank"
+                        rel="noreferrer"
+                        >${this.hass.localize(
+                          "ui.panel.config.analytics.preferences.snapshots.data_use_statement"
+                        )}</a
+                      >`,
+                    }
+                  )}
+                </p>
+                <ha-row-item>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      `ui.panel.config.analytics.preferences.snapshots.title`
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      `ui.panel.config.analytics.preferences.snapshots.description`
+                    )}
+                  </span>
+                  <ha-switch
+                    slot="end"
+                    @change=${this._handleDeviceRowClick}
+                    .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                    .disabled=${this._analyticsDetails === undefined}
+                  ></ha-switch>
+                </ha-row-item>
+              </div>
+              <div class="card-actions">
+                <ha-button
+                  size="s"
+                  appearance="plain"
+                  @click=${this._downloadDeviceInfo}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.analytics.download_device_info"
+                  )}
+                </ha-button>
+              </div>
+            </ha-card>`
+          : nothing
+      }
+      ${
+        this._zwaveEntryId !== undefined
+          ? html`<ha-card
+              outlined
+              data-section="zwave"
+              class=${this._highlightedSection === "zwave" ? "highlighted" : ""}
+              .header=${this.hass.localize(
+                "ui.panel.config.zwave_js.dashboard.data_collection.title"
+              )}
+            >
+              <div class="card-content">
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.data_collection.info",
+                    {
+                      documentation_link: html`<a
+                        target="_blank"
+                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                        rel="noreferrer"
+                        >${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
+                        )}</a
+                      >`,
+                    }
+                  )}
+                </p>
+                <ha-row-item>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
+                    )}
+                  </span>
+                  ${
+                    this._zwaveDataCollectionOptIn !== undefined
+                      ? html`
+                          <ha-switch
+                            slot="end"
+                            @change=${this._zwaveDataCollectionToggled}
+                            .checked=${this._zwaveDataCollectionOptIn === true}
+                          ></ha-switch>
+                        `
+                      : html`<ha-spinner slot="end" size="small"></ha-spinner>`
                   }
-                )}
-              </p>
-              <ha-row-item>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    `ui.panel.config.analytics.preferences.snapshots.title`
-                  )}
-                </span>
-                <span slot="supporting-text">
-                  ${this.hass.localize(
-                    `ui.panel.config.analytics.preferences.snapshots.description`
-                  )}
-                </span>
-                <ha-switch
-                  slot="end"
-                  @change=${this._handleDeviceRowClick}
-                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
-                  .disabled=${this._analyticsDetails === undefined}
-                ></ha-switch>
-              </ha-row-item>
-            </div>
-            <div class="card-actions">
-              <ha-button
-                size="small"
-                appearance="plain"
-                @click=${this._downloadDeviceInfo}
-              >
-                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.analytics.download_device_info"
-                )}
-              </ha-button>
-            </div>
-          </ha-card>`
-        : nothing}
-      ${this._zwaveEntryId !== undefined
-        ? html`<ha-card
-            outlined
-            data-section="zwave"
-            class=${this._highlightedSection === "zwave" ? "highlighted" : ""}
-            .header=${this.hass.localize(
-              "ui.panel.config.zwave_js.dashboard.data_collection.title"
-            )}
-          >
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.dashboard.data_collection.info",
-                  {
-                    documentation_link: html`<a
-                      target="_blank"
-                      href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                      rel="noreferrer"
-                      >${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
-                      )}</a
-                    >`,
-                  }
-                )}
-              </p>
-              <ha-row-item>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
-                  )}
-                </span>
-                <span slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
-                  )}
-                </span>
-                ${this._zwaveDataCollectionOptIn !== undefined
-                  ? html`
-                      <ha-switch
-                        slot="end"
-                        @change=${this._zwaveDataCollectionToggled}
-                        .checked=${this._zwaveDataCollectionOptIn === true}
-                      ></ha-switch>
-                    `
-                  : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
-              </ha-row-item>
-            </div>
-          </ha-card>`
-        : nothing}
+                </ha-row-item>
+              </div>
+            </ha-card>`
+          : nothing
+      }
     `;
   }
 

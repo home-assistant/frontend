@@ -44,8 +44,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
   }
 
   protected abstract get _config():
-    | BlueprintAutomationConfig
-    | BlueprintScriptConfig;
+    BlueprintAutomationConfig | BlueprintScriptConfig;
 
   protected renderCard() {
     const blueprint = this._blueprint;
@@ -59,58 +58,70 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         )}
       >
         <div class="blueprint-picker-container">
-          ${this._blueprints
-            ? Object.keys(this._blueprints).length
-              ? html`
-                  <ha-blueprint-picker
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.editor.blueprint.blueprint_to_use"
-                    )}
-                    .blueprints=${this._blueprints}
-                    .value=${this._config.use_blueprint.path}
-                    .disabled=${this.disabled}
-                    @value-changed=${this._blueprintChanged}
-                  ></ha-blueprint-picker>
-                `
-              : this.hass.localize(
-                  "ui.panel.config.automation.editor.blueprint.no_blueprints"
-                )
-            : html`<ha-spinner></ha-spinner>`}
+          ${
+            this._blueprints
+              ? Object.keys(this._blueprints).length
+                ? html`
+                    <ha-blueprint-picker
+                      .hass=${this.hass}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.automation.editor.blueprint.blueprint_to_use"
+                      )}
+                      .blueprints=${this._blueprints}
+                      .value=${this._config.use_blueprint.path}
+                      .disabled=${this.disabled}
+                      @value-changed=${this._blueprintChanged}
+                    ></ha-blueprint-picker>
+                  `
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.blueprint.no_blueprints"
+                  )
+              : html`<ha-spinner></ha-spinner>`
+          }
         </div>
 
-        ${this._config.use_blueprint.path
-          ? blueprint && "error" in blueprint
-            ? html`<p class="warning padding">
-                There is an error in this Blueprint: ${blueprint.error}
-              </p>`
-            : html`${blueprint?.metadata.description
-                ? html`<ha-markdown
-                    class="card-content"
-                    breaks
-                    .content=${blueprint.metadata.description}
-                  ></ha-markdown>`
-                : ""}
-              ${blueprint?.metadata?.input &&
-              Object.keys(blueprint.metadata.input).length
-                ? Object.entries(blueprint.metadata.input).map(
-                    ([key, value]) => {
-                      if (value && "input" in value) {
-                        const section = this._renderSection(key, value);
-                        border = false;
-                        return section;
-                      }
-                      const row = this._renderSettingRow(key, value, border);
-                      border = true;
-                      return row;
-                    }
-                  )
-                : html`<p class="padding">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.blueprint.no_inputs"
-                    )}
-                  </p>`}`
-          : ""}
+        ${
+          this._config.use_blueprint.path
+            ? blueprint && "error" in blueprint
+              ? html`<p class="warning padding">
+                  There is an error in this Blueprint: ${blueprint.error}
+                </p>`
+              : html`${
+                  blueprint?.metadata.description
+                    ? html`<ha-markdown
+                        class="card-content"
+                        breaks
+                        .content=${blueprint.metadata.description}
+                      ></ha-markdown>`
+                    : ""
+                }
+                ${
+                  blueprint?.metadata?.input &&
+                  Object.keys(blueprint.metadata.input).length
+                    ? Object.entries(blueprint.metadata.input).map(
+                        ([key, value]) => {
+                          if (value && "input" in value) {
+                            const section = this._renderSection(key, value);
+                            border = false;
+                            return section;
+                          }
+                          const row = this._renderSettingRow(
+                            key,
+                            value,
+                            border
+                          );
+                          border = true;
+                          return row;
+                        }
+                      )
+                    : html`<p class="padding">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.blueprint.no_inputs"
+                        )}
+                      </p>`
+                }`
+            : ""
+        }
       </ha-card>
     `;
   }
@@ -129,27 +140,33 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       .expanded=${expanded}
       .noCollapse=${anyRequired}
     >
-      ${section?.icon
-        ? html`
-            <ha-icon
-              slot="leading-icon"
-              class="section-header"
-              .icon=${section.icon}
-            ></ha-icon>
-          `
-        : nothing}
+      ${
+        section?.icon
+          ? html`
+              <ha-icon
+                slot="leading-icon"
+                class="section-header"
+                .icon=${section.icon}
+              ></ha-icon>
+            `
+          : nothing
+      }
       <div slot="header" role="heading" aria-level="3" class="section-header">
         <ha-markdown .content=${title}></ha-markdown>
       </div>
       <div class="content">
-        ${section?.description
-          ? html`<ha-markdown .content=${section.description}></ha-markdown>`
-          : nothing}
-        ${section.input
-          ? Object.entries(section.input).map(([key, value]) =>
-              this._renderSettingRow(key, value, true)
-            )
-          : nothing}
+        ${
+          section?.description
+            ? html`<ha-markdown .content=${section.description}></ha-markdown>`
+            : nothing
+        }
+        ${
+          section.input
+            ? Object.entries(section.input).map(([key, value]) =>
+                this._renderSettingRow(key, value, true)
+              )
+            : nothing
+        }
       </div>
     </ha-expansion-panel>`;
   }
@@ -179,10 +196,12 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .disabled=${this.disabled}
         .required=${value?.default === undefined}
         .placeholder=${value?.default}
-        .value=${this._config.use_blueprint.input &&
-        key in this._config.use_blueprint.input
-          ? this._config.use_blueprint.input[key]
-          : value?.default}
+        .value=${
+          this._config.use_blueprint.input &&
+          key in this._config.use_blueprint.input
+            ? this._config.use_blueprint.input[key]
+            : value?.default
+        }
         @value-changed=${this._inputChanged}
       ></ha-selector>`}
     </ha-settings-row>`;

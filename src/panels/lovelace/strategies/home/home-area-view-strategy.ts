@@ -17,6 +17,7 @@ import type {
 } from "../../cards/types";
 import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
+import type { LovelaceStrategyDependency } from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES,
@@ -33,6 +34,13 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "panels",
+  ];
+
   static async generate(
     config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant
@@ -411,7 +419,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: area.icon || "mdi:shape-square-rounded-plus",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.home-area.no_devices_title"

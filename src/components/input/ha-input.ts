@@ -127,6 +127,8 @@ export class HaInput extends WaInputMixin(LitElement) {
   @query("wa-input")
   private _input?: WaInput;
 
+  private _startSlotResizeObserver?: ResizeObserver;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected i18n?: ContextType<typeof internationalizationContext>;
@@ -167,7 +169,13 @@ export class HaInput extends WaInputMixin(LitElement) {
       // Wait for wa-input to finish its first render
       await this._input?.updateComplete;
       this._syncStartSlotWidth();
+      this._observeStartSlot();
     }
+  }
+
+  public override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._startSlotResizeObserver?.disconnect();
   }
 
   protected render() {
@@ -228,13 +236,17 @@ export class HaInput extends WaInputMixin(LitElement) {
         @wa-invalid=${this._handleInvalid}
         exportparts="base:wa-base, hint:wa-hint, input:wa-input"
       >
-        ${this.label || hasLabelSlot
-          ? html`<slot name="label" slot="label"
-              >${this.label
-                ? this._renderLabel(this.label, this.required)
-                : nothing}</slot
-            >`
-          : nothing}
+        ${
+          this.label || hasLabelSlot
+            ? html`<slot name="label" slot="label"
+                >${
+                  this.label
+                    ? this._renderLabel(this.label, this.required)
+                    : nothing
+                }</slot
+              >`
+            : nothing
+        }
         <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
           ${this.renderStartDefault()}
         </slot>
@@ -242,8 +254,9 @@ export class HaInput extends WaInputMixin(LitElement) {
         <slot name="clear-button" slot="clear-button">
           <ha-icon-button
             @click=${this._handleClearClick}
-            .label=${this.i18n?.localize?.("ui.components.input.clear") ||
-            "Clear"}
+            .label=${
+              this.i18n?.localize?.("ui.components.input.clear") || "Clear"
+            }
             .path=${mdiClose}
           ></ha-icon-button>
         </slot>
@@ -251,9 +264,11 @@ export class HaInput extends WaInputMixin(LitElement) {
           <ha-icon-button
             @keydown=${stopPropagation}
             @click=${this._handlePasswordToggle}
-            .label=${this.i18n?.localize?.(
-              `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
-            ) || (this.passwordVisible ? "Hide password" : "Show password")}
+            .label=${
+              this.i18n?.localize?.(
+                `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
+              ) || (this.passwordVisible ? "Hide password" : "Show password")
+            }
             .path=${this.passwordVisible ? mdiEyeOff : mdiEye}
           ></ha-icon-button>
         </slot>
@@ -265,10 +280,12 @@ export class HaInput extends WaInputMixin(LitElement) {
           role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
           aria-live="polite"
         >
-          ${this._invalid || this.invalid
-            ? this.validationMessage || this._input?.validationMessage
-            : this.hint ||
-              (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)}
+          ${
+            this._invalid || this.invalid
+              ? this.validationMessage || this._input?.validationMessage
+              : this.hint ||
+                (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)
+          }
         </div>
       </wa-input>
     `;
@@ -280,6 +297,25 @@ export class HaInput extends WaInputMixin(LitElement) {
 
   protected renderEndDefault(): TemplateResult | typeof nothing {
     return nothing;
+  }
+
+  // Safari can report the start-slot width as 0 during the first render, which
+  // leaves the floating label overlapping the start icon (e.g. the magnify icon
+  // in ha-input-search). Re-sync whenever the wrapper's size changes
+  // (0 -> icon width, or hidden -> shown) so the label padding stays correct.
+  private _observeStartSlot() {
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const startEl = this._input?.shadowRoot?.querySelector('[part~="start"]');
+    if (!startEl) {
+      return;
+    }
+    this._startSlotResizeObserver?.disconnect();
+    this._startSlotResizeObserver = new ResizeObserver(() =>
+      this._syncStartSlotWidth()
+    );
+    this._startSlotResizeObserver.observe(startEl);
   }
 
   private _syncStartSlotWidth = () => {

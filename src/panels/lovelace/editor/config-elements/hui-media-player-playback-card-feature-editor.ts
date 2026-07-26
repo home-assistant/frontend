@@ -2,18 +2,25 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-form/ha-form";
 import type { MediaPlayerEntity } from "../../../../data/media-player";
 import type { HomeAssistant } from "../../../../types";
-import { supportsMediaPlayerPlaybackControl } from "../../card-features/hui-media-player-playback-card-feature";
 import {
-  MEDIA_PLAYER_PLAYBACK_CONTROLS,
-  type LovelaceCardFeatureContext,
-  type MediaPlayerPlaybackCardFeatureConfig,
+  getDefaultMediaPlayerControls,
+  supportsMediaPlayerPlaybackControl,
+} from "../../card-features/media-player-playback-controls";
+import type {
+  LovelaceCardFeatureContext,
+  MediaPlayerPlaybackCardFeatureConfig,
 } from "../../card-features/types";
+import { MEDIA_PLAYER_PLAYBACK_CONTROLS } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import {
+  customizableListData,
+  customizableListSchema,
+  processCustomizableListValue,
+} from "./customizable-list-feature";
 
 @customElement("hui-media-player-playback-card-feature-editor")
 export class HuiMediaPlayerPlaybackCardFeatureEditor
@@ -31,25 +38,21 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, stateObj?: MediaPlayerEntity) =>
+    (stateObj: MediaPlayerEntity | undefined) =>
       [
+        ...customizableListSchema({
+          field: "controls",
+          options: MEDIA_PLAYER_PLAYBACK_CONTROLS.filter(
+            (control) =>
+              stateObj && supportsMediaPlayerPlaybackControl(stateObj, control)
+          ).map((control) => ({
+            value: control,
+            label: this.hass!.localize(`ui.card.media_player.${control}`),
+          })),
+        }),
         {
-          name: "controls",
-          selector: {
-            select: {
-              multiple: true,
-              mode: "list" as const,
-              reorder: true,
-              options: MEDIA_PLAYER_PLAYBACK_CONTROLS.filter(
-                (control) =>
-                  stateObj &&
-                  supportsMediaPlayerPlaybackControl(stateObj, control)
-              ).map((control) => ({
-                value: control,
-                label: localize(`ui.card.media_player.${control}`),
-              })),
-            },
-          },
+          name: "hide_disabled_controls",
+          selector: { boolean: {} },
         },
       ] as const
   );
@@ -61,41 +64,57 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
-    const schema = this._schema(this.hass.localize, stateObj);
+    const data = customizableListData(this._config, "controls");
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const stateObj = this.context?.entity_id
+      ? (this.hass!.states[this.context.entity_id] as
+          MediaPlayerEntity | undefined)
+      : undefined;
+    const defaults = getDefaultMediaPlayerControls(stateObj).filter(
+      (control) =>
+        stateObj && supportsMediaPlayerPlaybackControl(stateObj, control)
+    );
+    const config =
+      processCustomizableListValue<MediaPlayerPlaybackCardFeatureConfig>(
+        ev.detail.value,
+        "controls",
+        defaults
+      );
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "controls":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.media-player-playback.${schema.name}`
-        );
-      default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
-    }
-  };
+  ) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.features.types.media-player-playback.${schema.name}`
+    );
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
+    schema.name === "hide_disabled_controls"
+      ? this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.media-player-playback.hide_disabled_controls_helper"
+        )
+      : undefined;
 }
 
 declare global {

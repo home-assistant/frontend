@@ -134,96 +134,104 @@ export class HAFullCalendar extends LitElement {
     );
 
     return html`
-      ${this.calendar
-        ? html`
-            ${this.error
-              ? html`<hui-warning .hass=${this.hass} severity="warning"
-                  >${this.error}</hui-warning
-                >`
-              : ""}
-            <div class="header">
-              ${!this.narrow
-                ? html`
-                    <div class="navigation">
-                      <ha-button
-                        appearance="filled"
-                        size="small"
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</ha-button
-                      >
-                      <ha-icon-button-prev
-                        .label=${this.hass.localize("ui.common.previous")}
-                        class="prev"
-                        @click=${this._handlePrev}
-                      >
-                      </ha-icon-button-prev>
-                      <ha-icon-button-next
-                        .label=${this.hass.localize("ui.common.next")}
-                        class="next"
-                        @click=${this._handleNext}
-                      >
-                      </ha-icon-button-next>
-                    </div>
-                    <h1>${this.calendar.view.title}</h1>
-                    <ha-button-toggle-group
-                      .buttons=${viewToggleButtons}
-                      .active=${this._activeView}
-                      size="small"
-                      no-wrap
-                      @value-changed=${this._handleView}
-                    ></ha-button-toggle-group>
-                  `
-                : html`
-                    <div class="controls">
-                      <h1>${this.calendar.view.title}</h1>
-                      <div>
-                        <ha-icon-button-prev
-                          .label=${this.hass.localize("ui.common.previous")}
-                          class="prev"
-                          @click=${this._handlePrev}
-                        >
-                        </ha-icon-button-prev>
-                        <ha-icon-button-next
-                          .label=${this.hass.localize("ui.common.next")}
-                          class="next"
-                          @click=${this._handleNext}
-                        >
-                        </ha-icon-button-next>
-                      </div>
-                    </div>
-                    <div class="controls buttons">
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.components.calendar.today"
-                        )}</ha-button
-                      >
-                      <ha-button-toggle-group
-                        .buttons=${viewToggleButtons}
-                        .active=${this._activeView}
-                        size="small"
-                        no-wrap
-                        @value-changed=${this._handleView}
-                      ></ha-button-toggle-group>
-                    </div>
-                  `}
-            </div>
-          `
-        : ""}
+      ${
+        this.calendar
+          ? html`
+              ${
+                this.error
+                  ? html`<hui-warning .hass=${this.hass} severity="warning"
+                      >${this.error}</hui-warning
+                    >`
+                  : ""
+              }
+              <div class="header">
+                ${
+                  !this.narrow
+                    ? html`
+                        <div class="navigation">
+                          <ha-button
+                            appearance="filled"
+                            size="s"
+                            class="today"
+                            @click=${this._handleToday}
+                            >${this.hass.localize(
+                              "ui.components.calendar.today"
+                            )}</ha-button
+                          >
+                          <ha-icon-button-prev
+                            .label=${this.hass.localize("ui.common.previous")}
+                            class="prev"
+                            @click=${this._handlePrev}
+                          >
+                          </ha-icon-button-prev>
+                          <ha-icon-button-next
+                            .label=${this.hass.localize("ui.common.next")}
+                            class="next"
+                            @click=${this._handleNext}
+                          >
+                          </ha-icon-button-next>
+                        </div>
+                        <h1>${this.calendar.view.title}</h1>
+                        <ha-button-toggle-group
+                          .buttons=${viewToggleButtons}
+                          .active=${this._activeView}
+                          size="s"
+                          no-wrap
+                          @value-changed=${this._handleView}
+                        ></ha-button-toggle-group>
+                      `
+                    : html`
+                        <div class="controls">
+                          <h1>${this.calendar.view.title}</h1>
+                          <div>
+                            <ha-icon-button-prev
+                              .label=${this.hass.localize("ui.common.previous")}
+                              class="prev"
+                              @click=${this._handlePrev}
+                            >
+                            </ha-icon-button-prev>
+                            <ha-icon-button-next
+                              .label=${this.hass.localize("ui.common.next")}
+                              class="next"
+                              @click=${this._handleNext}
+                            >
+                            </ha-icon-button-next>
+                          </div>
+                        </div>
+                        <div class="controls buttons">
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            class="today"
+                            @click=${this._handleToday}
+                            >${this.hass.localize(
+                              "ui.components.calendar.today"
+                            )}</ha-button
+                          >
+                          <ha-button-toggle-group
+                            .buttons=${viewToggleButtons}
+                            .active=${this._activeView}
+                            size="s"
+                            no-wrap
+                            @value-changed=${this._handleView}
+                          ></ha-button-toggle-group>
+                        </div>
+                      `
+                }
+              </div>
+            `
+          : ""
+      }
 
       <div id="calendar"></div>
-      ${this.addFab && this._hasMutableCalendars
-        ? html`<ha-button size="large" slot="fab" @click=${this._createEvent}>
-            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.components.calendar.event.add")}
-          </ha-button>`
-        : nothing}
+      ${
+        this.addFab && this._hasMutableCalendars
+          ? html`<ha-button size="l" slot="fab" @click=${this._createEvent}>
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.components.calendar.event.add")}
+            </ha-button>`
+          : nothing
+      }
     `;
   }
 

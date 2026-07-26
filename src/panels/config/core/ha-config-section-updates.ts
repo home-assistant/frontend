@@ -39,11 +39,13 @@ import {
   installUpdates,
   isSystemUpdate,
   latestVersionIsSkipped,
+  updateIsInstalling,
   UpdateEntityFeature,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
@@ -153,9 +155,9 @@ class HaConfigSectionUpdates extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config/system"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config/system"
+        }
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
@@ -182,25 +184,29 @@ class HaConfigSectionUpdates extends LitElement {
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-dropdown-item>
-            ${this._supervisorInfo
-              ? html`
-                  <wa-divider></wa-divider>
-                  <ha-dropdown-item
-                    value="toggle_beta"
-                    .disabled=${this._supervisorInfo.channel === "dev"}
-                  >
-                    <ha-svg-icon
-                      .path=${this._supervisorInfo.channel === "stable"
-                        ? mdiLocationEnter
-                        : mdiLocationExit}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
-                    )}
-                  </ha-dropdown-item>
-                `
-              : nothing}
+            ${
+              this._supervisorInfo
+                ? html`
+                    <wa-divider></wa-divider>
+                    <ha-dropdown-item
+                      value="toggle_beta"
+                      .disabled=${this._supervisorInfo.channel === "dev"}
+                    >
+                      <ha-svg-icon
+                        .path=${
+                          this._supervisorInfo.channel === "stable"
+                            ? mdiLocationEnter
+                            : mdiLocationExit
+                        }
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
           </ha-dropdown>
         </div>
         <div class="content">
@@ -212,23 +218,27 @@ class HaConfigSectionUpdates extends LitElement {
                     <div class="title" role="heading" aria-level="2">
                       ${group.title}
                     </div>
-                    ${group.showUpdateAll
-                      ? html`
-                          <ha-button
-                            appearance="plain"
-                            size="small"
-                            .group=${group}
-                            @click=${this._updateAll}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.updates.update_all"
-                            )}
-                          </ha-button>
-                        `
-                      : nothing}
+                    ${
+                      group.showUpdateAll
+                        ? html`
+                            <ha-button
+                              appearance="plain"
+                              size="s"
+                              .group=${group}
+                              .disabled=${group.entities.every((entity) =>
+                                updateIsInstalling(entity)
+                              )}
+                              @click=${this._updateAll}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.updates.update_all"
+                              )}
+                            </ha-button>
+                          `
+                        : nothing
+                    }
                   </div>
                   <ha-config-updates
-                    .hass=${this.hass}
                     .narrow=${this.narrow}
                     .updateEntities=${group.entities}
                     showAll
@@ -237,63 +247,67 @@ class HaConfigSectionUpdates extends LitElement {
               </ha-card>
             `
           )}
-          ${skippedUpdates.length
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <div class="card-header">
-                      <div class="title" role="heading" aria-level="2">
-                        ${this.hass.localize(
-                          "ui.panel.config.updates.title_skipped",
-                          {
-                            count: skippedUpdates.length,
-                          }
-                        )}
+          ${
+            skippedUpdates.length
+              ? html`
+                  <ha-card outlined>
+                    <div class="card-content">
+                      <div class="card-header">
+                        <div class="title" role="heading" aria-level="2">
+                          ${this.hass.localize(
+                            "ui.panel.config.updates.title_skipped",
+                            {
+                              count: skippedUpdates.length,
+                            }
+                          )}
+                        </div>
                       </div>
+                      <ha-config-updates
+                        .narrow=${this.narrow}
+                        .updateEntities=${skippedUpdates}
+                        showAll
+                      ></ha-config-updates>
                     </div>
-                    <ha-config-updates
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .updateEntities=${skippedUpdates}
-                      showAll
-                    ></ha-config-updates>
-                  </div>
-                </ha-card>
-              `
-            : nothing}
-          ${notInstallableUpdates.length
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <div class="card-header">
-                      <div class="title" role="heading" aria-level="2">
-                        ${this.hass.localize(
-                          "ui.panel.config.updates.title_not_installable",
-                          {
-                            count: notInstallableUpdates.length,
-                          }
-                        )}
+                  </ha-card>
+                `
+              : nothing
+          }
+          ${
+            notInstallableUpdates.length
+              ? html`
+                  <ha-card outlined>
+                    <div class="card-content">
+                      <div class="card-header">
+                        <div class="title" role="heading" aria-level="2">
+                          ${this.hass.localize(
+                            "ui.panel.config.updates.title_not_installable",
+                            {
+                              count: notInstallableUpdates.length,
+                            }
+                          )}
+                        </div>
                       </div>
+                      <ha-config-updates
+                        .narrow=${this.narrow}
+                        .updateEntities=${notInstallableUpdates}
+                        showAll
+                      ></ha-config-updates>
                     </div>
-                    <ha-config-updates
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .updateEntities=${notInstallableUpdates}
-                      showAll
-                    ></ha-config-updates>
-                  </div>
-                </ha-card>
-              `
-            : nothing}
-          ${groups.length + notInstallableUpdates.length + skippedUpdates.length
-            ? nothing
-            : html`
-                <ha-card outlined>
-                  <div class="no-updates">
-                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
-                  </div>
-                </ha-card>
-              `}
+                  </ha-card>
+                `
+              : nothing
+          }
+          ${
+            groups.length + notInstallableUpdates.length + skippedUpdates.length
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <div class="no-updates">
+                      ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                    </div>
+                  </ha-card>
+                `
+          }
         </div>
       </hass-subpage>
     `;
@@ -339,17 +353,29 @@ class HaConfigSectionUpdates extends LitElement {
 
   private async _updateAll(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
+    const entityIds = group.entities
+      .filter((entity) => !updateIsInstalling(entity))
+      .map((entity) => entity.entity_id);
+    if (!entityIds.length) {
+      return;
+    }
     try {
-      await installUpdates(
-        this.hass,
-        group.entities.map((entity) => entity.entity_id)
-      );
+      await installUpdates(this.hass, entityIds, false);
     } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
-        text: extractApiErrorMessage(err),
-        warning: true,
-      });
+      let message = extractApiErrorMessage(err);
+      // The backend error embeds the raw entity_id; swap in the update's name.
+      for (const entityId of entityIds) {
+        const stateObj = this.hass.states[entityId] as UpdateEntity | undefined;
+        if (stateObj && message.includes(entityId)) {
+          message = message.replaceAll(
+            entityId,
+            stateObj.attributes.title ||
+              stateObj.attributes.friendly_name ||
+              entityId
+          );
+        }
+      }
+      showToast(this, { message, duration: 10000, dismissable: true });
     }
   }
 

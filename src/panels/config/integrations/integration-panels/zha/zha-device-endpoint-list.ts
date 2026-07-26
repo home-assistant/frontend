@@ -1,5 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -13,7 +13,6 @@ import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
 import "../../../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
-import type { HaListSelectedDetail } from "../../../../../components/list/types";
 import {
   areasContext,
   internationalizationContext,
@@ -86,54 +85,63 @@ export class ZHADeviceEndpointList extends LitElement {
           this.scrollable ? "scrollable" : ""
         }`}
       >
-        ${showSearch
-          ? html`
-              <div class="search">
-                <ha-input-search
-                  appearance="outlined"
-                  .value=${this._filter}
-                  @input=${this._handleFilterChanged}
-                ></ha-input-search>
-              </div>
-            `
-          : ""}
-        ${deviceEndpoints.length
-          ? html`
-              ${this.selectable
-                ? html`
-                    <ha-list-selectable
-                      multi
-                      @ha-list-selected=${this._handleListSelectionChanged}
-                    >
-                      ${repeat(
-                        deviceEndpoints,
-                        (deviceEndpoint) => deviceEndpoint.id,
-                        (deviceEndpoint) =>
-                          this._renderSelectableListRow(deviceEndpoint)
-                      )}
-                    </ha-list-selectable>
-                  `
-                : html`
-                    <ha-list>
-                      ${repeat(
-                        deviceEndpoints,
-                        (deviceEndpoint) => deviceEndpoint.id,
-                        (deviceEndpoint) =>
-                          this._renderReadonlyListRow(deviceEndpoint)
-                      )}
-                    </ha-list>
-                  `}
-            `
-          : html`
-              <div class="empty-list">
-                ${this._filter
-                  ? this._i18n.localize(
-                      "ui.panel.config.zha.groups.no_devices_found"
-                    )
-                  : this.emptyText ||
-                    this._i18n.localize("ui.components.data-table.no-data")}
-              </div>
-            `}
+        ${
+          showSearch
+            ? html`
+                <div class="search">
+                  <ha-input-search
+                    appearance="outlined"
+                    .value=${this._filter}
+                    @input=${this._handleFilterChanged}
+                  ></ha-input-search>
+                </div>
+              `
+            : ""
+        }
+        ${
+          deviceEndpoints.length
+            ? html`
+                ${
+                  this.selectable
+                    ? html`
+                        <ha-list-selectable
+                          multi
+                          @ha-list-item-selected=${this._handleItemSelected}
+                          @ha-list-item-deselected=${this._handleItemDeselected}
+                        >
+                          ${repeat(
+                            deviceEndpoints,
+                            (deviceEndpoint) => deviceEndpoint.id,
+                            (deviceEndpoint) =>
+                              this._renderSelectableListRow(deviceEndpoint)
+                          )}
+                        </ha-list-selectable>
+                      `
+                    : html`
+                        <ha-list>
+                          ${repeat(
+                            deviceEndpoints,
+                            (deviceEndpoint) => deviceEndpoint.id,
+                            (deviceEndpoint) =>
+                              this._renderReadonlyListRow(deviceEndpoint)
+                          )}
+                        </ha-list>
+                      `
+                }
+              `
+            : html`
+                <div class="empty-list">
+                  ${
+                    this._filter
+                      ? this._i18n.localize(
+                          "ui.panel.config.zha.groups.no_devices_found"
+                        )
+                      : this.emptyText ||
+                        this._i18n.localize("ui.components.data-table.no-data")
+                  }
+                </div>
+              `
+        }
       </ha-card>
     `;
   }
@@ -170,19 +178,21 @@ export class ZHADeviceEndpointList extends LitElement {
         <span slot="supporting-text">
           ${this._deviceEndpointDetails(deviceEndpoint)}
         </span>
-        ${this.showDeviceLink
-          ? html`
-              <ha-icon-button
-                slot="end"
-                .path=${mdiOpenInNew}
-                .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
-                .label=${this._i18n.localize(
-                  "ui.panel.config.zha.groups.open_device"
-                )}
-                @click=${this._stopPropagation}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.showDeviceLink
+            ? html`
+                <ha-icon-button
+                  slot="end"
+                  .path=${mdiChevronRight}
+                  .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.zha.groups.open_device"
+                  )}
+                  @click=${this._stopPropagation}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
       </ha-list-item-option>
     `;
   }
@@ -196,18 +206,20 @@ export class ZHADeviceEndpointList extends LitElement {
         <span slot="supporting-text">
           ${this._deviceEndpointDetails(deviceEndpoint)}
         </span>
-        ${this.showDeviceLink
-          ? html`
-              <ha-icon-button
-                slot="end"
-                .path=${mdiOpenInNew}
-                .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
-                .label=${this._i18n.localize(
-                  "ui.panel.config.zha.groups.open_device"
-                )}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.showDeviceLink
+            ? html`
+                <ha-icon-button
+                  slot="end"
+                  .path=${mdiChevronRight}
+                  .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.zha.groups.open_device"
+                  )}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
       </ha-list-item-base>
     `;
   }
@@ -261,36 +273,38 @@ export class ZHADeviceEndpointList extends LitElement {
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleListSelectionChanged(
-    ev: CustomEvent<HaListSelectedDetail>
-  ): void {
+  private _handleItemSelected(ev: CustomEvent<number>): void {
     const list = ev.currentTarget as HaListSelectable;
     let selectedDeviceIds = this._selectedDeviceIds;
 
-    ev.detail.diff?.added.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDeviceIds = this._setSelectedDeviceId(
-          selectedDeviceIds,
-          item.value,
-          true
-        );
-      }
-    });
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value) {
+      selectedDeviceIds = this._setSelectedDeviceId(
+        selectedDeviceIds,
+        item.value,
+        true
+      );
 
-    ev.detail.diff?.removed.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDeviceIds = this._setSelectedDeviceId(
-          selectedDeviceIds,
-          item.value,
-          false
-        );
-      }
-    });
+      this._selectedDeviceIds = selectedDeviceIds;
+      this._fireSelectionChanged();
+    }
+  }
 
-    this._selectedDeviceIds = selectedDeviceIds;
-    this._fireSelectionChanged();
+  private _handleItemDeselected(ev: CustomEvent<number>): void {
+    const list = ev.currentTarget as HaListSelectable;
+    let selectedDeviceIds = this._selectedDeviceIds;
+
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value) {
+      selectedDeviceIds = this._setSelectedDeviceId(
+        selectedDeviceIds,
+        item.value,
+        false
+      );
+
+      this._selectedDeviceIds = selectedDeviceIds;
+      this._fireSelectionChanged();
+    }
   }
 
   private _setSelectedDeviceId(

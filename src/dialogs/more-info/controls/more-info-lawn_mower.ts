@@ -1,7 +1,8 @@
+import { consume } from "@lit/context";
 import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -10,6 +11,12 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
+import {
+  apiContext,
+  entitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
@@ -25,13 +32,31 @@ import {
   isMowing,
 } from "../../../data/lawn_mower";
 import "../../../state-control/lawn_mower/ha-state-control-lawn_mower-status";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-lawn_mower")
 class MoreInfoLawnMower extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HomeAssistant["states"];
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
 
   @property({ attribute: false }) public stateObj?: LawnMowerEntity;
 
@@ -53,20 +78,23 @@ class MoreInfoLawnMower extends LitElement {
     );
   }
 
-  private get _startPauseIcon(): string {
-    if (!this.stateObj) return mdiPlay;
-    return isMowing(this.stateObj) &&
+  private get _showPause(): boolean {
+    if (!this.stateObj) return false;
+    return (
+      isMowing(this.stateObj) &&
       supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
-      ? mdiPause
-      : mdiPlay;
+    );
+  }
+
+  private get _startPauseIcon(): string {
+    return this._showPause ? mdiPause : mdiPlay;
   }
 
   private get _startPauseLabel(): string {
-    if (!this.stateObj || !this.hass) return "";
-    return isMowing(this.stateObj) &&
-      supportsFeature(this.stateObj, LawnMowerEntityFeature.PAUSE)
-      ? this.hass.localize("ui.dialogs.more_info_control.lawn_mower.pause")
-      : this.hass.localize(
+    if (!this.stateObj) return "";
+    return this._showPause
+      ? this._i18n.localize("ui.dialogs.more_info_control.lawn_mower.pause")
+      : this._i18n.localize(
           "ui.dialogs.more_info_control.lawn_mower.start_mowing"
         );
   }
@@ -74,23 +102,26 @@ class MoreInfoLawnMower extends LitElement {
   private get _startPauseDisabled(): boolean {
     if (!this.stateObj) return true;
     if (this.stateObj.state === UNAVAILABLE) return true;
-    if (isMowing(this.stateObj)) return false;
-    return !canStartMowing(this.stateObj);
+    if (this._showPause) return false;
+    return (
+      !supportsFeature(this.stateObj, LawnMowerEntityFeature.START_MOWING) ||
+      !canStartMowing(this.stateObj)
+    );
   }
 
   private _renderBattery() {
-    if (!this.stateObj || !this.hass) {
+    if (!this.stateObj) {
       return nothing;
     }
 
-    const deviceId = this.hass.entities[this.stateObj.entity_id]?.device_id;
+    const deviceId = this._entities[this.stateObj.entity_id]?.device_id;
     const entities = deviceId
-      ? this._deviceEntities(deviceId, this.hass.entities)
+      ? this._deviceEntities(deviceId, this._entities)
       : [];
 
-    const batteryEntity = findBatteryEntity(this.hass, entities);
+    const batteryEntity = findBatteryEntity(this._states, entities);
     const battery = batteryEntity
-      ? this.hass.states[batteryEntity.entity_id]
+      ? this._states[batteryEntity.entity_id]
       : undefined;
     const batteryDomain = battery ? computeStateDomain(battery) : undefined;
 
@@ -99,24 +130,25 @@ class MoreInfoLawnMower extends LitElement {
       (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
     ) {
       const batteryChargingEntity = findBatteryChargingEntity(
-        this.hass,
+        this._states,
         entities
       );
       const batteryCharging = batteryChargingEntity
-        ? this.hass.states[batteryChargingEntity?.entity_id]
+        ? this._states[batteryChargingEntity?.entity_id]
         : undefined;
 
       return html`
         <span class="battery" slot="after-time">
-          ${batteryDomain === "binary_sensor"
-            ? nothing
-            : html`<span
-                >${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this.hass.locale
-                )}%</span
-              >`}
+          ${
+            batteryDomain === "binary_sensor"
+              ? nothing
+              : html`<span
+                  >${Number(battery.state).toFixed()}${blankBeforePercent(
+                    this._i18n.locale
+                  )}%</span
+                >`
+          }
           <ha-battery-icon
-            .hass=${this.hass}
             .batteryStateObj=${battery}
             .batteryChargingStateObj=${batteryCharging}
           ></ha-battery-icon>
@@ -130,12 +162,12 @@ class MoreInfoLawnMower extends LitElement {
   private _handleStartPause() {
     if (!this.stateObj) return;
     forwardHaptic(this, "light");
-    if (isMowing(this.stateObj)) {
-      this.hass.callService("lawn_mower", "pause", {
+    if (this._showPause) {
+      this._api.callService("lawn_mower", "pause", {
         entity_id: this.stateObj.entity_id,
       });
     } else {
-      this.hass.callService("lawn_mower", "start_mowing", {
+      this._api.callService("lawn_mower", "start_mowing", {
         entity_id: this.stateObj.entity_id,
       });
     }
@@ -144,13 +176,13 @@ class MoreInfoLawnMower extends LitElement {
   private _handleDock() {
     if (!this.stateObj) return;
     forwardHaptic(this, "light");
-    this.hass.callService("lawn_mower", "dock", {
+    this._api.callService("lawn_mower", "dock", {
       entity_id: this.stateObj.entity_id,
     });
   }
 
   protected render() {
-    if (!this.stateObj) {
+    if (!this.stateObj || !this._i18n) {
       return nothing;
     }
 
@@ -161,52 +193,57 @@ class MoreInfoLawnMower extends LitElement {
     const hasAnyCommand = this._supportsStartPause || supportsDock;
 
     return html`
-      <ha-more-info-state-header .hass=${this.hass} .stateObj=${this.stateObj}>
+      <ha-more-info-state-header .stateObj=${this.stateObj}>
         ${this._renderBattery()}
       </ha-more-info-state-header>
 
       <div class="controls">
         <ha-state-control-lawn_mower-status
           .stateObj=${this.stateObj}
-          .hass=${this.hass}
         ></ha-state-control-lawn_mower-status>
 
-        ${hasAnyCommand
-          ? html`
-              <div class="buttons">
-                <ha-control-button-group>
-                  ${this._supportsStartPause
-                    ? html`
-                        <ha-control-button
-                          .label=${this._startPauseLabel}
-                          @click=${this._handleStartPause}
-                          .disabled=${this._startPauseDisabled}
-                        >
-                          <ha-svg-icon
-                            .path=${this._startPauseIcon}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsDock
-                    ? html`
-                        <ha-control-button
-                          .label=${this.hass.localize(
-                            "ui.dialogs.more_info_control.lawn_mower.dock"
-                          )}
-                          @click=${this._handleDock}
-                          .disabled=${isUnavailable || !canDock(stateObj)}
-                        >
-                          <ha-svg-icon
-                            .path=${mdiHomeImportOutline}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                </ha-control-button-group>
-              </div>
-            `
-          : nothing}
+        ${
+          hasAnyCommand
+            ? html`
+                <div class="buttons">
+                  <ha-control-button-group>
+                    ${
+                      this._supportsStartPause
+                        ? html`
+                            <ha-control-button
+                              .label=${this._startPauseLabel}
+                              @click=${this._handleStartPause}
+                              .disabled=${this._startPauseDisabled}
+                            >
+                              <ha-svg-icon
+                                .path=${this._startPauseIcon}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsDock
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.lawn_mower.dock"
+                              )}
+                              @click=${this._handleDock}
+                              .disabled=${isUnavailable || !canDock(stateObj)}
+                            >
+                              <ha-svg-icon
+                                .path=${mdiHomeImportOutline}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                  </ha-control-button-group>
+                </div>
+              `
+            : nothing
+        }
       </div>
     `;
   }

@@ -25,6 +25,7 @@ import type {
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import type { TimestampRenderingFormat } from "../components/types";
 import type { LovelaceElementConfig } from "../elements/types";
 import type {
@@ -37,11 +38,7 @@ import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
-  | "arm_away"
-  | "arm_home"
-  | "arm_night"
-  | "arm_vacation"
-  | "arm_custom_bypass";
+  "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -115,7 +112,9 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
   show_name?: boolean;
   show_icon?: boolean;
 }
@@ -129,7 +128,9 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
@@ -196,6 +197,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 }
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
+  show_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
@@ -332,8 +334,10 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
-  format?: TimestampRenderingFormat;
+  color?: string;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -344,7 +348,9 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: (string | GlanceConfigEntity)[];
   columns?: number;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export interface HumidifierCardConfig extends LovelaceCardConfig {
@@ -386,6 +392,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   theme?: string;
   state_filter?: string[];
+  name_detail?: "auto" | LogbookNameDetail;
 }
 
 export interface MapEntityConfig extends EntityConfig {
@@ -446,11 +453,28 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
+  date_format?: ClockCardDatePart[];
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
   face_style?: "markers" | "numbers_upright" | "roman";
 }
+
+export type ClockCardDatePart =
+  | "weekday-short"
+  | "weekday-long"
+  | "day-numeric"
+  | "day-2-digit"
+  | "month-short"
+  | "month-long"
+  | "month-numeric"
+  | "month-2-digit"
+  | "year-2-digit"
+  | "year-numeric"
+  | "separator-dash"
+  | "separator-slash"
+  | "separator-dot"
+  | "separator-new-line";
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -665,6 +689,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

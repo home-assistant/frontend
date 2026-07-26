@@ -50,8 +50,10 @@ export class HaTTSVoicePicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.tts-voice-picker.voice")}
+        .label=${
+          this.label ||
+          this.hass!.localize("ui.components.tts-voice-picker.voice")
+        }
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -85,15 +87,25 @@ export class HaTTSVoicePicker extends LitElement {
       await listTTSVoices(this.hass, this.engineId, this.language)
     ).voices;
 
-    if (!this.value) {
+    const valueIsValid =
+      this.value &&
+      this._voices?.some((voice) => voice.voice_id === this.value);
+
+    if (valueIsValid) {
       return;
     }
 
-    if (
-      !this._voices ||
-      !this._voices.find((voice) => voice.voice_id === this.value)
-    ) {
-      this.value = undefined;
+    // The current value is missing or no longer valid for the loaded voices.
+    // When a voice is required, auto-select the first one (the <ha-select>
+    // already displays it) so the value is propagated to the parent;
+    // otherwise clear it.
+    const newValue =
+      this.required && this._voices?.length
+        ? this._voices[0].voice_id
+        : undefined;
+
+    if (newValue !== this.value) {
+      this.value = newValue;
       fireEvent(this, "value-changed", { value: this.value });
     }
   }

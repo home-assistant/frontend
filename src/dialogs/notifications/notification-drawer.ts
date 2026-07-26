@@ -132,33 +132,39 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
           </div>
           <ha-icon-button-prev
             slot="actionItems"
-            .hass=${this.hass}
             @click=${this.closeDialog}
             .label=${this.hass.localize("ui.notification_drawer.close")}
           >
           </ha-icon-button-prev>
         </ha-header-bar>
         <div class="notifications">
-          ${notifications.length
-            ? html`<div class="list-container">
-                  <lit-virtualizer
-                    .items=${notifications}
-                    .renderItem=${this._renderItem}
-                  ></lit-virtualizer>
-                </div>
-                ${this._notifications.length > 1
-                  ? html`<div class="notification-actions">
-                      <ha-button appearance="filled" @click=${this._dismissAll}>
-                        ${this.hass.localize(
-                          "ui.notification_drawer.dismiss_all"
-                        )}
-                      </ha-button>
-                    </div>`
-                  : ""}`
-            : html` <div class="empty">
-                ${this.hass.localize("ui.notification_drawer.empty")}
-                <div></div>
-              </div>`}
+          ${
+            notifications.length
+              ? html`<div class="list-container">
+                    <lit-virtualizer
+                      .items=${notifications}
+                      .renderItem=${this._renderItem}
+                    ></lit-virtualizer>
+                  </div>
+                  ${
+                    this._notifications.length > 1
+                      ? html`<div class="notification-actions">
+                          <ha-button
+                            appearance="filled"
+                            @click=${this._dismissAll}
+                          >
+                            ${this.hass.localize(
+                              "ui.notification_drawer.dismiss_all"
+                            )}
+                          </ha-button>
+                        </div>`
+                      : ""
+                  }`
+              : html` <div class="empty">
+                  ${this.hass.localize("ui.notification_drawer.empty")}
+                  <div></div>
+                </div>`
+          }
         </div>
       </ha-drawer>
     `;

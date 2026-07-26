@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
+import { unitFromParts } from "./value_parts";
 
 interface EntityUnitStubConfig {
   entity: string;
@@ -40,5 +41,5 @@ export const computeEntityUnitDisplay = (
     ? hass.formatEntityAttributeValueToParts(stateObj, config.attribute)
     : hass.formatEntityStateToParts(stateObj);
 
-  return parts.find((part) => part.type === "unit")?.value ?? "";
+  return unitFromParts(parts);
 };

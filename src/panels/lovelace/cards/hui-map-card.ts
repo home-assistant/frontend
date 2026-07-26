@@ -15,6 +15,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-alert";
@@ -90,10 +91,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     const personSources = new Set<string>();
     const locationEntities: string[] = [];
     Object.values(hass.states).forEach((entity) => {
-      if (
-        !("latitude" in entity.attributes) ||
-        !("longitude" in entity.attributes)
-      ) {
+      if (!getEntityLocation(entity, hass.states)) {
         return;
       }
       locationEntities.push(entity.entity_id);
@@ -213,7 +211,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
           <ha-map
-            .hass=${this.hass}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
@@ -225,21 +222,25 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             render-passive
           ></ha-map>
           <div id="buttons">
-            ${this._filteredMapEntities.length > 1
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.map.toggle_grouping"
-                    )}
-                    .path=${this._clusterMarkers
-                      ? mdiGoogleCirclesCommunities
-                      : mdiDotsHexagon}
-                    style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-                    @click=${this._toggleClusterMarkers}
-                    tabindex="0"
-                  ></ha-icon-button>
-                `
-              : nothing}
+            ${
+              this._filteredMapEntities.length > 1
+                ? html`
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.map.toggle_grouping"
+                      )}
+                      .path=${
+                        this._clusterMarkers
+                          ? mdiGoogleCirclesCommunities
+                          : mdiDotsHexagon
+                      }
+                      style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+                      @click=${this._toggleClusterMarkers}
+                      tabindex="0"
+                    ></ha-icon-button>
+                  `
+                : nothing
+            }
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.reset_focus"

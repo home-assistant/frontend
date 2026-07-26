@@ -123,6 +123,10 @@ interface EMOutgoingMessageConnectionStatus extends EMMessage {
   payload: { event: string };
 }
 
+interface EMOutgoingMessageFrontendLoaded extends EMMessage {
+  type: "frontend/loaded"; // Fired once the launch screen is removed; with hasSplashscreen this is after the first panel has rendered
+}
+
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
   type: "config_screen/show";
 }
@@ -201,6 +205,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
   | EMOutgoingMessageConnectionStatus
+  | EMOutgoingMessageFrontendLoaded
   | EMOutgoingMessageExoplayerPlayHLS
   | EMOutgoingMessageExoplayerResize
   | EMOutgoingMessageExoplayerStop
@@ -320,6 +325,18 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
+export interface MatterCommissionFinish {
+  name: string | null;
+  success: boolean;
+}
+
+export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
+  id: number;
+  type: "command";
+  command: "matter/commission/finish";
+  payload: MatterCommissionFinish;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -331,12 +348,11 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageMatterCommissionFinish
   | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
-  | EMMessageResultSuccess
-  | EMMessageResultError
-  | EMIncomingMessageCommands;
+  EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
 
 type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
@@ -346,6 +362,7 @@ export interface ExternalConfig {
   canWriteTag?: boolean;
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
+  hasMatterStatusReport?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
@@ -354,6 +371,7 @@ export interface ExternalConfig {
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
+  hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }
 
 export interface ExternalEntityAddToAction {

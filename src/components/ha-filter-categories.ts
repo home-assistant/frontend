@@ -75,95 +75,105 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
       >
         <div slot="header" class="header">
           ${this.hass.localize("ui.panel.config.category.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`
-              <ha-list
-                @selected=${this._categorySelected}
-                class="ha-scrollbar"
-                activatable
-              >
-                ${this._categories.length > 0
-                  ? html`<ha-list-item
-                      .selected=${!this.value?.length}
-                      .activated=${!this.value?.length}
-                      >${this.hass.localize(
-                        "ui.panel.config.category.filter.show_all"
-                      )}</ha-list-item
-                    >`
-                  : nothing}
-                ${this._categories.map(
-                  (category) =>
-                    html`<ha-list-item
-                      .value=${category.category_id}
-                      .selected=${this.value?.includes(category.category_id)}
-                      .activated=${this.value?.includes(category.category_id)}
-                      graphic="icon"
-                      hasMeta
-                    >
-                      ${category.icon
-                        ? html`<ha-icon
-                            slot="graphic"
-                            .icon=${category.icon}
-                          ></ha-icon>`
-                        : html`<ha-svg-icon
-                            .path=${mdiTag}
-                            slot="graphic"
-                          ></ha-svg-icon>`}
-                      ${category.name}
-                      <ha-dropdown
-                        @click=${stopPropagation}
-                        @wa-select=${this._handleAction}
-                        slot="meta"
-                        .categoryId=${category.category_id}
+        ${
+          this._shouldRender
+            ? html`
+                <ha-list
+                  @selected=${this._categorySelected}
+                  class="ha-scrollbar"
+                  activatable
+                >
+                  ${
+                    this._categories.length > 0
+                      ? html`<ha-list-item
+                          .selected=${!this.value?.length}
+                          .activated=${!this.value?.length}
+                          >${this.hass.localize(
+                            "ui.panel.config.category.filter.show_all"
+                          )}</ha-list-item
+                        >`
+                      : nothing
+                  }
+                  ${this._categories.map(
+                    (category) =>
+                      html`<ha-list-item
+                        .value=${category.category_id}
+                        .selected=${this.value?.includes(category.category_id)}
+                        .activated=${this.value?.includes(category.category_id)}
+                        graphic="icon"
+                        hasMeta
                       >
-                        <ha-icon-button
-                          .path=${mdiDotsVertical}
-                          slot="trigger"
-                          .label=${this.hass.localize("ui.common.menu")}
-                        ></ha-icon-button>
-                        <ha-dropdown-item value="edit">
-                          <ha-svg-icon
-                            slot="icon"
-                            .path=${mdiPencil}
-                          ></ha-svg-icon>
-                          ${this.hass.localize(
-                            "ui.panel.config.category.editor.edit"
-                          )}
-                        </ha-dropdown-item>
-                        <ha-dropdown-item value="delete" variant="danger">
-                          <ha-svg-icon
-                            slot="icon"
-                            .path=${mdiDelete}
-                          ></ha-svg-icon>
-                          ${this.hass.localize(
-                            "ui.panel.config.category.editor.delete"
-                          )}
-                        </ha-dropdown-item>
-                      </ha-dropdown>
-                    </ha-list-item>`
-                )}
-              </ha-list>
-            `
-          : nothing}
+                        ${
+                          category.icon
+                            ? html`<ha-icon
+                                slot="graphic"
+                                .icon=${category.icon}
+                              ></ha-icon>`
+                            : html`<ha-svg-icon
+                                .path=${mdiTag}
+                                slot="graphic"
+                              ></ha-svg-icon>`
+                        }
+                        ${category.name}
+                        <ha-dropdown
+                          @click=${stopPropagation}
+                          @wa-select=${this._handleAction}
+                          slot="meta"
+                          .categoryId=${category.category_id}
+                        >
+                          <ha-icon-button
+                            .path=${mdiDotsVertical}
+                            slot="trigger"
+                            .label=${this.hass.localize("ui.common.menu")}
+                          ></ha-icon-button>
+                          <ha-dropdown-item value="edit">
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiPencil}
+                            ></ha-svg-icon>
+                            ${this.hass.localize(
+                              "ui.panel.config.category.editor.edit"
+                            )}
+                          </ha-dropdown-item>
+                          <ha-dropdown-item value="delete" variant="danger">
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiDelete}
+                            ></ha-svg-icon>
+                            ${this.hass.localize(
+                              "ui.panel.config.category.editor.delete"
+                            )}
+                          </ha-dropdown-item>
+                        </ha-dropdown>
+                      </ha-list-item>`
+                  )}
+                </ha-list>
+              `
+            : nothing
+        }
       </ha-expansion-panel>
-      ${this.expanded
-        ? html`<ha-list-item
-            graphic="icon"
-            @click=${this._addCategory}
-            class="add"
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.category.editor.add")}
-          </ha-list-item>`
-        : nothing}
+      ${
+        this.expanded
+          ? html`<ha-list-item
+              graphic="icon"
+              @click=${this._addCategory}
+              class="add"
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.panel.config.category.editor.add")}
+            </ha-list-item>`
+          : nothing
+      }
     `;
   }
 

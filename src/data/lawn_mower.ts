@@ -5,13 +5,9 @@ import type {
 import { UNAVAILABLE } from "./entity/entity";
 
 export type LawnMowerEntityState =
-  | "paused"
-  | "mowing"
-  | "returning"
-  | "docked"
-  | "error";
+  "paused" | "mowing" | "returning" | "docked" | "error";
 
-export const enum LawnMowerEntityFeature {
+export enum LawnMowerEntityFeature {
   START_MOWING = 1,
   PAUSE = 2,
   DOCK = 4,

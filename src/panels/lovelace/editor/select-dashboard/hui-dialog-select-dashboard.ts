@@ -73,28 +73,30 @@ export class HuiDialogSelectDashboard extends LitElement {
         .preventScrimClose=${this._saving}
         @closed=${this._dialogClosed}
       >
-        ${this._dashboards && !this._saving
-          ? html`
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.panel.lovelace.editor.select_view.dashboard_label"
-                )}
-                @selected=${this._dashboardChanged}
-                .value=${this._toUrlPath || ""}
-                .options=${this._dashboards.map((dashboard) => ({
-                  value: dashboard.url_path,
-                  label: dashboard.title,
-                  disabled:
-                    dashboard.mode !== "storage" ||
-                    dashboard.url_path === this._fromUrlPath ||
-                    (dashboard.url_path === "lovelace" &&
-                      this._fromUrlPath === null),
-                }))}
-              ></ha-select>
-            `
-          : html`<div class="loading">
-              <ha-spinner size="medium"></ha-spinner>
-            </div>`}
+        ${
+          this._dashboards && !this._saving
+            ? html`
+                <ha-select
+                  .label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.select_view.dashboard_label"
+                  )}
+                  @selected=${this._dashboardChanged}
+                  .value=${this._toUrlPath || ""}
+                  .options=${this._dashboards.map((dashboard) => ({
+                    value: dashboard.url_path,
+                    label: dashboard.title,
+                    disabled:
+                      dashboard.mode !== "storage" ||
+                      dashboard.url_path === this._fromUrlPath ||
+                      (dashboard.url_path === "lovelace" &&
+                        this._fromUrlPath === null),
+                  }))}
+                ></ha-select>
+              `
+            : html`<div class="loading">
+                <ha-spinner size="medium"></ha-spinner>
+              </div>`
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -107,9 +109,11 @@ export class HuiDialogSelectDashboard extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._selectDashboard}
-            .disabled=${!this._config ||
-            this._fromUrlPath === this._toUrlPath ||
-            this._saving}
+            .disabled=${
+              !this._config ||
+              this._fromUrlPath === this._toUrlPath ||
+              this._saving
+            }
           >
             ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
           </ha-button>

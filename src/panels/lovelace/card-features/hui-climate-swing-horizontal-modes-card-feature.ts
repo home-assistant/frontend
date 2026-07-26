@@ -1,4 +1,5 @@
 import { mdiArrowOscillating } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +13,16 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
+const supportsClimateSwingHorizontalModesCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "climate" &&
+    supportsFeature(stateObj, ClimateEntityFeature.SWING_HORIZONTAL_MODE)
+  );
+};
+
 export const supportsClimateSwingHorizontalModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -20,11 +31,7 @@ export const supportsClimateSwingHorizontalModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "climate" &&
-    supportsFeature(stateObj, ClimateEntityFeature.SWING_HORIZONTAL_MODE)
-  );
+  return supportsClimateSwingHorizontalModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-climate-swing-horizontal-modes-card-feature")
@@ -65,9 +72,8 @@ class HuiClimateSwingHorizontalModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsClimateSwingHorizontalModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsClimateSwingHorizontalModesCardFeatureFromState(this._stateObj)
     );
   }
 }

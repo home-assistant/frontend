@@ -1,18 +1,23 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-textarea";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
+
+const LONG_VALUE = Array.from(
+  { length: 30 },
+  (_, i) => `Line ${i + 1}: this content overflows the max-height and scrolls.`
+).join("\n");
 
 @customElement("demo-components-ha-textarea")
 export class DemoHaTextarea extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-textarea in ${mode}">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <h3>Basic</h3>
                 <div class="row">
@@ -37,6 +42,11 @@ export class DemoHaTextarea extends LitElement {
                     label="Autogrow with value"
                     resize="auto"
                     value="This textarea will grow as you type more content into it. Try adding more lines to see the effect."
+                  ></ha-textarea>
+                  <ha-textarea
+                    label="Autogrow capped (scrolls past max-height)"
+                    resize="auto"
+                    .value=${LONG_VALUE}
                   ></ha-textarea>
                 </div>
 
@@ -84,42 +94,19 @@ export class DemoHaTextarea extends LitElement {
                 </div>
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
-  }
-
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
   }
 
   static styles = css`
     :host {
-      display: flex;
-      justify-content: center;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     .card-content {
       display: flex;

@@ -101,24 +101,26 @@ export class HuiCardEditMode extends LitElement {
     return html`
       <div class="card-wrapper" inert><slot></slot></div>
       <div class="card-overlay ${classMap({ visible: showOverlay })}">
-        ${this.noEdit
-          ? html`
-              <div class="control">
-                <div class="control-overlay"></div>
-                <ha-svg-icon .path=${mdiCursorMove}> </ha-svg-icon>
-              </div>
-            `
-          : html`
-              <div
-                class="control"
-                @click=${this._handleOverlayClick}
-                @keydown=${this._handleOverlayClick}
-                tabindex="0"
-              >
-                <div class="control-overlay"></div>
-                <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
-              </div>
-            `}
+        ${
+          this.noEdit
+            ? html`
+                <div class="control">
+                  <div class="control-overlay"></div>
+                  <ha-svg-icon .path=${mdiCursorMove}> </ha-svg-icon>
+                </div>
+              `
+            : html`
+                <div
+                  class="control"
+                  @click=${this._handleOverlayClick}
+                  @keydown=${this._handleOverlayClick}
+                  tabindex="0"
+                >
+                  <div class="control-overlay"></div>
+                  <ha-svg-icon .path=${mdiPencil}> </ha-svg-icon>
+                </div>
+              `
+        }
         <ha-dropdown
           class="more"
           placement="bottom-end"
@@ -126,45 +128,56 @@ export class HuiCardEditMode extends LitElement {
         >
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}>
           </ha-icon-button>
-          ${this.noEdit
-            ? nothing
-            : html`
-                <ha-dropdown-item value="edit">
-                  <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
-                  ${this._localize("ui.panel.lovelace.editor.edit_card.edit")}
-                </ha-dropdown-item>
-              `}
-          ${this.noDuplicate
-            ? nothing
-            : html`
-                <ha-dropdown-item value="duplicate">
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiPlusCircleMultipleOutline}
-                  ></ha-svg-icon>
-                  ${this._localize(
-                    "ui.panel.lovelace.editor.edit_card.duplicate"
-                  )}
-                </ha-dropdown-item>
-              `}
-          ${this.noMove
-            ? nothing
-            : html`
-                <ha-dropdown-item value="copy">
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiContentCopy}
-                  ></ha-svg-icon>
-                  ${this._localize("ui.panel.lovelace.editor.edit_card.copy")}
-                </ha-dropdown-item>
-                <ha-dropdown-item value="cut">
-                  <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
-                  ${this._localize("ui.panel.lovelace.editor.edit_card.cut")}
-                </ha-dropdown-item>
-              `}
-          ${this.noDuplicate && this.noEdit && this.noMove
-            ? nothing
-            : html`<wa-divider></wa-divider>`}
+          ${
+            this.noEdit
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="edit">
+                    <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.edit")}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noDuplicate
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="duplicate">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPlusCircleMultipleOutline}
+                    ></ha-svg-icon>
+                    ${this._localize(
+                      "ui.panel.lovelace.editor.edit_card.duplicate"
+                    )}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noMove
+              ? nothing
+              : html`
+                  <ha-dropdown-item value="copy">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentCopy}
+                    ></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.copy")}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item value="cut">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentCut}
+                    ></ha-svg-icon>
+                    ${this._localize("ui.panel.lovelace.editor.edit_card.cut")}
+                  </ha-dropdown-item>
+                `
+          }
+          ${
+            this.noDuplicate && this.noEdit && this.noMove
+              ? nothing
+              : html`<wa-divider></wa-divider>`
+          }
           <ha-dropdown-item value="delete" variant="danger">
             ${this._localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon

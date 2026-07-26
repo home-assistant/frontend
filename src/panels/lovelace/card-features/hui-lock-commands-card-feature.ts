@@ -1,10 +1,18 @@
+import { consume } from "@lit/context";
 import { mdiLock, mdiLockOpenVariant } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import { apiContext } from "../../../data/context";
 import { forwardHaptic } from "../../../data/haptics";
 import {
   callProtectedLockService,
@@ -12,13 +20,18 @@ import {
   canUnlock,
   type LockEntity,
 } from "../../../data/lock";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LockCommandsCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsLockCommandsCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "lock";
+};
 
 export const supportsLockCommandsCardFeature = (
   hass: HomeAssistant,
@@ -28,8 +41,7 @@ export const supportsLockCommandsCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "lock";
+  return supportsLockCommandsCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-lock-commands-card-feature")
@@ -37,18 +49,21 @@ class HuiLockCommandsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: LockCommandsCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: LockEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as LockEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _config?: LockCommandsCardFeatureConfig;
 
   static getStubConfig(): LockCommandsCardFeatureConfig {
     return {
@@ -66,20 +81,28 @@ class HuiLockCommandsCardFeature
   private _onTap(ev): void {
     ev.stopPropagation();
     const service = ev.target.dataset.service;
-    if (!this.hass || !this._stateObj || !service) {
+    if (!this._stateObj || !service) {
       return;
     }
     forwardHaptic(this, "light");
-    callProtectedLockService(this, this.hass, this._stateObj, service);
+    callProtectedLockService(
+      this,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this._stateObj,
+      service
+    );
   }
 
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsLockCommandsCardFeature(this.hass, this.context)
+      !supportsLockCommandsCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -87,7 +110,7 @@ class HuiLockCommandsCardFeature
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .label=${this.hass.localize("ui.card.lock.lock")}
+          .label=${this._localize("ui.card.lock.lock")}
           .disabled=${!canLock(this._stateObj)}
           @click=${this._onTap}
           data-service="lock"
@@ -95,7 +118,7 @@ class HuiLockCommandsCardFeature
           <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
         </ha-control-button>
         <ha-control-button
-          .label=${this.hass.localize("ui.card.lock.unlock")}
+          .label=${this._localize("ui.card.lock.unlock")}
           .disabled=${!canUnlock(this._stateObj)}
           @click=${this._onTap}
           data-service="unlock"

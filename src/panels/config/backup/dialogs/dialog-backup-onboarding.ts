@@ -15,6 +15,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/item/ha-row-item";
 import "../../../../components/list/ha-list-base";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type {
   BackupConfig,
   BackupMutableConfig,
@@ -82,7 +83,10 @@ const RECOMMENDED_CONFIG: BackupConfig = {
 };
 
 @customElement("ha-dialog-backup-onboarding")
-class DialogBackupOnboarding extends LitElement implements HassDialog {
+class DialogBackupOnboarding
+  extends DirtyStateProviderMixin<BackupConfig>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -115,6 +119,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
 
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._config!);
   }
 
   public closeDialog() {
@@ -169,6 +174,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     try {
       await this._save(true);
       this._params?.submit!(true);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -197,6 +203,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("_step") && this._step === "key") {
       this._save();
     }
@@ -214,52 +221,58 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       <ha-dialog
         .open=${this._open}
         header-title=${this._stepTitle}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${isFirstStep
-          ? html`
-              <ha-icon-button
-                slot="headerNavigationIcon"
-                data-dialog="close"
-                .label=${this.hass.localize("ui.common.close")}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `
-          : html`
-              <ha-icon-button-prev
-                slot="headerNavigationIcon"
-                @click=${this._previousStep}
-              ></ha-icon-button-prev>
-            `}
+        ${
+          isFirstStep
+            ? html`
+                <ha-icon-button
+                  slot="headerNavigationIcon"
+                  data-dialog="close"
+                  .label=${this.hass.localize("ui.common.close")}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+            : html`
+                <ha-icon-button-prev
+                  slot="headerNavigationIcon"
+                  @click=${this._previousStep}
+                ></ha-icon-button-prev>
+              `
+        }
         <div>${this._renderStepContent()}</div>
-        ${!FULL_DIALOG_STEPS.has(this._step)
-          ? html`
-              <ha-dialog-footer slot="footer">
-                ${isLastStep
-                  ? html`
-                      <ha-button
-                        slot="primaryAction"
-                        @click=${this._done}
-                        .disabled=${!this._isStepValid()}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.dialogs.onboarding.save_and_create"
-                        )}
-                      </ha-button>
-                    `
-                  : html`
-                      <ha-button
-                        slot="primaryAction"
-                        @click=${this._nextStep}
-                        .disabled=${!this._isStepValid()}
-                      >
-                        ${this.hass.localize("ui.common.next")}
-                      </ha-button>
-                    `}
-              </ha-dialog-footer>
-            `
-          : nothing}
+        ${
+          !FULL_DIALOG_STEPS.has(this._step)
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  ${
+                    isLastStep
+                      ? html`
+                          <ha-button
+                            slot="primaryAction"
+                            @click=${this._done}
+                            .disabled=${!this._isStepValid()}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.dialogs.onboarding.save_and_create"
+                            )}
+                          </ha-button>
+                        `
+                      : html`
+                          <ha-button
+                            slot="primaryAction"
+                            @click=${this._nextStep}
+                            .disabled=${!this._isStepValid()}
+                          >
+                            ${this.hass.localize("ui.common.next")}
+                          </ha-button>
+                        `
+                  }
+                </ha-dialog-footer>
+              `
+            : nothing
+        }
       </ha-dialog>
     `;
   }
@@ -293,6 +306,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         password: this._config.create_backup.password,
       },
     };
+    this._updateDirtyState(this._config);
     this._done();
   }
 
@@ -379,7 +393,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               )}
             </span>
             <ha-button
-              size="small"
+              size="s"
               appearance="plain"
               slot="end"
               @click=${this._downloadKey}
@@ -515,6 +529,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         include_addons: data.include_addons || null,
       },
     };
+    this._updateDirtyState(this._config);
   }
 
   private _scheduleChanged(ev) {
@@ -524,6 +539,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       schedule: value.schedule,
       retention: value.retention,
     };
+    this._updateDirtyState(this._config);
   }
 
   private _agentsConfigChanged(ev) {
@@ -535,6 +551,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         agent_ids: agents,
       },
     };
+    this._updateDirtyState(this._config);
   }
 
   static get styles(): CSSResultGroup {

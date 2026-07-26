@@ -33,15 +33,13 @@ export class HomeFavoriteEntityListItem extends LitElement {
 
     return html`
       <ha-settings-row slim>
-        <state-badge
-          slot="prefix"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-        ></state-badge>
+        <state-badge slot="prefix" .stateObj=${stateObj}></state-badge>
         <span slot="heading">${primary}</span>
-        ${secondary
-          ? html`<span slot="description">${secondary}</span>`
-          : nothing}
+        ${
+          secondary
+            ? html`<span slot="description">${secondary}</span>`
+            : nothing
+        }
         <ha-icon-button
           .path=${mdiDelete}
           .label=${this.hass.localize("ui.common.delete")}

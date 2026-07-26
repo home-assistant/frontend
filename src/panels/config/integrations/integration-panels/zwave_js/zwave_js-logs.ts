@@ -66,8 +66,9 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.zwave_js.logs.caption")}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
         <div class="container">
           <ha-card>
@@ -77,29 +78,31 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
               </h1>
             </div>
             <div class="card-content">
-              ${this._logConfig
-                ? html`
-                    <ha-select
-                      .label=${this.hass.localize(
-                        "ui.panel.config.zwave_js.logs.log_level"
-                      )}
-                      .value=${this._logConfig.level}
-                      @selected=${this._dropdownSelected}
-                      .options=${[
-                        "error",
-                        "warn",
-                        "info",
-                        "verbose",
-                        "debug",
-                        "silly",
-                      ].map((level) => ({
-                        value: level,
-                        label: capitalizeFirstLetter(level),
-                      }))}
-                    >
-                    </ha-select>
-                  `
-                : ""}
+              ${
+                this._logConfig
+                  ? html`
+                      <ha-select
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.logs.log_level"
+                        )}
+                        .value=${this._logConfig.level}
+                        @selected=${this._dropdownSelected}
+                        .options=${[
+                          "error",
+                          "warn",
+                          "info",
+                          "verbose",
+                          "debug",
+                          "silly",
+                        ].map((level) => ({
+                          value: level,
+                          label: capitalizeFirstLetter(level),
+                        }))}
+                      >
+                      </ha-select>
+                    `
+                  : ""
+              }
             </div>
             <ha-icon-button
               .label=${this.hass.localize(

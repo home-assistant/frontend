@@ -106,9 +106,11 @@ export class HaConfigLovelaceResources extends LitElement {
         sortable: true,
         filterable: true,
         template: (resource) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.resources.types.${resource.type}`
-          ) || resource.type}
+          ${
+            this.hass.localize(
+              `ui.panel.config.lovelace.resources.types.${resource.type}`
+            ) || resource.type
+          }
         `,
       },
       delete: {
@@ -190,19 +192,21 @@ export class HaConfigLovelaceResources extends LitElement {
         has-fab
         clickable
       >
-        ${isYamlMode
-          ? html`
-              <ha-icon-button
-                slot="toolbar-icon"
-                .label=${this.hass.localize(
-                  "ui.panel.config.lovelace.resources.reload_resources"
-                )}
-                .path=${mdiRefresh}
-                @click=${this._handleReloadResources}
-              ></ha-icon-button>
-            `
-          : ""}
-        <ha-button slot="fab" size="large" @click=${this._addResource}>
+        ${
+          isYamlMode
+            ? html`
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.reload_resources"
+                  )}
+                  .path=${mdiRefresh}
+                  @click=${this._handleReloadResources}
+                ></ha-icon-button>
+              `
+            : ""
+        }
+        <ha-button slot="fab" size="l" @click=${this._addResource}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.lovelace.resources.picker.add_resource"

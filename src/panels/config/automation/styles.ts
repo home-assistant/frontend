@@ -53,6 +53,11 @@ export const rowStyles = css`
     position: absolute;
   }
 
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }
@@ -264,6 +269,7 @@ export const overflowStyles = css`
     white-space: nowrap;
   }
   .overflow-label .shortcut {
+    direction: ltr;
     --mdc-icon-size: 12px;
     display: inline-flex;
     flex-direction: row;

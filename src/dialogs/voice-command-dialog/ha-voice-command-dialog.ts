@@ -58,9 +58,11 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _startListening = false;
 
-  public async showDialog(
-    params: Required<VoiceCommandDialogParams>
-  ): Promise<void> {
+  private _prompt?: string;
+
+  private _submitPrompt = false;
+
+  public async showDialog(params: VoiceCommandDialogParams): Promise<void> {
     await this._loadPipelines();
     const pipelinesIds = this._pipelines?.map((pipeline) => pipeline.id) || [];
     if (
@@ -77,7 +79,9 @@ export class HaVoiceCommandDialog extends LitElement {
       this._pipelineId = this._preferredPipeline;
     }
 
-    this._startListening = params.start_listening;
+    this._startListening = params.start_listening ?? false;
+    this._prompt = params.prompt;
+    this._submitPrompt = params.submit ?? false;
     this._dialogOpen = true;
     this._open = true;
   }
@@ -117,46 +121,53 @@ export class HaVoiceCommandDialog extends LitElement {
                 slot="trigger"
                 appearance="plain"
                 variant="neutral"
-                size="small"
+                size="s"
                 .loading=${!this._pipelines}
               >
                 ${this._pipeline?.name}
                 <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
-              ${!this._pipelines
-                ? nothing
-                : this._pipelines?.map(
-                    (pipeline) =>
-                      html`<ha-dropdown-item
-                        ?selected=${pipeline.id === this._pipelineId ||
-                        (!this._pipelineId &&
-                          pipeline.id === this._preferredPipeline)}
-                        .value=${pipeline.id}
-                      >
-                        ${pipeline.name}${pipeline.id ===
-                        this._preferredPipeline
-                          ? html`
-                              <ha-svg-icon
-                                slot="details"
-                                .path=${mdiStar}
-                              ></ha-svg-icon>
-                            `
-                          : nothing}
-                      </ha-dropdown-item>`
-                  )}
-              ${this.hass.user?.is_admin
-                ? html`<wa-divider></wa-divider>
-                    <a href="/config/voice-assistants/assistants"
-                      ><ha-dropdown-item
-                        >${this.hass.localize(
-                          "ui.dialogs.voice_command.manage_assistants"
-                        )}
+              ${
+                !this._pipelines
+                  ? nothing
+                  : this._pipelines?.map(
+                      (pipeline) =>
+                        html`<ha-dropdown-item
+                          ?selected=${
+                            pipeline.id === this._pipelineId ||
+                            (!this._pipelineId &&
+                              pipeline.id === this._preferredPipeline)
+                          }
+                          .value=${pipeline.id}
+                        >
+                          ${pipeline.name}${
+                            pipeline.id === this._preferredPipeline
+                              ? html`
+                                  <ha-svg-icon
+                                    slot="details"
+                                    .path=${mdiStar}
+                                  ></ha-svg-icon>
+                                `
+                              : nothing
+                          }
+                        </ha-dropdown-item>`
+                    )
+              }
+              ${
+                this.hass.user?.is_admin
+                  ? html`<wa-divider></wa-divider>
+                      <a href="/config/voice-assistants/assistants"
+                        ><ha-dropdown-item
+                          >${this.hass.localize(
+                            "ui.dialogs.voice_command.manage_assistants"
+                          )}
 
-                        <ha-icon-next
-                          slot="details"
-                        ></ha-icon-next></ha-dropdown-item
-                    ></a>`
-                : nothing}
+                          <ha-icon-next
+                            slot="details"
+                          ></ha-icon-next></ha-dropdown-item
+                      ></a>`
+                  : nothing
+              }
             </ha-dropdown>
           </div>
           <ha-icon-button
@@ -169,24 +180,28 @@ export class HaVoiceCommandDialog extends LitElement {
           ></ha-icon-button>
         </ha-dialog-header>
 
-        ${this._errorLoadAssist
-          ? html`<ha-alert alert-type="error">
-              ${this.hass.localize(
-                `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
-              )}
-            </ha-alert>`
-          : this._pipeline
-            ? html`
-                <ha-assist-chat
-                  .hass=${this.hass}
-                  .pipeline=${this._pipeline}
-                  .startListening=${this._startListening}
-                >
-                </ha-assist-chat>
-              `
-            : html`<div class="pipelines-loading">
-                <ha-spinner size="large"></ha-spinner>
-              </div>`}
+        ${
+          this._errorLoadAssist
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize(
+                  `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
+                )}
+              </ha-alert>`
+            : this._pipeline
+              ? html`
+                  <ha-assist-chat
+                    .hass=${this.hass}
+                    .pipeline=${this._pipeline}
+                    .startListening=${this._startListening}
+                    .initialPrompt=${this._prompt}
+                    .submitInitialPrompt=${this._submitPrompt}
+                  >
+                  </ha-assist-chat>
+                `
+              : html`<div class="pipelines-loading">
+                  <ha-spinner size="large"></ha-spinner>
+                </div>`
+        }
       </ha-dialog>
     `;
   }

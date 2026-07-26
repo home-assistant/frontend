@@ -22,8 +22,8 @@ import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: "var(--energy-grid-consumption-color)" },
-  { level: 0, stroke: "var(--energy-grid-return-color)" },
+  { level: -1, stroke: "var(--energy-grid-return-color)" },
+  { level: 0, stroke: "var(--energy-grid-consumption-color)" },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
@@ -107,9 +107,9 @@ class HuiEnergyGridGaugeCard
 
     if (consumedFromGrid !== null && returnedToGrid !== null) {
       if (returnedToGrid > consumedFromGrid) {
-        value = 1 - consumedFromGrid / returnedToGrid;
+        value = (1 - consumedFromGrid / returnedToGrid) * -1;
       } else if (returnedToGrid < consumedFromGrid) {
-        value = (1 - returnedToGrid / consumedFromGrid) * -1;
+        value = 1 - returnedToGrid / consumedFromGrid;
       } else {
         value = 0;
       }
@@ -117,48 +117,52 @@ class HuiEnergyGridGaugeCard
 
     return html`
       <ha-card>
-        ${value !== undefined
-          ? html`
-              <ha-gauge
-                min="-1"
-                max="1"
-                .value=${value}
-                .valueText=${formatNumber(
-                  Math.abs(returnedToGrid! - consumedFromGrid!),
-                  this.hass.locale,
-                  { maximumFractionDigits: 2 }
-                )}
-                .locale=${this.hass!.locale}
-                .levels=${LEVELS}
-                label="kWh"
-                needle
-              ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
-              <ha-tooltip for="info" placement="left">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
-                )}
-                <br /><br />
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
-                )}
-              </ha-tooltip>
-              <div class="name">
-                ${returnedToGrid! >= consumedFromGrid!
-                  ? this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
-                    )}
-              </div>
-            `
-          : this.hass.localize(
-              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
-            )}
+        ${
+          value !== undefined
+            ? html`
+                <ha-gauge
+                  min="-1"
+                  max="1"
+                  .value=${value}
+                  .valueText=${formatNumber(
+                    Math.abs(returnedToGrid! - consumedFromGrid!),
+                    this.hass.locale,
+                    { maximumFractionDigits: 2 }
+                  )}
+                  .locale=${this.hass!.locale}
+                  .levels=${LEVELS}
+                  label="kWh"
+                  needle
+                ></ha-gauge>
+                <ha-svg-icon
+                  id="info"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <ha-tooltip for="info" placement="left">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                  )}
+                </ha-tooltip>
+                <div class="name">
+                  ${
+                    returnedToGrid! >= consumedFromGrid!
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                        )
+                  }
+                </div>
+              `
+            : this.hass.localize(
+                "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+              )
+        }
       </ha-card>
     `;
   }

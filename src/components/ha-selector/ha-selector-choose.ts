@@ -63,7 +63,7 @@ export class HaChooseSelector extends LitElement {
     return html`<div class="multi-header">
         <span>${this.label}${this.required ? "*" : ""}</span>
         <ha-button-toggle-group
-          size="small"
+          size="s"
           .buttons=${this._toggleButtons(
             this.selector.choose.choices,
             this.selector.choose.translation_key,

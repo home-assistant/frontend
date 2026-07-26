@@ -127,7 +127,6 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "away_mode",
   "changed_by",
   "code_format",
-  "color_modes",
   "current_activity",
   "device_class",
   "editable",
@@ -177,6 +176,7 @@ export const NON_NUMERIC_ATTRIBUTES = [
   "source_type",
   "source",
   "state_class",
+  "supported_color_modes",
   "supported_features",
   "swing_mode",
   "swing_mode",
@@ -190,7 +190,6 @@ export const NON_NUMERIC_ATTRIBUTES = [
 export const STATE_CONDITION_HIDDEN_ATTRIBUTES = [
   "access_token",
   "available_modes",
-  "color_modes",
   "editable",
   "effect_list",
   "entity_picture",
@@ -207,6 +206,7 @@ export const STATE_CONDITION_HIDDEN_ATTRIBUTES = [
   "sound_mode_list",
   "source_list",
   "state_class",
+  "supported_color_modes",
   "swing_modes",
   "token",
 ];

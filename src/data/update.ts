@@ -77,7 +77,10 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
-export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
+export const updateReleaseNotes = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entityId: string
+) =>
   hass.callWS<string | null>({
     type: "update/release_notes",
     entity_id: entityId,
@@ -146,10 +149,20 @@ export const filterUpdateEntitiesParameterized = (
     return updateCanInstall(entity, showSkipped);
   });
 
-export const installUpdates = (hass: HomeAssistant, entityIds: string[]) =>
-  hass.callService("update", "install", {
-    entity_id: entityIds,
-  });
+export const installUpdates = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  notifyOnError = true
+) =>
+  hass.callService(
+    "update",
+    "install",
+    {
+      entity_id: entityIds,
+    },
+    undefined,
+    notifyOnError
+  );
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,
@@ -221,6 +234,24 @@ export const computeUpdateStateDisplay = (
   const state = stateObj.state;
   const attributes = stateObj.attributes;
 
+  // An install can be in progress even when the state is "off", e.g. when
+  // downgrading firmware (installed_version is newer than latest_version).
+  // Show the installing status regardless of state in that case.
+  if (updateIsInstalling(stateObj)) {
+    const supportsProgress =
+      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
+      attributes.update_percentage !== null;
+    if (supportsProgress) {
+      return hass.localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, hass.locale, {
+          maximumFractionDigits: attributes.display_precision,
+          minimumFractionDigits: attributes.display_precision,
+        }),
+      });
+    }
+    return hass.localize("ui.card.update.installing");
+  }
+
   if (state === "off") {
     const isSkipped =
       attributes.latest_version &&
@@ -231,31 +262,11 @@ export const computeUpdateStateDisplay = (
     return hass.formatEntityState(stateObj);
   }
 
-  if (state === "on") {
-    if (updateIsInstalling(stateObj)) {
-      const supportsProgress =
-        supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-        attributes.update_percentage !== null;
-      if (supportsProgress) {
-        return hass.localize("ui.card.update.installing_with_progress", {
-          progress: formatNumber(attributes.update_percentage!, hass.locale, {
-            maximumFractionDigits: attributes.display_precision,
-            minimumFractionDigits: attributes.display_precision,
-          }),
-        });
-      }
-      return hass.localize("ui.card.update.installing");
-    }
-  }
-
   return hass.formatEntityState(stateObj);
 };
 
 export type UpdateType =
-  | "addon"
-  | "home_assistant"
-  | "home_assistant_os"
-  | "generic";
+  "addon" | "home_assistant" | "home_assistant_os" | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,

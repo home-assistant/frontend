@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,17 +6,20 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import "../../../components/input/ha-input";
-import type { HomeAssistant } from "../../../types";
+import { apiContext } from "../../../data/context";
+import type { HomeAssistantApi } from "../../../types";
 
 @customElement("more-info-configurator")
 export class MoreInfoConfigurator extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() private _isConfiguring = false;
 
-  private _fieldInput = {};
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  private _fieldInput: Record<string, unknown> = {};
 
   protected render() {
     if (this.stateObj?.state !== "configure") {
@@ -29,11 +33,13 @@ export class MoreInfoConfigurator extends LitElement {
           .content=${this.stateObj.attributes.description}
         ></ha-markdown>
 
-        ${this.stateObj.attributes.errors
-          ? html`<ha-alert alert-type="error">
-              ${this.stateObj.attributes.errors}
-            </ha-alert>`
-          : nothing}
+        ${
+          this.stateObj.attributes.errors
+            ? html`<ha-alert alert-type="error">
+                ${this.stateObj.attributes.errors}
+              </ha-alert>`
+            : nothing
+        }
         ${this.stateObj.attributes.fields.map(
           (field) =>
             html`<ha-input
@@ -43,17 +49,19 @@ export class MoreInfoConfigurator extends LitElement {
               @change=${this._fieldChanged}
             ></ha-input>`
         )}
-        ${this.stateObj.attributes.submit_caption
-          ? html`<p class="submit">
-              <ha-button
-                .disabled=${this._isConfiguring}
-                @click=${this._submitClicked}
-                .loading=${this._isConfiguring}
-              >
-                ${this.stateObj.attributes.submit_caption}
-              </ha-button>
-            </p>`
-          : nothing}
+        ${
+          this.stateObj.attributes.submit_caption
+            ? html`<p class="submit">
+                <ha-button
+                  .disabled=${this._isConfiguring}
+                  @click=${this._submitClicked}
+                  .loading=${this._isConfiguring}
+                >
+                  ${this.stateObj.attributes.submit_caption}
+                </ha-button>
+              </p>`
+            : nothing
+        }
       </div>
     `;
   }
@@ -71,7 +79,7 @@ export class MoreInfoConfigurator extends LitElement {
 
     this._isConfiguring = true;
 
-    this.hass.callService("configurator", "configure", data).then(
+    this._api.callService("configurator", "configure", data).then(
       () => {
         this._isConfiguring = false;
       },

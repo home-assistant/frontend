@@ -28,7 +28,7 @@ import {
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
 
 @customElement("ha-config-application-credentials")
@@ -171,39 +171,37 @@ export class HaConfigApplicationCredentials extends LitElement {
         @search-changed=${this._handleSearchChange}
       >
         <div class="header-btns" slot="selection-bar">
-          ${!this.narrow
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  @click=${this._deleteSelected}
-                  variant="danger"
-                  >${this.hass.localize(
-                    "ui.panel.config.application_credentials.picker.remove_selected.button"
-                  )}</ha-button
-                >
-              `
-            : html`
-                <ha-icon-button
-                  class="warning"
-                  id="remove-btn"
-                  @click=${this._deleteSelected}
-                  .path=${mdiDelete}
-                  .label=${this.hass.localize("ui.common.remove")}
-                ></ha-icon-button>
-                <ha-help-tooltip
-                  .label=${this.hass.localize(
-                    "ui.panel.config.application_credentials.picker.remove_selected.button"
-                  )}
-                >
-                </ha-help-tooltip>
-              `}
+          ${
+            !this.narrow
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    size="s"
+                    @click=${this._deleteSelected}
+                    variant="danger"
+                    >${this.hass.localize(
+                      "ui.panel.config.application_credentials.picker.remove_selected.button"
+                    )}</ha-button
+                  >
+                `
+              : html`
+                  <ha-icon-button
+                    class="warning"
+                    id="remove-btn"
+                    @click=${this._deleteSelected}
+                    .path=${mdiDelete}
+                    .label=${this.hass.localize("ui.common.remove")}
+                  ></ha-icon-button>
+                  <ha-help-tooltip
+                    .label=${this.hass.localize(
+                      "ui.panel.config.application_credentials.picker.remove_selected.button"
+                    )}
+                  >
+                  </ha-help-tooltip>
+                `
+          }
         </div>
-        <ha-button
-          slot="fab"
-          size="large"
-          @click=${this._addApplicationCredential}
-        >
+        <ha-button slot="fab" size="l" @click=${this._addApplicationCredential}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.application_credentials.picker.add_application_credential"

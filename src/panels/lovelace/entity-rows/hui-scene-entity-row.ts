@@ -48,13 +48,15 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           @click=${this._callService}
           .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
-          ${this._config.action_name ||
-          this.hass!.localize("ui.card.scene.activate")}
+          ${
+            this._config.action_name ||
+            this.hass!.localize("ui.card.scene.activate")
+          }
         </ha-button>
       </hui-generic-entity-row>
     `;

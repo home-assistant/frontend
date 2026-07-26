@@ -27,9 +27,11 @@ export class HaBooleanSelector extends LitElement {
         ></ha-switch>
         <span slot="label">
           <p class="primary">${this.label}</p>
-          ${this.helper
-            ? html`<p class="secondary">${this.helper}</p>`
-            : nothing}
+          ${
+            this.helper
+              ? html`<p class="secondary">${this.helper}</p>`
+              : nothing
+          }
         </span>
       </ha-formfield>
     `;

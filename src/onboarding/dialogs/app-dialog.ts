@@ -1,39 +1,21 @@
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import { fireEvent } from "../../common/dom/fire_event";
+import { customElement } from "lit/decorators";
 import "../../components/ha-dialog";
+import { DialogMixin } from "../../dialogs/dialog-mixin";
+import type { AppDialogParams } from "./show-app-dialog";
 
 @customElement("app-dialog")
-class DialogApp extends LitElement {
-  @property({ attribute: false }) public localize?: LocalizeFunc;
-
-  @state() private _open = false;
-
-  public async showDialog(params: { localize: LocalizeFunc }): Promise<void> {
-    this.localize = params.localize;
-    this._open = true;
-  }
-
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this.localize = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
+class DialogApp extends DialogMixin<AppDialogParams>(LitElement) {
   protected render() {
-    if (!this.localize) {
+    if (!this.params?.localize) {
       return nothing;
     }
     return html`<ha-dialog
-      .open=${this._open}
-      header-title=${this.localize(
-        "ui.panel.page-onboarding.welcome.download_app"
-      ) || "Click here to download the app"}
-      @closed=${this._dialogClosed}
+      open
+      header-title=${
+        this.params.localize("ui.panel.page-onboarding.welcome.download_app") ||
+        "Click here to download the app"
+      }
     >
       <div>
         <div class="app-qr">
@@ -45,13 +27,17 @@ class DialogApp extends LitElement {
             <img
               loading="lazy"
               src="/static/images/appstore.svg"
-              alt=${this.localize("ui.panel.page-onboarding.welcome.appstore")}
+              alt=${this.params.localize(
+                "ui.panel.page-onboarding.welcome.appstore"
+              )}
               class="icon"
             />
             <img
               loading="lazy"
               src="/static/images/qr-appstore.svg"
-              alt=${this.localize("ui.panel.page-onboarding.welcome.appstore")}
+              alt=${this.params.localize(
+                "ui.panel.page-onboarding.welcome.appstore"
+              )}
             />
           </a>
           <a
@@ -62,13 +48,17 @@ class DialogApp extends LitElement {
             <img
               loading="lazy"
               src="/static/images/playstore.svg"
-              alt=${this.localize("ui.panel.page-onboarding.welcome.playstore")}
+              alt=${this.params.localize(
+                "ui.panel.page-onboarding.welcome.playstore"
+              )}
               class="icon"
             />
             <img
               loading="lazy"
               src="/static/images/qr-playstore.svg"
-              alt=${this.localize("ui.panel.page-onboarding.welcome.playstore")}
+              alt=${this.params.localize(
+                "ui.panel.page-onboarding.welcome.playstore"
+              )}
             />
           </a>
         </div>

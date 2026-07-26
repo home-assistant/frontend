@@ -28,6 +28,7 @@ import {
   fetchBackupConfig,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "../components/config/ha-backup-config-data";
@@ -59,7 +60,10 @@ const STEPS = ["data", "sync"] as const;
 const DISALLOWED_AGENTS_NO_HA = [CLOUD_AGENT];
 
 @customElement("ha-dialog-generate-backup")
-class DialogGenerateBackup extends LitElement implements HassDialog {
+class DialogGenerateBackup
+  extends DirtyStateProviderMixin<FormData>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _step?: "data" | "sync";
@@ -79,6 +83,8 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._formData = INITIAL_DATA;
     this._params = _params;
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, INITIAL_DATA);
+    this._updateDirtyState(this._formData);
 
     this._fetchAgents();
     this._fetchBackupConfig();
@@ -160,6 +166,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             agents_mode: "custom",
             agent_ids: filteredAgents,
           };
+          this._updateDirtyState(this._formData);
         }
       }
     }
@@ -180,62 +187,74 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const selectedAgents = this._formData.agent_ids;
 
     return html`
-      <ha-dialog .open=${this._open} @closed=${this._dialogClosed}>
+      <ha-dialog
+        .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
+        @closed=${this._dialogClosed}
+      >
         <ha-dialog-header slot="header">
-          ${isFirstStep
-            ? html`
-                <ha-icon-button
-                  slot="navigationIcon"
-                  data-dialog="close"
-                  .label=${this.hass.localize("ui.common.close")}
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              `
-            : html`
-                <ha-icon-button-prev
-                  slot="navigationIcon"
-                  @click=${this._previousStep}
-                ></ha-icon-button-prev>
-              `}
+          ${
+            isFirstStep
+              ? html`
+                  <ha-icon-button
+                    slot="navigationIcon"
+                    data-dialog="close"
+                    .label=${this.hass.localize("ui.common.close")}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                `
+              : html`
+                  <ha-icon-button-prev
+                    slot="navigationIcon"
+                    @click=${this._previousStep}
+                  ></ha-icon-button-prev>
+                `
+          }
           <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
         </ha-dialog-header>
         <div class="content">
           ${this._step === "data" ? this._renderData() : this._renderSync()}
         </div>
         <ha-dialog-footer slot="footer">
-          ${isFirstStep
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  @click=${this.closeDialog}
-                  appearance="plain"
-                >
-                  ${this.hass.localize("ui.common.cancel")}
-                </ha-button>
-              `
-            : nothing}
-          ${isLastStep
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._submit}
-                  .disabled=${this._formData.agents_mode === "custom" &&
-                  !selectedAgents.length}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.dialogs.generate.actions.create"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._nextStep}
-                  .disabled=${this._step === "data" && this._noDataSelected}
-                >
-                  ${this.hass.localize("ui.common.next")}
-                </ha-button>
-              `}
+          ${
+            isFirstStep
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    @click=${this.closeDialog}
+                    appearance="plain"
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </ha-button>
+                `
+              : nothing
+          }
+          ${
+            isLastStep
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._submit}
+                    .disabled=${
+                      this._formData.agents_mode === "custom" &&
+                      !selectedAgents.length
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.generate.actions.create"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._nextStep}
+                    .disabled=${this._step === "data" && this._noDataSelected}
+                  >
+                    ${this.hass.localize("ui.common.next")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -276,6 +295,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ...this._formData!,
       data,
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _renderSync() {
@@ -328,39 +348,43 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           ]}
         ></ha-select>
       </ha-row-item>
-      ${disabledAgentIds.length
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
-              )}
-            </ha-alert>
-          `
-        : nothing}
-      ${this._formData.agents_mode === "custom"
-        ? html`
-            <ha-expansion-panel
-              .header=${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.locations"
-              )}
-              outlined
-              expanded
-            >
-              <ha-backup-agents-picker
-                .hass=${this.hass}
-                .value=${this._formData.agent_ids}
-                @value-changed=${this._agentsChanged}
-                .agents=${this._agents}
-                .disabledAgentIds=${disabledAgentIds}
-              ></ha-backup-agents-picker>
-            </ha-expansion-panel>
-          `
-        : nothing}
+      ${
+        disabledAgentIds.length
+          ? html`
+              <ha-alert
+                alert-type="info"
+                .title=${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.title"
+                )}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
+                )}
+              </ha-alert>
+            `
+          : nothing
+      }
+      ${
+        this._formData.agents_mode === "custom"
+          ? html`
+              <ha-expansion-panel
+                .header=${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.locations"
+                )}
+                outlined
+                expanded
+              >
+                <ha-backup-agents-picker
+                  .hass=${this.hass}
+                  .value=${this._formData.agent_ids}
+                  @value-changed=${this._agentsChanged}
+                  .agents=${this._agents}
+                  .disabledAgentIds=${disabledAgentIds}
+                ></ha-backup-agents-picker>
+              </ha-expansion-panel>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -370,6 +394,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ...this._formData!,
       agents_mode: value,
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _agentsChanged(ev) {
@@ -377,6 +402,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ...this._formData!,
       agent_ids: ev.detail.value,
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -384,6 +410,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
       ...this._formData!,
       name: (ev.target as HaInput).value ?? "",
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _disabledAgentIds() {
@@ -429,6 +456,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     }
 
     this._params!.submit?.(params);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

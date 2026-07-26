@@ -45,8 +45,7 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-humidifier-state>
+        <ha-humidifier-state .stateObj=${stateObj}> </ha-humidifier-state>
       </hui-generic-entity-row>
     `;
   }

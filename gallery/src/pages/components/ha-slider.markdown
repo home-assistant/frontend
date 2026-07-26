@@ -17,13 +17,13 @@ subtitle: A slider component for selecting a value from a range.
 ### Example Usage
 
 <div class="wrapper">
-  <ha-slider size="small" with-markers min="0" max="8" value="4"></ha-slider>
-  <ha-slider size="medium"></ha-slider>
+  <ha-slider size="s" with-markers min="0" max="8" value="4"></ha-slider>
+  <ha-slider size="m"></ha-slider>
 </div>
 
 ```html
-<ha-slider size="small" with-markers min="0" max="8" value="4"></ha-slider>
-<ha-slider size="medium"></ha-slider>
+<ha-slider size="s" with-markers min="0" max="8" value="4"></ha-slider>
+<ha-slider size="m"></ha-slider>
 ```
 
 ### API

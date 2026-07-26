@@ -3,10 +3,27 @@ import { render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
 import { withViewTransition } from "../common/util/view-transition";
 
-export const removeLaunchScreen = () => {
+let removalInitiated = false;
+
+/**
+ * Removes the launch screen with a fade-out view transition.
+ *
+ * @param instant - Removes the launch screen without animation. Used when the
+ * external app covers the frontend with its own splash screen until the
+ * `frontend/loaded` event, where the animation would play invisibly underneath.
+ * @returns Whether this call initiated the removal (false when the removal
+ * was already initiated, e.g. while the fade-out is still running).
+ */
+export const removeLaunchScreen = (instant = false): boolean => {
   const launchScreenElement = document.getElementById("ha-launch-screen");
-  if (!launchScreenElement?.parentElement) {
-    return;
+  if (removalInitiated || !launchScreenElement?.parentElement) {
+    return false;
+  }
+  removalInitiated = true;
+
+  if (instant) {
+    launchScreenElement.parentElement.removeChild(launchScreenElement);
+    return true;
   }
 
   withViewTransition((viewTransitionAvailable: boolean) => {
@@ -25,6 +42,7 @@ export const removeLaunchScreen = () => {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
     }, parseAnimationDuration(durationFromCss));
   });
+  return true;
 };
 
 export const renderLaunchScreenInfoBox = (content: TemplateResult) => {

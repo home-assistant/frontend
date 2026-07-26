@@ -84,24 +84,27 @@ class DialogMediaPlayerBrowse extends LitElement {
         @opened=${this._dialogOpened}
       >
         <ha-dialog-header show-border slot="header">
-          ${this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
-            ? html`
-                <ha-icon-button-arrow-prev
-                  slot="navigationIcon"
-                  @click=${this._goBack}
-                ></ha-icon-button-arrow-prev>
-              `
-            : nothing}
+          ${
+            this._navigateIds.length > (this._params.minimumNavigateLevel ?? 1)
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    slot="navigationIcon"
+                    @click=${this._goBack}
+                  ></ha-icon-button-arrow-prev>
+                `
+              : nothing
+          }
           <span slot="title">
-            ${!this._currentItem
-              ? this.hass.localize(
-                  "ui.components.media-browser.media-player-browser"
-                )
-              : this._currentItem.title}
+            ${
+              !this._currentItem
+                ? this.hass.localize(
+                    "ui.components.media-browser.media-player-browser"
+                  )
+                : this._currentItem.title
+            }
           </span>
           <ha-media-manage-button
             slot="actionItems"
-            .hass=${this.hass}
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>
@@ -117,9 +120,9 @@ class DialogMediaPlayerBrowse extends LitElement {
             ></ha-icon-button>
             <ha-dropdown-item value="auto">
               <ha-svg-icon
-                class=${this._preferredLayout === "auto"
-                  ? "selected_menu_item"
-                  : ""}
+                class=${
+                  this._preferredLayout === "auto" ? "selected_menu_item" : ""
+                }
                 slot="icon"
                 .path=${mdiAlphaABoxOutline}
               ></ha-svg-icon>
@@ -127,9 +130,9 @@ class DialogMediaPlayerBrowse extends LitElement {
             </ha-dropdown-item>
             <ha-dropdown-item value="grid">
               <ha-svg-icon
-                class=${this._preferredLayout === "grid"
-                  ? "selected_menu_item"
-                  : ""}
+                class=${
+                  this._preferredLayout === "grid" ? "selected_menu_item" : ""
+                }
                 slot="icon"
                 .path=${mdiGrid}
               ></ha-svg-icon>
@@ -138,9 +141,9 @@ class DialogMediaPlayerBrowse extends LitElement {
             <ha-dropdown-item value="list">
               <ha-svg-icon
                 slot="icon"
-                class=${this._preferredLayout === "list"
-                  ? "selected_menu_item"
-                  : ""}
+                class=${
+                  this._preferredLayout === "list" ? "selected_menu_item" : ""
+                }
                 .path=${mdiListBoxOutline}
               ></ha-svg-icon>
               ${this.hass.localize("ui.components.media-browser.list")}

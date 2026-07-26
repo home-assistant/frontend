@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { EmptyStateCardConfig } from "../../cards/types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import type { LovelaceStrategyDependency } from "../types";
 
 export interface OriginalStatesViewStrategyConfig {
   type: "original-states";
@@ -19,6 +20,13 @@ export interface OriginalStatesViewStrategyConfig {
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+  ];
+
   static async generate(
     config: OriginalStatesViewStrategyConfig,
     hass: HomeAssistant
@@ -76,7 +84,6 @@ export class OriginalStatesViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:home-assistant",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.original-states.empty_state_title"
