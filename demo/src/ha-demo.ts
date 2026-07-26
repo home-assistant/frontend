@@ -77,6 +77,7 @@ export class HaDemo extends HomeAssistantAppEl {
     // when those integrations are loaded. Enable them here (demo only) so the
     // mocked backup/config/info and webhook/list are queried. usage_prediction
     // is needed for common-controls sections in strategy dashboards.
+    // assist_pipeline makes the voice assistants panel show the Assist card.
     hass.updateHass({
       config: {
         ...hass.config,
@@ -85,6 +86,7 @@ export class HaDemo extends HomeAssistantAppEl {
           "backup",
           "webhook",
           "usage_prediction",
+          "assist_pipeline",
         ],
       },
     });
