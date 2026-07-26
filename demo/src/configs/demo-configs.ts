@@ -15,30 +15,38 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
   hass.mockTheme(null, getDemoTheme(theme));
 };
 
-export const demoConfigs: (() => Promise<DemoConfig>)[] = [
-  () => import("./sections").then((mod) => mod.demoSections),
-  () => import("./home").then((mod) => mod.demoHome),
-  () => import("./arsaboo").then((mod) => mod.demoArsaboo),
-  () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
-  () => import("./kernehed").then((mod) => mod.demoKernehed),
-  () => import("./jimpower").then((mod) => mod.demoJimpower),
-];
+export const demoConfigs: Record<string, () => Promise<DemoConfig>> = {
+  sections: () => import("./sections").then((mod) => mod.demoSections),
+  home: () => import("./home").then((mod) => mod.demoHome),
+  arsaboo: () => import("./arsaboo").then((mod) => mod.demoArsaboo),
+  teachingbirds: () =>
+    import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
+  kernehed: () => import("./kernehed").then((mod) => mod.demoKernehed),
+  jimpower: () => import("./jimpower").then((mod) => mod.demoJimpower),
+};
+
+export const demos = Object.keys(demoConfigs);
+
+const initialDemo = () => {
+  const slug = new URLSearchParams(window.location.search).get("demo");
+  return slug && demos.includes(slug) ? slug : demos[0];
+};
 
 // eslint-disable-next-line import-x/no-mutable-exports
-export let selectedDemoConfigIndex = 0;
+export let selectedDemo = initialDemo();
 // eslint-disable-next-line import-x/no-mutable-exports
 export let selectedDemoConfig: Promise<DemoConfig> =
-  demoConfigs[selectedDemoConfigIndex]();
+  demoConfigs[selectedDemo]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
   lovelace: Lovelace,
-  index: number
+  demo: string
 ) => {
-  const confProm = demoConfigs[index]();
+  const confProm = demoConfigs[demo]();
   const config = await confProm;
 
-  selectedDemoConfigIndex = index;
+  selectedDemo = demo;
   selectedDemoConfig = confProm;
 
   setDemoFloors(hass, config.floors);
@@ -54,6 +62,6 @@ export const setDemoConfig = async (
 
   await lovelace.saveConfig(config.lovelace(hass.localize));
   // The view of the previous demo might not exist in the new one
-  navigate(`/${hass.panelUrl}`, { replace: true });
+  navigate(`/${hass.panelUrl}?demo=${demo}`, { replace: true });
   applyDemoTheme(hass, config.theme);
 };

@@ -2,8 +2,8 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { LovelaceInfo } from "../../../src/data/lovelace/resource";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import {
+  selectedDemo,
   selectedDemoConfig,
-  selectedDemoConfigIndex,
   setDemoConfig,
 } from "../configs/demo-configs";
 import "../custom-cards/cast-demo-row";
@@ -46,11 +46,11 @@ customElements.whenDefined("hui-root").then(() => {
   HUIRoot.prototype.firstUpdated = function (changedProperties) {
     oldFirstUpdated.call(this, changedProperties);
     this.addEventListener("set-demo-config", async (ev) => {
-      const index = (ev as CustomEvent).detail.index;
+      const demo = (ev as CustomEvent).detail.demo;
       try {
-        await setDemoConfig(this.hass, this.lovelace!, index);
+        await setDemoConfig(this.hass, this.lovelace!, demo);
       } catch (_err: any) {
-        setDemoConfig(this.hass, this.lovelace!, selectedDemoConfigIndex);
+        setDemoConfig(this.hass, this.lovelace!, selectedDemo);
         alert("Failed to switch config :-(");
       }
     });

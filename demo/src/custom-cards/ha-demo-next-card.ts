@@ -16,9 +16,9 @@ import type {
   LovelaceGridOptions,
 } from "../../../src/panels/lovelace/types";
 import {
-  demoConfigs,
+  demos,
+  selectedDemo,
   selectedDemoConfig,
-  selectedDemoConfigIndex,
 } from "../configs/demo-configs";
 
 @customElement("ha-demo-next-card")
@@ -77,10 +77,7 @@ export class HADemoNextCard extends LitElement implements LovelaceCard {
   private _nextConfig() {
     this._switching = true;
     fireEvent(this, "set-demo-config" as any, {
-      index:
-        selectedDemoConfigIndex < demoConfigs.length - 1
-          ? selectedDemoConfigIndex + 1
-          : 0,
+      demo: demos[(demos.indexOf(selectedDemo) + 1) % demos.length],
     });
   }
 
