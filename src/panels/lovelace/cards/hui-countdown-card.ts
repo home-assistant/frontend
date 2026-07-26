@@ -159,16 +159,16 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
               : html`
                   <div class="countdown-display">
                     ${
-                    days > 0
-                      ? html`
-                          <div class="unit">
-                            <span class="value">${days}</span>
-                            <span class="label">days</span>
-                          </div>
-                          <div class="separator">:</div>
-                        `
-                      : nothing
-                  }
+                      days > 0
+                        ? html`
+                            <div class="unit">
+                              <span class="value">${days}</span>
+                              <span class="label">days</span>
+                            </div>
+                            <div class="separator">:</div>
+                          `
+                        : nothing
+                    }
                     <div class="unit">
                       <span class="value">${this._pad(hours)}</span>
                       <span class="label">hr</span>
@@ -179,16 +179,16 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
                       <span class="label">min</span>
                     </div>
                     ${
-                    show_seconds
-                      ? html`
-                          <div class="separator">:</div>
-                          <div class="unit">
-                            <span class="value">${this._pad(seconds)}</span>
-                            <span class="label">sec</span>
-                          </div>
-                        `
-                      : nothing
-                  }
+                      show_seconds
+                        ? html`
+                            <div class="separator">:</div>
+                            <div class="unit">
+                              <span class="value">${this._pad(seconds)}</span>
+                              <span class="label">sec</span>
+                            </div>
+                          `
+                        : nothing
+                    }
                   </div>
                 `
           }
