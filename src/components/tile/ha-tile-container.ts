@@ -32,7 +32,7 @@ export class HaTileContainer extends LitElement {
   }
 
   protected render() {
-    const containerOrientationClass =
+    const rowOrientationClass =
       this.featurePosition === "inline" ? "horizontal" : "";
     const contentClasses = { vertical: this.vertical };
 
@@ -49,15 +49,18 @@ export class HaTileContainer extends LitElement {
         <ha-ripple .disabled=${!this.interactive}></ha-ripple>
       </div>
       <div
-        class="container ${containerOrientationClass}"
+        class="container"
         @action=${stopPropagation}
         @click=${stopPropagation}
       >
-        <div class="content ${classMap(contentClasses)}">
-          <slot name="icon"></slot>
-          <slot name="info" id="info"></slot>
+        <div class="row ${rowOrientationClass}">
+          <div class="content ${classMap(contentClasses)}">
+            <slot name="icon"></slot>
+            <slot name="info" id="info"></slot>
+          </div>
+          <slot name="features"></slot>
         </div>
-        <slot name="features"></slot>
+        <slot name="features-bottom"></slot>
       </div>
     `;
   }
@@ -90,7 +93,13 @@ export class HaTileContainer extends LitElement {
       flex-direction: column;
       flex: 1;
     }
-    .container.horizontal {
+    .row {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .row.horizontal {
       flex-direction: row;
     }
 
@@ -134,11 +143,12 @@ export class HaTileContainer extends LitElement {
       transition: background-color 180ms ease-in-out;
       box-sizing: border-box;
     }
-    ::slotted([slot="features"]) {
+    ::slotted([slot="features"]),
+    ::slotted([slot="features-bottom"]) {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
 
-    .container.horizontal ::slotted([slot="features"]) {
+    .row.horizontal ::slotted([slot="features"]) {
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
       --feature-height: var(--ha-space-9);

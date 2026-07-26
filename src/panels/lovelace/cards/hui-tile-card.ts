@@ -22,7 +22,10 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
-import type { LovelaceCardFeatureContext } from "../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../card-features/types";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -108,11 +111,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const featuresPosition =
       this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
-    return (
-      1 +
-      (this._config?.vertical ? 1 : 0) +
-      (featuresPosition === "inline" ? 0 : featuresCount)
-    );
+    // In inline mode, the first feature shares the row with the name
+    const stackedFeaturesCount =
+      featuresPosition === "inline"
+        ? Math.max(featuresCount - 1, 0)
+        : featuresCount;
+    return 1 + (this._config?.vertical ? 1 : 0) + stackedFeaturesCount;
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -124,6 +128,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
+        // The first feature is inline, the remaining ones are stacked below
+        rows += Math.max(featuresCount - 1, 0);
       } else {
         rows += featuresCount;
       }
@@ -232,15 +238,29 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
+  private _inlineFeatures = memoizeOne(
+    (config: TileCardConfig): LovelaceCardFeatureConfig[] => {
+      const features = config.features || [];
+      const featurePosition = this._featurePosition(config);
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
+      if (featurePosition === "inline") {
+        return features.slice(0, 1);
+      }
+      return [];
     }
-    return features;
-  });
+  );
+
+  private _stackedFeatures = memoizeOne(
+    (config: TileCardConfig): LovelaceCardFeatureConfig[] => {
+      const features = config.features || [];
+      const featurePosition = this._featurePosition(config);
+
+      if (featurePosition === "inline") {
+        return features.slice(1);
+      }
+      return features;
+    }
+  );
 
   protected render() {
     if (!this._config || !this.hass) {
@@ -284,7 +304,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
 
     const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const inlineFeatures = this._inlineFeatures(this._config);
+    const stackedFeatures = this._stackedFeatures(this._config);
 
     const hasImage = Boolean(imageUrl);
 
@@ -335,14 +356,31 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             }
           </ha-tile-info>
           ${
-            features.length > 0
+            inlineFeatures.length > 0
               ? html`
                   <hui-card-features
                     slot="features"
                     .hass=${this.hass}
                     .context=${this._featureContext}
                     .color=${this._config.color}
-                    .features=${features}
+                    .features=${inlineFeatures}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
+          ${
+            stackedFeatures.length > 0
+              ? html`
+                  <hui-card-features
+                    slot=${
+                      featurePosition === "inline"
+                        ? "features-bottom"
+                        : "features"
+                    }
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${stackedFeatures}
                   ></hui-card-features>
                 `
               : nothing
