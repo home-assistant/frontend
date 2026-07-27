@@ -16,6 +16,21 @@ export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfoDict> =>
     type: "otbr/info",
   });
 
+export interface OTBREphemeralKey {
+  ephemeral_key: string;
+  lifetime: number;
+  port: number | null;
+}
+
+export const OTBRCreateEphemeralKey = (
+  hass: HomeAssistant,
+  extended_address: string
+): Promise<OTBREphemeralKey> =>
+  hass.callWS({
+    type: "otbr/create_ephemeral_key",
+    extended_address,
+  });
+
 export const OTBRCreateNetwork = (
   hass: HomeAssistant,
   extended_address: string

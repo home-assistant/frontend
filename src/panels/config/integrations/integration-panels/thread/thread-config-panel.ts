@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
+  mdiQrcode,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -21,6 +22,7 @@ import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
+  OTBRCreateEphemeralKey,
   OTBRCreateNetwork,
   OTBRSetChannel,
   OTBRSetNetwork,
@@ -50,6 +52,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+import { showThreadEphemeralKeyDialog } from "./show-dialog-thread-ephemeral-key";
 
 export interface ThreadNetwork {
   name: string;
@@ -196,6 +199,14 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ${network.name}${
           network.dataset
             ? html`<div>
+                ${otbrForNetwork
+                  ? html`<ha-icon-button
+                      label="Share network credentials"
+                      .otbr=${otbrForNetwork}
+                      .path=${mdiQrcode}
+                      @click=${this._shareCredentials}
+                    ></ha-icon-button>`
+                  : ""}
                 <ha-icon-button
                   .label=${this.hass.localize(
                     "ui.panel.config.thread.thread_network_info"
@@ -431,6 +442,25 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         extended_pan_id: dataset.extended_pan_id,
       },
     });
+  }
+
+  private async _shareCredentials(ev: Event) {
+    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
+    try {
+      const result = await OTBRCreateEphemeralKey(
+        this.hass,
+        otbr.extended_address
+      );
+      showThreadEphemeralKeyDialog(this, {
+        ephemeralKey: result.ephemeral_key,
+        lifetime: result.lifetime,
+      });
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: "Failed to create code",
+        text: err.message,
+      });
+    }
   }
 
   private async _showDatasetInfo(ev: Event) {
