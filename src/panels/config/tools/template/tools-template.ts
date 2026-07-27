@@ -1,4 +1,10 @@
-import { mdiViewSplitHorizontal, mdiViewSplitVertical } from "@mdi/js";
+import {
+  mdiRestore,
+  mdiTrashCanOutline,
+  mdiViewSplitHorizontal,
+  mdiViewSplitVertical,
+} from "@mdi/js";
+import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,10 +12,10 @@ import { customElement, property, state } from "lit/decorators";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-expansion-panel";
+import type { HaIconButtonToolbarItem } from "../../../../components/ha-icon-button-toolbar";
 import "../../../../components/ha-label";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-split-panel";
@@ -227,6 +233,28 @@ class HaPanelDevTemplate extends LitElement {
     `;
   }
 
+  // Reset/clear live in the editor toolbar next to the built-in undo/redo,
+  // copy, search and fullscreen buttons; the trailing divider separates them.
+  private _editorToolbarItems = memoizeOne(
+    (
+      localize: HomeAssistant["localize"]
+    ): (HaIconButtonToolbarItem | string)[] => [
+      {
+        id: "restore-demo",
+        label: localize("ui.panel.config.tools.tabs.templates.reset"),
+        path: mdiRestore,
+        action: () => this._restoreDemo(),
+      },
+      {
+        id: "clear",
+        label: localize("ui.common.clear"),
+        path: mdiTrashCanOutline,
+        action: () => this._clear(),
+      },
+      "divider",
+    ]
+  );
+
   private _renderEditorCard() {
     return html`
       <ha-card
@@ -240,6 +268,7 @@ class HaPanelDevTemplate extends LitElement {
             mode="jinja2"
             .value=${this._template}
             .error=${this._error}
+            .toolbarItems=${this._editorToolbarItems(this.hass.localize)}
             autofocus
             autocomplete-entities
             autocomplete-icons
@@ -247,22 +276,20 @@ class HaPanelDevTemplate extends LitElement {
             dir="ltr"
           ></ha-code-editor>
         </div>
-        <div class="card-actions">
-          <ha-button appearance="plain" @click=${this._restoreDemo}>
-            ${this.hass.localize("ui.panel.config.tools.tabs.templates.reset")}
-          </ha-button>
-          <ha-button appearance="plain" @click=${this._clear}>
-            ${this.hass.localize("ui.common.clear")}
-          </ha-button>
-        </div>
-        <ha-tip>
-          ${this.hass.localize(
-            "ui.panel.config.tools.tabs.templates.keyboard_tip",
-            {
-              autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
-            }
-          )}
-        </ha-tip>
+        ${
+          this.narrow
+            ? nothing
+            : html`
+                <ha-tip>
+                  ${this.hass.localize(
+                    "ui.panel.config.tools.tabs.templates.keyboard_tip",
+                    {
+                      autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+                    }
+                  )}
+                </ha-tip>
+              `
+        }
       </ha-card>
     `;
   }
@@ -310,7 +337,7 @@ class HaPanelDevTemplate extends LitElement {
                       )}:
                       ${resultType}
                     </ha-label>
-                    <pre class="rendered ha-scrollbar">
+                    <pre class="rendered">
 ${
   type === "object"
     ? JSON.stringify(this._templateResult.result, null, 2)
@@ -618,7 +645,6 @@ ${
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
-          overflow: auto;
         }
 
         p,
@@ -662,13 +688,6 @@ ${
           border-radius: var(--ha-border-radius-xs);
           background-color: var(--secondary-background-color);
           white-space: nowrap;
-        }
-
-        .card-actions {
-          display: flex;
-        }
-        .card-actions > ha-button:last-child {
-          margin-inline-start: auto;
         }
       `,
     ];
