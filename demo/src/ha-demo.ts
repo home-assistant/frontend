@@ -6,7 +6,7 @@ import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
-import { mockAreaRegistry } from "./stubs/area_registry";
+import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -14,7 +14,7 @@ import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
-import { mockFloorRegistry } from "./stubs/floor_registry";
+import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
@@ -29,6 +29,7 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
+import { mockUsagePrediction } from "./stubs/usage_prediction";
 import "./cloud/cloud-demo-controls";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
@@ -74,11 +75,18 @@ export class HaDemo extends HomeAssistantAppEl {
 
     // The cloud account page only fetches backup config and the webhook count
     // when those integrations are loaded. Enable them here (demo only) so the
-    // mocked backup/config/info and webhook/list are queried.
+    // mocked backup/config/info and webhook/list are queried. usage_prediction
+    // is needed for common-controls sections in strategy dashboards.
     hass.updateHass({
       config: {
         ...hass.config,
-        components: [...(hass.config?.components ?? []), "backup", "webhook"],
+        components: [
+          ...(hass.config?.components ?? []),
+          "backup",
+          "webhook",
+          "usage_prediction",
+          "assist_pipeline",
+        ],
       },
     });
 
@@ -122,6 +130,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
+    mockUsagePrediction(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
@@ -169,9 +178,11 @@ export class HaDemo extends HomeAssistantAppEl {
 
     hass.addEntities(energyEntities());
 
-    // Once config is loaded AND localize, set entities and apply theme.
+    // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
+        setDemoFloors(hass, conf.floors);
+        setDemoAreas(hass, conf.areas);
         hass.addEntities(conf.entities(localize));
         applyDemoTheme(hass, conf.theme);
       }
