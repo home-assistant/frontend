@@ -51,6 +51,7 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+const DEFAULT_CHART_WIDTH = 500;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -1048,7 +1049,9 @@ export class HaChartBase extends LitElement {
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
-              this.clientWidth * window.devicePixelRatio,
+              // 0 while inside a hidden container, e.g. a section with a visibility condition
+              (this.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
               minX,
               maxX
             ),

@@ -34,6 +34,8 @@ export const supportsTrendGraphCardFeature = (
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
+const HOUR = 60 * 60 * 1000;
+
 @customElement("hui-trend-graph-card-feature")
 class HuiHistoryChartCardFeature
   extends LitElement
@@ -93,9 +95,13 @@ class HuiHistoryChartCardFeature
 
   public connectedCallback() {
     super.connectedCallback();
-    // redraw the graph every minute to update the time axis
+    // recompute the graph every minute so the x-axis (and the horizontal fill
+    // to now) keeps advancing even while the sensor value stays constant
     clearInterval(this._interval);
-    this._interval = window.setInterval(() => this.requestUpdate(), 1000 * 60);
+    this._interval = window.setInterval(
+      () => this._calculateCoordinates(),
+      1000 * 60
+    );
     if (this.hasUpdated) {
       this._subscribeHistory();
     }
@@ -146,12 +152,18 @@ class HuiHistoryChartCardFeature
       ? Math.max(10, width / 5, hourToShow)
       : Math.max(10, hourToShow);
     const useMean = !detail;
+    // Anchor the x-axis to the full time window so a constant value is drawn as
+    // a horizontal line up to now, instead of ending at the last state change.
+    const now = Date.now();
     const { points, yAxisOrigin } = coordinatesMinimalResponseCompressedState(
       this._stateHistory,
       width,
       height,
       maxDetails,
-      undefined,
+      {
+        minX: now - hourToShow * HOUR,
+        maxX: now,
+      },
       useMean
     );
     this._coordinates = points;

@@ -2510,8 +2510,8 @@
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
-      "new_version_available": "A new version of the frontend is available.",
-      "reload": "Reload",
+      "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
+      "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
       "onboarding_survey": {
@@ -4244,6 +4244,8 @@
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
+              "capacity": "Battery capacity",
+              "capacity_helper": "Usable battery capacity in kWh. Used to weight the combined state of charge when you have multiple batteries of different sizes.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
@@ -5669,7 +5671,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
+                  "no_triggers": "There are no triggers with IDs set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
@@ -11252,6 +11254,7 @@
         "cards": {
           "demo": {
             "demo_by": "by {name}",
+            "interactive_demo": "Interactive demo",
             "next_demo": "Next demo",
             "introduction": "Welcome home! You've reached the Home Assistant demo where we showcase the best UIs created by our community.",
             "learn_more": "Learn more about Home Assistant"

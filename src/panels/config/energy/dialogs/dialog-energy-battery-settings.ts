@@ -248,6 +248,24 @@ export class DialogEnergyBatterySettings
           @value-changed=${this._statisticSocChanged}
         ></ha-statistic-picker>
 
+        <ha-input
+          .value=${this._source.capacity != null
+            ? String(this._source.capacity)
+            : ""}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.capacity"
+          )}
+          .hint=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.capacity_helper"
+          )}
+          type="number"
+          step="any"
+          min="0"
+          @input=${this._capacityChanged}
+        >
+          <span slot="end">kWh</span>
+        </ha-input>
+
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
@@ -346,6 +364,18 @@ export class DialogEnergyBatterySettings
     });
   }
 
+  private _capacityChanged(ev: InputEvent) {
+    const rawValue = (ev.target as HaInput).value;
+    const value = rawValue ? parseFloat(rawValue) : NaN;
+    this._source = {
+      ...this._source!,
+      capacity: Number.isFinite(value) && value > 0 ? value : undefined,
+    };
+    if (this._source.capacity === undefined) {
+      delete this._source.capacity;
+    }
+  }
+
   private async _save() {
     try {
       const source: BatterySourceTypeEnergyPreference = {
@@ -366,6 +396,10 @@ export class DialogEnergyBatterySettings
         source.stat_soc = this._source!.stat_soc;
       }
 
+      if (this._source!.capacity != null) {
+        source.capacity = this._source!.capacity;
+      }
+
       await this._params!.saveCallback(source);
       this._markDirtyStateClean();
       this.closeDialog();
@@ -384,7 +418,11 @@ export class DialogEnergyBatterySettings
           display: block;
           margin-bottom: var(--ha-space-4);
         }
-        ha-statistic-picker:last-of-type {
+        ha-input {
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+        }
+        ha-input:last-of-type {
           margin-bottom: 0;
         }
       `,

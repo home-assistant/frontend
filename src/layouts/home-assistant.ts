@@ -173,11 +173,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     window.addEventListener("location-changed", () => updateRoute());
 
     // Handle history changes
-    if (useHash) {
-      window.addEventListener("hashchange", () => updateRoute());
-    } else {
-      window.addEventListener("popstate", () => updateRoute());
-    }
+    window.addEventListener("popstate", () => updateRoute());
 
     // Handle clicking on links
     window.addEventListener("click", (ev) => {

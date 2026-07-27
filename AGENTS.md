@@ -2,6 +2,8 @@
 
 You are helping develop the Home Assistant frontend. This repository is a TypeScript application built from Lit-based Web Components for the Home Assistant web UI.
 
+For the standalone demo — including how to open a specific demo configuration or page via URL — read `demo/AGENTS.md`.
+
 ## Essential Commands
 
 ```bash
