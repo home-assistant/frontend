@@ -102,8 +102,10 @@
         opacity: .66;
       }
       .ohf-logo span {
+        font-family: Roboto, sans-serif;
         font-size: 12px;
-        line-height: 16px;
+        line-height: 12px;
+        text-transform: uppercase;
       }
       .ohf-logo picture {
         display: flex;
