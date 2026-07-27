@@ -5,7 +5,11 @@ import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { CountdownCardConfig } from "./types";
 
 @customElement("hui-countdown-card")
@@ -21,6 +25,11 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("./hui-countdown-card-editor");
+    return document.createElement("hui-countdown-card-editor");
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: CountdownCardConfig;
@@ -34,6 +43,14 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
   };
 
   private _tickInterval?: number;
+
+  private _handleVisibilityChange = () => {
+    if (document.hidden) {
+      this._stopTick();
+    } else {
+      this._startTick();
+    }
+  };
 
   public setConfig(config: CountdownCardConfig): void {
     if (!config.target_date && !config.entity) {
@@ -61,11 +78,16 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
   public connectedCallback() {
     super.connectedCallback();
     this._startTick();
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._stopTick();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -75,6 +97,7 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
   }
 
   private _startTick() {
+    if (this._tickInterval !== undefined) return;
     this._tickInterval = window.setInterval(() => this._tick(), 1000);
     this._tick();
   }
@@ -157,7 +180,11 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
             expired
               ? html`<div class="expired-label">Reached</div>`
               : html`
-                  <div class="countdown-display">
+                  <div
+                    class="countdown-display"
+                    role="timer"
+                    aria-atomic="true"
+                  >
                     ${
                       days > 0
                         ? html`
