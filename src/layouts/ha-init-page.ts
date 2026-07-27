@@ -62,8 +62,12 @@ export class HaInitPage extends LitElement {
       : html`<p>
           ${
             this.migration
-              ? this.localize?.("ui.init.migration") ||
-                "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed. The upgrade may need a long time to complete, please be patient."
+              ? html`<span class="migration-text"
+                  >${
+                    this.localize?.("ui.init.migration") ||
+                    "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient."
+                  }</span
+                >`
               : this.localize?.("ui.init.loading") || "Loading data"
           }
         </p>`;
@@ -112,6 +116,9 @@ export class HaInitPage extends LitElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-m, 14px);
       text-align: center;
+    }
+    .migration-text {
+      white-space: pre-line;
     }
   `;
 }

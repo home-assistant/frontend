@@ -9,7 +9,7 @@ await import("../../src/layouts/ha-init-page");
 
 const translations: Record<string, string> = {
   "ui.init.loading": "Loading translated data",
-  "ui.init.migration": "Database migration translated",
+  "ui.init.migration": "Database migration translated\n\nPlease wait",
   "ui.init.error.title": "Connection error translated",
   "ui.init.error.retry_now": "Retry translated",
 };
@@ -50,9 +50,17 @@ describe("ha-init-page", () => {
 
     initPage.migration = true;
     await initPage.updateComplete;
-    expect(initPage.shadowRoot!.textContent).toContain(
-      "Database migration translated"
-    );
+    expect(
+      initPage.shadowRoot!.querySelector(".migration-text")!.textContent
+    ).toBe("Database migration translated\n\nPlease wait");
+  });
+
+  it("preserves migration paragraph breaks without localization", async () => {
+    const initPage = await mount({ localize: undefined, migration: true });
+
+    expect(
+      initPage.shadowRoot!.querySelector(".migration-text")!.textContent
+    ).toContain("completed.\n\nThe upgrade");
   });
 
   it("renders the localized connection error and countdown", async () => {
