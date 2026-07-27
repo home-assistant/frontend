@@ -1,36 +1,26 @@
 [modern]
 # Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills, etc.
 # It is served to browsers meeting the following requirements:
-# - released in the last year + current alpha/beta versions
-# - Firefox extended support release (ESR)
-# - with global utilization at or above 0.5%
+# - released in the last 3 years + current alpha/beta versions
 # - exclude dead browsers (no security maintenance for 2+ years)
 # - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
 unreleased versions
-last 1 year
-Firefox ESR
->= 0.5%
+last 2 years
 not dead
-not KaiOS > 0
 not QQAndroid > 0
 not UCAndroid > 0
 
 [legacy]
 # Legacy builds are served when modern requirements are not met and support browsers:
-# - released in the last 7 years + current alpha/beta versionss
-# - with global utilization at or above 0.05%
+# - released in the last 7 years with global utilization at or above 0.001%
 # - exclude dead browsers (no security maintenance for 2+ years)
 # - exclude Opera Mini which does not support web sockets
-unreleased versions
-last 7 years
->= 0.05%
+last 7 years and >= 0.001%
 not dead
 not op_mini all
 
 [legacy-sw]
-# Same as legacy plus supports service workers
-unreleased versions
-last 7 years
->= 0.05% and supports serviceworkers
+# Same as legacy, restricted to browsers that support service workers
+# (currently resolves to the same set; guards the service worker build if the legacy floor ever drops below them)
+last 7 years and >= 0.001% and supports serviceworkers
 not dead
-not op_mini all
