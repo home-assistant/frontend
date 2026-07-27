@@ -41,7 +41,7 @@ export const mockHardware = (hass: MockHomeAssistant) => {
         onChange?.(message);
       };
       send();
-      const interval = window.setInterval(send, 5000);
+      const interval = window.setInterval(send, 1000);
       return () => clearInterval(interval);
     }
   );
