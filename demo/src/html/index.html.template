@@ -78,23 +78,13 @@
       }
       #ha-launch-screen .ha-lockup {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 8px;
         flex-shrink: 0;
         animation: launch-lockup-in var(--ha-animation-duration-slow, 350ms) ease-out both;
       }
       #ha-launch-screen .ha-logo {
         width: 96px;
         height: 96px;
-      }
-      #ha-launch-screen .ha-wordmark {
-        color: var(--primary-text-color, #212121);
-        font-size: 28px;
-        font-weight: 500;
-        line-height: .9;
-        letter-spacing: -1px;
-        text-align: center;
       }
       #ha-launch-screen .ha-launch-screen-spacer-top {
         flex: 1;
@@ -140,7 +130,6 @@
       <div class="ha-launch-screen-spacer-top"></div>
       <div class="ha-lockup" aria-hidden="true">
         <img class="ha-logo" src="/static/images/home-assistant-logo-loading.svg" alt="">
-        <span class="ha-wordmark">Home<br>Assistant</span>
       </div>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
