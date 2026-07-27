@@ -99,9 +99,12 @@
         font-size: 12px;
         line-height: 16px;
       }
+      .ohf-logo picture {
+        display: flex;
+      }
       .ohf-logo img {
         width: 220px;
-        aspect-ratio: 1578 / 356;
+        aspect-ratio: 2960 / 291;
         height: auto;
       }
       @media (prefers-color-scheme: dark) {
@@ -137,7 +140,10 @@
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
         <span id="ha-launch-screen-attribution">A project from the</span>
-        <img src="/static/icons/ohf.svg" alt="Open Home Foundation" width="1578" height="356">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="/static/images/open-home-foundation-on-dark.svg">
+          <img src="/static/images/open-home-foundation-on-light.svg" alt="Open Home Foundation" width="2960" height="291">
+        </picture>
       </div>
     </div>
     <home-assistant></home-assistant>
