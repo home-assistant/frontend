@@ -34,6 +34,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#03a9f4" />
+    <link rel="preload" href="/static/fonts/roboto/Roboto-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <%= renderTemplate("_social_meta.html.template") %>
     <style>
       @font-face {
@@ -86,6 +87,10 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
+      }
+      #ha-launch-screen-info-box > *,
+      #ha-launch-screen .ohf-logo {
         animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
       }
       #ha-launch-screen .ha-logo {

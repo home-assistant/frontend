@@ -18,6 +18,7 @@
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
+    <link rel="preload" href="/static/fonts/roboto/Roboto-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <%= renderTemplate("_style_base.html.template") %>
     <style>
       @font-face {
@@ -80,6 +81,10 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
+      }
+      #ha-launch-screen-info-box > *,
+      #ha-launch-screen .ohf-logo {
         animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
       }
       #ha-launch-screen .ha-logo {
