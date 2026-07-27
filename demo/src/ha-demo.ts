@@ -16,6 +16,7 @@ import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockHardware } from "./stubs/hardware";
 import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
@@ -79,6 +80,7 @@ export class HaDemo extends HomeAssistantAppEl {
     // mocked backup/config/info and webhook/list are queried. usage_prediction
     // is needed for common-controls sections in strategy dashboards. hassio
     // gates the apps panel, which otherwise redirects to its explainer page.
+    // hardware supplies the board name and image on the hardware page.
     hass.updateHass({
       config: {
         ...hass.config,
@@ -88,6 +90,7 @@ export class HaDemo extends HomeAssistantAppEl {
           "webhook",
           "usage_prediction",
           "hassio",
+          "hardware",
         ],
       },
     });
@@ -115,6 +118,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockHardware(hass);
     mockHassioSupervisor(hass);
     mockIcons(hass);
     mockEnergy(hass);
