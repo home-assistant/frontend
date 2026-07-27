@@ -63,7 +63,7 @@ gulp.task("fetch-nightly-translations", async function () {
     }
     console.warn(
       "Failed to fetch nightly translations, continuing with English only:",
-      err.message
+      err?.message || err
     );
   }
 });
