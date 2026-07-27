@@ -383,7 +383,7 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(isAvailable);
     this._unusedEntities = [...unusedEntities].filter(isAvailable);
 
-    this._favorites = this.hass.userData?.dashboard_favorite_cards ?? [];
+    this._favorites = this.hass.userData?.dashboard_favorite_card_types ?? [];
 
     this._loadCards();
   }
@@ -553,7 +553,7 @@ export class HuiCardPicker extends LitElement {
   private _persistFavorites(): Promise<void> {
     return saveFrontendUserData(this.hass!.connection, "core", {
       ...this.hass!.userData,
-      dashboard_favorite_cards: this._favorites,
+      dashboard_favorite_card_types: this._favorites,
     });
   }
 

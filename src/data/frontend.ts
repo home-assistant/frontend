@@ -10,7 +10,7 @@ export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
   default_panel?: string;
   apps_info_dismissed?: boolean;
-  dashboard_favorite_cards?: string[];
+  dashboard_favorite_card_types?: string[];
 }
 
 export interface SidebarFrontendUserData {
