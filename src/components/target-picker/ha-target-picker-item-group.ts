@@ -8,12 +8,12 @@ import "../ha-expansion-panel";
 import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
 
-const TYPE_PLURAL: Record<TargetTypeFloorless, string> = {
+const TYPE_PLURAL = {
   entity: "entities",
   device: "devices",
   area: "areas",
   label: "labels",
-};
+} as const satisfies Record<TargetTypeFloorless, string>;
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
