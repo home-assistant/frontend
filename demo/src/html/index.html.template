@@ -107,6 +107,7 @@
       }
       .ohf-logo img {
         width: 220px;
+        aspect-ratio: 1578 / 356;
         height: auto;
       }
       @media (max-height: 560px) {
@@ -132,7 +133,7 @@
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
         <span id="ha-launch-screen-attribution">A project from the</span>
-        <img src="/static/icons/ohf.svg" alt="Open Home Foundation">
+        <img src="/static/icons/ohf.svg" alt="Open Home Foundation" width="1578" height="356">
       </div>
     </div>
     <ha-demo></ha-demo>
