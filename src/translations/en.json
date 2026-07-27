@@ -5177,6 +5177,13 @@
               "area": "No areas or floors found for {term}",
               "label": "No labels found for {term}"
             },
+            "show_more_search": {
+              "trigger": "{count} more triggers...",
+              "condition": "{count} more conditions...",
+              "action": "{count} more actions...",
+              "entity": "{count} more entities...",
+              "device": "{count} more devices..."
+            },
             "load_target_items_failed": "Failed to load target items for",
             "other_areas": "Other areas",
             "services": "Services",
