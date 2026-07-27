@@ -382,6 +382,33 @@ describe("buildSankeyDeviceNodes", () => {
     expect(result.untrackedConsumption).toBe(0);
   });
 
+  it("keeps a small device whose chain reaches a small ancestor past a rendered one", () => {
+    // g(small) > a(rendered) > c(small): c hangs off rendered a, so it never
+    // touches untracked and cannot be double-counted through g.
+    const devs = devices(
+      { stat_consumption: "g" },
+      { stat_consumption: "a", included_in_stat: "g" },
+      { stat_consumption: "c", included_in_stat: "a" }
+    );
+    const values = { g: 0.0005, a: 0.5, c: 0.0004 };
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devs,
+        values,
+        initialUntracked: 1,
+      })
+    );
+    expect(result.deviceNodes.map((n) => n.id)).toEqual([
+      "a",
+      "g",
+      "c",
+      "untracked_a",
+    ]);
+    expect(result.parentLinks.c).toBe("a");
+    // only the two top-level values (a and g) come off untracked
+    expect(result.untrackedConsumption).toBeCloseTo(1 - 0.5 - 0.0005, 10);
+  });
+
   it("leaves a cyclic small-device cluster in untracked instead of looping", () => {
     const result = buildSankeyDeviceNodes(
       cumulativeOpts({

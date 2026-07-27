@@ -194,10 +194,15 @@ export const buildSankeyDeviceNodes = (
   smallConsumersByParent.forEach((allConsumers, parentKey) => {
     // A small consumer whose included_in_stat chain reaches another small
     // consumer is already counted inside that ancestor's value - drop it so
-    // totals don't double-count nested devices.
+    // totals don't double-count nested devices. A rendered ancestor ends the
+    // walk: the consumer links to it and never touches untracked, so it can't
+    // be double-counted through anything further up.
     const consumers = allConsumers.filter((consumer) => {
       let ancestor = consumer.includedInStat;
       for (let hops = 0; ancestor && hops < devices.length; hops++) {
+        if (renderedId(ancestor)) {
+          return true;
+        }
         if (smallConsumerStats.has(ancestor)) {
           return false;
         }
