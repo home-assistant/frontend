@@ -1,21 +1,25 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import {
+  mockAreaRegistry,
+  type DemoArea,
+} from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
+import {
+  mockFloorRegistry,
+  type DemoFloor,
+} from "../../../../demo/src/stubs/floor_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
-import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
-import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
 import {
   showDialog,
@@ -147,75 +151,43 @@ const DEVICES: DeviceRegistryEntry[] = [
   },
 ];
 
-const AREAS: AreaRegistryEntry[] = [
+const AREAS: DemoArea[] = [
   {
     area_id: "backyard",
     floor_id: "ground",
     name: "Backyard",
-    icon: null,
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "bedroom",
     floor_id: "first",
     name: "Bedroom",
     icon: "mdi:bed",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "livingroom",
     floor_id: "ground",
     name: "Livingroom",
     icon: "mdi:sofa",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 
-const FLOORS: FloorRegistryEntry[] = [
+const FLOORS: DemoFloor[] = [
   {
     floor_id: "ground",
     name: "Ground floor",
     level: 0,
-    icon: null,
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
   {
     floor_id: "first",
     name: "First floor",
     level: 1,
     icon: "mdi:numeric-1",
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
   {
     floor_id: "second",
     name: "Second floor",
     level: 2,
     icon: "mdi:numeric-2",
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 

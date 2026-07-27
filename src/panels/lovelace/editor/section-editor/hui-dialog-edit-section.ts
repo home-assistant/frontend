@@ -76,6 +76,7 @@ export class HuiDialogEditSection
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const sectionConfig = {
         ...this._config,
