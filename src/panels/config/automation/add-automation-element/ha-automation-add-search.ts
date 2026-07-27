@@ -102,7 +102,7 @@ const MAX_SEARCH_ITEMS_PER_SECTION = 5;
 
 type SearchSection = "item" | "block" | "entity" | "device" | "area" | "label";
 
-interface SearchMoreComboBoxItem {
+interface SearchMoreComboBoxItem extends PickerComboBoxItem {
   type: "more";
   section: "entity" | "device" | "item";
   label: string;
@@ -322,8 +322,8 @@ export class HaAutomationAddSearch extends LitElement {
           .path=${mdiUnfoldMoreHorizontal}
         ></ha-svg-icon>
         <span slot="headline"></span>
-        <span slot="supporting-text">${item.label}</span></ha-combo-box-item
-      ></ha-combo-box-item>`;
+        <span slot="supporting-text">${item.label}</span>
+      </ha-combo-box-item>`;
     }
 
     const type = ["trigger", "condition", "action", "block"].includes(
@@ -778,7 +778,7 @@ export class HaAutomationAddSearch extends LitElement {
         if (labels.length) {
           resultSections.push({
             title: localize("ui.components.target-picker.type.labels"),
-            type: "device",
+            type: "label",
             items: labels,
           });
         }
@@ -796,13 +796,15 @@ export class HaAutomationAddSearch extends LitElement {
           (section.type === "item" ||
             section.type === "entity" ||
             section.type === "device") &&
-          section.items.length > MAX_SEARCH_ITEMS_PER_SECTION
+          section.items.length > MAX_SEARCH_ITEMS_PER_SECTION + 1
         ) {
           resultItems.push(
             ...section.items.slice(0, MAX_SEARCH_ITEMS_PER_SECTION)
           );
           const typeKey = section.type === "item" ? type : section.type;
           resultItems.push({
+            primary: "",
+            id: `search-more-${type}`,
             type: "more",
             section: section.type,
             label: localize(
