@@ -26,21 +26,22 @@ export const removeLaunchScreen = (instant = false): boolean => {
     return true;
   }
 
-  withViewTransition((viewTransitionAvailable: boolean) => {
-    if (!viewTransitionAvailable) {
+  withViewTransition((viewTransitionAvailable) => {
+    if (viewTransitionAvailable) {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
       return;
     }
 
     launchScreenElement.classList.add("removing");
-
     const durationFromCss = getComputedStyle(document.documentElement)
-      .getPropertyValue("--ha-animation-duration-slow")
+      .getPropertyValue("--ha-animation-duration-normal")
       .trim();
-
-    setTimeout(() => {
-      launchScreenElement.parentElement?.removeChild(launchScreenElement);
-    }, parseAnimationDuration(durationFromCss));
+    setTimeout(
+      () => {
+        launchScreenElement.parentElement?.removeChild(launchScreenElement);
+      },
+      parseAnimationDuration(durationFromCss || "250ms")
+    );
   });
   return true;
 };

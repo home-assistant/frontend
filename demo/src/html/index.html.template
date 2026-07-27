@@ -61,6 +61,10 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
+      }
+      #ha-launch-screen.removing {
+        opacity: 0;
       }
       @keyframes launch-lockup-in {
         from {
