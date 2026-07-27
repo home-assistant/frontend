@@ -5,7 +5,6 @@ import {
   mdiArrowUpRight,
   mdiFilterVariant,
   mdiKeyboard,
-  mdiMagnify,
   mdiPlay,
   mdiPlus,
 } from "@mdi/js";
@@ -21,6 +20,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { slugify } from "../../common/string/slugify";
 import { debounce } from "../../common/util/debounce";
 import { UNAVAILABLE } from "../../data/entity/entity";
@@ -448,8 +448,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     const mediaClassFilterOptions =
       showSearch && currentItem.search_media_classes
         ? [...currentItem.search_media_classes].sort((a, b) =>
-            this._localizeMediaClass(a).localeCompare(
-              this._localizeMediaClass(b)
+            caseInsensitiveStringCompare(
+              this._localizeMediaClass(a),
+              this._localizeMediaClass(b),
+              this.hass.locale.language
             )
           )
         : [];
@@ -741,13 +743,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                     ? this._renderMediaClassFilter(mediaClassFilterOptions)
                     : nothing
                 }
-                <ha-icon-button
+                <ha-button
                   class="search-button"
-                  .path=${mdiMagnify}
-                  .label=${this.hass.localize("ui.common.search")}
+                  appearance="filled"
                   .disabled=${!this._searchQuery.trim()}
                   @click=${this._search}
-                ></ha-icon-button>
+                >
+                  ${this.hass.localize("ui.common.search")}
+                </ha-button>
               `
             : nothing
         }
@@ -1288,8 +1291,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           --ha-input-padding-bottom: 0;
         }
         .search-button {
-          --ha-icon-button-size: 40px;
-          color: var(--secondary-text-color);
+          flex: none;
         }
         :host([narrow]) .search-row {
           box-sizing: border-box;
