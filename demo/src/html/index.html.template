@@ -36,6 +36,13 @@
     <meta name="theme-color" content="#03a9f4" />
     <%= renderTemplate("_social_meta.html.template") %>
     <style>
+      @font-face {
+        font-family: "Roboto Launch Screen";
+        font-display: block;
+        src: url("/static/fonts/roboto/Roboto-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
@@ -56,6 +63,7 @@
         padding: 0;
       }
       #ha-launch-screen {
+        font-family: "Roboto Launch Screen", sans-serif;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -102,7 +110,6 @@
         opacity: .66;
       }
       .ohf-logo span {
-        font-family: Roboto, sans-serif;
         font-size: 12px;
         line-height: 12px;
         text-transform: uppercase;

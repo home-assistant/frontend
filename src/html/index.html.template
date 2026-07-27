@@ -20,6 +20,13 @@
     <meta name="color-scheme" content="dark light" />
     <%= renderTemplate("_style_base.html.template") %>
     <style>
+      @font-face {
+        font-family: "Roboto Launch Screen";
+        font-display: block;
+        src: url("/static/fonts/roboto/Roboto-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+      }
       @keyframes fade-out {
         from {
           opacity: 1;
@@ -41,6 +48,7 @@
         height: 100vh;
       }
       #ha-launch-screen {
+        font-family: "Roboto Launch Screen", sans-serif;
         position: fixed;
         top: 0;
         left: 0;
@@ -96,7 +104,6 @@
         opacity: .66;
       }
       .ohf-logo span {
-        font-family: Roboto, sans-serif;
         font-size: 12px;
         line-height: 12px;
         text-transform: uppercase;
