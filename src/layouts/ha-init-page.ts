@@ -1,91 +1,88 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../components/ha-spinner";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 
 @customElement("ha-init-page")
-class HaInitPage extends LitElement {
+export class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
 
   @property({ type: Boolean }) public migration = false;
 
   @state() private _retryInSeconds = 60;
 
-  private _showProgressIndicatorTimeout?: number;
+  @state() @consumeLocalize() private _localize?: LocalizeFunc;
 
   private _retryInterval?: number;
 
   protected render() {
     return this.error
       ? html`
-          <p>Unable to connect to Home Assistant.</p>
+          <p>
+            ${
+              this._localize?.("ui.init.error.title") ||
+              "Unable to connect to Home Assistant."
+            }
+          </p>
           <p class="retry-text">
-            Retrying in ${this._retryInSeconds} seconds...
+            ${
+              this._localize?.("ui.init.error.retrying", {
+                seconds: this._retryInSeconds,
+              }) || `Retrying in ${this._retryInSeconds} seconds...`
+            }
           </p>
           <ha-button size="s" appearance="plain" @click=${this._retry}
-            >Retry now</ha-button
+            >${
+              this._localize?.("ui.init.error.retry_now") || "Retry now"
+            }</ha-button
           >
           ${
             location.host.includes("ui.nabu.casa")
-              ? html`
-                  <p>
-                    It is possible that you are seeing this screen because your
-                    Home Assistant is not currently connected. You can ask it to
-                    come online from your
-                    <a href="https://account.nabucasa.com/"
-                      >Nabu Casa account page</a
-                    >.
-                  </p>
-                `
-              : ""
+              ? html`<p>
+                  ${
+                    this._localize?.("ui.init.error.nabu_casa", {
+                      account_link: html`<a href="https://account.nabucasa.com/"
+                        >${
+                          this._localize?.("ui.init.error.nabu_casa_account") ||
+                          "Nabu Casa account page"
+                        }</a
+                      >`,
+                    }) ||
+                    html`It is possible that you are seeing this screen because
+                      your Home Assistant is not currently connected. You can
+                      ask it to come online from your
+                      <a href="https://account.nabucasa.com/"
+                        >Nabu Casa account page</a
+                      >.`
+                  }
+                </p>`
+              : nothing
           }
         `
-      : html`
-          <div id="progress-indicator-wrapper">
-            <ha-spinner></ha-spinner>
-          </div>
-          <div id="loading-text">
-            ${
-              this.migration
-                ? html`
-                    Database upgrade is in progress, Home Assistant will not
-                    start until the upgrade is completed.
-                    <br /><br />
-                    The upgrade may need a long time to complete, please be
-                    patient.
-                  `
-                : "Loading data"
-            }
-          </div>
-        `;
+      : html`<p>
+          ${
+            this.migration
+              ? this._localize?.("ui.init.migration") ||
+                "A database upgrade is in progress. Home Assistant will not start until it is complete. This may take a while, so please be patient."
+              : this._localize?.("ui.init.loading") || "Loading data"
+          }
+        </p>`;
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._showProgressIndicatorTimeout) {
-      clearTimeout(this._showProgressIndicatorTimeout);
-    }
     if (this._retryInterval) {
       clearInterval(this._retryInterval);
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("error") && this.error) {
-      import("../components/ha-button");
-    }
-  }
-
   protected firstUpdated() {
-    this._showProgressIndicatorTimeout = window.setTimeout(() => {
-      import("../components/ha-spinner");
-    }, 5000);
-
     this._retryInterval = window.setInterval(() => {
-      const remainingSeconds = this._retryInSeconds--;
-      if (remainingSeconds <= 0) {
+      if (this._retryInSeconds <= 1) {
         this._retry();
+      } else {
+        this._retryInSeconds -= 1;
       }
     }, 1000);
   }
@@ -104,22 +101,17 @@ class HaInitPage extends LitElement {
       flex-direction: column;
       align-items: center;
     }
-    #progress-indicator-wrapper {
-      display: flex;
-      align-items: center;
-      margin: 25px 0;
-      height: 50px;
-    }
     a {
       color: var(--primary-color);
     }
     .retry-text {
       margin-top: 0;
     }
-    p,
-    #loading-text {
+    p {
       max-width: 350px;
+      margin: var(--ha-space-3, 12px) var(--ha-space-4, 16px);
       color: var(--primary-text-color);
+      font-size: var(--ha-font-size-m, 14px);
       text-align: center;
     }
   `;

@@ -45,9 +45,22 @@ export const removeLaunchScreen = (instant = false): boolean => {
   return true;
 };
 
-export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
+export const renderLaunchScreenContent = (
+  content: TemplateResult,
+  attribution: string
+) => {
   const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
   if (infoBoxElement) {
     render(content, infoBoxElement);
+  }
+  updateLaunchScreenAttribution(attribution);
+};
+
+export const updateLaunchScreenAttribution = (attribution: string) => {
+  const attributionElement = document.getElementById(
+    "ha-launch-screen-attribution"
+  );
+  if (attributionElement) {
+    attributionElement.textContent = attribution;
   }
 };

@@ -18,7 +18,8 @@ import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   removeLaunchScreen,
-  renderLaunchScreenInfoBox,
+  renderLaunchScreenContent,
+  updateLaunchScreenAttribution,
 } from "../util/launch-screen";
 import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
@@ -188,6 +189,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (this.render !== this.renderHass) {
       this._renderInitInfo(false);
     }
+    this.addEventListener("translations-updated", () => {
+      if (this.render !== this.renderHass) {
+        updateLaunchScreenAttribution(this._launchScreenAttribution);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -315,7 +321,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async _initializeHass() {
     try {
-      let result;
+      let result: Awaited<Window["hassConnection"]>;
 
       if (window.hassConnection) {
         result = await window.hassConnection;
@@ -388,11 +394,19 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _renderInitInfo(error: boolean) {
-    renderLaunchScreenInfoBox(
+    renderLaunchScreenContent(
       html`<ha-init-page
         .error=${error}
         .migration=${this._databaseMigration}
-      ></ha-init-page>`
+      ></ha-init-page>`,
+      this._launchScreenAttribution
+    );
+  }
+
+  private get _launchScreenAttribution() {
+    return (
+      (this.hass ?? this._pendingHass).localize?.("ui.init.project_from") ||
+      "A project from the"
     );
   }
 }
