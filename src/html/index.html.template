@@ -72,7 +72,7 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        animation: launch-lockup-in var(--ha-animation-duration-slow, 350ms) ease-out both;
+        animation: launch-lockup-in var(--ha-animation-duration-normal, 250ms) ease-out both;
       }
       #ha-launch-screen .ha-logo {
         width: 96px;
