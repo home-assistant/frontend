@@ -189,6 +189,12 @@ const ADDON_STATS: HassioStats = {
 };
 
 export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
+  // Gallery pages rely on this to enable the hassio-gated pickers. The demo
+  // lists hassio in its own components, hence the guard against duplicates.
+  if (!hass.config.components.includes("hassio")) {
+    hass.config.components.push("hassio");
+  }
+
   hass.mockWS("supervisor/api", (msg) => {
     if (msg.endpoint === "/supervisor/info") {
       const data: HassioSupervisorInfo = {
