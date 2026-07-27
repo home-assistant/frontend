@@ -804,7 +804,7 @@ export class HaAutomationAddSearch extends LitElement {
           const typeKey = section.type === "item" ? type : section.type;
           resultItems.push({
             primary: "",
-            id: `search-more-${type}`,
+            id: `search-more-${section.type}`,
             type: "more",
             section: section.type,
             label: localize(
