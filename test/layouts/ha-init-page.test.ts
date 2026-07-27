@@ -1,9 +1,6 @@
-import { ContextProvider } from "@lit/context";
 import { LitElement } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { LocalizeFunc } from "../../src/common/translations/localize";
-import { internationalizationContext } from "../../src/data/context";
-import type { HomeAssistantInternationalization } from "../../src/types";
 import type { HaInitPage } from "../../src/layouts/ha-init-page";
 
 vi.mock("../../src/components/ha-button", () => ({}));
@@ -30,12 +27,8 @@ let element: HaInitPage | undefined;
 const mount = async (properties: Partial<HaInitPage> = {}) => {
   host = document.createElement("div");
   document.body.append(host);
-  new ContextProvider(host, {
-    context: internationalizationContext,
-    initialValue: { localize } as HomeAssistantInternationalization,
-  });
   element = document.createElement("ha-init-page");
-  Object.assign(element, properties);
+  Object.assign(element, { localize, ...properties });
   host.append(element);
   await element.updateComplete;
   return element;

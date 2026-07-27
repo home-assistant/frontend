@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 
@@ -10,9 +9,9 @@ export class HaInitPage extends LitElement {
 
   @property({ type: Boolean }) public migration = false;
 
-  @state() private _retryInSeconds = 60;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
-  @state() @consumeLocalize() private _localize?: LocalizeFunc;
+  @state() private _retryInSeconds = 60;
 
   private _retryInterval?: number;
 
@@ -21,30 +20,30 @@ export class HaInitPage extends LitElement {
       ? html`
           <p>
             ${
-              this._localize?.("ui.init.error.title") ||
+              this.localize?.("ui.init.error.title") ||
               "Unable to connect to Home Assistant."
             }
           </p>
           <p class="retry-text">
             ${
-              this._localize?.("ui.init.error.retrying", {
+              this.localize?.("ui.init.error.retrying", {
                 seconds: this._retryInSeconds,
               }) || `Retrying in ${this._retryInSeconds} seconds...`
             }
           </p>
           <ha-button size="s" appearance="plain" @click=${this._retry}
             >${
-              this._localize?.("ui.init.error.retry_now") || "Retry now"
+              this.localize?.("ui.init.error.retry_now") || "Retry now"
             }</ha-button
           >
           ${
             location.host.includes("ui.nabu.casa")
               ? html`<p>
                   ${
-                    this._localize?.("ui.init.error.nabu_casa", {
+                    this.localize?.("ui.init.error.nabu_casa", {
                       account_link: html`<a href="https://account.nabucasa.com/"
                         >${
-                          this._localize?.("ui.init.error.nabu_casa_account") ||
+                          this.localize?.("ui.init.error.nabu_casa_account") ||
                           "Nabu Casa account page"
                         }</a
                       >`,
@@ -63,9 +62,9 @@ export class HaInitPage extends LitElement {
       : html`<p>
           ${
             this.migration
-              ? this._localize?.("ui.init.migration") ||
+              ? this.localize?.("ui.init.migration") ||
                 "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed. The upgrade may need a long time to complete, please be patient."
-              : this._localize?.("ui.init.loading") || "Loading data"
+              : this.localize?.("ui.init.loading") || "Loading data"
           }
         </p>`;
   }
