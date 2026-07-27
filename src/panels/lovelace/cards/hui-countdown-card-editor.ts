@@ -50,6 +50,8 @@ export class HuiCountdownCardEditor
         return "Show seconds";
       case "no_background":
         return "Transparent background";
+      default:
+        return "";
     }
   };
 
