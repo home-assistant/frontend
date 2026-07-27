@@ -249,9 +249,9 @@ export class DialogEnergyBatterySettings
         ></ha-statistic-picker>
 
         <ha-input
-          .value=${this._source.capacity != null
-            ? String(this._source.capacity)
-            : ""}
+          .value=${
+            this._source.capacity != null ? String(this._source.capacity) : ""
+          }
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.capacity"
           )}
