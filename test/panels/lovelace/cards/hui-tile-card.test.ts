@@ -9,8 +9,8 @@ import type { TileCardConfig } from "../../../../src/panels/lovelace/cards/types
 
 // getCardSize() and getGridOptions() drive how much space the tile card claims
 // in masonry and sections views. In "inline" mode the first feature shares the
-// name row and only the remaining features add rows, so the counting differs
-// from "bottom" mode; these tests pin that arithmetic down.
+// name row and the remaining features are laid out two per row below it, so the
+// counting differs from "bottom" mode; these tests pin that arithmetic down.
 
 // Bundler-defined globals the card's import graph reads at eval time.
 vi.hoisted(() => {
@@ -59,13 +59,14 @@ describe("hui-tile-card getCardSize", () => {
     ).toBe(4);
   });
 
-  it("counts all but the inline feature in inline mode", () => {
-    expect(
+  it("pairs the features below the inline one", () => {
+    const sizes = [1, 2, 3, 4, 5, 6].map((count) =>
       makeCard({
         features_position: "inline",
-        features: features(3),
+        features: features(count),
       }).getCardSize()
-    ).toBe(3);
+    );
+    expect(sizes).toEqual([1, 2, 2, 3, 3, 4]);
   });
 
   it("does not add rows for a single inline feature", () => {
@@ -122,15 +123,24 @@ describe("hui-tile-card getGridOptions", () => {
     });
   });
 
-  it("widens to 12 columns and stacks the extra features in inline mode", () => {
+  it("widens to 12 columns and pairs the extra features in inline mode", () => {
     expect(
       gridOptions({ features_position: "inline", features: features(3) })
     ).toEqual({
       columns: 6,
-      rows: 3,
+      rows: 2,
       min_columns: 12,
-      min_rows: 3,
+      min_rows: 2,
     });
+  });
+
+  it("adds a row per pair of features below the inline one", () => {
+    const rows = [1, 2, 3, 4, 5, 6].map(
+      (count) =>
+        gridOptions({ features_position: "inline", features: features(count) })
+          .rows
+    );
+    expect(rows).toEqual([1, 2, 2, 3, 3, 4]);
   });
 
   it("keeps a single row for one inline feature", () => {

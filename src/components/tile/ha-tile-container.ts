@@ -60,7 +60,9 @@ export class HaTileContainer extends LitElement {
           </div>
           <slot name="features"></slot>
         </div>
-        <slot name="features-bottom"></slot>
+        <div class="features-bottom">
+          <slot name="features-bottom"></slot>
+        </div>
       </div>
     `;
   }
@@ -154,6 +156,16 @@ export class HaTileContainer extends LitElement {
       --feature-height: var(--ha-space-9);
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
+    }
+
+    .features-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: var(--column-gap, 0px);
+    }
+    ::slotted([slot="features-bottom"]) {
+      flex: 1 1 calc(50% - var(--column-gap, 0px) / 2);
+      min-width: 0;
     }
     [role="button"] {
       cursor: pointer;

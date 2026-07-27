@@ -108,15 +108,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
-    const featuresCount = this._config?.features?.length || 0;
-    // In inline mode, the first feature shares the row with the name
-    const stackedFeaturesCount =
-      featuresPosition === "inline"
-        ? Math.max(featuresCount - 1, 0)
-        : featuresCount;
-    return 1 + (this._config?.vertical ? 1 : 0) + stackedFeaturesCount;
+    const featureRows = this._config
+      ? this._bottomFeatureRowCount(this._config)
+      : 0;
+    return 1 + (this._config?.vertical ? 1 : 0) + featureRows;
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -128,11 +123,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     if (featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
-        // The first feature is inline, the remaining ones are stacked below
-        rows += Math.max(featuresCount - 1, 0);
-      } else {
-        rows += featuresCount;
       }
+      rows += this._bottomFeatureRowCount(this._config!);
     }
 
     if (this._config?.vertical) {
@@ -250,15 +242,27 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _stackedFeatures = memoizeOne(
-    (config: TileCardConfig): LovelaceCardFeatureConfig[] => {
+  private _bottomFeatureGroups = memoizeOne(
+    (config: TileCardConfig): LovelaceCardFeatureConfig[][] => {
       const features = config.features || [];
       const featurePosition = this._featurePosition(config);
 
       if (featurePosition === "inline") {
-        return features.slice(1);
+        return features.slice(1).map((feature) => [feature]);
       }
-      return features;
+      return features.length ? [features] : [];
+    }
+  );
+
+  private _bottomFeatureRowCount = memoizeOne(
+    (config: TileCardConfig): number => {
+      const featuresCount = config.features?.length || 0;
+      const featurePosition = this._featurePosition(config);
+
+      if (featurePosition === "inline") {
+        return Math.ceil(Math.max(featuresCount - 1, 0) / 2);
+      }
+      return featuresCount;
     }
   );
 
@@ -305,7 +309,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const featurePosition = this._featurePosition(this._config);
     const inlineFeatures = this._inlineFeatures(this._config);
-    const stackedFeatures = this._stackedFeatures(this._config);
+    const bottomFeatureGroups = this._bottomFeatureGroups(this._config);
 
     const hasImage = Boolean(imageUrl);
 
@@ -368,23 +372,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 `
               : nothing
           }
-          ${
-            stackedFeatures.length > 0
-              ? html`
-                  <hui-card-features
-                    slot=${
-                      featurePosition === "inline"
-                        ? "features-bottom"
-                        : "features"
-                    }
-                    .hass=${this.hass}
-                    .context=${this._featureContext}
-                    .color=${this._config.color}
-                    .features=${stackedFeatures}
-                  ></hui-card-features>
-                `
-              : nothing
-          }
+          ${bottomFeatureGroups.map(
+            (group) => html`
+              <hui-card-features
+                slot=${
+                  featurePosition === "inline" ? "features-bottom" : "features"
+                }
+                .hass=${this.hass}
+                .context=${this._featureContext}
+                .color=${this._config!.color}
+                .features=${group}
+              ></hui-card-features>
+            `
+          )}
         </ha-tile-container>
       </ha-card>
     `;
