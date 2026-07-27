@@ -64,16 +64,26 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   const replace = options?.replace || false;
 
   if (__DEMO__) {
+    if (!path.includes("#")) {
+      // The demo routes with the hash instead of the pathname. Resolve the
+      // path like the browser would do for pushState, and keep the query
+      // parameters in the URL query instead of inside the hash.
+      const url = new URL(
+        path,
+        `${mainWindow.location.origin}${mainWindow.location.hash.substring(1)}`
+      );
+      path = `${mainWindow.location.pathname}${url.search}#${url.pathname}`;
+    }
     if (replace) {
       mainWindow.history.replaceState(
         mainWindow.history.state?.root
           ? { root: true }
           : (options?.data ?? null),
         "",
-        `${mainWindow.location.pathname}#${path}`
+        path
       );
     } else {
-      mainWindow.location.hash = path;
+      mainWindow.history.pushState(options?.data ?? null, "", path);
     }
   } else if (replace) {
     mainWindow.history.replaceState(

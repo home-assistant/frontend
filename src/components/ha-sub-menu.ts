@@ -1,5 +1,5 @@
 import { SubMenu } from "@material/web/menu/internal/submenu/sub-menu";
-import { styles } from "@material/web/menu/internal/submenu/sub-menu-styles";
+import { styles } from "@material/web/menu/internal/submenu/sub-menu-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

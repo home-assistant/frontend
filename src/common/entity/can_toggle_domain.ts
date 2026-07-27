@@ -1,16 +1,12 @@
 import type { HomeAssistant } from "../../types";
+import { getToggleAction } from "./get_toggle_action";
 
 export const canToggleDomain = (hass: HomeAssistant, domain: string) => {
   const services = hass.services[domain];
   if (!services) {
     return false;
   }
-
-  if (domain === "lock") {
-    return "lock" in services;
-  }
-  if (domain === "cover") {
-    return "open_cover" in services;
-  }
-  return "turn_on" in services;
+  const actionOn = getToggleAction(domain, true);
+  const actionOff = getToggleAction(domain, false);
+  return actionOn in services && actionOff in services;
 };

@@ -179,6 +179,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
 
+    const exposedToAlexa =
+      showAssistants.includes("cloud.alexa") &&
+      (alexaManual ? manExposedAlexa : this.exposed["cloud.alexa"]);
+    const exposedToGoogle =
+      showAssistants.includes("cloud.google_assistant") &&
+      (googleManual
+        ? manExposedGoogle
+        : this.exposed["cloud.google_assistant"]);
+    const exposedToAssist = this.exposed.conversation;
+
     return html`
       <ha-md-list-item>
         <h3 slot="headline">
@@ -275,7 +285,24 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       </h3>
 
       <p class="description">
-        ${this.hass.localize("ui.dialogs.voice-settings.aliases_description")}
+        ${[
+          this.hass.localize("ui.dialogs.voice-settings.aliases_description"),
+          exposedToAlexa &&
+            this.hass.localize(
+              "ui.dialogs.voice-settings.aliases_description_alexa"
+            ),
+          exposedToGoogle &&
+            this.hass.localize(
+              "ui.dialogs.voice-settings.aliases_description_google"
+            ),
+          exposedToAssist &&
+            (exposedToAlexa || exposedToGoogle) &&
+            this.hass.localize(
+              "ui.dialogs.voice-settings.aliases_description_assist"
+            ),
+        ]
+          .filter(Boolean)
+          .join(" ")}
       </p>
 
       ${

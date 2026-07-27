@@ -138,6 +138,7 @@ export class HaStateControlFanSpeed extends LitElement {
         max="100"
         .value=${this.sliderValue}
         .step=${this.stateObj.attributes.percentage_step ?? 1}
+        round-value
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
           this._i18n.localize,

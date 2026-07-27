@@ -1,8 +1,22 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
 export interface NumberDeviceClassUnits {
   units: string[];
 }
+
+const AUTO_MODE_MAX_STEPS = 256;
+
+export const showNumberSlider = (stateObj: HassEntity): boolean => {
+  const { mode, min, max, step } = stateObj.attributes;
+  if (mode === "slider") {
+    return true;
+  }
+  return (
+    mode === "auto" &&
+    (Number(max) - Number(min)) / Number(step) <= AUTO_MODE_MAX_STEPS
+  );
+};
 
 export const getNumberDeviceClassConvertibleUnits = (
   hass: HomeAssistant,

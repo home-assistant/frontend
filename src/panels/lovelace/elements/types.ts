@@ -1,4 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
+import type { ActionHandlerOptions } from "../../../data/lovelace/action_handler";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 import type { Condition } from "../common/validate-condition";
@@ -23,6 +24,26 @@ export interface LovelaceElement extends HTMLElement {
   hass?: HomeAssistant;
   preview?: boolean;
   setConfig(config: LovelaceElementConfig): void;
+  /**
+   * Set by the picture-elements card on elements that take part in its
+   * nearest-target tap routing: the card's container gesture handles pointer
+   * input, the element keeps keyboard activation.
+   */
+  delegatedActions?: boolean;
+  /**
+   * The element's current visible hit target and gesture options, or null
+   * while it has nothing actionable to offer (no actions configured, or an
+   * entity-not-found warning is rendered instead of the element).
+   */
+  getHitInfo?(): LovelaceElementHitInfo | null;
+}
+
+export interface LovelaceElementHitInfo {
+  /** Viewport-relative box of the element's visible hit target. */
+  rect: DOMRect;
+  /** The rect is a text line: route it as a segment, not a point. */
+  isText?: boolean;
+  options: ActionHandlerOptions;
 }
 
 export interface ConditionalElementConfig extends LovelaceElementConfigBase {

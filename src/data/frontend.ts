@@ -1,6 +1,11 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { ShortcutItem } from "./home_shortcuts";
 
+export interface SurveyInteraction {
+  date: string;
+  action: "opened" | "dismissed";
+}
+
 export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
   default_panel?: string;
@@ -16,6 +21,9 @@ export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
   onboarded_date?: string;
+  surveys?: {
+    onboarding?: SurveyInteraction;
+  };
 }
 
 export interface HomeFrontendSystemData {

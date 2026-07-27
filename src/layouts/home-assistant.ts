@@ -5,9 +5,12 @@ import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
+import { fetchHttpConfig } from "../data/http";
+import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
+import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
@@ -17,6 +20,7 @@ import {
   removeLaunchScreen,
   renderLaunchScreenInfoBox,
 } from "../util/launch-screen";
+import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -54,6 +58,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   @state() private _databaseMigration?: boolean;
 
+  private _httpPendingDialogOpen = false;
+
+  private _onboardingSurveyChecked = false;
+
   private _panelUrl: string;
 
   @storage({ key: "ha-version", state: false, subscribe: false })
@@ -85,13 +93,34 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._databaseMigration === undefined &&
       changedProps.has("hass") &&
       this.hass?.config &&
-      changedProps.get("hass")?.config !== this.hass?.config
+      oldHass?.config !== this.hass.config
     ) {
       this.checkDataBaseMigration();
+    }
+    // Wait for `hass.user` to populate so the admin guard can run; it arrives
+    // asynchronously after `hass.config`.
+    if (
+      changedProps.has("hass") &&
+      this.hass?.user &&
+      oldHass?.user !== this.hass.user
+    ) {
+      this.checkHttpPendingConfig();
+    }
+    if (
+      changedProps.has("hass") &&
+      !this._onboardingSurveyChecked &&
+      this.hass?.user &&
+      this.hass.systemData
+    ) {
+      this._onboardingSurveyChecked = true;
+      if (!__DEMO__) {
+        checkOnboardingSurveyToast(this, this.hass);
+      }
     }
   }
 
@@ -104,7 +133,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
-      removeLaunchScreen();
+      // Apps with a native splash screen keep covering the frontend until
+      // frontend/loaded, so the launch screen stays up (invisibly) until the
+      // first panel has rendered and partial-panel-resolver removes it.
+      if (!this.hass.auth.external?.config.hasSplashscreen) {
+        removeLaunchScreen();
+      }
+      this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
     }
     super.update(changedProps);
   }
@@ -138,11 +173,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     window.addEventListener("location-changed", () => updateRoute());
 
     // Handle history changes
-    if (useHash) {
-      window.addEventListener("hashchange", () => updateRoute());
-    } else {
-      window.addEventListener("popstate", () => updateRoute());
-    }
+    window.addEventListener("popstate", () => updateRoute());
 
     // Handle clicking on links
     window.addEventListener("click", (ev) => {
@@ -218,6 +249,39 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         location.reload(true);
       }
     }
+  }
+
+  protected async checkHttpPendingConfig() {
+    if (__DEMO__ || this._httpPendingDialogOpen) {
+      return;
+    }
+    if (!this.hass?.user?.is_admin) {
+      return;
+    }
+    let httpConfig: HttpConfigState;
+    try {
+      httpConfig = await fetchHttpConfig(this.hass);
+    } catch (_err) {
+      // The check re-runs on the next reconnect; ignore transient failures.
+      return;
+    }
+    // Only prompt for an active trial. A pending config with an error was
+    // already reverted/failed and is kept only for display in the config form,
+    // so it must not pop the confirm/revert dialog.
+    if (
+      !httpConfig.pending ||
+      httpConfig.pending.error ||
+      this._httpPendingDialogOpen
+    ) {
+      return;
+    }
+    this._httpPendingDialogOpen = true;
+    showHttpPendingConfigDialog(this, {
+      state: httpConfig,
+      onResolved: () => {
+        this._httpPendingDialogOpen = false;
+      },
+    });
   }
 
   protected async checkDataBaseMigration() {

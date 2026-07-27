@@ -1,146 +1,132 @@
 import { expect, test } from "@playwright/test";
 import {
+  expectNoPageErrors,
   NAVIGATION_TIMEOUT,
   PANEL_TIMEOUT,
   QUICK_TIMEOUT,
   SHELL_TIMEOUT,
-  appErrors as filterAppErrors,
+  trackPageErrors,
 } from "./helpers";
+import {
+  DEMO_THEME_STORAGE_KEY,
+  activateDemoSidebarPanel,
+  demoCardSelector,
+  expectDemoDarkMode,
+  expectStoredDemoTheme,
+  loadDemo,
+  moreInfoCardSelector,
+  openDemoSidebar,
+  reloadDemo,
+} from "./demo/helpers";
 
 test.describe("Home Assistant Demo", () => {
-  // Collect JS errors during each test so we can assert no unexpected crashes.
-  let pageErrors: Error[] = [];
+  let pageErrors: ReturnType<typeof trackPageErrors>;
 
   test.beforeEach(async ({ page }) => {
-    pageErrors = [];
-    page.on("pageerror", (err) => pageErrors.push(err));
-    await page.goto("/");
+    pageErrors = trackPageErrors(page);
   });
-
-  function appErrors() {
-    return filterAppErrors(pageErrors);
-  }
-
-  // ── 1. Page loads ──────────────────────────────────────────────────────────
 
   test("page loads and ha-demo mounts without JS errors", async ({ page }) => {
-    // The custom element is present in the document
-    await expect(page.locator("ha-demo")).toBeAttached({
-      timeout: NAVIGATION_TIMEOUT,
-    });
+    await loadDemo(page);
 
-    // The launch screen should disappear once the app is ready
-    await expect(page.locator("#ha-launch-screen")).toBeHidden({
-      timeout: NAVIGATION_TIMEOUT,
-    });
-
-    // No unhandled JS exceptions
-    expect(appErrors()).toHaveLength(0);
+    expectNoPageErrors(pageErrors);
   });
 
-  // ── 2. Dashboard renders ───────────────────────────────────────────────────
-
   test("dashboard renders Lovelace cards", async ({ page }) => {
-    await expect(page.locator("ha-demo")).toBeAttached({
-      timeout: NAVIGATION_TIMEOUT,
-    });
-    await expect(page.locator("#ha-launch-screen")).toBeHidden({
-      timeout: NAVIGATION_TIMEOUT,
-    });
+    await loadDemo(page);
 
-    const cardSelector = [
-      "hui-tile-card",
-      "hui-entity-card",
-      "hui-glance-card",
-      "hui-button-card",
-      "hui-markdown-card",
-    ].join(", ");
-
-    await expect(page.locator(cardSelector).first()).toBeVisible({
+    await expect(page.locator(demoCardSelector).first()).toBeVisible({
       timeout: PANEL_TIMEOUT,
     });
   });
 
-  // ── 3. Sidebar navigation ─────────────────────────────────────────────────
-
   test("sidebar navigation changes the active panel", async ({ page }) => {
-    await expect(page.locator("ha-demo")).toBeAttached({
-      timeout: NAVIGATION_TIMEOUT,
-    });
-    await expect(page.locator("#ha-launch-screen")).toBeHidden({
-      timeout: NAVIGATION_TIMEOUT,
-    });
+    await loadDemo(page);
+    await openDemoSidebar(page);
+    await activateDemoSidebarPanel(page, "map");
 
-    // On narrow viewports (< 870 px — mobile / tablet) the sidebar lives
-    // inside a modal drawer that is closed by default. Open it first via
-    // the ha-menu-button in the top app-bar.
-    const menuButton = page.locator("ha-menu-button");
-    if (await menuButton.isVisible()) {
-      await menuButton.click();
-      await expect(page.locator("ha-sidebar")).toBeVisible({
-        timeout: SHELL_TIMEOUT,
-      });
-    } else {
-      await expect(page.locator("ha-sidebar")).toBeAttached({
-        timeout: NAVIGATION_TIMEOUT,
-      });
-    }
-
-    const candidatePanels = ["map", "logbook", "history", "config"];
-
-    let clicked = false;
-    for (const panel of candidatePanels) {
-      const navItem = page.locator(`#sidebar-panel-${panel}`);
-      // eslint-disable-next-line no-await-in-loop
-      const visible = await navItem.isVisible().catch(() => false);
-      if (visible) {
-        // eslint-disable-next-line no-await-in-loop
-        await navItem.click();
-        // eslint-disable-next-line no-await-in-loop
-        await expect(page).toHaveURL(new RegExp(`/${panel}`), {
-          timeout: SHELL_TIMEOUT,
-        });
-        clicked = true;
-        break;
-      }
-    }
-
-    expect(clicked, "No known sidebar panel was found to click").toBe(true);
-    expect(appErrors()).toHaveLength(0);
+    expectNoPageErrors(pageErrors);
   });
-
-  // ── 4. More info dialog ───────────────────────────────────────────────────
 
   test("clicking an entity card opens the more-info dialog", async ({
     page,
   }) => {
-    await expect(page.locator("ha-demo")).toBeAttached({
+    await loadDemo(page);
+
+    // Tile cards are the most common card type in the demo; fall back to other
+    // clickable card types in case this platform renders a different layout.
+    await expect(page.locator(moreInfoCardSelector).first()).toBeVisible({
       timeout: NAVIGATION_TIMEOUT,
     });
-    await expect(page.locator("#ha-launch-screen")).toBeHidden({
-      timeout: NAVIGATION_TIMEOUT,
-    });
+    await page.locator(moreInfoCardSelector).first().click();
 
-    // Tile cards are the most common card type in the demo; they open the
-    // more-info dialog on click. Fall back to other clickable card types in
-    // case the demo layout on this platform doesn't include tile cards.
-    const cardSelector =
-      "hui-tile-card, hui-entity-card, hui-button-card, hui-glance-card";
-
-    await expect(page.locator(cardSelector).first()).toBeVisible({
-      timeout: NAVIGATION_TIMEOUT,
-    });
-    await page.locator(cardSelector).first().click();
-
-    // The more-info dialog is a top-level custom element appended to the body.
-    // We verify it is attached, then confirm it rendered by checking the title
-    // span which is slotted into the light DOM and has real layout dimensions.
     const dialog = page.locator("ha-more-info-dialog");
     await expect(dialog).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(dialog.locator("span.title")).toBeVisible({
+      timeout: QUICK_TIMEOUT,
+    });
 
-    const title = dialog.locator("span.title");
-    await expect(title).toBeVisible({ timeout: QUICK_TIMEOUT });
+    expectNoPageErrors(pageErrors);
+  });
 
-    expect(appErrors()).toHaveLength(0);
+  for (const colorScheme of ["light", "dark"] as const) {
+    test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.addInitScript((storageKey) => {
+        localStorage.removeItem(storageKey);
+        localStorage.removeItem("selectedTheme");
+      }, DEMO_THEME_STORAGE_KEY);
+
+      await loadDemo(page);
+      await expectDemoDarkMode(page, false);
+
+      expectNoPageErrors(pageErrors);
+    });
+  }
+
+  test("theme selection persists without offering migration", async ({
+    page,
+  }) => {
+    await page.addInitScript((storageKey) => {
+      if (sessionStorage.getItem("theme_test_seeded")) {
+        return;
+      }
+      sessionStorage.setItem("theme_test_seeded", "true");
+      localStorage.removeItem(storageKey);
+      localStorage.setItem(
+        "selectedTheme",
+        JSON.stringify({ theme: "default", dark: false })
+      );
+    }, DEMO_THEME_STORAGE_KEY);
+
+    await loadDemo(page, "/#/profile/general");
+
+    const themeRow = page.locator("ha-pick-theme-row");
+    await expect(themeRow).toBeVisible({ timeout: PANEL_TIMEOUT });
+    await expect(themeRow.locator(":scope > ha-settings-row")).toHaveCount(0);
+
+    await themeRow.locator('ha-radio-option[value="dark"]').click();
+
+    await expectStoredDemoTheme(page, { theme: "default", dark: true });
+    await expect
+      .poll(() => page.evaluate(() => localStorage.getItem("selectedTheme")), {
+        timeout: SHELL_TIMEOUT,
+      })
+      .toBeNull();
+    await expectDemoDarkMode(page, true);
+
+    await reloadDemo(page);
+    await expectStoredDemoTheme(page, { theme: "default", dark: true });
+    await expectDemoDarkMode(page, true);
+
+    await loadDemo(page, "/#/profile/general");
+    await expect(themeRow).toBeVisible({ timeout: PANEL_TIMEOUT });
+    await expect(
+      themeRow.locator('ha-radio-option[value="dark"]')
+    ).toHaveAttribute("aria-checked", "true");
+
+    expectNoPageErrors(pageErrors);
   });
 });

@@ -49,8 +49,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
+import { csvSafeString, csvDownload } from "../../util/csv";
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
@@ -64,13 +64,17 @@ class HaPanelHistory extends LitElement {
 
   @state() private _endDate: Date;
 
-  @state()
+  @state() private _targetPickerValue: HassServiceTarget = {};
+
+  // Remembers the last user-picked selection as a fallback for visits without
+  // URL params. Kept separate from _targetPickerValue because localStorage is
+  // synced across tabs and would leak one tab's selection into the others.
   @storage({
     key: "historyPickedValue",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _targetPickerValue: HassServiceTarget = {};
+  private _storedTargetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
 
@@ -124,19 +128,13 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
-        ${
-          entitiesSelected
-            ? html`
-                <ha-icon-button
-                  slot="actionItems"
-                  @click=${this._removeAll}
-                  .disabled=${this._isLoading}
-                  .path=${mdiFilterRemove}
-                  .label=${this.hass.localize("ui.panel.history.remove_all")}
-                ></ha-icon-button>
-              `
-            : ""
-        }
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._removeAll}
+          .disabled=${this._isLoading || !entitiesSelected}
+          .path=${mdiFilterRemove}
+          .label=${this.hass.localize("ui.panel.history.remove_all")}
+        ></ha-icon-button>
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -228,9 +226,11 @@ class HaPanelHistory extends LitElement {
     const queryParams = decodeHistoryLogbookQueryParams(
       extractSearchParamsObject()
     );
-    const targetPickerValue = historyLogbookTargetFromQueryParams(queryParams);
-    if (targetPickerValue) {
-      this._targetPickerValue = targetPickerValue;
+    const initialValue =
+      historyLogbookTargetFromQueryParams(queryParams) ??
+      this._storedTargetPickerValue;
+    if (initialValue) {
+      this._targetPickerValue = initialValue;
     }
     if (queryParams.start_date) {
       this._startDate = queryParams.start_date;
@@ -268,6 +268,7 @@ class HaPanelHistory extends LitElement {
 
   private _removeAll() {
     this._targetPickerValue = {};
+    this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
   }
 
@@ -402,6 +403,7 @@ class HaPanelHistory extends LitElement {
 
   private _targetsChanged(ev) {
     this._targetPickerValue = ev.detail.value || {};
+    this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
   }
 
@@ -441,8 +443,8 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
-    const csv: string[] = [""]; // headers will be replaced later.
     const headers = ["entity_id", "state", "last_changed"];
+    const csv: string[][] = [[]]; // headers will be replaced later.
     const processedDomainAttributes = new Set<string>();
     const domainAttributes: Record<string, Record<string, number>> = {
       climate: {
@@ -484,7 +486,7 @@ class HaPanelHistory extends LitElement {
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
-            csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+            csv.push([entityId, s.state, formatDate(s.last_changed)]);
           }
         }
 
@@ -501,25 +503,22 @@ class HaPanelHistory extends LitElement {
             }
           }
 
-          csv.push(data.join(",") + "\n");
+          csv.push(data);
         }
       }
     }
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
-        const safeState = /,|"/.test(s.state)
-          ? `"${s.state.replaceAll('"', '""')}"`
-          : s.state;
-        csv.push(`${entityId},${safeState},${formatDate(s.last_changed)}\n`);
+        csv.push([
+          entityId,
+          csvSafeString(s.state),
+          formatDate(s.last_changed),
+        ]);
       }
     }
-    csv[0] = headers.join(",") + "\n";
-    const blob = new Blob(csv, {
-      type: "text/csv",
-    });
-    const url = window.URL.createObjectURL(blob);
-    fileDownload(url, "history.csv");
+    csv[0] = headers;
+    csvDownload(csv, "history.csv");
   }
 
   private _suggestCard() {

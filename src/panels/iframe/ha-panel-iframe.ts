@@ -49,10 +49,13 @@ class HaPanelIframe extends LitElement {
   }
 
   static styles = css`
+    /* Fill hass-subpage's content box, which already excludes the safe-area
+       insets (see hass-subpage .content), instead of positioning absolutely
+       and spilling into the bottom/side insets. */
     iframe {
       border: 0;
+      display: block;
       width: 100%;
-      position: absolute;
       height: 100%;
       background-color: var(--primary-background-color);
     }

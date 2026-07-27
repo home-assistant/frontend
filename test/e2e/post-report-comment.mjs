@@ -27,19 +27,24 @@ const collectFailures = (report) => {
     const here = suite.title ? [...titlePath, suite.title] : titlePath;
     for (const spec of suite.specs ?? []) {
       if (spec.ok) continue;
-      const errors = [];
       for (const test of spec.tests ?? []) {
-        for (const result of test.results ?? []) {
+        const attempts = [];
+        for (const [index, result] of (test.results ?? []).entries()) {
+          const errors = [];
           for (const err of result.errors ?? []) {
             if (err.message) errors.push(stripAnsi(err.message));
           }
+          if (errors.length) attempts.push({ index: index + 1, errors });
         }
+        if (!attempts.length) continue;
+
+        const title = [...here, spec.title].join(" › ");
+        failures.push({
+          title: test.projectName ? `\`${test.projectName}\` ${title}` : title,
+          location: `${spec.file ?? suite.file ?? ""}:${spec.line ?? ""}`,
+          attempts,
+        });
       }
-      failures.push({
-        title: [...here, spec.title].join(" › "),
-        location: `${spec.file ?? suite.file ?? ""}:${spec.line ?? ""}`,
-        errors,
-      });
     }
     for (const child of suite.suites ?? []) walk(child, here);
   };
@@ -50,7 +55,12 @@ const collectFailures = (report) => {
 
 const formatFailure = (failure) => {
   const output =
-    failure.errors.join("\n\n").trim() || "(no error output captured)";
+    failure.attempts
+      .map(({ index, errors }) =>
+        [`Attempt ${index}`, "", errors.join("\n\n")].join("\n")
+      )
+      .join("\n\n")
+      .trim() || "(no error output captured)";
   return [
     `<details><summary>❌ ${failure.title} <code>${failure.location}</code></summary>`,
     "",

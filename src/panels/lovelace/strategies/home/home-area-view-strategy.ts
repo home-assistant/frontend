@@ -419,7 +419,6 @@ export class HomeAreaViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: area.icon || "mdi:shape-square-rounded-plus",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.home-area.no_devices_title"

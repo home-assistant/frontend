@@ -2,7 +2,13 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { uid } from "../../common/util/uid";
@@ -50,6 +56,13 @@ class HaInputMulti extends LitElement {
 
   @property() public autocomplete?: string;
 
+  /** Regular expression each entry is validated against (HTML `pattern`). */
+  @property() public pattern?: string;
+
+  /** Message shown on an entry when it fails `pattern` validation. */
+  @property({ attribute: "validation-message" })
+  public validationMessage?: string;
+
   @property({ attribute: "add-label" }) public addLabel?: string;
 
   @property({ attribute: "remove-label" }) public removeLabel?: string;
@@ -70,6 +83,8 @@ class HaInputMulti extends LitElement {
 
   @query("ha-input[data-last]") private _lastInput?: HaInput;
 
+  @queryAll("ha-input") private _inputs?: NodeListOf<HaInput>;
+
   // Stable key per row, kept in sync with `value`. Because items are plain
   // strings we cannot use a WeakMap (as the object-based sortable lists do),
   // so we track keys in a parallel array. Keys stay fixed while a row is
@@ -87,6 +102,16 @@ class HaInputMulti extends LitElement {
         (_, i) => this._keys[i] ?? uid()
       );
     }
+  }
+
+  public reportValidity(): boolean {
+    let valid = true;
+    this._inputs?.forEach((input) => {
+      if (!input.reportValidity()) {
+        valid = false;
+      }
+    });
+    return valid;
   }
 
   protected render() {
@@ -109,6 +134,9 @@ class HaInputMulti extends LitElement {
                     .type=${this.inputType}
                     .autocomplete=${this.autocomplete}
                     .disabled=${this.disabled}
+                    .pattern=${this.pattern}
+                    .validationMessage=${this.validationMessage}
+                    .autoValidate=${this.pattern !== undefined}
                     dialogInitialFocus=${index}
                     .index=${index}
                     class="flex-auto"
@@ -156,7 +184,7 @@ class HaInputMulti extends LitElement {
           )}
         </div>
       </ha-sortable>
-      <div class="layout horizontal">
+      <div class="layout horizontal add-row">
         <ha-button
           size="s"
           appearance="filled"
@@ -257,6 +285,9 @@ class HaInputMulti extends LitElement {
         .row {
           margin-bottom: 8px;
           --ha-input-padding-bottom: 0;
+        }
+        .add-row:has(+ ha-input-helper-text) {
+          margin-bottom: var(--ha-space-1);
         }
         ha-icon-button {
           display: block;

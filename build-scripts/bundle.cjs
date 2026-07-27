@@ -232,7 +232,7 @@ module.exports.config = {
     };
   },
 
-  demo({ isProdBuild, latestBuild, isStatsBuild }) {
+  demo({ isProdBuild, latestBuild, isStatsBuild, isTestBuild }) {
     return {
       name: "demo" + nameSuffix(latestBuild),
       entry: {
@@ -247,6 +247,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isTestBuild,
     };
   },
 
@@ -306,7 +307,7 @@ module.exports.config = {
     };
   },
 
-  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild }) {
+  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild, isTestBuild }) {
     return {
       name: "e2e-test-app" + nameSuffix(latestBuild),
       entry: {
@@ -321,6 +322,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isTestBuild,
     };
   },
 };
