@@ -46,7 +46,6 @@ const cumulativeOpts = (
     getValue: (id) => values[id] ?? 0,
     getLabel: (id, name) => name || id,
     getEntityId: (id) => id,
-    findEffectiveParent: () => undefined,
     ...rest,
   };
 };
@@ -168,6 +167,56 @@ describe("buildSankeyDeviceNodes", () => {
     expect(result.untrackedConsumption).toBe(0);
   });
 
+  it("resolves the parent to its node id, not its stat_consumption", () => {
+    // Instantaneous cards key the hierarchy by stat_consumption but render
+    // stat_rate, so the effective parent must come back as the stat_rate.
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "p", stat_rate: "sensor.p" },
+          {
+            stat_consumption: "c",
+            stat_rate: "sensor.c",
+            included_in_stat: "p",
+          }
+        ),
+        values: { "sensor.p": 100, "sensor.c": 40 },
+        minThreshold: 1,
+        initialUntracked: 100,
+        getId: (device) => device.stat_rate,
+      })
+    );
+    expect(result.parentLinks["sensor.c"]).toBe("sensor.p");
+    expect(result.links).toContainEqual({
+      source: "sensor.p",
+      target: "sensor.c",
+    });
+    expect(result.untrackedConsumption).toBe(0); // only the top-level parent
+  });
+
+  it("walks through an intermediate device that has no node id", () => {
+    // "middle" has no stat_rate, so the child must attach to the grandparent.
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "p", stat_rate: "sensor.p" },
+          { stat_consumption: "middle", included_in_stat: "p" },
+          {
+            stat_consumption: "c",
+            stat_rate: "sensor.c",
+            included_in_stat: "middle",
+          }
+        ),
+        values: { "sensor.p": 100, "sensor.c": 40 },
+        minThreshold: 1,
+        initialUntracked: 100,
+        getId: (device) => device.stat_rate,
+      })
+    );
+    expect(result.parentLinks["sensor.c"]).toBe("sensor.p");
+    expect(result.untrackedConsumption).toBe(0);
+  });
+
   it("adds a per-parent untracked residual above the floor", () => {
     const result = buildSankeyDeviceNodes(
       cumulativeOpts({
@@ -177,7 +226,6 @@ describe("buildSankeyDeviceNodes", () => {
         ),
         values: { parent: 10, child: 4 },
         initialUntracked: 10,
-        findEffectiveParent: (includedInStat) => includedInStat,
       })
     );
     expect(result.parentLinks.child).toBe("parent");
@@ -199,7 +247,6 @@ describe("buildSankeyDeviceNodes", () => {
         values: { parent: 10, child: 9.5 },
         untrackedFloor: 1,
         initialUntracked: 10,
-        findEffectiveParent: (includedInStat) => includedInStat,
       })
     );
     expect(result.deviceNodes.some((n) => n.id.startsWith("untracked_"))).toBe(
@@ -217,7 +264,6 @@ describe("buildSankeyDeviceNodes", () => {
         ),
         values: { parent: 10, s1: 0.003, s2: 0.004 },
         initialUntracked: 10,
-        findEffectiveParent: (includedInStat) => includedInStat,
       })
     );
     const other = result.deviceNodes.find((n) => n.id === "other_parent");
@@ -305,6 +351,62 @@ describe("buildSankeyDeviceNodes", () => {
     );
     expect(result.deviceNodes.map((n) => n.id)).toEqual(["heater_group"]);
     expect(result.untrackedConsumption).toBeCloseTo(10 - 0.008, 10);
+  });
+
+  it("excludes a nested small device from a rendered parent's cluster", () => {
+    // big(rendered) > b(small) > c(small): c is inside b's value, so only b
+    // may be attributed under big.
+    const devs = devices(
+      { stat_consumption: "big" },
+      { stat_consumption: "b", included_in_stat: "big" },
+      { stat_consumption: "c", included_in_stat: "b" }
+    );
+    const values = { big: 10, b: 0.004, c: 0.003 };
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devs,
+        values,
+        initialUntracked: 10,
+      })
+    );
+    // b is the lone survivor, so it is shown directly instead of "Other"
+    expect(result.deviceNodes.map((n) => n.id)).toEqual([
+      "big",
+      "b",
+      "untracked_big",
+    ]);
+    expect(result.parentLinks.b).toBe("big");
+    expect(
+      result.deviceNodes.find((n) => n.id === "untracked_big")?.value
+    ).toBeCloseTo(10 - 0.004, 10);
+    expect(result.untrackedConsumption).toBe(0);
+  });
+
+  it("keeps a small device whose chain reaches a small ancestor past a rendered one", () => {
+    // g(small) > a(rendered) > c(small): c hangs off rendered a, so it never
+    // touches untracked and cannot be double-counted through g.
+    const devs = devices(
+      { stat_consumption: "g" },
+      { stat_consumption: "a", included_in_stat: "g" },
+      { stat_consumption: "c", included_in_stat: "a" }
+    );
+    const values = { g: 0.0005, a: 0.5, c: 0.0004 };
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devs,
+        values,
+        initialUntracked: 1,
+      })
+    );
+    expect(result.deviceNodes.map((n) => n.id)).toEqual([
+      "a",
+      "g",
+      "c",
+      "untracked_a",
+    ]);
+    expect(result.parentLinks.c).toBe("a");
+    // only the two top-level values (a and g) come off untracked
+    expect(result.untrackedConsumption).toBeCloseTo(1 - 0.5 - 0.0005, 10);
   });
 
   it("leaves a cyclic small-device cluster in untracked instead of looping", () => {
