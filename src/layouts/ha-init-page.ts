@@ -64,7 +64,7 @@ export class HaInitPage extends LitElement {
           ${
             this.migration
               ? this._localize?.("ui.init.migration") ||
-                "A database upgrade is in progress. Home Assistant will not start until it is complete. This may take a while, so please be patient."
+                "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed. The upgrade may need a long time to complete, please be patient."
               : this._localize?.("ui.init.loading") || "Loading data"
           }
         </p>`;
