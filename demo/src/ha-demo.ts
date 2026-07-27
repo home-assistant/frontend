@@ -75,12 +75,6 @@ export class HaDemo extends HomeAssistantAppEl {
     // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
     const hass = provideHass(this, initial, true, false);
 
-    // The cloud account page only fetches backup config and the webhook count
-    // when those integrations are loaded. Enable them here (demo only) so the
-    // mocked backup/config/info and webhook/list are queried. usage_prediction
-    // is needed for common-controls sections in strategy dashboards. hassio
-    // gates the apps panel, which otherwise redirects to its explainer page.
-    // hardware supplies the board name and image on the hardware page.
     hass.updateHass({
       config: {
         ...hass.config,
