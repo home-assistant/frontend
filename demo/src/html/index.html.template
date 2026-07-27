@@ -130,8 +130,8 @@
   <body>
     <div id="ha-launch-screen">
       <div class="ha-launch-screen-spacer-top"></div>
-      <div class="ha-lockup" aria-hidden="true">
-        <img class="ha-logo" src="/static/images/home-assistant-logo-loading.svg" alt="">
+      <div class="ha-lockup">
+        <img class="ha-logo" src="/static/images/home-assistant-logo-loading.svg" alt="Home Assistant">
       </div>
       <div id="ha-launch-screen-info-box" class="ha-launch-screen-spacer-bottom"></div>
       <div class="ohf-logo">
