@@ -2,6 +2,7 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
   findEntities,
   generateEntityFilter,
@@ -107,7 +108,24 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
+
+    // Only show the devices tile if the other devices view has content: it
+    // only renders area-less primary entities that belong to a device.
+    const hasOtherDevices = allEntities.some(
+      (entityId) =>
+        otherDevicesFilters.some((filter) => filter(entityId)) &&
+        primaryFilter(entityId) &&
+        !!getEntityContext(
+          hass.states[entityId],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        ).device
+    );
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -140,13 +158,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
-    if (home.areas.length > 0 || entitiesWithoutAreas.length > 0) {
+    if (home.areas.length > 0 || hasOtherDevices) {
       const cards: LovelaceCardConfig[] = [];
       for (const areaId of home.areas) {
         cards.push(computeAreaCard(areaId, hass));
       }
 
-      if (entitiesWithoutAreas.length > 0) {
+      if (hasOtherDevices) {
         cards.push({
           type: "tile",
           entity: "zone.home", // zone entity to represent unassigned area as it always exists
