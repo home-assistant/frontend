@@ -17,7 +17,7 @@ import type {
   DeviceCondition,
   DeviceTrigger,
 } from "./device/device_automation";
-import type { Action, Field, MODES } from "./script";
+import type { Action, Field, MODES, Option } from "./script";
 import { migrateAutomationAction } from "./script";
 import type { TriggerDescription } from "./trigger";
 
@@ -705,8 +705,14 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Option) => void;
   rename: () => void;
   duplicate: () => void;
+  toggleYamlMode: () => void;
+  yamlMode?: boolean;
+  config: {
+    option?: Option;
+  };
   defaultOption?: boolean;
   note?: string;
 }
