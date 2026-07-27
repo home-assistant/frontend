@@ -17,6 +17,7 @@ export type SankeyDeviceNode = Node & { parent?: string };
 
 interface SmallConsumer {
   id: string;
+  includedInStat: string | undefined;
   name: string | undefined;
   value: number;
   effectiveParent: string | undefined;
@@ -96,7 +97,14 @@ export const buildSankeyDeviceNodes = (
   const deviceNodes: SankeyDeviceNode[] = [];
   const parentLinks: Record<string, string> = {};
   const smallConsumersByParent = new Map<string, SmallConsumer[]>();
+  const smallConsumerStats = new Set<string>();
   let untrackedConsumption = initialUntracked;
+
+  // Parent chain in stat_consumption space, used to detect nested small consumers
+  const deviceParents = new Map<string, string | undefined>();
+  devices.forEach((device) => {
+    deviceParents.set(device.stat_consumption, device.included_in_stat);
+  });
 
   devices.forEach((device, idx) => {
     const id = getId(device);
@@ -115,11 +123,13 @@ export const buildSankeyDeviceNodes = (
       }
       smallConsumersByParent.get(parentKey)!.push({
         id,
+        includedInStat: device.included_in_stat,
         name: device.name,
         value,
         effectiveParent,
         idx,
       });
+      smallConsumerStats.add(device.stat_consumption);
       return;
     }
 
@@ -142,7 +152,21 @@ export const buildSankeyDeviceNodes = (
   });
 
   // Process small consumers - show a lone one directly, group clusters as "Other"
-  smallConsumersByParent.forEach((consumers, parentKey) => {
+  smallConsumersByParent.forEach((allConsumers, parentKey) => {
+    // A small consumer whose included_in_stat chain reaches another small
+    // consumer is already counted inside that ancestor's value - drop it so
+    // totals don't double-count nested devices.
+    const consumers = allConsumers.filter((consumer) => {
+      let ancestor = consumer.includedInStat;
+      for (let hops = 0; ancestor && hops < devices.length; hops++) {
+        if (smallConsumerStats.has(ancestor)) {
+          return false;
+        }
+        ancestor = deviceParents.get(ancestor);
+      }
+      return true;
+    });
+
     const totalValue = consumers.reduce((sum, c) => sum + c.value, 0);
     if (totalValue <= 0) {
       return;
