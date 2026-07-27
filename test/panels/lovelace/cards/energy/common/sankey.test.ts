@@ -231,6 +231,96 @@ describe("buildSankeyDeviceNodes", () => {
     // the top-level parent (10), never the cluster total.
     expect(result.untrackedConsumption).toBe(0);
   });
+
+  it("counts a nested small device only once (via its small ancestor)", () => {
+    // child's consumption is already included in parent's statistic
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "parent" },
+          { stat_consumption: "child", included_in_stat: "parent" }
+        ),
+        values: { parent: 0.008, child: 0.006 },
+        initialUntracked: 10,
+      })
+    );
+    // Only the parent remains, so it is shown directly instead of "Other"
+    expect(result.deviceNodes.map((n) => n.id)).toEqual(["parent"]);
+    expect(result.deviceNodes[0].value).toBeCloseTo(0.008, 10);
+    expect(result.untrackedConsumption).toBeCloseTo(10 - 0.008, 10);
+  });
+
+  it("excludes nested small devices from the Other total", () => {
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "parent" },
+          { stat_consumption: "child", included_in_stat: "parent" },
+          { stat_consumption: "unrelated" }
+        ),
+        values: { parent: 0.004, child: 0.003, unrelated: 0.002 },
+        initialUntracked: 10,
+      })
+    );
+    const other = result.deviceNodes.find((n) => n.id === "other_home");
+    // parent + unrelated only; child is inside parent's value
+    expect(other?.value).toBeCloseTo(0.006, 10);
+    expect(result.untrackedConsumption).toBeCloseTo(10 - 0.006, 10);
+  });
+
+  it("keeps only the top ancestor of a nested small-device chain", () => {
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "grandparent" },
+          { stat_consumption: "parent", included_in_stat: "grandparent" },
+          { stat_consumption: "child", included_in_stat: "parent" }
+        ),
+        values: { grandparent: 0.005, parent: 0.004, child: 0.003 },
+        initialUntracked: 10,
+      })
+    );
+    expect(result.deviceNodes.map((n) => n.id)).toEqual(["grandparent"]);
+    expect(result.untrackedConsumption).toBeCloseTo(10 - 0.005, 10);
+  });
+
+  it("detects a small ancestor across a device the card skips entirely", () => {
+    // Power-card scenario: "outlet" has no stat_rate so it is never rendered
+    // or collected, but the plug's consumption still flows through it into
+    // the heater group. Requires walking the chain, not a direct-parent check.
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "heater_group" },
+          { stat_consumption: "outlet", included_in_stat: "heater_group" },
+          { stat_consumption: "plug", included_in_stat: "outlet" }
+        ),
+        values: { heater_group: 0.008, plug: 0.005 },
+        initialUntracked: 10,
+        getId: (device) =>
+          device.stat_consumption === "outlet"
+            ? undefined
+            : device.stat_consumption,
+      })
+    );
+    expect(result.deviceNodes.map((n) => n.id)).toEqual(["heater_group"]);
+    expect(result.untrackedConsumption).toBeCloseTo(10 - 0.008, 10);
+  });
+
+  it("leaves a cyclic small-device cluster in untracked instead of looping", () => {
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "a", included_in_stat: "b" },
+          { stat_consumption: "b", included_in_stat: "a" }
+        ),
+        values: { a: 0.003, b: 0.004 },
+        initialUntracked: 10,
+      })
+    );
+    expect(result.deviceNodes).toEqual([]);
+    expect(result.untrackedConsumption).toBe(10);
+  });
 });
 
 describe("groupSankeyDevicesByFloorAndArea", () => {
