@@ -10,7 +10,10 @@ import type {
   HostDisksUsage,
 } from "../../../src/data/hassio/host";
 import type { NetworkInfo } from "../../../src/data/hassio/network";
-import type { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import type {
+  HassioInfo,
+  HassioSupervisorInfo,
+} from "../../../src/data/hassio/supervisor";
 import type { SupervisorMounts } from "../../../src/data/supervisor/mounts";
 import type { SupervisorUpdateConfig } from "../../../src/data/supervisor/update";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -156,19 +159,6 @@ const addonDetails = (addon: HassioAddonInfo): HassioAddonDetails => ({
   webui: null,
 });
 
-const CHANGELOGS: Record<string, string> = {
-  d5369777_music_assistant: `## 2.6.3
-
-- Fix Spotify Connect reconnecting after a network drop
-- Improve artwork caching for large libraries
-- Update player provider dependencies`,
-  "5c53de3b_esphome": `## 2025.7.3
-
-- Fix compile error for ESP32-C6 boards using the \`uart\` component
-- Improve reconnect behaviour of the native API after a WiFi outage
-- Update platformio toolchain`,
-};
-
 const LOGS: Record<string, string> = {
   d5369777_music_assistant: `[server] Starting Music Assistant Server 2.6.3
 [server] Loaded provider: filesystem_local
@@ -202,16 +192,16 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
   hass.mockWS("supervisor/api", (msg) => {
     if (msg.endpoint === "/supervisor/info") {
       const data: HassioSupervisorInfo = {
-        version: "2021.10.dev0805",
-        version_latest: "2021.10.dev0806",
-        update_available: true,
-        channel: "dev",
+        version: "2026.07.1",
+        version_latest: "2026.07.1",
+        update_available: false,
+        channel: "stable",
         arch: "aarch64",
         supported: true,
         healthy: true,
         ip_address: "172.30.32.2",
         wait_boot: 5,
-        timezone: "America/Los_Angeles",
+        timezone: "Europe/Amsterdam",
         logging: "info",
         debug: false,
         debug_block: false,
@@ -257,11 +247,32 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
       return addonMatch[2] === "stats" ? ADDON_STATS : addonDetails(addon);
     }
 
+    if (msg.endpoint === "/info") {
+      const data: HassioInfo = {
+        arch: "aarch64",
+        channel: "stable",
+        docker: "27.5.1",
+        features: ["reboot", "shutdown", "network", "hostname", "os_agent"],
+        hassos: null,
+        homeassistant: "2026.7.2",
+        hostname: "homeassistant",
+        logging: "info",
+        machine: "green",
+        state: "running",
+        operating_system: "Home Assistant OS 18.2",
+        supervisor: "2026.07.1",
+        supported: true,
+        supported_arch: ["aarch64", "armv7", "armhf"],
+        timezone: "Europe/Amsterdam",
+      };
+      return data;
+    }
+
     if (msg.endpoint === "/host/info") {
       const data: HassioHostInfo = {
-        agent_version: "1.6.0",
+        agent_version: "1.8.0",
         chassis: "embedded",
-        cpe: "cpe:2.3:o:home-assistant:haos:15.2:*:production:*:*:*:aarch64:*",
+        cpe: "cpe:2.3:o:home-assistant:haos:18.2:*:production:*:*:*:aarch64:*",
         deployment: "production",
         disk_life_time: 6,
         disk_free: 22.3,
@@ -269,8 +280,8 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
         disk_used: 8.9,
         features: ["reboot", "shutdown", "network", "hostname", "os_agent"],
         hostname: "homeassistant",
-        kernel: "6.6.54-haos",
-        operating_system: "Home Assistant OS 15.2",
+        kernel: "6.12.48-haos",
+        operating_system: "Home Assistant OS 18.2",
         boot_timestamp: 1751932800000000,
         startup_time: 12.4,
       };
@@ -279,12 +290,12 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
 
     if (msg.endpoint === "/os/info") {
       const data: HassioHassOSInfo = {
-        board: "yellow",
+        board: "green",
         boot: "A",
         update_available: false,
-        version: "15.2",
-        version_latest: "15.2",
-        data_disk: "Home Assistant Yellow (mmcblk0)",
+        version: "18.2",
+        version_latest: "18.2",
+        data_disk: "Home Assistant Green (mmcblk0)",
       };
       return data;
     }
@@ -353,11 +364,6 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
     add_on_backup_retain_copies: 1,
     core_backup_before_update: true,
   }));
-
-  hass.mockAPI(/^hassio\/addons\/[^/]+\/changelog$/, (_hass, _method, path) => {
-    const slug = path.split("/")[2];
-    return CHANGELOGS[slug];
-  });
 
   hass.mockAPI(/^hassio\/host\/logs\/boots$/, () => ({
     data: { boots: { "0": "2026-07-26T09:00:00.000000+00:00" } },

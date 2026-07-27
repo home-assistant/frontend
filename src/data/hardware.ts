@@ -19,6 +19,7 @@ export const BOARD_NAMES: Record<string, string> = {
   "generic-x86-64": "Generic x86-64",
   "intel-nuc": "Intel NUC",
   yellow: "Home Assistant Yellow",
+  green: "Home Assistant Green",
 };
 
 export interface HardwareInfo {

@@ -191,6 +191,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     this._stopPolling();
   }
 
+  // The supervisor reports whether the app ships a changelog at all.
+  private _renderChangelogLink() {
+    if (!(this._currentAddon as HassioAddonDetails).changelog) {
+      return nothing;
+    }
+
+    return html`<div class="changelog" @click=${this._openChangelog}>
+      (<span class="changelog-link"
+        >${this.i18n.localize("ui.panel.config.apps.dashboard.changelog")}</span
+      >)
+    </div>`;
+  }
+
   private _renderInfoCard() {
     const systemManaged = this._isSystemManaged(this._currentAddon);
 
@@ -225,13 +238,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.current_version",
                         { version: this._currentAddon.version }
                       )}
-                      <div class="changelog" @click=${this._openChangelog}>
-                        (<span class="changelog-link"
-                          >${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.changelog"
-                          )}</span
-                        >)
-                      </div>
+                      ${this._renderChangelogLink()}
                     `
                   : html`${this._currentAddon.version_latest}
                       <span class="changelog-link" @click=${this._openChangelog}
