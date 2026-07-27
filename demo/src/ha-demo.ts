@@ -85,6 +85,7 @@ export class HaDemo extends HomeAssistantAppEl {
           "backup",
           "webhook",
           "usage_prediction",
+          "assist_pipeline",
         ],
       },
     });
