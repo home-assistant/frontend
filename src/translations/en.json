@@ -797,13 +797,6 @@
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
-        "selected": {
-          "entity": "Entities: {count}",
-          "device": "Devices: {count}",
-          "area": "Areas: {count}",
-          "label": "Labels: {count}",
-          "floor": "Floors: {count}"
-        },
         "type": {
           "area": "Area",
           "areas": "Areas",
