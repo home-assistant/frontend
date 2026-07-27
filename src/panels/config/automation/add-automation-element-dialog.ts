@@ -183,12 +183,7 @@ const ENTITY_DOMAINS_OTHER = new Set([
 
 const ENTITY_DOMAINS_MAIN = new Set(["notify"]);
 
-const DYNAMIC_KEYWORDS = [
-  "dynamicGroups",
-  "helpers",
-  "other",
-  "customDynamicGroups",
-];
+const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "integrationGroups"];
 
 const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
@@ -197,7 +192,7 @@ const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 // drills into its items, like selecting the matching group in the "by type" tab.
 const TIME_LOCATION_GROUPS = ["time", "sun"];
 
-type CollectionGroupType = "helper" | "other" | "dynamic" | "customDynamic";
+type CollectionGroupType = "helper" | "dynamic" | "integration";
 
 interface DomainClassificationOptions {
   type: AddAutomationElementDialogParams["type"];
@@ -1148,11 +1143,8 @@ class DialogAddAutomationElement
         if (collection.groups.helpers) {
           types.push("helper");
         }
-        if (collection.groups.other) {
-          types.push("other");
-        }
-        if (collection.groups.customDynamicGroups) {
-          types.push("customDynamic");
+        if (collection.groups.integrationGroups) {
+          types.push("integration");
         }
 
         if (types.length) {
@@ -1319,37 +1311,34 @@ class DialogAddAutomationElement
     manifest: DomainManifestLookup[string] | undefined,
     options: DomainClassificationOptions
   ): CollectionGroupType | undefined {
-    if (manifest && !manifest.is_built_in) {
-      return "customDynamic";
-    }
+    const integrationType = manifest?.integration_type;
 
-    const domainUsed = !options.usedDomains || options.usedDomains.has(domain);
-
-    if (
-      ENTITY_DOMAINS_MAIN.has(domain) ||
-      (manifest?.integration_type === "entity" &&
-        !ENTITY_DOMAINS_OTHER.has(domain) &&
-        (domainUsed || (options.activeSystemDomains?.has(domain) ?? false))) ||
-      (manifest?.integration_type === "system" &&
-        (options.activeSystemDomains?.has(domain) ?? false))
-    ) {
-      return "dynamic";
-    }
-
-    if (manifest?.integration_type === "helper") {
+    if (integrationType === "helper") {
       return "helper";
     }
 
-    const hiddenTypes =
-      options.type === "action" ? ["entity"] : ["entity", "system"];
-    if (
-      !ENTITY_DOMAINS_OTHER.has(domain) &&
-      hiddenTypes.includes(manifest?.integration_type || "")
-    ) {
+    if (ENTITY_DOMAINS_MAIN.has(domain) || integrationType === "entity") {
+      // Core entity domains. Actions always list them; triggers/conditions
+      // only when matching entities exist or a system domain covers them.
+      if (
+        options.type === "action" ||
+        !options.usedDomains ||
+        options.usedDomains.has(domain) ||
+        ENTITY_DOMAINS_OTHER.has(domain) ||
+        (options.activeSystemDomains?.has(domain) ?? false)
+      ) {
+        return "dynamic";
+      }
       return undefined;
     }
 
-    return "other";
+    if (integrationType === "system" && options.type !== "action") {
+      return options.activeSystemDomains?.has(domain) ? "dynamic" : undefined;
+    }
+
+    // Integrations that bring their own elements, built-in (like Apple TV,
+    // FFmpeg) and custom (like HACS) alike.
+    return "integration";
   }
 
   private _dynamicDomainGroups = (
@@ -1544,16 +1533,15 @@ class DialogAddAutomationElement
       usedDomains: this._domains,
       activeSystemDomains: this._systemDomains?.active,
     });
-    if (groupType === "dynamic") {
-      return "dynamicGroups";
-    }
     if (groupType === "helper") {
       return "helpers";
     }
-    if (groupType === "customDynamic") {
-      return "customDynamicGroups";
+    if (groupType === "integration") {
+      return "integrationGroups";
     }
-    return "other";
+    // "dynamic", plus domains hidden in the by-type list (like unused entity
+    // domains) that can still surface when browsing by target.
+    return "dynamicGroups";
   }
 
   private _sortDomainsByCollection(

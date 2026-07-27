@@ -54,7 +54,6 @@ export const ACTION_COLLECTIONS: AutomationElementGroupCollection[] = [
       service: {},
       set_conversation_response: {},
       helpers: {},
-      other: {},
     },
   },
   {
@@ -66,9 +65,9 @@ export const ACTION_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.actions.groups.custom_integrations.label",
+      "ui.panel.config.automation.editor.actions.groups.integrations.label",
     groups: {
-      customDynamicGroups: {},
+      integrationGroups: {},
     },
   },
 ] as const;

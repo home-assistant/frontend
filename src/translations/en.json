@@ -5236,8 +5236,8 @@
                 "generic": {
                   "label": "Generic"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5548,8 +5548,8 @@
                 "building_blocks": {
                   "label": "Building blocks"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5721,8 +5721,8 @@
                 "generic": {
                   "label": "Generic"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 },
                 "building_blocks": {
                   "label": "Building blocks"

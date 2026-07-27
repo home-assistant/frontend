@@ -21,7 +21,6 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
       helpers: {},
       template: {},
       trigger: {},
-      other: {},
     },
   },
   {
@@ -35,9 +34,9 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.conditions.groups.custom_integrations.label",
+      "ui.panel.config.automation.editor.conditions.groups.integrations.label",
     groups: {
-      customDynamicGroups: {},
+      integrationGroups: {},
     },
   },
 ] as const;
