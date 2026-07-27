@@ -103,8 +103,8 @@
         display: flex;
       }
       .ohf-logo img {
-        width: 220px;
-        aspect-ratio: 2960 / 291;
+        width: 237px;
+        aspect-ratio: 237 / 24;
         height: auto;
       }
       @media (prefers-color-scheme: dark) {
@@ -142,7 +142,7 @@
         <span id="ha-launch-screen-attribution">A project from the</span>
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="/static/images/open-home-foundation-on-dark.svg">
-          <img src="/static/images/open-home-foundation-on-light.svg" alt="Open Home Foundation" width="2960" height="291">
+          <img src="/static/images/open-home-foundation-on-light.svg" alt="Open Home Foundation" width="237" height="24">
         </picture>
       </div>
     </div>
