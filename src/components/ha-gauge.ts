@@ -1,6 +1,7 @@
+import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import type { PropertyValues } from "lit";
 import { css, LitElement, svg } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
@@ -46,15 +47,36 @@ export class HaGauge extends LitElement {
 
   @state() private _segment_label?: string = "";
 
+  @query(".text") private _textSvg?: SVGSVGElement;
+
+  @query(".value-text") private _valueText?: SVGTextElement;
+
   private _sortedLevels?: LevelDefinition[];
 
-  private _rescaleOnConnect = false;
+  // Set when the value text could not be measured because we have no layout box
+  // yet, either disconnected or inside a hidden container.
+  private _rescalePending = false;
+
+  // Measure again once we become visible, e.g. when a section hidden by a
+  // visibility condition is revealed. Nothing else re-renders the gauge then,
+  // and a resize observer would stay silent because the size we get back is the
+  // same one it last reported.
+  // @ts-ignore side-effect-only controller, its value is never read
+  private _intersectionController = new IntersectionController(this, {
+    callback: (entries) => {
+      if (
+        this._rescalePending &&
+        entries.some((entry) => entry.isIntersecting)
+      ) {
+        this._rescaleSvg();
+      }
+    },
+  });
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this._rescaleOnConnect) {
+    if (this._rescalePending && this.hasUpdated) {
       this._rescaleSvg();
-      this._rescaleOnConnect = false;
     }
   }
 
@@ -221,15 +243,22 @@ export class HaGauge extends LitElement {
     // fit the text
     // That way it will auto-scale correctly
 
-    if (!this.isConnected) {
-      // Retry this later if we're disconnected, otherwise we get a 0 bbox and missing label
-      this._rescaleOnConnect = true;
+    if (!this._textSvg || !this._valueText || !this.isConnected) {
+      this._rescalePending = true;
       return;
     }
 
-    const svgRoot = this.shadowRoot!.querySelector(".text")!;
-    const box = svgRoot.querySelector("text")!.getBBox()!;
-    svgRoot.setAttribute(
+    const box = this._valueText.getBBox();
+
+    // An empty box means we have no layout, so keep the last known good viewBox
+    // and retry later. A viewBox with a 0 width or height would hide the label.
+    if (!box.width || !box.height) {
+      this._rescalePending = true;
+      return;
+    }
+
+    this._rescalePending = false;
+    this._textSvg.setAttribute(
       "viewBox",
       `${box.x} ${box.y} ${box.width} ${box.height}`
     );
