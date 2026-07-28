@@ -44,3 +44,13 @@ http://localhost:8090/?demo=<second slug>#/energy/water
 - `src/configs/demo-configs.ts`: Registry of demo configurations and URL slug handling.
 - `src/stubs/`: Mocked WebSocket/REST APIs.
 - `script/develop_demo`, `script/build_demo`: Dev server and static build wrappers.
+
+## The gallery imports these stubs too
+
+`demo/src/stubs/` is shared, not demo-private: gallery pages import from it directly. Before changing or removing anything a stub does, grep for its callers across `gallery/` as well as `demo/`, and check the affected gallery pages, not just the demo.
+
+```bash
+grep -rn "stubs/<name>" demo/src gallery/src
+```
+
+The two consume a stub differently, so demo behavior does not predict gallery behavior. A gallery page calls stubs against the `hass` from `provideHass`, where `hass.config` is the shared `demoConfig` object, so a stub that mutates `hass.config` in place is visible to the page. `ha-demo.ts` copies `components` into a new array before the stubs run, so the same mutation never reaches the demo. A change can therefore look fine in the demo while quietly breaking a gallery page.
