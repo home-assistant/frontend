@@ -82,6 +82,7 @@ class HaPanelConfig extends HassRouterPage {
       info: {
         tag: "ha-config-info",
         load: () => import("./info/ha-config-info"),
+        waitForReady: true,
       },
       // customize was removed in 2021.12, fallback to dashboard
       customize: "dashboard",
