@@ -241,17 +241,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                       }
                     `
                   : html`${this._currentAddon.version_latest}
-                    ${
-                      this._currentAddon.changelog
-                        ? html`<span
-                            class="changelog-link"
-                            @click=${this._openChangelog}
-                            >${this.i18n.localize(
-                              "ui.panel.config.apps.dashboard.changelog"
-                            )}</span
-                          >`
-                        : nothing
-                    }`
+                      <span class="changelog-link" @click=${this._openChangelog}
+                        >${this.i18n.localize(
+                          "ui.panel.config.apps.dashboard.changelog"
+                        )}</span
+                      >`
               }
             </div>
           </div>

@@ -26,7 +26,6 @@ export interface StoreAddonDetails extends StoreAddon {
   apparmor: boolean;
   arch: SupervisorArch[];
   auth_api: boolean;
-  changelog: boolean;
   detached: boolean;
   docker_api: boolean;
   documentation: boolean;
