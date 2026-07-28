@@ -1,6 +1,7 @@
+import { mdiAlertOutline } from "@mdi/js";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -13,12 +14,20 @@ import {
   getDevices,
   type DevicePickerItem,
 } from "../../data/device/device_picker";
-import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+  type DeviceRegistryEntry,
+} from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
+import "../ha-alert";
+import "../ha-button";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import "../ha-svg-icon";
+import { showDeviceReplacedDialog } from "./show-dialog-device-replaced";
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -95,6 +104,10 @@ export class HaDevicePicker extends LitElement {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
+
   private _getDevicesMemoized = memoizeOne(
     (
       _devices: HomeAssistant["devices"],
@@ -123,12 +136,72 @@ export class HaDevicePicker extends LitElement {
     this._loadConfigEntries();
   }
 
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    if (
+      !this.hass ||
+      !this.value ||
+      this._compositeSplits !== undefined ||
+      this._loadingCompositeSplits
+    ) {
+      return;
+    }
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    const devicesChanged =
+      changedProperties.has("hass") && this.hass.devices !== oldHass?.devices;
+    if (
+      (changedProperties.has("value") || devicesChanged) &&
+      !this.hass.devices[this.value]
+    ) {
+      // The selected device is not in the registry; it might be a legacy
+      // composite device that was split into separate devices. Fetch the
+      // split map so we can offer to replace the reference.
+      this._loadCompositeSplits();
+    }
+  }
+
   private async _loadConfigEntries() {
     const configEntries = await getConfigEntries(this.hass);
     this._configEntryLookup = Object.fromEntries(
       configEntries.map((entry) => [entry.entry_id, entry])
     );
   }
+
+  private async _loadCompositeSplits() {
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
+  }
+
+  private _getReplacement = memoizeOne(
+    (
+      value: string | undefined,
+      _devices: HomeAssistant["devices"],
+      compositeSplits: DeviceCompositeSplits | undefined,
+      items: (DevicePickerItem | string)[]
+    ) => {
+      if (!value || !compositeSplits || this.hass.devices[value]) {
+        return undefined;
+      }
+      const split = compositeSplits[value];
+      if (!split) {
+        return undefined;
+      }
+      // Keep only the split devices that pass this picker's filters. In
+      // practice usually exactly one of the split devices matches.
+      const selectableIds = new Set(
+        items
+          .filter((item): item is DevicePickerItem => typeof item !== "string")
+          .map((item) => item.id)
+      );
+      const candidates = split.split_ids.filter((id) => selectableIds.has(id));
+      return { candidates, primaryId: split.primary_id };
+    }
+  );
 
   private _getItems = () =>
     this._getDevicesMemoized(
@@ -144,49 +217,66 @@ export class HaDevicePicker extends LitElement {
     );
 
   private _valueRenderer = memoizeOne(
-    (configEntriesLookup: Record<string, ConfigEntry>) => (value: string) => {
-      const deviceId = value;
-      const device = this.hass.devices[deviceId];
+    (
+      configEntriesLookup: Record<string, ConfigEntry>,
+      replacementName: string | undefined
+    ) =>
+      (value: string) => {
+        const deviceId = value;
+        const device = this.hass.devices[deviceId];
 
-      if (!device) {
-        return html`<span slot="headline">${deviceId}</span>`;
-      }
-
-      const area = getDeviceArea(device, this.hass.areas);
-
-      const deviceName = device ? computeDeviceName(device) : undefined;
-      const areaName = area ? computeAreaName(area) : undefined;
-
-      const primary = deviceName;
-      const secondary = areaName;
-
-      const configEntry = device.primary_config_entry
-        ? configEntriesLookup[device.primary_config_entry]
-        : undefined;
-
-      return html`
-        ${
-          configEntry
-            ? html`<img
+        if (!device) {
+          // When the device was replaced and a replacement is available, show
+          // the replacement device's name. Otherwise fall back to the normal
+          // "not found" display of the raw id.
+          if (replacementName) {
+            return html`
+              <ha-svg-icon
                 slot="start"
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl(
-                  {
-                    domain: configEntry.domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
-                  },
-                  this.hass.auth.data.hassUrl
-                )}
-              />`
-            : nothing
+                style="color: var(--warning-color)"
+                .path=${mdiAlertOutline}
+              ></ha-svg-icon>
+              <span slot="headline">${replacementName}</span>
+            `;
+          }
+          return html`<span slot="headline">${deviceId}</span>`;
         }
-        <span slot="headline">${primary}</span>
-        <span slot="supporting-text">${secondary}</span>
-      `;
-    }
+
+        const area = getDeviceArea(device, this.hass.areas);
+
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+
+        const primary = deviceName;
+        const secondary = areaName;
+
+        const configEntry = device.primary_config_entry
+          ? configEntriesLookup[device.primary_config_entry]
+          : undefined;
+
+        return html`
+          ${
+            configEntry
+              ? html`<img
+                  slot="start"
+                  alt=""
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl(
+                    {
+                      domain: configEntry.domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes?.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
+                />`
+              : nothing
+          }
+          <span slot="headline">${primary}</span>
+          <span slot="supporting-text">${secondary}</span>
+        `;
+      }
   );
 
   private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
@@ -235,7 +325,39 @@ export class HaDevicePicker extends LitElement {
       this.placeholder ??
       this.hass.localize("ui.components.device-picker.placeholder");
 
-    const valueRenderer = this._valueRenderer(this._configEntryLookup);
+    // Only resolve a replacement (which needs the full item list) when the
+    // value is a missing device that we know was replaced, to avoid computing
+    // the item list on every render for the common case.
+    const replacement =
+      this.value &&
+      !this.hass.devices[this.value] &&
+      this._compositeSplits?.[this.value]
+        ? this._getReplacement(
+            this.value,
+            this.hass.devices,
+            this._compositeSplits,
+            this._getItems()
+          )
+        : undefined;
+
+    // Only treat the value as "replaced" when there is an available
+    // replacement device; otherwise fall back to normal "not found" behavior.
+    const canReplace = !!replacement?.candidates.length;
+    const replacementName = canReplace
+      ? computeDeviceName(
+          this.hass.devices[
+            replacement!.primaryId &&
+            replacement!.candidates.includes(replacement!.primaryId)
+              ? replacement!.primaryId
+              : replacement!.candidates[0]
+          ]
+        )
+      : undefined;
+
+    const valueRenderer = this._valueRenderer(
+      this._configEntryLookup,
+      replacementName
+    );
 
     return html`
       <ha-generic-picker
@@ -256,13 +378,82 @@ export class HaDevicePicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
         .searchKeys=${deviceComboBoxKeys}
-        .unknownItemText=${this.hass.localize(
-          "ui.components.device-picker.unknown"
-        )}
+        .unknownItemText=${
+          replacement?.candidates.length
+            ? this.hass.localize(
+                "ui.components.device-picker.device_replaced_count",
+                { count: replacement.candidates.length }
+              )
+            : this.hass.localize("ui.components.device-picker.unknown")
+        }
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
+      ${canReplace ? this._renderReplacedAlert(replacement!) : nothing}
     `;
+  }
+
+  private _renderReplacedAlert(replacement: {
+    candidates: string[];
+    primaryId: string | null;
+  }) {
+    const { candidates } = replacement;
+
+    const replacementName =
+      candidates.length === 1
+        ? computeDeviceName(this.hass.devices[candidates[0]])
+        : undefined;
+
+    return html`
+      <ha-alert alert-type="warning">
+        ${
+          replacementName
+            ? this.hass.localize(
+                "ui.components.device-picker.device_replaced_by_one",
+                { device: replacementName }
+              )
+            : this.hass.localize(
+                "ui.components.device-picker.device_replaced_by_multiple",
+                { count: candidates.length }
+              )
+        }
+        <ha-button
+          slot="action"
+          appearance="plain"
+          @click=${this._handleReplace}
+        >
+          ${this.hass.localize("ui.components.device-picker.replace_device")}
+        </ha-button>
+      </ha-alert>
+    `;
+  }
+
+  private _handleReplace = () => {
+    const replacement = this._getReplacement(
+      this.value,
+      this.hass.devices,
+      this._compositeSplits,
+      this._getItems()
+    );
+    if (!replacement?.candidates.length) {
+      return;
+    }
+    const { candidates, primaryId } = replacement;
+    if (candidates.length === 1) {
+      this._setValue(candidates[0]);
+      return;
+    }
+    showDeviceReplacedDialog(this, {
+      originalDeviceId: this.value!,
+      candidates,
+      primaryId,
+      onResolved: (deviceId) => this._setValue(deviceId),
+    });
+  };
+
+  private _setValue(value: string) {
+    this.value = value;
+    fireEvent(this, "value-changed", { value });
   }
 
   public async open() {
@@ -281,6 +472,13 @@ export class HaDevicePicker extends LitElement {
     this.hass.localize("ui.components.device-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
+
+  static styles = css`
+    ha-alert {
+      display: block;
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {
