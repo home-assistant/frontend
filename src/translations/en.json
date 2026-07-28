@@ -8644,13 +8644,7 @@
             "editor": {
               "label": "Format",
               "add": "Add",
-              "search": "Search part",
-              "examples": {
-                "area": "Living room",
-                "device": "Thermostat",
-                "entity": "Temperature",
-                "floor": "Ground floor"
-              }
+              "search": "Search part"
             }
           }
         },

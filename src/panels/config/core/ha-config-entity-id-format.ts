@@ -3,7 +3,6 @@ import { mdiRestore } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { computeEntityIdFormatExample } from "../../../common/entity/compute_entity_id_format_example";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -58,22 +57,12 @@ export class HaConfigEntityIdFormat extends LitElement {
     }
   }
 
-  private _examples = memoizeOne(
-    (localize: LocalizeFunc): Record<EntityIdPart, string> => ({
-      area: localize(
-        "ui.panel.config.entity_id_format.card.editor.examples.area"
-      ),
-      device: localize(
-        "ui.panel.config.entity_id_format.card.editor.examples.device"
-      ),
-      entity: localize(
-        "ui.panel.config.entity_id_format.card.editor.examples.entity"
-      ),
-      floor: localize(
-        "ui.panel.config.entity_id_format.card.editor.examples.floor"
-      ),
-    })
-  );
+  private _examples: Record<EntityIdPart, string> = {
+    area: "Living room",
+    device: "Thermostat",
+    entity: "Temperature",
+    floor: "Ground floor",
+  };
 
   protected render() {
     return html`
@@ -142,10 +131,7 @@ export class HaConfigEntityIdFormat extends LitElement {
   }
 
   private _renderPreview() {
-    const example = computeEntityIdFormatExample(
-      this._format!,
-      this._examples(this._localize)
-    );
+    const example = computeEntityIdFormatExample(this._format!, this._examples);
     return html`
       <div class="preview">
         <span class="preview-label">
