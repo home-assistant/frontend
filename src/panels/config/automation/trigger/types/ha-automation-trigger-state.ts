@@ -80,7 +80,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 "available_modes",
                 "code_arm_required",
                 "code_format",
-                "color_modes",
                 "device_class",
                 "editable",
                 "effect_list",

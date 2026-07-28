@@ -147,7 +147,13 @@ export class HaDeviceSelector extends LitElement {
 
   private _filterEntities = (entity: HassEntity): boolean =>
     ensureArray(this.selector.device!.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
 }
 

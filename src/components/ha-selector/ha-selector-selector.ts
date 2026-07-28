@@ -10,6 +10,7 @@ import type {
 } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "../ha-form/ha-form";
+import { unitOfMeasurementOptions } from "../../data/number";
 
 const SELECTOR_DEFAULTS = {
   number: {
@@ -111,6 +112,16 @@ const SELECTOR_SCHEMAS = {
     {
       name: "step",
       selector: { number: { mode: "box", step: "any" } },
+    },
+    {
+      name: "unit_of_measurement",
+      selector: {
+        select: {
+          custom_value: true,
+          sort: true,
+          options: unitOfMeasurementOptions,
+        },
+      },
     },
   ] as const,
   object: [] as const,

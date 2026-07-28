@@ -1,10 +1,16 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { ShortcutItem } from "./home_shortcuts";
 
+export interface SurveyInteraction {
+  date: string;
+  action: "opened" | "dismissed";
+}
+
 export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
   default_panel?: string;
   apps_info_dismissed?: boolean;
+  dashboard_favorite_card_types?: string[];
 }
 
 export interface SidebarFrontendUserData {
@@ -16,6 +22,9 @@ export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
   onboarded_date?: string;
+  surveys?: {
+    onboarding?: SurveyInteraction;
+  };
 }
 
 export interface HomeFrontendSystemData {

@@ -104,6 +104,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   }
 
   protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
     if (
       !this._saving &&

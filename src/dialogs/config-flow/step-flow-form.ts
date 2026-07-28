@@ -9,6 +9,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
+import { getHiddenFields } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -107,7 +108,7 @@ class StepFlowForm extends LitElement {
             : nothing
         }
         ${
-          step.data_schema.length
+          step.data_schema.length || this._errors
             ? html`<ha-form
                 ${ref(this._formRef)}
                 ?autofocus=${this.autoFocus}
@@ -226,14 +227,17 @@ class StepFlowForm extends LitElement {
     const checkAllRequiredFields = (
       schema: readonly HaFormSchema[],
       data: Record<string, any>
-    ) =>
-      schema.every(
+    ) => {
+      const hidden = getHiddenFields(schema, data);
+      return schema.every(
         (field) =>
-          (!field.required || !["", undefined].includes(data[field.name])) &&
-          (field.type !== "expandable" ||
-            (!field.required && data[field.name] === undefined) ||
-            checkAllRequiredFields(field.schema, data[field.name]))
+          hidden.has(field.name) ||
+          ((!field.required || !["", undefined].includes(data[field.name])) &&
+            (field.type !== "expandable" ||
+              (!field.required && data[field.name] === undefined) ||
+              checkAllRequiredFields(field.schema, data[field.name])))
       );
+    };
 
     const allRequiredInfoFilledIn =
       stepData === undefined
@@ -255,8 +259,14 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
+    const hiddenFields = getHiddenFields(this.step.data_schema, stepData);
+
     const toSendData: Record<string, unknown> = {};
     Object.keys(stepData).forEach((key) => {
+      if (hiddenFields.has(key)) {
+        // Hidden fields are not part of the submitted config
+        return;
+      }
       const value = stepData[key];
       const isEmpty = [undefined, ""].includes(value);
       const field = this.step.data_schema?.find((f) => f.name === key);

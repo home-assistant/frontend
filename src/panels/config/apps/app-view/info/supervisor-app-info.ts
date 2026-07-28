@@ -95,7 +95,7 @@ import { showMoreInfoDialog } from "../../../../../dialogs/more-info/show-ha-mor
 import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../../resources/styles";
-import type { Route } from "../../../../../types";
+import type { HomeAssistantRegistries, Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-state";
@@ -172,8 +172,18 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._computeUpdateEntityId();
     this._startPolling();
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    // Registries load asynchronously and change over time; resolve the update
+    // entity reactively instead of only once on connect.
+    this._updateEntityId = this._findUpdateEntityId(
+      this.registries.devices,
+      this.registries.entities,
+      (this._currentAddon as HassioAddonDetails).slug
+    );
   }
 
   public disconnectedCallback() {
@@ -215,20 +225,33 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.current_version",
                         { version: this._currentAddon.version }
                       )}
-                      <div class="changelog" @click=${this._openChangelog}>
-                        (<span class="changelog-link"
-                          >${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.changelog"
-                          )}</span
-                        >)
-                      </div>
+                      ${
+                        this._currentAddon.changelog
+                          ? html`<div
+                              class="changelog"
+                              @click=${this._openChangelog}
+                            >
+                              (<span class="changelog-link"
+                                >${this.i18n.localize(
+                                  "ui.panel.config.apps.dashboard.changelog"
+                                )}</span
+                              >)
+                            </div>`
+                          : nothing
+                      }
                     `
                   : html`${this._currentAddon.version_latest}
-                      <span class="changelog-link" @click=${this._openChangelog}
-                        >${this.i18n.localize(
-                          "ui.panel.config.apps.dashboard.changelog"
-                        )}</span
-                      >`
+                    ${
+                      this._currentAddon.changelog
+                        ? html`<span
+                            class="changelog-link"
+                            @click=${this._openChangelog}
+                            >${this.i18n.localize(
+                              "ui.panel.config.apps.dashboard.changelog"
+                            )}</span
+                          >`
+                        : nothing
+                    }`
               }
             </div>
           </div>
@@ -1500,26 +1523,24 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       "system_managed" in addon && addon.system_managed
   );
 
-  private _computeUpdateEntityId() {
-    const addon = this._currentAddon as HassioAddonDetails;
-    const device = Object.values(this.registries.devices).find((d) =>
-      d.identifiers.some(
-        ([domain, id]) => domain === "hassio" && id === addon.slug
-      )
-    );
-    if (!device) {
-      return;
+  private _findUpdateEntityId = memoizeOne(
+    (
+      devices: HomeAssistantRegistries["devices"],
+      entities: HomeAssistantRegistries["entities"],
+      slug: string
+    ): string | undefined => {
+      const device = Object.values(devices).find((d) =>
+        d.identifiers.some(([domain, id]) => domain === "hassio" && id === slug)
+      );
+      if (!device) {
+        return undefined;
+      }
+      return Object.values(entities).find(
+        (e) =>
+          e.device_id === device.id && computeDomain(e.entity_id) === "update"
+      )?.entity_id;
     }
-    const updateEntity = Object.values(this.registries.entities).find(
-      (e) =>
-        e.device_id === device.id && computeDomain(e.entity_id) === "update"
-    );
-    if (!updateEntity) {
-      return;
-    }
-
-    this._updateEntityId = updateEntity.entity_id;
-  }
+  );
 
   private _openUpdate() {
     showMoreInfoDialog(this, { entityId: this._updateEntityId! });

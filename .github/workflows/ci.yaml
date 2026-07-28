@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
@@ -21,16 +22,30 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint and check format
+  prepare-dependencies:
+    name: Prepare dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Node and install
+      - name: Prepare dependencies
+        uses: ./.github/actions/prepare-dependencies
+
+  lint:
+    name: Lint and check format
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Check for duplicate dependencies
         run: yarn dedupe --check
       - name: Build resources
@@ -63,14 +78,17 @@ jobs:
         run: yarn run lint:licenses
   test:
     name: Run tests
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
         env:
@@ -80,16 +98,19 @@ jobs:
   build:
     name: Build frontend
     needs:
+      - prepare-dependencies
       - lint
       - test
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Build Application
         uses: ./.github/actions/build
         with:

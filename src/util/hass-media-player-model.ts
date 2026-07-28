@@ -1,6 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { cleanupMediaTitle } from "../data/media-player";
+import {
+  cleanupMediaTitle,
+  MediaPlayerEntityFeature,
+} from "../data/media-player";
 import type { HomeAssistant } from "../types";
 
 export default class MediaPlayerEntity {
@@ -75,51 +78,60 @@ export default class MediaPlayerEntity {
   }
 
   get supportsPause() {
-    return supportsFeature(this.stateObj, 1);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.PAUSE);
   }
 
   get supportsVolumeSet() {
-    return supportsFeature(this.stateObj, 4);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.VOLUME_SET);
   }
 
   get supportsVolumeMute() {
-    return supportsFeature(this.stateObj, 8);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.VOLUME_MUTE);
   }
 
   get supportsPreviousTrack() {
-    return supportsFeature(this.stateObj, 16);
+    return supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.PREVIOUS_TRACK
+    );
   }
 
   get supportsNextTrack() {
-    return supportsFeature(this.stateObj, 32);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.NEXT_TRACK);
   }
 
   get supportsTurnOn() {
-    return supportsFeature(this.stateObj, 128);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.TURN_ON);
   }
 
   get supportsTurnOff() {
-    return supportsFeature(this.stateObj, 256);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.TURN_OFF);
   }
 
   get supportsPlayMedia() {
-    return supportsFeature(this.stateObj, 512);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.PLAY_MEDIA);
   }
 
   get supportsVolumeButtons() {
-    return supportsFeature(this.stateObj, 1024);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.VOLUME_STEP);
   }
 
   get supportsSelectSource() {
-    return supportsFeature(this.stateObj, 2048);
+    return supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.SELECT_SOURCE
+    );
   }
 
   get supportsSelectSoundMode() {
-    return supportsFeature(this.stateObj, 65536);
+    return supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.SELECT_SOUND_MODE
+    );
   }
 
   get supportsPlay() {
-    return supportsFeature(this.stateObj, 16384);
+    return supportsFeature(this.stateObj, MediaPlayerEntityFeature.PLAY);
   }
 
   get primaryTitle() {
