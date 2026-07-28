@@ -12,6 +12,7 @@ const SUBSTITUTIONS = {
   position: "current_position",
   "tilt-position": "current_tilt_position",
   area: "area_name",
+  none: undefined,
 };
 
 export const migrateSecondaryInfoConfig = <T extends LegacySecondaryInfoConfig>(
@@ -29,8 +30,11 @@ export const migrateSecondaryInfoConfig = <T extends LegacySecondaryInfoConfig>(
   ) {
     return config;
   }
+  const { secondary_info, ...rest } = config;
   return {
-    ...config,
-    secondary_info: SUBSTITUTIONS[config.secondary_info],
+    ...rest,
+    ...(SUBSTITUTIONS[secondary_info] && {
+      secondary_info: SUBSTITUTIONS[secondary_info],
+    }),
   } as T;
 };

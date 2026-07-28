@@ -102,6 +102,7 @@ export class HuiGenericEntityRow extends LitElement {
                               .content=${this.config.secondary_info}
                               .timeFormat=${this.config.time_format}
                               .name=${name}
+                              timestamp-tooltip
                             >
                             </state-display>`
                           }

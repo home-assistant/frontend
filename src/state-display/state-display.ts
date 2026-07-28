@@ -117,6 +117,9 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public timeFormat?: string;
 
+  @property({ type: Boolean, attribute: "timestamp-tooltip" })
+  public timestampTooltip = false;
+
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
@@ -215,6 +218,7 @@ class StateDisplay extends LitElement {
         .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize
+        .tooltip=${this.timestampTooltip}
       ></hui-timestamp-display>`;
     }
 
