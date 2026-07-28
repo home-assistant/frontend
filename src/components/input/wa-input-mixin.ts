@@ -1,7 +1,7 @@
 import { type LitElement, css } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
+import { supportsNativeElementInternals } from "../../common/feature-detect/support-native-element-internals";
 import type { Constructor } from "../../types";
 
 /**
@@ -198,7 +198,7 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     }
 
     public checkValidity(): boolean {
-      return nativeElementInternalsSupported
+      return supportsNativeElementInternals()
         ? (this._formControl?.checkValidity() ?? true)
         : true;
     }
