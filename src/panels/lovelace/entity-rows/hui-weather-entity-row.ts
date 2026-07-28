@@ -169,6 +169,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                     .content=${this._config.secondary_info}
                     .timeFormat=${this._config.time_format}
                     .name=${name}
+                    timestamp-tooltip
                   >
                   </state-display>
                 </div>
