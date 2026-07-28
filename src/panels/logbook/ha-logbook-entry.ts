@@ -1,58 +1,52 @@
-import { mdiCast, mdiCloud, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
-import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/entity/state-badge";
 import "../../components/ha-relative-time";
-import "../../components/ha-domain-icon";
-import "../../components/ha-state-icon";
-import "../../components/ha-svg-icon";
 import "../../components/ha-tooltip";
-import "../../components/user/ha-user-badge";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LogbookEntry } from "../../data/logbook";
-import type { TraceContexts } from "../../data/trace";
-import type { User } from "../../data/user";
 import { buttonLinkStyle, haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { brandsUrl } from "../../util/brands-url";
 import type {
   LogbookCause,
   LogbookCauseType,
-  LogbookGlyph,
   LogbookItem,
   LogbookNameDetail,
   LogbookValue,
 } from "./logbook-entry-model";
+import { computeLogbookItem, nodeColor } from "./logbook-entry-model";
 import {
-  computeLogbookItem,
-  nodeColor,
-  TRIGGER_DOMAINS,
-} from "./logbook-entry-model";
+  renderLogbookCauseIcon,
+  renderLogbookGlyph,
+} from "./logbook-entry-templates";
 
 type EntryLayout = "timeline" | "list" | "inline";
 
 interface LogbookRenderItem extends LogbookItem {
-  traceLink: string | undefined;
   renderedTime: TemplateResult | string;
   renderedValue: TemplateResult | string;
 }
 
-// Names are the fixed system user names set by core (cloud/cast integrations).
-const SYSTEM_USER_ICONS: Record<string, string> = {
-  "Home Assistant Cloud": mdiCloud,
-  "Home Assistant Cast": mdiCast,
-};
+export interface LogbookEntrySelectedDetail {
+  index: number;
+  item: LogbookEntry;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "logbook-entry-selected": LogbookEntrySelectedDetail;
+    "logbook-toggle-time": undefined;
+  }
+}
 
 @customElement("ha-logbook-entry")
 class HaLogbookEntry extends LitElement {
@@ -65,7 +59,10 @@ class HaLogbookEntry extends LitElement {
 
   @property({ attribute: false }) public systemUserIds = new Set<string>();
 
-  @property({ attribute: false }) public traceContexts: TraceContexts = {};
+  @property({ attribute: false }) public index = -1;
+
+  @property({ type: Boolean, attribute: "no-row-click" }) public noRowClick =
+    false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -99,17 +96,6 @@ class HaLogbookEntry extends LitElement {
       systemUserIds: this.systemUserIds,
     });
 
-    const traceContext =
-      entry.domain &&
-      TRIGGER_DOMAINS.includes(entry.domain) &&
-      entry.context_id &&
-      entry.context_id in this.traceContexts
-        ? this.traceContexts[entry.context_id]
-        : undefined;
-    const traceLink = traceContext
-      ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
-      : undefined;
-
     const hideName = this.nameDetail === "none";
     const layout: EntryLayout =
       !this.narrow && !this.noIcon ? "timeline" : hideName ? "inline" : "list";
@@ -125,10 +111,11 @@ class HaLogbookEntry extends LitElement {
 
     const ctx: LogbookRenderItem = {
       ...item,
-      traceLink,
       renderedTime,
-      renderedValue: this._renderValue(item.value, seenEntityIds, !!traceLink),
+      renderedValue: this._renderValue(item.value, seenEntityIds),
     };
+
+    const clickable = !this.noRowClick;
 
     return html`
       <div
@@ -138,7 +125,12 @@ class HaLogbookEntry extends LitElement {
           "last-of-day": this.lastOfDay,
           [`category-${ctx.category}`]: true,
           "time-am-pm": useAmPm(this.hass.locale),
+          clickable,
         })}"
+        role=${ifDefined(clickable ? "button" : undefined)}
+        tabindex=${ifDefined(clickable ? "0" : undefined)}
+        @click=${this._rowClicked}
+        @keydown=${this._rowKeydown}
       >
         ${
           layout === "timeline"
@@ -176,24 +168,36 @@ class HaLogbookEntry extends LitElement {
 
   private _toggleTime(e: Event) {
     e.stopPropagation();
-    fireEvent(this, "logbook-toggle-time" as any);
+    fireEvent(this, "logbook-toggle-time");
   }
 
   private _timeKeydown(e: KeyboardEvent) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      fireEvent(this, "logbook-toggle-time" as any);
+      e.stopPropagation();
+      fireEvent(this, "logbook-toggle-time");
     }
   }
 
-  private _handleTraceClick(ev: MouseEvent) {
-    // Let modified clicks open in a new tab; otherwise route in-app.
-    if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey) {
+  private _rowClicked() {
+    if (this.noRowClick) {
+      return;
+    }
+    fireEvent(this, "logbook-entry-selected", {
+      index: this.index,
+      item: this.item,
+    });
+  }
+
+  private _rowKeydown(ev: KeyboardEvent) {
+    if (this.noRowClick || (ev.key !== "Enter" && ev.key !== " ")) {
+      return;
+    }
+    if (ev.target !== ev.currentTarget) {
       return;
     }
     ev.preventDefault();
-    navigate((ev.currentTarget as HTMLAnchorElement).getAttribute("href")!);
-    fireEvent(this, "closed");
+    this._rowClicked();
   }
 
   private _entityClicked(ev: Event) {
@@ -217,7 +221,6 @@ class HaLogbookEntry extends LitElement {
 
   private _renderTrailing(
     cause: LogbookCause | undefined,
-    traceLink: string | undefined,
     renderedTime: TemplateResult | string
   ) {
     return html`<span class="trailing">
@@ -225,22 +228,12 @@ class HaLogbookEntry extends LitElement {
         cause
           ? html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
               <span class="cause-badge" id="cause-badge"
-                >${this._renderCauseIcon(cause)}</span
+                >${renderLogbookCauseIcon(cause)}</span
               >`
           : nothing
       }
-      ${traceLink ? this._renderTraceLink(traceLink) : nothing}
       ${this._renderTimeChip(renderedTime)}
     </span>`;
-  }
-
-  private _renderTraceLink(traceLink: string) {
-    return html`<a
-      class="trace-link"
-      href=${traceLink}
-      @click=${this._handleTraceClick}
-      >${this.hass.localize("ui.components.logbook.view_trace")}</a
-    >`;
   }
 
   private _renderTimeline(ctx: LogbookRenderItem) {
@@ -279,15 +272,9 @@ class HaLogbookEntry extends LitElement {
           : nothing
       }
       ${
-        causePhrase || ctx.traceLink
+        causePhrase
           ? html`<div class="secondary">
-              ${
-                causePhrase
-                  ? html`<span class="cause-phrase">${causePhrase}</span>`
-                  : nothing
-              }
-              ${causePhrase && ctx.traceLink ? html`·` : nothing}
-              ${ctx.traceLink ? this._renderTraceLink(ctx.traceLink) : nothing}
+              <span class="cause-phrase">${causePhrase}</span>
             </div>`
           : nothing
       }
@@ -297,9 +284,7 @@ class HaLogbookEntry extends LitElement {
   private _renderList(ctx: LogbookRenderItem) {
     const cause =
       this.showCause || ctx.category === "entity" ? ctx.cause : undefined;
-    const trailingTrace = this.showCause ? undefined : ctx.traceLink;
-    const thirdLineTrace = this.showCause ? ctx.traceLink : undefined;
-    const showThirdLine = this.showCause && (cause || thirdLineTrace);
+    const showThirdLine = this.showCause && cause;
     return html`
       <div class="primary">
         <span class="subject"
@@ -313,26 +298,22 @@ class HaLogbookEntry extends LitElement {
         <span class="secondary-text">${ctx.context ?? nothing}</span>
         ${this._renderTrailing(
           showThirdLine ? undefined : cause,
-          trailingTrace,
           ctx.renderedTime
         )}
       </div>
       ${
         showThirdLine
           ? html`<div class="secondary">
-              ${this._renderListCauseLine(cause, thirdLineTrace)}
+              ${this._renderListCauseLine(cause)}
             </div>`
           : nothing
       }
     `;
   }
 
-  private _renderListCauseLine(
-    cause: LogbookCause | undefined,
-    traceLink: string | undefined
-  ) {
+  private _renderListCauseLine(cause: LogbookCause | undefined) {
     if (!cause) {
-      return traceLink ? this._renderTraceLink(traceLink) : nothing;
+      return nothing;
     }
     const { localize } = this.hass;
     if (cause.entityId) {
@@ -357,12 +338,10 @@ class HaLogbookEntry extends LitElement {
         >
           ${cause.name}
         </button>
-        ${traceLink ? this._renderTraceLink(traceLink) : nothing}
       `;
     }
     return html`
       <span class="secondary-text">${this._renderCausePhrase(cause)}</span>
-      ${traceLink ? this._renderTraceLink(traceLink) : nothing}
     `;
   }
 
@@ -372,7 +351,6 @@ class HaLogbookEntry extends LitElement {
         <span class="primary-text">${ctx.renderedValue}</span>
         ${this._renderTrailing(
           ctx.category === "entity" ? ctx.cause : undefined,
-          ctx.traceLink,
           ctx.renderedTime
         )}
       </div>
@@ -381,21 +359,19 @@ class HaLogbookEntry extends LitElement {
 
   private _renderValue(
     value: LogbookValue | undefined,
-    seenEntityIds: string[],
-    noLink: boolean
+    seenEntityIds: string[]
   ): TemplateResult | string {
     if (!value) {
       return "";
     }
     return value.type === "message"
-      ? this._formatMessageWithPossibleEntity(value.text, seenEntityIds, noLink)
+      ? this._formatMessageWithPossibleEntity(value.text, seenEntityIds)
       : value.text;
   }
 
   private _renderEntity(
     entityId: string | undefined,
-    entityName: string | undefined,
-    noLink?: boolean
+    entityName: string | undefined
   ) {
     const hasState = entityId && entityId in this.hass.states;
     const displayName =
@@ -406,15 +382,13 @@ class HaLogbookEntry extends LitElement {
     if (!hasState) {
       return displayName;
     }
-    return noLink
-      ? displayName
-      : html`<button
-          class="link"
-          @click=${this._entityClicked}
-          .entityId=${entityId}
-        >
-          ${displayName}
-        </button>`;
+    return html`<button
+      class="link"
+      @click=${this._entityClicked}
+      .entityId=${entityId}
+    >
+      ${displayName}
+    </button>`;
   }
 
   private _renderCausePhrase(cause: LogbookCause): TemplateResult | string {
@@ -470,54 +444,9 @@ class HaLogbookEntry extends LitElement {
     }
   }
 
-  private _renderCauseIcon(cause: LogbookCause) {
-    if (cause.type === "user") {
-      const systemIcon = cause.systemUser
-        ? SYSTEM_USER_ICONS[cause.name]
-        : undefined;
-      if (systemIcon) {
-        return html`<ha-svg-icon
-          class="cause-icon"
-          .path=${systemIcon}
-        ></ha-svg-icon>`;
-      }
-      return html`<ha-user-badge
-        class="cause-icon cause-avatar"
-        .user=${{ id: cause.userId!, name: cause.name } as User}
-      ></ha-user-badge>`;
-    }
-    if (cause.type === "automation") {
-      return html`<ha-svg-icon
-        class="cause-icon"
-        .path=${mdiRobot}
-      ></ha-svg-icon>`;
-    }
-    if (cause.type === "script") {
-      return html`<ha-svg-icon
-        class="cause-icon"
-        .path=${mdiScriptText}
-      ></ha-svg-icon>`;
-    }
-    if (cause.type === "state") {
-      return nothing;
-    }
-    if (cause.brandDomain) {
-      return html`<ha-domain-icon
-        class="cause-icon"
-        .domain=${cause.brandDomain}
-        brand-fallback
-      ></ha-domain-icon>`;
-    }
-    return html`<ha-svg-icon
-      class="cause-icon"
-      .path=${mdiPuzzle}
-    ></ha-svg-icon>`;
-  }
-
   private _formatMessageWithPossibleEntity(
     message: string,
-    seenEntities: string[],
-    noLink?: boolean
+    seenEntities: string[]
   ) {
     if (message.indexOf(".") !== -1) {
       const messageParts = message.split(" ");
@@ -533,8 +462,7 @@ class HaLogbookEntry extends LitElement {
           return html`${messageParts.join(" ")}
           ${this._renderEntity(
             entityId,
-            this.hass.states[entityId].attributes.friendly_name,
-            noLink
+            this.hass.states[entityId].attributes.friendly_name
           )}
           ${messageEnd.join(" ")}`;
         }
@@ -571,47 +499,9 @@ class HaLogbookEntry extends LitElement {
     const unavailable =
       item.glyph.type === "state" && item.glyph.stateObj.state === UNAVAILABLE;
     return html`<div class="node-glyph" style=${style}>
-      ${this._renderGlyph(item.glyph)}
+      ${renderLogbookGlyph(this.hass, this.item, item.glyph)}
       ${unavailable ? html`<span class="node-badge"></span>` : nothing}
     </div>`;
-  }
-
-  private _renderGlyph(glyph: LogbookGlyph) {
-    if (glyph.type === "automation") {
-      return html`<ha-svg-icon
-        .path=${glyph.script ? mdiScriptText : mdiRobot}
-      ></ha-svg-icon>`;
-    }
-    if (glyph.type === "state") {
-      return html`<ha-state-icon
-        .stateObj=${glyph.stateObj}
-        .icon=${glyph.icon}
-      ></ha-state-icon>`;
-    }
-    return html`<state-badge
-      .overrideIcon=${glyph.icon}
-      .overrideImage=${this._brandImage(glyph.domain)}
-      .stateColor=${false}
-    ></state-badge>`;
-  }
-
-  private _brandImage(domain?: string): string | undefined {
-    if (
-      !domain ||
-      this.item.icon ||
-      this.item.state ||
-      !isComponentLoaded(this.hass.config, domain)
-    ) {
-      return undefined;
-    }
-    return brandsUrl(
-      {
-        domain,
-        type: "icon",
-        darkOptimized: this.hass.themes?.darkMode,
-      },
-      this.hass.auth.data.hassUrl
-    );
   }
 
   static get styles(): CSSResultGroup {
@@ -670,6 +560,19 @@ class HaLogbookEntry extends LitElement {
             --logbook-category-integration-color,
             var(--teal-color)
           );
+        }
+
+        .entry.clickable {
+          cursor: pointer;
+        }
+
+        .entry.clickable:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
+
+        .entry.clickable:focus-visible {
+          outline: 2px solid var(--primary-color);
+          outline-offset: -2px;
         }
 
         .time {
@@ -957,6 +860,7 @@ class HaLogbookEntry extends LitElement {
 
         .time-chip {
           flex-shrink: 0;
+          min-width: 4.5em;
           text-align: end;
           line-height: 1;
           font-size: var(--ha-font-size-s);
@@ -964,10 +868,6 @@ class HaLogbookEntry extends LitElement {
           font-variant-numeric: tabular-nums;
           cursor: pointer;
           user-select: none;
-        }
-
-        .time-chip {
-          min-width: 4.5em;
         }
 
         .entry.time-am-pm .time-chip {
@@ -1004,18 +904,6 @@ class HaLogbookEntry extends LitElement {
           white-space: nowrap;
           font-weight: var(--ha-font-weight-medium);
           color: var(--primary-text-color);
-        }
-
-        /* The trace link sits after the cause; it never shrinks, so a long
-           cause truncates instead. */
-        .trace-link {
-          flex-shrink: 0;
-          color: var(--primary-color);
-          text-decoration: none;
-        }
-
-        .trace-link:hover {
-          text-decoration: underline;
         }
 
         /* Entity names read as the subject, not a wall of blue links — the
