@@ -151,6 +151,24 @@ const delayedLovelaceScenario: Scenario = (hass) => {
   hass.mockWS("lovelace/config", () => configPromise);
 };
 
+const delayedGeneratedDashboardScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const loadFragmentTranslation = hass.loadFragmentTranslation;
+  let resolveTranslation: (() => void) | undefined;
+  const translationReady = new Promise<void>((resolve) => {
+    resolveTranslation = resolve;
+  });
+
+  hass.loadFragmentTranslation = async (fragment) => {
+    if (fragment === "lovelace") {
+      await translationReady;
+    }
+    return loadFragmentTranslation(fragment);
+  };
+  window.resolveGeneratedDashboard = resolveTranslation;
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -158,6 +176,7 @@ export const scenarios: Record<string, Scenario> = {
   "non-admin": nonAdminScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
+  "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
   "light-more-info": lightMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
   "delayed-lovelace": delayedLovelaceScenario,
