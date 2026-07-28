@@ -35,7 +35,7 @@ export const updateFloorRegistryEntry = (
   floorId: string,
   updates: Partial<FloorRegistryEntryMutableParams>
 ) =>
-  hass.callWS<AreaRegistryEntry>({
+  hass.callWS<FloorRegistryEntry>({
     type: "config/floor_registry/update",
     floor_id: floorId,
     ...updates,

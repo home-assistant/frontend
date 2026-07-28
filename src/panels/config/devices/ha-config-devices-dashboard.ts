@@ -1206,7 +1206,7 @@ ${rejected
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       confirm: async () => {
-        const proms: Promise<DeviceRegistryEntry>[] = [];
+        const proms: Promise<DeviceRegistryEntry | null>[] = [];
         this._selectedCanDelete.forEach((deviceId) => {
           const entries = this.hass!.devices[deviceId]?.config_entries;
           entries.forEach((entryId) => {

@@ -14,6 +14,8 @@ const baseDevice = {
   name_by_user: null,
   disabled_by: null,
   configuration_url: null,
+  config_entry_id: null,
+  config_subentry_id: null,
   created_at: 0,
   modified_at: 0,
 };

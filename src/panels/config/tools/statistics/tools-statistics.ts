@@ -746,10 +746,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this._data.push({
           statistic_id: statisticId,
           statistics_unit_of_measurement: "",
+          display_unit_of_measurement: "",
           source: "",
+          name: null,
           state: this._states[statisticId],
           issues: issues[statisticId],
           mean_type: StatisticMeanType.NONE,
+          has_mean: false,
           has_sum: false,
           unit_class: null,
         });

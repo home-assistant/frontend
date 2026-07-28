@@ -1,8 +1,9 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { IntegrationType } from "./integration";
+import type { RegistryEntry } from "./registry";
 
-export interface ConfigEntry {
+export interface ConfigEntry extends RegistryEntry {
   entry_id: string;
   domain: string;
   title: string;
@@ -14,7 +15,8 @@ export interface ConfigEntry {
     | "setup_retry"
     | "not_loaded"
     | "failed_unload"
-    | "setup_in_progress";
+    | "setup_in_progress"
+    | "unload_in_progress";
   supports_options: boolean;
   supports_remove_device: boolean;
   supports_unload: boolean;
@@ -33,7 +35,7 @@ export interface SubEntry {
   subentry_id: string;
   subentry_type: string;
   title: string;
-  unique_id: string;
+  unique_id: string | null;
 }
 
 export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>

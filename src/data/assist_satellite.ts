@@ -5,6 +5,7 @@ import { UNAVAILABLE } from "./entity/entity";
 
 export enum AssistSatelliteEntityFeature {
   ANNOUNCE = 1,
+  START_CONVERSATION = 2,
 }
 
 export interface WakeWordInterceptMessage {

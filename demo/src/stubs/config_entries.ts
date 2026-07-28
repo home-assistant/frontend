@@ -21,6 +21,8 @@ const baseEntry = {
   reason: null,
   error_reason_translation_key: null,
   error_reason_translation_placeholders: null,
+  created_at: 0,
+  modified_at: 0,
 };
 
 // Each entry is tagged with its integration type so we can honor the

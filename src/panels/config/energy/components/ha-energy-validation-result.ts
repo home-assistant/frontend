@@ -27,7 +27,7 @@ class EnergyValidationMessage extends LitElement {
         >
           ${this.hass.localize(
             `component.energy.issues.${issue.type}.description`,
-            issue.translation_placeholders
+            issue.translation_placeholders ?? undefined
           )}
           ${
             issue.type === "recorder_untracked"

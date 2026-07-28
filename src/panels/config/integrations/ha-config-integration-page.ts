@@ -54,6 +54,7 @@ import {
 import type {
   IntegrationLogInfo,
   IntegrationManifest,
+  IntegrationType,
 } from "../../../data/integration";
 import {
   LogSeverity,
@@ -165,6 +166,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _subEntries: Record<string, SubEntry[]> = {};
 
   private _subEntriesFetchId = 0;
+
+  /** Virtual integrations never have config entries, so they have no strings. */
+  private get _configEntryIntegrationType(): IntegrationType | undefined {
+    const integrationType = this._manifest?.integration_type;
+    return integrationType && integrationType !== "virtual"
+      ? integrationType
+      : undefined;
+  }
 
   @state() private _domainEntities: Record<string, string[]> = {};
 
@@ -683,9 +692,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         this.hass.localize(
                           `component.${this.domain}.config.initiate_flow.user`
                         ) ||
-                        (this._manifest?.integration_type
+                        (this._configEntryIntegrationType
                           ? this.hass.localize(
-                              `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
+                              `ui.panel.config.integrations.integration_page.add_${this._configEntryIntegrationType}`
                             )
                           : this.hass.localize(
                               `ui.panel.config.integrations.integration_page.add_entry`
@@ -834,9 +843,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           <div class="section">
             <h3 class="section-header">
               ${
-                this._manifest?.integration_type
+                this._configEntryIntegrationType
                   ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
+                      `ui.panel.config.integrations.integration_page.entries_${this._configEntryIntegrationType}`
                     )
                   : this.hass.localize(
                       `ui.panel.config.integrations.integration_page.entries`

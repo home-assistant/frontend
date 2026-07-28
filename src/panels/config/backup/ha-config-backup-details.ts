@@ -314,7 +314,7 @@ class HaConfigBackupDetails extends LitElement {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
       this._backup = response.backup;
-      this._agents = computeAgents(response.backup);
+      this._agents = response.backup ? computeAgents(response.backup) : [];
     } catch (err: any) {
       this._error =
         err?.message ||

@@ -1,13 +1,15 @@
 import type { HomeAssistant } from "../../types";
-import type { AddonRole, AddonStage } from "../hassio/addon";
+import type { AddonAppArmour, AddonRole, AddonStage } from "../hassio/addon";
 import { supervisorApiCall } from "./common";
 import type { SupervisorArch } from "./supervisor";
 
 export interface StoreAddon {
   advanced: boolean;
+  arch: SupervisorArch[];
   available: boolean;
   build: boolean;
   description: string;
+  documentation: boolean;
   homeassistant: string | null;
   icon: boolean;
   installed: boolean;
@@ -17,19 +19,20 @@ export interface StoreAddon {
   slug: string;
   stage: AddonStage;
   update_available: boolean;
-  url: string;
+  url: string | null;
   version_latest: string;
+  // The Supervisor reports the installed version here, but the frontend only
+  // ever loads store details for add-ons that are not installed. Kept as `null`
+  // so it discriminates `StoreAddon` from `HassioAddonInfo`.
   version: null;
 }
 
 export interface StoreAddonDetails extends StoreAddon {
-  apparmor: boolean;
-  arch: SupervisorArch[];
+  apparmor: AddonAppArmour;
   auth_api: boolean;
   changelog: boolean;
   detached: boolean;
   docker_api: boolean;
-  documentation: boolean;
   full_access: boolean;
   hassio_api: boolean;
   hassio_role: AddonRole;
@@ -37,7 +40,7 @@ export interface StoreAddonDetails extends StoreAddon {
   host_network: boolean;
   host_pid: boolean;
   ingress: boolean;
-  long_description: string;
+  long_description: string | null;
   rating: number;
   signed: boolean;
 }

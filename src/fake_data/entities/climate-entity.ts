@@ -100,11 +100,6 @@ export class MockClimateEntity extends MockBaseEntity {
       return;
     }
 
-    if (service === "set_aux_heat") {
-      this.update({ attributes: { aux_heat: data.aux_heat } });
-      return;
-    }
-
     super.handleService(domain, service, data);
   }
 
@@ -225,11 +220,6 @@ export class MockClimateEntity extends MockBaseEntity {
       stateAttrs.swing_horizontal_mode = isOff
         ? null
         : (attrs.swing_horizontal_mode ?? null);
-    }
-
-    // Aux heat
-    if (supportsFeatureFromAttributes(attrs, ClimateEntityFeature.AUX_HEAT)) {
-      stateAttrs.aux_heat = isOff ? null : (attrs.aux_heat ?? null);
     }
 
     return stateAttrs;

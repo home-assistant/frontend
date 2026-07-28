@@ -37,7 +37,7 @@ export interface EntityRegistryDisplayEntryResponse {
     ec?: number;
     en?: string;
     ic?: string;
-    pl?: string;
+    pl: string;
     tk?: string;
     hb?: boolean;
     dp?: number;
@@ -58,21 +58,21 @@ export interface EntityRegistryEntry extends RegistryEntry {
   area_id: string | null;
   labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
-  hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
+  hidden_by: "user" | "integration" | null;
   entity_category: EntityCategory | null;
   has_entity_name: boolean;
-  original_name?: string;
+  original_name: string | null;
   unique_id: string;
-  translation_key?: string;
-  options: EntityRegistryOptions | null;
+  translation_key: string | null;
+  options: EntityRegistryOptions;
   categories: Record<string, string>;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
-  capabilities: Record<string, unknown>;
-  original_icon?: string;
-  device_class?: string;
-  original_device_class?: string;
+  capabilities: Record<string, unknown> | null;
+  original_icon: string | null;
+  device_class: string | null;
+  original_device_class: string | null;
   aliases: (string | null)[];
 }
 

@@ -91,7 +91,7 @@ export class HaBackupDataPicker extends LitElement {
             `ui.panel.${this.translationKeyPanel}.data_picker.${data.database_included ? "settings_and_history" : "settings"}`
           ),
           id: "config",
-          version: data.homeassistant_version,
+          version: data.homeassistant_version ?? undefined,
         });
       }
       items.push(
@@ -133,9 +133,9 @@ export class HaBackupDataPicker extends LitElement {
       addonIcons: Record<string, boolean>
     ) =>
       data.addons.map<BackupAddonItem>((addon) => ({
-        name: addon.name,
+        name: addon.name || addon.slug,
         slug: addon.slug,
-        version: addon.version,
+        version: addon.version ?? undefined,
         icon: addonIcons[addon.slug],
       }))
   );

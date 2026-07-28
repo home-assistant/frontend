@@ -17,6 +17,7 @@ export type AddonCapability = Exclude<
 >;
 export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
+export type AddonBootConfig = "auto" | "manual" | "manual_only";
 export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
 export type AddonStartup =
   "initialize" | "system" | "services" | "application" | "once";
@@ -63,13 +64,14 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   audio_output: null | string;
   audio: boolean;
   auth_api: boolean;
-  auto_uart: boolean;
   auto_update: boolean;
   boot: "auto" | "manual";
+  boot_config: AddonBootConfig;
   changelog: boolean;
   devices: string[];
   devicetree: boolean;
   discovery: string[];
+  dns: string[];
   docker_api: boolean;
   documentation: boolean;
   full_access: boolean;
@@ -82,22 +84,24 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   host_ipc: boolean;
   host_network: boolean;
   host_pid: boolean;
+  host_uts: boolean;
   ingress_entry: null | string;
   ingress_panel: boolean;
+  ingress_port: number | null;
   ingress_url: null | string;
   ingress: boolean;
   ip_address: string;
   kernel_modules: boolean;
   long_description: null | string;
-  machine: any;
+  machine: string[];
   network_description: null | Record<string, string>;
   network: null | Record<string, number>;
   options: Record<string, unknown>;
-  privileged: any;
+  privileged: string[];
   protected: boolean;
   rating: number;
   schema: HaFormSchema[] | null;
-  services_role: string[];
+  services: string[];
   signed: boolean;
   slug: string;
   startup: AddonStartup;
@@ -105,6 +109,10 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   system_managed: boolean;
   system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
+  uart: boolean;
+  udev: boolean;
+  usb: boolean;
+  video: boolean;
   watchdog: null | boolean;
   webui: null | string;
 }

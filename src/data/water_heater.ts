@@ -7,6 +7,7 @@ export enum WaterHeaterEntityFeature {
   TARGET_TEMPERATURE = 1,
   OPERATION_MODE = 2,
   AWAY_MODE = 4,
+  ON_OFF = 8,
 }
 
 export const OPERATION_MODES = [

@@ -85,7 +85,7 @@ export class HaBackupOverviewProgress extends LitElement {
 
   private get _heading() {
     const managerState = this.manager.manager_state;
-    if (managerState === "idle") {
+    if (managerState === "idle" || managerState === "blocked") {
       return "";
     }
     return this.hass.localize(
@@ -94,7 +94,10 @@ export class HaBackupOverviewProgress extends LitElement {
   }
 
   private get _isUploadStage(): boolean {
-    if (this.manager.manager_state === "idle") {
+    if (
+      this.manager.manager_state === "idle" ||
+      this.manager.manager_state === "blocked"
+    ) {
       return false;
     }
     return this.manager.stage === "upload_to_agents";

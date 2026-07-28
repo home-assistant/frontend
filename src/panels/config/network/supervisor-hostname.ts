@@ -32,7 +32,7 @@ export class HassioHostname extends LitElement {
 
   private async _fetchHostInfo() {
     const hostInfo = await fetchHassioHostInfo(this.hass);
-    this._hostname = hostInfo.hostname;
+    this._hostname = hostInfo.hostname ?? undefined;
   }
 
   protected render() {

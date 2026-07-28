@@ -1,29 +1,46 @@
 import type { HomeAssistant } from "../../types";
 
 export interface HassioHostInfo {
-  agent_version: string;
-  chassis: string;
-  cpe: string;
-  deployment: string;
+  agent_version: string | null;
+  apparmor_version: string | null;
+  boot_timestamp: number | null;
+  broadcast_llmnr: boolean | null;
+  broadcast_mdns: boolean | null;
+  chassis: string | null;
+  cpe: string | null;
+  deployment: string | null;
   disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;
+  dt_synchronized: boolean | null;
+  dt_utc: string;
   features: string[];
-  hostname: string;
-  kernel: string;
-  operating_system: string;
-  boot_timestamp: number;
-  startup_time: number;
+  hostname: string | null;
+  kernel: string | null;
+  llmnr_hostname: string | null;
+  operating_system: string | null;
+  startup_time: number | null;
+  timezone: string | null;
+  use_ntp: boolean | null;
+  virtualization: string | null;
+}
+
+export interface HassioHassOSBootSlot {
+  state: string | null;
+  status: string | null;
+  version: string | null;
 }
 
 export interface HassioHassOSInfo {
   board: string | null;
   boot: string | null;
+  boot_slots: Record<string, HassioHassOSBootSlot>;
   update_available: boolean;
   version_latest: string | null;
+  version_pending: string | null;
   version: string | null;
-  data_disk: string;
+  data_disk: string | null;
 }
 
 export interface Datadisk {

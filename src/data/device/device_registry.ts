@@ -18,6 +18,8 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
   config_entries_subentries: Record<string, (string | null)[]>;
+  config_entry_id: string | null;
+  config_subentry_id: string | null;
   connections: [string, string][];
   identifiers: [string, string][];
   manufacturer: string | null;
@@ -87,7 +89,7 @@ export const removeConfigEntryFromDevice = (
   deviceId: string,
   configEntryId: string
 ) =>
-  hass.callWS<DeviceRegistryEntry>({
+  hass.callWS<DeviceRegistryEntry | null>({
     type: "config/device_registry/remove_config_entry",
     device_id: deviceId,
     config_entry_id: configEntryId,

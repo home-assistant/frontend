@@ -264,7 +264,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._name = this.entry.name || "";
     this._icon = this.entry.icon || "";
     this._deviceClass =
-      this.entry.device_class || this.entry.original_device_class;
+      this.entry.device_class || this.entry.original_device_class || undefined;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
     this._labels = this.entry.labels;

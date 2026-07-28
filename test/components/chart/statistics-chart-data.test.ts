@@ -28,8 +28,10 @@ const buildMetadata = (
       {
         statistic_id: id,
         statistics_unit_of_measurement: unit,
+        display_unit_of_measurement: unit,
         source: "recorder",
         name: null,
+        has_mean: !hasSum,
         has_sum: hasSum,
         mean_type: hasSum
           ? StatisticMeanType.NONE

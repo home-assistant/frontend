@@ -251,6 +251,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           reason: null,
           error_reason_translation_key: null,
           error_reason_translation_placeholders: null,
+          // Synthetic entry for a YAML-only integration, it has no registry timestamps
+          created_at: 0,
+          modified_at: 0,
         })
       );
 

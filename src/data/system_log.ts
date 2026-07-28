@@ -5,7 +5,8 @@ export type SystemLogLevel =
 
 export interface LoggedError {
   name: string;
-  message: [string];
+  // The backend keeps up to 5 deduplicated messages per entry
+  message: string[];
   level: SystemLogLevel;
   source: [string, number];
   exception: string;

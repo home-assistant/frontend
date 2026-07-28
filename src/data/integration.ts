@@ -20,6 +20,12 @@ export const integrationsWithPanel = {
 export type IntegrationType =
   "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
 
+/**
+ * `integration_type` as reported by manifests and brand data. Virtual
+ * integrations only exist as metadata, they never have config entries.
+ */
+export type ManifestIntegrationType = IntegrationType | "virtual";
+
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
 export interface IntegrationManifest {
@@ -35,9 +41,9 @@ export interface IntegrationManifest {
   codeowners?: string[];
   requirements?: string[];
   ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
-  zeroconf?: string[];
+  zeroconf?: (string | Record<string, string>)[];
   homekit?: { models: string[] };
-  integration_type?: IntegrationType;
+  integration_type?: ManifestIntegrationType;
   loggers?: string[];
   quality_scale?:
     | "bronze"

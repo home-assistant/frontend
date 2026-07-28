@@ -47,9 +47,12 @@ export enum StatisticMeanType {
 
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
+  display_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
-  name?: string | null;
+  name: string | null;
+  /** @deprecated Use `mean_type` instead, removed in HA Core 2026.4 */
+  has_mean: boolean;
   has_sum: boolean;
   mean_type: StatisticMeanType;
   unit_class: string | null;

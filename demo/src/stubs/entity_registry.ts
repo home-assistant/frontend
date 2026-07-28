@@ -16,7 +16,14 @@ export const mockEntityRegistry = (
       for (const entityId of msg.entity_ids) {
         const entry = data.find((e) => e.entity_id === entityId);
         if (entry) {
-          result[entityId] = { ...entry, capabilities: {}, aliases: [] };
+          result[entityId] = {
+            ...entry,
+            capabilities: {},
+            original_icon: null,
+            device_class: null,
+            original_device_class: null,
+            aliases: [],
+          };
         }
       }
       return result;

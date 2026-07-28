@@ -619,19 +619,6 @@ export const demoServices: HassServices = {
     },
   },
   climate: {
-    set_aux_heat: {
-      description: "Turn auxiliary heater on/off for climate device.",
-      fields: {
-        entity_id: {
-          description: "Name(s) of entities to change.",
-          example: "climate.kitchen",
-        },
-        aux_heat: {
-          description: "New value of axillary heater.",
-          example: "true",
-        },
-      },
-    },
     set_temperature: {
       description: "Set target temperature of climate device.",
       fields: {

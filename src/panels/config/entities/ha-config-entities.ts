@@ -1231,6 +1231,8 @@ export class HaConfigEntities extends LitElement {
           selectable: false,
           entity_category: null,
           has_entity_name: false,
+          original_name: null,
+          translation_key: null,
           options: this._getExposedEntitySettingsAsOptions(entityId),
           labels: [],
           categories: {},

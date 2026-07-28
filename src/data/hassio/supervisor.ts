@@ -1,5 +1,6 @@
 import type { HomeAssistant, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
+import type { AddonState } from "./addon";
 import type { HassioResponse } from "./common";
 
 export interface HassioHomeAssistantInfo {
@@ -19,14 +20,37 @@ export interface HassioHomeAssistantInfo {
   watchdog: boolean;
 }
 
+export interface HassioSupervisorAddonInfo {
+  name: string;
+  slug: string;
+  version: string | null;
+  version_latest: string;
+  update_available: boolean;
+  state: AddonState;
+  repository: string;
+  icon: boolean;
+}
+
+export interface HassioSupervisorRepositoryInfo {
+  name: string;
+  slug: string;
+}
+
+export type SupervisorFeatureFlag =
+  "supervisor_v2_api" | "supervisor_websocket_v2_api";
+
 export interface HassioSupervisorInfo {
-  addons: string[];
-  addons_repositories: string[];
+  addons: HassioSupervisorAddonInfo[];
+  addons_repositories: HassioSupervisorRepositoryInfo[];
   arch: SupervisorArch;
+  auto_update: boolean;
   channel: string;
+  country: string | null;
   debug: boolean;
   debug_block: boolean;
+  detect_blocking_io: boolean;
   diagnostics: boolean | null;
+  feature_flags: Record<SupervisorFeatureFlag, boolean>;
   healthy: boolean;
   ip_address: string;
   logging: string;
@@ -35,6 +59,7 @@ export interface HassioSupervisorInfo {
   update_available: boolean;
   version: string;
   version_latest: string;
+  /** @deprecated No longer used by the Supervisor */
   wait_boot: number;
 }
 
@@ -43,11 +68,12 @@ export interface HassioInfo {
   channel: string;
   docker: string;
   features: string[];
-  hassos: null;
+  hassos: string | null;
   homeassistant: string;
-  hostname: string;
+  hostname: string | null;
   logging: string;
   machine: string;
+  machine_id: string | null;
   state:
     | "initialize"
     | "setup"
@@ -57,7 +83,7 @@ export interface HassioInfo {
     | "shutdown"
     | "stopping"
     | "close";
-  operating_system: string;
+  operating_system: string | null;
   supervisor: string;
   supported: boolean;
   supported_arch: SupervisorArch[];

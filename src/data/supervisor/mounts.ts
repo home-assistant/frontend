@@ -12,49 +12,64 @@ export enum SupervisorMountUsage {
   SHARE = "share",
 }
 
+/** Mirrors the systemd unit active state the Supervisor reports. */
 export enum SupervisorMountState {
   ACTIVE = "active",
+  ACTIVATING = "activating",
+  DEACTIVATING = "deactivating",
   FAILED = "failed",
-  UNKNOWN = "unknown",
+  INACTIVE = "inactive",
+  MAINTENANCE = "maintenance",
+  RELOADING = "reloading",
 }
 
 interface MountOptions {
   default_backup_mount?: string | null;
 }
 
+/** `auto` is a UI-only value, it is stripped before the mount is submitted. */
 export type CIFSVersion = "auto" | "1.0" | "2.0";
 
 interface SupervisorMountBase {
   name: string;
   usage: SupervisorMountUsage;
   type: SupervisorMountType;
+  read_only?: boolean;
   server: string;
-  port: number;
+  port?: number;
 }
 
-export interface SupervisorMountResponse extends SupervisorMountBase {
-  state: SupervisorMountState | null;
-}
-
-export interface SupervisorNFSMount extends SupervisorMountResponse {
+interface SupervisorNFSMountBase extends SupervisorMountBase {
   type: SupervisorMountType.NFS;
   path: string;
 }
 
-export interface SupervisorCIFSMount extends SupervisorMountResponse {
+interface SupervisorCIFSMountBase extends SupervisorMountBase {
   type: SupervisorMountType.CIFS;
   share: string;
-  version?: CIFSVersion;
+  version?: CIFSVersion | null;
 }
+
+/** Fields the Supervisor adds to a configured mount when reporting it. */
+export interface SupervisorMountResponse {
+  read_only: boolean;
+  state: SupervisorMountState | null;
+  user_path: string | null;
+}
+
+export type SupervisorNFSMount = SupervisorNFSMountBase &
+  SupervisorMountResponse;
+
+export type SupervisorCIFSMount = SupervisorCIFSMountBase &
+  SupervisorMountResponse;
 
 export type SupervisorMount = SupervisorNFSMount | SupervisorCIFSMount;
 
-export type SupervisorNFSMountRequestParams = SupervisorNFSMount;
+export type SupervisorNFSMountRequestParams = SupervisorNFSMountBase;
 
-export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
+export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMountBase {
   username?: string;
   password?: string;
-  version?: CIFSVersion;
 }
 
 export type SupervisorMountRequestParams =

@@ -121,22 +121,19 @@ export interface BackupContent {
     "supervisor.addon_update"?: string;
     "supervisor.app_update"?: string;
   };
-  with_automatic_settings: boolean;
+  with_automatic_settings: boolean | null;
 }
 
 export interface BackupData {
   addons: BackupAddon[];
   database_included: boolean;
   folders: string[];
-  homeassistant_version: string;
+  // null when homeassistant_included is false
+  homeassistant_version: string | null;
   homeassistant_included: boolean;
 }
 
-export interface BackupAddon {
-  name: string;
-  slug: string;
-  version: string;
-}
+export type BackupAddon = AddonInfo;
 
 export interface BackupContentExtended extends BackupContent, BackupData {}
 
@@ -152,7 +149,8 @@ export interface BackupInfo {
 }
 
 export interface BackupDetails {
-  backup: BackupContentExtended;
+  backup: BackupContentExtended | null;
+  agent_errors: Record<string, string>;
 }
 
 export interface BackupAgentsInfo {
