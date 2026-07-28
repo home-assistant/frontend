@@ -1,5 +1,6 @@
 import type { ExtEntityRegistryEntry } from "../../../../../src/data/entity/entity_registry";
 import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
+import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -124,6 +125,32 @@ const quickSearchAssistScenario: Scenario = async (hass) => {
   });
 };
 
+const addLaunchScreen = () => {
+  const launchScreen = document.createElement("div");
+  launchScreen.id = "ha-launch-screen";
+  document.body.prepend(launchScreen);
+};
+
+const delayedLovelaceScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const config: LovelaceRawConfig = {
+    views: [
+      {
+        title: "Home",
+        cards: [{ type: "markdown", content: "Dashboard ready" }],
+      },
+    ],
+  };
+  let resolveConfig: ((config: LovelaceRawConfig) => void) | undefined;
+  const configPromise = new Promise<LovelaceRawConfig>((resolve) => {
+    resolveConfig = resolve;
+  });
+
+  window.resolveLovelaceConfig = () => resolveConfig?.(config);
+  hass.mockWS("lovelace/config", () => configPromise);
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -133,4 +160,5 @@ export const scenarios: Record<string, Scenario> = {
   "custom-theme": customThemeScenario,
   "light-more-info": lightMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
+  "delayed-lovelace": delayedLovelaceScenario,
 };

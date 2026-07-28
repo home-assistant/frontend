@@ -92,6 +92,7 @@ declare global {
   interface Window {
     __assistRun?: unknown;
     __mockHass: MockHomeAssistant;
+    resolveLovelaceConfig?: () => void;
   }
 }
 
