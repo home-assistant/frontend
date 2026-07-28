@@ -2,6 +2,7 @@ import { assert, describe, it } from "vitest";
 
 import { canToggleState } from "../../../src/common/entity/can_toggle_state";
 import { ClimateEntityFeature } from "../../../src/data/climate";
+import { CoverEntityFeature } from "../../../src/data/feature/cover_entity_feature";
 
 describe("canToggleState", () => {
   const hass: any = {
@@ -61,6 +62,39 @@ describe("canToggleState", () => {
       entity_id: "climate.bla",
       attributes: {
         supported_features: 0,
+      },
+    };
+    assert.isFalse(canToggleState(hass, stateObj));
+  });
+
+  it("Detects cover with toggle", () => {
+    const stateObj: any = {
+      entity_id: "cover.bla",
+      attributes: {
+        supported_features: CoverEntityFeature.OPEN + CoverEntityFeature.CLOSE,
+      },
+    };
+    assert.isTrue(canToggleState(hass, stateObj));
+  });
+
+  it("Detects tilt-only cover with toggle", () => {
+    const stateObj: any = {
+      entity_id: "cover.bla",
+      attributes: {
+        supported_features:
+          CoverEntityFeature.OPEN_TILT +
+          CoverEntityFeature.CLOSE_TILT +
+          CoverEntityFeature.SET_TILT_POSITION,
+      },
+    };
+    assert.isTrue(canToggleState(hass, stateObj));
+  });
+
+  it("Detects tilt-only cover without toggle", () => {
+    const stateObj: any = {
+      entity_id: "cover.bla",
+      attributes: {
+        supported_features: CoverEntityFeature.STOP_TILT,
       },
     };
     assert.isFalse(canToggleState(hass, stateObj));
