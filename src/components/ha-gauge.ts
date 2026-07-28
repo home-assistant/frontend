@@ -273,6 +273,8 @@ export class HaGauge extends LitElement {
 
   static styles = css`
     :host {
+      /* a non replaced inline element never reports a size to a resize observer */
+      display: block;
       position: relative;
     }
 
