@@ -128,7 +128,7 @@ export class HaEntityToggle extends LitElement {
 
     const serviceDomain =
       stateDomain === "group" ? "homeassistant" : stateDomain;
-    const service = getToggleAction(stateDomain, turnOn);
+    const service = getToggleAction(stateDomain, turnOn, this.stateObj);
 
     const currentState = this.stateObj;
 
