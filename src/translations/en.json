@@ -74,6 +74,18 @@
     }
   },
   "ui": {
+    "init": {
+      "loading": "Loading data",
+      "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
+      "project_from": "A project from the",
+      "error": {
+        "title": "Unable to connect to Home Assistant.",
+        "retrying": "Retrying in {seconds, plural, one {# second} other {# seconds}}...",
+        "retry_now": "Retry now",
+        "nabu_casa": "It is possible that you are seeing this screen because your Home Assistant is not currently connected. You can ask it to come online from your {account_link}.",
+        "nabu_casa_account": "Nabu Casa account page"
+      }
+    },
     "backup": {
       "upload_backup": "Upload backup"
     },
@@ -797,13 +809,6 @@
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
-        "selected": {
-          "entity": "Entities: {count}",
-          "device": "Devices: {count}",
-          "area": "Areas: {count}",
-          "label": "Labels: {count}",
-          "floor": "Floors: {count}"
-        },
         "type": {
           "area": "Area",
           "areas": "Areas",
@@ -1193,6 +1198,11 @@
         "play": "Play",
         "play-media": "Play media",
         "pick-media": "Pick media",
+        "search": {
+          "search_placeholder": "Search {name}",
+          "no_results": "No results found"
+        },
+        "filter_media_type": "Filter by media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
@@ -5178,6 +5188,13 @@
               "device": "No devices found for {term}",
               "area": "No areas or floors found for {term}",
               "label": "No labels found for {term}"
+            },
+            "show_more_search": {
+              "trigger": "{count} more triggers...",
+              "condition": "{count} more conditions...",
+              "action": "{count} more actions...",
+              "entity": "{count} more entities...",
+              "device": "{count} more devices..."
             },
             "load_target_items_failed": "Failed to load target items for",
             "other_areas": "Other areas",
@@ -10058,6 +10075,11 @@
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
               "custom_cards": "Community cards",
+              "favorite_cards": "Favorite cards",
+              "add_favorite": "Add to favorites",
+              "remove_favorite": "Remove from favorites",
+              "reorder_favorites": "Reorder favorites",
+              "favorite_save_failed": "Failed to save favorite cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",

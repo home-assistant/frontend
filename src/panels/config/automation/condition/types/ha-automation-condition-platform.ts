@@ -218,20 +218,14 @@ export class HaPlatformCondition extends LitElement {
       </div>
       ${
         conditionDesc && "target" in conditionDesc
-          ? html`<ha-settings-row narrow>
-              <span slot="heading"
-                >${this.hass.localize(
-                  "ui.components.service-control.target"
-                )}</span
-              >
-              <ha-selector
-                .hass=${this.hass}
-                .selector=${this._targetSelector(conditionDesc.target)}
-                .disabled=${this.disabled}
-                @value-changed=${this._targetChanged}
-                .value=${this.condition?.target}
-              ></ha-selector
-            ></ha-settings-row>`
+          ? html`<ha-selector
+              class="target-selector"
+              .hass=${this.hass}
+              .selector=${this._targetSelector(conditionDesc.target)}
+              .disabled=${this.disabled}
+              @value-changed=${this._targetChanged}
+              .value=${this.condition?.target}
+            ></ha-selector>`
           : nothing
       }
       ${
@@ -669,6 +663,14 @@ export class HaPlatformCondition extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

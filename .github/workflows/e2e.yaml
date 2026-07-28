@@ -38,7 +38,7 @@ jobs:
     name: Prepare container dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.62.0-noble
       options: --user 1001
     defaults:
       run:
@@ -154,7 +154,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.62.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -206,7 +206,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.62.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -260,7 +260,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.62.0-noble
       options: --user 1001 --ipc=host
     defaults:
       run:

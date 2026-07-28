@@ -215,35 +215,6 @@ class HuiWaterSankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    // Set of device stats that will be rendered as their own node
-    const renderedStats = new Set<string>();
-    prefs.device_consumption_water.forEach((device) => {
-      if (deviceValue(device.stat_consumption) >= minWaterThreshold) {
-        renderedStats.add(device.stat_consumption);
-      }
-    });
-
-    // Walk up the included_in_stat chain to the first ancestor that is rendered
-    const deviceMap = new Map<string, string | undefined>();
-    prefs.device_consumption_water.forEach((device) => {
-      deviceMap.set(device.stat_consumption, device.included_in_stat);
-    });
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        if (renderedStats.has(currentParent)) {
-          return currentParent;
-        }
-        if (!deviceMap.has(currentParent)) {
-          return undefined;
-        }
-        currentParent = deviceMap.get(currentParent);
-      }
-      return undefined;
-    };
-
     const deviceLabel = (statConsumption: string, name?: string) =>
       name ||
       getStatisticLabel(
@@ -270,7 +241,6 @@ class HuiWaterSankeyCard
       getValue: deviceValue,
       getLabel: deviceLabel,
       getEntityId: (id) => (isExternalStatistic(id) ? undefined : id),
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 

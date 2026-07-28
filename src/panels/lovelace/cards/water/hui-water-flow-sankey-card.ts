@@ -241,48 +241,6 @@ class HuiWaterFlowSankeyCard
       }
     }
 
-    // Build a map of device relationships for hierarchy resolution
-    const deviceMap = new Map<
-      string,
-      { stat_rate?: string; included_in_stat?: string }
-    >();
-    prefs.device_consumption_water.forEach((device) => {
-      deviceMap.set(device.stat_consumption, {
-        stat_rate: device.stat_rate,
-        included_in_stat: device.included_in_stat,
-      });
-    });
-
-    // Set of stat_rate entities that will be rendered as nodes
-    const renderedStatRates = new Set<string>();
-    prefs.device_consumption_water.forEach((device) => {
-      if (device.stat_rate) {
-        const value = this._getCurrentFlowRate(device.stat_rate);
-        if (value >= minFlowThreshold) {
-          renderedStatRates.add(device.stat_rate);
-        }
-      }
-    });
-
-    // Find the effective parent for hierarchy
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        const parentDevice = deviceMap.get(currentParent);
-        if (!parentDevice) return undefined;
-        if (
-          parentDevice.stat_rate &&
-          renderedStatRates.has(parentDevice.stat_rate)
-        ) {
-          return parentDevice.stat_rate;
-        }
-        currentParent = parentDevice.included_in_stat;
-      }
-      return undefined;
-    };
-
     const {
       deviceNodes,
       parentLinks,
@@ -301,7 +259,6 @@ class HuiWaterFlowSankeyCard
       getValue: (id) => this._getCurrentFlowRate(id),
       getLabel: (id, name) => name || this._getEntityLabel(id),
       getEntityId: (id) => id,
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 
