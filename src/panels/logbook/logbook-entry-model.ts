@@ -12,13 +12,14 @@ import {
   localizeStateMessage,
   parseTriggerSource,
 } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 
 export type LogbookEntryCategory = "entity" | "automation" | "integration";
 
-export const TRIGGER_DOMAINS = ["automation", "script"];
+const TRIGGER_DOMAINS = ["automation", "script"];
 
-export const stripEntityId = (message: string, entityId?: string) =>
+const stripEntityId = (message: string, entityId?: string) =>
   entityId ? message.replace(entityId, " ") : message;
 
 export const classifyLogbookEntry = (
@@ -96,11 +97,48 @@ export const entityDisplay = (
   return { primary, secondary };
 };
 
-export const hasContext = (item: LogbookEntry) =>
+const hasContext = (item: LogbookEntry) =>
   item.context_event_type || item.context_state || item.context_message;
 
 export const sameDay = (a?: LogbookEntry, b?: LogbookEntry) =>
   !!a?.when && !!b?.when && isSameDay(a.when * 1000, b.when * 1000);
+
+// Entries are sorted newest first.
+export const findPreviousState = (
+  entries: LogbookEntry[],
+  index: number
+): string | undefined => {
+  const entityId = entries[index]?.entity_id;
+  if (!entityId) {
+    return undefined;
+  }
+  for (let i = index + 1; i < entries.length; i++) {
+    const entry = entries[i];
+    if (entry.entity_id === entityId && entry.state !== undefined) {
+      return entry.state;
+    }
+  }
+  return undefined;
+};
+
+export const isSameLogbookEntry = (a: LogbookEntry, b: LogbookEntry) =>
+  a.when === b.when &&
+  a.entity_id === b.entity_id &&
+  a.state === b.state &&
+  a.message === b.message &&
+  a.name === b.name;
+
+// Every entry of a run shares the run's context id, so effect rows resolve
+// to their cause's trace too.
+export const computeTraceLink = (
+  traceContexts: TraceContexts,
+  contextId?: string
+): string | undefined => {
+  const traceContext = contextId ? traceContexts[contextId] : undefined;
+  return traceContext
+    ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
+    : undefined;
+};
 
 // Unavailable is flagged with an orange badge by the row, not a color change.
 export const nodeColor = (
@@ -131,8 +169,7 @@ export interface LogbookCause {
   brandDomain?: string;
 }
 
-export const computeLogbookCause = (
-  hass: HomeAssistant,
+export const computeUserCause = (
   item: LogbookEntry,
   userIdToName: Record<string, string>,
   systemUserIds?: Set<string>
@@ -140,15 +177,21 @@ export const computeLogbookCause = (
   const userName = item.context_user_id
     ? userIdToName[item.context_user_id]
     : undefined;
-  if (userName) {
-    return {
-      type: "user",
-      name: userName,
-      userId: item.context_user_id,
-      systemUser: systemUserIds?.has(item.context_user_id!),
-    };
+  if (!userName) {
+    return undefined;
   }
+  return {
+    type: "user",
+    name: userName,
+    userId: item.context_user_id,
+    systemUser: systemUserIds?.has(item.context_user_id!),
+  };
+};
 
+export const computeContextCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry
+): LogbookCause | undefined => {
   if (
     item.context_event_type === "automation_triggered" ||
     item.context_event_type === "script_started"
@@ -239,6 +282,18 @@ export const computeLogbookCause = (
   return undefined;
 };
 
+export const computeLogbookCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
+): LogbookCause | undefined =>
+  computeUserCause(item, userIdToName, systemUserIds) ??
+  computeContextCause(hass, item);
+
+export const isRunCause = (cause?: LogbookCause): boolean =>
+  cause?.type === "automation" || cause?.type === "script";
+
 export type LogbookGlyph =
   | { type: "state"; stateObj: HassEntity; icon?: string }
   | { type: "automation"; script: boolean }
@@ -284,10 +339,8 @@ const computeLogbookValue = (
       type: "state",
     };
   }
-  const isAutomationRun =
-    domain &&
-    TRIGGER_DOMAINS.includes(domain) &&
-    (item.source || hasContext(item) || !!item.context_user_id);
+  // Core sends run rows with a raw English message; use our own label.
+  const isAutomationRun = domain && TRIGGER_DOMAINS.includes(domain);
   if (isAutomationRun) {
     return {
       text: hass.localize(
@@ -348,6 +401,13 @@ export const computeLogbookItem = (
     ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
+  const userCause = computeUserCause(
+    entry,
+    opts.userIdToName ?? {},
+    opts.systemUserIds
+  );
+  const contextCause = computeContextCause(hass, entry);
+
   return {
     category,
     glyph: computeLogbookGlyph(entry, category, historicStateObj, domain),
@@ -355,12 +415,10 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    cause: computeLogbookCause(
-      hass,
-      entry,
-      opts.userIdToName ?? {},
-      opts.systemUserIds
-    ),
+    // A row shows the run over the user who started it; the dialog shows both.
+    cause: isRunCause(contextCause)
+      ? contextCause
+      : (userCause ?? contextCause),
     when: entry.when * 1000,
   };
 };

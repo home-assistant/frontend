@@ -2049,6 +2049,19 @@
         "description": "Description",
         "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
       },
+      "logbook_detail": {
+        "title": "Activity details",
+        "entity": "Entity",
+        "automation": "Automation",
+        "script": "Script",
+        "integration": "Integration",
+        "state": "State",
+        "event": "Event",
+        "time": "Time",
+        "what_happened": "What happened",
+        "no_known_cause": "No cause was recorded for this activity.",
+        "action_used": "Action used: {name}"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",

@@ -6,6 +6,7 @@ import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LogbookEntry } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -13,13 +14,14 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-entry";
+import type { LogbookEntrySelectedDetail } from "./ha-logbook-entry";
 import type { LogbookNameDetail } from "./logbook-entry-model";
-import { sameDay } from "./logbook-entry-model";
+import { findPreviousState, sameDay } from "./logbook-entry-model";
+import { showLogbookDetailDialog } from "./show-dialog-logbook-detail";
 
 declare global {
   interface HASSDomEvents {
     "hass-logbook-live": { enable: boolean };
-    "logbook-toggle-time": undefined;
   }
 }
 
@@ -32,6 +34,7 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ attribute: false }) public systemUserIds = new Set<string>();
 
+  // Not rendered by rows; read at click time and handed to the detail dialog.
   @property({ attribute: false }) public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
@@ -47,6 +50,9 @@ class HaLogbookRenderer extends LitElement {
     false;
 
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
+    false;
+
+  @property({ type: Boolean, attribute: "no-row-click" }) public noRowClick =
     false;
 
   @property({ type: String, attribute: "name-detail" })
@@ -77,7 +83,7 @@ class HaLogbookRenderer extends LitElement {
 
     return (
       changedProps.has("entries") ||
-      changedProps.has("traceContexts") ||
+      changedProps.has("noRowClick") ||
       changedProps.has("_showRelative" as never) ||
       languageChanged
     );
@@ -97,6 +103,7 @@ class HaLogbookRenderer extends LitElement {
         class="container ha-scrollbar"
         @scroll=${this._saveScrollPos}
         @logbook-toggle-time=${this._handleToggleTime}
+        @logbook-entry-selected=${this._handleEntrySelected}
       >
         ${
           this.virtualize
@@ -139,9 +146,9 @@ class HaLogbookRenderer extends LitElement {
         <ha-logbook-entry
           .hass=${this.hass}
           .item=${item}
+          .index=${index}
           .userIdToName=${this.userIdToName}
           .systemUserIds=${this.systemUserIds}
-          .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
           .graphColor=${this.graphColor}
@@ -150,6 +157,7 @@ class HaLogbookRenderer extends LitElement {
           .lastOfDay=${lastOfDay}
           .showRelative=${this._showRelative}
           .showCause=${this.showCause}
+          .noRowClick=${this.noRowClick}
         ></ha-logbook-entry>
       </div>
     `;
@@ -157,6 +165,24 @@ class HaLogbookRenderer extends LitElement {
 
   private _handleToggleTime() {
     this._showRelative = !this._showRelative;
+  }
+
+  private _handleEntrySelected(ev: HASSDomEvent<LogbookEntrySelectedDetail>) {
+    ev.stopPropagation();
+    const { item } = ev.detail;
+    let index = ev.detail.index;
+    if (this.entries[index] !== item) {
+      // A recycled virtualizer row can deliver a stale index.
+      index = this.entries.indexOf(item);
+    }
+    showLogbookDetailDialog(this, {
+      entry: item,
+      previousState:
+        index >= 0 ? findPreviousState(this.entries, index) : undefined,
+      traceContexts: this.traceContexts,
+      userIdToName: this.userIdToName,
+      systemUserIds: this.systemUserIds,
+    });
   }
 
   private _formatDateHeader(date: Date): string {
