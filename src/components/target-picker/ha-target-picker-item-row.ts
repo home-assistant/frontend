@@ -57,6 +57,7 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
+import "../ha-button";
 import "../ha-icon-button";
 import "../ha-state-icon";
 import "../ha-svg-icon";
@@ -252,15 +253,18 @@ export class HaTargetPickerItemRow extends LitElement {
       ${
         canMigrate
           ? html`
-              <button
-                class="main link migrate"
+              <ha-button
+                class="migrate"
                 slot="end"
+                appearance="plain"
+                variant="warning"
+                size="s"
                 @click=${this._migrate}
               >
                 ${this.hass.localize(
                   "ui.components.target-picker.replace_device"
                 )}
-              </button>
+              </ha-button>
             `
           : nothing
       }
@@ -829,8 +833,6 @@ export class HaTargetPickerItemRow extends LitElement {
       .migrate {
         align-self: center;
         white-space: nowrap;
-        font-weight: var(--ha-font-weight-medium);
-        color: var(--ha-color-on-warning-normal);
       }
 
       .replaceable {

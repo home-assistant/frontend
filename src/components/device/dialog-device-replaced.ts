@@ -1,6 +1,7 @@
 import { mdiDevices } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
@@ -49,6 +50,25 @@ export class DialogDeviceReplaced
     this.closeDialog();
   }
 
+  private _items = memoizeOne(
+    (
+      candidates: string[],
+      primaryId: string | null,
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"]
+    ) =>
+      candidates.map((deviceId) => {
+        const device = devices[deviceId];
+        const area = device ? getDeviceArea(device, areas) : undefined;
+        return {
+          deviceId,
+          name: device ? computeDeviceName(device) : deviceId,
+          secondary: area ? computeAreaName(area) : undefined,
+          isPrimary: deviceId === primaryId,
+        };
+      })
+  );
+
   protected render() {
     if (!this._params || !this.hass) {
       return nothing;
@@ -68,24 +88,22 @@ export class DialogDeviceReplaced
           )}
         </p>
         <ha-list-base @click=${this._pick}>
-          ${this._params.candidates.map((deviceId) => {
-            const device = this.hass.devices[deviceId];
-            const name = device ? computeDeviceName(device) : deviceId;
-            const area = device
-              ? getDeviceArea(device, this.hass.areas)
-              : undefined;
-            const secondary = area ? computeAreaName(area) : undefined;
-            const isPrimary = deviceId === this._params!.primaryId;
-            return html`
-              <ha-list-item-button .deviceId=${deviceId}>
+          ${this._items(
+            this._params.candidates,
+            this._params.primaryId,
+            this.hass.devices,
+            this.hass.areas
+          ).map(
+            (item) => html`
+              <ha-list-item-button .deviceId=${item.deviceId}>
                 <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
-                <span slot="headline">${name}</span>
+                <span slot="headline">${item.name}</span>
                 ${
-                  secondary || isPrimary
+                  item.secondary || item.isPrimary
                     ? html`<span slot="supporting-text">
                         ${[
-                          secondary,
-                          isPrimary
+                          item.secondary,
+                          item.isPrimary
                             ? this.hass.localize(
                                 "ui.components.device-picker.replaced_dialog.recommended"
                               )
@@ -97,8 +115,8 @@ export class DialogDeviceReplaced
                     : nothing
                 }
               </ha-list-item-button>
-            `;
-          })}
+            `
+          )}
         </ha-list-base>
       </ha-dialog>
     `;

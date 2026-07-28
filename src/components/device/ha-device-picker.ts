@@ -325,12 +325,20 @@ export class HaDevicePicker extends LitElement {
       this.placeholder ??
       this.hass.localize("ui.components.device-picker.placeholder");
 
-    const replacement = this._getReplacement(
-      this.value,
-      this.hass.devices,
-      this._compositeSplits,
-      this._getItems()
-    );
+    // Only resolve a replacement (which needs the full item list) when the
+    // value is a missing device that we know was replaced, to avoid computing
+    // the item list on every render for the common case.
+    const replacement =
+      this.value &&
+      !this.hass.devices[this.value] &&
+      this._compositeSplits?.[this.value]
+        ? this._getReplacement(
+            this.value,
+            this.hass.devices,
+            this._compositeSplits,
+            this._getItems()
+          )
+        : undefined;
 
     // Only treat the value as "replaced" when there is an available
     // replacement device; otherwise fall back to normal "not found" behavior.

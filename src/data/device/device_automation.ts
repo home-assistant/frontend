@@ -174,7 +174,12 @@ export const deviceAutomationEditorMode = (
   if (compositeSplits === undefined) {
     return "loading";
   }
-  return compositeSplits[deviceId] ? "editable" : "unknown-device";
+  // Only editable if at least one of the split (replacement) devices still
+  // exists; otherwise the reference is stale and cannot be fixed here.
+  const split = compositeSplits[deviceId];
+  return split?.split_ids.some((id) => id in hass.devices)
+    ? "editable"
+    : "unknown-device";
 };
 
 // Like deviceAutomationsEqual, but ignores device_id and entity_id so an
