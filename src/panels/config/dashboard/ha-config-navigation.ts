@@ -1,4 +1,5 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { consume } from "@lit/context";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
@@ -7,6 +8,10 @@ import "../../../components/ha-icon-next";
 import type { CloudStatus } from "../../../data/cloud";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-config-navigation-list";
 
@@ -18,21 +23,20 @@ class HaConfigNavigation extends LitElement {
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
-  @state() private _hasBluetoothConfigEntries = false;
+  @state() private _visiblePages?: PageNavigation[];
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    }).then((bluetoothEntries) => {
-      this._hasBluetoothConfigEntries = bluetoothEntries.length > 0;
-    });
+  private _hasBluetoothConfigEntries = false;
+
+  @consume({ context: childPanelReadyContext })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._registerChildPanelReady?.(this._resolveVisiblePages());
   }
 
   protected render(): TemplateResult {
-    const pages = filterNavigationPages(this.hass, this.pages, {
-      hasBluetoothConfigEntries: this._hasBluetoothConfigEntries,
-    }).map((page) => ({
+    const pages = (this._visiblePages ?? []).map((page) => ({
       ...page,
       name:
         page.name ||
@@ -73,6 +77,20 @@ class HaConfigNavigation extends LitElement {
         .label=${this.hass.localize("panel.config")}
       ></ha-config-navigation-list>
     `;
+  }
+
+  private async _resolveVisiblePages(): Promise<void> {
+    if (this.pages.some((page) => page.component === "bluetooth")) {
+      const entries = await getConfigEntries(this.hass, {
+        domain: "bluetooth",
+      });
+      this._hasBluetoothConfigEntries = entries.length > 0;
+    }
+
+    this._visiblePages = filterNavigationPages(this.hass, this.pages, {
+      hasBluetoothConfigEntries: this._hasBluetoothConfigEntries,
+    });
+    await this.updateComplete;
   }
 
   static styles: CSSResultGroup = css`
