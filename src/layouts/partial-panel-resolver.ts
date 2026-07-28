@@ -45,11 +45,25 @@ const COMPONENTS = {
   "media-browser": {
     load: () => import("../panels/media-browser/ha-panel-media-browser"),
   },
-  light: { load: () => import("../panels/light/ha-panel-light") },
-  security: { load: () => import("../panels/security/ha-panel-security") },
-  climate: { load: () => import("../panels/climate/ha-panel-climate") },
+  light: {
+    load: () => import("../panels/light/ha-panel-light"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  security: {
+    load: () => import("../panels/security/ha-panel-security"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  climate: {
+    load: () => import("../panels/climate/ha-panel-climate"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
   maintenance: {
     load: () => import("../panels/maintenance/ha-panel-maintenance"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
   },
   home: {
     load: () => import("../panels/home/ha-panel-home"),

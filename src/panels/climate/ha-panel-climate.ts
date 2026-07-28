@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
@@ -30,6 +31,11 @@ class PanelClimate extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
+
+  public constructor() {
+    super();
+    new ChildPanelReady(this);
+  }
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
