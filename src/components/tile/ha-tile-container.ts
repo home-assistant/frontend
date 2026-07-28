@@ -145,8 +145,7 @@ export class HaTileContainer extends LitElement {
       transition: background-color 180ms ease-in-out;
       box-sizing: border-box;
     }
-    ::slotted([slot="features"]),
-    ::slotted([slot="features-bottom"]) {
+    ::slotted([slot="features"]) {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
 
@@ -161,11 +160,13 @@ export class HaTileContainer extends LitElement {
     .features-bottom {
       display: flex;
       flex-wrap: wrap;
-      column-gap: var(--column-gap, 0px);
+      column-gap: var(--ha-space-3);
+      padding: 0 var(--ha-space-3);
     }
     ::slotted([slot="features-bottom"]) {
-      flex: 1 1 calc(50% - var(--column-gap, 0px) / 2);
+      flex: 1 1 calc(50% - var(--ha-space-3) / 2);
       min-width: 0;
+      padding-bottom: var(--ha-space-3);
     }
     [role="button"] {
       cursor: pointer;
