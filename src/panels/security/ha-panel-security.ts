@@ -32,10 +32,7 @@ class PanelSecurity extends LitElement {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  public constructor() {
-    super();
-    new ChildPanelReady(this);
-  }
+  private _childPanelReady?: ChildPanelReady;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -133,6 +130,7 @@ class PanelSecurity extends LitElement {
       return;
     }
 
+    this._childPanelReady ??= new ChildPanelReady(this);
     this._lovelace = {
       config: config,
       rawConfig: rawConfig,
