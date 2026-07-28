@@ -28,6 +28,15 @@
         font-weight: 400;
         font-style: normal;
       }
+      /* Mirrors core.globals.ts, which only lands once the app bundle has loaded */
+      html {
+        --ha-animation-duration-normal: 250ms;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          --ha-animation-duration-normal: 1ms;
+        }
+      }
       @keyframes fade-out {
         from {
           opacity: 1;

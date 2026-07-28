@@ -20,6 +20,9 @@
       46.153846% { transform: translate(70px, 37.6348px) scale(1.2); animation-timing-function: cubic-bezier(.39, .575, .565, 1); }
       69.230769%, 100% { transform: translate(70px, 37.6348px) scale(1); }
     }
+    @media (prefers-reduced-motion: reduce) {
+      .dot-left, .dot-right, .dot-top { animation: none; }
+    }
   </style>
   <g transform="matrix(.938408 0 0 .93841 -5.688557 -13.572944)">
     <path fill="#18bcf2" d="M73.5367 13.0937 106.463 46.0524v.0033C108.41 48.0043 110 51.848 110 54.6007v30.0292c0 2.7527-2.25 5.0049-5 5.0049l-70-.0034c-2.75 0-5-2.2522-5-5.0048V54.5974c0-2.7527 1.5933-6.5998 3.5367-8.545l32.93-32.9587c1.9433-1.9452 5.1266-1.9452 7.07 0Z" transform="matrix(1.598452 0 0 1.598452 -41.89164 -.937304)"/>
