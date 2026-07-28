@@ -1,4 +1,4 @@
-import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
 import { css, LitElement, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -57,17 +57,13 @@ export class HaGauge extends LitElement {
   // yet, either disconnected or inside a hidden container.
   private _rescalePending = false;
 
-  // Measure again once we become visible, e.g. when a section hidden by a
-  // visibility condition is revealed. Nothing else re-renders the gauge then,
-  // and a resize observer would stay silent because the size we get back is the
-  // same one it last reported.
+  // Measure again once we get a layout box, e.g. when a section hidden by a
+  // visibility condition is revealed. Nothing else re-renders the gauge then.
   // @ts-ignore side-effect-only controller, its value is never read
-  private _intersectionController = new IntersectionController(this, {
+  private _resizeController = new ResizeController(this, {
+    skipInitial: true,
     callback: (entries) => {
-      if (
-        this._rescalePending &&
-        entries.some((entry) => entry.isIntersecting)
-      ) {
+      if (this._rescalePending && entries[0]?.contentRect.width) {
         this._rescaleSvg();
       }
     },
