@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { isTiltOnly } from "../../data/cover";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { CameraEntityFeature } from "../../data/feature/camera_entity_feature";
 import { ClimateEntityFeature } from "../../data/feature/climate_entity_feature";
 import { CoverEntityFeature } from "../../data/feature/cover_entity_feature";
@@ -70,10 +71,14 @@ export const getToggleAction = (
   onOff: boolean,
   stateObj?: HassEntity
 ): string => {
-  // Tilt-only covers don't support open_cover/close_cover. Let core pick the
-  // direction from the tilt position, as the state may be unknown.
+  // Tilt-only covers don't support open_cover/close_cover. When the cover
+  // reports no state to derive a direction from, let core pick one from the
+  // tilt position.
   if (domain === "cover" && stateObj && isTiltOnly(stateObj)) {
-    return "toggle_cover_tilt";
+    if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
+      return "toggle_cover_tilt";
+    }
+    return onOff ? "open_cover_tilt" : "close_cover_tilt";
   }
   return (
     SPECIAL_TOGGLE_ACTIONS[domain]?.[onOff ? "on" : "off"] ||
