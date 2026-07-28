@@ -199,14 +199,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ${network.name}${
           network.dataset
             ? html`<div>
-                ${otbrForNetwork
-                  ? html`<ha-icon-button
-                      label="Share network credentials"
-                      .otbr=${otbrForNetwork}
-                      .path=${mdiQrcode}
-                      @click=${this._shareCredentials}
-                    ></ha-icon-button>`
-                  : ""}
+                ${
+                  otbrForNetwork
+                    ? html`<ha-icon-button
+                        label="Share network credentials"
+                        .otbr=${otbrForNetwork}
+                        .path=${mdiQrcode}
+                        @click=${this._shareCredentials}
+                      ></ha-icon-button>`
+                    : ""
+                }
                 <ha-icon-button
                   .label=${this.hass.localize(
                     "ui.panel.config.thread.thread_network_info"
