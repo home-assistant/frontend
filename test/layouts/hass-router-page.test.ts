@@ -17,6 +17,10 @@ class TestRouter extends HassRouterPage {
       },
     },
   };
+
+  public get rendered() {
+    return this.pageRendered;
+  }
 }
 
 class ImmediatePanel extends HTMLElement {}
@@ -55,13 +59,13 @@ describe("HassRouterPage panel readiness", () => {
   it("resolves when a routed panel has no readiness promise", async () => {
     const element = await mountRouter("/immediate");
 
-    await expect(element.panelReady).resolves.toBeUndefined();
+    await expect(element.rendered).resolves.toBeUndefined();
   });
 
   it("waits for the routed panel readiness promise", async () => {
     const element = await mountRouter("/deferred");
     let ready = false;
-    element.panelReady.then(() => {
+    element.rendered.then(() => {
       ready = true;
     });
 
@@ -74,14 +78,14 @@ describe("HassRouterPage panel readiness", () => {
     await Promise.resolve();
     expect(ready).toBe(false);
 
-    await expect(element.panelReady).resolves.toBeUndefined();
+    await expect(element.rendered).resolves.toBeUndefined();
     expect(panel.loaded).toBe(true);
   });
 
   it("waits for a dynamically loaded panel before reading its readiness", async () => {
     const element = await mountRouter("/loaded");
     let ready = false;
-    element.panelReady.then(() => {
+    element.rendered.then(() => {
       ready = true;
     });
 
@@ -93,7 +97,7 @@ describe("HassRouterPage panel readiness", () => {
     expect(ready).toBe(false);
 
     panelIsReady(element.lastElementChild as HTMLElement);
-    await expect(element.panelReady).resolves.toBeUndefined();
+    await expect(element.rendered).resolves.toBeUndefined();
   });
 });
 

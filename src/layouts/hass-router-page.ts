@@ -298,18 +298,12 @@ export class HassRouterPage extends ReactiveElement {
     return this.updateComplete
       .then(() => this._currentLoadProm)
       .then(() => {
-        const page = this.lastElementChild as Partial<HassRouterPage> | null;
-        return Promise.all([this._panelReady.ready, page?.panelReady]).then(
-          () => undefined
-        );
+        const page = this.lastElementChild;
+        return Promise.all([
+          this._panelReady.ready,
+          page instanceof HassRouterPage ? page.pageRendered : undefined,
+        ]).then(() => undefined);
       });
-  }
-
-  /**
-   * Promise that resolves when the current page is ready to be shown.
-   */
-  public get panelReady(): Promise<void> {
-    return this.pageRendered;
   }
 
   protected createElement(tag: string) {
