@@ -2,7 +2,6 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
@@ -215,10 +214,15 @@ class DemoHaSelectorReplacedDevice
     mockEntityRegistry(hass);
     mockDeviceRegistry(hass, DEVICES);
     mockConfigEntries(hass);
-    mockAreaRegistry(hass, AREAS);
     mockHassioSupervisor(hass);
-    // Link the demo entities to the split devices.
-    hass.updateHass({ entities: ENTITY_REGISTRY });
+    // Provide the demo areas and link the demo entities to the split devices.
+    // Set them directly via updateHass (typed against the real registry types)
+    // instead of the area stub, whose demo-specific type differs.
+    const areas: Record<string, AreaRegistryEntry> = {};
+    AREAS.forEach((area) => {
+      areas[area.area_id] = area;
+    });
+    hass.updateHass({ areas, entities: ENTITY_REGISTRY });
     hass.mockWS(
       "config/device_registry/list_composite_splits",
       () => COMPOSITE_SPLITS
