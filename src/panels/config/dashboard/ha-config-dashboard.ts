@@ -158,10 +158,9 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     total: 0,
   };
 
-  private _childPanelReady = new ChildPanelReady(this);
-
-  public get ready(): Promise<void> {
-    return this._childPanelReady.ready;
+  public constructor() {
+    super();
+    new ChildPanelReady(this);
   }
 
   private _pages = memoizeOne(
