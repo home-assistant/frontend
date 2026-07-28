@@ -317,7 +317,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 color:
                   automation.state === UNAVAILABLE
                     ? "var(--error-color)"
-                    : "unset",
+                    : automation.state === "on"
+                      ? "var(--state-active-color)"
+                      : "unset",
               })}
             ></ha-state-icon>`,
         },
