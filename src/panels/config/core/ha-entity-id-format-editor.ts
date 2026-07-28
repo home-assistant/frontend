@@ -58,7 +58,7 @@ export class HaEntityIdFormatEditor extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  private _editIndex?: number;
+  @state() private _editIndex?: number;
 
   protected render() {
     return html`
