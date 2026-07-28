@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fetchHttpConfig } from "../data/http";
 import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
@@ -18,7 +19,7 @@ import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   removeLaunchScreen,
-  renderLaunchScreenInfoBox,
+  renderLaunchScreenContent,
 } from "../util/launch-screen";
 import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
@@ -59,6 +60,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _databaseMigration?: boolean;
 
   private _httpPendingDialogOpen = false;
+
+  private _initError = false;
 
   private _onboardingSurveyChecked = false;
 
@@ -191,6 +194,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (this.render !== this.renderHass) {
       this._renderInitInfo(false);
     }
+    this.addEventListener("translations-updated", () => {
+      if (this.render !== this.renderHass) {
+        this._renderInitInfo(this._initError);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -318,7 +326,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async _initializeHass() {
     try {
-      let result;
+      let result: Awaited<Window["hassConnection"]>;
 
       if (window.hassConnection) {
         result = await window.hassConnection;
@@ -391,11 +399,25 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _renderInitInfo(error: boolean) {
-    renderLaunchScreenInfoBox(
+    this._initError = error;
+    renderLaunchScreenContent(
       html`<ha-init-page
         .error=${error}
         .migration=${this._databaseMigration}
-      ></ha-init-page>`
+        .localize=${this._launchScreenLocalize}
+      ></ha-init-page>`,
+      this._launchScreenAttribution
+    );
+  }
+
+  private get _launchScreenLocalize(): LocalizeFunc | undefined {
+    return (this.hass ?? this._pendingHass).localize;
+  }
+
+  private get _launchScreenAttribution() {
+    return (
+      this._launchScreenLocalize?.("ui.init.project_from") ||
+      "A project from the"
     );
   }
 }

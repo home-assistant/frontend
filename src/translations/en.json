@@ -74,6 +74,18 @@
     }
   },
   "ui": {
+    "init": {
+      "loading": "Loading data",
+      "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
+      "project_from": "A project from the",
+      "error": {
+        "title": "Unable to connect to Home Assistant.",
+        "retrying": "Retrying in {seconds, plural, one {# second} other {# seconds}}...",
+        "retry_now": "Retry now",
+        "nabu_casa": "It is possible that you are seeing this screen because your Home Assistant is not currently connected. You can ask it to come online from your {account_link}.",
+        "nabu_casa_account": "Nabu Casa account page"
+      }
+    },
     "backup": {
       "upload_backup": "Upload backup"
     },
