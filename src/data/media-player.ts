@@ -186,6 +186,9 @@ export interface MediaPlayerItem {
   can_play: boolean;
   can_expand: boolean;
   can_search: boolean;
+  search_media_classes?:
+    | (keyof TranslationDict["ui"]["components"]["media-browser"]["class"])[]
+    | null;
   thumbnail?: string;
   iconPath?: string;
   children?: MediaPlayerItem[];

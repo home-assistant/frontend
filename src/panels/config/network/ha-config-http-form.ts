@@ -19,7 +19,11 @@ import {
   HTTP_CONFIG_FIELDS,
   saveHttpConfig,
 } from "../../../data/http";
-import type { HttpConfig } from "../../../data/http";
+import type {
+  ActiveConfigType,
+  HttpConfig,
+  HttpConfigWithMeta,
+} from "../../../data/http";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -161,6 +165,11 @@ class HaConfigHttpForm extends LitElement {
 
   @state() private _showNoChanges = false;
 
+  @state() private _activeConfigType?: ActiveConfigType;
+
+  // A pending config that was reverted/failed and kept only for display.
+  @state() private _revertedPending?: HttpConfigWithMeta;
+
   @query("ha-form") private _form?: HaForm;
 
   @query("ha-alert") private _firstAlert?: HTMLElement;
@@ -201,6 +210,40 @@ class HaConfigHttpForm extends LitElement {
           <p class="description">
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
+          ${
+            this._activeConfigType === "default"
+              ? html`
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.network.http.running_default"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
+          ${
+            this._revertedPending
+              ? html`
+                  <ha-alert alert-type="warning">
+                    ${
+                      this._revertedPending.error === "not_promoted"
+                        ? this.hass.localize(
+                            "ui.panel.config.network.http.reverted_not_confirmed"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.network.http.reverted_failed",
+                            { error: this._revertedPending.error ?? "" }
+                          )
+                    }
+                    <ha-button slot="action" @click=${this._reviewReverted}>
+                      ${this.hass.localize(
+                        "ui.panel.config.network.http.reverted_action"
+                      )}
+                    </ha-button>
+                  </ha-alert>
+                `
+              : nothing
+          }
           ${
             portChanged
               ? html`
@@ -266,14 +309,28 @@ class HaConfigHttpForm extends LitElement {
 
   private async _fetchConfig(): Promise<void> {
     try {
-      // Pending is exclusively handled by the global confirm/revert dialog, so
-      // the form only ever displays stable.
-      const { stable } = await fetchHttpConfig(this.hass);
+      const { stable, pending, active_config_type } = await fetchHttpConfig(
+        this.hass
+      );
       this._stable = stable;
       this._config = { ...stable };
+      this._activeConfigType = active_config_type;
+      // An active trial pending (no error) is handled by the global
+      // confirm/revert dialog. A pending carrying an error was reverted or
+      // failed to apply and is kept only so we can surface it here.
+      this._revertedPending = pending?.error ? pending : undefined;
     } catch (err: any) {
       this._error = err.message;
     }
+  }
+
+  private _reviewReverted(): void {
+    if (!this._revertedPending) {
+      return;
+    }
+    // Load the reverted values into the form so the user can fix and re-save.
+    this._config = { ...this._revertedPending };
+    this._revertedPending = undefined;
   }
 
   private _computeLabel = (

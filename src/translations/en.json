@@ -74,6 +74,18 @@
     }
   },
   "ui": {
+    "init": {
+      "loading": "Loading data",
+      "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
+      "project_from": "A project from the",
+      "error": {
+        "title": "Unable to connect to Home Assistant.",
+        "retrying": "Retrying in {seconds, plural, one {# second} other {# seconds}}...",
+        "retry_now": "Retry now",
+        "nabu_casa": "It is possible that you are seeing this screen because your Home Assistant is not currently connected. You can ask it to come online from your {account_link}.",
+        "nabu_casa_account": "Nabu Casa account page"
+      }
+    },
     "backup": {
       "upload_backup": "Upload backup"
     },
@@ -797,13 +809,6 @@
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
-        "selected": {
-          "entity": "Entities: {count}",
-          "device": "Devices: {count}",
-          "area": "Areas: {count}",
-          "label": "Labels: {count}",
-          "floor": "Floors: {count}"
-        },
         "type": {
           "area": "Area",
           "areas": "Areas",
@@ -1193,6 +1198,11 @@
         "play": "Play",
         "play-media": "Play media",
         "pick-media": "Pick media",
+        "search": {
+          "search_placeholder": "Search {name}",
+          "no_results": "No results found"
+        },
+        "filter_media_type": "Filter by media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
@@ -2510,8 +2520,8 @@
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
-      "new_version_available": "A new version of the frontend is available.",
-      "reload": "Reload",
+      "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
+      "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
       "onboarding_survey": {
@@ -4244,6 +4254,8 @@
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
+              "capacity": "Battery capacity",
+              "capacity_helper": "Usable battery capacity in kWh. Used to weight the combined state of charge when you have multiple batteries of different sizes.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
@@ -5177,6 +5189,13 @@
               "area": "No areas or floors found for {term}",
               "label": "No labels found for {term}"
             },
+            "show_more_search": {
+              "trigger": "{count} more triggers...",
+              "condition": "{count} more conditions...",
+              "action": "{count} more actions...",
+              "entity": "{count} more entities...",
+              "device": "{count} more devices..."
+            },
             "load_target_items_failed": "Failed to load target items for",
             "other_areas": "Other areas",
             "services": "Services",
@@ -5669,7 +5688,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
+                  "no_triggers": "There are no triggers with IDs set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
@@ -8693,6 +8712,10 @@
             "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
             "invalid_host": "Enter a valid IP address.",
             "invalid_network": "Enter a valid IP address or network.",
+            "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
+            "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
+            "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
+            "reverted_action": "Review the change",
             "save_confirm": {
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
@@ -10052,6 +10075,11 @@
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
               "custom_cards": "Community cards",
+              "favorite_cards": "Favorite cards",
+              "add_favorite": "Add to favorites",
+              "remove_favorite": "Remove from favorites",
+              "reorder_favorites": "Reorder favorites",
+              "favorite_save_failed": "Failed to save favorite cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",
@@ -11248,6 +11276,7 @@
         "cards": {
           "demo": {
             "demo_by": "by {name}",
+            "interactive_demo": "Interactive demo",
             "next_demo": "Next demo",
             "introduction": "Welcome home! You've reached the Home Assistant demo where we showcase the best UIs created by our community.",
             "learn_more": "Learn more about Home Assistant"

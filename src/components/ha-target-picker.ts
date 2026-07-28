@@ -1342,7 +1342,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     .item-groups {
       overflow: hidden;
-      border: 2px solid var(--divider-color);
+      border: var(--ha-border-width-sm) solid var(--divider-color);
       border-radius: var(--ha-border-radius-lg);
     }
   `;

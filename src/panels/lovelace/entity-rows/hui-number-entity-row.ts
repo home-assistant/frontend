@@ -107,7 +107,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
                     .max=${Number(stateObj.attributes.max)}
-                    .value=${stateObj.state}
+                    .value=${Number(stateObj.state).toString()}
                     type="number"
                     @change=${this._selectedValueChanged}
                   >

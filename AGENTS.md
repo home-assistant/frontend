@@ -2,7 +2,7 @@
 
 You are helping develop the Home Assistant frontend. This repository is a TypeScript application built from Lit-based Web Components for the Home Assistant web UI.
 
-For gallery-specific documentation, demos, page structure, and examples, read `gallery/AGENTS.md` when working under `gallery/`.
+For the standalone demo — including how to open a specific demo configuration or page via URL — read `demo/AGENTS.md`.
 
 ## Essential Commands
 
@@ -46,6 +46,7 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
 - `ha-frontend-review`: PR template use, review checklist, and recurring review issues.
+- `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
 
 ## Pull Requests
 

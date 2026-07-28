@@ -17,6 +17,7 @@ export type SankeyDeviceNode = Node & { parent?: string };
 
 interface SmallConsumer {
   id: string;
+  includedInStat: string | undefined;
   name: string | undefined;
   value: number;
   effectiveParent: string | undefined;
@@ -53,9 +54,6 @@ export interface BuildSankeyDeviceNodesOptions {
   getValue: (id: string) => number;
   getLabel: (id: string, name: string | undefined) => string;
   getEntityId: (id: string) => string | undefined;
-  findEffectiveParent: (
-    includedInStat: string | undefined
-  ) => string | undefined;
 }
 
 /**
@@ -85,7 +83,6 @@ export const buildSankeyDeviceNodes = (
     getValue,
     getLabel,
     getEntityId,
-    findEffectiveParent,
   } = options;
 
   const unavailableColor = computedStyle
@@ -96,15 +93,65 @@ export const buildSankeyDeviceNodes = (
   const deviceNodes: SankeyDeviceNode[] = [];
   const parentLinks: Record<string, string> = {};
   const smallConsumersByParent = new Map<string, SmallConsumer[]>();
+  const smallConsumerStats = new Set<string>();
   let untrackedConsumption = initialUntracked;
 
-  devices.forEach((device, idx) => {
+  // Resolve every device's node id and value once. `included_in_stat` always
+  // names a stat_consumption, so the hierarchy is keyed by that, while the
+  // rendered set holds node ids (stat_consumption or stat_rate, per `getId`).
+  const deviceByStat = new Map<string, DeviceConsumptionEnergyPreference>();
+  const deviceValues = new Map<string, number>();
+  const renderedIds = new Set<string>();
+  devices.forEach((device) => {
+    deviceByStat.set(device.stat_consumption, device);
     const id = getId(device);
     // Falsy check (not `=== undefined`) mirrors the cards' original `!stat_rate` guard.
     if (!id) {
       return;
     }
     const value = getValue(id);
+    deviceValues.set(id, value);
+    if (value >= minThreshold) {
+      renderedIds.add(id);
+    }
+  });
+
+  /** Node id of a device rendered as its own node, else undefined. */
+  const renderedId = (statConsumption: string): string | undefined => {
+    const device = deviceByStat.get(statConsumption);
+    if (!device) {
+      return undefined;
+    }
+    const id = getId(device);
+    return id && renderedIds.has(id) ? id : undefined;
+  };
+
+  // Walk up the included_in_stat chain to the first ancestor that is rendered.
+  // Bounded because a hand-edited config can make included_in_stat cyclic.
+  const findEffectiveParent = (
+    includedInStat: string | undefined
+  ): string | undefined => {
+    let current = includedInStat;
+    for (let hops = 0; current && hops < devices.length; hops++) {
+      const rendered = renderedId(current);
+      if (rendered) {
+        return rendered;
+      }
+      const device = deviceByStat.get(current);
+      if (!device) {
+        return undefined;
+      }
+      current = device.included_in_stat;
+    }
+    return undefined;
+  };
+
+  devices.forEach((device, idx) => {
+    const id = getId(device);
+    if (!id) {
+      return;
+    }
+    const value = deviceValues.get(id)!;
     const effectiveParent = findEffectiveParent(device.included_in_stat);
 
     if (value < minThreshold) {
@@ -115,11 +162,13 @@ export const buildSankeyDeviceNodes = (
       }
       smallConsumersByParent.get(parentKey)!.push({
         id,
+        includedInStat: device.included_in_stat,
         name: device.name,
         value,
         effectiveParent,
         idx,
       });
+      smallConsumerStats.add(device.stat_consumption);
       return;
     }
 
@@ -142,7 +191,26 @@ export const buildSankeyDeviceNodes = (
   });
 
   // Process small consumers - show a lone one directly, group clusters as "Other"
-  smallConsumersByParent.forEach((consumers, parentKey) => {
+  smallConsumersByParent.forEach((allConsumers, parentKey) => {
+    // A small consumer whose included_in_stat chain reaches another small
+    // consumer is already counted inside that ancestor's value - drop it so
+    // totals don't double-count nested devices. A rendered ancestor ends the
+    // walk: the consumer links to it and never touches untracked, so it can't
+    // be double-counted through anything further up.
+    const consumers = allConsumers.filter((consumer) => {
+      let ancestor = consumer.includedInStat;
+      for (let hops = 0; ancestor && hops < devices.length; hops++) {
+        if (renderedId(ancestor)) {
+          return true;
+        }
+        if (smallConsumerStats.has(ancestor)) {
+          return false;
+        }
+        ancestor = deviceByStat.get(ancestor)?.included_in_stat;
+      }
+      return true;
+    });
+
     const totalValue = consumers.reduce((sum, c) => sum + c.value, 0);
     if (totalValue <= 0) {
       return;
