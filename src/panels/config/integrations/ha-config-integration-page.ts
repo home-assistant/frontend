@@ -1398,7 +1398,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           font-size: 32px;
           font-weight: 700;
           line-height: 40px;
-          text-align: left;
+          text-align: start;
           text-underline-position: from-font;
           text-decoration-skip-ink: none;
           margin: 0;
