@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import deepClone from "deep-clone-simple";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -12,6 +12,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
+import type { HaForm } from "../../components/ha-form/ha-form";
 
 interface StackEntry {
   params: FormDialogParams;
@@ -36,10 +37,15 @@ export class DialogForm
 
   @state() private _stack: StackEntry[] = [];
 
+  @state() private _error?: Record<string, string>;
+
+  @query("ha-form") private _form?: HaForm;
+
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
     this._data = params.data || {};
     this._open = true;
+    this._error = undefined;
     this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
@@ -92,6 +98,13 @@ export class DialogForm
   }
 
   private _submit(): void {
+    if (this._form && !this._form.reportValidity()) {
+      this._error = {
+        base: this.hass!.localize("ui.components.form.validation_failed"),
+      };
+      return;
+    }
+
     this._closeState = "submitted";
     const submit = this._params?.submit;
     const data = this._data;
@@ -158,6 +171,7 @@ export class DialogForm
           .computeHelper=${this._params.computeHelper}
           .data=${this._data}
           .schema=${this._params.schema}
+          .error=${this._error}
           @value-changed=${this._valueChanged}
           @show-dialog=${this._handleNestedShowDialog}
         >

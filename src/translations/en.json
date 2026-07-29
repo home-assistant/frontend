@@ -522,6 +522,9 @@
         "show_password": "Show password",
         "hide_password": "Hide password"
       },
+      "form": {
+        "validation_failed": "Form validation failed."
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
@@ -618,6 +621,7 @@
             "manual": "Manual entry"
           }
         },
+
         "template": {
           "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (for example, '{{ states(sensor.test) > 0 }}').",
           "learn_more": "Learn more about templating"
