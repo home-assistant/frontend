@@ -278,54 +278,6 @@ class HuiPowerSankeyCard
       }
     }
 
-    // Build a map of device relationships for hierarchy resolution
-    // Key: stat_consumption (energy), Value: { stat_rate, included_in_stat }
-    const deviceMap = new Map<
-      string,
-      { stat_rate?: string; included_in_stat?: string }
-    >();
-    prefs.device_consumption.forEach((device) => {
-      deviceMap.set(device.stat_consumption, {
-        stat_rate: device.stat_rate,
-        included_in_stat: device.included_in_stat,
-      });
-    });
-
-    // Set of stat_rate entities that will be rendered as nodes
-    const renderedStatRates = new Set<string>();
-    prefs.device_consumption.forEach((device) => {
-      if (device.stat_rate) {
-        const value = this._getCurrentPower(device.stat_rate);
-        if (value >= minPowerThreshold) {
-          renderedStatRates.add(device.stat_rate);
-        }
-      }
-    });
-
-    // Find the effective parent for power hierarchy
-    // Walks up the chain to find an ancestor with stat_rate that will be rendered
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        const parentDevice = deviceMap.get(currentParent);
-        if (!parentDevice) {
-          return undefined;
-        }
-        // If this parent has a stat_rate and will be rendered, use it
-        if (
-          parentDevice.stat_rate &&
-          renderedStatRates.has(parentDevice.stat_rate)
-        ) {
-          return parentDevice.stat_rate;
-        }
-        // Otherwise, continue up the chain
-        currentParent = parentDevice.included_in_stat;
-      }
-      return undefined;
-    };
-
     const {
       deviceNodes,
       parentLinks,
@@ -344,7 +296,6 @@ class HuiPowerSankeyCard
       getValue: (id) => this._getCurrentPower(id),
       getLabel: (id, name) => name || this._getEntityLabel(id),
       getEntityId: (id) => id,
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 

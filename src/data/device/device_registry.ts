@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
@@ -53,6 +54,69 @@ export interface DeviceRegistryEntryMutableParams {
   disabled_by?: string | null;
   labels?: string[];
 }
+
+/**
+ * Describes how a legacy composite device (that lived on multiple config
+ * entries) was split into separate devices. The composite device no longer
+ * exists in the registry; references to it (in automations, targets, ...) now
+ * need to point at one or more of the split devices instead.
+ */
+export interface DeviceCompositeSplit {
+  /** Ids of the devices that replaced the composite device. */
+  split_ids: string[];
+  /** The split device that took over the composite's primary config entry. */
+  primary_id: string | null;
+}
+
+/** Map of removed composite device id -> its split information. */
+export type DeviceCompositeSplits = Record<string, DeviceCompositeSplit>;
+
+// The composite split migration in core is a one-time operation, so the split
+// map is static for the lifetime of the connection. Cache the request per
+// connection so it is fetched once and shared across all pickers, instead of
+// being requested again by every device/target picker.
+const compositeSplitsCache = new WeakMap<
+  Connection,
+  Promise<DeviceCompositeSplits>
+>();
+
+export const fetchDeviceCompositeSplits = (
+  hass: Pick<HomeAssistant, "connection" | "callWS">
+): Promise<DeviceCompositeSplits> => {
+  const conn = hass.connection;
+
+  let request = compositeSplitsCache.get(conn);
+  if (!request) {
+    request = hass
+      .callWS<DeviceCompositeSplits>({
+        type: "config/device_registry/list_composite_splits",
+      })
+      .catch((err) => {
+        // Don't cache failures so the next caller retries.
+        compositeSplitsCache.delete(conn);
+        throw err;
+      });
+    compositeSplitsCache.set(conn, request);
+  }
+  return request;
+};
+
+/**
+ * Fetch the devices that are linked to the given device because they share at
+ * least one connection or identifier. These are separate devices (one per
+ * config entry) that represent the same physical hardware, managed by
+ * different integrations.
+ */
+export const fetchLinkedDevices = (
+  hass: Pick<HomeAssistant, "callWS">,
+  deviceId: string
+): Promise<string[]> =>
+  hass
+    .callWS<{ linked_devices: string[] }>({
+      type: "config/device_registry/list_linked_devices",
+      device_id: deviceId,
+    })
+    .then((result) => result.linked_devices);
 
 export const fallbackDeviceName = (
   hass: HomeAssistant,

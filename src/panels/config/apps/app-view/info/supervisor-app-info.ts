@@ -225,20 +225,33 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.current_version",
                         { version: this._currentAddon.version }
                       )}
-                      <div class="changelog" @click=${this._openChangelog}>
-                        (<span class="changelog-link"
-                          >${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.changelog"
-                          )}</span
-                        >)
-                      </div>
+                      ${
+                        this._currentAddon.changelog
+                          ? html`<div
+                              class="changelog"
+                              @click=${this._openChangelog}
+                            >
+                              (<span class="changelog-link"
+                                >${this.i18n.localize(
+                                  "ui.panel.config.apps.dashboard.changelog"
+                                )}</span
+                              >)
+                            </div>`
+                          : nothing
+                      }
                     `
                   : html`${this._currentAddon.version_latest}
-                      <span class="changelog-link" @click=${this._openChangelog}
-                        >${this.i18n.localize(
-                          "ui.panel.config.apps.dashboard.changelog"
-                        )}</span
-                      >`
+                    ${
+                      this._currentAddon.changelog
+                        ? html`<span
+                            class="changelog-link"
+                            @click=${this._openChangelog}
+                            >${this.i18n.localize(
+                              "ui.panel.config.apps.dashboard.changelog"
+                            )}</span
+                          >`
+                        : nothing
+                    }`
               }
             </div>
           </div>

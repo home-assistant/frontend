@@ -33,11 +33,16 @@ import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   apiContext,
   configEntriesContext,
+  connectionContext,
   internationalizationContext,
   labelsContext,
   registriesContext,
   statesContext,
 } from "../../../../data/context";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   deviceMeetsTargetSelector,
@@ -89,8 +94,15 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
 
   private _countCache = new Map<
     string,
@@ -107,6 +119,43 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("_registries")
     ) {
       this._rerenderCount = true;
+    }
+
+    if (
+      (changedProps.has("target") || changedProps.has("_registries")) &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this._hasMissingDevice()
+    ) {
+      // A referenced device is missing from the registry; it might be a legacy
+      // composite device that was split. Fetch the split map so we can flag it.
+      this._loadCompositeSplits();
+    }
+  }
+
+  private _hasMissingDevice(): boolean {
+    const deviceIds = this.target?.device_id
+      ? ensureArray(this.target.device_id)
+      : [];
+    return deviceIds.some(
+      (id) => !isTemplate(id) && !this._registries?.devices?.[id]
+    );
+  }
+
+  private async _loadCompositeSplits() {
+    if (!this._api || !this._connection) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits({
+        connection: this._connection.connection,
+        callWS: this._api.callWS,
+      });
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
     }
   }
 
@@ -342,7 +391,8 @@ export class HaAutomationRowTargets extends LitElement {
     error = false,
     targetId?: string,
     targetType?: string,
-    countTemplate: unknown = nothing
+    countTemplate: unknown = nothing,
+    title?: string
   ) {
     if (!this.interactive || !targetId || !targetType) {
       return html`<div
@@ -351,6 +401,7 @@ export class HaAutomationRowTargets extends LitElement {
           warning,
           error,
         })}
+        title=${title ?? nothing}
         .targetId=${targetId}
         .targetType=${targetType}
         .label=${label}
@@ -366,6 +417,7 @@ export class HaAutomationRowTargets extends LitElement {
         warning,
         error,
       })}
+      title=${title ?? nothing}
       .targetId=${targetId}
       .targetType=${targetType}
       .label=${label}
@@ -385,6 +437,7 @@ export class HaAutomationRowTargets extends LitElement {
     let icon: string | undefined;
     let label: string;
     let warning = false;
+    let title: string | undefined;
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
     let countTemplate: unknown = nothing;
@@ -408,17 +461,28 @@ export class HaAutomationRowTargets extends LitElement {
       const exists = this._checkTargetExists(targetType, targetId);
       if (!exists) {
         icon = mdiAlert;
-        label = getTargetText(
-          this._registries,
-          this._states,
-          this._i18n.localize,
-          targetType,
-          targetId,
-          this._getLabel
-        );
         warning = true;
         badgeTargetId = undefined;
         badgeTargetType = undefined;
+        if (targetType === "device" && this._compositeSplits?.[targetId]) {
+          // The device was replaced by one or more split devices; make clear
+          // this reference needs to be updated, distinct from "unknown device".
+          label = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.device_replaced"
+          );
+          title = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.device_replaced_description"
+          );
+        } else {
+          label = getTargetText(
+            this._registries,
+            this._states,
+            this._i18n.localize,
+            targetType,
+            targetId,
+            this._getLabel
+          );
+        }
       } else {
         label = getTargetText(
           this._registries,
@@ -456,6 +520,7 @@ export class HaAutomationRowTargets extends LitElement {
           targetType: badgeTargetType,
           label,
         }}
+        title=${title ?? nothing}
         class=${classMap({
           warning,
         })}
@@ -470,7 +535,8 @@ export class HaAutomationRowTargets extends LitElement {
       false,
       badgeTargetId,
       badgeTargetType,
-      countTemplate
+      countTemplate,
+      title
     );
   }
 
