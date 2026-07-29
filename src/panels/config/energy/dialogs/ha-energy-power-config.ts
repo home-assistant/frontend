@@ -1,14 +1,20 @@
+import { mdiInformationOutline } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { PowerConfig } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
+import { buttonLinkStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 
 export type PowerType = "none" | "standard" | "inverted" | "two_sensors";
@@ -94,6 +100,29 @@ export function buildPowerExcludeList(
   return powerIds.filter((id) => !currentPowerIds.includes(id));
 }
 
+/**
+ * Returns the entity id of the power sensor the backend generated for a saved
+ * source, if any. Inverted and two sensor configs get such a helper, its entity
+ * id is stored in `stat_rate`. Returns nothing while the config differs from the
+ * saved one, as the helper doesn't match the edited config yet.
+ */
+export function getPowerHelperEntityId(
+  source: { stat_rate?: string; power_config?: PowerConfig } | undefined,
+  currentPowerConfig: PowerConfig
+): string | undefined {
+  if (!source?.stat_rate || !source.power_config) {
+    return undefined;
+  }
+  const savedPowerType = getPowerTypeFromConfig(source.power_config);
+  if (savedPowerType !== "inverted" && savedPowerType !== "two_sensors") {
+    return undefined;
+  }
+  if (!deepEqual(source.power_config, currentPowerConfig)) {
+    return undefined;
+  }
+  return source.stat_rate;
+}
+
 declare global {
   interface HASSDomEvents {
     "power-config-changed": { powerType: PowerType; powerConfig: PowerConfig };
@@ -110,10 +139,14 @@ export class HaEnergyPowerConfig extends LitElement {
 
   @property({ attribute: false }) public excludeList?: string[];
 
+  /** Entity id of the power sensor generated for the saved config, if any. */
+  @property({ attribute: false }) public helperEntityId?: string;
+
   /**
    * Base key for localization lookups.
-   * Should include keys for: sensor_type, type_none, type_standard, type_inverted,
-   * type_two_sensors, power, power_helper, type_inverted_description, power_from, power_to
+   * Should include keys for: sensor_type, sensor_type_para, type_none, type_standard,
+   * type_inverted, type_two_sensors, power, power_helper, type_inverted_description,
+   * power_from, power_to, helper_sensor_note, helper_sensor_in_use
    */
   @property({ attribute: false }) public localizeBaseKey =
     "ui.panel.config.energy.battery.dialog";
@@ -164,11 +197,13 @@ export class HaEnergyPowerConfig extends LitElement {
           ${this.hass.localize(
             `${this.localizeBaseKey}.type_inverted` as LocalizeKeys
           )}
+          ${this._renderHelperSensorNote("inverted")}
         </ha-radio-option>
         <ha-radio-option value="two_sensors">
           ${this.hass.localize(
             `${this.localizeBaseKey}.type_two_sensors` as LocalizeKeys
           )}
+          ${this._renderHelperSensorNote("two_sensors")}
         </ha-radio-option>
       </ha-radio-group>
 
@@ -243,7 +278,48 @@ export class HaEnergyPowerConfig extends LitElement {
             `
           : nothing
       }
+      ${this._renderHelperSensorInUse()}
     `;
+  }
+
+  private _renderHelperSensorNote(powerType: PowerType) {
+    const id = `helper-sensor-note-${powerType}`;
+    return html`
+      <ha-svg-icon
+        id=${id}
+        tabindex="0"
+        class="note-icon"
+        .path=${mdiInformationOutline}
+        @click=${stopPropagation}
+      ></ha-svg-icon>
+      <ha-tooltip .for=${id} placement="top">
+        ${this.hass.localize(
+          `${this.localizeBaseKey}.helper_sensor_note` as LocalizeKeys
+        )}
+      </ha-tooltip>
+    `;
+  }
+
+  private _renderHelperSensorInUse() {
+    if (!this.helperEntityId) {
+      return nothing;
+    }
+    return html`
+      <p class="helper-sensor-in-use">
+        ${this.hass.localize(
+          `${this.localizeBaseKey}.helper_sensor_in_use` as LocalizeKeys,
+          {
+            entity: html`<button class="link" @click=${this._showHelperSensor}>
+              ${this.helperEntityId}
+            </button>`,
+          }
+        )}
+      </p>
+    `;
+  }
+
+  private _showHelperSensor() {
+    fireEvent(this, "hass-more-info", { entityId: this.helperEntityId! });
   }
 
   private _handlePowerTypeChanged(ev: Event) {
@@ -309,28 +385,46 @@ export class HaEnergyPowerConfig extends LitElement {
     }
   }
 
-  static readonly styles: CSSResultGroup = css`
-    ha-statistic-picker {
-      display: block;
-      margin-bottom: var(--ha-space-4);
-    }
-    ha-statistic-picker:last-of-type {
-      margin-bottom: 0;
-    }
-    ha-radio-group {
-      margin-bottom: var(--ha-space-4);
-    }
-    .power-section-label {
-      margin-top: var(--ha-space-4);
-      margin-bottom: var(--ha-space-2);
-    }
-    .power-section-description {
-      margin-top: 0;
-      margin-bottom: var(--ha-space-2);
-      color: var(--secondary-text-color);
-      font-size: 0.875em;
-    }
-  `;
+  static readonly styles: CSSResultGroup = [
+    buttonLinkStyle,
+    css`
+      ha-statistic-picker {
+        display: block;
+        margin-bottom: var(--ha-space-4);
+      }
+      ha-statistic-picker:last-of-type {
+        margin-bottom: 0;
+      }
+      ha-radio-group {
+        margin-bottom: var(--ha-space-4);
+      }
+      .power-section-label {
+        margin-top: var(--ha-space-4);
+        margin-bottom: var(--ha-space-2);
+      }
+      .power-section-description {
+        margin-top: 0;
+        margin-bottom: var(--ha-space-2);
+        color: var(--secondary-text-color);
+        font-size: 0.875em;
+      }
+      .note-icon {
+        margin-inline-start: var(--ha-space-1);
+        color: var(--secondary-text-color);
+        --mdc-icon-size: 18px;
+      }
+      .helper-sensor-in-use {
+        margin: var(--ha-space-2) 0 0 0;
+        color: var(--secondary-text-color);
+        font-size: 0.875em;
+      }
+      .helper-sensor-in-use button.link {
+        color: var(--primary-color);
+        /* entity ids offer no break opportunities of their own */
+        overflow-wrap: anywhere;
+      }
+    `,
+  ];
 }
 
 declare global {
