@@ -27,12 +27,21 @@ class HaConfigNavigation extends LitElement {
 
   private _hasBluetoothConfigEntries = false;
 
+  private _childReadyRegistered = false;
+
   @consume({ context: childPanelReadyContext })
   private _registerChildPanelReady?: RegisterChildPanelReady;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._registerChildPanelReady?.(this._resolveVisiblePages());
+  protected override updated(changedProps: Map<PropertyKey, unknown>) {
+    super.updated(changedProps);
+
+    if (changedProps.has("pages") || changedProps.has("hass")) {
+      const ready = this._resolveVisiblePages();
+      if (!this._childReadyRegistered) {
+        this._registerChildPanelReady?.(ready);
+        this._childReadyRegistered = true;
+      }
+    }
   }
 
   protected render(): TemplateResult {

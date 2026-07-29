@@ -43,13 +43,10 @@ export class ChildPanelReady implements ReactiveController {
   }
 
   public hostUpdated() {
-    Promise.all(this._promises).then(
-      () => {
-        this._resolveReady?.();
-        return panelIsReady(this._host);
-      },
-      () => undefined
-    );
+    Promise.allSettled(this._promises).then(() => {
+      this._resolveReady?.();
+      return panelIsReady(this._host);
+    });
     this._host.removeController(this);
   }
 }
