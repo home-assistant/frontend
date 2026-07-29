@@ -252,13 +252,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     slot="graphic"
                     .src=${brandsUrl(
                       {
-                        domain: router.brand,
+                        domain: router.brand ?? "",
                         type: "icon",
                         darkOptimized: this.hass.themes?.darkMode,
                       },
                       this.hass.auth.data.hassUrl
                     )}
-                    alt=${router.brand}
+                    alt=${router.brand ?? ""}
                     crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @error=${this._onImageError}

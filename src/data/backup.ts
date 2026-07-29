@@ -81,7 +81,8 @@ export interface BackupMutableConfig {
   schedule?: {
     recurrence: BackupScheduleRecurrence;
     time?: string | null;
-    days?: BackupDay[] | null;
+    // The backend schema has no null branch for days, send [] to clear
+    days?: BackupDay[];
   };
   agents?: BackupAgentsConfig;
 }

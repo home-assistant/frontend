@@ -7,7 +7,7 @@ export interface AssistPipeline {
   name: string;
   language: string;
   conversation_engine: string;
-  conversation_language: string | null;
+  conversation_language: string;
   prefer_local_intents?: boolean;
   stt_engine: string | null;
   stt_language: string | null;
@@ -27,7 +27,7 @@ export interface AssistPipelineMutableParams {
   name: string;
   language: string;
   conversation_engine: string;
-  conversation_language: string | null;
+  conversation_language: string;
   prefer_local_intents?: boolean;
   stt_engine: string | null;
   stt_language: string | null;

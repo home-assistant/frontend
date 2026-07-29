@@ -293,7 +293,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
         name: data.name!,
         language: data.language!,
         conversation_engine: data.conversation_engine!,
-        conversation_language: data.conversation_language ?? null,
+        conversation_language: data.conversation_language ?? "*",
         prefer_local_intents: data.prefer_local_intents ?? true,
         stt_engine: data.stt_engine ?? null,
         stt_language: data.stt_language ?? null,

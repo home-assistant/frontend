@@ -195,6 +195,7 @@ export interface ZWaveJSClient {
   ws_server_url: string;
   server_version: string;
   driver_version: string;
+  server_logging_enabled: boolean;
 }
 
 export interface ZWaveJSController {
@@ -218,6 +219,8 @@ export interface ZWaveJSController {
   supports_timers: boolean;
   is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
+  /** ControllerStatus from zwave-js: ready, unresponsive or jammed */
+  status: number;
   nodes: ZWaveJSNodeStatus[];
   supports_long_range: boolean;
 }

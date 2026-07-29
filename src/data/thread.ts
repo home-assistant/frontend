@@ -1,10 +1,27 @@
 import type { HomeAssistant } from "../types";
 
+/** Brands the backend maps a router's mDNS vendor name to. */
+export type ThreadBrand =
+  | "amazon"
+  | "apple"
+  | "aqara_gateway"
+  | "eero"
+  | "glinet"
+  | "google"
+  | "homeassistant"
+  | "ikea"
+  | "nanoleaf"
+  | "openthread"
+  | "samsung"
+  | "smartthings"
+  | "smlight"
+  | "yeelight";
+
 export interface ThreadRouter {
   instance_name: string;
-  addresses: [string];
+  addresses: string[];
   border_agent_id: string | null;
-  brand: "google" | "apple" | "homeassistant";
+  brand: ThreadBrand | null;
   extended_address: string;
   extended_pan_id: string;
   model_name: string | null;
@@ -28,11 +45,10 @@ export interface ThreadDataSet {
   source: string;
 }
 
-export interface ThreadRouterDiscoveryEvent {
-  key: string;
-  type: "router_discovered" | "router_removed";
-  data: ThreadRouter;
-}
+export type ThreadRouterDiscoveryEvent =
+  | { type: "router_discovered"; key: string; data: ThreadRouter }
+  // No data is sent when a router disappears
+  | { type: "router_removed"; key: string };
 
 class DiscoveryStream {
   routers: Record<string, ThreadRouter>;
