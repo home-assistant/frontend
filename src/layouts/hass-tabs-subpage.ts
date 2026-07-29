@@ -15,6 +15,7 @@ import { restoreScroll } from "../common/decorators/restore-scroll";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { goBack, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -164,17 +165,19 @@ export class HassTabsSubpage extends LitElement {
       this._narrow,
       this.localizeFunc || this.hass.localize
     );
+    const backPath = sanitizeNavigationPath(this.backPath);
+
     return html`
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
             ${
-              this.mainPage || (!this.backPath && history.state?.root)
+              this.mainPage || (!backPath && history.state?.root)
                 ? html`<ha-menu-button></ha-menu-button>`
-                : this.backPath
+                : backPath
                   ? html`
                       <ha-icon-button-arrow-prev
-                        .href=${this.backPath}
+                        .href=${backPath}
                       ></ha-icon-button-arrow-prev>
                     `
                   : html`
