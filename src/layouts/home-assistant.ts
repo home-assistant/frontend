@@ -19,6 +19,7 @@ import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { renderLaunchScreenContent } from "../util/launch-screen";
 import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
+import { reloadFresh } from "../util/recover-stale-build";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -247,13 +248,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
           if (registration) {
             registration.update();
           } else if (oldVersion) {
-            // @ts-ignore Firefox supports forceGet
-            location.reload(true);
+            reloadFresh();
           }
         });
       } else if (oldVersion) {
-        // @ts-ignore Firefox supports forceGet
-        location.reload(true);
+        reloadFresh();
       }
     }
   }

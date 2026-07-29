@@ -379,8 +379,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
         if (config.safe_mode) {
-          // @ts-ignore Firefox supports forceGet
-          location.reload(true);
+          location.reload();
         }
         this._updateHass({ config });
         this.checkDataBaseMigration();
