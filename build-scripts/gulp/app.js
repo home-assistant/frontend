@@ -52,6 +52,29 @@ gulp.task(
 );
 
 gulp.task(
+  "build-app-modern",
+  gulp.series(
+    async function setEnv() {
+      process.env.NODE_ENV = "production";
+    },
+    "clean",
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations",
+      "build-locale-data",
+      "gen-licenses"
+    ),
+    "copy-static-app",
+    "rspack-prod-app-modern",
+    gulp.parallel(
+      "gen-pages-app-prod-modern",
+      "gen-service-worker-app-prod-modern"
+    ),
+    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app-modern"])
+  )
+);
+
+gulp.task(
   "analyze-app",
   gulp.series(
     async function setEnv() {

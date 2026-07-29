@@ -160,6 +160,17 @@ gulp.task("rspack-prod-app", () =>
   )
 );
 
+gulp.task("rspack-prod-app-modern", () =>
+  prodBuild(
+    createAppConfig({
+      isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+      latestBuild: true,
+    })
+  )
+);
+
 gulp.task("rspack-dev-server-demo", () =>
   runDevServer({
     compiler: rspack(

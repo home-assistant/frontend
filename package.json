@@ -7,7 +7,7 @@
   "name": "home-assistant-frontend",
   "version": "1.0.0",
   "scripts": {
-    "build": "script/build_frontend",
+    "build": "node build-scripts/build-manager.mjs",
     "lint:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --max-warnings=0",
     "format:eslint": "eslint \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
     "lint:prettier": "prettier . --cache --check",

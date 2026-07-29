@@ -184,6 +184,17 @@ gulp.task(
   )
 );
 
+gulp.task(
+  "gen-pages-app-prod-modern",
+  genPagesProdTask(
+    APP_PAGE_ENTRIES,
+    paths.root_dir,
+    paths.app_output_root,
+    paths.app_output_latest,
+    undefined
+  )
+);
+
 const CAST_PAGE_ENTRIES = {
   "faq.html": ["launcher"],
   "index.html": ["launcher"],
