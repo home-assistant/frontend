@@ -68,23 +68,58 @@ export const readProcessRecord = (file) => {
   try {
     const data = JSON.parse(fs.readFileSync(file, "utf8"));
     return data && Number.isInteger(data.pid) ? data : undefined;
-  } catch {
-    return undefined;
+  } catch (err) {
+    if (err.code === "ENOENT" || err instanceof SyntaxError) {
+      return undefined;
+    }
+    throw err;
   }
 };
 
 export const writeProcessRecord = (file, data) => {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   const temporary = `${file}.${process.pid}.${Date.now()}.tmp`;
-  fs.writeFileSync(temporary, JSON.stringify(data));
-  fs.renameSync(temporary, file);
+  try {
+    fs.writeFileSync(temporary, JSON.stringify(data));
+    fs.renameSync(temporary, file);
+  } finally {
+    removeFileIfExists(temporary);
+  }
 };
 
 export const removeProcessRecord = (file) => {
+  removeFileIfExists(file);
+};
+
+const removeFileIfExists = (file) => {
   try {
     fs.rmSync(file);
-  } catch {
-    // Already gone.
+  } catch (err) {
+    if (err.code !== "ENOENT") {
+      throw err;
+    }
+  }
+};
+
+export const withExclusiveFileLockSync = (file, operation) => {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  let fd;
+  try {
+    fd = fs.openSync(file, "wx");
+  } catch (err) {
+    if (err.code === "EEXIST") {
+      return { acquired: false };
+    }
+    throw err;
+  }
+  try {
+    return { acquired: true, value: operation() };
+  } finally {
+    try {
+      fs.closeSync(fd);
+    } finally {
+      removeFileIfExists(file);
+    }
   }
 };
 

@@ -26,6 +26,7 @@ import {
   spawnForeground,
   terminateProcess,
   waitFor,
+  withExclusiveFileLockSync,
   writeProcessRecord,
 } from "./managed-process.mjs";
 
@@ -38,7 +39,7 @@ const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
 const logFile = path.join(stateDir, "build.log");
 const lockDir = path.join(stateDir, "build.lock");
 const lockFile = path.join(lockDir, "process.json");
-const cleanupLockDir = path.join(stateDir, "cleanup.lock");
+const cleanupLockFile = path.join(stateDir, "cleanup.lock");
 
 const usage = () => {
   process.stderr.write(
@@ -78,27 +79,15 @@ const hints = () =>
 const readBuild = () => readProcessRecord(lockFile);
 
 const releaseBuild = (token) => {
-  try {
-    fs.mkdirSync(cleanupLockDir);
-  } catch {
-    return;
-  }
-  try {
+  withExclusiveFileLockSync(cleanupLockFile, () => {
     if (readBuild()?.token === token) {
       fs.rmSync(lockDir, { recursive: true, force: true });
     }
-  } finally {
-    fs.rmSync(cleanupLockDir, { recursive: true, force: true });
-  }
+  });
 };
 
 const removeStaleBuild = () => {
-  try {
-    fs.mkdirSync(cleanupLockDir);
-  } catch {
-    return false;
-  }
-  try {
+  const result = withExclusiveFileLockSync(cleanupLockFile, () => {
     const existing = readBuild();
     if (existing && isProcessRecordAlive(existing)) {
       return false;
@@ -108,9 +97,8 @@ const removeStaleBuild = () => {
     }
     fs.rmSync(lockDir, { recursive: true, force: true });
     return true;
-  } finally {
-    fs.rmSync(cleanupLockDir, { recursive: true, force: true });
-  }
+  });
+  return result.acquired && result.value;
 };
 
 const acquireBuild = (modern, foreground) => {

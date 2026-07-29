@@ -37,6 +37,7 @@ import {
   spawnForeground,
   terminateProcess,
   waitFor,
+  withExclusiveFileLockSync,
   writeProcessRecord,
 } from "./managed-process.mjs";
 
@@ -182,24 +183,15 @@ const pidFileFor = (suite) =>
 const cleanupLockFor = (suite) => `${pidFileFor(suite)}.cleanup`;
 
 const removePidFileIf = (suite, matches) => {
-  const cleanupLock = cleanupLockFor(suite);
-  let fd;
-  try {
-    fd = fs.openSync(cleanupLock, "wx");
-  } catch {
-    return false;
-  }
-  try {
+  const result = withExclusiveFileLockSync(cleanupLockFor(suite), () => {
     const existing = readProcessRecord(pidFileFor(suite));
     if (!existing || matches(existing)) {
       removeProcessRecord(pidFileFor(suite));
       return true;
     }
     return false;
-  } finally {
-    fs.closeSync(fd);
-    removeProcessRecord(cleanupLock);
-  }
+  });
+  return result.acquired && result.value;
 };
 
 const acquireProcessSuite = (suite) => {
