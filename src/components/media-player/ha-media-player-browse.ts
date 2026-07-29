@@ -1157,7 +1157,14 @@ export class HaMediaPlayerBrowse extends LitElement {
       return;
     }
     this._initialReady = true;
-    panelIsReady(this);
+    const root = this.getRootNode();
+    panelIsReady(
+      root instanceof ShadowRoot &&
+        root.host instanceof HTMLElement &&
+        root.host.tagName.startsWith("HA-PANEL-")
+        ? root.host
+        : this
+    );
   }
 
   private _setError(error: any) {
