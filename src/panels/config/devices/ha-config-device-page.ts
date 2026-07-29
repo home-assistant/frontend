@@ -102,6 +102,7 @@ import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
 import {
@@ -892,6 +893,11 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      <ha-device-linked-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+        .entries=${this.entries}
+      ></ha-device-linked-devices-card>
     `;
 
     const entitiesColumn = html`

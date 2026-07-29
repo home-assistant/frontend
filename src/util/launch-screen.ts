@@ -26,28 +26,42 @@ export const removeLaunchScreen = (instant = false): boolean => {
     return true;
   }
 
-  withViewTransition((viewTransitionAvailable: boolean) => {
-    if (!viewTransitionAvailable) {
+  withViewTransition((viewTransitionAvailable) => {
+    if (viewTransitionAvailable) {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
       return;
     }
 
     launchScreenElement.classList.add("removing");
-
     const durationFromCss = getComputedStyle(document.documentElement)
-      .getPropertyValue("--ha-animation-duration-slow")
+      .getPropertyValue("--ha-animation-duration-normal")
       .trim();
-
-    setTimeout(() => {
-      launchScreenElement.parentElement?.removeChild(launchScreenElement);
-    }, parseAnimationDuration(durationFromCss));
+    setTimeout(
+      () => {
+        launchScreenElement.parentElement?.removeChild(launchScreenElement);
+      },
+      parseAnimationDuration(durationFromCss || "250ms")
+    );
   });
   return true;
 };
 
-export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
+export const renderLaunchScreenContent = (
+  content: TemplateResult,
+  attribution: string
+) => {
   const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
   if (infoBoxElement) {
     render(content, infoBoxElement);
+  }
+  updateLaunchScreenAttribution(attribution);
+};
+
+export const updateLaunchScreenAttribution = (attribution: string) => {
+  const attributionElement = document.getElementById(
+    "ha-launch-screen-attribution"
+  );
+  if (attributionElement) {
+    attributionElement.textContent = attribution;
   }
 };

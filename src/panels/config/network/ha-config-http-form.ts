@@ -397,8 +397,20 @@ class HaConfigHttpForm extends LitElement {
     this._error = undefined;
     this._fieldErrors = {};
     this._showNoChanges = false;
+    // Drop empty entries from multi-value fields, and omit the field entirely
+    // once it is empty so the backend applies its default. Otherwise a cleared
+    // "IP address to bind to" would submit [""] / [], which binds to nothing.
+    const config = Object.fromEntries(
+      Object.entries(this._config).map(([key, value]) => {
+        if (Array.isArray(value)) {
+          const filtered = value.filter(Boolean);
+          return [key, filtered.length ? filtered : undefined];
+        }
+        return [key, value];
+      })
+    ) as HttpConfig;
     try {
-      const result = await saveHttpConfig(this.hass, this._config);
+      const result = await saveHttpConfig(this.hass, config);
       if (!result.restart) {
         this._showNoChanges = true;
       }

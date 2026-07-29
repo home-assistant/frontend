@@ -96,6 +96,11 @@ const createRspackConfig = ({
                   __dirname,
                   "minify-template-literals-loader.cjs"
                 ),
+                options: {
+                  browserslistEnv: latestBuild
+                    ? "modern"
+                    : `legacy${info.issuerLayer === "sw" ? "-sw" : ""}`,
+                },
               },
               !latestBuild &&
                 info.resource.startsWith(
