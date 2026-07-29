@@ -193,8 +193,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public last = false;
 
-  @property({ attribute: false }) public sortableData?:
-    Condition | LegacyCondition;
+  @property({ attribute: false }) public sortableData?: VisibilityCondition;
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
