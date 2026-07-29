@@ -2,9 +2,10 @@ import type { HassEntities } from "home-assistant-js-websocket";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import type { CallWS } from "../../types";
+import type { CallWS, HomeAssistant } from "../../types";
 import type { BaseTrigger } from "../automation";
 import { migrateAutomationTrigger } from "../automation";
+import type { DeviceCompositeSplits } from "./device_registry";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import {
   entityRegistryByEntityId,
@@ -156,6 +157,51 @@ export const deviceAutomationsEqual = (
   }
 
   return true;
+};
+
+// Decides how a device automation editor should handle its referenced device.
+// A missing device that was replaced by a split device stays editable so the
+// device picker can offer to fix the reference; a genuinely unknown device
+// cannot be edited visually. Returns "loading" while the split map is unknown.
+export const deviceAutomationEditorMode = (
+  hass: HomeAssistant,
+  deviceId: string | undefined,
+  compositeSplits: DeviceCompositeSplits | undefined
+): "editable" | "loading" | "unknown-device" => {
+  if (!deviceId || deviceId in hass.devices) {
+    return "editable";
+  }
+  if (compositeSplits === undefined) {
+    return "loading";
+  }
+  // Only editable if at least one of the split (replacement) devices still
+  // exists; otherwise the reference is stale and cannot be fixed here.
+  const split = compositeSplits[deviceId];
+  return split?.split_ids.some((id) => id in hass.devices)
+    ? "editable"
+    : "unknown-device";
+};
+
+// Like deviceAutomationsEqual, but ignores device_id and entity_id so an
+// automation can be matched to the equivalent one on a different device (for
+// example when a referenced device was replaced by a split device).
+export const deviceAutomationsSimilar = (
+  a: DeviceAutomation,
+  b: DeviceAutomation
+) => {
+  if (typeof a !== typeof b) {
+    return false;
+  }
+  return deviceAutomationIdentifiers
+    .filter((property) => property !== "device_id" && property !== "entity_id")
+    .every((property) => {
+      const inA = property in a;
+      const inB = property in b;
+      if (!inA && !inB) {
+        return true;
+      }
+      return Object.is(a[property], b[property]);
+    });
 };
 
 const compareEntityIdWithEntityRegId = (

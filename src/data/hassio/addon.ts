@@ -95,7 +95,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   options: Record<string, unknown>;
   privileged: any;
   protected: boolean;
-  rating: "1-8";
+  rating: number;
   schema: HaFormSchema[] | null;
   services_role: string[];
   signed: boolean;

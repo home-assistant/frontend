@@ -108,7 +108,7 @@ class StepFlowForm extends LitElement {
             : nothing
         }
         ${
-          step.data_schema.length
+          step.data_schema.length || this._errors
             ? html`<ha-form
                 ${ref(this._formRef)}
                 ?autofocus=${this.autoFocus}

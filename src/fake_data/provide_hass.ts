@@ -299,6 +299,7 @@ export const provideHass = (
         icon: undefined,
         platform: "demo",
         labels: [],
+        area_id: ent.areaId,
       } satisfies EntityRegistryDisplayEntry;
     });
     if (replace) {
@@ -479,6 +480,17 @@ export const provideHass = (
       return response
         ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
+    },
+    // Mocks return a plain body; wrap it so callers can stream it like a fetch
+    // Response. Callbacks may return a Response themselves to set headers.
+    async callApiRaw(method, path, parameters, headers) {
+      const result = await hassObj.callApi<any>(
+        method,
+        path,
+        parameters,
+        headers
+      );
+      return result instanceof Response ? result : new Response(result);
     },
     hassUrl: (path?) => path,
     fetchWithAuth: () => Promise.reject("Not implemented"),

@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import { computeRouteTail } from "../common/url/route";
 import type { Route } from "../types";
+import { PanelReady } from "./panel-ready";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -22,6 +23,7 @@ export interface RouteOptions {
   // Function to load the page.
   load?: () => Promise<unknown>;
   cache?: boolean;
+  waitForReady?: boolean;
 }
 
 export interface RouterOptions {
@@ -52,6 +54,8 @@ export class HassRouterPage extends ReactiveElement {
   protected _currentPage = "";
 
   private _currentLoadProm?: Promise<void>;
+
+  private _panelReady = new PanelReady();
 
   private _cache = {};
 
@@ -180,6 +184,10 @@ export class HassRouterPage extends ReactiveElement {
     // If we don't show loading screen, just show the panel.
     // It will be automatically upgraded when loading done.
     if (!routerOptions.showLoading) {
+      const loadComplete = () => {
+        this._currentLoadProm = undefined;
+      };
+      this._currentLoadProm = loadProm.then(loadComplete, loadComplete);
       this._createPanel(routerOptions, newPage, routeOptions);
       return;
     }
@@ -287,7 +295,15 @@ export class HassRouterPage extends ReactiveElement {
    * Promise that resolves when the page has rendered.
    */
   protected get pageRendered(): Promise<void> {
-    return this.updateComplete.then(() => this._currentLoadProm);
+    return this.updateComplete
+      .then(() => this._currentLoadProm)
+      .then(() => {
+        const page = this.lastElementChild;
+        return Promise.all([
+          this._panelReady.ready,
+          page instanceof HassRouterPage ? page.pageRendered : undefined,
+        ]).then(() => undefined);
+      });
   }
 
   protected createElement(tag: string) {
@@ -312,6 +328,7 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
+    this._panelReady.track(panelEl, routeOptions.waitForReady);
     this.updatePageEl(panelEl);
     this.appendChild(panelEl);
 

@@ -36,6 +36,10 @@ export function downSampleLineData<
   const min = minX ?? getPointData(data[0]!)[0];
   const max = maxX ?? getPointData(data[data.length - 1]!)[0];
   const step = Math.ceil((max - min) / Math.floor(maxDetails));
+  if (!Number.isFinite(step) || step <= 0) {
+    // a degenerate frame size would put every point in a single frame
+    return data;
+  }
 
   if (useMean) {
     // Group points into frames, accumulating sums in insertion order.

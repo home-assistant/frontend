@@ -126,7 +126,7 @@ export class HaProgressButton extends LitElement {
       visibility: hidden;
     }
 
-    :host([appearance="brand"]) ha-svg-icon {
+    .progress ha-svg-icon {
       color: var(--white-color);
     }
   `;
