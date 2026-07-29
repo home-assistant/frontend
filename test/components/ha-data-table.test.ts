@@ -43,7 +43,10 @@ describe("ha-data-table narrow secondary line", () => {
     };
     const el = document.createElement("ha-data-table") as HaDataTable;
     const container = document.createElement("div");
-    render((el as any)._renderRow(emptyColumns, true, { id: "1", name: "Test" }, 0), container);
+    render(
+      (el as any)._renderRow(emptyColumns, true, { id: "1", name: "Test" }, 0),
+      container
+    );
     expect(container.querySelector(".secondary")!.textContent!.trim()).toBe("");
   });
 });
