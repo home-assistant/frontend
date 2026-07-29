@@ -31,6 +31,7 @@ import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import {
   addSearchParam,
   extractSearchParamsObject,
@@ -893,10 +894,12 @@ class HUIRoot extends LitElement {
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    if (curViewConfig?.back_path != null) {
-      navigate(curViewConfig.back_path, { replace: true });
-    } else if (this.backPath) {
-      navigate(this.backPath, { replace: true });
+    const backPath = sanitizeNavigationPath(
+      curViewConfig?.back_path ?? this.backPath
+    );
+
+    if (backPath) {
+      navigate(backPath, { replace: true });
     } else if (history.length > 1) {
       goBack();
     } else if (!views[0].subview) {
@@ -918,11 +921,12 @@ class HUIRoot extends LitElement {
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    if (curViewConfig?.back_path != null) {
-      return curViewConfig.back_path;
-    }
-    if (this.backPath) {
-      return this.backPath;
+    const backPath = sanitizeNavigationPath(
+      curViewConfig?.back_path ?? this.backPath
+    );
+
+    if (backPath) {
+      return backPath;
     }
     return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
