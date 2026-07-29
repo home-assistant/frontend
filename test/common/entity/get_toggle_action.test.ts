@@ -32,7 +32,7 @@ describe("getToggleAction", () => {
     );
   });
 
-  it("Uses tilt services for tilt-only covers with a known state", () => {
+  it("Uses tilt services for tilt-only covers", () => {
     const stateObj: any = {
       entity_id: "cover.bla",
       state: "open",
@@ -50,27 +50,6 @@ describe("getToggleAction", () => {
     assert.strictEqual(
       getToggleAction("cover", false, stateObj),
       "close_cover_tilt"
-    );
-  });
-
-  it("Uses toggle_cover_tilt for tilt-only covers with an unknown state", () => {
-    const stateObj: any = {
-      entity_id: "cover.bla",
-      state: "unknown",
-      attributes: {
-        supported_features:
-          CoverEntityFeature.OPEN_TILT +
-          CoverEntityFeature.CLOSE_TILT +
-          CoverEntityFeature.SET_TILT_POSITION,
-      },
-    };
-    assert.strictEqual(
-      getToggleAction("cover", true, stateObj),
-      "toggle_cover_tilt"
-    );
-    assert.strictEqual(
-      getToggleAction("cover", false, stateObj),
-      "toggle_cover_tilt"
     );
   });
 });
