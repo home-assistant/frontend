@@ -26,10 +26,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   LIFECYCLE_MODE_FLAGS,
+  acquireProcessRecord,
   isProcessRecordAlive,
   outputLog,
   processStartTime,
   readProcessRecord,
+  releaseProcessRecord,
   removeProcessRecord,
   runCli,
   sleep,
@@ -37,7 +39,6 @@ import {
   spawnForeground,
   terminateProcess,
   waitFor,
-  withExclusiveFileLockSync,
   writeProcessRecord,
 } from "./managed-process.mjs";
 
@@ -52,6 +53,12 @@ const developAndServeScript = path.join(
   "develop_and_serve"
 );
 const logDir = path.join(repoRoot, "node_modules", ".cache", "ha-dev-server");
+const outputLockFile = path.join(
+  repoRoot,
+  "node_modules",
+  ".cache",
+  "ha-generated-output.lock"
+);
 
 // Each suite names its yarn alias (for hints), a liveness model, and how to
 // spawn it. health suites carry a fixed port; process suites carry the log line
@@ -180,63 +187,45 @@ const parseArgs = (argv) => {
 const logFileFor = (suite) => path.join(logDir, `${suite}.log`);
 const pidFileFor = (suite) =>
   path.join(logDir, `${SUITES.get(suite).processKey ?? suite}.pid`);
-const cleanupLockFor = (suite) => `${pidFileFor(suite)}.cleanup`;
-
 const removePidFileIf = (suite, matches) => {
-  const result = withExclusiveFileLockSync(cleanupLockFor(suite), () => {
-    const existing = readProcessRecord(pidFileFor(suite));
-    if (!existing || matches(existing)) {
-      removeProcessRecord(pidFileFor(suite));
-      return true;
-    }
-    return false;
-  });
-  return result.acquired && result.value;
+  const existing = readProcessRecord(pidFileFor(suite));
+  if (!existing) {
+    removeProcessRecord(pidFileFor(suite));
+    return true;
+  }
+  if (matches(existing)) {
+    releaseProcessRecord(outputLockFile, existing.token, () => {
+      if (readProcessRecord(pidFileFor(suite))?.token === existing.token) {
+        removeProcessRecord(pidFileFor(suite));
+      }
+    });
+    return true;
+  }
+  return false;
 };
 
 const acquireProcessSuite = (suite) => {
   const pidFile = pidFileFor(suite);
-  fs.mkdirSync(logDir, { recursive: true });
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const token = `${process.pid}-${Date.now()}-${Math.random()}`;
-    const record = {
-      pid: process.pid,
-      startTime: processStartTime(process.pid),
-      suite,
-      starting: true,
-      token,
-    };
-    try {
-      const fd = fs.openSync(pidFile, "wx");
-      try {
-        fs.writeFileSync(fd, JSON.stringify(record));
-      } finally {
-        fs.closeSync(fd);
-      }
-      return { token };
-    } catch (err) {
-      if (err.code !== "EEXIST") {
-        throw err;
-      }
-      const existing = readProcessRecord(pidFile);
-      if (existing && isProcessRecordAlive(existing)) {
-        return { existing };
-      }
-      if (!existing && Date.now() - fs.statSync(pidFile).mtimeMs < 5000) {
-        return { existing };
-      }
-      if (
-        !removePidFileIf(
-          suite,
-          (current) =>
-            current.token === existing?.token && !isProcessRecordAlive(current)
-        )
-      ) {
-        return { existing: readProcessRecord(pidFile) };
-      }
-    }
+  const token = `${process.pid}-${Date.now()}-${Math.random()}`;
+  const record = {
+    pid: process.pid,
+    startTime: processStartTime(process.pid),
+    kind: "dev",
+    suite,
+    starting: true,
+    token,
+  };
+  const result = acquireProcessRecord(outputLockFile, record);
+  if (!result.acquired) {
+    return { existing: result.existing };
   }
-  return { existing: readProcessRecord(pidFile) };
+  try {
+    writeProcessRecord(pidFile, record);
+  } catch (err) {
+    releaseProcessRecord(outputLockFile, token);
+    throw err;
+  }
+  return { token };
 };
 
 const updateProcessSuite = (suite, token, child) => {
@@ -246,16 +235,28 @@ const updateProcessSuite = (suite, token, child) => {
       `Dev server (${suite}) process ownership was lost during startup.`
     );
   }
-  writePidFile(suite, {
+  const record = {
     ...existing,
     pid: child.pid,
     startTime: processStartTime(child.pid),
     starting: false,
-  });
+  };
+  writePidFile(suite, record);
+  const outputOwner = readProcessRecord(outputLockFile);
+  if (outputOwner?.token !== token) {
+    throw Error(
+      `Dev server (${suite}) output ownership was lost during startup.`
+    );
+  }
+  writeProcessRecord(outputLockFile, record);
 };
 
 const releaseProcessSuite = (suite, token) => {
-  removePidFileIf(suite, (existing) => existing.token === token);
+  releaseProcessRecord(outputLockFile, token, () => {
+    if (readPidFile(suite)?.token === token) {
+      removeProcessRecord(pidFileFor(suite));
+    }
+  });
 };
 
 const hints = (suite) => {
@@ -264,6 +265,22 @@ const hints = (suite) => {
     `  Stop:   ${alias} --stop\n` +
     `  Status: ${alias} --status\n` +
     `  Logs:   ${alias} --logs\n`
+  );
+};
+
+const reportProcessConflict = (suite, existing) => {
+  if (existing?.kind === "build") {
+    process.stdout.write(
+      `Frontend build already running${existing.pid ? ` (pid ${existing.pid})` : ""}. ` +
+        "Stop it with yarn build --stop.\n"
+    );
+    return;
+  }
+  process.stdout.write(
+    `Dev server (${existing?.suite ?? suite}) already running` +
+      `${urlSuffix(existing?.port)} ` +
+      `${existing?.pid ? `(pid ${existing.pid})` : ""}\n` +
+      hints(existing?.suite ?? suite)
   );
 };
 
@@ -567,11 +584,7 @@ const spawnArgs = (cfg, passthrough) => [
 const runForegroundProcess = async (suite, cfg, passthrough) => {
   const lock = acquireProcessSuite(suite);
   if (!lock.token) {
-    process.stdout.write(
-      `Dev server (${lock.existing?.suite ?? suite}) already running ` +
-        `${lock.existing?.pid ? `(pid ${lock.existing.pid}). ` : ""}` +
-        `Stop it with yarn ${cfg.alias} --stop.\n`
-    );
+    reportProcessConflict(suite, lock.existing);
     return 0;
   }
   try {
@@ -590,11 +603,7 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
 const runBackgroundProcess = async (suite, cfg, passthrough) => {
   const lock = acquireProcessSuite(suite);
   if (!lock.token) {
-    process.stdout.write(
-      `Dev server (${lock.existing?.suite ?? suite}) already running${urlSuffix(lock.existing?.port)} ` +
-        `${lock.existing?.pid ? `(pid ${lock.existing.pid})` : ""}\n` +
-        hints(lock.existing?.suite ?? suite)
-    );
+    reportProcessConflict(suite, lock.existing);
     return 0;
   }
 

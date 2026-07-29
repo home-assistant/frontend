@@ -12,21 +12,21 @@
 //
 //   --modern           Build only the modern frontend_latest bundle.
 
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   LIFECYCLE_MODE_FLAGS,
+  acquireProcessRecord,
   isProcessRecordAlive,
   outputLog,
   processStartTime,
   readProcessRecord,
+  releaseProcessRecord,
   runCli,
   spawnDetachedToLog,
   spawnForeground,
   terminateProcess,
   waitFor,
-  withExclusiveFileLockSync,
   writeProcessRecord,
 } from "./managed-process.mjs";
 
@@ -37,9 +37,12 @@ const repoRoot = path.resolve(
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
 const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
 const logFile = path.join(stateDir, "build.log");
-const lockDir = path.join(stateDir, "build.lock");
-const lockFile = path.join(lockDir, "process.json");
-const cleanupLockFile = path.join(stateDir, "cleanup.lock");
+const lockFile = path.join(
+  repoRoot,
+  "node_modules",
+  ".cache",
+  "ha-generated-output.lock"
+);
 
 const usage = () => {
   process.stderr.write(
@@ -78,59 +81,21 @@ const hints = () =>
 
 const readBuild = () => readProcessRecord(lockFile);
 
-const releaseBuild = (token) => {
-  withExclusiveFileLockSync(cleanupLockFile, () => {
-    if (readBuild()?.token === token) {
-      fs.rmSync(lockDir, { recursive: true, force: true });
-    }
-  });
-};
-
-const removeStaleBuild = () => {
-  const result = withExclusiveFileLockSync(cleanupLockFile, () => {
-    const existing = readBuild();
-    if (existing && isProcessRecordAlive(existing)) {
-      return false;
-    }
-    if (!existing && Date.now() - fs.statSync(lockDir).mtimeMs < 5000) {
-      return false;
-    }
-    fs.rmSync(lockDir, { recursive: true, force: true });
-    return true;
-  });
-  return result.acquired && result.value;
-};
+const releaseBuild = (token) => releaseProcessRecord(lockFile, token);
 
 const acquireBuild = (modern, foreground) => {
-  fs.mkdirSync(stateDir, { recursive: true });
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      fs.mkdirSync(lockDir);
-      const token = `${process.pid}-${Date.now()}-${Math.random()}`;
-      writeProcessRecord(lockFile, {
-        pid: process.pid,
-        startTime: processStartTime(process.pid),
-        processGroup: false,
-        foreground,
-        modern,
-        starting: true,
-        token,
-      });
-      return { token };
-    } catch (err) {
-      if (err.code !== "EEXIST") {
-        throw err;
-      }
-      const existing = readBuild();
-      if (existing && isProcessRecordAlive(existing)) {
-        return { existing };
-      }
-      if (!removeStaleBuild()) {
-        return { existing: readBuild() };
-      }
-    }
-  }
-  return { existing: readBuild() };
+  const token = `${process.pid}-${Date.now()}-${Math.random()}`;
+  const result = acquireProcessRecord(lockFile, {
+    pid: process.pid,
+    startTime: processStartTime(process.pid),
+    processGroup: false,
+    foreground,
+    kind: "build",
+    modern,
+    starting: true,
+    token,
+  });
+  return result.acquired ? { token } : { existing: result.existing };
 };
 
 const updateBuild = (token, child, processGroup) => {
@@ -150,6 +115,17 @@ const updateBuild = (token, child, processGroup) => {
 const taskFor = (modern) => (modern ? "build-app-modern" : "build-app");
 
 const reportExisting = (existing) => {
+  if (existing?.kind === "dev") {
+    const command = existing.suite === "app-serve" ? "dev:serve" : "dev";
+    process.stdout.write(
+      `Dev server (${existing.suite}) already running` +
+        `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n` +
+        `  Stop:   yarn ${command} --stop\n` +
+        `  Status: yarn ${command} --status\n` +
+        `  Logs:   yarn ${command} --logs\n`
+    );
+    return;
+  }
   process.stdout.write(
     `Frontend ${existing?.modern ? "modern " : ""}build already running` +
       `${existing?.pid ? ` (pid ${existing.pid})` : ""}.\n${hints()}`
@@ -202,14 +178,11 @@ const runBackground = async (modern) => {
 
 const runStatus = () => {
   const existing = readBuild();
-  if (existing && isProcessRecordAlive(existing)) {
+  if (existing?.kind === "build" && isProcessRecordAlive(existing)) {
     process.stdout.write(
       `Frontend ${existing.modern ? "modern " : ""}build running (pid ${existing.pid}).\n`
     );
   } else {
-    if (existing) {
-      removeStaleBuild();
-    }
     process.stdout.write("Frontend build not running.\n");
   }
   return 0;
@@ -217,6 +190,10 @@ const runStatus = () => {
 
 const runStop = async () => {
   let existing = readBuild();
+  if (existing?.kind !== "build") {
+    process.stdout.write("Frontend build not running.\n");
+    return 0;
+  }
   if (existing?.starting) {
     const token = existing.token;
     await waitFor(
@@ -229,10 +206,12 @@ const runStop = async () => {
     );
     existing = readBuild();
   }
-  if (!existing || !isProcessRecordAlive(existing)) {
-    if (existing) {
-      removeStaleBuild();
-    }
+  if (
+    !existing ||
+    existing.kind !== "build" ||
+    !isProcessRecordAlive(existing)
+  ) {
+    if (existing) releaseBuild(existing.token);
     process.stdout.write("Frontend build not running.\n");
     return 0;
   }

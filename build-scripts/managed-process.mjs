@@ -91,6 +91,62 @@ export const removeProcessRecord = (file) => {
   removeFileIfExists(file);
 };
 
+export const acquireProcessRecord = (file, data) => {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const fd = fs.openSync(file, "wx");
+      try {
+        fs.writeFileSync(fd, JSON.stringify(data));
+      } finally {
+        fs.closeSync(fd);
+      }
+      return { acquired: true };
+    } catch (err) {
+      if (err.code !== "EEXIST") {
+        throw err;
+      }
+      const existing = readProcessRecord(file);
+      if (existing && isProcessRecordAlive(existing)) {
+        return { acquired: false, existing };
+      }
+      if (!existing && isRecentFile(file)) {
+        return { acquired: false };
+      }
+      const removed = withExclusiveFileLockSync(`${file}.cleanup`, () => {
+        const current = readProcessRecord(file);
+        if (
+          current &&
+          (current.token !== existing?.token || isProcessRecordAlive(current))
+        ) {
+          return false;
+        }
+        removeProcessRecord(file);
+        return true;
+      });
+      if (!removed.acquired || !removed.value) {
+        return { acquired: false, existing: readProcessRecord(file) };
+      }
+    }
+  }
+  return { acquired: false, existing: readProcessRecord(file) };
+};
+
+export const releaseProcessRecord = (file, token, onRelease) => {
+  if (!token) {
+    return;
+  }
+  withExclusiveFileLockSync(`${file}.cleanup`, () => {
+    const existing = readProcessRecord(file);
+    if (!existing || existing.token === token) {
+      onRelease?.();
+      if (existing) {
+        removeProcessRecord(file);
+      }
+    }
+  });
+};
+
 const removeFileIfExists = (file) => {
   try {
     fs.rmSync(file);
@@ -101,26 +157,55 @@ const removeFileIfExists = (file) => {
   }
 };
 
-export const withExclusiveFileLockSync = (file, operation) => {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  let fd;
+const isRecentFile = (file) => {
   try {
-    fd = fs.openSync(file, "wx");
+    return Date.now() - fs.statSync(file).mtimeMs < 5000;
   } catch (err) {
-    if (err.code === "EEXIST") {
-      return { acquired: false };
+    if (err.code === "ENOENT") {
+      return false;
     }
     throw err;
   }
-  try {
-    return { acquired: true, value: operation() };
-  } finally {
+};
+
+export const withExclusiveFileLockSync = (file, operation) => {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    let fd;
     try {
-      fs.closeSync(fd);
-    } finally {
+      fd = fs.openSync(file, "wx");
+    } catch (err) {
+      if (err.code !== "EEXIST") {
+        throw err;
+      }
+      const owner = readProcessRecord(file);
+      if (owner && isProcessRecordAlive(owner)) {
+        return { acquired: false };
+      }
+      if (!owner && isRecentFile(file)) {
+        return { acquired: false };
+      }
       removeFileIfExists(file);
+      continue;
+    }
+    try {
+      fs.writeFileSync(
+        fd,
+        JSON.stringify({
+          pid: process.pid,
+          startTime: processStartTime(process.pid),
+        })
+      );
+      return { acquired: true, value: operation() };
+    } finally {
+      try {
+        fs.closeSync(fd);
+      } finally {
+        removeFileIfExists(file);
+      }
     }
   }
+  return { acquired: false };
 };
 
 export const spawnForeground = ({
