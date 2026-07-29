@@ -11,6 +11,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import { groupBy } from "../../../../../common/util/group-by";
 import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
@@ -154,8 +155,9 @@ class ZWaveJSNodeConfig extends LitElement {
                     device_database: html`<a
                       rel="noreferrer noopener"
                       href=${
-                        this._nodeMetadata?.device_database_url ||
-                        "https://devices.zwave-js.io"
+                        sanitizeHttpUrl(
+                          this._nodeMetadata?.device_database_url
+                        ) || "https://devices.zwave-js.io"
                       }
                       target="_blank"
                       >${this.hass.localize(

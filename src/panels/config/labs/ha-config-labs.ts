@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -199,6 +200,9 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
     const isHighlighted = this._highlightedPreviewFeature === previewFeatureId;
 
+    const feedbackUrl = sanitizeHttpUrl(preview_feature.feedback_url);
+    const reportIssueUrl = sanitizeHttpUrl(preview_feature.report_issue_url);
+
     // Build description with learn more link if available
     const descriptionWithLink = preview_feature.learn_more_url
       ? `${description}\n\n[${this.hass.localize("ui.panel.config.labs.learn_more")}](${preview_feature.learn_more_url})`
@@ -237,11 +241,11 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         <div class="card-actions">
           <div>
             ${
-              preview_feature.feedback_url
+              feedbackUrl
                 ? html`
                     <ha-button
                       appearance="plain"
-                      href=${preview_feature.feedback_url}
+                      href=${feedbackUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -253,11 +257,11 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
                 : nothing
             }
             ${
-              preview_feature.report_issue_url
+              reportIssueUrl
                 ? html`
                     <ha-button
                       appearance="plain"
-                      href=${preview_feature.report_issue_url}
+                      href=${reportIssueUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

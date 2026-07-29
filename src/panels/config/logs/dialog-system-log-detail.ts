@@ -76,7 +76,12 @@ class DialogSystemLogDetail extends LitElement {
       this._manifest &&
       (this._manifest.is_built_in ||
         // Custom components with our official docs should not link to our docs
-        !this._manifest.documentation.includes("://www.home-assistant.io"));
+        (!!this._manifest.documentation &&
+          !this._manifest.documentation.includes("://www.home-assistant.io")));
+
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
+      : this._manifest?.documentation;
 
     const title = this.hass.localize("ui.panel.config.logs.details", {
       level: html`<span class=${item.level}
@@ -124,18 +129,12 @@ class DialogSystemLogDetail extends LitElement {
                     ${
                       !this._manifest ||
                       // Can happen with custom integrations
-                      !showDocumentation
+                      !showDocumentation ||
+                      !documentationLink
                         ? ""
                         : html`
                             (<a
-                              href=${
-                                this._manifest.is_built_in
-                                  ? documentationUrl(
-                                      this.hass,
-                                      `/integrations/${this._manifest.domain}`
-                                    )
-                                  : this._manifest.documentation
-                              }
+                              href=${documentationLink}
                               target="_blank"
                               rel="noreferrer"
                               >${this.hass.localize(
