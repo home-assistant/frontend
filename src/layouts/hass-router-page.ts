@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import { computeRouteTail } from "../common/url/route";
 import type { Route } from "../types";
+import { recoverFromStaleBuild } from "../util/recover-stale-build";
 import { PanelReady } from "./panel-ready";
 
 const extractPage = (path: string, defaultPage: string) => {
@@ -182,9 +183,15 @@ export class HassRouterPage extends ReactiveElement {
         this._showLoadingScreenTimeout = undefined;
       }
 
-      // Show error screen
+      // A stale build (the panel's hashed chunk 404s after an upgrade while
+      // the app stayed open) is recoverable: reload onto the current build
+      // (or prompt when there are unsaved edits) instead of dead-ending.
+      const message = err instanceof Error ? err.message : String(err ?? "");
+      const stale = recoverFromStaleBuild(message, this);
+
+      // Show error screen, offering a reload action for a stale build.
       this.appendChild(
-        this.createErrorScreen(`Error while loading page ${newPage}.`)
+        this.createErrorScreen(`Error while loading page ${newPage}.`, stale)
       );
     });
 
@@ -285,10 +292,11 @@ export class HassRouterPage extends ReactiveElement {
     return document.createElement("hass-loading-screen");
   }
 
-  protected createErrorScreen(error: string) {
+  protected createErrorScreen(error: string, showReload = false) {
     import("./hass-error-screen");
     const errorEl = document.createElement("hass-error-screen");
     errorEl.error = error;
+    errorEl.showReload = showReload;
     return errorEl;
   }
 
