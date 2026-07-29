@@ -107,6 +107,9 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Dev entries are unhashed, so the stale-index recovery guard has
+          // nothing to key off and rebuild churn could cause spurious reloads.
+          useCacheRecovery: false,
           latestEntryJS: entries.map(
             (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
@@ -146,6 +149,9 @@ const genPagesProdTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Recover from a stale index.html that pins deleted hashed entry
+          // bundles (see _bootstrap_recovery.html.template).
+          useCacheRecovery: true,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
           es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
