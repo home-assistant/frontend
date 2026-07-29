@@ -413,15 +413,6 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
     }
     this._submitting = true;
     try {
-      if (
-        this._backgroundConfig &&
-        this._params.saveConfig &&
-        this._params.lovelaceConfig &&
-        this._backgroundConfig.background !==
-          this._params.lovelaceConfig.background
-      ) {
-        await this._params.saveConfig(this._backgroundConfig);
-      }
       if (this._params.dashboard) {
         await this._params.updateDashboard({
           require_admin: this._data.require_admin ?? false,
@@ -438,6 +429,15 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
           url_path: this._data.url_path ?? "",
           mode: "storage",
         });
+      }
+      if (
+        this._backgroundConfig &&
+        this._params.saveConfig &&
+        this._params.lovelaceConfig &&
+        this._backgroundConfig.background !==
+          this._params.lovelaceConfig.background
+      ) {
+        await this._params.saveConfig(this._backgroundConfig);
       }
       this._markDirtyStateClean();
       this.closeDialog();
