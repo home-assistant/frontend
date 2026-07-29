@@ -55,7 +55,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
 
     // The sandbox keeps allow-same-origin, so a javascript: URL would run in
     // the frontend's own origin
-    if (sanitizeUrl(config.url) !== config.url) {
+    if (sanitizeUrl(config.url) === "about:blank") {
       throw new Error("Invalid URL");
     }
 

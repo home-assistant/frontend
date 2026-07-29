@@ -18,6 +18,10 @@ const SAFE_URLS = [
   "http://192.168.1.5:8080/",
   "mailto:someone@example.com",
   "/local/page.html",
+  // Forms that sanitizing rewrites, so they must not be compared to the input
+  "http://example.com",
+  "https://example.com/foo bar",
+  "https://Example.com/Path",
 ];
 
 describe("hui-weblink-row config", () => {

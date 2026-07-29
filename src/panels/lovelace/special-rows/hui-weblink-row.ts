@@ -18,7 +18,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     }
 
     // Reject schemes that would run script in the frontend's origin
-    if (sanitizeUrl(config.url) !== config.url) {
+    if (sanitizeUrl(config.url) === "about:blank") {
       throw new Error("Invalid URL");
     }
 

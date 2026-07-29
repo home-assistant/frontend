@@ -18,7 +18,7 @@ class HaPanelIframe extends LitElement {
   render() {
     // The sandbox keeps allow-same-origin, so a javascript: URL would run in
     // the frontend's own origin
-    if (sanitizeUrl(this.panel.config.url) !== this.panel.config.url) {
+    if (sanitizeUrl(this.panel.config.url) === "about:blank") {
       return html`
         <hass-error-screen
           .hass=${this.hass}
