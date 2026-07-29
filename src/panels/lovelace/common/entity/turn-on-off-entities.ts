@@ -8,27 +8,31 @@ export const turnOnOffEntities = (
   entityIds: string[],
   turnOn = true
 ): void => {
-  const domainsToCall = {};
+  const callsToMake: Record<
+    string,
+    { domain: string; service: string; entityIds: string[] }
+  > = {};
   entityIds.forEach((entityId) => {
-    if (STATES_OFF.includes(hass.states[entityId].state) === turnOn) {
+    const stateObj = hass.states[entityId];
+    if (STATES_OFF.includes(stateObj.state) === turnOn) {
       const stateDomain = computeDomain(entityId);
       // Entities with non-standard toggle action need separate calls
-      const serviceDomain =
+      const domain =
         getToggleAction(stateDomain, true) !== "turn_on"
           ? stateDomain
           : "homeassistant";
+      // The service can differ per entity, e.g. for tilt-only covers
+      const service = getToggleAction(domain, turnOn, stateObj);
 
-      if (!(serviceDomain in domainsToCall)) {
-        domainsToCall[serviceDomain] = [];
+      const key = `${domain}.${service}`;
+      if (!(key in callsToMake)) {
+        callsToMake[key] = { domain, service, entityIds: [] };
       }
-      domainsToCall[serviceDomain].push(entityId);
+      callsToMake[key].entityIds.push(entityId);
     }
   });
 
-  Object.keys(domainsToCall).forEach((domain) => {
-    const service = getToggleAction(domain, turnOn);
-
-    const entities = domainsToCall[domain];
-    hass.callService(domain, service, { entity_id: entities });
+  Object.values(callsToMake).forEach(({ domain, service, entityIds: ids }) => {
+    hass.callService(domain, service, { entity_id: ids });
   });
 };

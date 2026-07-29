@@ -1,8 +1,21 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import { isTiltOnly } from "../../data/cover";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
+import { CoverEntityFeature } from "../../data/feature/cover_entity_feature";
 import type { HomeAssistant } from "../../types";
 import { computeStateDomain } from "./compute_state_domain";
 import { getToggleAction } from "./get_toggle_action";
+import { supportsFeature } from "./supports-feature";
+
+// Tilt-only covers can only stop their tilt, and may not support it at all
+const getStopAction = (stateObj: HassEntity): string | undefined => {
+  if (!isTiltOnly(stateObj)) {
+    return "stop_cover";
+  }
+  return supportsFeature(stateObj, CoverEntityFeature.STOP_TILT)
+    ? "stop_cover_tilt"
+    : undefined;
+};
 
 export const computeGroupEntitiesState = (states: HassEntity[]): string => {
   if (!states.length) {
@@ -58,17 +71,29 @@ export const toggleGroupEntities = (
 
   const isOn = state === "on" || state === "open";
 
-  let service = getToggleAction(domain, !isOn);
-  if (domain === "cover") {
-    if (state === "opening" || state === "closing") {
-      // If the cover is opening or closing, we toggle it to stop it
-      service = "stop_cover";
+  // If the cover is opening or closing, we toggle it to stop it
+  const stopping =
+    domain === "cover" && (state === "opening" || state === "closing");
+
+  // The service can differ per entity, e.g. for tilt-only covers,
+  // so group the entities by the service they need
+  const entityIdsByService: Record<string, string[]> = {};
+  states.forEach((stateObj) => {
+    const service = stopping
+      ? getStopAction(stateObj)
+      : getToggleAction(domain, !isOn, stateObj);
+    if (!service) {
+      return;
     }
-  }
+    if (!(service in entityIdsByService)) {
+      entityIdsByService[service] = [];
+    }
+    entityIdsByService[service].push(stateObj.entity_id);
+  });
 
-  const entitiesIds = states.map((stateObj) => stateObj.entity_id);
-
-  hass.callService(domain, service, {
-    entity_id: entitiesIds,
+  Object.entries(entityIdsByService).forEach(([service, entityIds]) => {
+    hass.callService(domain, service, {
+      entity_id: entityIds,
+    });
   });
 };
