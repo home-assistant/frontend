@@ -484,13 +484,7 @@ export class HaDataTable extends LitElement {
                   : ""
               }
               ${Object.entries(columns).map(([key, column]) => {
-                if (
-                  column.hidden ||
-                  (this.columnOrder && this.columnOrder.includes(key)
-                    ? (this.hiddenColumns?.includes(key) ??
-                      column.defaultHidden)
-                    : column.defaultHidden)
-                ) {
+                if (!this._isColumnVisible(key, column)) {
                   return nothing;
                 }
                 const sorted = key === this.sortColumn;
@@ -658,10 +652,7 @@ export class HaDataTable extends LitElement {
         ${Object.entries(columns).map(([key, column]) => {
           if (
             (narrow && !column.main && !column.showNarrow) ||
-            column.hidden ||
-            (this.columnOrder && this.columnOrder.includes(key)
-              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
-              : column.defaultHidden)
+            !this._isColumnVisible(key, column)
           ) {
             return nothing;
           }
@@ -695,30 +686,15 @@ export class HaDataTable extends LitElement {
                         <div class="secondary">
                           ${join(
                             Object.entries(columns)
-                              .filter(
-                                ([key2, column2]) =>
-                                  !column2.hidden &&
-                                  !column2.main &&
-                                  !column2.showNarrow &&
-                                  !(this.columnOrder &&
-                                  this.columnOrder.includes(key2)
-                                    ? (this.hiddenColumns?.includes(key2) ??
-                                      column2.defaultHidden)
-                                    : column2.defaultHidden)
+                              .filter(([key2, column2]) =>
+                                this._isSecondaryColumnVisible(key2, column2)
                               )
                               .map(([key2, column2]) =>
                                 column2.template
                                   ? column2.template(row)
                                   : row[key2]
                               )
-                              // skip empty cells, so we don't render stray separators
-                              .filter(
-                                (value) =>
-                                  value !== undefined &&
-                                  value !== null &&
-                                  value !== "" &&
-                                  value !== nothing
-                              ),
+                              .filter(this._hasCellValue),
                             STRINGS_SEPARATOR_DOT
                           )}
                         </div>
@@ -739,6 +715,32 @@ export class HaDataTable extends LitElement {
       </div>
     `;
   };
+
+  private _isColumnVisible(key: string, column: DataTableColumnData): boolean {
+    if (column.hidden) {
+      return false;
+    }
+    if (!this.columnOrder?.includes(key)) {
+      return !column.defaultHidden;
+    }
+    return !(this.hiddenColumns?.includes(key) ?? column.defaultHidden);
+  }
+
+  private _isSecondaryColumnVisible(
+    key: string,
+    column: DataTableColumnData
+  ): boolean {
+    if (column.main || column.showNarrow) {
+      return false;
+    }
+    return this._isColumnVisible(key, column);
+  }
+
+  private _hasCellValue(value: unknown): boolean {
+    return (
+      value !== undefined && value !== null && value !== "" && value !== nothing
+    );
+  }
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();
