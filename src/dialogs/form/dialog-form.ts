@@ -18,6 +18,7 @@ interface StackEntry {
   params: FormDialogParams;
   data: FormDialogData;
   nestedField?: string;
+  error?: Record<string, string>;
 }
 
 @customElement("dialog-form")
@@ -65,11 +66,17 @@ export class DialogForm
     const origin = ev.composedPath()[0] as HTMLElement & { name?: string };
     this._stack = [
       ...this._stack,
-      { params: this._params!, data: this._data, nestedField: origin?.name },
+      {
+        params: this._params!,
+        data: this._data,
+        nestedField: origin?.name,
+        error: this._error,
+      },
     ];
     const nested = ev.detail.dialogParams as FormDialogParams;
     this._params = nested;
     this._data = nested?.data || {};
+    this._error = undefined;
     this._initDirtyTracking({ type: "deep" }, this._data);
   };
 
@@ -81,6 +88,7 @@ export class DialogForm
     this._stack = this._stack.slice(0, -1);
     this._params = prev.params;
     this._data = prev.data;
+    this._error = prev.error;
     this._initDirtyTracking({ type: "deep" }, this._data);
     return prev.nestedField;
   }
@@ -94,6 +102,7 @@ export class DialogForm
     this._params = undefined;
     this._data = {};
     this._open = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
