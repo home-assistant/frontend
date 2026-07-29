@@ -1,8 +1,6 @@
 import type { EntityDomainFilter } from "../common/entity/entity_domain_filter";
 import type { HomeAssistant } from "../types";
 
-type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
-
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
@@ -21,7 +19,8 @@ export interface CloudPreferences {
   alexa_enabled: boolean;
   remote_enabled: boolean;
   remote_allow_remote_enable: boolean;
-  strict_connection: StrictConnectionMode;
+  alexa_default_expose: string[] | null;
+  google_default_expose: string[] | null;
   google_secure_devices_pin: string | undefined;
   cloudhooks: Record<string, CloudWebhook>;
   alexa_report_state: boolean;
@@ -42,7 +41,7 @@ export interface CloudStatusLoggedIn {
   email: string;
   google_registered: boolean;
   google_entities: EntityDomainFilter;
-  google_domains: string[];
+  google_local_connected: boolean;
   alexa_registered: boolean;
   alexa_entities: EntityDomainFilter;
   prefs: CloudPreferences;
@@ -173,7 +172,6 @@ export const updateCloudPref = (
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
-    strict_connection?: CloudPreferences["strict_connection"];
     cloud_ice_servers_enabled?: CloudPreferences["cloud_ice_servers_enabled"];
   }
 ) =>
