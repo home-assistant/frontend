@@ -25,6 +25,15 @@ import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
+/** Compares the host, so a URL that merely contains ours does not pass. */
+const isOfficialDocumentationUrl = (url: string): boolean => {
+  try {
+    return new URL(url).hostname === "www.home-assistant.io";
+  } catch (_err) {
+    return false;
+  }
+};
+
 @customElement("dialog-system-log-detail")
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -77,7 +86,7 @@ class DialogSystemLogDetail extends LitElement {
       (this._manifest.is_built_in ||
         // Custom components with our official docs should not link to our docs
         (!!this._manifest.documentation &&
-          !this._manifest.documentation.includes("://www.home-assistant.io")));
+          !isOfficialDocumentationUrl(this._manifest.documentation)));
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
