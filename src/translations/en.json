@@ -6779,6 +6779,10 @@
             "heading": "Connected devices",
             "show_more": "+{count} devices not shown"
           },
+          "linked_devices": {
+            "heading": "Linked devices",
+            "description": "These devices share hardware with this device and are managed by other integrations."
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
