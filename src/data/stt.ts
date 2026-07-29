@@ -12,9 +12,11 @@ export interface SpeechMetadata {
 
 export interface STTEngine {
   engine_id: string;
-  supported_languages?: string[];
+  supported_languages: string[];
+  /** Only set for legacy providers. */
   name?: string;
-  deprecated: boolean;
+  /** Not currently set by stt/engine/list, unlike the tts equivalent. */
+  deprecated?: boolean;
 }
 
 export const listSTTEngines = (

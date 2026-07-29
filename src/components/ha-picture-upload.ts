@@ -187,6 +187,8 @@ export class HaPictureUpload extends LitElement {
           can_play: true,
           can_expand: false,
           can_search: false,
+          children_media_class: null,
+          search_media_classes: null,
           thumbnail: generateImageThumbnailUrl(media.id, 256),
         } as const;
         const navigateIds = [

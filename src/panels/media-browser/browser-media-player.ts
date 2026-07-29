@@ -94,7 +94,7 @@ export class BrowserMediaPlayer {
         : "playing";
     stateObj.attributes = {
       media_title: this.item.title,
-      entity_picture: this.item.thumbnail,
+      entity_picture: this.item.thumbnail ?? undefined,
       volume_level: this.player.volume,
       supported_features:
         // eslint-disable-next-line no-bitwise

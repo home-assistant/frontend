@@ -182,14 +182,14 @@ export interface MediaPlayerItem {
   media_content_type: string;
   media_content_id: string;
   media_class: keyof TranslationDict["ui"]["components"]["media-browser"]["class"];
-  children_media_class?: string | null;
+  children_media_class: string | null;
   can_play: boolean;
   can_expand: boolean;
   can_search: boolean;
-  search_media_classes?:
+  search_media_classes:
     | (keyof TranslationDict["ui"]["components"]["media-browser"]["class"])[]
     | null;
-  thumbnail?: string;
+  thumbnail: string | null;
   iconPath?: string;
   children?: MediaPlayerItem[];
   not_shown?: number;

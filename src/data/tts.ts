@@ -2,9 +2,11 @@ import type { HomeAssistant } from "../types";
 
 export interface TTSEngine {
   engine_id: string;
-  supported_languages?: string[];
+  supported_languages: string[];
+  /** Only set for legacy providers superseded by an entity-based engine. */
+  deprecated?: boolean;
+  /** Only set for legacy providers. */
   name?: string;
-  deprecated: boolean;
 }
 
 export interface TTSVoice {

@@ -94,6 +94,8 @@ const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_play: false,
   can_search: false,
   children_media_class: "",
+  search_media_classes: null,
+  thumbnail: null,
   media_class: "app",
   media_content_id: MANUAL_MEDIA_SOURCE_PREFIX,
   media_content_type: "",
