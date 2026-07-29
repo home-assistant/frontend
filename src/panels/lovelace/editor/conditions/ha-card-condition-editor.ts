@@ -511,7 +511,9 @@ export class HaCardConditionEditor extends LitElement {
 
     const contextEntityId =
       condition.condition === "state" || condition.condition === "numeric_state"
-        ? (condition as StateCondition | NumericStateCondition).entity ||
+        ? ("entity_id" in condition
+            ? (condition as { entity_id?: string }).entity_id
+            : (condition as StateCondition | NumericStateCondition).entity) ||
           (this._entityContext?.mode === "current"
             ? this._entityContext.entityId
             : undefined)
