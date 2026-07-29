@@ -5279,8 +5279,8 @@
                 "generic": {
                   "label": "Generic"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5591,8 +5591,8 @@
                 "building_blocks": {
                   "label": "Building blocks"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5761,11 +5761,11 @@
                 "device_id": {
                   "label": "Device"
                 },
-                "helpers": {
-                  "label": "Helpers"
+                "generic": {
+                  "label": "Generic"
                 },
-                "other": {
-                  "label": "Other actions"
+                "integrations": {
+                  "label": "Integrations"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
