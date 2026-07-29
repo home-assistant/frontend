@@ -59,7 +59,7 @@ export class HaInitPage extends LitElement {
               : nothing
           }
         `
-      : html`<p>
+      : html`<p class=${this.migration ? "" : "loading-text"}>
           ${
             this.migration
               ? html`<span class="migration-text"
@@ -68,7 +68,7 @@ export class HaInitPage extends LitElement {
                     "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient."
                   }</span
                 >`
-              : this.localize?.("ui.init.loading") || "Loading data"
+              : this.localize?.("ui.init.loading") || "Loading..."
           }
         </p>`;
   }
@@ -119,6 +119,9 @@ export class HaInitPage extends LitElement {
     }
     .migration-text {
       white-space: pre-line;
+    }
+    .loading-text {
+      opacity: 0.66;
     }
   `;
 }

@@ -75,7 +75,7 @@
   },
   "ui": {
     "init": {
-      "loading": "Loading data",
+      "loading": "Loading...",
       "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
       "project_from": "A project from the",
       "error": {
