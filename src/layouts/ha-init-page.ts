@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 
@@ -59,7 +60,7 @@ export class HaInitPage extends LitElement {
               : nothing
           }
         `
-      : html`<p class=${this.migration ? "" : "loading-text"}>
+      : html`<p class=${classMap({ "loading-text": !this.migration })}>
           ${
             this.migration
               ? html`<span class="migration-text"
