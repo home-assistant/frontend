@@ -15,6 +15,15 @@ export enum InclusionState {
   SmartStart,
 }
 
+export enum ControllerStatus {
+  /** The controller is ready to accept commands and transmit. */
+  Ready,
+  /** The controller is unresponsive. */
+  Unresponsive,
+  /** The controller is unable to transmit because the airwaves are jammed. */
+  Jammed,
+}
+
 export const enum InclusionStrategy {
   /**
    * Always uses Security S2 if supported, otherwise uses Security S0 for certain devices which don't work without encryption and uses no encryption otherwise.
@@ -219,8 +228,7 @@ export interface ZWaveJSController {
   supports_timers: boolean;
   is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
-  /** ControllerStatus from zwave-js: ready, unresponsive or jammed */
-  status: number;
+  status: ControllerStatus;
   nodes: ZWaveJSNodeStatus[];
   supports_long_range: boolean;
 }

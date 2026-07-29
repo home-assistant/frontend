@@ -27,17 +27,17 @@ export interface MatterFabricData {
   fabric_id: number;
   vendor_id: number;
   fabric_index: number;
-  fabric_label?: string;
-  vendor_name?: string;
+  fabric_label: string | null;
+  vendor_name: string | null;
 }
 
 export interface MatterNodeDiagnostics {
   node_id: number;
   network_type: NetworkType;
   node_type: NodeType;
-  network_name?: string;
+  network_name: string | null;
   ip_adresses: string[];
-  mac_address?: string;
+  mac_address: string | null;
   available: boolean;
   active_fabrics: MatterFabricData[];
   active_fabric_index: number;

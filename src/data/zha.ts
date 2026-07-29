@@ -12,33 +12,40 @@ export interface ZHADevice {
   name: string;
   ieee: string;
   nwk: number;
-  lqi: number;
-  rssi: string;
+  lqi: number | null;
+  rssi: number | null;
   last_seen: string;
   manufacturer: string;
   model: string;
   quirk_applied: boolean;
   quirk_class: string;
+  exposes_features: string[];
   entities: ZHAEntityReference[];
-  manufacturer_code: number;
+  endpoint_names: { name: string }[];
+  manufacturer_code: number | null;
   device_reg_id: string;
-  user_given_name?: string;
+  user_given_name?: string | null;
   power_source?: string;
-  area_id?: string;
+  area_id?: string | null;
   device_type: string;
   active_coordinator: boolean;
-  signature: any;
+  signature: Record<string, unknown>;
   neighbors: Neighbor[];
   routes: Route[];
+  /** Only sent on device_joined / device_fully_initialized gateway events. */
   pairing_status?: string;
 }
 
 export interface Neighbor {
+  device_type: string;
+  rx_on_when_idle: string;
+  relationship: string;
+  extended_pan_id: string;
   ieee: string;
   nwk: string;
-  lqi: string;
+  permit_joining: string;
   depth: string;
-  relationship: string;
+  lqi: string;
 }
 
 export interface Route {
@@ -182,6 +189,7 @@ export interface ZHANetworkBackupNetworkInfo {
 }
 
 export interface ZHANetworkBackup {
+  version: number;
   backup_time: string;
   network_info: ZHANetworkBackupNetworkInfo;
   node_info: ZHANetworkBackupNodeInfo;
@@ -195,7 +203,7 @@ export interface ZHADeviceSettings {
 
 export interface ZHANetworkSettings {
   settings: ZHANetworkBackup;
-  radio_type: "ezsp" | "znp" | "deconz" | "zigate" | "xbee";
+  radio_type: "ezsp" | "znp" | "deconz" | "ziggurat" | "zigate" | "xbee";
   device: ZHADeviceSettings;
 }
 
