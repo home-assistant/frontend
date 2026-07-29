@@ -58,6 +58,12 @@ const getCommonTemplateVars = () => {
   return {
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
     hassUrl: process.env.HASS_URL || "",
+    // Single source for the stale-build recovery patterns, shared with the
+    // bundled src/util/recover-stale-build.ts and injected into the inline
+    // boot guard (_bootstrap_recovery.html.template).
+    staleBuildPatterns: fs.readJsonSync(
+      resolve(paths.root_dir, "src/util/stale-build-patterns.json")
+    ),
   };
 };
 

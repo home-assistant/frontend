@@ -22,9 +22,10 @@
     // keeps the guard inert in development (unhashed core.js / app.js) and
     // scoped to the entry chunks whose 404 is fatal to boot - not translations
     // or lazily loaded panels, which fail non-fatally and are handled elsewhere.
-    var HASHED_ENTRY = /\/frontend_(?:latest|es5)\/[^/?#]+\.[0-9a-f]{8,}\.js/i;
-    var MODULE_ERROR =
-      /dynamically imported module|Importing a module script failed|error loading dynamically imported/i;
+    // Injected from stale-build-patterns.json (the single source shared with
+    // the bundled util/recover-stale-build.ts) so the two never drift.
+    var HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
+    var MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
 
     function booted() {
       // The launch screen is only removed once the app has taken over the
