@@ -147,9 +147,11 @@ const genPagesProdTask =
         {
           ...commonVars,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+          es5EntryJS: outputES5
+            ? entries.map((entry) => es5Manifest[`${entry}.js`])
+            : [],
           latestCustomPanelJS: latestManifest["custom-panel.js"],
-          es5CustomPanelJS: es5Manifest["custom-panel.js"],
+          es5CustomPanelJS: outputES5 ? es5Manifest["custom-panel.js"] : "",
         }
       );
       minifiedHTML.push(

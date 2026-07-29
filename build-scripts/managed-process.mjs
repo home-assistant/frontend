@@ -62,7 +62,7 @@ export const processStartTime = (pid) => {
 };
 
 export const isProcessRecordAlive = ({ pid, startTime }) =>
-  isProcessAlive(pid) && (!startTime || processStartTime(pid) === startTime);
+  Boolean(startTime) && processStartTime(pid) === startTime;
 
 export const readProcessRecord = (file) => {
   try {

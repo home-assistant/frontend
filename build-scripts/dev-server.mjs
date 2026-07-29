@@ -681,11 +681,12 @@ const runStopProcess = async (suite) => {
     return 0;
   }
   const { pid } = existing;
+  const activeSuite = existing.suite ?? suite;
   return terminate(
-    suite,
+    activeSuite,
     pid,
     () => !isProcessRecordAlive(existing),
-    () => releaseProcessSuite(suite, existing.token)
+    () => releaseProcessSuite(activeSuite, existing.token)
   );
 };
 
