@@ -736,11 +736,8 @@ export class HaDataTable extends LitElement {
     return this._isColumnVisible(key, column);
   }
 
-  private _hasCellValue(value: unknown): boolean {
-    return (
-      value !== undefined && value !== null && value !== "" && value !== nothing
-    );
-  }
+  private _hasCellValue = (value: unknown): boolean =>
+    value !== undefined && value !== null && value !== "" && value !== nothing;
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();

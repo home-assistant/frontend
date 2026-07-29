@@ -33,4 +33,17 @@ describe("ha-data-table narrow secondary line", () => {
       renderNarrowSecondary({ id: "1", name: "Test", area: "Kitchen" })
     ).toBe("Kitchen · filled");
   });
+
+  it("renders a blank secondary line when all secondary columns are empty", () => {
+    const emptyColumns: DataTableColumnContainer = {
+      name: { title: "Name", main: true },
+      area: { title: "Area" },
+      category: { title: "Category" },
+      empty_template: { title: "Empty", template: () => nothing },
+    };
+    const el = document.createElement("ha-data-table") as HaDataTable;
+    const container = document.createElement("div");
+    render((el as any)._renderRow(emptyColumns, true, { id: "1", name: "Test" }, 0), container);
+    expect(container.querySelector(".secondary")!.textContent!.trim()).toBe("");
+  });
 });
