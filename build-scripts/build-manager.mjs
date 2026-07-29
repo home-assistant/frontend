@@ -183,6 +183,9 @@ const runStatus = () => {
       `Frontend ${existing.modern ? "modern " : ""}build running (pid ${existing.pid}).\n`
     );
   } else {
+    if (existing?.kind === "build") {
+      releaseBuild(existing.token);
+    }
     process.stdout.write("Frontend build not running.\n");
   }
   return 0;
