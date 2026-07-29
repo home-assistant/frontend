@@ -1772,6 +1772,12 @@
         "person": {
           "create_zone": "Create zone from current location"
         },
+        "color": {
+          "color": "Color",
+          "color_temp": "Temperature",
+          "brightness": "Brightness",
+          "clear_brightness": "Clear brightness"
+        },
         "cover": {
           "edit_mode": "Edit favorites",
           "reset_favorites": "Reset favorites",
