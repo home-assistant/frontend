@@ -147,7 +147,14 @@ class DialogRepairsIssue extends LitElement {
                     }
                   >
                     ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
-                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                    ${
+                      learnMoreUrlIsHomeAssistant
+                        ? nothing
+                        : html`<ha-svg-icon
+                            slot="end"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>`
+                    }
                   </ha-button>
                 `
               : ""

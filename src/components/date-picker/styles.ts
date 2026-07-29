@@ -103,13 +103,15 @@ export const dateRangePickerStyles = css`
   }
   calendar-month::part(range-start),
   calendar-month::part(range-start):hover {
-    border-top-left-radius: var(--ha-border-radius-circle);
-    border-bottom-left-radius: var(--ha-border-radius-circle);
+    /* logical: rounds the inline-start corners (works in LTR and RTL) */
+    border-start-start-radius: var(--ha-border-radius-circle);
+    border-end-start-radius: var(--ha-border-radius-circle);
   }
   calendar-month::part(range-end),
   calendar-month::part(range-end):hover {
-    border-top-right-radius: var(--ha-border-radius-circle);
-    border-bottom-right-radius: var(--ha-border-radius-circle);
+    /* logical: rounds the inline-end corners (works in LTR and RTL) */
+    border-start-end-radius: var(--ha-border-radius-circle);
+    border-end-end-radius: var(--ha-border-radius-circle);
   }
   calendar-month::part(range-start):hover,
   calendar-month::part(range-end):hover,

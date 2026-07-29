@@ -19,29 +19,23 @@ jobs:
       url: ${{ steps.deploy.outputs.netlify_url }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version-file: ".nvmrc"
-          cache: yarn
-
-      - name: Install dependencies
-        run: yarn install --immutable
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
 
       - name: Build Gallery
-        run: ./node_modules/.bin/gulp build-gallery
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ./.github/actions/build
+        with:
+          target: build-gallery
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        run: |
-          npx -y netlify-cli deploy --dir=gallery/dist --prod --json > deploy_output.json
-          echo "netlify_url=$(jq -r '.url // .deploy_url' deploy_output.json)" >> "$GITHUB_OUTPUT"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+        uses: ./.github/actions/netlify-deploy
+        with:
+          dir: gallery/dist
+          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          site-id: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}

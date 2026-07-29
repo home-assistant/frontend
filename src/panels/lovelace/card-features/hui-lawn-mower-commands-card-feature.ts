@@ -16,7 +16,11 @@ import "../../../components/ha-svg-icon";
 import { apiContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { LawnMowerEntity } from "../../../data/lawn_mower";
-import { LawnMowerEntityFeature, canDock } from "../../../data/lawn_mower";
+import {
+  LawnMowerEntityFeature,
+  canDock,
+  canStartMowing,
+} from "../../../data/lawn_mower";
 import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -72,6 +76,9 @@ export const LAWN_MOWER_COMMANDS_BUTTONS: Record<
           translationKey: "start",
           icon: mdiPlay,
           serviceName: "start_mowing",
+          disabled:
+            !supportsFeature(stateObj, LawnMowerEntityFeature.START_MOWING) ||
+            !canStartMowing(stateObj),
         };
   },
   dock: (stateObj) => ({

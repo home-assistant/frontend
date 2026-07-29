@@ -51,7 +51,7 @@ export class HuiMarkdownCardEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, text_only: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "style",
@@ -73,9 +73,11 @@ export class HuiMarkdownCardEditor
             },
           },
         },
-        ...(!text_only
-          ? ([{ name: "title", selector: { text: {} } }] as const)
-          : []),
+        {
+          name: "title",
+          visible: { field: "style", operator: "not_eq", value: "text-only" },
+          selector: { text: {} },
+        },
         {
           name: "content",
           required: true,
@@ -131,10 +133,7 @@ export class HuiMarkdownCardEditor
       style: this._config.text_only ? "text-only" : "card",
     };
 
-    const schema = this._schema(
-      this.hass.localize,
-      this._config.text_only || false
-    );
+    const schema = this._schema(this.hass.localize);
 
     return html`
       <ha-form

@@ -1,26 +1,30 @@
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
-import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tip";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import type { BackupConfig } from "../../../../data/backup";
+import { fetchBackupConfig } from "../../../../data/backup";
 import type {
   CloudStatusLoggedIn,
   SubscriptionInfo,
 } from "../../../../data/cloud";
 import {
   cloudLogout,
+  completeCloudOnboarding,
   fetchCloudSubscriptionInfo,
+  ONBOARDING_ITEMS,
   removeCloudData,
 } from "../../../../data/cloud";
+import type { Webhook } from "../../../../data/webhook";
+import { fetchWebhooks } from "../../../../data/webhook";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -29,13 +33,14 @@ import "../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../ha-config-section";
-import "./cloud-ice-servers-pref";
-import "./cloud-remote-pref";
-import "./cloud-tts-pref";
-import "./cloud-webhooks";
+import "./cloud-account-onboarding";
+import "./cloud-account-overview";
+import {
+  onboardingComplete,
+  onboardingPanelCompleted,
+} from "./cloud-account-status";
+import { showCloudOnboardingDialog } from "./show-dialog-cloud-onboarding";
 import { showSupportPackageDialog } from "./show-dialog-cloud-support-package";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -48,6 +53,15 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public cloudStatus!: CloudStatusLoggedIn;
 
   @state() private _subscription?: SubscriptionInfo;
+
+  @state() private _backupConfig?: BackupConfig;
+
+  @state() private _webhooks?: Webhook[];
+
+  // Whether the async backup config fetch has finished (regardless of outcome).
+  // Used to avoid flashing the onboarding card in and out before we know the
+  // backup state — see _showOnboarding.
+  @state() private _backupConfigChecked = false;
 
   protected render() {
     return html`
@@ -77,174 +91,112 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
           </ha-dropdown-item>
         </ha-dropdown>
         <div class="content">
-          <ha-config-section .isWide=${this.isWide}>
-            <span slot="header">Home Assistant Cloud</span>
-            <div slot="introduction">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.thank_you_note"
-                )}
-              </p>
-            </div>
-
-            <ha-card
-              outlined
-              .header=${this.hass.localize(
-                "ui.panel.config.cloud.account.nabu_casa_account"
-              )}
-            >
-              <div class="account-row">
-                <ha-list-item noninteractive twoline>
-                  ${this.cloudStatus.email.replace(
-                    /(\w{3})[\w.-]+@([\w.]+\w)/,
-                    "$1***@$2"
-                  )}
-                  <span slot="secondary" class="wrap">
-                    ${
-                      this._subscription
-                        ? this._subscription.human_description.replace(
-                            "{periodEnd}",
-                            this._subscription.plan_renewal_date
-                              ? formatDateTime(
-                                  new Date(
-                                    this._subscription.plan_renewal_date * 1000
-                                  ),
-                                  this.hass.locale,
-                                  this.hass.config
-                                )
-                              : ""
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.fetching_subscription"
-                          )
-                    }
-                  </span>
-                </ha-list-item>
-              </div>
-
-              ${
-                this.cloudStatus.cloud === "connecting" &&
-                this.cloudStatus.cloud_last_disconnect_reason
-                  ? html`
-                      <ha-alert
-                        alert-type="warning"
-                        .title=${
-                          this.cloudStatus.cloud_last_disconnect_reason.reason
-                        }
-                      ></ha-alert>
-                    `
-                  : ""
-              }
-
-              <div class="account-row">
-                <ha-list-item noninteractive>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.connection_status"
-                  )}:
-                  ${
-                    this.cloudStatus.cloud === "connected"
-                      ? this.hass.localize(
-                          "ui.panel.config.cloud.account.connected"
-                        )
-                      : this.cloudStatus.cloud === "disconnected"
-                        ? this.hass.localize(
-                            "ui.panel.config.cloud.account.not_connected"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.connecting"
-                          )
-                  }
-                </ha-list-item>
-              </div>
-
-              <div class="card-actions">
-                <ha-button
-                  appearance="filled"
-                  href="https://account.nabucasa.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.manage_account"
-                  )}
-                </ha-button>
-                <ha-button
-                  @click=${this._signOut}
-                  variant="danger"
-                  appearance="plain"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.sign_out"
-                  )}
-                </ha-button>
-              </div>
-            </ha-card>
-          </ha-config-section>
-
-          <ha-config-section .isWide=${this.isWide}>
-            <span slot="header"
-              >${this.hass.localize(
-                "ui.panel.config.cloud.account.integrations"
-              )}</span
-            >
-            <div slot="introduction">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.integrations_introduction"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.integrations_introduction2"
-                )}
-                <a
-                  href="https://www.nabucasa.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.integrations_link_all_features"
-                  )}</a
-                >.
-              </p>
-            </div>
-
-            <cloud-remote-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-            ></cloud-remote-pref>
-
-            <cloud-tts-pref
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .cloudStatus=${this.cloudStatus}
-            ></cloud-tts-pref>
-
-            <cloud-ice-servers-pref
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-            ></cloud-ice-servers-pref>
-
-            <ha-tip>
-              <a href="/config/voice-assistants">
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.tip_moved_voice_assistants"
-                )}
-              </a>
-            </ha-tip>
-
-            <cloud-webhooks
-              .hass=${this.hass}
-              .cloudStatus=${this.cloudStatus}
-            ></cloud-webhooks>
-          </ha-config-section>
+          ${
+            this._showOnboarding
+              ? html`
+                  <cloud-account-onboarding
+                    .hass=${this.hass}
+                    .cloudStatus=${this.cloudStatus}
+                    .backupConfig=${this._backupConfig}
+                    @cloud-open-onboarding=${this._openOnboardingDialog}
+                  ></cloud-account-onboarding>
+                `
+              : nothing
+          }
+          <cloud-account-overview
+            .hass=${this.hass}
+            .cloudStatus=${this.cloudStatus}
+            .subscription=${this._subscription}
+            .backupConfig=${this._backupConfig}
+            .webhooks=${this._webhooks}
+            @cloud-sign-out=${this._signOut}
+          ></cloud-account-overview>
         </div>
       </hass-subpage>
     `;
   }
 
+  private get _onboarded(): boolean {
+    return (
+      this.cloudStatus.onboarding_completed ||
+      this.cloudStatus.onboarding_postponed
+    );
+  }
+
+  private get _showOnboarding(): boolean {
+    if (!this.cloudStatus.active_subscription) {
+      return false;
+    }
+
+    if (this._onboarded) {
+      return false;
+    }
+
+    if (!this._backupConfigChecked && this._nonBackupStepsComplete) {
+      return false;
+    }
+
+    // Hide once every step is set up (see _syncOnboardedItems, which records the
+    // completed items on the backend). The setup dialog lives at the document
+    // level (see _openOnboardingDialog), so it survives this card unmounting.
+    return !onboardingComplete(this.cloudStatus, this._backupConfig);
+  }
+
+  private _openOnboardingDialog() {
+    showCloudOnboardingDialog(this, {
+      cloudStatus: this.cloudStatus,
+      backupConfig: this._backupConfig,
+      // The dialog keeps its own copy live; this refreshes the page behind it.
+      onChanged: () => {
+        fireEvent(this, "ha-refresh-cloud-status");
+        this._fetchBackupConfig();
+      },
+    });
+  }
+
+  private get _nonBackupStepsComplete(): boolean {
+    return (
+      onboardingPanelCompleted("remote", this.cloudStatus) &&
+      onboardingPanelCompleted("voice", this.cloudStatus) &&
+      onboardingPanelCompleted("streaming", this.cloudStatus)
+    );
+  }
+
   firstUpdated() {
     this._fetchSubscriptionInfo();
+    this._fetchBackupConfig();
+    this._fetchWebhooks();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("cloudStatus") || changedProps.has("_backupConfig")) {
+      this._syncOnboardedItems();
+    }
+  }
+
+  private async _syncOnboardedItems() {
+    if (!this.cloudStatus.active_subscription) {
+      return;
+    }
+
+    const onboarded = this.cloudStatus.prefs.onboarded_items;
+    const toComplete = ONBOARDING_ITEMS.filter(
+      (item) =>
+        !onboarded.includes(item) &&
+        onboardingPanelCompleted(item, this.cloudStatus, this._backupConfig)
+    );
+
+    if (toComplete.length === 0) {
+      return;
+    }
+
+    try {
+      await completeCloudOnboarding(this.hass, toComplete);
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch {
+      // Best effort; retried on the next status refresh.
+    }
   }
 
   protected override hassSubscribe() {
@@ -286,6 +238,32 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
       this.cloudStatus.cloud !== "connected"
     ) {
       fireEvent(this, "ha-refresh-cloud-status");
+    }
+  }
+
+  private async _fetchBackupConfig() {
+    if (!isComponentLoaded(this.hass.config, "backup")) {
+      this._backupConfigChecked = true;
+      return;
+    }
+    try {
+      const result = await fetchBackupConfig(this.hass);
+      this._backupConfig = result.config;
+    } catch {
+      // Best effort; leave the backup status unknown.
+    } finally {
+      this._backupConfigChecked = true;
+    }
+  }
+
+  private async _fetchWebhooks() {
+    if (!isComponentLoaded(this.hass.config, "webhook")) {
+      return;
+    }
+    try {
+      this._webhooks = await fetchWebhooks(this.hass);
+    } catch {
+      // Best effort; leave the webhook count at zero.
     }
   }
 
@@ -355,33 +333,16 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        [slot="introduction"] {
-          margin: -1em 0;
-        }
-        [slot="introduction"] a {
-          color: var(--primary-color);
-        }
         .content {
-          padding-bottom: 24px;
-        }
-        .account-row {
+          padding: var(--ha-space-7) var(--ha-space-5) 0;
+          padding-bottom: calc(
+            var(--safe-area-inset-bottom) + var(--ha-space-6)
+          );
+          max-width: 860px;
+          margin: 0 auto;
+          gap: var(--ha-space-6);
           display: flex;
-          padding: 0 16px;
-        }
-        .card-actions {
-          display: flex;
-          flex-direction: row-reverse;
-          justify-content: space-between;
-        }
-        ha-button {
-          align-self: center;
-        }
-        .wrap {
-          white-space: normal;
-        }
-        .status {
-          text-transform: capitalize;
-          padding: 16px;
+          flex-direction: column;
         }
       `,
     ];

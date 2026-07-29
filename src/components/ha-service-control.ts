@@ -305,6 +305,10 @@ export class HaServiceControl extends LitElement {
     ) {
       return null;
     }
+    const isPrimaryEntity = (entityId: string) => {
+      const entity = this.hass.entities[entityId];
+      return !entity?.entity_category && !entity?.hidden;
+    };
     const targetEntities =
       ensureArray(
         value?.target?.entity_id || value?.data?.entity_id
@@ -333,11 +337,7 @@ export class HaServiceControl extends LitElement {
           targetSelector
         );
         targetDevices.push(...expanded.devices);
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(primaryEntities);
         targetAreas.push(...expanded.areas);
       });
@@ -362,11 +362,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
         targetDevices.push(...expanded.devices);
       });
@@ -379,11 +375,7 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        const primaryEntities = expanded.entities.filter(
-          (entityId) =>
-            !this.hass.entities[entityId]?.entity_category &&
-            !this.hass.entities[entityId]?.hidden
-        );
+        const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
       });
     }
@@ -550,20 +542,14 @@ export class HaServiceControl extends LitElement {
     }
     ${
       serviceData && "target" in serviceData
-        ? html`<ha-settings-row
-            .narrow=${this.narrow || isFullWidthSelector(targetSelector)}
-          >
-            <span slot="heading"
-              >${this.hass.localize("ui.components.service-control.target")}</span
-            >
-            <ha-selector
-              .hass=${this.hass}
-              .selector=${targetSelector}
-              .disabled=${this.disabled}
-              @value-changed=${this._targetChanged}
-              .value=${this._value?.target}
-            ></ha-selector
-          ></ha-settings-row>`
+        ? html`<ha-selector
+            class="target-selector"
+            .hass=${this.hass}
+            .selector=${targetSelector}
+            .disabled=${this.disabled}
+            @value-changed=${this._targetChanged}
+            .value=${this._value?.target}
+          ></ha-selector>`
         : entityId
           ? html`<ha-entity-picker
               .disabled=${this.disabled}
@@ -903,7 +889,13 @@ export class HaServiceControl extends LitElement {
         }
         if (targetEntities.length) {
           targetEntities = targetEntities.filter((entity) =>
-            entityMeetsTargetSelector(this.hass.states[entity], targetSelector)
+            entityMeetsTargetSelector(
+              this.hass.states[entity],
+              targetSelector,
+              undefined,
+              this.hass.entities,
+              this.hass.devices
+            )
           );
         }
         target = {
@@ -1060,6 +1052,14 @@ export class HaServiceControl extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: var(--service-control-padding, 0 var(--ha-space-4));
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

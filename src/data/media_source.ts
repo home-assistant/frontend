@@ -24,6 +24,23 @@ export const browseLocalMediaPlayer = (
     media_content_id: mediaContentId,
   });
 
+export interface SearchMediaResult {
+  result: MediaPlayerItem[];
+}
+
+export const searchMedia = (
+  hass: HomeAssistant,
+  mediaContentId: string | undefined,
+  searchQuery: string,
+  mediaFilterClasses?: string[]
+): Promise<SearchMediaResult> =>
+  hass.callWS<SearchMediaResult>({
+    type: "media_source/search_media",
+    media_content_id: mediaContentId,
+    search_query: searchQuery,
+    media_filter_classes: mediaFilterClasses,
+  });
+
 export const MANUAL_MEDIA_SOURCE_PREFIX = "__MANUAL_ENTRY__";
 
 export const isManualMediaSourceContentId = (mediaContentId: string) =>

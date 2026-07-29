@@ -36,6 +36,9 @@ export class HassBaseEl extends LitElement {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected checkDataBaseMigration() {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected checkHttpPendingConfig() {}
+
   protected hassChanged(hass, _oldHass) {
     this.__provideHass.forEach((el) => {
       (el as any).hass = hass;

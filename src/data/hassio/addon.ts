@@ -95,7 +95,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   options: Record<string, unknown>;
   privileged: any;
   protected: boolean;
-  rating: "1-8";
+  rating: number;
   schema: HaFormSchema[] | null;
   services_role: string[];
   signed: boolean;
@@ -140,7 +140,7 @@ export interface HassioAddonSetOptionParams {
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
   await hass.callWS({
     type: "supervisor/api",
-    endpoint: "/addons/reload",
+    endpoint: "/store/reload",
     method: "post",
   });
 };

@@ -100,6 +100,10 @@ export class HaLogbook extends LitElement {
 
   private _readyListenerAttached = false;
 
+  public getEntries(): LogbookEntry[] {
+    return this._logbookEntries || [];
+  }
+
   protected render() {
     if (!isComponentLoaded(this.hass.config, "logbook")) {
       return nothing;

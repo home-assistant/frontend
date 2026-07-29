@@ -27,6 +27,10 @@ import {
   getDevices,
   type DevicePickerItem,
 } from "../data/device/device_picker";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import {
   entityComboBoxKeys,
@@ -122,6 +126,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
@@ -211,6 +219,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._loadConfigEntries();
     }
 
+    const devicesChanged =
+      changedProps.has("hass") &&
+      this.hass.devices !== changedProps.get("hass")?.devices;
+    if (
+      (changedProps.has("value") || devicesChanged) &&
+      this.hass &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this.value?.device_id &&
+      ensureArray(this.value.device_id).some(
+        (deviceId) => !this.hass.devices[deviceId]
+      )
+    ) {
+      // A referenced device is missing from the registry; it might be a legacy
+      // composite device that was split. Fetch the split map to offer a fix.
+      this._loadCompositeSplits();
+    }
+
     if (
       this._pendingEntityId &&
       changedProps.has("hass") &&
@@ -297,6 +323,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                     .hass=${this.hass}
                     type="device"
                     .itemId=${device_id}
+                    .compositeSplits=${this._compositeSplits}
                     @remove-target-item=${this._handleRemove}
                     @expand-target-item=${this._handleExpand}
                   ></ha-target-picker-value-chip>
@@ -390,6 +417,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 <ha-target-picker-item-group
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
+                  @migrate-target-item=${this._handleMigrate}
                   type="device"
                   .hass=${this.hass}
                   .items=${{ device: deviceIds }}
@@ -398,6 +426,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                  .compositeSplits=${this._compositeSplits}
                 >
                 </ha-target-picker-item-group>
               `
@@ -479,6 +508,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div class="add-target-wrapper">
         <ha-generic-picker
           .hass=${this.hass}
+          popover-placement="bottom-start"
           .disabled=${this.disabled}
           .autofocus=${this.autofocus}
           .helper=${this.helper}
@@ -1174,6 +1204,31 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     );
   }
 
+  private async _loadCompositeSplits() {
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
+  }
+
+  private _handleMigrate(
+    ev: HASSDomEvent<HASSDomEvents["migrate-target-item"]>
+  ) {
+    const { id, replacements } = ev.detail;
+    let value = this._removeItem(this.value, "device", id);
+    for (const replacement of replacements) {
+      value = this._addTargetToValue(value, {
+        type: "device",
+        id: replacement,
+      });
+    }
+    fireEvent(this, "value-changed", { value });
+  }
+
   private _renderRow = (
     item:
       | PickerComboBoxItem
@@ -1341,7 +1396,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     .item-groups {
       overflow: hidden;
-      border: 2px solid var(--divider-color);
+      border: var(--ha-border-width-sm) solid var(--divider-color);
       border-radius: var(--ha-border-radius-lg);
     }
   `;
@@ -1356,6 +1411,7 @@ declare global {
     "remove-target-item": TargetItem;
     "expand-target-item": TargetItem;
     "replace-target-item": TargetItem;
+    "migrate-target-item": { id: string; replacements: string[] };
     "remove-target-group": string;
   }
 }

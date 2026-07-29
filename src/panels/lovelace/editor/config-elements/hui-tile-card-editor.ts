@@ -92,7 +92,6 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean,
       showTimeFormat: boolean
     ) =>
       [
@@ -144,31 +143,25 @@ export class HuiTileCardEditor
                 },
               ],
             },
-            ...(!hideState
-              ? ([
-                  {
-                    name: "state_content",
-                    selector: {
-                      ui_state_content: {
-                        allow_context: true,
-                      },
-                    },
-                    context: {
-                      filter_entity: "entity",
-                    },
-                  },
-                ] as const satisfies readonly HaFormSchema[])
-              : []),
-            ...(showTimeFormat
-              ? ([
-                  {
-                    name: "time_format",
-                    selector: {
-                      ui_time_format: {},
-                    },
-                  },
-                ] as const satisfies readonly HaFormSchema[])
-              : []),
+            {
+              name: "state_content",
+              visible: { field: "hide_state", operator: "not_eq", value: true },
+              selector: {
+                ui_state_content: {
+                  allow_context: true,
+                },
+              },
+              context: {
+                filter_entity: "entity",
+              },
+            },
+            {
+              name: "time_format",
+              visible: showTimeFormat,
+              selector: {
+                ui_time_format: {},
+              },
+            },
             {
               name: "content_layout",
               required: true,
@@ -293,12 +286,7 @@ export class HuiTileCardEditor
         this._config.state_content
       );
 
-    const schema = this._schema(
-      this.hass.localize,
-      entityId,
-      this._config.hide_state ?? false,
-      showTimeFormat
-    );
+    const schema = this._schema(this.hass.localize, entityId, showTimeFormat);
 
     const vertical = this._config.vertical ?? false;
 

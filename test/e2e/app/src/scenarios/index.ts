@@ -1,4 +1,5 @@
 import type { ExtEntityRegistryEntry } from "../../../../../src/data/entity/entity_registry";
+import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -89,6 +90,40 @@ const lightMoreInfoScenario: Scenario = async (hass) => {
   hass.mockWS("config/entity_registry/get", () => registryEntry);
 };
 
+const quickSearchAssistScenario: Scenario = async (hass) => {
+  const pipeline: AssistPipeline = {
+    id: "test-pipeline",
+    name: "Test Assist",
+    language: "en",
+    conversation_engine: "conversation.home_assistant",
+    conversation_language: "en",
+    stt_engine: null,
+    stt_language: null,
+    tts_engine: null,
+    tts_language: null,
+    tts_voice: null,
+    wake_word_entity: null,
+    wake_word_id: null,
+  };
+
+  hass.updateHass({
+    config: {
+      ...hass.config,
+      components: [...hass.config.components, "conversation"],
+    },
+    enableShortcuts: true,
+  });
+  hass.mockWS("assist_pipeline/pipeline/list", () => ({
+    pipelines: [pipeline],
+    preferred_pipeline: pipeline.id,
+  }));
+  hass.mockWS("assist_pipeline/pipeline/get", () => pipeline);
+  hass.mockWS("assist_pipeline/run", (message) => {
+    window.__assistRun = message;
+    return () => undefined;
+  });
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -97,4 +132,5 @@ export const scenarios: Record<string, Scenario> = {
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
   "light-more-info": lightMoreInfoScenario,
+  "quick-search-assist": quickSearchAssistScenario,
 };

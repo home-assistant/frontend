@@ -38,8 +38,7 @@ export class HuiSelectOptionsCardFeatureEditor
   private _schema = memoizeOne(
     (
       formatEntityState: FormatEntityStateFunc,
-      stateObj: HassEntity | undefined,
-      customizeOptions: boolean
+      stateObj: HassEntity | undefined
     ) =>
       [
         {
@@ -48,24 +47,21 @@ export class HuiSelectOptionsCardFeatureEditor
             boolean: {},
           },
         },
-        ...(customizeOptions
-          ? ([
-              {
-                name: "options",
-                selector: {
-                  select: {
-                    multiple: true,
-                    reorder: true,
-                    options:
-                      stateObj?.attributes.options?.map((option) => ({
-                        value: option,
-                        label: formatEntityState(stateObj, option),
-                      })) || [],
-                  },
-                },
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
+        {
+          name: "options",
+          visible: { field: "customize_options", value: true },
+          selector: {
+            select: {
+              multiple: true,
+              reorder: true,
+              options:
+                stateObj?.attributes.options?.map((option) => ({
+                  value: option,
+                  label: formatEntityState(stateObj, option),
+                })) || [],
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -83,11 +79,7 @@ export class HuiSelectOptionsCardFeatureEditor
       customize_options: this._config.options !== undefined,
     };
 
-    const schema = this._schema(
-      this.hass.formatEntityState,
-      stateObj,
-      data.customize_options
-    );
+    const schema = this._schema(this.hass.formatEntityState, stateObj);
 
     return html`
       <ha-form

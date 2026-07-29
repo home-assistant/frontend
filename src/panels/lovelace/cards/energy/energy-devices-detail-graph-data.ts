@@ -23,6 +23,7 @@ import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCompareTransform,
   getPeriodMidpointOffset,
   splitUntrackedConsumption,
@@ -238,15 +239,15 @@ function processUntracked(
   const sortedTimes = Object.keys(consumptionData.used_total).sort(
     (a, b) => Number(a) - Number(b)
   );
-  // Only start timestamps available here, so center sub-daily bars using the
-  // gap between the first two entries. With a lone first-of-day bucket there is
-  // no gap to measure, so fall back to the nominal period midpoint — which
-  // matches the device bars' computeStatMidpoint instead of collapsing to the
-  // period start and splitting into a second stack.
-  const periodOffset =
-    (period === "hour" || period === "5minute") && sortedTimes.length >= 2
-      ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
-      : getPeriodMidpointOffset(period);
+  // Only start timestamps available here, so center sub-daily bars from the
+  // gap between the first two entries, clamped to the nominal period so
+  // sparse or lone buckets stay centered on the same grid as the device bars.
+  const periodOffset = getPeriodMidpointOffset(
+    period,
+    sortedTimes.length >= 2
+      ? Number(sortedTimes[1]) - Number(sortedTimes[0])
+      : undefined
+  );
   sortedTimes.forEach((time) => {
     const ts = Number(time);
     const x = compare
@@ -515,8 +516,12 @@ export function generateEnergyDevicesDetailGraphData(
     }
   }
 
-  fillDataGapsAndRoundCaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  fillDataGapsAndRoundCaps(
+    datasets,
+    true,
+    generateFillBuckets(datasets, start, end, getSuggestedPeriod(start, end))
+  );
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   return {
     chartData: datasets,

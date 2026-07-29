@@ -34,7 +34,10 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
 import { labelsContext } from "../../data/context";
-import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type {
+  DeviceCompositeSplits,
+  DeviceRegistryEntry,
+} from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import { domainToName } from "../../data/integration";
@@ -54,6 +57,7 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
+import "../ha-button";
 import "../ha-icon-button";
 import "../ha-state-icon";
 import "../ha-svg-icon";
@@ -108,6 +112,9 @@ export class HaTargetPickerItemRow extends LitElement {
   @property({ type: Boolean, attribute: "primary-entities-only" })
   public primaryEntitiesOnly?: boolean;
 
+  @property({ attribute: false })
+  public compositeSplits?: DeviceCompositeSplits;
+
   @state() private _iconImg?: string;
 
   @state() private _domainName?: string;
@@ -127,6 +134,15 @@ export class HaTargetPickerItemRow extends LitElement {
   protected render() {
     const { name, context, iconPath, fallbackIconPath, stateObject, notFound } =
       this._itemData(this.type, this.itemId);
+
+    const replacement =
+      this.type === "device" && notFound
+        ? this._getReplacement(this.itemId)
+        : undefined;
+    // Only surface the "replaced" state when there is at least one available
+    // replacement device to migrate to. If every replacement device was
+    // deleted (or filtered out), fall back to the plain "not found" state.
+    const canMigrate = !!replacement?.candidates.length;
 
     const showEntities = this.type !== "entity" && !notFound;
 
@@ -174,15 +190,20 @@ export class HaTargetPickerItemRow extends LitElement {
         }
       </div>
 
-      <div slot="headline">${name}</div>
+      <div slot="headline">${(canMigrate && replacement?.name) || name}</div>
       ${
         notFound || (context && !this.hideContext)
           ? html`<span slot="supporting-text"
               >${
                 notFound
-                  ? this.hass.localize(
-                      `ui.components.target-picker.${this.type}_not_found`
-                    )
+                  ? canMigrate
+                    ? this.hass.localize(
+                        "ui.components.target-picker.device_replaced",
+                        { count: replacement!.candidates.length }
+                      )
+                    : this.hass.localize(
+                        `ui.components.target-picker.${this.type}_not_found`
+                      )
                   : context
               }</span
             >`
@@ -226,6 +247,24 @@ export class HaTargetPickerItemRow extends LitElement {
                       : nothing
                 }
               </div>
+            `
+          : nothing
+      }
+      ${
+        canMigrate
+          ? html`
+              <ha-button
+                class="migrate"
+                slot="end"
+                appearance="plain"
+                variant="warning"
+                size="s"
+                @click=${this._migrate}
+              >
+                ${this.hass.localize(
+                  "ui.components.target-picker.replace_device"
+                )}
+              </ha-button>
             `
           : nothing
       }
@@ -707,6 +746,51 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   }
 
+  // Returns the split devices that replaced a removed composite device and
+  // pass this row's filters, or undefined if the item is not a replaced device.
+  private _getReplacement(item: string) {
+    const split = this.compositeSplits?.[item];
+    if (!split || this.hass.devices[item]) {
+      return undefined;
+    }
+    const candidates = split.split_ids.filter((id) => {
+      const device = this.hass.devices[id];
+      return (
+        device &&
+        deviceMeetsFilter(
+          device,
+          this.hass.entities,
+          this.deviceFilter,
+          this.includeDomains,
+          this.includeDeviceClasses,
+          this.hass.states,
+          this.entityFilter,
+          !this.primaryEntitiesOnly
+        )
+      );
+    });
+    // Display the replaced reference using the primary replacement device's
+    // name instead of the removed composite device id. Fall back to the first
+    // available candidate if the primary device itself was deleted.
+    const nameDevice =
+      (split.primary_id && this.hass.devices[split.primary_id]) ||
+      (candidates.length ? this.hass.devices[candidates[0]] : undefined);
+    const name = nameDevice ? computeDeviceName(nameDevice) : undefined;
+    return { candidates, name };
+  }
+
+  private _migrate = (ev: MouseEvent) => {
+    ev.stopPropagation();
+    const replacement = this._getReplacement(this.itemId);
+    if (!replacement?.candidates.length) {
+      return;
+    }
+    fireEvent(this, "migrate-target-item", {
+      id: this.itemId,
+      replacements: replacement.candidates,
+    });
+  };
+
   private _openDetails(ev: MouseEvent) {
     ev.stopPropagation();
     showTargetDetailsDialog(this, {
@@ -744,6 +828,11 @@ export class HaTargetPickerItemRow extends LitElement {
 
       .error [slot="supporting-text"] {
         color: var(--ha-color-on-warning-normal);
+      }
+
+      .migrate {
+        align-self: center;
+        white-space: nowrap;
       }
 
       .replaceable {

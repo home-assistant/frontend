@@ -173,6 +173,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
+  capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -842,6 +843,8 @@ export const getEnergyDataCollection = (
           if (err.code === "not_found") {
             return {
               prefs: EMPTY_PREFERENCES,
+              start: collection.start,
+              end: collection.end,
             } as EnergyData;
           }
           throw err;

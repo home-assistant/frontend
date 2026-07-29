@@ -28,8 +28,8 @@ exports[`generateEnergyDevicesDetailGraphData > large month-of-hourly digest is 
     "start",
     "yAxisFractionDigits",
   ],
-  "numberCount": 53571,
-  "numberSum": "3.78242823564e+16",
+  "numberCount": 66969,
+  "numberSum": "4.54406219712e+16",
   "type": "object",
 }
 `;
@@ -14696,7 +14696,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for 5minute per
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -16102,7 +16102,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for a small hou
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -16368,6 +16368,15 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for daily perio
             1704499200000,
             1.321,
             1704499200000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704585600000,
+            0,
           ],
         },
       ],
@@ -16649,7 +16658,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for daily perio
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -18218,7 +18227,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -18350,6 +18359,222 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
           0.76,
           1704063600000,
         ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
       ],
       "id": "compare-sensor.grid_consumption-0",
       "itemStyle": {
@@ -18484,6 +18709,222 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
           1.826,
           1704063600000,
         ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
       ],
       "id": "compare-sensor.solar_production-1",
       "itemStyle": {
@@ -18858,6 +19299,222 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
             1704063600000,
           ],
         },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
       ],
       "id": "compare-sensor.battery_discharge-2",
       "itemStyle": {
@@ -19110,6 +19767,222 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
             1704065400000,
             0,
             1704063600000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
           ],
         },
       ],
@@ -19484,6 +20357,222 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
             1704065400000,
             -1.1470000000000002,
             1704063600000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
           ],
         },
       ],
@@ -21922,7 +23011,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -23019,6 +24108,15 @@ exports[`generateEnergyDevicesDetailGraphData > respects max_devices config 1`] 
             1704146400000,
           ],
         },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
       ],
       "id": "untracked-negative-1706745600000",
       "itemStyle": {
@@ -23083,6 +24181,6 @@ exports[`generateEnergyDevicesDetailGraphData > respects max_devices config 1`] 
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;

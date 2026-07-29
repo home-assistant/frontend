@@ -177,6 +177,18 @@ gulp.task("rspack-prod-demo", () =>
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
+gulp.task("rspack-prod-demo-e2e", () =>
+  prodBuild(
+    createDemoConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
@@ -269,6 +281,18 @@ gulp.task("rspack-prod-e2e-test-app", () =>
     bothBuilds(createE2eTestAppConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
+gulp.task("rspack-prod-e2e-test-app-e2e", () =>
+  prodBuild(
+    createE2eTestAppConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
