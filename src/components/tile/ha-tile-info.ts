@@ -133,6 +133,7 @@ export class HaTileInfo extends LitElement {
       -webkit-box-orient: vertical;
       -webkit-line-clamp: var(--tile-info-primary-line-clamp);
       overflow: hidden;
+      overflow-wrap: anywhere;
       width: 100%;
     }
     .primary {
