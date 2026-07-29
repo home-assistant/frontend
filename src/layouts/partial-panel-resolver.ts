@@ -8,6 +8,7 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { narrowViewportContext } from "../data/context";
 import { getDefaultPanel } from "../data/panel";
 import type { CustomPanelInfo } from "../data/panel_custom";
@@ -17,6 +18,7 @@ import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
 const CACHE_URL_PATHS = ["lovelace", "home", "config"];
+const PANEL_READY_TIMEOUT = 2000;
 const COMPONENTS = {
   app: () => import("../panels/app/ha-panel-app"),
   energy: () => import("../panels/energy/ha-panel-energy"),
@@ -219,9 +221,12 @@ class PartialPanelResolver extends HassRouterPage {
       )
     ) {
       await this.rebuild();
-      await this.pageRendered;
+      await promiseTimeout(PANEL_READY_TIMEOUT, this.pageRendered).catch(
+        () => undefined
+      );
       // Only fire frontend/loaded when this call actually removed the launch
-      // screen, so later panel updates do not fire it again.
+      // screen, so later panel updates do not fire it again. Native apps remove
+      // it instantly because their own splash screen is still visible.
       if (
         removeLaunchScreen(!!this.hass.auth.external?.config.hasSplashscreen)
       ) {

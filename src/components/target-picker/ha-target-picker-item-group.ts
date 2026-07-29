@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
 import type { HomeAssistant } from "../../types";
@@ -52,6 +53,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ type: Boolean, attribute: "primary-entities-only" })
   public primaryEntitiesOnly?: boolean;
 
+  @property({ attribute: false })
+  public compositeSplits?: DeviceCompositeSplits;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -87,6 +91,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .includeDomains=${this.includeDomains}
                     .includeDeviceClasses=${this.includeDeviceClasses}
                     .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                    .compositeSplits=${this.compositeSplits}
                   ></ha-target-picker-item-row>`
               )
             : nothing
