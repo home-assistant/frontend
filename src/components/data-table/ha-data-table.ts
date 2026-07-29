@@ -12,6 +12,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { join } from "lit/directives/join";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
@@ -692,28 +693,34 @@ export class HaDataTable extends LitElement {
                   : narrow && column.main
                     ? html`<div class="primary">${row[key]}</div>
                         <div class="secondary">
-                          ${Object.entries(columns)
-                            .filter(
-                              ([key2, column2]) =>
-                                !column2.hidden &&
-                                !column2.main &&
-                                !column2.showNarrow &&
-                                !(this.columnOrder &&
-                                this.columnOrder.includes(key2)
-                                  ? (this.hiddenColumns?.includes(key2) ??
-                                    column2.defaultHidden)
-                                  : column2.defaultHidden)
-                            )
-                            .map(
-                              ([key2, column2], i) =>
-                                html`${
-                                  i !== 0 ? STRINGS_SEPARATOR_DOT : nothing
-                                }${
-                                  column2.template
-                                    ? column2.template(row)
-                                    : row[key2]
-                                }`
-                            )}
+                          ${join(
+                            Object.entries(columns)
+                              .filter(
+                                ([key2, column2]) =>
+                                  !column2.hidden &&
+                                  !column2.main &&
+                                  !column2.showNarrow &&
+                                  !(this.columnOrder &&
+                                  this.columnOrder.includes(key2)
+                                    ? (this.hiddenColumns?.includes(key2) ??
+                                      column2.defaultHidden)
+                                    : column2.defaultHidden)
+                              )
+                              .map(([key2, column2]) =>
+                                column2.template
+                                  ? column2.template(row)
+                                  : row[key2]
+                              )
+                              // skip empty cells, so we don't render stray separators
+                              .filter(
+                                (value) =>
+                                  value !== undefined &&
+                                  value !== null &&
+                                  value !== "" &&
+                                  value !== nothing
+                              ),
+                            STRINGS_SEPARATOR_DOT
+                          )}
                         </div>
                         ${
                           column.extraTemplate
