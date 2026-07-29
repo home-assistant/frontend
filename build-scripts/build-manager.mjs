@@ -6,16 +6,28 @@
 //   (no mode)          Run in the foreground.
 //   --background       Start detached, print the pid, then exit and leave it
 //                      running.
-//   --status           Report whether a background build is running.
-//   --stop             Stop a running background build.
+//   --status           Report whether a managed build is running.
+//   --stop             Stop a managed build.
 //   --logs [--follow]  Print (or follow) the background build log.
 //
 //   --modern           Build only the modern frontend_latest bundle.
 
-import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  LIFECYCLE_MODE_FLAGS,
+  isProcessRecordAlive,
+  outputLog,
+  processStartTime,
+  readProcessRecord,
+  runCli,
+  spawnDetachedToLog,
+  spawnForeground,
+  terminateProcess,
+  waitFor,
+  writeProcessRecord,
+} from "./managed-process.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -24,7 +36,9 @@ const repoRoot = path.resolve(
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
 const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
 const logFile = path.join(stateDir, "build.log");
-const pidFile = path.join(stateDir, "build.pid");
+const lockDir = path.join(stateDir, "build.lock");
+const lockFile = path.join(lockDir, "process.json");
+const cleanupLockDir = path.join(stateDir, "cleanup.lock");
 
 const usage = () => {
   process.stderr.write(
@@ -36,79 +50,24 @@ const usage = () => {
 const parseArgs = (argv) => {
   const args = {
     mode: "foreground",
+    modes: [],
     follow: false,
     modern: false,
     unknown: [],
   };
   for (const arg of argv) {
-    switch (arg) {
-      case "--modern":
-        args.modern = true;
-        break;
-      case "--background":
-        args.mode = "background";
-        break;
-      case "--status":
-        args.mode = "status";
-        break;
-      case "--stop":
-        args.mode = "stop";
-        break;
-      case "--logs":
-        args.mode = "logs";
-        break;
-      case "--follow":
-        args.follow = true;
-        break;
-      default:
-        args.unknown.push(arg);
+    if (LIFECYCLE_MODE_FLAGS.has(arg)) {
+      args.mode = LIFECYCLE_MODE_FLAGS.get(arg);
+      args.modes.push(arg);
+    } else if (arg === "--modern") {
+      args.modern = true;
+    } else if (arg === "--follow") {
+      args.follow = true;
+    } else {
+      args.unknown.push(arg);
     }
   }
   return args;
-};
-
-const readPid = () => {
-  try {
-    const pid = Number(fs.readFileSync(pidFile, "utf8"));
-    return Number.isInteger(pid) && pid > 0 ? pid : undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-const isAlive = (pid) => {
-  if (!pid) {
-    return false;
-  }
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (err) {
-    // EPERM means the process exists but is owned by someone else.
-    return err.code === "EPERM";
-  }
-};
-
-const removePid = () => {
-  try {
-    fs.rmSync(pidFile);
-  } catch {
-    // Already gone.
-  }
-};
-
-// Signal the whole process group (the background build is its group leader),
-// falling back to the bare pid if that is not permitted.
-const killProcessTree = (pid, sig) => {
-  try {
-    process.kill(-pid, sig);
-  } catch {
-    try {
-      process.kill(pid, sig);
-    } catch {
-      // Already gone.
-    }
-  }
 };
 
 const hints = () =>
@@ -116,104 +75,198 @@ const hints = () =>
   "  Status: yarn build --status\n" +
   "  Logs:   yarn build --logs\n";
 
-const runningPid = () => {
-  const pid = readPid();
-  if (pid && isAlive(pid)) {
-    return pid;
+const readBuild = () => readProcessRecord(lockFile);
+
+const releaseBuild = (token) => {
+  try {
+    fs.mkdirSync(cleanupLockDir);
+  } catch {
+    return;
   }
-  if (pid) {
-    removePid();
+  try {
+    if (readBuild()?.token === token) {
+      fs.rmSync(lockDir, { recursive: true, force: true });
+    }
+  } finally {
+    fs.rmSync(cleanupLockDir, { recursive: true, force: true });
   }
-  return undefined;
+};
+
+const removeStaleBuild = () => {
+  try {
+    fs.mkdirSync(cleanupLockDir);
+  } catch {
+    return false;
+  }
+  try {
+    const existing = readBuild();
+    if (existing && isProcessRecordAlive(existing)) {
+      return false;
+    }
+    if (!existing && Date.now() - fs.statSync(lockDir).mtimeMs < 5000) {
+      return false;
+    }
+    fs.rmSync(lockDir, { recursive: true, force: true });
+    return true;
+  } finally {
+    fs.rmSync(cleanupLockDir, { recursive: true, force: true });
+  }
+};
+
+const acquireBuild = (modern, foreground) => {
+  fs.mkdirSync(stateDir, { recursive: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      fs.mkdirSync(lockDir);
+      const token = `${process.pid}-${Date.now()}-${Math.random()}`;
+      writeProcessRecord(lockFile, {
+        pid: process.pid,
+        startTime: processStartTime(process.pid),
+        processGroup: false,
+        foreground,
+        modern,
+        starting: true,
+        token,
+      });
+      return { token };
+    } catch (err) {
+      if (err.code !== "EEXIST") {
+        throw err;
+      }
+      const existing = readBuild();
+      if (existing && isProcessRecordAlive(existing)) {
+        return { existing };
+      }
+      if (!removeStaleBuild()) {
+        return { existing: readBuild() };
+      }
+    }
+  }
+  return { existing: readBuild() };
+};
+
+const updateBuild = (token, child, processGroup) => {
+  const existing = readBuild();
+  if (existing?.token !== token) {
+    throw Error("Frontend build lock ownership was lost during startup.");
+  }
+  writeProcessRecord(lockFile, {
+    ...existing,
+    pid: child.pid,
+    startTime: processStartTime(child.pid),
+    processGroup,
+    starting: false,
+  });
 };
 
 const taskFor = (modern) => (modern ? "build-app-modern" : "build-app");
 
-const runForeground = (modern) =>
-  new Promise((resolve) => {
-    const pid = runningPid();
-    if (pid) {
-      process.stderr.write(
-        `Frontend build already running in the background (pid ${pid}). ` +
-          "Stop it with yarn build --stop.\n"
-      );
-      resolve(1);
-      return;
-    }
-    const child = spawn(gulpBin, [taskFor(modern)], {
-      cwd: repoRoot,
-      stdio: "inherit",
-    });
-    child.on("exit", (code) => resolve(code ?? 1));
-  });
+const reportExisting = (existing) => {
+  process.stdout.write(
+    `Frontend ${existing?.modern ? "modern " : ""}build already running` +
+      `${existing?.pid ? ` (pid ${existing.pid})` : ""}.\n${hints()}`
+  );
+};
 
-const runBackground = (modern) => {
-  const existing = runningPid();
-  if (existing) {
-    process.stdout.write(
-      `Frontend build already running (pid ${existing}).\n${hints()}`
-    );
+const runForeground = async (modern) => {
+  const lock = acquireBuild(modern, true);
+  if (!lock.token) {
+    reportExisting(lock.existing);
+    return 1;
+  }
+  try {
+    return await spawnForeground({
+      cmd: gulpBin,
+      args: [taskFor(modern)],
+      cwd: repoRoot,
+      processGroup: true,
+      onSpawn: (child) => updateBuild(lock.token, child, true),
+    });
+  } finally {
+    releaseBuild(lock.token);
+  }
+};
+
+const runBackground = async (modern) => {
+  const lock = acquireBuild(modern, false);
+  if (!lock.token) {
+    reportExisting(lock.existing);
     return 0;
   }
-  fs.mkdirSync(stateDir, { recursive: true });
-  const fd = fs.openSync(logFile, "w");
-  const child = spawn(gulpBin, [taskFor(modern)], {
-    cwd: repoRoot,
-    detached: true,
-    stdio: ["ignore", fd, fd],
-  });
-  fs.closeSync(fd);
-  fs.writeFileSync(pidFile, String(child.pid));
-  child.unref();
-  process.stdout.write(
-    `Started ${modern ? "modern " : ""}frontend build (pid ${child.pid})\n` +
-      hints()
-  );
-  return 0;
+  try {
+    const child = await spawnDetachedToLog({
+      cmd: gulpBin,
+      args: [taskFor(modern)],
+      cwd: repoRoot,
+      logFile,
+    });
+    updateBuild(lock.token, child, true);
+    process.stdout.write(
+      `Started ${modern ? "modern " : ""}frontend build (pid ${child.pid})\n` +
+        hints()
+    );
+    return 0;
+  } catch (err) {
+    releaseBuild(lock.token);
+    throw err;
+  }
 };
 
 const runStatus = () => {
-  const pid = runningPid();
-  process.stdout.write(
-    pid
-      ? `Frontend build running (pid ${pid}).\n`
-      : "Frontend build not running.\n"
-  );
+  const existing = readBuild();
+  if (existing && isProcessRecordAlive(existing)) {
+    process.stdout.write(
+      `Frontend ${existing.modern ? "modern " : ""}build running (pid ${existing.pid}).\n`
+    );
+  } else {
+    if (existing) {
+      removeStaleBuild();
+    }
+    process.stdout.write("Frontend build not running.\n");
+  }
   return 0;
 };
 
-const runStop = () => {
-  const pid = runningPid();
-  if (!pid) {
-    // Idempotent: stopping something that is not running is a success.
+const runStop = async () => {
+  let existing = readBuild();
+  if (existing?.starting) {
+    const token = existing.token;
+    await waitFor(
+      () => {
+        const current = readBuild();
+        return !current?.starting || current.token !== token;
+      },
+      100,
+      5000
+    );
+    existing = readBuild();
+  }
+  if (!existing || !isProcessRecordAlive(existing)) {
+    if (existing) {
+      removeStaleBuild();
+    }
     process.stdout.write("Frontend build not running.\n");
     return 0;
   }
-  killProcessTree(pid, "SIGTERM");
-  removePid();
-  process.stdout.write(`Stopped frontend build (pid ${pid}).\n`);
+  if (
+    !(await terminateProcess({
+      pid: existing.pid,
+      processGroup: existing.processGroup,
+      isStopped: () => !isProcessRecordAlive(existing),
+    }))
+  ) {
+    process.stderr.write(
+      `Failed to stop frontend build (pid ${existing.pid}). Stop it manually.\n`
+    );
+    return 1;
+  }
+  releaseBuild(existing.token);
+  process.stdout.write(`Stopped frontend build (pid ${existing.pid}).\n`);
   return 0;
 };
 
-const runLogs = (follow) => {
-  if (!fs.existsSync(logFile)) {
-    process.stdout.write(`No frontend build log yet (${logFile}).\n`);
-    return Promise.resolve(0);
-  }
-  if (!follow) {
-    process.stdout.write(fs.readFileSync(logFile, "utf8"));
-    return Promise.resolve(0);
-  }
-  return new Promise((resolve) => {
-    const tail = spawn("tail", ["-f", logFile], { stdio: "inherit" });
-    tail.on("error", () => {
-      // No tail available; fall back to a one-shot dump.
-      process.stdout.write(fs.readFileSync(logFile, "utf8"));
-      resolve(0);
-    });
-    tail.on("exit", (code) => resolve(code ?? 0));
-  });
-};
+const runLogs = (follow) =>
+  outputLog(logFile, follow, `No frontend build log yet (${logFile}).\n`);
 
 const main = async () => {
   const args = parseArgs(process.argv.slice(2));
@@ -222,26 +275,23 @@ const main = async () => {
     usage();
     return 1;
   }
-  switch (args.mode) {
-    case "background":
-      return runBackground(args.modern);
-    case "status":
-      return runStatus();
-    case "stop":
-      return runStop();
-    case "logs":
-      return runLogs(args.follow);
-    default:
-      return runForeground(args.modern);
+  if (
+    args.modes.length > 1 ||
+    (args.follow && args.mode !== "logs") ||
+    (args.modern && !["foreground", "background"].includes(args.mode))
+  ) {
+    process.stderr.write("Invalid combination of build arguments.\n");
+    usage();
+    return 1;
   }
+  const handlers = {
+    foreground: () => runForeground(args.modern),
+    background: () => runBackground(args.modern),
+    status: runStatus,
+    stop: runStop,
+    logs: () => runLogs(args.follow),
+  };
+  return handlers[args.mode]();
 };
 
-main().then(
-  (code) => {
-    process.exitCode = code;
-  },
-  (err) => {
-    process.stderr.write(`${err?.stack || err}\n`);
-    process.exitCode = 1;
-  }
-);
+runCli(main);

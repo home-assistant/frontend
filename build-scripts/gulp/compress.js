@@ -50,7 +50,12 @@ const compressAppOtherZopfli = () =>
 
 gulp.task(
   "compress-app-modern",
-  gulp.parallel(compressAppModernBrotli, compressAppModernZopfli)
+  gulp.parallel(
+    compressAppModernBrotli,
+    compressAppOtherBrotli,
+    compressAppModernZopfli,
+    compressAppOtherZopfli
+  )
 );
 
 gulp.task(
