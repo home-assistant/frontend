@@ -1,4 +1,5 @@
 import type { PowerConfig } from "../../../../data/energy";
+import { deepEqual } from "../../../../common/util/deep-equal";
 
 export type PowerType = "none" | "standard" | "inverted" | "two_sensors";
 
@@ -100,4 +101,27 @@ export function buildPowerExcludeList(
   ].filter(Boolean) as string[];
 
   return powerIds.filter((id) => !currentPowerIds.includes(id));
+}
+
+/**
+ * Returns the entity id of the power sensor the backend generated for a saved
+ * source, if any. Inverted and two sensor configs get such a helper, its entity
+ * id is stored in `stat_rate`. Returns nothing while the config differs from the
+ * saved one, as the helper doesn't match the edited config yet.
+ */
+export function getPowerHelperEntityId(
+  source: { stat_rate?: string; power_config?: PowerConfig } | undefined,
+  currentPowerConfig: PowerConfig
+): string | undefined {
+  if (!source?.stat_rate || !source.power_config) {
+    return undefined;
+  }
+  const savedPowerType = getPowerTypeFromConfig(source.power_config);
+  if (savedPowerType !== "inverted" && savedPowerType !== "two_sensors") {
+    return undefined;
+  }
+  if (!deepEqual(source.power_config, currentPowerConfig)) {
+    return undefined;
+  }
+  return source.stat_rate;
 }

@@ -29,6 +29,7 @@ import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
   getInitialPowerConfig,
+  getPowerHelperEntityId,
   getPowerTypeFromConfig,
   isPowerConfigValid,
   type PowerType,
@@ -227,6 +228,10 @@ export class DialogEnergyBatterySettings
           .powerType=${this._powerType}
           .powerConfig=${this._powerConfig}
           .excludeList=${this._excludeListPower}
+          .helperEntityId=${getPowerHelperEntityId(
+            this._params.source,
+            this._powerConfig
+          )}
           .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>

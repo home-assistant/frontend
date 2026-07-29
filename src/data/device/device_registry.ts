@@ -101,6 +101,23 @@ export const fetchDeviceCompositeSplits = (
   return request;
 };
 
+/**
+ * Fetch the devices that are linked to the given device because they share at
+ * least one connection or identifier. These are separate devices (one per
+ * config entry) that represent the same physical hardware, managed by
+ * different integrations.
+ */
+export const fetchLinkedDevices = (
+  hass: Pick<HomeAssistant, "callWS">,
+  deviceId: string
+): Promise<string[]> =>
+  hass
+    .callWS<{ linked_devices: string[] }>({
+      type: "config/device_registry/list_linked_devices",
+      device_id: deviceId,
+    })
+    .then((result) => result.linked_devices);
+
 export const fallbackDeviceName = (
   hass: HomeAssistant,
   entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
