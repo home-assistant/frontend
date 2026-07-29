@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
@@ -31,9 +31,9 @@ import {
   getInitialPowerConfig,
   getPowerHelperEntityId,
   getPowerTypeFromConfig,
-  type HaEnergyPowerConfig,
+  isPowerConfigValid,
   type PowerType,
-} from "./ha-energy-power-config";
+} from "./power-config";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
@@ -67,8 +67,6 @@ export class DialogEnergyBatterySettings
   @state() private _energy_units?: string[];
 
   @state() private _error?: string;
-
-  @query("ha-energy-power-config") private _powerConfigEl?: HaEnergyPowerConfig;
 
   private _excludeList?: string[];
 
@@ -300,11 +298,7 @@ export class DialogEnergyBatterySettings
     }
 
     // Check power config validity
-    if (this._powerConfigEl && !this._powerConfigEl.isValid()) {
-      return false;
-    }
-
-    return true;
+    return isPowerConfigValid(this._powerType, this._powerConfig);
   }
 
   private async _updateMetadata(statId: string) {
@@ -379,6 +373,7 @@ export class DialogEnergyBatterySettings
     if (this._source.capacity === undefined) {
       delete this._source.capacity;
     }
+    this._updateFormDirtyState();
   }
 
   private async _save() {

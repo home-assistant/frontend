@@ -1,5 +1,5 @@
 import { assert, describe, it } from "vitest";
-import { getPowerHelperEntityId } from "../../../../src/panels/config/energy/dialogs/ha-energy-power-config";
+import { getPowerHelperEntityId } from "../../../../src/panels/config/energy/dialogs/power-config";
 
 describe("getPowerHelperEntityId", () => {
   it("returns the helper for an inverted config", () => {
