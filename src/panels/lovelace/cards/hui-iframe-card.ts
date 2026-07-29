@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -50,6 +51,12 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   public setConfig(config: IframeCardConfig): void {
     if (!config.url) {
       throw new Error("URL required");
+    }
+
+    // The sandbox keeps allow-same-origin, so a javascript: URL would run in
+    // the frontend's own origin
+    if (sanitizeUrl(config.url) !== config.url) {
+      throw new Error("Invalid URL");
     }
 
     this._config = config;

@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -14,6 +15,11 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
       throw new Error("URL required");
+    }
+
+    // Reject schemes that would run script in the frontend's origin
+    if (sanitizeUrl(config.url) !== config.url) {
+      throw new Error("Invalid URL");
     }
 
     this._config = {
