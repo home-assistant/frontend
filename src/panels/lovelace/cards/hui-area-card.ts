@@ -620,6 +620,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
+    const fixedInfoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
+
     return html`
       <ha-card style=${styleMap(style)}>
         ${
@@ -683,6 +686,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${Boolean(this._hasCardAction)}
           @action=${this._handleAction}
         >
@@ -699,7 +703,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           </ha-tile-icon>
           <ha-tile-info
             slot="info"
-            class=${ifDefined(this._config.vertical ? "multiline" : undefined)}
+            class=${ifDefined(
+              this._config.vertical && fixedInfoHeight ? "twoline" : undefined
+            )}
             .primary=${primary}
             .secondary=${secondary}
           ></ha-tile-info>
@@ -819,18 +825,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         justify-content: center;
         color: white;
       }
-      ha-tile-info.multiline {
+      ha-tile-info.twoline {
         --ha-tile-info-primary-line-clamp: 2;
         --ha-tile-info-primary-line-height: var(--ha-space-4);
-        /* Compensate the reduced line height so the space around the text
-           stays the same as with the normal line height */
-        --ha-tile-info-primary-padding-block: calc(
-          (
-              var(--ha-font-size-m) *
-                var(--ha-line-height-normal) - var(--ha-space-4)
-            ) /
-            2
-        );
       }
     `,
   ];
