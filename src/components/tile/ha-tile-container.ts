@@ -112,7 +112,7 @@ export class HaTileContainer extends LitElement {
       flex-direction: column;
       text-align: center;
       justify-content: center;
-      padding: 10px;
+      padding: 10px var(--ha-space-1);
     }
     .vertical ::slotted([slot="info"]) {
       width: 100%;

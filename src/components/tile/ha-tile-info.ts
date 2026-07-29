@@ -18,6 +18,8 @@ import { customElement, property } from "lit/decorators";
  * @cssprop --ha-tile-info-primary-font-size - The font size of the primary text. defaults to `var(--ha-font-size-m)`.
  * @cssprop --ha-tile-info-primary-font-weight - The font weight of the primary text. defaults to `var(--ha-font-weight-medium)`.
  * @cssprop --ha-tile-info-primary-line-height - The line height of the primary text. defaults to `var(--ha-line-height-normal)`.
+ * @cssprop --ha-tile-info-primary-line-clamp - The maximum number of lines for the primary text before truncating with an ellipsis. defaults to `1`.
+ * @cssprop --ha-tile-info-primary-padding-block - The vertical padding around the primary text. defaults to `0`.
  * @cssprop --ha-tile-info-primary-letter-spacing - The letter spacing of the primary text. defaults to `0.1px`.
  * @cssprop --ha-tile-info-primary-color - The color of the primary text. defaults to `var(--primary-text-color)`.
  * @cssprop --ha-tile-info-secondary-font-size - The font size of the secondary text. defaults to `var(--ha-font-size-s)`.
@@ -71,6 +73,11 @@ export class HaTileInfo extends LitElement {
         --ha-tile-info-primary-line-height,
         var(--ha-line-height-normal)
       );
+      --tile-info-primary-line-clamp: var(--ha-tile-info-primary-line-clamp, 1);
+      --tile-info-primary-padding-block: var(
+        --ha-tile-info-primary-padding-block,
+        0
+      );
       --tile-info-primary-letter-spacing: var(
         --ha-tile-info-primary-letter-spacing,
         0.1px
@@ -107,12 +114,21 @@ export class HaTileInfo extends LitElement {
       align-items: flex-start;
       justify-content: center;
     }
-    span,
-    ::slotted(*) {
+    .secondary span,
+    ::slotted([slot="secondary"]) {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
+    }
+    .primary span,
+    ::slotted([slot="primary"]) {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: var(--tile-info-primary-line-clamp);
+      overflow: hidden;
+      width: 100%;
+      padding-block: var(--tile-info-primary-padding-block);
     }
     .primary {
       font-size: var(--tile-info-primary-font-size);
