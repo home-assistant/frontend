@@ -38,7 +38,7 @@
     function showFatal() {
       var box = document.getElementById("ha-launch-screen-info-box");
       if (box) {
-        box.innerText =
+        box.textContent =
           "Could not load Home Assistant. Please refresh the page, and clear your browser cache if the problem persists.";
       }
     }
