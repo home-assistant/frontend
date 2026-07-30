@@ -70,7 +70,7 @@ gulp.task(
       "gen-pages-app-prod-modern",
       "gen-service-worker-app-prod-modern"
     ),
-    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app-modern"])
+    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
   )
 );
 

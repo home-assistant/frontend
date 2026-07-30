@@ -49,16 +49,6 @@ const compressAppOtherZopfli = () =>
   compressOther(paths.app_output_root, paths.app_output_latest, "zopfli");
 
 gulp.task(
-  "compress-app-modern",
-  gulp.parallel(
-    compressAppModernBrotli,
-    compressAppOtherBrotli,
-    compressAppModernZopfli,
-    compressAppOtherZopfli
-  )
-);
-
-gulp.task(
   "compress-app",
   gulp.parallel(
     compressAppModernBrotli,
