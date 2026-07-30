@@ -66,7 +66,7 @@ export class HaConfigEntityIdFormat extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_format") && this._format) {
+    if ((changedProps.has("_format") || changedProps.has("_localize")) && this._format) {
       if (changedProps.get("_format") === undefined) {
         this._updatePreview();
       } else {
