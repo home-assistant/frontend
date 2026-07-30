@@ -226,13 +226,17 @@ export const spawnForeground = ({
       signalProcess(child.pid, "SIGINT", processGroup);
     const forwardSigterm = () =>
       signalProcess(child.pid, "SIGTERM", processGroup);
+    const forwardSighup = () =>
+      signalProcess(child.pid, "SIGHUP", processGroup);
     const removeSignalHandlers = () => {
       process.off("SIGINT", forwardSigint);
       process.off("SIGTERM", forwardSigterm);
+      process.off("SIGHUP", forwardSighup);
     };
     if (processGroup) {
       process.on("SIGINT", forwardSigint);
       process.on("SIGTERM", forwardSigterm);
+      process.on("SIGHUP", forwardSighup);
     }
     child.once("spawn", () => {
       try {
