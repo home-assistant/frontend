@@ -41,6 +41,12 @@ import {
   waitFor,
   writeProcessRecord,
 } from "./managed-process.mjs";
+import {
+  describeOutputOwner,
+  outputLockEnv,
+  outputLockFile,
+} from "./output-lock.mjs";
+import { GULP_TASKS } from "./gulp-tasks.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -53,12 +59,7 @@ const developAndServeScript = path.join(
   "develop_and_serve"
 );
 const logDir = path.join(repoRoot, "node_modules", ".cache", "ha-dev-server");
-const outputLockFile = path.join(
-  repoRoot,
-  "node_modules",
-  ".cache",
-  "ha-generated-output.lock"
-);
+const appOutputLockFile = outputLockFile("app");
 
 // Each suite names its yarn alias (for hints), a liveness model, and how to
 // spawn it. health suites carry a fixed port; process suites carry the log line
@@ -70,7 +71,7 @@ const SUITES = new Map([
       alias: "test:e2e:app:dev",
       liveness: "health",
       port: 8095,
-      spawn: { cmd: gulpBin, args: ["develop-e2e-test-app"] },
+      spawn: { cmd: gulpBin, args: [GULP_TASKS.e2eApp.develop] },
     },
   ],
   [
@@ -79,7 +80,7 @@ const SUITES = new Map([
       alias: "dev:demo",
       liveness: "health",
       port: 8090,
-      spawn: { cmd: gulpBin, args: ["develop-demo"] },
+      spawn: { cmd: gulpBin, args: [GULP_TASKS.demo.develop] },
     },
   ],
   [
@@ -88,7 +89,7 @@ const SUITES = new Map([
       alias: "dev:gallery",
       liveness: "health",
       port: 8100,
-      spawn: { cmd: gulpBin, args: ["develop-gallery"] },
+      spawn: { cmd: gulpBin, args: [GULP_TASKS.gallery.develop] },
     },
   ],
   [
@@ -97,7 +98,7 @@ const SUITES = new Map([
       alias: "dev",
       liveness: "process",
       readyLog: /Build done @/,
-      spawn: { cmd: gulpBin, args: ["develop-app"] },
+      spawn: { cmd: gulpBin, args: [GULP_TASKS.app.develop] },
       processKey: "app",
     },
   ],
@@ -194,7 +195,7 @@ const removePidFileIf = (suite, matches) => {
     return true;
   }
   if (matches(existing)) {
-    releaseProcessRecord(outputLockFile, existing.token, () => {
+    releaseProcessRecord(appOutputLockFile, existing.token, () => {
       if (readProcessRecord(pidFileFor(suite))?.token === existing.token) {
         removeProcessRecord(pidFileFor(suite));
       }
@@ -215,14 +216,14 @@ const acquireProcessSuite = (suite) => {
     starting: true,
     token,
   };
-  const result = acquireProcessRecord(outputLockFile, record);
+  const result = acquireProcessRecord(appOutputLockFile, record);
   if (!result.acquired) {
     return { existing: result.existing };
   }
   try {
     writeProcessRecord(pidFile, record);
   } catch (err) {
-    releaseProcessRecord(outputLockFile, token);
+    releaseProcessRecord(appOutputLockFile, token);
     throw err;
   }
   return { token };
@@ -242,17 +243,17 @@ const updateProcessSuite = (suite, token, child) => {
     starting: false,
   };
   writePidFile(suite, record);
-  const outputOwner = readProcessRecord(outputLockFile);
+  const outputOwner = readProcessRecord(appOutputLockFile);
   if (outputOwner?.token !== token) {
     throw Error(
       `Dev server (${suite}) output ownership was lost during startup.`
     );
   }
-  writeProcessRecord(outputLockFile, record);
+  writeProcessRecord(appOutputLockFile, record);
 };
 
 const releaseProcessSuite = (suite, token) => {
-  releaseProcessRecord(outputLockFile, token, () => {
+  releaseProcessRecord(appOutputLockFile, token, () => {
     if (readPidFile(suite)?.token === token) {
       removeProcessRecord(pidFileFor(suite));
     }
@@ -269,6 +270,13 @@ const hints = (suite) => {
 };
 
 const reportProcessConflict = (suite, existing) => {
+  if (existing?.kind === "output") {
+    process.stdout.write(
+      `${describeOutputOwner(existing)} already owns the app output` +
+        `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n`
+    );
+    return;
+  }
   if (existing?.kind === "build") {
     process.stdout.write(
       `Frontend build already running${existing.pid ? ` (pid ${existing.pid})` : ""}. ` +
@@ -282,6 +290,36 @@ const reportProcessConflict = (suite, existing) => {
       `${existing?.pid ? `(pid ${existing.pid})` : ""}\n` +
       hints(existing?.suite ?? suite)
   );
+};
+
+const acquireHealthSuite = (suite) => {
+  const file = outputLockFile(suite);
+  const token = `${process.pid}-${Date.now()}-${Math.random()}`;
+  const record = {
+    pid: process.pid,
+    startTime: processStartTime(process.pid),
+    processGroup: false,
+    kind: "dev",
+    suite,
+    starting: true,
+    token,
+  };
+  const result = acquireProcessRecord(file, record);
+  return result.acquired ? { file, token } : { existing: result.existing };
+};
+
+const updateHealthSuite = (file, token, child) => {
+  const existing = readProcessRecord(file);
+  if (existing?.token !== token) {
+    throw Error("Dev server output ownership was lost during startup.");
+  }
+  writeProcessRecord(file, {
+    ...existing,
+    pid: child.pid,
+    startTime: processStartTime(child.pid),
+    processGroup: true,
+    starting: false,
+  });
 };
 
 // --- shared spawning and lifecycle ------------------------------------------
@@ -447,11 +485,23 @@ const runForegroundHealth = async (suite, cfg) => {
     );
     return 1;
   }
-  return spawnForeground({
-    cmd: cfg.spawn.cmd,
-    args: cfg.spawn.args,
-    cwd: repoRoot,
-  });
+  const lock = acquireHealthSuite(suite);
+  if (!lock.token) {
+    reportProcessConflict(suite, lock.existing);
+    return 1;
+  }
+  try {
+    return await spawnForeground({
+      cmd: cfg.spawn.cmd,
+      args: cfg.spawn.args,
+      cwd: repoRoot,
+      env: outputLockEnv(lock.token),
+      processGroup: true,
+      onSpawn: (child) => updateHealthSuite(lock.file, lock.token, child),
+    });
+  } finally {
+    releaseProcessRecord(lock.file, lock.token);
+  }
 };
 
 const runBackgroundHealth = async (suite, cfg) => {
@@ -478,23 +528,36 @@ const runBackgroundHealth = async (suite, cfg) => {
     return 1;
   }
 
-  const logFile = logFileFor(suite);
-  const child = await spawnDetachedToLog({
-    cmd: cfg.spawn.cmd,
-    args: cfg.spawn.args,
-    cwd: repoRoot,
-    logFile,
-  });
-  return awaitReady({
-    suite,
-    child,
-    logFile,
-    port,
-    isReady: async () => {
-      const status = await probe(port, 1000);
-      return status.state === "ours" && status.suite === suite;
-    },
-  });
+  const lock = acquireHealthSuite(suite);
+  if (!lock.token) {
+    reportProcessConflict(suite, lock.existing);
+    return 1;
+  }
+  try {
+    const logFile = logFileFor(suite);
+    const child = await spawnDetachedToLog({
+      cmd: cfg.spawn.cmd,
+      args: cfg.spawn.args,
+      cwd: repoRoot,
+      env: outputLockEnv(lock.token),
+      logFile,
+    });
+    updateHealthSuite(lock.file, lock.token, child);
+    return awaitReady({
+      suite,
+      child,
+      logFile,
+      port,
+      isReady: async () => {
+        const status = await probe(port, 1000);
+        return status.state === "ours" && status.suite === suite;
+      },
+      onExit: () => releaseProcessRecord(lock.file, lock.token),
+    });
+  } catch (err) {
+    releaseProcessRecord(lock.file, lock.token);
+    throw err;
+  }
 };
 
 const runStatusHealth = async (suite, cfg) => {
@@ -536,10 +599,13 @@ const runStopHealth = async (suite, cfg) => {
     );
     return 1;
   }
+  const lockFile = outputLockFile(suite);
+  const existing = readProcessRecord(lockFile);
   return terminate(
     suite,
     pid,
-    async () => (await probe(port, 800)).state === "free"
+    async () => (await probe(port, 800)).state === "free",
+    () => releaseProcessRecord(lockFile, existing?.token)
   );
 };
 
@@ -592,6 +658,7 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
+      env: outputLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateProcessSuite(suite, lock.token, child),
     });
@@ -613,6 +680,7 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
+      env: outputLockEnv(lock.token),
       logFile,
     });
 

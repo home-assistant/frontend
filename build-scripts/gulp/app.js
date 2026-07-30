@@ -1,5 +1,7 @@
 import gulp from "gulp";
 import env from "../env.cjs";
+import { GULP_TASKS } from "../gulp-tasks.mjs";
+import { createOutputWorkflow } from "../output-lock.mjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -11,12 +13,16 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
+const workflow = createOutputWorkflow("app", GULP_TASKS.app);
+
 gulp.task(
-  "develop-app",
+  workflow.develop.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    workflow.develop.output.acquire,
+    workflow.develop.generated.acquire,
     "clean",
     gulp.parallel(
       "gen-service-worker-app-dev",
@@ -26,16 +32,19 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
+    workflow.develop.generated.release,
     "rspack-watch-app"
   )
 );
 
 gulp.task(
-  "build-app",
+  workflow.build.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    workflow.build.output.acquire,
+    workflow.build.generated.acquire,
     "clean",
     gulp.parallel(
       "gen-icons-json",
@@ -47,16 +56,20 @@ gulp.task(
     "rspack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
-    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
+    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"]),
+    workflow.build.generated.release,
+    workflow.build.output.release
   )
 );
 
 gulp.task(
-  "build-app-modern",
+  workflow.modern.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    workflow.modern.output.acquire,
+    workflow.modern.generated.acquire,
     "clean",
     gulp.parallel(
       "gen-icons-json",
@@ -70,17 +83,23 @@ gulp.task(
       "gen-pages-app-prod-modern",
       "gen-service-worker-app-prod-modern"
     ),
-    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
+    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"]),
+    workflow.modern.generated.release,
+    workflow.modern.output.release
   )
 );
 
 gulp.task(
-  "analyze-app",
+  workflow.analyze.task,
   gulp.series(
     async function setEnv() {
       process.env.STATS = "1";
     },
+    workflow.analyze.output.acquire,
+    workflow.analyze.generated.acquire,
     "clean",
-    "rspack-prod-app"
+    "rspack-prod-app",
+    workflow.analyze.generated.release,
+    workflow.analyze.output.release
   )
 );

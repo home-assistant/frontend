@@ -1,4 +1,6 @@
 import gulp from "gulp";
+import { GULP_TASKS } from "../gulp-tasks.mjs";
+import { createOutputWorkflow } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -7,12 +9,16 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
+const workflow = createOutputWorkflow("demo", GULP_TASKS.demo);
+
 gulp.task(
-  "develop-demo",
+  workflow.develop.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    workflow.develop.output.acquire,
+    workflow.develop.generated.acquire,
     "clean-demo",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -22,49 +28,62 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-demo",
+    workflow.develop.generated.release,
     "rspack-dev-server-demo"
   )
 );
 
 gulp.task(
-  "build-demo",
+  workflow.build.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    workflow.build.output.acquire,
+    workflow.build.generated.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
     "rspack-prod-demo",
-    "gen-pages-demo-prod"
+    "gen-pages-demo-prod",
+    workflow.build.generated.release,
+    workflow.build.output.release
   )
 );
 
 gulp.task(
-  "build-demo-e2e",
+  workflow.e2e.task,
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    workflow.e2e.output.acquire,
+    workflow.e2e.generated.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
     "rspack-prod-demo-e2e",
-    "gen-pages-demo-prod-e2e"
+    "gen-pages-demo-prod-e2e",
+    workflow.e2e.generated.release,
+    workflow.e2e.output.release
   )
 );
 
 gulp.task(
-  "analyze-demo",
+  workflow.analyze.task,
   gulp.series(
     async function setEnv() {
       process.env.STATS = "1";
     },
+    workflow.analyze.output.acquire,
+    workflow.analyze.generated.acquire,
     "clean",
-    "rspack-prod-demo"
+    "rspack-prod-demo",
+    workflow.analyze.generated.release,
+    workflow.analyze.output.release
   )
 );

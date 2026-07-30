@@ -29,6 +29,12 @@ import {
   waitFor,
   writeProcessRecord,
 } from "./managed-process.mjs";
+import {
+  describeOutputOwner,
+  outputLockEnv,
+  outputLockFile,
+} from "./output-lock.mjs";
+import { GULP_TASKS } from "./gulp-tasks.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -37,12 +43,7 @@ const repoRoot = path.resolve(
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
 const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
 const logFile = path.join(stateDir, "build.log");
-const lockFile = path.join(
-  repoRoot,
-  "node_modules",
-  ".cache",
-  "ha-generated-output.lock"
-);
+const lockFile = outputLockFile("app");
 
 const usage = () => {
   process.stderr.write(
@@ -112,9 +113,17 @@ const updateBuild = (token, child, processGroup) => {
   });
 };
 
-const taskFor = (modern) => (modern ? "build-app-modern" : "build-app");
+const taskFor = (modern) =>
+  modern ? GULP_TASKS.app.modern : GULP_TASKS.app.build;
 
 const reportExisting = (existing) => {
+  if (existing?.kind === "output") {
+    process.stdout.write(
+      `${describeOutputOwner(existing)} already owns the app output` +
+        `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n`
+    );
+    return;
+  }
   if (existing?.kind === "dev") {
     const command = existing.suite === "app-serve" ? "dev:serve" : "dev";
     process.stdout.write(
@@ -143,6 +152,7 @@ const runForeground = async (modern) => {
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
+      env: outputLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateBuild(lock.token, child, true),
     });
@@ -162,6 +172,7 @@ const runBackground = async (modern) => {
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
+      env: outputLockEnv(lock.token),
       logFile,
     });
     updateBuild(lock.token, child, true);

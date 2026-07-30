@@ -212,6 +212,7 @@ export const spawnForeground = ({
   cmd,
   args,
   cwd,
+  env,
   processGroup = false,
   onSpawn,
 }) =>
@@ -219,6 +220,7 @@ export const spawnForeground = ({
     const child = spawn(cmd, args, {
       cwd,
       detached: processGroup,
+      env,
       stdio: "inherit",
     });
     let settled = false;
@@ -265,7 +267,7 @@ export const spawnForeground = ({
     });
   });
 
-export const spawnDetachedToLog = ({ cmd, args, cwd, logFile }) =>
+export const spawnDetachedToLog = ({ cmd, args, cwd, env, logFile }) =>
   new Promise((resolve, reject) => {
     fs.mkdirSync(path.dirname(logFile), { recursive: true });
     const fd = fs.openSync(logFile, "w");
@@ -274,6 +276,7 @@ export const spawnDetachedToLog = ({ cmd, args, cwd, logFile }) =>
       child = spawn(cmd, args, {
         cwd,
         detached: true,
+        env,
         stdio: ["ignore", fd, fd],
       });
     } finally {
