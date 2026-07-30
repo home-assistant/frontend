@@ -320,6 +320,13 @@ export const terminateProcess = async ({
   return await isStopped();
 };
 
+export const terminateDetachedProcess = (child) =>
+  terminateProcess({
+    pid: child.pid,
+    processGroup: true,
+    isStopped: () => !isProcessAlive(child.pid),
+  });
+
 export const outputLog = (logFile, follow, missingMessage) => {
   if (!fs.existsSync(logFile)) {
     process.stdout.write(missingMessage);
@@ -336,7 +343,7 @@ export const outputLog = (logFile, follow, missingMessage) => {
       if (!settled) {
         settled = true;
         process.stdout.write(fs.readFileSync(logFile, "utf8"));
-        resolve(0);
+        resolve(1);
       }
     });
     tail.once("exit", (code) => {

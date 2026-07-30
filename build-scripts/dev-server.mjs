@@ -37,11 +37,13 @@ import {
   sleep,
   spawnDetachedToLog,
   spawnForeground,
+  terminateDetachedProcess,
   terminateProcess,
   waitFor,
   writeProcessRecord,
 } from "./managed-process.mjs";
 import {
+  buildCacheDir,
   describeOutputOwner,
   outputLockEnv,
   outputLockFile,
@@ -58,7 +60,7 @@ const developAndServeScript = path.join(
   "script",
   "develop_and_serve"
 );
-const logDir = path.join(repoRoot, "node_modules", ".cache", "ha-dev-server");
+const logDir = path.join(buildCacheDir, "ha-dev-server");
 const appOutputLockFile = outputLockFile("app");
 
 // Each suite names its yarn alias (for hints), a liveness model, and how to
@@ -432,6 +434,31 @@ const probe = async (port, timeoutMs = 1000) => {
   return probeHost(0, false);
 };
 
+const isHttpServing = async (port, timeoutMs = 1000) => {
+  const probeHost = async (index) => {
+    const host = PROBE_HOSTS[index];
+    if (!host) {
+      return false;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(`http://${host}:${port}`, {
+        signal: controller.signal,
+      });
+      if (response.ok) {
+        return true;
+      }
+    } catch {
+      // Try the next address.
+    } finally {
+      clearTimeout(timer);
+    }
+    return probeHost(index + 1);
+  };
+  return probeHost(0);
+};
+
 // Find the pid listening on a port via the first available tool (no state file).
 const pidFromPort = (port) => {
   const attempts = [
@@ -533,9 +560,10 @@ const runBackgroundHealth = async (suite, cfg) => {
     reportProcessConflict(suite, lock.existing);
     return 1;
   }
+  let child;
   try {
     const logFile = logFileFor(suite);
-    const child = await spawnDetachedToLog({
+    child = await spawnDetachedToLog({
       cmd: cfg.spawn.cmd,
       args: cfg.spawn.args,
       cwd: repoRoot,
@@ -555,6 +583,9 @@ const runBackgroundHealth = async (suite, cfg) => {
       onExit: () => releaseProcessRecord(lock.file, lock.token),
     });
   } catch (err) {
+    if (child) {
+      await terminateDetachedProcess(child);
+    }
     releaseProcessRecord(lock.file, lock.token);
     throw err;
   }
@@ -651,7 +682,11 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
   const lock = acquireProcessSuite(suite);
   if (!lock.token) {
     reportProcessConflict(suite, lock.existing);
-    return 0;
+    return lock.existing?.kind === "dev" &&
+      lock.existing.suite === suite &&
+      !lock.existing.starting
+      ? 0
+      : 1;
   }
   try {
     return await spawnForeground({
@@ -671,12 +706,17 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
   const lock = acquireProcessSuite(suite);
   if (!lock.token) {
     reportProcessConflict(suite, lock.existing);
-    return 0;
+    return lock.existing?.kind === "dev" &&
+      lock.existing.suite === suite &&
+      !lock.existing.starting
+      ? 0
+      : 1;
   }
 
+  let child;
   try {
     const logFile = logFileFor(suite);
-    const child = await spawnDetachedToLog({
+    child = await spawnDetachedToLog({
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
@@ -693,10 +733,15 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
       child,
       logFile,
       port,
-      isReady: () => logIsReady(logFile, cfg.readyLog),
+      isReady: async () =>
+        logIsReady(logFile, cfg.readyLog) &&
+        (!cfg.acceptsArgs || (await isHttpServing(port))),
       onExit: () => releaseProcessSuite(suite, lock.token),
     });
   } catch (err) {
+    if (child) {
+      await terminateDetachedProcess(child);
+    }
     releaseProcessSuite(suite, lock.token);
     throw err;
   }
@@ -783,8 +828,10 @@ const main = async () => {
   }
   if (args.passthrough.length && !cfg.acceptsArgs) {
     process.stderr.write(
-      `Ignoring unexpected arguments: ${args.passthrough.join(" ")}\n`
+      `Unexpected arguments: ${args.passthrough.join(" ")}\n`
     );
+    usage();
+    return 1;
   }
 
   // A plain dev:<suite> under a coding agent backgrounds itself; explicit modes

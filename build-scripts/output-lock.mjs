@@ -11,19 +11,20 @@ const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
+export const buildCacheDir =
+  process.env.HA_BUILD_CACHE_DIR ??
+  path.join(repoRoot, "node_modules", ".cache");
 
 const GENERATED_LOCK_TOKEN_ENV = "HA_GENERATED_OUTPUT_LOCK_TOKEN";
 const OUTPUT_LOCK_TOKEN_ENV = "HA_OUTPUT_LOCK_TOKEN";
 
 export const generatedOutputLockFile = path.join(
-  repoRoot,
-  "node_modules",
-  ".cache",
+  buildCacheDir,
   "ha-generated-output.lock"
 );
 
 export const outputLockFile = (suite) =>
-  path.join(repoRoot, "node_modules", ".cache", `ha-${suite}-output.lock`);
+  path.join(buildCacheDir, `ha-${suite}-output.lock`);
 
 export const generatedOutputLockEnv = (token) => ({
   ...process.env,
@@ -47,14 +48,22 @@ export const describeOutputOwner = (owner) => {
 
 const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
   let ownedToken;
+  let exitToken;
 
+  const cleanup = () => {
+    if (!exitToken) {
+      return;
+    }
+    releaseProcessRecord(file, exitToken);
+    ownedToken = undefined;
+    exitToken = undefined;
+    process.off("exit", cleanup);
+  };
   const release = async () => {
     if (!ownedToken) {
       return;
     }
-    releaseProcessRecord(file, ownedToken);
-    ownedToken = undefined;
-    process.off("exit", release);
+    cleanup();
   };
 
   const acquire = async () => {
@@ -65,6 +74,8 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
           `${label} lock ownership was lost before ${target} started.`
         );
       }
+      exitToken = inheritedToken;
+      process.once("exit", cleanup);
       return;
     }
 
@@ -86,13 +97,25 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
     }
 
     ownedToken = token;
-    process.once("exit", release);
+    exitToken = token;
+    process.once("exit", cleanup);
   };
 
   acquire.displayName = `lock-${label}:${target}`;
   release.displayName = `unlock-${label}:${target}`;
 
   return { acquire, release };
+};
+
+export const runWithLock = async (lock, task) => {
+  await lock.acquire();
+  try {
+    await new Promise((resolve, reject) => {
+      task((err) => (err ? reject(err) : resolve()));
+    });
+  } finally {
+    lock.release();
+  }
 };
 
 export const createOutputLockTasks = (suite, target) =>

@@ -25,11 +25,13 @@ import {
   runCli,
   spawnDetachedToLog,
   spawnForeground,
+  terminateDetachedProcess,
   terminateProcess,
   waitFor,
   writeProcessRecord,
 } from "./managed-process.mjs";
 import {
+  buildCacheDir,
   describeOutputOwner,
   outputLockEnv,
   outputLockFile,
@@ -41,7 +43,7 @@ const repoRoot = path.resolve(
   ".."
 );
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
-const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
+const stateDir = path.join(buildCacheDir, "ha-build");
 const logFile = path.join(stateDir, "build.log");
 const lockFile = outputLockFile("app");
 
@@ -167,8 +169,9 @@ const runBackground = async (modern) => {
     reportExisting(lock.existing);
     return 1;
   }
+  let child;
   try {
-    const child = await spawnDetachedToLog({
+    child = await spawnDetachedToLog({
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
@@ -182,6 +185,9 @@ const runBackground = async (modern) => {
     );
     return 0;
   } catch (err) {
+    if (child) {
+      await terminateDetachedProcess(child);
+    }
     releaseBuild(lock.token);
     throw err;
   }
@@ -256,11 +262,7 @@ const main = async () => {
     usage();
     return 1;
   }
-  if (
-    args.modes.length > 1 ||
-    (args.follow && args.mode !== "logs") ||
-    (args.modern && !["foreground", "background"].includes(args.mode))
-  ) {
+  if (args.modes.length > 1 || (args.follow && args.mode !== "logs")) {
     process.stderr.write("Invalid combination of build arguments.\n");
     usage();
     return 1;

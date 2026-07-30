@@ -61,10 +61,33 @@ fi
 echo Core is used from ${coreUrl}
 
 # build the frontend so it connects to the passed core
-HASS_URL="$coreUrl" ./script/develop &
+HASS_URL="$coreUrl" ./node_modules/.bin/gulp develop-app &
+develop_pid=$!
 
 # serve the frontend
 ./node_modules/.bin/serve -p $frontendPort --single --no-port-switching --config ../script/serve-config.json ./hass_frontend &
+serve_pid=$!
 
-# keep the script running while serving
-wait
+stop_children() {
+    trap - EXIT INT TERM HUP
+    kill "$develop_pid" "$serve_pid" 2>/dev/null || true
+    wait "$develop_pid" 2>/dev/null || true
+    wait "$serve_pid" 2>/dev/null || true
+}
+
+trap stop_children EXIT
+trap 'stop_children; exit 130' INT
+trap 'stop_children; exit 143' TERM
+trap 'stop_children; exit 129' HUP
+
+while kill -0 "$develop_pid" 2>/dev/null && kill -0 "$serve_pid" 2>/dev/null; do
+    sleep 1
+done
+
+if ! kill -0 "$develop_pid" 2>/dev/null; then
+    if wait "$develop_pid"; then status=0; else status=$?; fi
+else
+    if wait "$serve_pid"; then status=0; else status=$?; fi
+fi
+
+exit "$status"
