@@ -8648,7 +8648,14 @@
             "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
             "learn_more": "Learn more",
             "preview": "Preview",
+            "preview_error": "Failed to generate preview",
             "reset": "Reset to default",
+            "examples": {
+              "area": "Living room",
+              "device": "Thermostat",
+              "entity": "Temperature",
+              "floor": "Ground floor"
+            },
             "editor": {
               "label": "Format",
               "add": "Add",

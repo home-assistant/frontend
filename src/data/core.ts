@@ -1,5 +1,5 @@
 import type { HassConfig } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface ConfigUpdateValues {
   location_name: string;
@@ -38,3 +38,12 @@ export const detectCoreConfig = (hass: HomeAssistant) =>
 
 export const checkCoreConfig = (hass: HomeAssistant) =>
   hass.callApi<CheckConfigResult>("POST", "config/core/check_config");
+
+export const fetchSlug = (
+  api: HomeAssistantApi,
+  text: string
+): Promise<{ slug: string }> =>
+  api.callWS<{ slug: string }>({
+    type: "config/core/slugify",
+    text,
+  });

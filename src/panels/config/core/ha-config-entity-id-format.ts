@@ -3,15 +3,17 @@ import { mdiRestore } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
-import { computeEntityIdFormatExample } from "../../../common/entity/compute_entity_id_format_example";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { debounce } from "../../../common/util/debounce";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import { fetchSlug } from "../../../data/core";
 import { apiContext, configContext } from "../../../data/context";
 import {
   fetchEntityRegistrySettings,
@@ -28,6 +30,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-entity-id-format-editor";
 
 const EXAMPLE_DOMAIN = "sensor";
+const PREVIEW_DEBOUNCE_MS = 200;
 
 @customElement("ha-config-entity-id-format")
 export class HaConfigEntityIdFormat extends LitElement {
@@ -47,6 +50,10 @@ export class HaConfigEntityIdFormat extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _preview?: string;
+
+  @state() private _previewError = false;
+
   protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     try {
@@ -57,12 +64,44 @@ export class HaConfigEntityIdFormat extends LitElement {
     }
   }
 
-  private _examples: Record<EntityIdPart, string> = {
-    area: "Living room",
-    device: "Thermostat",
-    entity: "Temperature",
-    floor: "Ground floor",
-  };
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_format") && this._format) {
+      if (changedProps.get("_format") === undefined) {
+        this._updatePreview();
+      } else {
+        this._debouncedUpdatePreview();
+      }
+    }
+  }
+
+  private _examples = memoizeOne(
+    (localize: LocalizeFunc): Record<EntityIdPart, string> => ({
+      area: localize("ui.panel.config.entity_id_format.card.examples.area"),
+      device: localize("ui.panel.config.entity_id_format.card.examples.device"),
+      entity: localize("ui.panel.config.entity_id_format.card.examples.entity"),
+      floor: localize("ui.panel.config.entity_id_format.card.examples.floor"),
+    })
+  );
+
+  private _debouncedUpdatePreview = debounce(
+    () => this._updatePreview(),
+    PREVIEW_DEBOUNCE_MS
+  );
+
+  private async _updatePreview() {
+    const examples = this._examples(this._localize);
+    const fullName = this._format!.map((part) => examples[part])
+      .filter(Boolean)
+      .join(" ");
+    try {
+      const { slug } = await fetchSlug(this._api, fullName);
+      this._preview = slug;
+      this._previewError = false;
+    } catch (_err: any) {
+      this._previewError = true;
+    }
+  }
 
   protected render() {
     return html`
@@ -131,13 +170,20 @@ export class HaConfigEntityIdFormat extends LitElement {
   }
 
   private _renderPreview() {
-    const example = computeEntityIdFormatExample(this._format!, this._examples);
     return html`
       <div class="preview">
         <span class="preview-label">
           ${this._localize("ui.panel.config.entity_id_format.card.preview")}
         </span>
-        <code>${EXAMPLE_DOMAIN}.${example}</code>
+        ${
+          this._previewError
+            ? html`<ha-alert alert-type="error">
+                ${this._localize(
+                  "ui.panel.config.entity_id_format.card.preview_error"
+                )}
+              </ha-alert>`
+            : html`<code>${EXAMPLE_DOMAIN}.${this._preview ?? "…"}</code>`
+        }
       </div>
     `;
   }
