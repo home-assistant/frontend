@@ -43,7 +43,6 @@ const createRspackConfig = ({
   isLandingPageBuild,
   dontHash,
 }) => {
-  const generatedOutputDir = process.env.HA_GENERATED_OUTPUT_DIR;
   if (!dontHash) {
     dontHash = new Set();
   }
@@ -204,24 +203,6 @@ const createRspackConfig = ({
       new rspack.DefinePlugin(
         bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
       ),
-      generatedOutputDir &&
-        new rspack.NormalModuleReplacementPlugin(
-          /(?:^|[\\/])build[\\/]/,
-          (resource) => {
-            const generatedPath = path.resolve(
-              resource.context,
-              resource.request
-            );
-            const relativePath = path.relative(paths.build_dir, generatedPath);
-            if (
-              relativePath !== "" &&
-              !relativePath.startsWith(`..${path.sep}`) &&
-              !path.isAbsolute(relativePath)
-            ) {
-              resource.request = path.join(generatedOutputDir, relativePath);
-            }
-          }
-        ),
       new rspack.IgnorePlugin({
         checkResource(resource, context) {
           // Only use ignore to intercept imports that we don't control

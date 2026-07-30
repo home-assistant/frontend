@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -6,7 +5,6 @@ import {
   processStartTime,
   readProcessRecord,
   releaseProcessRecord,
-  sleep,
 } from "./managed-process.mjs";
 
 const repoRoot = path.resolve(
@@ -17,17 +15,7 @@ export const buildCacheDir =
   process.env.HA_BUILD_CACHE_DIR ??
   path.join(repoRoot, "node_modules", ".cache");
 
-const GENERATED_LOCK_TOKEN_ENV = "HA_GENERATED_OUTPUT_LOCK_TOKEN";
-export const GENERATED_OUTPUT_DIR_ENV = "HA_GENERATED_OUTPUT_DIR";
 const WORKFLOW_LOCK_TOKEN_ENV = "HA_WORKFLOW_LOCK_TOKEN";
-const generatedLockTimeoutSeconds = Number(
-  process.env.HA_GENERATED_OUTPUT_LOCK_TIMEOUT || "120"
-);
-const GENERATED_LOCK_TIMEOUT_MS =
-  Number.isFinite(generatedLockTimeoutSeconds) &&
-  generatedLockTimeoutSeconds > 0
-    ? generatedLockTimeoutSeconds * 1000
-    : 120_000;
 const signalCleanups = new Set();
 const cleanupSignals = ["SIGINT", "SIGTERM", "SIGHUP"];
 
@@ -59,26 +47,7 @@ const unregisterSignalCleanup = (cleanup) => {
   }
 };
 
-const acquireUntil = async (file, record, deadline) => {
-  const result = acquireProcessRecord(file, record);
-  if (result.acquired || Date.now() >= deadline) {
-    return result;
-  }
-  await sleep(100);
-  return acquireUntil(file, record, deadline);
-};
-
-export const generatedOutputLockFile = path.join(
-  buildCacheDir,
-  "ha-generated-output.lock"
-);
-
 export const workflowLockFile = path.join(buildCacheDir, "ha-workflow.lock");
-
-export const generatedOutputLockEnv = (token) => ({
-  ...process.env,
-  [GENERATED_LOCK_TOKEN_ENV]: token,
-});
 
 export const workflowLockEnv = (token) => ({
   ...process.env,
@@ -95,8 +64,7 @@ export const describeOutputOwner = (owner) => {
   return owner?.target ? `Gulp task ${owner.target}` : "another process";
 };
 
-const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
-  let ownedToken;
+const createLockTask = ({ file, inheritedTokenEnv, kind, label, target }) => {
   let exitToken;
 
   const cleanup = () => {
@@ -104,18 +72,10 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
       return;
     }
     releaseProcessRecord(file, exitToken);
-    ownedToken = undefined;
     exitToken = undefined;
     process.off("exit", cleanup);
     unregisterSignalCleanup(cleanup);
   };
-  const release = async () => {
-    if (!ownedToken) {
-      return;
-    }
-    cleanup();
-  };
-
   const acquire = async () => {
     const inheritedToken = process.env[inheritedTokenEnv];
     if (inheritedToken) {
@@ -139,14 +99,7 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
       target,
       token,
     };
-    let result = acquireProcessRecord(file, record);
-    if (!result.acquired && kind === "generated-output") {
-      const deadline = Date.now() + GENERATED_LOCK_TIMEOUT_MS;
-      process.stdout.write(
-        `Waiting for ${describeOutputOwner(result.existing)} to release ${label}.\n`
-      );
-      result = await acquireUntil(file, record, deadline);
-    }
+    const result = acquireProcessRecord(file, record);
     if (!result.acquired) {
       const pid = result.existing?.pid;
       throw Error(
@@ -155,31 +108,17 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
       );
     }
 
-    ownedToken = token;
     exitToken = token;
     process.once("exit", cleanup);
     registerSignalCleanup(cleanup);
   };
 
   acquire.displayName = `lock-${label}:${target}`;
-  release.displayName = `unlock-${label}:${target}`;
-
-  return { acquire, release };
+  return acquire;
 };
 
-export const runWithLock = async (lock, task) => {
-  await lock.acquire();
-  try {
-    await new Promise((resolve, reject) => {
-      task((err) => (err ? reject(err) : resolve()));
-    });
-  } finally {
-    lock.release();
-  }
-};
-
-export const createWorkflowLockTasks = (target) =>
-  createLockTasks({
+export const createWorkflowLockTask = (target) =>
+  createLockTask({
     file: workflowLockFile,
     inheritedTokenEnv: WORKFLOW_LOCK_TOKEN_ENV,
     kind: "output",
@@ -187,40 +126,13 @@ export const createWorkflowLockTasks = (target) =>
     target,
   });
 
-export const createGeneratedLockTasks = (target) =>
-  createLockTasks({
-    file: generatedOutputLockFile,
-    inheritedTokenEnv: GENERATED_LOCK_TOKEN_ENV,
-    kind: "generated-output",
-    label: "generated-output",
-    target,
-  });
-
-const createGeneratedSnapshotTask = (suite, target) => {
-  const snapshot = async () => {
-    const source = path.join(repoRoot, "build");
-    const destination = path.join(buildCacheDir, "ha-generated-output", suite);
-    if (!process.env[GENERATED_OUTPUT_DIR_ENV]) {
-      fs.rmSync(destination, { recursive: true, force: true });
-    }
-    fs.cpSync(source, destination, { recursive: true });
-    process.env[GENERATED_OUTPUT_DIR_ENV] = destination;
-  };
-  snapshot.displayName = `snapshot-generated-output:${target}`;
-  return snapshot;
-};
-
-export const createOutputWorkflow = (suite, targets) =>
+export const createOutputWorkflow = (targets) =>
   Object.fromEntries(
     Object.entries(targets).map(([key, target]) => [
       key,
       {
         task: target,
-        output: createWorkflowLockTasks(target),
-        generated: {
-          ...createGeneratedLockTasks(target),
-          snapshot: createGeneratedSnapshotTask(suite, target),
-        },
+        acquire: createWorkflowLockTask(target),
       },
     ])
   );

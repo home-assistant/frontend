@@ -9,7 +9,7 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
-const workflow = createOutputWorkflow("demo", GULP_TASKS.demo);
+const workflow = createOutputWorkflow(GULP_TASKS.demo);
 
 gulp.task(
   workflow.develop.task,
@@ -17,8 +17,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.output.acquire,
-    workflow.develop.generated.acquire,
+    workflow.develop.acquire,
     "clean-demo",
     gulp.parallel(
       "gen-icons-json",
@@ -27,8 +26,6 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-demo",
-    workflow.develop.generated.snapshot,
-    workflow.develop.generated.release,
     "rspack-dev-server-demo"
   )
 );
@@ -39,8 +36,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.output.acquire,
-    workflow.build.generated.acquire,
+    workflow.build.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     gulp.parallel(
@@ -50,9 +46,7 @@ gulp.task(
     ),
     "copy-static-demo",
     "rspack-prod-demo",
-    "gen-pages-demo-prod",
-    workflow.build.generated.release,
-    workflow.build.output.release
+    "gen-pages-demo-prod"
   )
 );
 
@@ -62,8 +56,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.e2e.output.acquire,
-    workflow.e2e.generated.acquire,
+    workflow.e2e.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     gulp.parallel(
@@ -73,9 +66,7 @@ gulp.task(
     ),
     "copy-static-demo",
     "rspack-prod-demo-e2e",
-    "gen-pages-demo-prod-e2e",
-    workflow.e2e.generated.release,
-    workflow.e2e.output.release
+    "gen-pages-demo-prod-e2e"
   )
 );
 
@@ -85,11 +76,8 @@ gulp.task(
     async function setEnv() {
       process.env.STATS = "1";
     },
-    workflow.analyze.output.acquire,
-    workflow.analyze.generated.acquire,
+    workflow.analyze.acquire,
     "clean-demo",
-    "rspack-prod-demo",
-    workflow.analyze.generated.release,
-    workflow.analyze.output.release
+    "rspack-prod-demo"
   )
 );

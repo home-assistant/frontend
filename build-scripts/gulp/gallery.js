@@ -15,7 +15,7 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
-const workflow = createOutputWorkflow("gallery", GULP_TASKS.gallery);
+const workflow = createOutputWorkflow(GULP_TASKS.gallery);
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -168,8 +168,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.output.acquire,
-    workflow.develop.generated.acquire,
+    workflow.develop.acquire,
     "clean-gallery",
     gulp.parallel(
       "gen-icons-json",
@@ -179,8 +178,6 @@ gulp.task(
     ),
     "copy-static-gallery",
     "gen-pages-gallery-dev",
-    workflow.develop.generated.snapshot,
-    workflow.develop.generated.release,
     gulp.parallel(
       "rspack-dev-server-gallery",
       async function watchMarkdownFiles() {
@@ -202,8 +199,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.output.acquire,
-    workflow.build.generated.acquire,
+    workflow.build.acquire,
     "clean-gallery",
     gulp.parallel(
       "gen-icons-json",
@@ -213,8 +209,6 @@ gulp.task(
     ),
     "copy-static-gallery",
     "rspack-prod-gallery",
-    "gen-pages-gallery-prod",
-    workflow.build.generated.release,
-    workflow.build.output.release
+    "gen-pages-gallery-prod"
   )
 );

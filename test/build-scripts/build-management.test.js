@@ -113,6 +113,28 @@ describe("build management CLIs", () => {
     expect(result.stdout).toContain("yarn dev:demo --stop");
   });
 
+  it("does not stop another development suite", async () => {
+    const cache = await temporaryDirectory();
+    const lockFile = path.join(cache, "ha-workflow.lock");
+    const record = {
+      pid: process.pid,
+      startTime: processStartTime(process.pid),
+      kind: "dev",
+      suite: "demo",
+      token: "demo",
+    };
+    await writeFile(lockFile, JSON.stringify(record));
+
+    const result = await runNode(
+      ["build-scripts/dev-server.mjs", "--suite", "gallery", "--stop"],
+      { HA_BUILD_CACHE_DIR: cache }
+    );
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("Dev server (gallery) not running");
+    expect(JSON.parse(await readFile(lockFile, "utf8"))).toEqual(record);
+  });
+
   it("keeps an exact process suite start idempotent", async () => {
     const cache = await temporaryDirectory();
     await writeFile(
@@ -158,50 +180,7 @@ describe("build management CLIs", () => {
   });
 });
 
-describe("inherited output ownership", () => {
-  it("retains manager ownership after the Gulp release task", async () => {
-    const cache = await temporaryDirectory();
-    const lockFile = path.join(cache, "ha-workflow.lock");
-    const record = {
-      pid: process.pid,
-      startTime: processStartTime(process.pid),
-      kind: "build",
-      token: "inherited",
-    };
-    await writeFile(lockFile, JSON.stringify(record));
-    const script = [
-      'import { createWorkflowLockTasks } from "./build-scripts/output-lock.mjs";',
-      'const lock = createWorkflowLockTasks("test");',
-      "await lock.acquire();",
-      "await lock.release();",
-      'process.stdout.write("released\\n");',
-      "setTimeout(() => process.exit(), 10000);",
-    ].join("");
-    const child = spawn(
-      process.execPath,
-      ["--input-type=module", "-e", script],
-      {
-        cwd: repoRoot,
-        env: {
-          ...process.env,
-          HA_BUILD_CACHE_DIR: cache,
-          HA_WORKFLOW_LOCK_TOKEN: record.token,
-        },
-        stdio: ["ignore", "pipe", "inherit"],
-      }
-    );
-    await new Promise((resolve, reject) => {
-      child.stdout.once("data", resolve);
-      child.once("error", reject);
-    });
-
-    expect(JSON.parse(await readFile(lockFile, "utf8"))).toEqual(record);
-    child.kill();
-    await new Promise((resolve) => {
-      child.once("exit", resolve);
-    });
-  });
-
+describe("workflow ownership", () => {
   it("removes the inherited lock when the child exits", async () => {
     const cache = await temporaryDirectory();
     const lockFile = path.join(cache, "ha-workflow.lock");
@@ -216,8 +195,8 @@ describe("inherited output ownership", () => {
       })
     );
     const script = [
-      'import { createWorkflowLockTasks } from "./build-scripts/output-lock.mjs";',
-      'await createWorkflowLockTasks("test").acquire();',
+      'import { createWorkflowLockTask } from "./build-scripts/output-lock.mjs";',
+      'await createWorkflowLockTask("test")();',
     ].join("");
 
     const result = await runNode(["--input-type=module", "-e", script], {
@@ -233,8 +212,8 @@ describe("inherited output ownership", () => {
     const cache = await temporaryDirectory();
     const lockFile = path.join(cache, "ha-workflow.lock");
     const script = [
-      'import { createWorkflowLockTasks } from "./build-scripts/output-lock.mjs";',
-      'await createWorkflowLockTasks("test").acquire();',
+      'import { createWorkflowLockTask } from "./build-scripts/output-lock.mjs";',
+      'await createWorkflowLockTask("test")();',
       'process.stdout.write("ready\\n");',
       "setInterval(() => {}, 10000);",
     ].join("");
@@ -258,58 +237,5 @@ describe("inherited output ownership", () => {
     });
 
     await expect(readFile(lockFile)).rejects.toMatchObject({ code: "ENOENT" });
-  });
-
-  it("waits for generated output ownership", async () => {
-    const cache = await temporaryDirectory();
-    const lockFile = path.join(cache, "ha-generated-output.lock");
-    const record = {
-      pid: process.pid,
-      startTime: processStartTime(process.pid),
-      kind: "generated-output",
-      target: "holder",
-      token: "holder",
-    };
-    await writeFile(lockFile, JSON.stringify(record));
-    const script = [
-      'import { createGeneratedLockTasks } from "./build-scripts/output-lock.mjs";',
-      'const lock = createGeneratedLockTasks("waiter");',
-      "await lock.acquire();",
-      'process.stdout.write("acquired\\n");',
-      "await lock.release();",
-    ].join("");
-    const child = spawn(
-      process.execPath,
-      ["--input-type=module", "-e", script],
-      {
-        cwd: repoRoot,
-        env: { ...process.env, HA_BUILD_CACHE_DIR: cache },
-        stdio: ["ignore", "pipe", "inherit"],
-      }
-    );
-    let output = "";
-    child.stdout.on("data", (data) => {
-      output += data;
-    });
-    await new Promise((resolve) => {
-      const waiting = "Waiting for Gulp task holder";
-      if (output.includes(waiting)) {
-        resolve();
-        return;
-      }
-      child.stdout.on("data", () => {
-        if (output.includes(waiting)) {
-          resolve();
-        }
-      });
-    });
-    await rm(lockFile);
-    await new Promise((resolve, reject) => {
-      child.once("exit", resolve);
-      child.once("error", reject);
-    });
-
-    expect(output).toContain("Waiting for Gulp task holder");
-    expect(output).toContain("acquired");
   });
 });
