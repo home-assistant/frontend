@@ -300,6 +300,7 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
+    newValue[day] = [...newValue[day]];
     newValue[day][index] = {
       ...newValue[day][index],
       from: value.from,
@@ -337,6 +338,7 @@ class HaScheduleForm extends LitElement {
     };
 
     if (newDay === day) {
+      newValue[day] = [...newValue[day]];
       newValue[day][index] = event;
     } else {
       newValue[day].splice(index, 1);
