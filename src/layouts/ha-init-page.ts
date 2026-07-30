@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 
@@ -59,7 +60,7 @@ export class HaInitPage extends LitElement {
               : nothing
           }
         `
-      : html`<p>
+      : html`<p class=${classMap({ "loading-text": !this.migration })}>
           ${
             this.migration
               ? html`<span class="migration-text"
@@ -68,7 +69,7 @@ export class HaInitPage extends LitElement {
                     "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient."
                   }</span
                 >`
-              : this.localize?.("ui.init.loading") || "Loading data"
+              : this.localize?.("ui.init.loading") || "Loading..."
           }
         </p>`;
   }
@@ -119,6 +120,9 @@ export class HaInitPage extends LitElement {
     }
     .migration-text {
       white-space: pre-line;
+    }
+    .loading-text {
+      opacity: 0.66;
     }
   `;
 }
