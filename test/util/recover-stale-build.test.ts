@@ -66,6 +66,7 @@ describe("recover-stale-build", () => {
     } else {
       Reflect.deleteProperty(navigator, "serviceWorker");
     }
+    Reflect.deleteProperty(window, "externalApp");
     window.isDirtyState = false;
     globalThis.__DEV__ = false;
     globalThis.__DEMO__ = false;
@@ -121,6 +122,25 @@ describe("recover-stale-build", () => {
 
       // reloadFresh() ran (marker written before navigating) and did not toast.
       expect(reloadMarker()).not.toBeNull();
+      expect(notifications).toHaveLength(0);
+    });
+
+    it("uses the companion-app external command when a bridge is present", () => {
+      const externalBus = vi.fn();
+      (
+        window as unknown as {
+          externalApp: { externalBus: typeof externalBus };
+        }
+      ).externalApp = { externalBus };
+
+      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+
+      // Asks the native app to purge its cache and reload instead of the
+      // browser-only path.
+      expect(externalBus).toHaveBeenCalledOnce();
+      expect(externalBus.mock.calls[0][0]).toContain(
+        "frontend/reload_and_clear_cache"
+      );
       expect(notifications).toHaveLength(0);
     });
 

@@ -1,4 +1,5 @@
 import { mainWindow } from "../common/dom/get_main_window";
+import { fireExternalBusMessage } from "../external_app/external_messaging";
 import * as staleBuildPatterns from "./stale-build-patterns.json";
 import { showToast } from "./toast";
 
@@ -77,6 +78,15 @@ export const reloadFresh = async (): Promise<void> => {
     );
   } catch (_err) {
     // ignore
+  }
+
+  // In the companion app (WKWebView) there is no service worker, and its
+  // top-level document HTTP cache is not cleared by the Cache API — so the
+  // web-level recovery below is ineffective there. Ask the native app to
+  // purge its cache and reload the web view instead. Returns false (and falls
+  // through to the browser path) when no external bridge is present.
+  if (fireExternalBusMessage({ type: "frontend/reload_and_clear_cache" })) {
+    return;
   }
 
   if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
