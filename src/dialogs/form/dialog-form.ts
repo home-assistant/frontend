@@ -158,6 +158,7 @@ export class DialogForm
 
   private _valueChanged(ev: CustomEvent): void {
     this._data = ev.detail.value;
+    this._error = undefined;
     this._updateDirtyState(this._data);
   }
 
