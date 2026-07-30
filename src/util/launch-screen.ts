@@ -1,12 +1,11 @@
 import type { TemplateResult } from "lit";
 import { render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
-import { withViewTransition } from "../common/util/view-transition";
 
 let removalInitiated = false;
 
 /**
- * Removes the launch screen with a fade-out view transition.
+ * Removes the launch screen with a CSS fade-out transition.
  *
  * @param instant - Removes the launch screen without animation. Used when the
  * external app covers the frontend with its own splash screen until the
@@ -26,23 +25,16 @@ export const removeLaunchScreen = (instant = false): boolean => {
     return true;
   }
 
-  withViewTransition((viewTransitionAvailable) => {
-    if (viewTransitionAvailable) {
+  launchScreenElement.classList.add("removing");
+  const durationFromCss = getComputedStyle(document.documentElement)
+    .getPropertyValue("--ha-animation-duration-normal")
+    .trim();
+  setTimeout(
+    () => {
       launchScreenElement.parentElement?.removeChild(launchScreenElement);
-      return;
-    }
-
-    launchScreenElement.classList.add("removing");
-    const durationFromCss = getComputedStyle(document.documentElement)
-      .getPropertyValue("--ha-animation-duration-normal")
-      .trim();
-    setTimeout(
-      () => {
-        launchScreenElement.parentElement?.removeChild(launchScreenElement);
-      },
-      parseAnimationDuration(durationFromCss || "250ms")
-    );
-  });
+    },
+    parseAnimationDuration(durationFromCss || "250ms")
+  );
   return true;
 };
 

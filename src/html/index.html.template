@@ -20,21 +20,6 @@
     <meta name="color-scheme" content="dark light" />
     <%= renderTemplate("_style_base.html.template") %>
     <style>
-      @keyframes fade-out {
-        from {
-          opacity: 1;
-        }
-        to {
-          opacity: 0;
-        }
-      }
-      ::view-transition-group(launch-screen) {
-        animation-duration: var(--ha-animation-duration-normal, 250ms);
-        animation-timing-function: ease-out;
-      }
-      ::view-transition-old(launch-screen) {
-        animation: fade-out var(--ha-animation-duration-normal, 250ms) ease-out;
-      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
@@ -53,7 +38,6 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        view-transition-name: launch-screen;
         user-select: none;
         -webkit-user-select: none;
         background-color: var(--primary-background-color, #fafafa);
