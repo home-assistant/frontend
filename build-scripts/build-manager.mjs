@@ -33,8 +33,8 @@ import {
 import {
   buildCacheDir,
   describeOutputOwner,
-  outputLockEnv,
-  outputLockFile,
+  workflowLockEnv,
+  workflowLockFile,
 } from "./output-lock.mjs";
 import { GULP_TASKS } from "./gulp-tasks.mjs";
 
@@ -45,7 +45,7 @@ const repoRoot = path.resolve(
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
 const stateDir = path.join(buildCacheDir, "ha-build");
 const logFile = path.join(stateDir, "build.log");
-const lockFile = outputLockFile("app");
+const lockFile = workflowLockFile;
 
 const usage = () => {
   process.stderr.write(
@@ -81,6 +81,21 @@ const hints = () =>
   "  Stop:   yarn build --stop\n" +
   "  Status: yarn build --status\n" +
   "  Logs:   yarn build --logs\n";
+
+const devCommand = (suite) => {
+  switch (suite) {
+    case "app-serve":
+      return "dev:serve";
+    case "demo":
+      return "dev:demo";
+    case "gallery":
+      return "dev:gallery";
+    case "e2e-app":
+      return "test:e2e:app:dev";
+    default:
+      return "dev";
+  }
+};
 
 const readBuild = () => readProcessRecord(lockFile);
 
@@ -121,13 +136,13 @@ const taskFor = (modern) =>
 const reportExisting = (existing) => {
   if (existing?.kind === "output") {
     process.stdout.write(
-      `${describeOutputOwner(existing)} already owns the app output` +
+      `${describeOutputOwner(existing)} already owns the build and development workflow` +
         `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n`
     );
     return;
   }
   if (existing?.kind === "dev") {
-    const command = existing.suite === "app-serve" ? "dev:serve" : "dev";
+    const command = devCommand(existing.suite);
     process.stdout.write(
       `Dev server (${existing.suite}) already running` +
         `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n` +
@@ -154,7 +169,7 @@ const runForeground = async (modern) => {
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateBuild(lock.token, child, true),
     });
@@ -175,7 +190,7 @@ const runBackground = async (modern) => {
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       logFile,
     });
     updateBuild(lock.token, child, true);

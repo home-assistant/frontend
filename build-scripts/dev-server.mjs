@@ -45,8 +45,8 @@ import {
 import {
   buildCacheDir,
   describeOutputOwner,
-  outputLockEnv,
-  outputLockFile,
+  workflowLockEnv,
+  workflowLockFile,
 } from "./output-lock.mjs";
 import { GULP_TASKS } from "./gulp-tasks.mjs";
 
@@ -61,7 +61,7 @@ const developAndServeScript = path.join(
   "develop_and_serve"
 );
 const logDir = path.join(buildCacheDir, "ha-dev-server");
-const appOutputLockFile = outputLockFile("app");
+const appOutputLockFile = workflowLockFile;
 
 // Each suite names its yarn alias (for hints), a liveness model, and how to
 // spawn it. health suites carry a fixed port; process suites carry the log line
@@ -295,7 +295,7 @@ const reportProcessConflict = (suite, existing) => {
 };
 
 const acquireHealthSuite = (suite) => {
-  const file = outputLockFile(suite);
+  const file = workflowLockFile;
   const token = `${process.pid}-${Date.now()}-${Math.random()}`;
   const record = {
     pid: process.pid,
@@ -522,7 +522,7 @@ const runForegroundHealth = async (suite, cfg) => {
       cmd: cfg.spawn.cmd,
       args: cfg.spawn.args,
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateHealthSuite(lock.file, lock.token, child),
     });
@@ -567,7 +567,7 @@ const runBackgroundHealth = async (suite, cfg) => {
       cmd: cfg.spawn.cmd,
       args: cfg.spawn.args,
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       logFile,
     });
     updateHealthSuite(lock.file, lock.token, child);
@@ -630,7 +630,7 @@ const runStopHealth = async (suite, cfg) => {
     );
     return 1;
   }
-  const lockFile = outputLockFile(suite);
+  const lockFile = workflowLockFile;
   const existing = readProcessRecord(lockFile);
   return terminate(
     suite,
@@ -693,7 +693,7 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateProcessSuite(suite, lock.token, child),
     });
@@ -720,7 +720,7 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
-      env: outputLockEnv(lock.token),
+      env: workflowLockEnv(lock.token),
       logFile,
     });
 

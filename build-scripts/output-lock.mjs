@@ -19,7 +19,7 @@ export const buildCacheDir =
 
 const GENERATED_LOCK_TOKEN_ENV = "HA_GENERATED_OUTPUT_LOCK_TOKEN";
 export const GENERATED_OUTPUT_DIR_ENV = "HA_GENERATED_OUTPUT_DIR";
-const OUTPUT_LOCK_TOKEN_ENV = "HA_OUTPUT_LOCK_TOKEN";
+const WORKFLOW_LOCK_TOKEN_ENV = "HA_WORKFLOW_LOCK_TOKEN";
 const generatedLockTimeoutSeconds = Number(
   process.env.HA_GENERATED_OUTPUT_LOCK_TIMEOUT || "120"
 );
@@ -73,17 +73,16 @@ export const generatedOutputLockFile = path.join(
   "ha-generated-output.lock"
 );
 
-export const outputLockFile = (suite) =>
-  path.join(buildCacheDir, `ha-${suite}-output.lock`);
+export const workflowLockFile = path.join(buildCacheDir, "ha-workflow.lock");
 
 export const generatedOutputLockEnv = (token) => ({
   ...process.env,
   [GENERATED_LOCK_TOKEN_ENV]: token,
 });
 
-export const outputLockEnv = (token) => ({
+export const workflowLockEnv = (token) => ({
   ...process.env,
-  [OUTPUT_LOCK_TOKEN_ENV]: token,
+  [WORKFLOW_LOCK_TOKEN_ENV]: token,
 });
 
 export const describeOutputOwner = (owner) => {
@@ -179,12 +178,12 @@ export const runWithLock = async (lock, task) => {
   }
 };
 
-export const createOutputLockTasks = (suite, target) =>
+export const createWorkflowLockTasks = (target) =>
   createLockTasks({
-    file: outputLockFile(suite),
-    inheritedTokenEnv: OUTPUT_LOCK_TOKEN_ENV,
+    file: workflowLockFile,
+    inheritedTokenEnv: WORKFLOW_LOCK_TOKEN_ENV,
     kind: "output",
-    label: `${suite}-output`,
+    label: "build and development workflow",
     target,
   });
 
@@ -217,7 +216,7 @@ export const createOutputWorkflow = (suite, targets) =>
       key,
       {
         task: target,
-        output: createOutputLockTasks(suite, target),
+        output: createWorkflowLockTasks(target),
         generated: {
           ...createGeneratedLockTasks(target),
           snapshot: createGeneratedSnapshotTask(suite, target),
