@@ -27,6 +27,8 @@ class HaConfigNavigation extends LitElement {
 
   private _hasBluetoothConfigEntries = false;
 
+  private _bluetoothEntriesLoaded?: Promise<void>;
+
   private _childReadyRegistered = false;
 
   @consume({ context: childPanelReadyContext })
@@ -88,12 +90,20 @@ class HaConfigNavigation extends LitElement {
     `;
   }
 
+  private _loadBluetoothEntries(): Promise<void> {
+    if (!this._bluetoothEntriesLoaded) {
+      this._bluetoothEntriesLoaded = getConfigEntries(this.hass, {
+        domain: "bluetooth",
+      }).then((entries) => {
+        this._hasBluetoothConfigEntries = entries.length > 0;
+      });
+    }
+    return this._bluetoothEntriesLoaded;
+  }
+
   private async _resolveVisiblePages(): Promise<void> {
     if (this.pages.some((page) => page.component === "bluetooth")) {
-      const entries = await getConfigEntries(this.hass, {
-        domain: "bluetooth",
-      });
-      this._hasBluetoothConfigEntries = entries.length > 0;
+      await this._loadBluetoothEntries();
     }
 
     this._visiblePages = filterNavigationPages(this.hass, this.pages, {
