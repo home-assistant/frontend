@@ -20,11 +20,10 @@ gulp.task(
     workflow.develop.output.acquire,
     workflow.develop.generated.acquire,
     "clean-demo",
-    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
       "gen-pages-demo-dev",
-      "build-translations",
+      "build-translations-backend",
       "build-locale-data"
     ),
     "copy-static-demo",
@@ -43,8 +42,11 @@ gulp.task(
     workflow.build.generated.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-demo",
     "rspack-prod-demo",
     "gen-pages-demo-prod",
@@ -63,8 +65,11 @@ gulp.task(
     workflow.e2e.generated.acquire,
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-demo",
     "rspack-prod-demo-e2e",
     "gen-pages-demo-prod-e2e",
@@ -81,7 +86,7 @@ gulp.task(
     },
     workflow.analyze.output.acquire,
     workflow.analyze.generated.acquire,
-    "clean",
+    "clean-demo",
     "rspack-prod-demo",
     workflow.analyze.generated.release,
     workflow.analyze.output.release

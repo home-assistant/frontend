@@ -1,7 +1,7 @@
 import gulp from "gulp";
 import env from "../env.cjs";
 import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
+import { createOutputWorkflow, runWithLock } from "../output-lock.mjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -14,6 +14,13 @@ import "./translations.js";
 import "./rspack.js";
 
 const workflow = createOutputWorkflow("app", GULP_TASKS.app);
+
+gulp.task("rebuild-app-translations", () =>
+  runWithLock(
+    workflow.develop.generated,
+    gulp.series("build-translations", "copy-translations-app")
+  )
+);
 
 gulp.task(
   workflow.develop.task,

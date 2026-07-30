@@ -19,8 +19,11 @@ gulp.task(
     workflow.develop.output.acquire,
     workflow.develop.generated.acquire,
     "clean-cast",
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-cast",
     "gen-pages-cast-dev",
     workflow.develop.generated.release,
@@ -37,8 +40,11 @@ gulp.task(
     workflow.build.output.acquire,
     workflow.build.generated.acquire,
     "clean-cast",
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-cast",
     "rspack-prod-cast",
     "gen-pages-cast-prod",

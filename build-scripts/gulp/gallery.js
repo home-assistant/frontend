@@ -171,10 +171,9 @@ gulp.task(
     workflow.develop.output.acquire,
     workflow.develop.generated.acquire,
     "clean-gallery",
-    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
-      "build-translations",
+      "build-translations-backend",
       "build-locale-data",
       "gather-gallery-pages"
     ),
@@ -205,10 +204,9 @@ gulp.task(
     workflow.build.output.acquire,
     workflow.build.generated.acquire,
     "clean-gallery",
-    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
-      "build-translations",
+      "build-translations-backend",
       "build-locale-data",
       "gather-gallery-pages"
     ),

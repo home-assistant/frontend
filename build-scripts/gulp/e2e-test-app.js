@@ -19,11 +19,10 @@ gulp.task(
     workflow.develop.output.acquire,
     workflow.develop.generated.acquire,
     "clean-e2e-test-app",
-    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
       "gen-pages-e2e-test-app-dev",
-      "build-translations",
+      "build-translations-backend",
       "build-locale-data"
     ),
     "copy-static-e2e-test-app",
@@ -41,8 +40,11 @@ gulp.task(
     workflow.build.output.acquire,
     workflow.build.generated.acquire,
     "clean-e2e-test-app",
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-e2e-test-app",
     "rspack-prod-e2e-test-app",
     "gen-pages-e2e-test-app-prod",
@@ -60,8 +62,11 @@ gulp.task(
     workflow.e2e.output.acquire,
     workflow.e2e.generated.acquire,
     "clean-e2e-test-app",
-    "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    gulp.parallel(
+      "gen-icons-json",
+      "build-translations-backend",
+      "build-locale-data"
+    ),
     "copy-static-e2e-test-app",
     "rspack-prod-e2e-test-app-e2e",
     "gen-pages-e2e-test-app-prod",

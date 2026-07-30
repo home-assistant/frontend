@@ -108,7 +108,7 @@ const runDevServer = async ({
   }
 };
 
-const doneHandler = (done) => (err, stats) => {
+const doneHandler = () => (err, stats) => {
   if (err) {
     log.error(err.stack || err);
     if (err.details) {
@@ -122,18 +122,26 @@ const doneHandler = (done) => (err, stats) => {
   }
 
   log(`Build done @ ${new Date().toLocaleTimeString()}`);
-
-  if (done) {
-    done();
-  }
 };
 
 const prodBuild = (conf) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     rspack(
       conf,
       // Resolve promise when done. Because we pass a callback, rspack closes itself
-      doneHandler(resolve)
+      (err, stats) => {
+        if (err) {
+          reject(err);
+        } else if (stats.hasErrors()) {
+          reject(Error(stats.toString("errors-only")));
+        } else {
+          if (stats.hasWarnings()) {
+            console.log(stats.toString("minimal"));
+          }
+          log(`Build done @ ${new Date().toLocaleTimeString()}`);
+          resolve();
+        }
+      }
     );
   });
 
@@ -146,7 +154,7 @@ gulp.task("rspack-watch-app", () => {
   ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series("rebuild-app-translations")
   );
 });
 
@@ -258,10 +266,7 @@ gulp.task("rspack-watch-landing-page", () => {
 
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series(
-      "build-landing-page-translations",
-      "copy-translations-landing-page"
-    )
+    gulp.series("rebuild-landing-page-translations")
   );
 });
 

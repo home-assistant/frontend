@@ -1,5 +1,3 @@
-/* eslint-disable max-classes-per-file */
-
 import { deleteAsync } from "del";
 import { glob } from "glob";
 import gulp from "gulp";
@@ -20,15 +18,6 @@ const workDir = "build/translations";
 const outDir = join(workDir, "output");
 const EN_SRC = join(paths.translations_src, "en.json");
 const TEST_LOCALE = "en-x-test";
-
-let mergeBackend = false;
-
-gulp.task(
-  "translations-enable-merge-backend",
-  gulp.parallel(async () => {
-    mergeBackend = true;
-  }, "allow-setup-fetch-nightly-translations")
-);
 
 // Transform stream to apply a function on Vinyl JSON files (buffer mode only).
 // The provided function can either return a new object, or an array of
@@ -154,7 +143,7 @@ const createTestTranslation = () =>
  * project is buildable immediately after merging new translation keys, since
  * the Lokalise update to translations/en.json will not happen immediately.
  */
-const createMasterTranslation = () =>
+const createMasterTranslation = (mergeBackend) =>
   gulp
     .src([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])], {
       allowEmpty: true,
@@ -163,23 +152,15 @@ const createMasterTranslation = () =>
     .pipe(new MergeJSON("en"))
     .pipe(gulp.dest(workDir));
 
-const FRAGMENTS = ["base"];
-
-const setFragment = (fragment) => async () => {
-  FRAGMENTS[0] = fragment;
-};
-
 const panelFragment = (fragment) =>
   fragment !== "base" && fragment !== "landing-page";
 
-const HASHES = new Map();
-
-const createTranslations = async () => {
+const createTranslations = async ({ mergeBackend, fragments, hashes }) => {
   // Parse and store the master to avoid repeating this for each locale, then
   // add the panel fragments when processing the app.
   const enMaster = JSON.parse(await readFile(`${workDir}/en.json`, "utf-8"));
-  if (FRAGMENTS[0] === "base") {
-    FRAGMENTS.push(...Object.keys(enMaster.ui.panel));
+  if (fragments[0] === "base") {
+    fragments.push(...Object.keys(enMaster.ui.panel));
   }
 
   // The downstream pipeline is setup first.  It hashes the merged data for
@@ -194,7 +175,7 @@ const createTranslations = async () => {
       const hash = env.isProdBuild()
         ? createHash("md5").update(file.contents).digest("hex")
         : "dev";
-      HASHES.set(file.stem, hash);
+      hashes.set(file.stem, hash);
       file.stem += `-${hash}`;
       callback(null, file);
     },
@@ -202,7 +183,7 @@ const createTranslations = async () => {
   const fragmentsStream = hashStream
     .pipe(
       new CustomJSON((data) =>
-        FRAGMENTS.map((fragment) => {
+        fragments.map((fragment) => {
           switch (fragment) {
             case "base":
               // Remove the panels and landing-page to create the base translations
@@ -271,7 +252,7 @@ const createTranslations = async () => {
   await finished(fragmentsStream);
 };
 
-const writeTranslationMetaData = () =>
+const writeTranslationMetaData = (fragments, hashes) =>
   gulp
     .src([`${paths.translations_src}/translationMetadata.json`])
     .pipe(
@@ -288,32 +269,56 @@ const writeTranslationMetaData = () =>
               `Skipping locale ${locale} because native name is not translated.`
             );
           } else {
-            meta[locale].hash = HASHES.get(locale);
+            meta[locale].hash = hashes.get(locale);
           }
         }
         return {
-          fragments: FRAGMENTS.filter(panelFragment),
+          fragments: fragments.filter(panelFragment),
           translations: meta,
         };
       })
     )
     .pipe(gulp.dest(workDir));
 
-gulp.task(
-  "build-translations",
-  gulp.series(
-    gulp.parallel(
-      "fetch-nightly-translations",
-      gulp.series("clean-translations", makeWorkDir)
-    ),
-    createTestTranslation,
-    createMasterTranslation,
-    createTranslations,
-    writeTranslationMetaData
-  )
-);
+const createTranslationBuild = ({
+  mergeBackend = false,
+  fragment = "base",
+  allowTokenSetup = false,
+}) =>
+  async function buildTranslations() {
+    const fragments = [fragment];
+    const hashes = new Map();
+    const task = gulp.series(
+      gulp.parallel(
+        allowTokenSetup
+          ? "fetch-nightly-translations-with-setup"
+          : "fetch-nightly-translations",
+        gulp.series("clean-translations", makeWorkDir)
+      ),
+      createTestTranslation,
+      () => createMasterTranslation(mergeBackend),
+      () => createTranslations({ mergeBackend, fragments, hashes }),
+      () => writeTranslationMetaData(fragments, hashes)
+    );
+    await new Promise((resolve, reject) => {
+      task((err) => (err ? reject(err) : resolve()));
+    });
+  };
 
+gulp.task("build-translations", createTranslationBuild({}));
+gulp.task(
+  "build-translations-backend",
+  createTranslationBuild({ mergeBackend: true, allowTokenSetup: true })
+);
 gulp.task(
   "build-landing-page-translations",
-  gulp.series(setFragment("landing-page"), "build-translations")
+  createTranslationBuild({ fragment: "landing-page" })
+);
+gulp.task(
+  "build-landing-page-translations-backend",
+  createTranslationBuild({
+    mergeBackend: true,
+    fragment: "landing-page",
+    allowTokenSetup: true,
+  })
 );

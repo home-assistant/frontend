@@ -1,6 +1,6 @@
 import gulp from "gulp";
 import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
+import { createOutputWorkflow, runWithLock } from "../output-lock.mjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -11,6 +11,16 @@ import "./rspack.js";
 
 const workflow = createOutputWorkflow("landing-page", GULP_TASKS.landingPage);
 
+gulp.task("rebuild-landing-page-translations", () =>
+  runWithLock(
+    workflow.develop.generated,
+    gulp.series(
+      "build-landing-page-translations-backend",
+      "copy-translations-landing-page"
+    )
+  )
+);
+
 gulp.task(
   workflow.develop.task,
   gulp.series(
@@ -20,8 +30,7 @@ gulp.task(
     workflow.develop.output.acquire,
     workflow.develop.generated.acquire,
     "clean-landing-page",
-    "translations-enable-merge-backend",
-    "build-landing-page-translations",
+    "build-landing-page-translations-backend",
     "copy-translations-landing-page",
     "build-locale-data",
     "copy-static-landing-page",

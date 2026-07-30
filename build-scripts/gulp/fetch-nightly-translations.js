@@ -21,54 +21,55 @@ const EXTRACT_DIR = "translations";
 const TOKEN_FILE = path.posix.join(EXTRACT_DIR, "token.json");
 const ARTIFACT_FILE = path.posix.join(EXTRACT_DIR, "artifact.json");
 
-let allowTokenSetup = false;
-gulp.task("allow-setup-fetch-nightly-translations", (done) => {
-  allowTokenSetup = true;
-  done();
-});
-
-gulp.task("fetch-nightly-translations", async function () {
-  // Skip all when environment flag is set (assumes translations are already in place)
-  if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
-    console.log("Skipping fetch due to environment signal");
-    return;
-  }
-
-  // Read current translations artifact info if it exists,
-  // and stop if they are not old enough
-  let currentArtifact;
-  try {
-    currentArtifact = JSON.parse(await readFile(ARTIFACT_FILE, "utf-8"));
-    const currentAge =
-      (Date.now() - Date.parse(currentArtifact.created_at)) / 3600000;
-    if (currentAge < MAX_AGE) {
-      console.log(
-        "Keeping current translations (only %s hours old)",
-        currentAge.toFixed(1)
-      );
+const createFetchNightlyTranslations = (allowTokenSetup) =>
+  async function () {
+    // Skip all when environment flag is set (assumes translations are already in place)
+    if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
+      console.log("Skipping fetch due to environment signal");
       return;
     }
-  } catch {
-    currentArtifact = null;
-  }
 
-  try {
-    await fetchTranslations(currentArtifact);
-  } catch (err) {
-    // Local builds should work offline or without valid GitHub credentials,
-    // so fall back to English only. CI must fail instead of silently
-    // building without translations.
-    if (process.env.CI) {
-      throw err;
+    // Read current translations artifact info if it exists,
+    // and stop if they are not old enough
+    let currentArtifact;
+    try {
+      currentArtifact = JSON.parse(await readFile(ARTIFACT_FILE, "utf-8"));
+      const currentAge =
+        (Date.now() - Date.parse(currentArtifact.created_at)) / 3600000;
+      if (currentAge < MAX_AGE) {
+        console.log(
+          "Keeping current translations (only %s hours old)",
+          currentAge.toFixed(1)
+        );
+        return;
+      }
+    } catch {
+      currentArtifact = null;
     }
-    console.warn(
-      "Failed to fetch nightly translations, continuing with English only:",
-      err?.message || err
-    );
-  }
-});
 
-async function fetchTranslations(currentArtifact) {
+    try {
+      await fetchTranslations(currentArtifact, allowTokenSetup);
+    } catch (err) {
+      // Local builds should work offline or without valid GitHub credentials,
+      // so fall back to English only. CI must fail instead of silently
+      // building without translations.
+      if (process.env.CI) {
+        throw err;
+      }
+      console.warn(
+        "Failed to fetch nightly translations, continuing with English only:",
+        err?.message || err
+      );
+    }
+  };
+
+gulp.task("fetch-nightly-translations", createFetchNightlyTranslations(false));
+gulp.task(
+  "fetch-nightly-translations-with-setup",
+  createFetchNightlyTranslations(true)
+);
+
+async function fetchTranslations(currentArtifact, allowTokenSetup) {
   // To store file writing promises
   const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
   const writings = [];
@@ -181,8 +182,5 @@ async function fetchTranslations(currentArtifact) {
 
 gulp.task(
   "setup-and-fetch-nightly-translations",
-  gulp.series(
-    "allow-setup-fetch-nightly-translations",
-    "fetch-nightly-translations"
-  )
+  createFetchNightlyTranslations(true)
 );
