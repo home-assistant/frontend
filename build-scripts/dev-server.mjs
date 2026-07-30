@@ -254,6 +254,22 @@ const reportProcessConflict = (suite, existing) => {
   );
 };
 
+const acquireSuiteForStart = (suite) => {
+  const lock = acquireSuite(suite);
+  if (lock.token) {
+    return lock;
+  }
+  reportProcessConflict(suite, lock.existing);
+  return {
+    code:
+      lock.existing?.kind === "dev" &&
+      lock.existing.suite === suite &&
+      !lock.existing.starting
+        ? 0
+        : 1,
+  };
+};
+
 // --- shared spawning and lifecycle ------------------------------------------
 
 const urlSuffix = (port) => (port ? ` at http://localhost:${port}` : "");
@@ -391,14 +407,9 @@ const isHttpServing = async (port, timeoutMs = 1000) => {
 
 const runForegroundHealth = async (suite, cfg) => {
   const { port } = cfg;
-  const lock = acquireSuite(suite);
+  const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
-    reportProcessConflict(suite, lock.existing);
-    return lock.existing?.kind === "dev" &&
-      lock.existing.suite === suite &&
-      !lock.existing.starting
-      ? 0
-      : 1;
+    return lock.code;
   }
   const status = await probe(port);
   if (status.state === "ours") {
@@ -431,14 +442,9 @@ const runForegroundHealth = async (suite, cfg) => {
 
 const runBackgroundHealth = async (suite, cfg) => {
   const { port } = cfg;
-  const lock = acquireSuite(suite);
+  const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
-    reportProcessConflict(suite, lock.existing);
-    return lock.existing?.kind === "dev" &&
-      lock.existing.suite === suite &&
-      !lock.existing.starting
-      ? 0
-      : 1;
+    return lock.code;
   }
   const preflight = await probe(port);
   if (preflight.state === "ours") {
@@ -486,33 +492,6 @@ const runBackgroundHealth = async (suite, cfg) => {
   }
 };
 
-const runStatusHealth = async (suite, cfg) => {
-  const existing = readSuite(suite);
-  if (existing) {
-    process.stdout.write(
-      `Dev server (${suite}) running at http://localhost:${cfg.port} ` +
-        `(pid ${existing.pid})\n`
-    );
-  } else {
-    process.stdout.write(`Dev server (${suite}) not running.\n`);
-  }
-  return 0;
-};
-
-const runStopHealth = async (suite) => {
-  const existing = readSuite(suite);
-  if (!existing) {
-    process.stdout.write(`Dev server (${suite}) not running.\n`);
-    return 0;
-  }
-  return terminate(
-    suite,
-    existing.pid,
-    () => !isProcessRecordAlive(existing),
-    () => releaseSuite(existing.token)
-  );
-};
-
 const logIsReady = (logFile, readyLog) => {
   try {
     return readyLog.test(fs.readFileSync(logFile, "utf8"));
@@ -542,14 +521,9 @@ const spawnArgs = (cfg, passthrough) => [
 ];
 
 const runForegroundProcess = async (suite, cfg, passthrough) => {
-  const lock = acquireSuite(suite);
+  const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
-    reportProcessConflict(suite, lock.existing);
-    return lock.existing?.kind === "dev" &&
-      lock.existing.suite === suite &&
-      !lock.existing.starting
-      ? 0
-      : 1;
+    return lock.code;
   }
   try {
     return await spawnForeground({
@@ -566,14 +540,9 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
 };
 
 const runBackgroundProcess = async (suite, cfg, passthrough) => {
-  const lock = acquireSuite(suite);
+  const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
-    reportProcessConflict(suite, lock.existing);
-    return lock.existing?.kind === "dev" &&
-      lock.existing.suite === suite &&
-      !lock.existing.starting
-      ? 0
-      : 1;
+    return lock.code;
   }
 
   let child;
@@ -609,11 +578,11 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
   }
 };
 
-const runStatusProcess = async (suite) => {
+const runStatusSuite = async (suite, cfg) => {
   const existing = readSuite(suite);
   if (existing) {
     process.stdout.write(
-      `Dev server (${existing.suite ?? suite}) running${urlSuffix(existing.port)} ` +
+      `Dev server (${existing.suite ?? suite}) running${urlSuffix(existing.port ?? cfg.port)} ` +
         `(pid ${existing.pid})\n`
     );
   } else {
@@ -622,7 +591,7 @@ const runStatusProcess = async (suite) => {
   return 0;
 };
 
-const runStopProcess = async (suite) => {
+const runStopSuite = async (suite) => {
   const existing = readSuite(suite);
   if (!existing) {
     process.stdout.write(`Dev server (${suite}) not running.\n`);
@@ -687,21 +656,23 @@ const main = async () => {
   if (mode === "logs") {
     return runLogs(args.suite, args.follow);
   }
+  if (mode === "status") {
+    return runStatusSuite(args.suite, cfg);
+  }
+  if (mode === "stop") {
+    return runStopSuite(args.suite);
+  }
   const handlers =
     cfg.liveness === "health"
       ? {
           foreground: () => runForegroundHealth(args.suite, cfg),
           background: () => runBackgroundHealth(args.suite, cfg),
-          status: () => runStatusHealth(args.suite, cfg),
-          stop: () => runStopHealth(args.suite, cfg),
         }
       : {
           foreground: () =>
             runForegroundProcess(args.suite, cfg, args.passthrough),
           background: () =>
             runBackgroundProcess(args.suite, cfg, args.passthrough),
-          status: () => runStatusProcess(args.suite),
-          stop: () => runStopProcess(args.suite),
         };
   return handlers[mode]();
 };
