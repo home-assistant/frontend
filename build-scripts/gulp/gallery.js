@@ -179,6 +179,7 @@ gulp.task(
     ),
     "copy-static-gallery",
     "gen-pages-gallery-dev",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     gulp.parallel(
       "rspack-dev-server-gallery",

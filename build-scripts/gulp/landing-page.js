@@ -16,7 +16,8 @@ gulp.task("rebuild-landing-page-translations", () =>
     workflow.develop.generated,
     gulp.series(
       "build-landing-page-translations-backend",
-      "copy-translations-landing-page"
+      "copy-translations-landing-page",
+      workflow.develop.generated.snapshot
     )
   )
 );
@@ -35,6 +36,7 @@ gulp.task(
     "build-locale-data",
     "copy-static-landing-page",
     "gen-pages-landing-page-dev",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     "rspack-watch-landing-page"
   )

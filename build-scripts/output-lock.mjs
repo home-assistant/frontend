@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -17,6 +18,7 @@ export const buildCacheDir =
   path.join(repoRoot, "node_modules", ".cache");
 
 const GENERATED_LOCK_TOKEN_ENV = "HA_GENERATED_OUTPUT_LOCK_TOKEN";
+export const GENERATED_OUTPUT_DIR_ENV = "HA_GENERATED_OUTPUT_DIR";
 const OUTPUT_LOCK_TOKEN_ENV = "HA_OUTPUT_LOCK_TOKEN";
 const generatedLockTimeoutSeconds = Number(
   process.env.HA_GENERATED_OUTPUT_LOCK_TIMEOUT || "120"
@@ -195,6 +197,20 @@ export const createGeneratedLockTasks = (target) =>
     target,
   });
 
+const createGeneratedSnapshotTask = (suite, target) => {
+  const snapshot = async () => {
+    const source = path.join(repoRoot, "build");
+    const destination = path.join(buildCacheDir, "ha-generated-output", suite);
+    if (!process.env[GENERATED_OUTPUT_DIR_ENV]) {
+      fs.rmSync(destination, { recursive: true, force: true });
+    }
+    fs.cpSync(source, destination, { recursive: true });
+    process.env[GENERATED_OUTPUT_DIR_ENV] = destination;
+  };
+  snapshot.displayName = `snapshot-generated-output:${target}`;
+  return snapshot;
+};
+
 export const createOutputWorkflow = (suite, targets) =>
   Object.fromEntries(
     Object.entries(targets).map(([key, target]) => [
@@ -202,7 +218,10 @@ export const createOutputWorkflow = (suite, targets) =>
       {
         task: target,
         output: createOutputLockTasks(suite, target),
-        generated: createGeneratedLockTasks(target),
+        generated: {
+          ...createGeneratedLockTasks(target),
+          snapshot: createGeneratedSnapshotTask(suite, target),
+        },
       },
     ])
   );

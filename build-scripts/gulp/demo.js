@@ -27,6 +27,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-demo",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     "rspack-dev-server-demo"
   )

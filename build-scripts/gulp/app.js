@@ -18,7 +18,11 @@ const workflow = createOutputWorkflow("app", GULP_TASKS.app);
 gulp.task("rebuild-app-translations", () =>
   runWithLock(
     workflow.develop.generated,
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series(
+      "build-translations",
+      "copy-translations-app",
+      workflow.develop.generated.snapshot
+    )
   )
 );
 
@@ -39,6 +43,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-app",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     "rspack-watch-app"
   )

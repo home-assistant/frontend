@@ -26,6 +26,7 @@ gulp.task(
     ),
     "copy-static-cast",
     "gen-pages-cast-dev",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     "rspack-dev-server-cast"
   )

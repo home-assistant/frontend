@@ -26,6 +26,7 @@ gulp.task(
       "build-locale-data"
     ),
     "copy-static-e2e-test-app",
+    workflow.develop.generated.snapshot,
     workflow.develop.generated.release,
     "rspack-dev-server-e2e-test-app"
   )
