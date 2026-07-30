@@ -1,7 +1,6 @@
 import type { HomeAssistant } from "../types";
 import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
 
-export type { SearchMediaResult };
 
 export interface ResolvedMediaSource {
   url: string;
