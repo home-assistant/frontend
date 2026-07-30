@@ -68,7 +68,23 @@ export function canOpen(stateObj: CoverEntity) {
     return false;
   }
   const assumedState = stateObj.attributes.assumed_state === true;
-  return assumedState || (!isFullyOpen(stateObj) && !isOpening(stateObj));
+  if (assumedState) {
+    return true;
+  }
+  if (isFullyOpen(stateObj) || isOpening(stateObj)) {
+    return false;
+  }
+  // A cover that exposes a stop action is treated as a motor that must be
+  // stopped before it can reverse direction, so the open button is disabled
+  // while it is closing. A cover without a stop action can reverse instantly,
+  // so the open button stays available mid-travel.
+  if (
+    isClosing(stateObj) &&
+    supportsFeature(stateObj, CoverEntityFeature.STOP)
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export function canClose(stateObj: CoverEntity): boolean {
@@ -76,11 +92,32 @@ export function canClose(stateObj: CoverEntity): boolean {
     return false;
   }
   const assumedState = stateObj.attributes.assumed_state === true;
-  return assumedState || (!isFullyClosed(stateObj) && !isClosing(stateObj));
+  if (assumedState) {
+    return true;
+  }
+  if (isFullyClosed(stateObj) || isClosing(stateObj)) {
+    return false;
+  }
+  // See canOpen: a cover with a stop action must stop before reversing, so the
+  // close button is disabled while it is opening. A cover without a stop action
+  // can reverse instantly.
+  if (
+    isOpening(stateObj) &&
+    supportsFeature(stateObj, CoverEntityFeature.STOP)
+  ) {
+    return false;
+  }
+  return true;
 }
 
 export function canStop(stateObj: CoverEntity): boolean {
-  return stateObj.state !== UNAVAILABLE;
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  // Stopping is only meaningful while the cover is actually moving. For an
+  // assumed-state cover the movement is unknown, so keep the button available.
+  return assumedState || isOpening(stateObj) || isClosing(stateObj);
 }
 
 export function canOpenTilt(stateObj: CoverEntity): boolean {
