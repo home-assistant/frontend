@@ -269,7 +269,16 @@ describe("inherited output ownership", () => {
       output += data;
     });
     await new Promise((resolve) => {
-      setTimeout(resolve, 150);
+      const waiting = "Waiting for Gulp task holder";
+      if (output.includes(waiting)) {
+        resolve();
+        return;
+      }
+      child.stdout.on("data", () => {
+        if (output.includes(waiting)) {
+          resolve();
+        }
+      });
     });
     await rm(lockFile);
     await new Promise((resolve, reject) => {
