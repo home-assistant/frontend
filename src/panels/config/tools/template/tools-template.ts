@@ -9,6 +9,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -218,9 +219,9 @@ class HaPanelDevTemplate extends LitElement {
         class="divider-toggle"
         .title=${label}
         aria-label=${label}
-        @pointerdown=${this._dividerPointerDown}
-        @pointerup=${this._dividerPointerUp}
-        @click=${this._dividerClick}
+        @mousedown=${stopPropagation}
+        @touchstart=${stopPropagation}
+        @click=${this._toggleOrientation}
       >
         <ha-svg-icon
           .path=${
@@ -431,30 +432,6 @@ ${
     }
   }
 
-  private _dividerPointerStart?: { x: number; y: number };
-
-  private _dividerPointerDown = (ev: PointerEvent) => {
-    this._dividerPointerStart = { x: ev.clientX, y: ev.clientY };
-  };
-
-  private _dividerPointerUp = (ev: PointerEvent) => {
-    const start = this._dividerPointerStart;
-    this._dividerPointerStart = undefined;
-    // Ignore the pointerup that ends a drag-resize; only a genuine (still)
-    // tap or click toggles the orientation.
-    if (!start || Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 5) {
-      return;
-    }
-    this._toggleOrientation();
-  };
-
-  private _dividerClick = (ev: MouseEvent) => {
-    // Allow Enter/Space to toggle orientation when the divider is focused.
-    if (ev.detail === 0) {
-      this._toggleOrientation();
-    }
-  };
-
   private _storeSplitPosition = debounce(
     () => {
       if (!this._inited) {
@@ -504,8 +481,8 @@ ${
           --ha-split-panel-grip-display: none;
         }
 
-        /* Orientation toggle that lives on the divider and doubles as a grip.
-           Clicks toggle orientation; dragging the divider elsewhere resizes. */
+        /* Orientation toggle that lives on the divider. Clicking it toggles
+           orientation; resizing is done by dragging the divider elsewhere. */
         .divider-toggle {
           position: relative;
           z-index: 1;
