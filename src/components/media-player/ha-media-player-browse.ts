@@ -34,10 +34,12 @@ import {
   browseMediaPlayer,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
+  searchMediaPlayer,
 } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   isManualMediaSourceContentId,
+  isMediaSourceContentId,
   MANUAL_MEDIA_SOURCE_PREFIX,
   searchMedia,
 } from "../../data/media_source";
@@ -869,13 +871,31 @@ export class HaMediaPlayerBrowse extends LitElement {
     const mediaFilterClasses = this._mediaClassFilter.length
       ? this._mediaClassFilter
       : undefined;
+    // A player's tree can embed media sources, which resolve their own searches;
+    // everything else in it uses integration specific ids only the entity knows.
+    const searchEntityId =
+      this.entityId &&
+      this.entityId !== BROWSER_PLAYER &&
+      !isMediaSourceContentId(navigateId.media_content_id ?? "")
+        ? this.entityId
+        : undefined;
+
     try {
-      const { result } = await searchMedia(
-        this.hass,
-        navigateId.media_content_id,
-        searchQuery,
-        mediaFilterClasses
-      );
+      const { result } = searchEntityId
+        ? await searchMediaPlayer(
+            this.hass,
+            searchEntityId,
+            searchQuery,
+            navigateId.media_content_id,
+            navigateId.media_content_type,
+            mediaFilterClasses
+          )
+        : await searchMedia(
+            this.hass,
+            navigateId.media_content_id,
+            searchQuery,
+            mediaFilterClasses
+          );
       // Ignore the response if a newer search started or we navigated away
       if (requestId !== this._searchRequestId) {
         return;
