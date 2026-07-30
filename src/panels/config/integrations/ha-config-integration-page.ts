@@ -368,21 +368,18 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
+      : this._manifest?.documentation;
+
     return html`
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow}>
         ${
-          this._manifest
+          documentationLink
             ? html`
                 <a
                   slot="toolbar-icon"
-                  href=${
-                    this._manifest.is_built_in
-                      ? documentationUrl(
-                          this.hass,
-                          `/integrations/${this._manifest.domain}`
-                        )
-                      : this._manifest.documentation
-                  }
+                  href=${documentationLink}
                   rel="noreferrer"
                   target="_blank"
                 >
