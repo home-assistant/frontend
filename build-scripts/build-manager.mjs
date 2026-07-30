@@ -155,7 +155,7 @@ const runBackground = async (modern) => {
   const lock = acquireBuild(modern, false);
   if (!lock.token) {
     reportExisting(lock.existing);
-    return 0;
+    return 1;
   }
   try {
     const child = await spawnDetachedToLog({
