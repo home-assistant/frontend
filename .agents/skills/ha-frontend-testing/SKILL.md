@@ -20,6 +20,7 @@ yarn lint          # ESLint + Prettier + TypeScript + Lit
 yarn format        # Auto-fix ESLint + Prettier
 yarn lint:types    # TypeScript compiler, run without file arguments
 yarn test          # Vitest
+yarn build         # Full production build
 yarn dev           # App dev server
 yarn dev:serve     # Local serving dev server
 ```
@@ -27,6 +28,24 @@ yarn dev:serve     # Local serving dev server
 Never run `tsc` or `yarn lint:types` with file arguments. File arguments make `tsc` ignore `tsconfig.json` and can emit `.js` files into `src/`.
 
 For focused type feedback on one file, use editor diagnostics instead of a file-scoped `tsc` command.
+
+## Production Builds
+
+Production builds support foreground and managed background execution:
+
+```bash
+yarn build                         # Full foreground build
+yarn build --background            # Full managed background build
+yarn build --modern                # Modern frontend_latest bundle only
+yarn build --modern --background   # Modern managed background build
+yarn build --status
+yarn build --logs [--follow]
+yarn build --stop
+```
+
+Use `yarn build --modern --background` for production bundle-size or browser performance comparisons that only need modern browser output. It runs the normal metadata and static preparation, minifies and compresses the modern `frontend_latest` bundle and shared static assets, and generates modern-only entry pages and service workers. It deliberately skips the legacy bundle and its service worker.
+
+Do not pass `--help`, `--background`, or `--modern` to `script/build_frontend`; that raw script does not parse arguments and always starts the full foreground build. Use `yarn build` for managed builds. It prevents another foreground or background build from starting while one is using the shared generated files under `build/` and `hass_frontend/`.
 
 ## Unit And Utility Tests
 
@@ -41,7 +60,7 @@ For focused type feedback on one file, use editor diagnostics instead of a file-
 
 `yarn dev:serve` also serves locally and supports `-c` for the core URL and `-p` for the port. The default is 8124, or 8123 in a devcontainer.
 
-Dev server commands support `--background`, `--status`, `--stop`, and `--logs [--follow]`. Prefer managed background mode while iterating so the watcher stays available across test runs without occupying the terminal.
+Dev server commands support `--background`, `--status`, `--stop`, and `--logs [--follow]`. Prefer managed background mode while iterating so the watcher stays available across test runs without occupying the terminal. `yarn dev` and `yarn dev:serve` share one managed process slot because both write the app output.
 
 ## Playwright E2E
 
