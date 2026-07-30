@@ -13,7 +13,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
-import { fetchSlug } from "../../../data/core";
 import { apiContext, configContext } from "../../../data/context";
 import {
   fetchEntityRegistrySettings,
@@ -25,6 +24,7 @@ import {
   type EntityIdFormat,
   type EntityIdPart,
 } from "../../../data/entity_id_format";
+import { fetchSlug } from "../../../data/ws-slugify";
 import { haStyle } from "../../../resources/styles";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-entity-id-format-editor";
