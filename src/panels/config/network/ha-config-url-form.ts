@@ -187,7 +187,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               data-name="external_url"
               type="url"
               .maskedToggle=${!(this._showCustomExternalUrl && canEdit)}
-              placeholder=${externalUrlPlaceholder}
+              .placeholder=${externalUrlPlaceholder}
               .value=${externalUrl}
               .maskedValue=${
                 this._showCustomExternalUrl && canEdit
@@ -290,7 +290,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               data-name="internal_url"
               .maskedToggle=${!(this._showCustomInternalUrl && canEdit)}
               type="url"
-              placeholder=${internalUrlPlaceholder}
+              .placeholder=${internalUrlPlaceholder}
               .value=${internalUrl}
               .maskedValue=${
                 this._showCustomInternalUrl && canEdit
