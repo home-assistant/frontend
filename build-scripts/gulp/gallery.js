@@ -4,8 +4,7 @@ import gulp from "gulp";
 import { load as loadYaml } from "js-yaml";
 import { marked } from "marked";
 import path from "path";
-import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import paths from "../paths.cjs";
 import "./clean.js";
 import "./entry-html.js";
@@ -14,8 +13,6 @@ import "./gen-icons-json.js";
 import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
-
-const workflow = createOutputWorkflow(GULP_TASKS.gallery);
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
@@ -163,16 +160,17 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 });
 
 gulp.task(
-  workflow.develop.task,
+  "develop-gallery",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.acquire,
+    createWorkflowLockTask("develop-gallery"),
     "clean-gallery",
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
-      "build-translations-backend",
+      "build-translations",
       "build-locale-data",
       "gather-gallery-pages"
     ),
@@ -194,16 +192,17 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.build.task,
+  "build-gallery",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.acquire,
+    createWorkflowLockTask("build-gallery"),
     "clean-gallery",
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
-      "build-translations-backend",
+      "build-translations",
       "build-locale-data",
       "gather-gallery-pages"
     ),

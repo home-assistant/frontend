@@ -267,7 +267,7 @@ gulp.task("rspack-watch-landing-page", () => {
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
     gulp.series(
-      "build-landing-page-translations-backend",
+      "build-landing-page-translations",
       "copy-translations-landing-page"
     )
   );

@@ -1,6 +1,4 @@
 import gulp from "gulp";
-import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -8,21 +6,15 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
-const workflow = createOutputWorkflow(GULP_TASKS.cast);
-
 gulp.task(
-  workflow.develop.task,
+  "develop-cast",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.acquire,
     "clean-cast",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations-backend",
-      "build-locale-data"
-    ),
+    "translations-enable-merge-backend",
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     "gen-pages-cast-dev",
     "rspack-dev-server-cast"
@@ -30,18 +22,14 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.build.task,
+  "build-cast",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.acquire,
     "clean-cast",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations-backend",
-      "build-locale-data"
-    ),
+    "translations-enable-merge-backend",
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-cast",
     "rspack-prod-cast",
     "gen-pages-cast-prod"

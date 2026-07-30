@@ -47,7 +47,7 @@ Use `yarn build --modern --background` for production bundle-size or browser per
 
 Do not pass `--help`, `--background`, or `--modern` to `script/build_frontend`; that raw script does not parse arguments and always starts the full foreground build. Use `yarn build` for managed builds. App builds and development servers keep exclusive ownership of `hass_frontend/` for their lifetime.
 
-Top-level app, demo, gallery, e2e-app, cast, and landing-page Gulp workflows share one lifetime lock, so only one build or development server can run at a time.
+Managed app, demo, gallery, and E2E app workflows share one lifetime lock, so only one build or development server can run at a time.
 
 ## Unit And Utility Tests
 

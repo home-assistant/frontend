@@ -43,7 +43,6 @@ import {
   workflowLockEnv,
   workflowLockFile,
 } from "./output-lock.mjs";
-import { GULP_TASKS } from "./gulp-tasks.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -67,7 +66,7 @@ const SUITES = new Map([
       alias: "test:e2e:app:dev",
       liveness: "health",
       port: 8095,
-      spawn: { cmd: gulpBin, args: [GULP_TASKS.e2eApp.develop] },
+      spawn: { cmd: gulpBin, args: ["develop-e2e-test-app"] },
     },
   ],
   [
@@ -76,7 +75,7 @@ const SUITES = new Map([
       alias: "dev:demo",
       liveness: "health",
       port: 8090,
-      spawn: { cmd: gulpBin, args: [GULP_TASKS.demo.develop] },
+      spawn: { cmd: gulpBin, args: ["develop-demo"] },
     },
   ],
   [
@@ -85,7 +84,7 @@ const SUITES = new Map([
       alias: "dev:gallery",
       liveness: "health",
       port: 8100,
-      spawn: { cmd: gulpBin, args: [GULP_TASKS.gallery.develop] },
+      spawn: { cmd: gulpBin, args: ["develop-gallery"] },
     },
   ],
   [
@@ -94,7 +93,7 @@ const SUITES = new Map([
       alias: "dev",
       liveness: "process",
       readyLog: /Build done @/,
-      spawn: { cmd: gulpBin, args: [GULP_TASKS.app.develop] },
+      spawn: { cmd: gulpBin, args: ["develop-app"] },
     },
   ],
   [
@@ -664,10 +663,8 @@ const main = async () => {
   }
   if (args.passthrough.length && !cfg.acceptsArgs) {
     process.stderr.write(
-      `Unexpected arguments: ${args.passthrough.join(" ")}\n`
+      `Ignoring unexpected arguments: ${args.passthrough.join(" ")}\n`
     );
-    usage();
-    return 1;
   }
 
   // A plain dev:<suite> under a coding agent backgrounds itself; explicit modes

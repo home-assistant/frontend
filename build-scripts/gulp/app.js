@@ -1,7 +1,6 @@
 import gulp from "gulp";
 import env from "../env.cjs";
-import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -13,15 +12,13 @@ import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
 
-const workflow = createOutputWorkflow(GULP_TASKS.app);
-
 gulp.task(
-  workflow.develop.task,
+  "develop-app",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.acquire,
+    createWorkflowLockTask("develop-app"),
     "clean",
     gulp.parallel(
       "gen-service-worker-app-dev",
@@ -36,12 +33,12 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.build.task,
+  "build-app",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.acquire,
+    createWorkflowLockTask("build-app"),
     "clean",
     gulp.parallel(
       "gen-icons-json",
@@ -58,12 +55,12 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.modern.task,
+  "build-app-modern",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.modern.acquire,
+    createWorkflowLockTask("build-app-modern"),
     "clean",
     gulp.parallel(
       "gen-icons-json",
@@ -82,12 +79,11 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.analyze.task,
+  "analyze-app",
   gulp.series(
     async function setEnv() {
       process.env.STATS = "1";
     },
-    workflow.analyze.acquire,
     "clean",
     "rspack-prod-app"
   )

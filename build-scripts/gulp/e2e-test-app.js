@@ -1,6 +1,5 @@
 import gulp from "gulp";
-import { GULP_TASKS } from "../gulp-tasks.mjs";
-import { createOutputWorkflow } from "../output-lock.mjs";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -8,20 +7,19 @@ import "./gen-icons-json.js";
 import "./translations.js";
 import "./rspack.js";
 
-const workflow = createOutputWorkflow(GULP_TASKS.e2eApp);
-
 gulp.task(
-  workflow.develop.task,
+  "develop-e2e-test-app",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
-    workflow.develop.acquire,
+    createWorkflowLockTask("develop-e2e-test-app"),
     "clean-e2e-test-app",
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-json",
       "gen-pages-e2e-test-app-dev",
-      "build-translations-backend",
+      "build-translations",
       "build-locale-data"
     ),
     "copy-static-e2e-test-app",
@@ -30,18 +28,15 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.build.task,
+  "build-e2e-test-app",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.build.acquire,
+    createWorkflowLockTask("build-e2e-test-app"),
     "clean-e2e-test-app",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations-backend",
-      "build-locale-data"
-    ),
+    "translations-enable-merge-backend",
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-e2e-test-app",
     "rspack-prod-e2e-test-app",
     "gen-pages-e2e-test-app-prod"
@@ -49,18 +44,14 @@ gulp.task(
 );
 
 gulp.task(
-  workflow.e2e.task,
+  "build-e2e-test-app-e2e",
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
-    workflow.e2e.acquire,
     "clean-e2e-test-app",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations-backend",
-      "build-locale-data"
-    ),
+    "translations-enable-merge-backend",
+    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-e2e-test-app",
     "rspack-prod-e2e-test-app-e2e",
     "gen-pages-e2e-test-app-prod"

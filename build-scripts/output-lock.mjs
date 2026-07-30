@@ -125,14 +125,3 @@ export const createWorkflowLockTask = (target) =>
     label: "build and development workflow",
     target,
   });
-
-export const createOutputWorkflow = (targets) =>
-  Object.fromEntries(
-    Object.entries(targets).map(([key, target]) => [
-      key,
-      {
-        task: target,
-        acquire: createWorkflowLockTask(target),
-      },
-    ])
-  );

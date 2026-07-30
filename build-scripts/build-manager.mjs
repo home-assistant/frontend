@@ -36,7 +36,6 @@ import {
   workflowLockEnv,
   workflowLockFile,
 } from "./output-lock.mjs";
-import { GULP_TASKS } from "./gulp-tasks.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -130,8 +129,7 @@ const updateBuild = (token, child, processGroup) => {
   });
 };
 
-const taskFor = (modern) =>
-  modern ? GULP_TASKS.app.modern : GULP_TASKS.app.build;
+const taskFor = (modern) => (modern ? "build-app-modern" : "build-app");
 
 const reportExisting = (existing) => {
   if (existing?.kind === "output") {

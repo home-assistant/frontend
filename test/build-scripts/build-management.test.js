@@ -47,18 +47,6 @@ afterEach(async () => {
 });
 
 describe("build management CLIs", () => {
-  it("rejects unsupported suite arguments", async () => {
-    const result = await runNode([
-      "build-scripts/dev-server.mjs",
-      "--suite",
-      "demo",
-      "--unsupported",
-    ]);
-
-    expect(result.code).toBe(1);
-    expect(result.stderr).toContain("Unexpected arguments: --unsupported");
-  });
-
   it("allows modern lifecycle queries", async () => {
     const result = await runNode(
       ["build-scripts/build-manager.mjs", "--modern", "--status"],

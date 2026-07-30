@@ -343,7 +343,7 @@ export const outputLog = (logFile, follow, missingMessage) => {
       if (!settled) {
         settled = true;
         process.stdout.write(fs.readFileSync(logFile, "utf8"));
-        resolve(1);
+        resolve(0);
       }
     });
     tail.once("exit", (code) => {
