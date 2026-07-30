@@ -84,10 +84,21 @@ while kill -0 "$develop_pid" 2>/dev/null && kill -0 "$serve_pid" 2>/dev/null; do
     sleep 1
 done
 
+develop_status=
+serve_status=
 if ! kill -0 "$develop_pid" 2>/dev/null; then
-    if wait "$develop_pid"; then status=0; else status=$?; fi
+    if wait "$develop_pid"; then develop_status=0; else develop_status=$?; fi
+fi
+if ! kill -0 "$serve_pid" 2>/dev/null; then
+    if wait "$serve_pid"; then serve_status=0; else serve_status=$?; fi
+fi
+
+if [ -n "$develop_status" ] && [ "$develop_status" -ne 0 ]; then
+    status=$develop_status
+elif [ -n "$serve_status" ]; then
+    status=$serve_status
 else
-    if wait "$serve_pid"; then status=0; else status=$?; fi
+    status=$develop_status
 fi
 
 exit "$status"
