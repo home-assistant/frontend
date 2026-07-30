@@ -1,6 +1,10 @@
 global.window = (global.window ?? {}) as any;
 if (!global.navigator) {
-  Object.defineProperty(global, "navigator", { value: {} });
+  Object.defineProperty(global, "navigator", {
+    value: {},
+    configurable: true,
+    writable: true,
+  });
 }
 
 global.__DEMO__ = false;
