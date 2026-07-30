@@ -5,6 +5,7 @@ import {
   processStartTime,
   readProcessRecord,
   releaseProcessRecord,
+  sleep,
 } from "./managed-process.mjs";
 
 const repoRoot = path.resolve(
@@ -17,6 +18,53 @@ export const buildCacheDir =
 
 const GENERATED_LOCK_TOKEN_ENV = "HA_GENERATED_OUTPUT_LOCK_TOKEN";
 const OUTPUT_LOCK_TOKEN_ENV = "HA_OUTPUT_LOCK_TOKEN";
+const generatedLockTimeoutSeconds = Number(
+  process.env.HA_GENERATED_OUTPUT_LOCK_TIMEOUT || "120"
+);
+const GENERATED_LOCK_TIMEOUT_MS =
+  Number.isFinite(generatedLockTimeoutSeconds) &&
+  generatedLockTimeoutSeconds > 0
+    ? generatedLockTimeoutSeconds * 1000
+    : 120_000;
+const signalCleanups = new Set();
+const cleanupSignals = ["SIGINT", "SIGTERM", "SIGHUP"];
+
+const handleSignal = (signal) => {
+  for (const cleanup of signalCleanups) {
+    cleanup();
+  }
+  for (const cleanupSignal of cleanupSignals) {
+    process.off(cleanupSignal, handleSignal);
+  }
+  process.kill(process.pid, signal);
+};
+
+const registerSignalCleanup = (cleanup) => {
+  if (signalCleanups.size === 0) {
+    for (const signal of cleanupSignals) {
+      process.on(signal, handleSignal);
+    }
+  }
+  signalCleanups.add(cleanup);
+};
+
+const unregisterSignalCleanup = (cleanup) => {
+  signalCleanups.delete(cleanup);
+  if (signalCleanups.size === 0) {
+    for (const signal of cleanupSignals) {
+      process.off(signal, handleSignal);
+    }
+  }
+};
+
+const acquireUntil = async (file, record, deadline) => {
+  const result = acquireProcessRecord(file, record);
+  if (result.acquired || Date.now() >= deadline) {
+    return result;
+  }
+  await sleep(100);
+  return acquireUntil(file, record, deadline);
+};
 
 export const generatedOutputLockFile = path.join(
   buildCacheDir,
@@ -58,6 +106,7 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
     ownedToken = undefined;
     exitToken = undefined;
     process.off("exit", cleanup);
+    unregisterSignalCleanup(cleanup);
   };
   const release = async () => {
     if (!ownedToken) {
@@ -76,18 +125,27 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
       }
       exitToken = inheritedToken;
       process.once("exit", cleanup);
+      registerSignalCleanup(cleanup);
       return;
     }
 
     const token = `${process.pid}-${Date.now()}-${Math.random()}`;
-    const result = acquireProcessRecord(file, {
+    const record = {
       pid: process.pid,
       startTime: processStartTime(process.pid),
       processGroup: false,
       kind,
       target,
       token,
-    });
+    };
+    let result = acquireProcessRecord(file, record);
+    if (!result.acquired && kind === "generated-output") {
+      const deadline = Date.now() + GENERATED_LOCK_TIMEOUT_MS;
+      process.stdout.write(
+        `Waiting for ${describeOutputOwner(result.existing)} to release ${label}.\n`
+      );
+      result = await acquireUntil(file, record, deadline);
+    }
     if (!result.acquired) {
       const pid = result.existing?.pid;
       throw Error(
@@ -99,6 +157,7 @@ const createLockTasks = ({ file, inheritedTokenEnv, kind, label, target }) => {
     ownedToken = token;
     exitToken = token;
     process.once("exit", cleanup);
+    registerSignalCleanup(cleanup);
   };
 
   acquire.displayName = `lock-${label}:${target}`;

@@ -205,4 +205,79 @@ describe("inherited output ownership", () => {
     expect(result.code).toBe(0);
     await expect(readFile(lockFile)).rejects.toMatchObject({ code: "ENOENT" });
   });
+
+  it("removes owned locks when the child is terminated", async () => {
+    const cache = await temporaryDirectory();
+    const lockFile = path.join(cache, "ha-app-output.lock");
+    const script = [
+      'import { createOutputLockTasks } from "./build-scripts/output-lock.mjs";',
+      'await createOutputLockTasks("app", "test").acquire();',
+      'process.stdout.write("ready\\n");',
+      "setInterval(() => {}, 10000);",
+    ].join("");
+    const child = spawn(
+      process.execPath,
+      ["--input-type=module", "-e", script],
+      {
+        cwd: repoRoot,
+        env: { ...process.env, HA_BUILD_CACHE_DIR: cache },
+        stdio: ["ignore", "pipe", "inherit"],
+      }
+    );
+    await new Promise((resolve, reject) => {
+      child.stdout.once("data", resolve);
+      child.once("error", reject);
+    });
+
+    child.kill("SIGTERM");
+    await new Promise((resolve) => {
+      child.once("exit", resolve);
+    });
+
+    await expect(readFile(lockFile)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("waits for generated output ownership", async () => {
+    const cache = await temporaryDirectory();
+    const lockFile = path.join(cache, "ha-generated-output.lock");
+    const record = {
+      pid: process.pid,
+      startTime: processStartTime(process.pid),
+      kind: "generated-output",
+      target: "holder",
+      token: "holder",
+    };
+    await writeFile(lockFile, JSON.stringify(record));
+    const script = [
+      'import { createGeneratedLockTasks } from "./build-scripts/output-lock.mjs";',
+      'const lock = createGeneratedLockTasks("waiter");',
+      "await lock.acquire();",
+      'process.stdout.write("acquired\\n");',
+      "await lock.release();",
+    ].join("");
+    const child = spawn(
+      process.execPath,
+      ["--input-type=module", "-e", script],
+      {
+        cwd: repoRoot,
+        env: { ...process.env, HA_BUILD_CACHE_DIR: cache },
+        stdio: ["ignore", "pipe", "inherit"],
+      }
+    );
+    let output = "";
+    child.stdout.on("data", (data) => {
+      output += data;
+    });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 150);
+    });
+    await rm(lockFile);
+    await new Promise((resolve, reject) => {
+      child.once("exit", resolve);
+      child.once("error", reject);
+    });
+
+    expect(output).toContain("Waiting for Gulp task holder");
+    expect(output).toContain("acquired");
+  });
 });
