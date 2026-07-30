@@ -5,6 +5,7 @@ import {
   canClose,
   canOpen,
   canStop,
+  canStopTilt,
   CoverEntityFeature,
 } from "../../src/data/cover";
 
@@ -37,9 +38,12 @@ const mockCover = (options: MockCoverOptions): CoverEntity => {
 
 // A motor-style cover exposes a stop action.
 const MOTOR =
-  CoverEntityFeature.OPEN + CoverEntityFeature.CLOSE + CoverEntityFeature.STOP;
+  // eslint-disable-next-line no-bitwise
+  CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP;
+
 // A blind-style cover has open/close but no stop.
-const NO_STOP = CoverEntityFeature.OPEN + CoverEntityFeature.CLOSE;
+// eslint-disable-next-line no-bitwise
+const NO_STOP = CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE;
 
 describe("cover button availability", () => {
   describe("canStop", () => {
@@ -182,6 +186,67 @@ describe("cover button availability", () => {
     it("is disabled when unavailable", () => {
       expect(
         canClose(mockCover({ state: "unavailable", supportedFeatures: MOTOR }))
+      ).toBe(false);
+    });
+  });
+
+  describe("canStopTilt", () => {
+    const TILT =
+      // eslint-disable-next-line no-bitwise
+      CoverEntityFeature.OPEN |
+      CoverEntityFeature.CLOSE |
+      CoverEntityFeature.STOP |
+      CoverEntityFeature.OPEN_TILT |
+      CoverEntityFeature.CLOSE_TILT |
+      CoverEntityFeature.STOP_TILT;
+
+    it("is disabled when the cover is idle (open)", () => {
+      expect(
+        canStopTilt(mockCover({ state: "open", supportedFeatures: TILT }))
+      ).toBe(false);
+    });
+
+    it("is disabled when the cover is idle (closed)", () => {
+      expect(
+        canStopTilt(mockCover({ state: "closed", supportedFeatures: TILT }))
+      ).toBe(false);
+    });
+
+    it("is enabled while opening", () => {
+      expect(
+        canStopTilt(mockCover({ state: "opening", supportedFeatures: TILT }))
+      ).toBe(true);
+    });
+
+    it("is enabled while closing", () => {
+      expect(
+        canStopTilt(mockCover({ state: "closing", supportedFeatures: TILT }))
+      ).toBe(true);
+    });
+
+    it("is disabled when idle on a non-tilt cover (drives the combined stop button)", () => {
+      expect(
+        canStopTilt(mockCover({ state: "closed", supportedFeatures: MOTOR }))
+      ).toBe(false);
+    });
+
+    it("is enabled for an assumed-state cover regardless of movement", () => {
+      expect(
+        canStopTilt(
+          mockCover({
+            state: "open",
+            supportedFeatures: TILT,
+            assumedState: true,
+          })
+        )
+      ).toBe(true);
+    });
+
+    it("is disabled when unavailable", () => {
+      expect(
+        canStopTilt(
+          mockCover({ state: "unavailable", supportedFeatures: TILT })
+        )
       ).toBe(false);
     });
   });

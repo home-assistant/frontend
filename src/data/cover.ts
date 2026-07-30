@@ -137,7 +137,15 @@ export function canCloseTilt(stateObj: CoverEntity): boolean {
 }
 
 export function canStopTilt(stateObj: CoverEntity): boolean {
-  return stateObj.state !== UNAVAILABLE;
+  if (stateObj.state === UNAVAILABLE) {
+    return false;
+  }
+  const assumedState = stateObj.attributes.assumed_state === true;
+  // Mirror canStop: stopping is only meaningful while the cover is moving.
+  // Covers have no tilt-specific movement state, so the shared opening/closing
+  // state drives this too. Without this guard the combined stop button
+  // (!canStop && !canStopTilt) stays enabled on an idle non-tilt cover.
+  return assumedState || isOpening(stateObj) || isClosing(stateObj);
 }
 
 interface CoverEntityAttributes extends HassEntityAttributeBase {
