@@ -2396,7 +2396,7 @@
           "header": "Copy pairing code",
           "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
           "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
-          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} from the list",
           "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
           "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
           "use_pairing_code": "Use Pairing Code",
