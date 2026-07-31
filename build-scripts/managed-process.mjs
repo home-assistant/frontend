@@ -469,7 +469,11 @@ const stopProcessRecord = async (file, owner) => {
     processGroup: current.processGroup ?? false,
     isStopped: () => {
       const latest = readProcessRecord(file);
-      return !sameProcessRecord(latest, owner) || !latest || !isProcessRecordAlive(latest);
+      return (
+        !sameProcessRecord(latest, owner) ||
+        !latest ||
+        !isProcessRecordAlive(latest)
+      );
     },
   });
   current = readProcessRecord(file);
