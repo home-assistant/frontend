@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -148,12 +148,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       this._migrating = false;
     }
   }
-
-  static styles = css`
-    a {
-      color: var(--primary-color);
-    }
-  `;
 }
 
 declare global {
