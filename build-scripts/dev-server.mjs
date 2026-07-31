@@ -8,6 +8,9 @@
 //   --status           Report whether the suite's dev server is running.
 //   --stop             Stop a running background dev server.
 //   --logs [--follow]  Print (or follow) the background dev server log.
+//   --fetch-translations
+//                      Fetch nightly translations before starting (app,
+//                      app-serve, demo, and gallery only).
 //
 // Extra args (for example -p or -c on app-serve) are forwarded to the underlying
 // script. Suites use one of two liveness models:
@@ -73,6 +76,7 @@ const SUITES = new Map([
     "demo",
     {
       alias: "dev:demo",
+      fetchTranslations: true,
       liveness: "health",
       port: 8090,
       spawn: { cmd: gulpBin, args: ["develop-demo"] },
@@ -82,6 +86,7 @@ const SUITES = new Map([
     "gallery",
     {
       alias: "dev:gallery",
+      fetchTranslations: true,
       liveness: "health",
       port: 8100,
       spawn: { cmd: gulpBin, args: ["develop-gallery"] },
@@ -91,6 +96,7 @@ const SUITES = new Map([
     "app",
     {
       alias: "dev",
+      fetchTranslations: true,
       liveness: "process",
       readyLog: /Build done @/,
       spawn: { cmd: gulpBin, args: ["develop-app"] },
@@ -102,6 +108,7 @@ const SUITES = new Map([
       alias: "dev:serve",
       liveness: "process",
       acceptsArgs: true,
+      fetchTranslations: true,
       readyLog: /Build done @/,
       spawn: { cmd: developAndServeScript, args: [] },
     },
@@ -144,12 +151,14 @@ const usage = () => {
   const suites = [...SUITES.keys()].join("|");
   process.stderr.write(
     `Usage: node build-scripts/dev-server.mjs --suite <${suites}> ` +
-      `[--background | --status | --stop | --logs [--follow]]\n`
+      `[--background | --status | --stop | --logs [--follow]] ` +
+      `[--fetch-translations]\n`
   );
 };
 
 const parseArgs = (argv) => {
   const args = {
+    fetchTranslations: false,
     mode: "foreground",
     follow: false,
     modes: [],
@@ -165,6 +174,9 @@ const parseArgs = (argv) => {
       case "--follow":
         args.follow = true;
         break;
+      case "--fetch-translations":
+        args.fetchTranslations = true;
+        break;
       default:
         if (LIFECYCLE_MODE_FLAGS.has(arg)) {
           args.mode = LIFECYCLE_MODE_FLAGS.get(arg);
@@ -177,6 +189,28 @@ const parseArgs = (argv) => {
   }
   return args;
 };
+
+const translationPrebuildEnv = (token) => {
+  const env = workflowLockEnv(token);
+  delete env.SKIP_FETCH_NIGHTLY_TRANSLATIONS;
+  return env;
+};
+
+const suiteEnv = (token, fetchTranslations = false) => ({
+  ...workflowLockEnv(token),
+  ...(fetchTranslations && { SKIP_FETCH_NIGHTLY_TRANSLATIONS: "1" }),
+});
+
+const runPrebuild = (token, fetchTranslations = false) =>
+  fetchTranslations
+    ? spawnForeground({
+        cmd: gulpBin,
+        args: ["setup-and-fetch-nightly-translations"],
+        cwd: repoRoot,
+        env: translationPrebuildEnv(token),
+        processGroup: true,
+      })
+    : Promise.resolve(0);
 
 const logFileFor = (suite) => path.join(logDir, `${suite}.log`);
 const acquireSuite = (suite) => {
@@ -405,7 +439,7 @@ const isHttpServing = async (port, timeoutMs = 1000) => {
   return probeHost(0);
 };
 
-const runForegroundHealth = async (suite, cfg) => {
+const runForegroundHealth = async (suite, cfg, fetchTranslations = false) => {
   const { port } = cfg;
   const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
@@ -427,11 +461,15 @@ const runForegroundHealth = async (suite, cfg) => {
     return 1;
   }
   try {
+    const prebuildCode = await runPrebuild(lock.token, fetchTranslations);
+    if (prebuildCode !== 0) {
+      return prebuildCode;
+    }
     return await spawnForeground({
       cmd: cfg.spawn.cmd,
       args: cfg.spawn.args,
       cwd: repoRoot,
-      env: workflowLockEnv(lock.token),
+      env: suiteEnv(lock.token, fetchTranslations),
       processGroup: true,
       onSpawn: (child) => updateSuite(suite, lock.token, child, port),
     });
@@ -440,7 +478,7 @@ const runForegroundHealth = async (suite, cfg) => {
   }
 };
 
-const runBackgroundHealth = async (suite, cfg) => {
+const runBackgroundHealth = async (suite, cfg, fetchTranslations = false) => {
   const { port } = cfg;
   const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
@@ -463,12 +501,17 @@ const runBackgroundHealth = async (suite, cfg) => {
   }
   let child;
   try {
+    const prebuildCode = await runPrebuild(lock.token, fetchTranslations);
+    if (prebuildCode !== 0) {
+      releaseSuite(lock.token);
+      return prebuildCode;
+    }
     const logFile = logFileFor(suite);
     child = await spawnDetachedToLog({
       cmd: cfg.spawn.cmd,
       args: cfg.spawn.args,
       cwd: repoRoot,
-      env: workflowLockEnv(lock.token),
+      env: suiteEnv(lock.token, fetchTranslations),
       logFile,
     });
     updateSuite(suite, lock.token, child, port);
@@ -520,17 +563,26 @@ const spawnArgs = (cfg, passthrough) => [
   ...(cfg.acceptsArgs ? passthrough : []),
 ];
 
-const runForegroundProcess = async (suite, cfg, passthrough) => {
+const runForegroundProcess = async (
+  suite,
+  cfg,
+  passthrough,
+  fetchTranslations = false
+) => {
   const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
   }
   try {
+    const prebuildCode = await runPrebuild(lock.token, fetchTranslations);
+    if (prebuildCode !== 0) {
+      return prebuildCode;
+    }
     return await spawnForeground({
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
-      env: workflowLockEnv(lock.token),
+      env: suiteEnv(lock.token, fetchTranslations),
       processGroup: true,
       onSpawn: (child) => updateSuite(suite, lock.token, child),
     });
@@ -539,7 +591,12 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
   }
 };
 
-const runBackgroundProcess = async (suite, cfg, passthrough) => {
+const runBackgroundProcess = async (
+  suite,
+  cfg,
+  passthrough,
+  fetchTranslations = false
+) => {
   const lock = acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
@@ -547,12 +604,17 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
 
   let child;
   try {
+    const prebuildCode = await runPrebuild(lock.token, fetchTranslations);
+    if (prebuildCode !== 0) {
+      releaseSuite(lock.token);
+      return prebuildCode;
+    }
     const logFile = logFileFor(suite);
     child = await spawnDetachedToLog({
       cmd: cfg.spawn.cmd,
       args: spawnArgs(cfg, passthrough),
       cwd: repoRoot,
-      env: workflowLockEnv(lock.token),
+      env: suiteEnv(lock.token, fetchTranslations),
       logFile,
     });
 
@@ -630,6 +692,17 @@ const main = async () => {
     usage();
     return 1;
   }
+  if (
+    args.fetchTranslations &&
+    (!["foreground", "background"].includes(args.mode) ||
+      !cfg.fetchTranslations)
+  ) {
+    process.stderr.write(
+      "--fetch-translations is only supported when starting app, app-serve, demo, or gallery.\n"
+    );
+    usage();
+    return 1;
+  }
   if (args.passthrough.length && !cfg.acceptsArgs) {
     process.stderr.write(
       `Ignoring unexpected arguments: ${args.passthrough.join(" ")}\n`
@@ -665,14 +738,26 @@ const main = async () => {
   const handlers =
     cfg.liveness === "health"
       ? {
-          foreground: () => runForegroundHealth(args.suite, cfg),
-          background: () => runBackgroundHealth(args.suite, cfg),
+          foreground: () =>
+            runForegroundHealth(args.suite, cfg, args.fetchTranslations),
+          background: () =>
+            runBackgroundHealth(args.suite, cfg, args.fetchTranslations),
         }
       : {
           foreground: () =>
-            runForegroundProcess(args.suite, cfg, args.passthrough),
+            runForegroundProcess(
+              args.suite,
+              cfg,
+              args.passthrough,
+              args.fetchTranslations
+            ),
           background: () =>
-            runBackgroundProcess(args.suite, cfg, args.passthrough),
+            runBackgroundProcess(
+              args.suite,
+              cfg,
+              args.passthrough,
+              args.fetchTranslations
+            ),
         };
   return handlers[mode]();
 };
