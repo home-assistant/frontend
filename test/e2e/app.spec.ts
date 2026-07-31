@@ -166,6 +166,40 @@ defineRouteSmokeTests(appRouteSmokeGroups);
 // ---------------------------------------------------------------------------
 
 test.describe("Lovelace dashboard", () => {
+  test("keeps the launch screen until generated content renders", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/?scenario=delayed-generated-dashboard#/climate");
+
+    const launchScreen = page.locator("#ha-launch-screen");
+    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(page.locator("hui-view")).not.toBeAttached();
+
+    await page.evaluate(() => window.resolveGeneratedDashboard?.());
+
+    await expect(page.locator("hui-view")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+
+  test("keeps the launch screen until initial content renders", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/?scenario=delayed-lovelace#/lovelace");
+
+    const launchScreen = page.locator("#ha-launch-screen");
+    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(page.locator("hui-card")).not.toBeAttached();
+
+    await page.evaluate(() => window.resolveLovelaceConfig?.());
+
+    await expect(page.locator("hui-card").first()).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+
   test("renders cards", async ({ page }) => {
     await goToPanel(page, "/lovelace");
     // At least one card should appear
