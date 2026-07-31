@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -30,6 +31,14 @@ class HaConfigNavigation extends LitElement {
   private _bluetoothEntriesLoaded?: Promise<void>;
 
   private _childReadyRegistered = false;
+
+  private _filterNavigationPages = memoizeOne(
+    (
+      hass: HomeAssistant,
+      pages: PageNavigation[],
+      hasBluetoothConfigEntries: boolean
+    ) => filterNavigationPages(hass, pages, { hasBluetoothConfigEntries })
+  );
 
   @consume({ context: childPanelReadyContext, subscribe: true })
   private _registerChildPanelReady?: RegisterChildPanelReady;
@@ -124,9 +133,19 @@ class HaConfigNavigation extends LitElement {
       await this._loadBluetoothEntries();
     }
 
-    this._visiblePages = filterNavigationPages(this.hass, this.pages, {
-      hasBluetoothConfigEntries: this._hasBluetoothConfigEntries,
-    });
+    const visiblePages = this._filterNavigationPages(
+      this.hass,
+      this.pages,
+      this._hasBluetoothConfigEntries
+    );
+    const currentVisiblePages = this._visiblePages;
+    if (
+      !currentVisiblePages ||
+      visiblePages.length !== currentVisiblePages.length ||
+      visiblePages.some((page, index) => page !== currentVisiblePages[index])
+    ) {
+      this._visiblePages = visiblePages;
+    }
     await this.updateComplete;
   }
 
