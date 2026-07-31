@@ -163,7 +163,7 @@ class PartialPanelResolver extends HassRouterPage {
       const data: RouteOptions = {
         tag: `ha-panel-${panel.component_name}`,
         cache: CACHE_URL_PATHS.includes(panel.url_path),
-        ...component,
+        ...(component ?? {}),
       };
       routes[panel.url_path] = data;
     });
