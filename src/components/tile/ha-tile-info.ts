@@ -15,13 +15,14 @@ import { customElement, property } from "lit/decorators";
  *
  * @property {boolean} secondaryLoading - Whether the secondary text is loading. Shows a skeleton placeholder.
  *
+ * @csspart primary - The primary text. Style it to opt into another truncation, such as a multi line clamp.
+ *
  * @cssprop --ha-tile-info-gap - The vertical gap between the primary and secondary text. defaults to `0`.
  * @cssprop --ha-tile-info-min-height - Minimum height of the primary/secondary block. Set this to reserve space for a missing secondary so it doesn't shift surrounding content. defaults to `auto`.
- * @cssprop --ha-tile-info-primary-min-height - Minimum height of the primary text block, independent of `--ha-tile-info-primary-line-clamp`. Lets tiles that never wrap still match the height of tiles that do. defaults to `auto` (sizes to the actual rendered lines).
+ * @cssprop --ha-tile-info-primary-min-height - Minimum height of the primary text block, independent of the number of rendered lines. Lets tiles that never wrap still match the height of tiles that do. defaults to `auto` (sizes to the actual rendered lines).
  * @cssprop --ha-tile-info-primary-font-size - The font size of the primary text. defaults to `var(--ha-font-size-m)`.
  * @cssprop --ha-tile-info-primary-font-weight - The font weight of the primary text. defaults to `var(--ha-font-weight-medium)`.
  * @cssprop --ha-tile-info-primary-line-height - The line height of the primary text. defaults to `var(--ha-line-height-normal)`.
- * @cssprop --ha-tile-info-primary-line-clamp - The maximum number of lines for the primary text before truncating with an ellipsis. defaults to `1`.
  * @cssprop --ha-tile-info-primary-letter-spacing - The letter spacing of the primary text. defaults to `0.1px`.
  * @cssprop --ha-tile-info-primary-color - The color of the primary text. defaults to `var(--primary-text-color)`.
  * @cssprop --ha-tile-info-secondary-font-size - The font size of the secondary text. defaults to `var(--ha-font-size-s)`.
@@ -43,7 +44,7 @@ export class HaTileInfo extends LitElement {
     return html`
       <div class="info">
         <slot name="primary" class="primary">
-          <span>${this.primary}</span>
+          <span part="primary">${this.primary}</span>
         </slot>
         ${
           this.secondaryLoading
@@ -77,7 +78,6 @@ export class HaTileInfo extends LitElement {
         --ha-tile-info-primary-line-height,
         var(--ha-line-height-normal)
       );
-      --tile-info-primary-line-clamp: var(--ha-tile-info-primary-line-clamp, 1);
       --tile-info-primary-min-height: var(
         --ha-tile-info-primary-min-height,
         auto
@@ -120,20 +120,13 @@ export class HaTileInfo extends LitElement {
       gap: var(--tile-info-gap);
       min-height: var(--tile-info-min-height);
     }
+    .primary span,
+    ::slotted([slot="primary"]),
     .secondary span,
     ::slotted([slot="secondary"]) {
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
-      width: 100%;
-    }
-    .primary span,
-    ::slotted([slot="primary"]) {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: var(--tile-info-primary-line-clamp);
-      overflow: hidden;
-      overflow-wrap: anywhere;
       width: 100%;
     }
     .primary {
