@@ -10,7 +10,6 @@ import {
   STRINGS_SEPARATOR_DOT,
   TIMESTAMP_STATE_DOMAINS,
 } from "../common/const";
-import "../components/ha-relative-time";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import {
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
@@ -118,6 +117,9 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public timeFormat?: string;
 
+  @property({ type: Boolean, attribute: "timestamp-tooltip" })
+  public timestampTooltip = false;
+
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
@@ -185,7 +187,9 @@ class StateDisplay extends LitElement {
     if (content === "name" && this.name) {
       return html`${this.name}`;
     }
-
+    if (content === "entity-id") {
+      return stateObj.entity_id;
+    }
     if (
       content === "device_name" ||
       content === "area_name" ||
@@ -214,6 +218,7 @@ class StateDisplay extends LitElement {
         .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize
+        .tooltip=${this.timestampTooltip}
       ></hui-timestamp-display>`;
     }
 
