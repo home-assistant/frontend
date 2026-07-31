@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   fireEvent,
-  HASSDomCurrentTargetEvent,
+  type HASSDomCurrentTargetEvent,
 } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
