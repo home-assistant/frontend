@@ -1,6 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import {
+  fireEvent,
+  HASSDomCurrentTargetEvent,
+} from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
@@ -107,8 +110,8 @@ class ConfirmEventDialogBox extends LitElement {
     `;
   }
 
-  private _scopeChanged(ev: Event): void {
-    this._scope = (ev.currentTarget as HaRadioGroup).value as RecurrenceScope;
+  private _scopeChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>): void {
+    this._scope = ev.currentTarget.value as RecurrenceScope;
   }
 
   private _dismiss(): void {
