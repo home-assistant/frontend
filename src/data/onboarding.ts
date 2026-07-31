@@ -4,10 +4,11 @@ import type { CloudStatus } from "./cloud";
 
 export interface InstallationType {
   installation_type:
-    | "Home Assistant Operating System"
+    | "Home Assistant OS"
     | "Home Assistant Container"
     | "Home Assistant Supervised"
     | "Home Assistant Core"
+    | "Unsupported Third Party Container"
     | "Unknown";
 }
 

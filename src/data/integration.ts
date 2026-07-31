@@ -54,12 +54,7 @@ export interface IntegrationManifest {
     | "internal"
     | "legacy"
     | "custom";
-  iot_class:
-    | "assumed_state"
-    | "cloud_polling"
-    | "cloud_push"
-    | "local_polling"
-    | "local_push";
+  iot_class: string;
   single_config_entry?: boolean;
   version?: string;
 }

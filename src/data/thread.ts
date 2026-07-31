@@ -1,27 +1,11 @@
 import type { HomeAssistant } from "../types";
 
-/** Brands the backend maps a router's mDNS vendor name to. */
-export type ThreadBrand =
-  | "amazon"
-  | "apple"
-  | "aqara_gateway"
-  | "eero"
-  | "glinet"
-  | "google"
-  | "homeassistant"
-  | "ikea"
-  | "nanoleaf"
-  | "openthread"
-  | "samsung"
-  | "smartthings"
-  | "smlight"
-  | "yeelight";
-
 export interface ThreadRouter {
   instance_name: string;
   addresses: string[];
   border_agent_id: string | null;
-  brand: ThreadBrand | null;
+  /** Integration domain the backend maps the router's vendor name to. */
+  brand: string | null;
   extended_address: string;
   extended_pan_id: string;
   model_name: string | null;

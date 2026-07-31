@@ -203,7 +203,7 @@ export interface ZHADeviceSettings {
 
 export interface ZHANetworkSettings {
   settings: ZHANetworkBackup;
-  radio_type: "ezsp" | "znp" | "deconz" | "ziggurat" | "zigate" | "xbee";
+  radio_type: string;
   device: ZHADeviceSettings;
 }
 

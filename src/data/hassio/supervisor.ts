@@ -36,9 +36,6 @@ export interface HassioSupervisorRepositoryInfo {
   slug: string;
 }
 
-export type SupervisorFeatureFlag =
-  "supervisor_v2_api" | "supervisor_websocket_v2_api";
-
 export interface HassioSupervisorInfo {
   addons: HassioSupervisorAddonInfo[];
   addons_repositories: HassioSupervisorRepositoryInfo[];
@@ -50,7 +47,7 @@ export interface HassioSupervisorInfo {
   debug_block: boolean;
   detect_blocking_io: boolean;
   diagnostics: boolean | null;
-  feature_flags: Record<SupervisorFeatureFlag, boolean>;
+  feature_flags: Record<string, boolean>;
   healthy: boolean;
   ip_address: string;
   logging: string;
