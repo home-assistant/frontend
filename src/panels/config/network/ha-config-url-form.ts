@@ -15,6 +15,8 @@ import type { HaInputCopy } from "../../../components/input/ha-input-copy";
 import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
+import type { HttpConfigWithMeta } from "../../../data/http";
+import { fetchHttpConfig } from "../../../data/http";
 import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -33,6 +35,12 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @state() private _external_url = "";
 
   @state() private _internal_url = "";
+
+  // Stable HTTP config from core; used to build a realistic internal URL
+  // placeholder (scheme from SSL, port from the configured/default port).
+  @state() private _httpConfig?: HttpConfigWithMeta;
+
+  @state() private _httpDefault?: HttpConfigWithMeta;
 
   @state() private _cloudStatus?: CloudStatus | null;
 
@@ -97,6 +105,28 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       }
     }
 
+    // Build realistic URL placeholders: use https when an SSL certificate is
+    // configured, and only show the port when it differs from the scheme
+    // default (80 for http, 443 for https).
+    const useHttps = this._httpConfig?.ssl_certificate ? true : httpUseHttps;
+    const placeholderPort =
+      this._httpConfig?.server_port ?? this._httpDefault?.server_port;
+    const placeholderParts = {
+      protocol: useHttps ? "https" : "http",
+      port:
+        placeholderPort && placeholderPort !== (useHttps ? 443 : 80)
+          ? `:${placeholderPort}`
+          : "",
+    };
+    const internalUrlPlaceholder = this.hass.localize(
+      "ui.panel.config.url.internal_url_placeholder",
+      placeholderParts
+    );
+    const externalUrlPlaceholder = this.hass.localize(
+      "ui.panel.config.url.external_url_placeholder",
+      placeholderParts
+    );
+
     return html`
       <ha-card
         outlined
@@ -157,7 +187,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               data-name="external_url"
               type="url"
               .maskedToggle=${!(this._showCustomExternalUrl && canEdit)}
-              placeholder="https://example.duckdns.org:8123"
+              .placeholder=${externalUrlPlaceholder}
               .value=${externalUrl}
               .maskedValue=${
                 this._showCustomExternalUrl && canEdit
@@ -260,9 +290,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               data-name="internal_url"
               .maskedToggle=${!(this._showCustomInternalUrl && canEdit)}
               type="url"
-              placeholder=${this.hass.localize(
-                "ui.panel.config.url.internal_url_placeholder"
-              )}
+              .placeholder=${internalUrlPlaceholder}
               .value=${internalUrl}
               .maskedValue=${
                 this._showCustomInternalUrl && canEdit
@@ -325,6 +353,14 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       this._cloudStatus = null;
     }
     this._fetchUrls();
+    // Best-effort: the placeholder still works without it, just without a port.
+    fetchHttpConfig(this.hass).then(
+      ({ stable, default: defaultConfig }) => {
+        this._httpConfig = stable;
+        this._httpDefault = defaultConfig;
+      },
+      () => undefined
+    );
   }
 
   private _toggleCloud(ev: Event) {
