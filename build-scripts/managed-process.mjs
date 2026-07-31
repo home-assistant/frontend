@@ -132,7 +132,6 @@ const confirmStopConflict = async (ownerDescription, stopCommand) => {
     }
     process.stderr.write("\n");
     return false;
-  }
   } finally {
     clearTimeout(timeout);
     readline.close();
