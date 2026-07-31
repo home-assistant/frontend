@@ -127,11 +127,12 @@ const confirmStopConflict = async (ownerDescription, stopCommand) => {
     });
     return ["y", "yes"].includes(answer.trim().toLowerCase());
   } catch (err) {
-    if (err.name !== "AbortError") {
+    if (err?.name !== "AbortError") {
       throw err;
     }
     process.stderr.write("\n");
     return false;
+  }
   } finally {
     clearTimeout(timeout);
     readline.close();
@@ -450,9 +451,7 @@ export const terminateProcess = async ({
 };
 
 const sameProcessRecord = (current, expected) =>
-  current?.token === expected?.token &&
-  current.pid === expected.pid &&
-  current.startTime === expected.startTime;
+  Boolean(expected?.token) && current?.token === expected.token;
 
 const stopProcessRecord = async (file, owner) => {
   let current = readProcessRecord(file);
