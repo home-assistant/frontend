@@ -62,7 +62,7 @@ Managed app, demo, gallery, and E2E app workflows share one lifetime lock, so on
 
 `yarn dev:serve` also serves locally and supports `-c` for the core URL and `-p` for the port. The default is 8124, or 8123 in a devcontainer.
 
-Dev server commands support `--background`, `--status`, `--stop`, and `--logs [--follow]`. Prefer managed background mode while iterating so the watcher stays available across test runs without occupying the terminal. `yarn dev` and `yarn dev:serve` share one managed process slot because both write the app output.
+Dev server commands support `--background`, `--status`, `--stop`, and `--logs [--follow]`. `yarn dev`, `yarn dev:serve`, `yarn dev:demo`, and `yarn dev:gallery` also support `--fetch-translations`; this runs translation fetching, including first-time GitHub device authentication, under the workflow lock before starting the watcher. It works in foreground and background modes. Prefer managed background mode while iterating so the watcher stays available across test runs without occupying the terminal. `yarn dev` and `yarn dev:serve` share one managed process slot because both write the app output.
 
 ## Playwright E2E
 
