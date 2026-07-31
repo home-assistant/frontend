@@ -27,7 +27,10 @@ const COMPONENTS = {
     waitForReady: true,
     readyTimeout: DASHBOARD_READY_TIMEOUT,
   },
-  calendar: { load: () => import("../panels/calendar/ha-panel-calendar") },
+  calendar: {
+    load: () => import("../panels/calendar/ha-panel-calendar"),
+    waitForReady: true,
+  },
   config: { load: () => import("../panels/config/ha-panel-config") },
   custom: { load: () => import("../panels/custom/ha-panel-custom") },
   lovelace: {
@@ -44,6 +47,7 @@ const COMPONENTS = {
   todo: { load: () => import("../panels/todo/ha-panel-todo") },
   "media-browser": {
     load: () => import("../panels/media-browser/ha-panel-media-browser"),
+    waitForReady: true,
   },
   light: {
     load: () => import("../panels/light/ha-panel-light"),
