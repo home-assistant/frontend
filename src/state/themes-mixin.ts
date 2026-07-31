@@ -8,6 +8,7 @@ import type { HASSDomEvent } from "../common/dom/fire_event";
 import { subscribeThemePreferences, saveThemePreferences } from "../data/theme";
 import { subscribeThemes } from "../data/ws-themes";
 import type { Constructor, HomeAssistant } from "../types";
+import { updateLaunchScreenLogo } from "../util/launch-screen";
 import { storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
 
@@ -144,6 +145,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         themeSettings,
         true
       );
+
+      updateLaunchScreenLogo(darkMode);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({

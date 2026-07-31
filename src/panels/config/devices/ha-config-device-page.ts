@@ -96,12 +96,17 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
 import {
@@ -892,6 +897,11 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      <ha-device-linked-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+        .entries=${this.entries}
+      ></ha-device-linked-devices-card>
     `;
 
     const entitiesColumn = html`
@@ -1257,12 +1267,11 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceActions: DeviceAction[] = [];
 
-    const configurationUrlIsHomeAssistant =
-      device.configuration_url?.startsWith("homeassistant://") || false;
+    const configurationUrlIsHomeAssistant = isHomeAssistantUrl(
+      device.configuration_url
+    );
 
-    const configurationUrl = configurationUrlIsHomeAssistant
-      ? device.configuration_url?.replace("homeassistant://", "/")
-      : device.configuration_url;
+    const configurationUrl = sanitizeLinkUrl(device.configuration_url);
 
     if (configurationUrl) {
       deviceActions.push({

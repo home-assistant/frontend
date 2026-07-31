@@ -6,8 +6,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import { domainToName } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../../dialogs/make-dialog-manager";
+import { brandsUrl } from "../../util/brands-url";
 import "../ha-dialog";
 import "../ha-svg-icon";
 import "../item/ha-list-item-button";
@@ -23,11 +26,21 @@ export class DialogDeviceReplaced
 
   @state() private _open = false;
 
+  @state() private _configEntryLookup?: Record<string, ConfigEntry>;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   public async showDialog(params: DeviceReplacedDialogParams): Promise<void> {
     this._params = params;
     this._open = true;
+    this._loadConfigEntries();
+  }
+
+  private async _loadConfigEntries(): Promise<void> {
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
   }
 
   public closeDialog(): boolean {
@@ -55,15 +68,23 @@ export class DialogDeviceReplaced
       candidates: string[],
       primaryId: string | null,
       devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"]
+      areas: HomeAssistant["areas"],
+      configEntryLookup: Record<string, ConfigEntry> | undefined
     ) =>
       candidates.map((deviceId) => {
         const device = devices[deviceId];
         const area = device ? getDeviceArea(device, areas) : undefined;
+        const configEntry = device?.primary_config_entry
+          ? configEntryLookup?.[device.primary_config_entry]
+          : undefined;
         return {
           deviceId,
           name: device ? computeDeviceName(device) : deviceId,
-          secondary: area ? computeAreaName(area) : undefined,
+          area: area ? computeAreaName(area) : undefined,
+          domain: configEntry?.domain,
+          domainName: configEntry
+            ? domainToName(this.hass.localize, configEntry.domain)
+            : undefined,
           isPrimary: deviceId === primaryId,
         };
       })
@@ -92,31 +113,54 @@ export class DialogDeviceReplaced
             this._params.candidates,
             this._params.primaryId,
             this.hass.devices,
-            this.hass.areas
-          ).map(
-            (item) => html`
+            this.hass.areas,
+            this._configEntryLookup
+          ).map((item) => {
+            const supportingText = [
+              item.area,
+              item.domainName,
+              item.isPrimary
+                ? this.hass.localize(
+                    "ui.components.device-picker.replaced_dialog.recommended"
+                  )
+                : undefined,
+            ]
+              .filter(Boolean)
+              .join(" • ");
+            return html`
               <ha-list-item-button .deviceId=${item.deviceId}>
-                <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
+                ${
+                  item.domain
+                    ? html`<img
+                        slot="start"
+                        alt=""
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                        src=${brandsUrl(
+                          {
+                            domain: item.domain,
+                            type: "icon",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
+                      />`
+                    : html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiDevices}
+                      ></ha-svg-icon>`
+                }
                 <span slot="headline">${item.name}</span>
                 ${
-                  item.secondary || item.isPrimary
-                    ? html`<span slot="supporting-text">
-                        ${[
-                          item.secondary,
-                          item.isPrimary
-                            ? this.hass.localize(
-                                "ui.components.device-picker.replaced_dialog.recommended"
-                              )
-                            : undefined,
-                        ]
-                          .filter(Boolean)
-                          .join(" • ")}
-                      </span>`
+                  supportingText
+                    ? html`<span slot="supporting-text"
+                        >${supportingText}</span
+                      >`
                     : nothing
                 }
               </ha-list-item-button>
-            `
-          )}
+            `;
+          })}
         </ha-list-base>
       </ha-dialog>
     `;
@@ -131,6 +175,10 @@ export class DialogDeviceReplaced
       margin: 0;
       padding: 0 var(--ha-space-6) var(--ha-space-4);
       color: var(--secondary-text-color);
+    }
+    img[slot="start"] {
+      width: 24px;
+      height: 24px;
     }
   `;
 }

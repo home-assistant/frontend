@@ -18,38 +18,15 @@
     <meta name="referrer" content="same-origin" />
     <meta name="theme-color" content="{{ theme_color }}" />
     <meta name="color-scheme" content="dark light" />
-    <link rel="preload" href="/static/fonts/roboto/Roboto-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <%= renderTemplate("_style_base.html.template") %>
     <style>
-      @font-face {
-        font-family: "Roboto Launch Screen";
-        font-display: block;
-        src: url("/static/fonts/roboto/Roboto-Regular.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-      }
-      @keyframes fade-out {
-        from {
-          opacity: 1;
-        }
-        to {
-          opacity: 0;
-        }
-      }
-      ::view-transition-group(launch-screen) {
-        animation-duration: var(--ha-animation-duration-normal, 250ms);
-        animation-timing-function: ease-out;
-      }
-      ::view-transition-old(launch-screen) {
-        animation: fade-out var(--ha-animation-duration-normal, 250ms) ease-out;
-      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
         height: 100vh;
       }
       #ha-launch-screen {
-        font-family: "Roboto Launch Screen", sans-serif;
+        font-family: ui-sans-serif, system-ui, sans-serif;
         position: fixed;
         top: 0;
         left: 0;
@@ -61,7 +38,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        view-transition-name: launch-screen;
+        user-select: none;
+        -webkit-user-select: none;
         background-color: var(--primary-background-color, #fafafa);
         z-index: 100;
         transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
@@ -98,7 +76,7 @@
       }
       #ha-launch-screen .ha-launch-screen-spacer-bottom {
         flex: 1;
-        padding-top: 48px;
+        padding-top: 16px;
       }
       .ohf-logo {
         margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;

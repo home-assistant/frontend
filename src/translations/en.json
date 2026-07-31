@@ -75,7 +75,7 @@
   },
   "ui": {
     "init": {
-      "loading": "Loading data",
+      "loading": "Loading...",
       "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
       "project_from": "A project from the",
       "error": {
@@ -521,6 +521,9 @@
         "clear": "Clear",
         "show_password": "Show password",
         "hide_password": "Hide password"
+      },
+      "form": {
+        "validation_failed": "Form validation failed."
       },
       "selectors": {
         "serial_port": {
@@ -2396,7 +2399,7 @@
           "header": "Copy pairing code",
           "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
           "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
-          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} from the list",
           "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
           "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
           "use_pairing_code": "Use Pairing Code",
@@ -3955,6 +3958,9 @@
               "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
+              "result_placeholder": "Your template result will appear here.",
+              "layout_stacked": "Drag to resize, click for stacked view",
+              "layout_side_by_side": "Drag to resize, click for side-by-side view",
               "reset": "Reset to demo template",
               "confirm_reset": "Do you want to reset your current template back to the demo template?",
               "confirm_clear": "Do you want to clear your current template?",
@@ -4211,7 +4217,9 @@
               "power_stat": "Power sensor",
               "power_helper": "Pick a sensor which measures grid power in either of {unit}.",
               "power_from": "Power imported from grid",
-              "power_to": "Power exported to grid"
+              "power_to": "Power exported to grid",
+              "helper_sensor_note": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_note%]",
+              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]"
             },
             "flow_dialog": {
               "from": {
@@ -4278,7 +4286,9 @@
               "type_inverted_description": "Positive values indicate charging, negative values indicate discharging.",
               "type_two_sensors": "Two sensors",
               "power_from": "Discharge power",
-              "power_to": "Charge power"
+              "power_to": "Charge power",
+              "helper_sensor_note": "Home Assistant will create a helper sensor entity for this option.",
+              "helper_sensor_in_use": "Currently using helper {entity}"
             }
           },
           "gas": {
@@ -4472,7 +4482,8 @@
           "internal_url_https_error_title": "Invalid local network URL",
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
-          "internal_url_placeholder": "http://<some IP address>:8123",
+          "internal_url_placeholder": "{protocol}://192.168.1.100{port}",
+          "external_url_placeholder": "{protocol}://example.duckdns.org{port}",
           "invalid_url": "Invalid URL"
         },
         "hardware": {
@@ -6779,6 +6790,10 @@
             "heading": "Connected devices",
             "show_more": "+{count} devices not shown"
           },
+          "linked_devices": {
+            "heading": "Linked devices",
+            "description": "These devices share hardware with this device and are managed by other integrations."
+          },
           "type": {
             "device_heading": "Device",
             "device": "device",
@@ -8640,7 +8655,14 @@
             "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
             "learn_more": "Learn more",
             "preview": "Preview",
+            "preview_error": "Failed to generate preview",
             "reset": "Reset to default",
+            "examples": {
+              "area": "Living room",
+              "device": "Thermostat",
+              "entity": "Temperature",
+              "floor": "Ground floor"
+            },
             "editor": {
               "label": "Format",
               "add": "Add",
@@ -8740,6 +8762,7 @@
             "save_no_changes": "Nothing changed — no restart needed.",
             "save_error": "Could not save the HTTP configuration.",
             "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
+            "server_host_warning": "Leave this empty to listen on all interfaces. If you set specific addresses, Home Assistant is only reachable through those — binding it only to an address that other devices can't reach (for example localhost) will make it unreachable from those devices.",
             "invalid_host": "Enter a valid IP address.",
             "invalid_network": "Enter a valid IP address or network.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
@@ -8750,6 +8773,11 @@
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
               "confirm": "Save and restart"
+            },
+            "restart_address": {
+              "title": "Home Assistant is restarting",
+              "text": "The address changed. Once Home Assistant has restarted, you can reach it at:",
+              "note": "Depending on your network setup, this address may not be reachable from this device."
             },
             "ssl_profile_modern": "Modern",
             "ssl_profile_intermediate": "Intermediate",
@@ -8774,7 +8802,7 @@
               "login_attempts_threshold": "Login attempts before ban"
             },
             "helpers": {
-              "server_port": "The port Home Assistant listens on. Default is 8123.",
+              "server_port": "The port Home Assistant listens on. Default is {port}.",
               "server_host": "IP addresses to bind to. Leave empty to listen on all interfaces.",
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",

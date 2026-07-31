@@ -130,6 +130,19 @@ class PanelHome extends LitElement {
   }
 
   private async _setup() {
+    void import("../lovelace/strategies/home/home-dashboard-strategy").catch(
+      () => undefined
+    );
+    void import("../lovelace/strategies/home/home-overview-view-strategy")
+      .then(({ preloadHomeEnergyPreferences }) => {
+        const path = this.route?.path?.split("/")[1];
+        return !path || path === "overview"
+          ? preloadHomeEnergyPreferences(this.hass)
+          : undefined;
+      })
+      .catch(() => undefined);
+    void import("../lovelace/views/hui-sections-view").catch(() => undefined);
+
     this._updateExtraActionItems();
     this._loadConfigPromise = this._loadConfig();
     await this._loadConfigPromise;
