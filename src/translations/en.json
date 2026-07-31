@@ -522,6 +522,9 @@
         "show_password": "Show password",
         "hide_password": "Hide password"
       },
+      "form": {
+        "validation_failed": "Form validation failed."
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
