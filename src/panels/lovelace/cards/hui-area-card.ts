@@ -825,9 +825,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         justify-content: center;
         color: white;
       }
-      ha-tile-info.twoline {
-        --ha-tile-info-primary-line-clamp: 2;
-        --ha-tile-info-primary-line-height: var(--ha-space-4);
+      ha-tile-info.twoline::part(primary) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
     `,
   ];
