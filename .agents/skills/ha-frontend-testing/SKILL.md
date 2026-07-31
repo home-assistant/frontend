@@ -45,7 +45,9 @@ yarn build --stop
 
 Use `yarn build --modern --background` for production bundle-size or browser performance comparisons that only need modern browser output. It runs the normal metadata and static preparation, minifies and compresses the modern `frontend_latest` bundle and shared static assets, and generates modern-only entry pages and service workers. It deliberately skips the legacy bundle and its service worker.
 
-Do not pass `--help`, `--background`, or `--modern` to `script/build_frontend`; that raw script does not parse arguments and always starts the full foreground build. Use `yarn build` for managed builds. It prevents another foreground or background build from starting while one is using the shared generated files under `build/` and `hass_frontend/`.
+Do not pass `--help`, `--background`, or `--modern` to `script/build_frontend`; that raw script does not parse arguments and always starts the full foreground build. Use `yarn build` for managed builds. App builds and development servers keep exclusive ownership of `hass_frontend/` for their lifetime.
+
+Managed app, demo, gallery, and E2E app workflows share one lifetime lock, so only one build or development server can run at a time.
 
 ## Unit And Utility Tests
 
@@ -78,7 +80,7 @@ The custom development wrappers use `/__ha_dev_status` to identify and manage th
 
 Local runs against a watched development server do not always match CI's clean build artifacts, environment, sharding, or worker configuration. Use background servers for the fast iteration loop, but confirm the relevant CI jobs complete successfully before considering E2E changes verified.
 
-Use `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three suites in parallel when every managed server is available, otherwise it runs them sequentially to prevent cold builds racing over shared generated assets. Run suites directly; piping through output truncation hides progress and failures.
+Use `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs suites sequentially when managed servers are unavailable to prevent cold builds racing over shared generated assets. Run suites directly; piping through output truncation hides progress and failures.
 
 The app suite uses a stripped-down harness for e2e. Demo and gallery use their normal dev servers.
 

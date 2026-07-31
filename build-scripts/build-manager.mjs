@@ -25,24 +25,26 @@ import {
   runCli,
   spawnDetachedToLog,
   spawnForeground,
+  terminateDetachedProcess,
   terminateProcess,
   waitFor,
   writeProcessRecord,
 } from "./managed-process.mjs";
+import {
+  buildCacheDir,
+  describeOutputOwner,
+  workflowLockEnv,
+  workflowLockFile,
+} from "./output-lock.mjs";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   ".."
 );
 const gulpBin = path.join(repoRoot, "node_modules", ".bin", "gulp");
-const stateDir = path.join(repoRoot, "node_modules", ".cache", "ha-build");
+const stateDir = path.join(buildCacheDir, "ha-build");
 const logFile = path.join(stateDir, "build.log");
-const lockFile = path.join(
-  repoRoot,
-  "node_modules",
-  ".cache",
-  "ha-generated-output.lock"
-);
+const lockFile = workflowLockFile;
 
 const usage = () => {
   process.stderr.write(
@@ -78,6 +80,21 @@ const hints = () =>
   "  Stop:   yarn build --stop\n" +
   "  Status: yarn build --status\n" +
   "  Logs:   yarn build --logs\n";
+
+const devCommand = (suite) => {
+  switch (suite) {
+    case "app-serve":
+      return "dev:serve";
+    case "demo":
+      return "dev:demo";
+    case "gallery":
+      return "dev:gallery";
+    case "e2e-app":
+      return "test:e2e:app:dev";
+    default:
+      return "dev";
+  }
+};
 
 const readBuild = () => readProcessRecord(lockFile);
 
@@ -115,8 +132,15 @@ const updateBuild = (token, child, processGroup) => {
 const taskFor = (modern) => (modern ? "build-app-modern" : "build-app");
 
 const reportExisting = (existing) => {
+  if (existing?.kind === "output") {
+    process.stdout.write(
+      `${describeOutputOwner(existing)} already owns the build and development workflow` +
+        `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n`
+    );
+    return;
+  }
   if (existing?.kind === "dev") {
-    const command = existing.suite === "app-serve" ? "dev:serve" : "dev";
+    const command = devCommand(existing.suite);
     process.stdout.write(
       `Dev server (${existing.suite}) already running` +
         `${existing.pid ? ` (pid ${existing.pid})` : ""}.\n` +
@@ -143,6 +167,7 @@ const runForeground = async (modern) => {
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
+      env: workflowLockEnv(lock.token),
       processGroup: true,
       onSpawn: (child) => updateBuild(lock.token, child, true),
     });
@@ -157,11 +182,13 @@ const runBackground = async (modern) => {
     reportExisting(lock.existing);
     return 1;
   }
+  let child;
   try {
-    const child = await spawnDetachedToLog({
+    child = await spawnDetachedToLog({
       cmd: gulpBin,
       args: [taskFor(modern)],
       cwd: repoRoot,
+      env: workflowLockEnv(lock.token),
       logFile,
     });
     updateBuild(lock.token, child, true);
@@ -171,6 +198,9 @@ const runBackground = async (modern) => {
     );
     return 0;
   } catch (err) {
+    if (child) {
+      await terminateDetachedProcess(child);
+    }
     releaseBuild(lock.token);
     throw err;
   }
@@ -245,11 +275,7 @@ const main = async () => {
     usage();
     return 1;
   }
-  if (
-    args.modes.length > 1 ||
-    (args.follow && args.mode !== "logs") ||
-    (args.modern && !["foreground", "background"].includes(args.mode))
-  ) {
+  if (args.modes.length > 1 || (args.follow && args.mode !== "logs")) {
     process.stderr.write("Invalid combination of build arguments.\n");
     usage();
     return 1;

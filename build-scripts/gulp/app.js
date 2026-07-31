@@ -1,5 +1,6 @@
 import gulp from "gulp";
 import env from "../env.cjs";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
@@ -17,6 +18,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-app"),
     "clean",
     gulp.parallel(
       "gen-service-worker-app-dev",
@@ -36,6 +38,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-app"),
     "clean",
     gulp.parallel(
       "gen-icons-json",
@@ -57,6 +60,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-app-modern"),
     "clean",
     gulp.parallel(
       "gen-icons-json",
