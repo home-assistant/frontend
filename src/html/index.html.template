@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Home Assistant</title>
+    <% if (useCacheRecovery) { %><%= renderTemplate("_bootstrap_recovery.html.template") %><% } %>
     <%= renderTemplate("_header.html.template") %>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#18bcf2" />
     <link
