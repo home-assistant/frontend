@@ -141,9 +141,8 @@ export class DialogForm
       : data;
 
     this._data = deepClone({ ...this._data, [nestedField]: newValue });
-this._data = deepClone({ ...this._data, [nestedField]: newValue });
-this._error = undefined;
-this._updateDirtyState(this._data);
+    this._error = undefined;
+    this._updateDirtyState(this._data);
   }
 
   private _cancel(): void {
