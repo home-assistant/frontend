@@ -19,6 +19,7 @@ import {
   acquireProcessRecord,
   isProcessRecordAlive,
   outputLog,
+  offerToStopProcessRecord,
   processStartTime,
   readProcessRecord,
   releaseProcessRecord,
@@ -100,9 +101,16 @@ const readBuild = () => readProcessRecord(lockFile);
 
 const releaseBuild = (token) => releaseProcessRecord(lockFile, token);
 
-const acquireBuild = (modern, foreground) => {
+const stopCommandFor = (owner) =>
+  owner?.kind === "build"
+    ? "yarn build --stop"
+    : owner?.kind === "dev"
+      ? `yarn ${devCommand(owner.suite)} --stop`
+      : undefined;
+
+const acquireBuild = async (modern, foreground) => {
   const token = `${process.pid}-${Date.now()}-${Math.random()}`;
-  const result = acquireProcessRecord(lockFile, {
+  const record = {
     pid: process.pid,
     startTime: processStartTime(process.pid),
     processGroup: false,
@@ -111,8 +119,20 @@ const acquireBuild = (modern, foreground) => {
     modern,
     starting: true,
     token,
-  });
-  return result.acquired ? { token } : { existing: result.existing };
+  };
+  const result = acquireProcessRecord(lockFile, record);
+  if (result.acquired) {
+    return { token };
+  }
+  reportExisting(result.existing);
+  return (await offerToStopProcessRecord({
+    file: lockFile,
+    owner: result.existing,
+    ownerDescription: describeOutputOwner(result.existing),
+    stopCommand: stopCommandFor(result.existing),
+  }))
+    ? acquireBuild(modern, foreground)
+    : { existing: result.existing };
 };
 
 const updateBuild = (token, child, processGroup) => {
@@ -157,9 +177,8 @@ const reportExisting = (existing) => {
 };
 
 const runForeground = async (modern) => {
-  const lock = acquireBuild(modern, true);
+  const lock = await acquireBuild(modern, true);
   if (!lock.token) {
-    reportExisting(lock.existing);
     return 1;
   }
   try {
@@ -177,9 +196,8 @@ const runForeground = async (modern) => {
 };
 
 const runBackground = async (modern) => {
-  const lock = acquireBuild(modern, false);
+  const lock = await acquireBuild(modern, false);
   if (!lock.token) {
-    reportExisting(lock.existing);
     return 1;
   }
   let child;
