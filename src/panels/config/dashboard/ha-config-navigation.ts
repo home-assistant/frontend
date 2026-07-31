@@ -31,18 +31,32 @@ class HaConfigNavigation extends LitElement {
 
   private _childReadyRegistered = false;
 
-  @consume({ context: childPanelReadyContext })
+  @consume({ context: childPanelReadyContext, subscribe: true })
   private _registerChildPanelReady?: RegisterChildPanelReady;
 
   protected override updated(changedProps: Map<PropertyKey, unknown>) {
     super.updated(changedProps);
 
-    if (changedProps.has("pages") || changedProps.has("hass")) {
+    const pagesOrHassChanged =
+      changedProps.has("pages") || changedProps.has("hass");
+
+    if (pagesOrHassChanged) {
       const ready = this._resolveVisiblePages();
-      if (!this._childReadyRegistered) {
-        this._registerChildPanelReady?.(ready);
+      if (!this._childReadyRegistered && this._registerChildPanelReady) {
+        this._registerChildPanelReady(ready);
         this._childReadyRegistered = true;
       }
+      return;
+    }
+
+    if (
+      !this._childReadyRegistered &&
+      this._registerChildPanelReady &&
+      this.pages &&
+      this.hass
+    ) {
+      this._registerChildPanelReady(this._resolveVisiblePages());
+      this._childReadyRegistered = true;
     }
   }
 
@@ -94,9 +108,13 @@ class HaConfigNavigation extends LitElement {
     if (!this._bluetoothEntriesLoaded) {
       this._bluetoothEntriesLoaded = getConfigEntries(this.hass, {
         domain: "bluetooth",
-      }).then((entries) => {
-        this._hasBluetoothConfigEntries = entries.length > 0;
-      });
+      })
+        .then((entries) => {
+          this._hasBluetoothConfigEntries = entries.length > 0;
+        })
+        .catch(() => {
+          this._hasBluetoothConfigEntries = false;
+        });
     }
     return this._bluetoothEntriesLoaded;
   }

@@ -29,6 +29,8 @@ export class ChildPanelReady implements ReactiveController {
 
   private _resolveReady?: () => void;
 
+  private _completing = false;
+
   public ready = new Promise<void>((resolve) => {
     this._resolveReady = resolve;
   });
@@ -43,11 +45,30 @@ export class ChildPanelReady implements ReactiveController {
   }
 
   public hostUpdated() {
-    Promise.allSettled(this._promises).then(() => {
-      this._resolveReady?.();
-      return panelIsReady(this._host);
-    });
+    if (this._completing) {
+      return;
+    }
+    this._completing = true;
     this._host.removeController(this);
+    void this._complete();
+  }
+
+  private async _complete() {
+    // Children created/updated during this render register after the host's
+    // update commits. Wait for that before snapshotting readiness promises.
+    await this._host.updateComplete;
+
+    await this._waitForPromises();
+
+    this._resolveReady?.();
+    await panelIsReady(this._host);
+  }
+
+  private _waitForPromises(): Promise<void> {
+    const count = this._promises.length;
+    return Promise.allSettled(this._promises).then(() =>
+      this._promises.length > count ? this._waitForPromises() : undefined
+    );
   }
 }
 
