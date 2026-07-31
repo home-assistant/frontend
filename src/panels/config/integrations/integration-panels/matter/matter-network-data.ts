@@ -37,6 +37,10 @@ export const strengthToScale = (
       return 3;
     case "weak":
       return 2;
+    // "unknown" (no measurement, link presumed up) sits above "none"/dead so it
+    // reads as a present link, not a degraded one
+    case "unknown":
+      return 2;
     default:
       return 1;
   }
@@ -52,6 +56,9 @@ export const strengthToColorVar = (
       return "--warning-color";
     case "weak":
       return "--error-color";
+    // neutral, distinct from the "dead link" disabled color
+    case "unknown":
+      return "--secondary-text-color";
     default:
       return "--disabled-color";
   }

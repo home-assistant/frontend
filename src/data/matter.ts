@@ -48,7 +48,8 @@ export type MatterPingResult = Record<string, boolean>;
 export type MatterTopologyNodeKind =
   "matter" | "border_router" | "thread_unknown" | "wifi_ap";
 
-export type MatterTopologyStrength = "strong" | "medium" | "weak" | "none";
+export type MatterTopologyStrength =
+  "strong" | "medium" | "weak" | "none" | "unknown";
 
 export interface MatterTopologyDirectionInfo {
   strength: MatterTopologyStrength;

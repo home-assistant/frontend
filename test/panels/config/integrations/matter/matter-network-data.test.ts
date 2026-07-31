@@ -9,6 +9,7 @@ import {
   createMatterNetworkChartData,
   getTopologyNodeCategory,
   getTopologyNodeName,
+  strengthToColorVar,
   strengthToScale,
 } from "../../../../../src/panels/config/integrations/integration-panels/matter/matter-network-data";
 import type { HomeAssistant } from "../../../../../src/types";
@@ -62,6 +63,19 @@ describe("strengthToScale", () => {
     expect(strengthToScale("none")).toBe(1);
     expect(strengthToScale(undefined)).toBe(1);
     expect(strengthToScale(null)).toBe(1);
+  });
+
+  it("renders an unmeasured link as present, above a dead one", () => {
+    // "unknown" (no measurement) must not collapse to the "none"/dead bucket
+    expect(strengthToScale("unknown")).toBe(2);
+    expect(strengthToScale("unknown")).toBeGreaterThan(strengthToScale("none"));
+  });
+});
+
+describe("strengthToColorVar", () => {
+  it("colors an unmeasured link neutrally, not as a dead link", () => {
+    expect(strengthToColorVar("unknown")).toBe("--secondary-text-color");
+    expect(strengthToColorVar("unknown")).not.toBe(strengthToColorVar("none"));
   });
 });
 
