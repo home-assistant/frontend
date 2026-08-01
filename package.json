@@ -193,7 +193,7 @@
     "gulp-rename": "2.1.0",
     "html-minifier-terser": "7.2.0",
     "husky": "9.1.7",
-    "jsdom": "30.0.0",
+    "jsdom": "30.0.1",
     "jszip": "3.10.1",
     "license-checker-rseidelsohn": "5.0.1",
     "lint-staged": "17.2.0",
