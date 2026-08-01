@@ -91,16 +91,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?:
-    | "entity-id"
-    | "last-changed"
-    | "last-triggered"
-    | "last-updated"
-    | "area"
-    | "position"
-    | "state"
-    | "tilt-position"
-    | "brightness";
+  secondary_info?: string | string[];
   action_name?: string;
   action?: string;
   /** @deprecated use "action" instead */

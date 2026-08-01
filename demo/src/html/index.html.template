@@ -34,16 +34,8 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#03a9f4" />
-    <link rel="preload" href="/static/fonts/roboto/Roboto-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <%= renderTemplate("_social_meta.html.template") %>
     <style>
-      @font-face {
-        font-family: "Roboto Launch Screen";
-        font-display: block;
-        src: url("/static/fonts/roboto/Roboto-Regular.woff2") format("woff2");
-        font-weight: 400;
-        font-style: normal;
-      }
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
@@ -64,12 +56,14 @@
         padding: 0;
       }
       #ha-launch-screen {
-        font-family: "Roboto Launch Screen", sans-serif;
+        font-family: ui-sans-serif, system-ui, sans-serif;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        user-select: none;
+        -webkit-user-select: none;
         transition: opacity var(--ha-animation-duration-normal, 250ms) ease-out;
       }
       #ha-launch-screen.removing {
@@ -104,7 +98,7 @@
       }
       #ha-launch-screen .ha-launch-screen-spacer-bottom {
         flex: 1;
-        padding-top: 48px;
+        padding-top: 16px;
       }
       .ohf-logo {
         margin: max(var(--safe-area-inset-bottom, 0px), 48px) 0;

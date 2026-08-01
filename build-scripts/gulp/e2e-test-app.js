@@ -1,4 +1,5 @@
 import gulp from "gulp";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import "./clean.js";
 import "./entry-html.js";
 import "./gather-static.js";
@@ -12,6 +13,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-e2e-test-app"),
     "clean-e2e-test-app",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -31,6 +33,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-e2e-test-app"),
     "clean-e2e-test-app",
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),

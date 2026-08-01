@@ -1,0 +1,4 @@
+{
+  "hashedEntry": "/frontend_(?:latest|es5)/[^/?#]+\\.[0-9a-f]{8,}\\.js",
+  "moduleError": "dynamically imported module|Importing a module script failed|error loading dynamically imported|ChunkLoadError"
+}

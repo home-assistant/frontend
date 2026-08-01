@@ -1,5 +1,3 @@
-/* eslint-disable max-classes-per-file */
-
 import { deleteAsync } from "del";
 import { glob } from "glob";
 import gulp from "gulp";

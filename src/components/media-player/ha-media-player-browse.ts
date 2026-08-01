@@ -34,15 +34,18 @@ import {
   browseMediaPlayer,
   BROWSER_PLAYER,
   MediaClassBrowserSettings,
+  searchMediaPlayer,
 } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
   isManualMediaSourceContentId,
+  isMediaSourceContentId,
   MANUAL_MEDIA_SOURCE_PREFIX,
   searchMedia,
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
@@ -159,6 +162,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _initialReady = false;
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachResizeObserver());
@@ -272,6 +277,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         ids: navigateIds,
         current: this._currentItem,
       });
+      this._signalInitialReady();
     } else {
       if (!currentProm) {
         currentProm = this._fetchData(
@@ -287,6 +293,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             ids: navigateIds,
             current: item,
           });
+          this._signalInitialReady();
         },
         (err) => {
           // When we change entity ID, we will first try to see if the new entity is
@@ -320,8 +327,10 @@ export class HaMediaPlayerBrowse extends LitElement {
               ),
               code: "entity_not_found",
             });
+            this._signalInitialReady();
           } else {
             this._setError(err);
+            this._signalInitialReady();
           }
         }
       );
@@ -869,13 +878,31 @@ export class HaMediaPlayerBrowse extends LitElement {
     const mediaFilterClasses = this._mediaClassFilter.length
       ? this._mediaClassFilter
       : undefined;
+    // A player's tree can embed media sources, which resolve their own searches;
+    // everything else in it uses integration specific ids only the entity knows.
+    const searchEntityId =
+      this.entityId &&
+      this.entityId !== BROWSER_PLAYER &&
+      !isMediaSourceContentId(navigateId.media_content_id ?? "")
+        ? this.entityId
+        : undefined;
+
     try {
-      const { result } = await searchMedia(
-        this.hass,
-        navigateId.media_content_id,
-        searchQuery,
-        mediaFilterClasses
-      );
+      const { result } = searchEntityId
+        ? await searchMediaPlayer(
+            this.hass,
+            searchEntityId,
+            searchQuery,
+            navigateId.media_content_id,
+            navigateId.media_content_type,
+            mediaFilterClasses
+          )
+        : await searchMedia(
+            this.hass,
+            navigateId.media_content_id,
+            searchQuery,
+            mediaFilterClasses
+          );
       // Ignore the response if a newer search started or we navigated away
       if (requestId !== this._searchRequestId) {
         return;
@@ -1125,6 +1152,21 @@ export class HaMediaPlayerBrowse extends LitElement {
     fireEvent(this, "close-dialog");
   }
 
+  private _signalInitialReady(): void {
+    if (this._initialReady) {
+      return;
+    }
+    this._initialReady = true;
+    const root = this.getRootNode();
+    panelIsReady(
+      root instanceof ShadowRoot &&
+        root.host instanceof HTMLElement &&
+        root.host.tagName.startsWith("HA-PANEL-")
+        ? root.host
+        : this
+    );
+  }
+
   private _setError(error: any) {
     if (!this.dialog) {
       this._error = error;
@@ -1189,8 +1231,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _animateHeaderHeight() {
-    let start;
-    const animate = (time) => {
+    let start: number | undefined;
+    const animate = (time: number) => {
       if (start === undefined) {
         start = time;
       }

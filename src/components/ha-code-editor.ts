@@ -57,7 +57,10 @@ import "./ha-code-editor-completion-items";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button-toolbar";
-import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
+import type {
+  HaIconButtonToolbar,
+  HaIconButtonToolbarItem,
+} from "./ha-icon-button-toolbar";
 
 declare global {
   interface HASSDomEvents {
@@ -114,6 +117,9 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean, attribute: "has-test" })
   public hasTest = false;
+
+  @property({ attribute: false })
+  public toolbarItems?: (HaIconButtonToolbarItem | string)[];
 
   @property({ attribute: false }) public testing = false;
 
@@ -351,7 +357,8 @@ export class HaCodeEditor extends ReactiveElement {
       changedProps.has("_canCopy") ||
       changedProps.has("_canUndo") ||
       changedProps.has("_canRedo") ||
-      changedProps.has("testing")
+      changedProps.has("testing") ||
+      changedProps.has("toolbarItems")
     ) {
       this._updateToolbarButtons();
     }
@@ -529,6 +536,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     this._editorToolbar.items = [
+      ...(this.toolbarItems ?? []),
       ...(this.hasTest && !this._isFullscreen
         ? [
             {
