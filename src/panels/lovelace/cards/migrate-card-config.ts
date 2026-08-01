@@ -1,5 +1,6 @@
 import { migrateStateColorConfig } from "../common/entity-color-config";
 import { migrateTimeFormatConfig } from "../common/entity-time-format-config";
+import { migrateSecondaryInfoConfig } from "../common/entity-secondary-info-config";
 import type {
   ConditionalRowConfig,
   LovelaceRowConfig,
@@ -20,11 +21,13 @@ const migrateEntitiesRowConfig = (
   let newConf: LovelaceRowConfig = rowConf;
   newConf = migrateTimeFormatConfig(newConf as EntitiesCardEntityConfig);
   newConf = migrateStateColorConfig(newConf as EntitiesCardEntityConfig);
+  newConf = migrateSecondaryInfoConfig(newConf as EntitiesCardEntityConfig);
   if (newConf.type === "conditional") {
     const row = (newConf as ConditionalRowConfig).row;
     if (row && typeof row === "object") {
       let newRow = migrateTimeFormatConfig(row as EntitiesCardEntityConfig);
       newRow = migrateStateColorConfig(newRow);
+      newRow = migrateSecondaryInfoConfig(newRow);
       if (newRow !== row) {
         newConf = { ...newConf, row: newRow } as ConditionalRowConfig;
       }

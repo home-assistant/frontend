@@ -92,6 +92,11 @@ declare global {
   interface Window {
     __assistRun?: unknown;
     __mockHass: MockHomeAssistant;
+    rejectMediaBrowse?: () => void;
+    resolveCalendarRegistry?: () => void;
+    resolveGeneratedDashboard?: () => void;
+    resolveLovelaceConfig?: () => void;
+    resolveMediaBrowse?: () => void;
   }
 }
 

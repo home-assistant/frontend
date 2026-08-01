@@ -12,6 +12,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { join } from "lit/directives/join";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { STRINGS_SEPARATOR_DOT } from "../../common/const";
@@ -483,13 +484,7 @@ export class HaDataTable extends LitElement {
                   : ""
               }
               ${Object.entries(columns).map(([key, column]) => {
-                if (
-                  column.hidden ||
-                  (this.columnOrder && this.columnOrder.includes(key)
-                    ? (this.hiddenColumns?.includes(key) ??
-                      column.defaultHidden)
-                    : column.defaultHidden)
-                ) {
+                if (!this._isColumnVisible(key, column)) {
                   return nothing;
                 }
                 const sorted = key === this.sortColumn;
@@ -657,10 +652,7 @@ export class HaDataTable extends LitElement {
         ${Object.entries(columns).map(([key, column]) => {
           if (
             (narrow && !column.main && !column.showNarrow) ||
-            column.hidden ||
-            (this.columnOrder && this.columnOrder.includes(key)
-              ? (this.hiddenColumns?.includes(key) ?? column.defaultHidden)
-              : column.defaultHidden)
+            !this._isColumnVisible(key, column)
           ) {
             return nothing;
           }
@@ -692,28 +684,19 @@ export class HaDataTable extends LitElement {
                   : narrow && column.main
                     ? html`<div class="primary">${row[key]}</div>
                         <div class="secondary">
-                          ${Object.entries(columns)
-                            .filter(
-                              ([key2, column2]) =>
-                                !column2.hidden &&
-                                !column2.main &&
-                                !column2.showNarrow &&
-                                !(this.columnOrder &&
-                                this.columnOrder.includes(key2)
-                                  ? (this.hiddenColumns?.includes(key2) ??
-                                    column2.defaultHidden)
-                                  : column2.defaultHidden)
-                            )
-                            .map(
-                              ([key2, column2], i) =>
-                                html`${
-                                  i !== 0 ? STRINGS_SEPARATOR_DOT : nothing
-                                }${
-                                  column2.template
-                                    ? column2.template(row)
-                                    : row[key2]
-                                }`
-                            )}
+                          ${join(
+                            Object.entries(columns)
+                              .filter(([key2, column2]) =>
+                                this._isSecondaryColumnVisible(key2, column2)
+                              )
+                              .map(([key2, column2]) =>
+                                column2.template
+                                  ? column2.template(row)
+                                  : row[key2]
+                              )
+                              .filter(this._hasCellValue),
+                            STRINGS_SEPARATOR_DOT
+                          )}
                         </div>
                         ${
                           column.extraTemplate
@@ -732,6 +715,29 @@ export class HaDataTable extends LitElement {
       </div>
     `;
   };
+
+  private _isColumnVisible(key: string, column: DataTableColumnData): boolean {
+    if (column.hidden) {
+      return false;
+    }
+    if (!this.columnOrder?.includes(key)) {
+      return !column.defaultHidden;
+    }
+    return !(this.hiddenColumns?.includes(key) ?? column.defaultHidden);
+  }
+
+  private _isSecondaryColumnVisible(
+    key: string,
+    column: DataTableColumnData
+  ): boolean {
+    if (column.main || column.showNarrow) {
+      return false;
+    }
+    return this._isColumnVisible(key, column);
+  }
+
+  private _hasCellValue = (value: unknown): boolean =>
+    value !== undefined && value !== null && value !== "" && value !== nothing;
 
   private async _sortFilterData() {
     const startTime = new Date().getTime();

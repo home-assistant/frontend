@@ -185,20 +185,17 @@ export class HaPlatformCondition extends LitElement {
       )
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/conditions/${this.condition.condition}`)
+      : this._manifest?.documentation;
+
     return html`
       <div class="description">
         ${description ? html`<p>${description}</p>` : nothing}
         ${
-          this._manifest
+          documentationLink
             ? html`<a
-                href=${
-                  this._manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/conditions/${this.condition.condition}`
-                      )
-                    : this._manifest.documentation
-                }
+                href=${documentationLink}
                 title=${this.hass.localize(
                   "ui.components.service-control.integration_doc"
                 )}

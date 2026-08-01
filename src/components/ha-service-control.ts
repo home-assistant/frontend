@@ -488,6 +488,11 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
+    const documentationLink =
+      this._manifest?.is_built_in && this._value?.action
+        ? documentationUrl(this.hass, `/actions/${this._value.action}`)
+        : this._manifest?.documentation;
+
     const targetSelector =
       serviceData && "target" in serviceData
         ? this._targetSelector(
@@ -514,16 +519,9 @@ export class HaServiceControl extends LitElement {
             <div class="description">
               ${description ? html`<p>${description}</p>` : ""}
               ${
-                this._manifest
+                documentationLink
                   ? html` <a
-                      href=${
-                        this._manifest.is_built_in && this._value?.action
-                          ? documentationUrl(
-                              this.hass,
-                              `/actions/${this._value.action}`
-                            )
-                          : this._manifest.documentation
-                      }
+                      href=${documentationLink}
                       title=${this.hass.localize(
                         "ui.components.service-control.integration_doc"
                       )}

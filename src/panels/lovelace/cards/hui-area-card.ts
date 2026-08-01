@@ -620,6 +620,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
+    const fixedInfoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
+
     return html`
       <ha-card style=${styleMap(style)}>
         ${
@@ -683,6 +686,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${Boolean(this._hasCardAction)}
           @action=${this._handleAction}
         >
@@ -699,6 +703,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           </ha-tile-icon>
           <ha-tile-info
             slot="info"
+            class=${ifDefined(
+              this._config.vertical && fixedInfoHeight ? "twoline" : undefined
+            )}
             .primary=${primary}
             .secondary=${secondary}
           ></ha-tile-info>
@@ -817,6 +824,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         align-items: center;
         justify-content: center;
         color: white;
+      }
+      ha-tile-info.twoline::part(primary) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
     `,
   ];

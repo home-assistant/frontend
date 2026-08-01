@@ -314,6 +314,11 @@ export interface ZWaveJSSetConfigParamResult {
   error?: string;
 }
 
+export interface ZwaveJSNodeConfigParameterUpdate {
+  id: string;
+  value: number | null;
+}
+
 export interface ZWaveJSDataCollectionStatus {
   enabled: boolean;
   opted_in: boolean;
@@ -729,6 +734,16 @@ export const fetchZwaveNodeConfigParameters = (
 ): Promise<ZWaveJSNodeConfigParams> =>
   hass.callWS({
     type: "zwave_js/get_config_parameters",
+    device_id,
+  });
+
+export const subscribeZwaveNodeConfigParameterUpdates = (
+  hass: HomeAssistant,
+  device_id: string,
+  callback: (update: ZwaveJSNodeConfigParameterUpdate) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callback, {
+    type: "zwave_js/subscribe_config_parameter_updates",
     device_id,
   });
 

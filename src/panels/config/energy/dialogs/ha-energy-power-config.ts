@@ -61,6 +61,10 @@ export class HaEnergyPowerConfig extends LitElement {
     }
   }
 
+  private get _requiredError(): string {
+    return this.hass.localize("ui.common.error_required");
+  }
+
   protected render(): TemplateResult {
     return html`
       <p class="power-section-label">
@@ -119,6 +123,9 @@ export class HaEnergyPowerConfig extends LitElement {
                   `${this.localizeBaseKey}.power_helper` as LocalizeKeys,
                   { unit: this._powerUnits?.join(", ") || "" }
                 )}
+                required
+                .invalid=${!this.powerConfig.stat_rate}
+                .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
             `
           : nothing
@@ -138,11 +145,16 @@ export class HaEnergyPowerConfig extends LitElement {
                 .helper=${this.hass.localize(
                   `${this.localizeBaseKey}.type_inverted_description` as LocalizeKeys
                 )}
+                required
+                .invalid=${!this.powerConfig.stat_rate_inverted}
+                .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
             `
           : nothing
       }
       ${
+        // These two exclude each other, so they keep their clear button
+        // (and therefore no required marker) to stay swappable.
         this.powerType === "two_sensors"
           ? html`
               <ha-statistic-picker
@@ -157,6 +169,8 @@ export class HaEnergyPowerConfig extends LitElement {
                   this.powerConfig.stat_rate_to,
                 ].filter((id): id is string => Boolean(id))}
                 @value-changed=${this._fromPowerChanged}
+                .invalid=${!this.powerConfig.stat_rate_from}
+                .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
               <ha-statistic-picker
                 .hass=${this.hass}
@@ -170,6 +184,8 @@ export class HaEnergyPowerConfig extends LitElement {
                   this.powerConfig.stat_rate_from,
                 ].filter((id): id is string => Boolean(id))}
                 @value-changed=${this._toPowerChanged}
+                .invalid=${!this.powerConfig.stat_rate_to}
+                .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
             `
           : nothing
