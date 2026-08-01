@@ -761,3 +761,12 @@ export interface UpdatesCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
+
+export interface CountdownCardConfig extends LovelaceCardConfig {
+  type: "countdown";
+  title?: string;
+  target_date?: string;
+  entity?: string;
+  show_seconds?: boolean;
+  no_background?: boolean;
+}
