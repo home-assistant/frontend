@@ -15,6 +15,10 @@ export class HaTileContainer extends LitElement {
   @property({ type: Boolean })
   public vertical = false;
 
+  /* reserve a consistent height for the info block instead of sizing to content, so sibling tiles stay aligned */
+  @property({ type: Boolean, attribute: "fixed-info-height" })
+  public fixedInfoHeight = false;
+
   @property({ attribute: false })
   public interactive = false;
 
@@ -34,7 +38,10 @@ export class HaTileContainer extends LitElement {
   protected render() {
     const containerOrientationClass =
       this.featurePosition === "inline" ? "horizontal" : "";
-    const contentClasses = { vertical: this.vertical };
+    const contentClasses = {
+      vertical: this.vertical,
+      "fixed-info-height": this.fixedInfoHeight,
+    };
 
     return html`
       <div
@@ -112,7 +119,15 @@ export class HaTileContainer extends LitElement {
       flex-direction: column;
       text-align: center;
       justify-content: center;
-      padding: 10px 0;
+      padding: 10px var(--ha-space-2);
+    }
+    .vertical.fixed-info-height {
+      /* pin sizing so every tile in a grid reserves the same height, wrapping or not, secondary or not */
+      gap: 2px;
+      --ha-tile-info-gap: 2px;
+      --ha-tile-info-primary-line-height: var(--ha-space-4);
+      --ha-tile-info-primary-min-height: var(--ha-space-8);
+      --ha-tile-info-min-height: var(--ha-space-12);
     }
     .vertical ::slotted([slot="info"]) {
       width: 100%;

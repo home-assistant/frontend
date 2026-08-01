@@ -481,6 +481,17 @@ export const provideHass = (
         ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
+    // Mocks return a plain body; wrap it so callers can stream it like a fetch
+    // Response. Callbacks may return a Response themselves to set headers.
+    async callApiRaw(method, path, parameters, headers) {
+      const result = await hassObj.callApi<any>(
+        method,
+        path,
+        parameters,
+        headers
+      );
+      return result instanceof Response ? result : new Response(result);
+    },
     hassUrl: (path?) => path,
     fetchWithAuth: () => Promise.reject("Not implemented"),
     sendWS: (msg) => hassObj.connection.sendMessage(msg),

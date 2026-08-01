@@ -23,6 +23,7 @@ export interface LovelaceViewElement extends HTMLElement {
   badges?: HuiBadge[];
   sections?: HuiSection[];
   isStrategy: boolean;
+  initialRenderComplete?: Promise<void>;
   setConfig(config: LovelaceViewConfig): void;
 }
 

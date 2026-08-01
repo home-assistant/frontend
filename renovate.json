@@ -106,7 +106,8 @@
     {
       "description": "Group Playwright package and CI container updates",
       "groupName": "Playwright",
-      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"]
+      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
+      "minimumGroupSize": 5
     }
   ]
 }

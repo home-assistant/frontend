@@ -74,6 +74,18 @@
     }
   },
   "ui": {
+    "init": {
+      "loading": "Loading...",
+      "migration": "Database upgrade is in progress, Home Assistant will not start until the upgrade is completed.\n\nThe upgrade may need a long time to complete, please be patient.",
+      "project_from": "A project from the",
+      "error": {
+        "title": "Unable to connect to Home Assistant.",
+        "retrying": "Retrying in {seconds, plural, one {# second} other {# seconds}}...",
+        "retry_now": "Retry now",
+        "nabu_casa": "It is possible that you are seeing this screen because your Home Assistant is not currently connected. You can ask it to come online from your {account_link}.",
+        "nabu_casa_account": "Nabu Casa account page"
+      }
+    },
     "backup": {
       "upload_backup": "Upload backup"
     },
@@ -510,6 +522,9 @@
         "show_password": "Show password",
         "hide_password": "Hide password"
       },
+      "form": {
+        "validation_failed": "Form validation failed."
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
@@ -792,18 +807,14 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
+        "replaced_device": "Replaced device",
+        "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
+        "replace_device": "Replace",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
-        "selected": {
-          "entity": "Entities: {count}",
-          "device": "Devices: {count}",
-          "area": "Areas: {count}",
-          "label": "Labels: {count}",
-          "floor": "Floors: {count}"
-        },
         "type": {
           "area": "Area",
           "areas": "Areas",
@@ -911,7 +922,16 @@
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
         "placeholder": "Select a device",
-        "unknown": "Unknown device selected"
+        "unknown": "Unknown device selected",
+        "device_replaced_count": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
+        "device_replaced_by_one": "This device was replaced by {device}.",
+        "device_replaced_by_multiple": "This device was replaced by {count} devices.",
+        "replace_device": "Replace",
+        "replaced_dialog": {
+          "title": "Replace device",
+          "description": "This device was replaced by multiple devices. Choose which one to use.",
+          "recommended": "Recommended"
+        }
       },
       "category-picker": {
         "clear": "Clear",
@@ -1193,6 +1213,11 @@
         "play": "Play",
         "play-media": "Play media",
         "pick-media": "Pick media",
+        "search": {
+          "search_placeholder": "Search {name}",
+          "no_results": "No results found"
+        },
+        "filter_media_type": "Filter by media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
@@ -1287,18 +1312,18 @@
           "invalid_duration": "The duration of the event is not valid. Please check start and end date.",
           "not_all_required_fields": "Not all required fields are filled in",
           "end_auto_adjusted": "Event end was adjusted to prevent negative duration",
+          "recurrence_range": {
+            "this_event": "Only this event",
+            "this_and_future": "This and all future events"
+          },
           "confirm_delete": {
             "delete": "Delete event",
-            "delete_this": "Delete only this event",
-            "delete_future": "Delete all future events",
             "prompt": "Do you want to delete this event?",
-            "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
+            "recurring_prompt": "Which events do you want to delete?"
           },
           "confirm_update": {
             "update": "Update event",
-            "update_this": "Update only this event",
-            "update_future": "Update all future events",
-            "recurring_prompt": "Do you want to update only this event, or this and all future occurrences of the event?"
+            "recurring_prompt": "Which events do you want to update?"
           },
           "repeat": {
             "label": "Repeat",
@@ -2374,7 +2399,7 @@
           "header": "Copy pairing code",
           "step_1": "[%key:ui::dialogs::matter-add-device::google_home::step_1%]",
           "step_2": "[%key:ui::dialogs::matter-add-device::google_home::step_2%]",
-          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} form the list",
+          "step_3": "Tap {link_apps_services} and choose {use_pairing_code} from the list",
           "linked_matter_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::linked_matter_apps_services%]",
           "link_apps_services": "[%key:ui::dialogs::matter-add-device::google_home::link_apps_services%]",
           "use_pairing_code": "Use Pairing Code",
@@ -3933,6 +3958,9 @@
               "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
+              "result_placeholder": "Your template result will appear here.",
+              "layout_stacked": "Drag to resize, click for stacked view",
+              "layout_side_by_side": "Drag to resize, click for side-by-side view",
               "reset": "Reset to demo template",
               "confirm_reset": "Do you want to reset your current template back to the demo template?",
               "confirm_clear": "Do you want to clear your current template?",
@@ -4189,7 +4217,9 @@
               "power_stat": "Power sensor",
               "power_helper": "Pick a sensor which measures grid power in either of {unit}.",
               "power_from": "Power imported from grid",
-              "power_to": "Power exported to grid"
+              "power_to": "Power exported to grid",
+              "helper_sensor_note": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_note%]",
+              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]"
             },
             "flow_dialog": {
               "from": {
@@ -4244,6 +4274,8 @@
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
+              "capacity": "Battery capacity",
+              "capacity_helper": "Usable battery capacity in kWh. Used to weight the combined state of charge when you have multiple batteries of different sizes.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
@@ -4254,7 +4286,9 @@
               "type_inverted_description": "Positive values indicate charging, negative values indicate discharging.",
               "type_two_sensors": "Two sensors",
               "power_from": "Discharge power",
-              "power_to": "Charge power"
+              "power_to": "Charge power",
+              "helper_sensor_note": "Home Assistant will create a helper sensor entity for this option.",
+              "helper_sensor_in_use": "Currently using helper {entity}"
             }
           },
           "gas": {
@@ -4448,7 +4482,8 @@
           "internal_url_https_error_title": "Invalid local network URL",
           "internal_url_https_error_description": "You have configured an HTTPS certificate in Home Assistant. This means that your internal URL needs to be set to a domain covered by the certificate.",
           "internal_url_automatic_description": "Use the configured network settings",
-          "internal_url_placeholder": "http://<some IP address>:8123",
+          "internal_url_placeholder": "{protocol}://192.168.1.100{port}",
+          "external_url_placeholder": "{protocol}://example.duckdns.org{port}",
           "invalid_url": "Invalid URL"
         },
         "hardware": {
@@ -5177,6 +5212,13 @@
               "area": "No areas or floors found for {term}",
               "label": "No labels found for {term}"
             },
+            "show_more_search": {
+              "trigger": "{count} more triggers...",
+              "condition": "{count} more conditions...",
+              "action": "{count} more actions...",
+              "entity": "{count} more entities...",
+              "device": "{count} more devices..."
+            },
             "load_target_items_failed": "Failed to load target items for",
             "other_areas": "Other areas",
             "services": "Services",
@@ -5189,6 +5231,8 @@
               "all_entities": "All entities",
               "none_entities": "No entities",
               "template": "Template",
+              "device_replaced": "Replaced device",
+              "device_replaced_description": "This device was replaced by one or more new devices. Update this automation to use them.",
               "types": {
                 "entity": "[%key:ui::components::target-picker::type::entities%]",
                 "device": "[%key:ui::components::target-picker::type::devices%]",
@@ -5246,8 +5290,8 @@
                 "generic": {
                   "label": "Generic"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5558,8 +5602,8 @@
                 "building_blocks": {
                   "label": "Building blocks"
                 },
-                "custom_integrations": {
-                  "label": "Custom integrations"
+                "integrations": {
+                  "label": "Integrations"
                 }
               },
               "type": {
@@ -5669,7 +5713,7 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
+                  "no_triggers": "There are no triggers with IDs set in this automation. Edit a trigger and give it a Trigger ID name.",
                   "id": "Trigger",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
@@ -5728,11 +5772,11 @@
                 "device_id": {
                   "label": "Device"
                 },
-                "helpers": {
-                  "label": "Helpers"
+                "generic": {
+                  "label": "Generic"
                 },
-                "other": {
-                  "label": "Other actions"
+                "integrations": {
+                  "label": "Integrations"
                 },
                 "building_blocks": {
                   "label": "Building blocks"
@@ -6391,7 +6435,7 @@
           "account": {
             "thank_you_title": "Thank you!",
             "getting_renewal_date": "Getting renewal date…",
-            "funding_note": "Every subscription funds Home Assistant and the Open Home Foundation, paying full-time developers and keeping the project independent. No private equity, no ads, and no data harvesting.",
+            "funding_note": "Every Cloud subscription funds the Open Home Foundation, paying full-time developers to work on and keep the Home Assistant project independent. No private equity, no ads, no data harvesting.",
             "email": "Email",
             "show_email": "Show email",
             "hide_email": "Hide email",
@@ -6523,7 +6567,7 @@
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
             "reset": "Reset",
             "reset_data_failed": "Failed to reset cloud data",
-            "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
+            "thank_you_note": "It's because of people like you that we are able to make a great home automation experience for everyone.",
             "nabu_casa_account": "Nabu Casa account",
             "connection_status": "Cloud connection status",
             "manage_account": "Manage account",
@@ -6745,6 +6789,10 @@
           "connected_devices": {
             "heading": "Connected devices",
             "show_more": "+{count} devices not shown"
+          },
+          "linked_devices": {
+            "heading": "Linked devices",
+            "description": "These devices share hardware with this device and are managed by other integrations."
           },
           "type": {
             "device_heading": "Device",
@@ -8599,6 +8647,29 @@
           "caption": "AI tasks",
           "description": "Configure AI suggestions and task preferences"
         },
+        "entity_id_format": {
+          "caption": "Entity ID format",
+          "description": "Manage the format of newly created entity IDs",
+          "card": {
+            "header": "Entity ID format for new entities",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
+            "learn_more": "Learn more",
+            "preview": "Preview",
+            "preview_error": "Failed to generate preview",
+            "reset": "Reset to default",
+            "examples": {
+              "area": "Living room",
+              "device": "Thermostat",
+              "entity": "Temperature",
+              "floor": "Ground floor"
+            },
+            "editor": {
+              "label": "Format",
+              "add": "Add",
+              "search": "Search part"
+            }
+          }
+        },
         "labs": {
           "caption": "Labs",
           "custom_integration": "Custom integration",
@@ -8691,6 +8762,7 @@
             "save_no_changes": "Nothing changed — no restart needed.",
             "save_error": "Could not save the HTTP configuration.",
             "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
+            "server_host_warning": "Leave this empty to listen on all interfaces. If you set specific addresses, Home Assistant is only reachable through those — binding it only to an address that other devices can't reach (for example localhost) will make it unreachable from those devices.",
             "invalid_host": "Enter a valid IP address.",
             "invalid_network": "Enter a valid IP address or network.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
@@ -8701,6 +8773,11 @@
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
               "confirm": "Save and restart"
+            },
+            "restart_address": {
+              "title": "Home Assistant is restarting",
+              "text": "The address changed. Once Home Assistant has restarted, you can reach it at:",
+              "note": "Depending on your network setup, this address may not be reachable from this device."
             },
             "ssl_profile_modern": "Modern",
             "ssl_profile_intermediate": "Intermediate",
@@ -8725,7 +8802,7 @@
               "login_attempts_threshold": "Login attempts before ban"
             },
             "helpers": {
-              "server_port": "The port Home Assistant listens on. Default is 8123.",
+              "server_port": "The port Home Assistant listens on. Default is {port}.",
               "server_host": "IP addresses to bind to. Leave empty to listen on all interfaces.",
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
@@ -10056,6 +10133,11 @@
               "core_cards": "Core cards",
               "energy_cards": "Energy cards",
               "custom_cards": "Community cards",
+              "favorite_cards": "Favorite cards",
+              "add_favorite": "Add to favorites",
+              "remove_favorite": "Remove from favorites",
+              "reorder_favorites": "Reorder favorites",
+              "favorite_save_failed": "Failed to save favorite cards",
               "round_temperature": "Round temperature",
               "features": "Features",
               "actions": "Actions",

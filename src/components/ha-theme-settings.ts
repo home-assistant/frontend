@@ -228,6 +228,9 @@ export class HaThemeSettings extends LitElement {
   }
 
   static styles = css`
+    a {
+      color: var(--primary-color);
+    }
     .inputs {
       display: flex;
       flex-wrap: wrap;

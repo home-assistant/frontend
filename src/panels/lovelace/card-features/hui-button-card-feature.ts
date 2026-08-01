@@ -11,6 +11,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import { apiContext, servicesContext } from "../../../data/context";
+import { forwardHaptic } from "../../../data/haptics";
 import {
   hasRequiredScriptFieldsForServices,
   requiredScriptFieldsFilledForServices,
@@ -95,6 +96,8 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           }
         : {}),
     };
+
+    forwardHaptic(this, "light");
 
     this._api.callService(domain, service, serviceData);
   }

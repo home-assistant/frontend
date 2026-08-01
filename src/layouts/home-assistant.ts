@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fetchHttpConfig } from "../data/http";
 import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
@@ -16,10 +17,7 @@ import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import {
-  removeLaunchScreen,
-  renderLaunchScreenInfoBox,
-} from "../util/launch-screen";
+import { renderLaunchScreenContent } from "../util/launch-screen";
 import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
   registerServiceWorker,
@@ -59,6 +57,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _databaseMigration?: boolean;
 
   private _httpPendingDialogOpen = false;
+
+  private _initError = false;
 
   private _onboardingSurveyChecked = false;
 
@@ -133,13 +133,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
-      // Apps with a native splash screen keep covering the frontend until
-      // frontend/loaded, so the launch screen stays up (invisibly) until the
-      // first panel has rendered and partial-panel-resolver removes it.
-      if (!this.hass.auth.external?.config.hasSplashscreen) {
-        removeLaunchScreen();
-      }
-      this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+      // partial-panel-resolver removes the launch screen after the first panel
+      // is ready. Native apps request instant removal because their own splash
+      // screen covers the frontend until frontend/loaded is sent.
     }
     super.update(changedProps);
   }
@@ -188,6 +184,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (this.render !== this.renderHass) {
       this._renderInitInfo(false);
     }
+    this.addEventListener("translations-updated", () => {
+      if (this.render !== this.renderHass) {
+        this._renderInitInfo(this._initError);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -315,7 +316,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async _initializeHass() {
     try {
-      let result;
+      let result: Awaited<Window["hassConnection"]>;
 
       if (window.hassConnection) {
         result = await window.hassConnection;
@@ -388,11 +389,25 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _renderInitInfo(error: boolean) {
-    renderLaunchScreenInfoBox(
+    this._initError = error;
+    renderLaunchScreenContent(
       html`<ha-init-page
         .error=${error}
         .migration=${this._databaseMigration}
-      ></ha-init-page>`
+        .localize=${this._launchScreenLocalize}
+      ></ha-init-page>`,
+      this._launchScreenAttribution
+    );
+  }
+
+  private get _launchScreenLocalize(): LocalizeFunc | undefined {
+    return (this.hass ?? this._pendingHass).localize;
+  }
+
+  private get _launchScreenAttribution() {
+    return (
+      this._launchScreenLocalize?.("ui.init.project_from") ||
+      "A project from the"
     );
   }
 }

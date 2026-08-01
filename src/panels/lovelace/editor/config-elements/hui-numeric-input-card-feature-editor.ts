@@ -54,7 +54,7 @@ export class HuiNumericInputCardFeatureEditor
     }
 
     const data: NumericInputCardFeatureConfig = {
-      style: "buttons",
+      style: "slider",
       ...this._config,
     };
 
