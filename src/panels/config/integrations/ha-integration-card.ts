@@ -1,8 +1,10 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import type { ConfigEntry } from "../../../data/config_entries";
@@ -14,14 +16,15 @@ import type {
 } from "../../../data/integration";
 import { LogSeverity } from "../../../data/integration";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-card-footer";
 import "./ha-integration-card-header";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property() public domain!: string;
 
@@ -61,23 +64,22 @@ export class HaIntegrationCard extends LitElement {
           <ha-ripple></ha-ripple>
           <div class="card-content">
             <ha-integration-card-header
-              .hass=${this.hass}
               .domain=${this.domain}
               .localizedDomainName=${this.items[0].localized_domain_name}
               .error=${
                 ERROR_STATES.includes(entryState)
-                  ? this.hass.localize(
+                  ? this._localize(
                       `ui.panel.config.integrations.config_entry.state.${entryState}`
                     )
                   : undefined
               }
               .warning=${
                 entryState !== "loaded" && !ERROR_STATES.includes(entryState)
-                  ? this.hass.localize(
+                  ? this._localize(
                       `ui.panel.config.integrations.config_entry.state.${entryState}`
                     )
                   : debugLoggingEnabled
-                    ? this.hass.localize(
+                    ? this._localize(
                         "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                       )
                     : undefined
@@ -85,7 +87,6 @@ export class HaIntegrationCard extends LitElement {
               .manifest=${this.manifest}
             ></ha-integration-card-header>
             <ha-integration-card-footer
-              .hass=${this.hass}
               .manifest=${this.manifest}
               .items=${this.items}
               .entityRegistryEntries=${this.entityRegistryEntries}

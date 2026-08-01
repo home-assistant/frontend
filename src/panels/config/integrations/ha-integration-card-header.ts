@@ -1,17 +1,20 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
+import { configContext, uiContext } from "../../../data/context";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantConfig, HomeAssistantUI } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-integration-card-header")
 export class HaIntegrationCardHeader extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public error?: string;
 
   @property() public warning?: string;
@@ -22,10 +25,28 @@ export class HaIntegrationCardHeader extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ auth }) => auth.data.hassUrl,
+  })
+  private _hassUrl!: string;
+
   protected render(): TemplateResult {
     const domainName =
       this.localizedDomainName ||
-      domainToName(this.hass.localize, this.domain, this.manifest);
+      domainToName(this._localize, this.domain, this.manifest);
 
     return html`
       <div class="header">
@@ -35,9 +56,9 @@ export class HaIntegrationCardHeader extends LitElement {
             {
               domain: this.domain,
               type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
+              darkOptimized: this._darkMode,
             },
-            this.hass.auth.data.hassUrl
+            this._hassUrl
           )}
           crossorigin="anonymous"
           referrerpolicy="no-referrer"

@@ -1,21 +1,27 @@
 import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import {
+  devicesContext,
+  internationalizationContext,
+} from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantInternationalization } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 
 @customElement("ha-integration-card-footer")
 export class HaIntegrationCardFooter extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   @property({ attribute: false }) public items!: ConfigEntryExtended[];
@@ -25,8 +31,23 @@ export class HaIntegrationCardFooter extends LitElement {
 
   @property({ attribute: false }) public domainEntities: string[] = [];
 
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, boolean>({
+    transformer: ({ language, translationMetadata }) =>
+      computeRTL(language, translationMetadata.translations),
+  })
+  private _isRTL!: boolean;
+
   protected render(): TemplateResult | typeof nothing {
-    const devices = this._getDevices(this.items, this.hass.devices);
+    const devices = this._getDevices(this.items, this._devices);
     const entitiesCount = devices.length
       ? 0
       : this._getEntityCount(
@@ -49,30 +70,29 @@ export class HaIntegrationCardFooter extends LitElement {
     let countBadge: TemplateResult | typeof nothing = nothing;
     if (devices.length > 0) {
       countBadge = html`<span class="count-badge"
-        >${this.hass.localize(
+        >${this._localize(
           `ui.panel.config.integrations.config_entry.${services ? "services" : "devices"}`,
           { count: devices.length }
         )}</span
       >`;
     } else if (entitiesCount > 0) {
       countBadge = html`<span class="count-badge"
-        >${this.hass.localize(
+        >${this._localize(
           `ui.panel.config.integrations.config_entry.entities`,
           { count: entitiesCount }
         )}</span
       >`;
     } else if (this.items.find((itm) => itm.source !== "yaml")) {
       countBadge = html`<span class="count-badge"
-        >${this.hass.localize(
-          `ui.panel.config.integrations.config_entry.entries`,
-          {
-            count: this.items.filter((itm) => itm.source !== "yaml").length,
-          }
-        )}</span
+        >${this._localize(`ui.panel.config.integrations.config_entry.entries`, {
+          count: this.items.filter((itm) => itm.source !== "yaml").length,
+        })}</span
       >`;
     }
 
     if (countBadge === nothing && !hasIcons) return nothing;
+
+    const placement = this._isRTL ? "right" : "left";
 
     return html`
       <div class="footer">
@@ -89,18 +109,8 @@ export class HaIntegrationCardFooter extends LitElement {
                     id="icon-custom"
                     .path=${mdiPackageVariant}
                   ></ha-svg-icon>
-                  <ha-tooltip
-                    for="icon-custom"
-                    .placement=${
-                      computeRTL(
-                        this.hass.language,
-                        this.hass.translationMetadata.translations
-                      )
-                        ? "right"
-                        : "left"
-                    }
-                  >
-                    ${this.hass.localize(
+                  <ha-tooltip for="icon-custom" .placement=${placement}>
+                    ${this._localize(
                       this.manifest.overwrites_built_in
                         ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                         : "ui.panel.config.integrations.config_entry.custom_integration"
@@ -113,18 +123,8 @@ export class HaIntegrationCardFooter extends LitElement {
             this.manifest && this.manifest.iot_class?.startsWith("cloud_")
               ? html`<span class="icon cloud">
                   <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
-                  <ha-tooltip
-                    for="icon-cloud"
-                    .placement=${
-                      computeRTL(
-                        this.hass.language,
-                        this.hass.translationMetadata.translations
-                      )
-                        ? "right"
-                        : "left"
-                    }
-                  >
-                    ${this.hass.localize(
+                  <ha-tooltip for="icon-cloud" .placement=${placement}>
+                    ${this._localize(
                       "ui.panel.config.integrations.config_entry.depends_on_cloud"
                     )}
                   </ha-tooltip>
@@ -140,18 +140,8 @@ export class HaIntegrationCardFooter extends LitElement {
                     id="icon-yaml"
                     .path=${mdiFileCodeOutline}
                   ></ha-svg-icon>
-                  <ha-tooltip
-                    for="icon-yaml"
-                    .placement=${
-                      computeRTL(
-                        this.hass.language,
-                        this.hass.translationMetadata.translations
-                      )
-                        ? "right"
-                        : "left"
-                    }
-                  >
-                    ${this.hass.localize(
+                  <ha-tooltip for="icon-yaml" .placement=${placement}>
+                    ${this._localize(
                       "ui.panel.config.integrations.config_entry.no_config_flow"
                     )}
                   </ha-tooltip>
@@ -205,7 +195,7 @@ export class HaIntegrationCardFooter extends LitElement {
   private _getDevices = memoizeOne(
     (
       configEntry: ConfigEntryExtended[],
-      deviceRegistryEntries: HomeAssistant["devices"]
+      deviceRegistryEntries: ContextType<typeof devicesContext>
     ): DeviceRegistryEntry[] => {
       if (!deviceRegistryEntries) {
         return [];
