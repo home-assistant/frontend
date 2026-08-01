@@ -99,6 +99,8 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "confirm_turn_on": "Are you sure you want to turn on ''{entity}''?",
+        "confirm_turn_off": "Are you sure you want to turn off ''{entity}''?",
         "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
@@ -10722,7 +10724,9 @@
                 "customize_options": "Customize options"
               },
               "toggle": {
-                "label": "Toggle"
+                "label": "Toggle",
+                "confirm_turn_on": "Require confirmation to turn on",
+                "confirm_turn_off": "Require confirmation to turn off"
               },
               "numeric-input": {
                 "label": "Numeric input",

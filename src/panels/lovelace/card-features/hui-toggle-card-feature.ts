@@ -19,16 +19,19 @@ import {
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorCss } from "../../../common/entity/state_color";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
+import type { HaControlSwitch } from "../../../components/ha-control-switch";
 import { apiContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant, HomeAssistantApi } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -91,6 +94,11 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: ToggleCardFeatureConfig;
 
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-toggle-card-feature-editor");
+    return document.createElement("hui-toggle-card-feature-editor");
+  }
+
   static getStubConfig(): ToggleCardFeatureConfig {
     return {
       type: "toggle",
@@ -104,28 +112,46 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     this._config = config;
   }
 
-  private _valueChanged(ev) {
-    const checked = ev.target.checked as boolean;
+  private async _valueChanged(ev) {
+    const control = ev.target as HaControlSwitch;
+    const checked = control.checked;
 
-    if (checked) {
-      this._turnOn();
-    } else {
-      this._turnOff();
+    const confirmed = checked ? await this._turnOn() : await this._turnOff();
+
+    if (!confirmed) {
+      control.checked = this._stateObj?.state === "on";
     }
   }
 
   private _turnOn() {
-    this._callService(true);
+    return this._callService(true);
   }
 
   private _turnOff() {
-    this._callService(false);
+    return this._callService(false);
   }
 
-  private async _callService(turnOn): Promise<void> {
+  private async _callService(turnOn): Promise<boolean> {
     if (!this._stateObj) {
-      return;
+      return false;
     }
+
+    if (
+      turnOn ? this._config?.confirm_turn_on : this._config?.confirm_turn_off
+    ) {
+      const confirmed = await showConfirmationDialog(this, {
+        text: this._localize(
+          turnOn
+            ? "ui.card.common.confirm_turn_on"
+            : "ui.card.common.confirm_turn_off",
+          { entity: computeStateName(this._stateObj) }
+        ),
+      });
+      if (!confirmed) {
+        return false;
+      }
+    }
+
     forwardHaptic(this, "light");
     const stateDomain = computeDomain(this._stateObj.entity_id);
     const serviceDomain = stateDomain;
@@ -134,6 +160,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     await this._api.callService(serviceDomain, service, {
       entity_id: this._stateObj.entity_id,
     });
+    return true;
   }
 
   protected render() {

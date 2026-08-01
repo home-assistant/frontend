@@ -188,6 +188,8 @@ export interface TargetTemperatureCardFeatureConfig {
 
 export interface ToggleCardFeatureConfig {
   type: "toggle";
+  confirm_turn_on?: boolean;
+  confirm_turn_off?: boolean;
 }
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
