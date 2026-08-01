@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../components/animation/ha-fade-in";
 import "../components/ha-top-app-bar-fixed";
 import "../components/ha-spinner";
 import type { HomeAssistant } from "../types";
@@ -36,7 +37,9 @@ class HassLoadingScreen extends LitElement {
   private _renderContent(): TemplateResult {
     return html`
       <div class="content">
-        <ha-spinner></ha-spinner>
+        <ha-fade-in .delay=${500}>
+          <ha-spinner></ha-spinner>
+        </ha-fade-in>
         ${
           this.message
             ? html`<div id="loading-text">${this.message}</div>`

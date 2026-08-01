@@ -36,6 +36,7 @@ import { showQuickBar } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { ChildPanelReady } from "../../../layouts/panel-ready";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -156,6 +157,11 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     issues: [],
     total: 0,
   };
+
+  public constructor() {
+    super();
+    new ChildPanelReady(this);
+  }
 
   private _pages = memoizeOne(
     (

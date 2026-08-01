@@ -89,6 +89,7 @@ class HaPanelConfig extends HassRouterPage {
       dashboard: {
         tag: "ha-config-dashboard",
         load: () => import("./dashboard/ha-config-dashboard"),
+        waitForReady: true,
       },
       entities: {
         tag: "ha-config-entities",

@@ -4,7 +4,7 @@
  * Run with:
  *   yarn test:e2e:app
  */
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import {
   appSidebar,
   appSidebarConfig,
@@ -161,11 +161,106 @@ test.describe("Quick search", () => {
 
 defineRouteSmokeTests(appRouteSmokeGroups);
 
+const assertInitialReadiness = async (
+  page: Page,
+  options: {
+    path: string;
+    loadingSelector: string;
+    resolver:
+      "rejectMediaBrowse" | "resolveCalendarRegistry" | "resolveMediaBrowse";
+    readySelector: string;
+  }
+) => {
+  await goToPanel(page, options.path);
+
+  const launchScreen = page.locator("#ha-launch-screen");
+  await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+  await expect(page.locator(options.loadingSelector)).toBeAttached({
+    timeout: QUICK_TIMEOUT,
+  });
+
+  await page.evaluate((resolver) => window[resolver]?.(), options.resolver);
+
+  await expect(page.locator(options.readySelector)).toBeAttached({
+    timeout: PANEL_TIMEOUT,
+  });
+  await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+};
+
+test.describe("Initial readiness", () => {
+  test("keeps the launch screen until calendar content renders", async ({
+    page,
+  }) => {
+    await assertInitialReadiness(page, {
+      path: "/?scenario=delayed-calendar#/calendar",
+      loadingSelector: "ha-panel-calendar ha-spinner",
+      resolver: "resolveCalendarRegistry",
+      readySelector: "ha-full-calendar",
+    });
+  });
+
+  test("keeps the launch screen until media content renders", async ({
+    page,
+  }) => {
+    await assertInitialReadiness(page, {
+      path: "/?scenario=delayed-media-browse#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      resolver: "resolveMediaBrowse",
+      readySelector: "ha-media-player-browse .no-items",
+    });
+  });
+
+  test("keeps the launch screen until a media error renders", async ({
+    page,
+  }) => {
+    await assertInitialReadiness(page, {
+      path: "/?scenario=delayed-media-browse-error#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      resolver: "rejectMediaBrowse",
+      readySelector: "ha-media-player-browse ha-alert",
+    });
+  });
+});
+
 // ---------------------------------------------------------------------------
 // Lovelace
 // ---------------------------------------------------------------------------
 
 test.describe("Lovelace dashboard", () => {
+  test("keeps the launch screen until generated content renders", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/?scenario=delayed-generated-dashboard#/climate");
+
+    const launchScreen = page.locator("#ha-launch-screen");
+    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(page.locator("hui-view")).not.toBeAttached();
+
+    await page.evaluate(() => window.resolveGeneratedDashboard?.());
+
+    await expect(page.locator("hui-view")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+
+  test("keeps the launch screen until initial content renders", async ({
+    page,
+  }) => {
+    await goToPanel(page, "/?scenario=delayed-lovelace#/lovelace");
+
+    const launchScreen = page.locator("#ha-launch-screen");
+    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(page.locator("hui-card")).not.toBeAttached();
+
+    await page.evaluate(() => window.resolveLovelaceConfig?.());
+
+    await expect(page.locator("hui-card").first()).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+
   test("renders cards", async ({ page }) => {
     await goToPanel(page, "/lovelace");
     // At least one card should appear
