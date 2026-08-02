@@ -1,20 +1,94 @@
 import type { HomeAssistant } from "../../types";
 
-interface IpConfiguration {
+export type InterfaceMethod = "disabled" | "static" | "auto";
+
+export type InterfaceType = "ethernet" | "wireless" | "vlan";
+
+export type InterfaceAddrGenMode =
+  "eui64" | "stable-privacy" | "default-or-eui64" | "default";
+
+export type InterfaceIp6Privacy =
+  "default" | "disabled" | "enabled-prefer-public" | "enabled";
+
+export type MulticastDnsMode = "default" | "off" | "resolve" | "announce";
+
+export type WifiMode = "infrastructure" | "mesh" | "adhoc" | "ap";
+
+export type AuthMethod = "open" | "wep" | "wpa-psk";
+
+export interface IpConfiguration {
+  method: InterfaceMethod;
   address: string[];
-  gateway: string | null;
-  method: "disabled" | "static" | "auto";
   nameservers: string[];
+  gateway: string | null;
+  route_metric: number | null;
+  ready: boolean | null;
+}
+
+export interface Ip6Configuration extends IpConfiguration {
+  addr_gen_mode: InterfaceAddrGenMode;
+  ip6_privacy: InterfaceIp6Privacy;
+}
+
+export interface WifiConfiguration {
+  mode: WifiMode;
+  auth: AuthMethod;
+  ssid: string;
+  signal: number | null;
+}
+
+export interface VlanConfiguration {
+  id: number;
+  parent: string | null;
 }
 
 export interface NetworkInterface {
-  primary: boolean;
   interface: string;
+  type: InterfaceType;
   enabled: boolean;
-  ipv4?: Partial<IpConfiguration>;
-  ipv6?: Partial<IpConfiguration>;
-  type: "ethernet" | "wireless" | "vlan";
-  wifi?: Partial<WifiConfiguration> | null;
+  connected: boolean;
+  primary: boolean;
+  mac: string;
+  ipv4: IpConfiguration | null;
+  ipv6: Ip6Configuration | null;
+  wifi: WifiConfiguration | null;
+  vlan: VlanConfiguration | null;
+  mdns: MulticastDnsMode | null;
+  llmnr: MulticastDnsMode | null;
+}
+
+/** Wifi fields accepted by the interface update endpoint. */
+export interface WifiConfigurationUpdate {
+  mode?: WifiMode;
+  auth?: AuthMethod;
+  ssid?: string;
+  psk?: string;
+}
+
+/** Body accepted by the interface update endpoint. */
+export interface NetworkInterfaceUpdate {
+  enabled?: boolean;
+  mdns?: MulticastDnsMode;
+  llmnr?: MulticastDnsMode;
+  ipv4?: Partial<
+    Pick<
+      IpConfiguration,
+      "address" | "method" | "gateway" | "route_metric" | "nameservers"
+    >
+  >;
+  ipv6?: Partial<
+    Pick<
+      Ip6Configuration,
+      | "address"
+      | "method"
+      | "addr_gen_mode"
+      | "ip6_privacy"
+      | "gateway"
+      | "route_metric"
+      | "nameservers"
+    >
+  >;
+  wifi?: WifiConfigurationUpdate;
 }
 
 export interface DockerNetwork {
@@ -25,7 +99,7 @@ export interface DockerNetwork {
 }
 
 export interface AccessPoint {
-  mode: "infrastructure" | "mesh" | "adhoc" | "ap";
+  mode: WifiMode;
   ssid: string;
   mac: string;
   frequency: number;
@@ -36,17 +110,11 @@ export interface AccessPoints {
   accesspoints: AccessPoint[];
 }
 
-export interface WifiConfiguration {
-  mode: "infrastructure" | "mesh" | "adhoc" | "ap";
-  auth: "open" | "wep" | "wpa-psk";
-  ssid: string;
-  signal: number;
-  psk?: string;
-}
-
 export interface NetworkInfo {
   interfaces: NetworkInterface[];
   docker: DockerNetwork;
+  host_internet: boolean | null;
+  supervisor_internet: boolean;
 }
 
 export const fetchNetworkInfo = async (
@@ -61,7 +129,7 @@ export const fetchNetworkInfo = async (
 export const updateNetworkInterface = async (
   hass: HomeAssistant,
   network_interface: string,
-  options: Partial<NetworkInterface>
+  options: NetworkInterfaceUpdate
 ) => {
   await hass.callWS({
     type: "supervisor/api",

@@ -44,13 +44,13 @@ export interface HassioAddonInfo {
   detached: boolean;
   homeassistant: string;
   icon: boolean;
-  installed: boolean;
   logo: boolean;
   name: string;
   repository: AddonRepository;
   slug: string;
   stage: AddonStage;
   state: AddonState;
+  system_managed: boolean;
   update_available: boolean;
   url: string | null;
   version_latest: string;
@@ -106,7 +106,6 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
-  system_managed: boolean;
   system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
   uart: boolean;

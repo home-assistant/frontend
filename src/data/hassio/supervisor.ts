@@ -4,19 +4,20 @@ import type { AddonState } from "./addon";
 import type { HassioResponse } from "./common";
 
 export interface HassioHomeAssistantInfo {
-  arch: SupervisorArch;
+  arch: SupervisorArch | null;
   audio_input: string | null;
   audio_output: string | null;
+  backups_exclude_database: boolean;
   boot: boolean;
+  duplicate_log_file: boolean;
   image: string;
   ip_address: string;
-  machine: string;
+  machine: string | null;
   port: number;
   ssl: boolean;
   update_available: boolean;
-  version_latest: string;
-  version: string;
-  wait_boot: number;
+  version_latest: string | null;
+  version: string | null;
   watchdog: boolean;
 }
 

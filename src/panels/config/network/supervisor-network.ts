@@ -29,7 +29,8 @@ import {
   type NetworkInterface,
   parseAddress,
   updateNetworkInterface,
-  type WifiConfiguration,
+  type WifiConfigurationUpdate,
+  type NetworkInterfaceUpdate,
 } from "../../../data/hassio/network";
 import {
   showAlertDialog,
@@ -74,7 +75,7 @@ export class HassioNetwork extends LitElement {
 
   @state() private _scanning = false;
 
-  @state() private _wifiConfiguration?: WifiConfiguration;
+  @state() private _wifiConfiguration?: WifiConfigurationUpdate;
 
   @state() private _dnsMenuOpen = false;
 
@@ -534,7 +535,7 @@ export class HassioNetwork extends LitElement {
 
   private async _updateNetwork() {
     this._processing = true;
-    let interfaceOptions: Partial<NetworkInterface> = {};
+    let interfaceOptions: NetworkInterfaceUpdate = {};
 
     IP_VERSIONS.forEach((version) => {
       interfaceOptions[version] = {
