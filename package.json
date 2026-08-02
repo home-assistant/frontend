@@ -150,7 +150,7 @@
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
-    "@playwright/test": "1.62.0",
+    "@playwright/test": "1.62.1",
     "@rsdoctor/rspack-plugin": "1.6.1",
     "@rspack/core": "2.1.7",
     "@rspack/dev-server": "2.1.0",
