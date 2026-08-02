@@ -30,7 +30,6 @@ export interface StoreAddon {
 export interface StoreAddonDetails extends StoreAddon {
   apparmor: AddonAppArmour;
   auth_api: boolean;
-  changelog: boolean;
   detached: boolean;
   docker_api: boolean;
   full_access: boolean;

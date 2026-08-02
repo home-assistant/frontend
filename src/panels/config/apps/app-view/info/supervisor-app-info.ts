@@ -193,6 +193,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   private _renderInfoCard() {
     const systemManaged = this._isSystemManaged(this._currentAddon);
+    // The store endpoints do not report changelog availability
+    const hasChangelog =
+      "changelog" in this._currentAddon && this._currentAddon.changelog;
 
     return html` <ha-card outlined>
       <div class="card-content">
@@ -226,7 +229,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         { version: this._currentAddon.version }
                       )}
                       ${
-                        this._currentAddon.changelog
+                        hasChangelog
                           ? html`<div
                               class="changelog"
                               @click=${this._openChangelog}
@@ -242,7 +245,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     `
                   : html`${this._currentAddon.version_latest}
                     ${
-                      this._currentAddon.changelog
+                      hasChangelog
                         ? html`<span
                             class="changelog-link"
                             @click=${this._openChangelog}

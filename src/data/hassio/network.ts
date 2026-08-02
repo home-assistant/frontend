@@ -9,7 +9,6 @@ interface IpConfiguration {
 
 export interface NetworkInterface {
   primary: boolean;
-  privacy: boolean;
   interface: string;
   enabled: boolean;
   ipv4?: Partial<IpConfiguration>;

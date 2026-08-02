@@ -364,7 +364,6 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
         interfaces: [
           {
             primary: true,
-            privacy: false,
             interface: "eth0",
             enabled: true,
             type: "ethernet",
