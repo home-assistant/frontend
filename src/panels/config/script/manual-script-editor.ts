@@ -47,6 +47,7 @@ const scriptConfigStruct = object({
   mode: optional(enums([typeof MODES])),
   max: optional(number()),
   fields: optional(object()),
+  variables: optional(object()),
 });
 
 @customElement("manual-script-editor")
@@ -232,8 +233,9 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
     const actionType = getActionType(config);
     if (
-      !["sequence", "unknown"].includes(actionType) ||
-      (actionType === "sequence" && "metadata" in config)
+      !["sequence", "variables", "unknown"].includes(actionType) ||
+      (actionType === "sequence" && "metadata" in config) ||
+      (actionType === "variables" && !("sequence" in config))
     ) {
       config = { sequence: [config] };
     }
