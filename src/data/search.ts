@@ -38,10 +38,12 @@ export type ItemType =
 export const findRelated = (
   hass: Pick<HomeAssistant, "callWS">,
   itemType: ItemType,
-  itemId: string
+  itemId: string,
+  includeDisabledEntities = false
 ): Promise<RelatedResult> =>
   hass.callWS<RelatedResult>({
     type: "search/related",
     item_type: itemType,
     item_id: itemId,
+    ...(includeDisabledEntities ? { include_disabled_entities: true } : {}),
   });

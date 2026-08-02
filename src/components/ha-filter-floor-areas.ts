@@ -60,6 +60,9 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
+
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
@@ -300,7 +303,9 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.areas) {
       for (const areaId of this.value.areas) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "area", areaId));
+          relatedPromises.push(
+            findRelated(this._api, "area", areaId, this.includeDisabledEntities)
+          );
         }
       }
     }
@@ -308,7 +313,14 @@ export class HaFilterFloorAreas extends LitElement {
     if (this.value.floors) {
       for (const floorId of this.value.floors) {
         if (this.type) {
-          relatedPromises.push(findRelated(this._api, "floor", floorId));
+          relatedPromises.push(
+            findRelated(
+              this._api,
+              "floor",
+              floorId,
+              this.includeDisabledEntities
+            )
+          );
         }
       }
     }

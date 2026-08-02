@@ -55,6 +55,9 @@ export class HaFilterDevices extends LitElement {
 
   @property() public type?: keyof RelatedResult;
 
+  @property({ type: Boolean, attribute: "include-disabled-entities" })
+  public includeDisabledEntities = false;
+
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property({ type: Boolean }) public narrow = false;
@@ -237,7 +240,14 @@ export class HaFilterDevices extends LitElement {
     for (const deviceId of this.value) {
       value.push(deviceId);
       if (this.type) {
-        relatedPromises.push(findRelated(this._api, "device", deviceId));
+        relatedPromises.push(
+          findRelated(
+            this._api,
+            "device",
+            deviceId,
+            this.includeDisabledEntities
+          )
+        );
       }
     }
     const results = await Promise.all(relatedPromises);
