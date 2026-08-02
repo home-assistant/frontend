@@ -1,7 +1,7 @@
 import { describe, beforeEach, expect, test, vi } from "vitest";
 
 import "../../../../src/panels/config/script/manual-script-editor";
-import type { HaManualScriptEditor } from "../../../../src/panels/config/automation/manual-script-editor";
+import type { HaManualScriptEditor } from "../../../../src/panels/config/script/manual-script-editor";
 import { createMockHass } from "../../../fixtures/hass";
 import { showPasteReplaceDialog } from "../../../../src/panels/config/automation/paste-replace-dialog/show-dialog-paste-replace";
 
@@ -97,9 +97,7 @@ describe("manual automation paste", () => {
 
       el.hass = createMockHass();
       el.config = {
-        triggers: [],
-        conditions: [],
-        actions: [],
+        sequence: [],
       } as any;
 
       const valueChanged = new Promise<CustomEvent>((resolve) => {
