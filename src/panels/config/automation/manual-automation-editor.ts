@@ -51,6 +51,8 @@ const baseConfigStruct = object({
   mode: optional(string()),
   max_exceeded: optional(string()),
   id: optional(string()),
+  variables: optional(object()),
+  trigger_variables: optional(object()),
 });
 
 const automationConfigStruct = union([
@@ -257,6 +259,27 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
       }
     }
 
+    // If an object can be ambiguously an action or an automation, check for
+    // toplevel automation keywords to disqualify it
+    function isQualifiedAction(cfg): boolean {
+      const type = getActionType(cfg);
+      if (type === "variables") {
+        if (
+          [
+            "trigger",
+            "triggers",
+            "condition",
+            "conditions",
+            "action",
+            "actions",
+          ].some((key) => key in cfg)
+        ) {
+          return false;
+        }
+      }
+      return type !== "unknown";
+    }
+
     if (Array.isArray(config)) {
       if (config.length === 1) {
         config = config[0];
@@ -276,7 +299,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
             found = true;
             (newConfig.conditions as Condition[]).push(cfg);
           }
-          if (getActionType(cfg) !== "unknown") {
+          if (isQualifiedAction(cfg)) {
             found = true;
             (newConfig.actions as Action[]).push(cfg);
           }
@@ -293,7 +316,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     if (isCondition(config)) {
       config = { conditions: [config] };
     }
-    if (getActionType(config) !== "unknown") {
+    if (isQualifiedAction(config)) {
       config = { actions: [config] };
     }
 
