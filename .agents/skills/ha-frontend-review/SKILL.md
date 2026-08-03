@@ -70,4 +70,4 @@ Configuration and props:
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
-- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-user-facing-text` when a finding falls in that area.
+- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-events`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-user-facing-text` when a finding falls in that area.

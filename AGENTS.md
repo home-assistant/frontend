@@ -40,6 +40,7 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-events`: event handler typing, custom event dispatch, and event-map declarations.
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
