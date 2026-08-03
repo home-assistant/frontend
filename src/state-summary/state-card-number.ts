@@ -5,7 +5,9 @@ import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
+import type { HaSlider } from "../components/ha-slider";
 import "../components/ha-slider";
+import type { HaInput } from "../components/input/ha-input";
 import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { showNumberSlider } from "../data/number";
@@ -126,9 +128,9 @@ class StateCardNumber extends LitElement {
   }
 
   private async _selectedValueChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
+    ev: HASSDomTargetEvent<HaSlider | HaInput>
   ) {
-    const value = (ev.target as HTMLInputElement).value;
+    const value = String(ev.target.value);
     if (value === this.stateObj.state) {
       return;
     }

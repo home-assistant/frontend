@@ -275,10 +275,12 @@ export class HaForm extends LitElement implements HaFormElement {
 
       if (ev.target === this) return;
 
+      const changeEv = ev as
+        HaFormDataChangedEvent | HaFormDataContainerChangedEvent;
       const newValue =
         !schema.name || ("flatten" in schema && schema.flatten)
-          ? (ev as HaFormDataContainerChangedEvent).detail.value
-          : { [schema.name]: (ev as HaFormDataChangedEvent).detail.value };
+          ? (changeEv.detail.value as HaFormDataContainer)
+          : { [schema.name]: changeEv.detail.value as HaFormData };
 
       this.data = {
         ...this.data,
