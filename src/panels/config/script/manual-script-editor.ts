@@ -314,12 +314,14 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
       return;
     }
 
-    if ("fields" in config) {
-      workingCopy.fields = {
-        ...workingCopy.fields,
-        ...config.fields,
-      };
-    }
+    ["fields", "variables"].forEach((key) => {
+      if (key in config) {
+        workingCopy[key] = {
+          ...workingCopy[key],
+          ...config[key],
+        };
+      }
+    });
     if ("sequence" in config) {
       workingCopy.sequence = ensureArray(workingCopy.sequence || []).concat(
         ensureArray(config.sequence)

@@ -52,6 +52,50 @@ variables: {}
       variables: { a: "b" },
     },
   },
+  {
+    name: "append test",
+    config: {
+      variables: { a: 1 },
+      fields: { x: {} },
+      sequence: [{ stop: "1" }],
+    },
+    response: "append",
+    paste: `
+  - variables:
+      b: 2
+    fields:
+      "y": {}
+    sequence:
+      - stop: "2"
+`,
+    expected: {
+      sequence: [{ stop: "1" }, { stop: "2" }],
+      fields: { x: {}, y: {} },
+      variables: { a: 1, b: 2 },
+    },
+  },
+  {
+    name: "replace test",
+    config: {
+      variables: { a: 1 },
+      fields: { x: {} },
+      sequence: [{ stop: "1" }],
+    },
+    response: "replace",
+    paste: `
+  - variables:
+      b: 2
+    fields:
+      "y": {}
+    sequence:
+      - stop: "2"
+`,
+    expected: {
+      sequence: [{ stop: "2" }],
+      fields: { y: {} },
+      variables: { b: 2 },
+    },
+  },
 ];
 
 vi.mock(
@@ -82,23 +126,37 @@ const makePasteEvent = (text: string): ClipboardEvent => {
 };
 
 describe("manual automation paste", () => {
+  let dialogResponse: string | undefined;
   beforeEach(() => {
-    vi.mocked(showPasteReplaceDialog).mockImplementation(() => {
-      throw new Error("showPasteReplaceDialog should not have been called");
+    vi.clearAllMocks();
+    dialogResponse = undefined;
+    vi.mocked(showPasteReplaceDialog).mockImplementation((_ctx, options) => {
+      if (dialogResponse === "append") {
+        options.onAppend();
+        return;
+      }
+      if (dialogResponse === "replace") {
+        options.onReplace();
+        return;
+      }
+      throw new Error("Did not expect dialog to be raised");
     });
   });
 
   test.each(pasteCases)(
     "pastes $name into an empty editor",
-    async ({ paste, expected }) => {
+    async ({ config, paste, response, expected }) => {
       const el = document.createElement(
         "manual-script-editor"
       ) as HaManualScriptEditor;
 
+      dialogResponse = response;
       el.hass = createMockHass();
-      el.config = {
-        sequence: [],
-      } as any;
+      el.config =
+        config ??
+        ({
+          sequence: [],
+        } as any);
 
       const valueChanged = new Promise<CustomEvent>((resolve) => {
         el.addEventListener("value-changed", resolve as EventListener, {
@@ -108,6 +166,8 @@ describe("manual automation paste", () => {
 
       // Call the protected method through `any` to avoid full DOM lifecycle.
       await (el as any).handlePaste(makePasteEvent(paste));
+
+      expect(showPasteReplaceDialog).toHaveBeenCalledTimes(response ? 1 : 0);
 
       const ev = await valueChanged;
       expect(ev.detail.value).toEqual(expected);
