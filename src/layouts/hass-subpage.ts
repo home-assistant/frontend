@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { goBack } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import "../components/ha-icon-button-arrow-prev";
@@ -74,7 +75,7 @@ class HassSubpage extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 

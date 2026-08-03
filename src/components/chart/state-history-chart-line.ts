@@ -216,11 +216,13 @@ export class StateHistoryChartLine extends LitElement {
     })}`;
   };
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
   }
 
@@ -229,7 +231,7 @@ export class StateHistoryChartLine extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,

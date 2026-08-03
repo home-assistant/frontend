@@ -3,6 +3,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
 import "../components/ha-slider";
 import "../components/input/ha-input";
@@ -152,7 +153,9 @@ class StateCardInputNumber extends LitElement {
     }
   }
 
-  private _selectedValueChanged(ev: Event): void {
+  private _selectedValueChanged(
+    ev: HASSDomTargetEvent<HTMLInputElement>
+  ): void {
     if ((ev.target as HTMLInputElement).value !== this.stateObj.state) {
       setValue(
         this.hass!,
