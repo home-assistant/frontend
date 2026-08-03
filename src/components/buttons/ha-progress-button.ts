@@ -18,6 +18,8 @@ export class HaProgressButton extends LitElement {
 
   @property() appearance: Appearance = "accent";
 
+  @property() size: "xs" | "s" | "m" | "l" | "xl" = "m";
+
   @property({ attribute: false }) public iconPath?: string;
 
   @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
@@ -32,6 +34,7 @@ export class HaProgressButton extends LitElement {
     return html`
       <ha-button
         .appearance=${appearance}
+        .size=${this.size}
         .disabled=${this.disabled}
         .loading=${this.progress}
         .variant=${
@@ -116,6 +119,12 @@ export class HaProgressButton extends LitElement {
 
     ha-button {
       width: 100%;
+    }
+
+    /* The icon lives in this shadow root, so callers cannot size it themselves. */
+    ha-button[size="xs"] ha-svg-icon[slot="start"],
+    ha-button[size="s"] ha-svg-icon[slot="start"] {
+      --mdc-icon-size: 16px;
     }
 
     ha-button.result::part(start),
