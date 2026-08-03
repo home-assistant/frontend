@@ -26,7 +26,10 @@ import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { transform } from "../../common/decorators/transform";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
@@ -1216,7 +1219,9 @@ export class HaChartBase extends LitElement {
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
-  private _legendPointerDown(ev: PointerEvent) {
+  private _legendPointerDown(
+    ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     // Mouse uses Ctrl/Cmd+click instead
     if (ev.pointerType === "mouse") {
       return;
@@ -1246,7 +1251,9 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _toggleDataset(ev: MouseEvent) {
+  private _toggleDataset(
+    ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     ev.stopPropagation();
     if (!this.chart) {
       return;
@@ -1268,7 +1275,7 @@ export class HaChartBase extends LitElement {
     this._handleDatasetToggle(id);
   }
 
-  private _labelClick(ev: MouseEvent) {
+  private _labelClick(ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>) {
     ev.stopPropagation();
     if (!this.chart) {
       return;
