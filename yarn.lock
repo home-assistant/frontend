@@ -2779,13 +2779,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.5.2":
-  version: 7.5.2
-  resolution: "@formatjs/intl-datetimeformat@npm:7.5.2"
+"@formatjs/intl-datetimeformat@npm:7.6.0":
+  version: 7.6.0
+  resolution: "@formatjs/intl-datetimeformat@npm:7.6.0"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.7"
     "@formatjs/intl-localematcher": "npm:0.8.13"
-  checksum: 10/a9b18f890bd1fd747b6a4639a7fcc30456dfed2e78aebeca1dac245f1f2a5a20d295a9a125fc7037a7603ec257e0fadd7989ea180c68dd5a30c8ae2c429d689d
+  checksum: 10/8d172390d12c0d771721e5737d4af37ed3dd3bdbb59dfbc7ac2280ee17ff0ed56a737d0b8a3ca507e40c556140b4297a28d72b33b5b3b3e9becca55d8ef26549
   languageName: node
   linkType: hard
 
@@ -2843,13 +2843,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:9.3.14":
-  version: 9.3.14
-  resolution: "@formatjs/intl-numberformat@npm:9.3.14"
+"@formatjs/intl-numberformat@npm:9.4.0":
+  version: 9.4.0
+  resolution: "@formatjs/intl-numberformat@npm:9.4.0"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.7"
     "@formatjs/intl-localematcher": "npm:0.8.13"
-  checksum: 10/7ba06936b41674cdcfa2aabc05a1dac5defbbb57a790bf8e3eb97d930750b0ec5ba715124cb3661d54015072f6877cbece5d92fa5e2ab98ba32d096c99432140
+  checksum: 10/63476552f2cb9dd8530c8965bf891e9ead573813e5a42c1fc2dc7e254ff3fec15aba90ac44a4df1a875a2c2e04431e7eea643098651afaebf2f439d4a7cacea0
   languageName: node
   linkType: hard
 
@@ -9904,13 +9904,13 @@ __metadata:
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
-    "@formatjs/intl-datetimeformat": "npm:7.5.2"
+    "@formatjs/intl-datetimeformat": "npm:7.6.0"
     "@formatjs/intl-displaynames": "npm:7.3.13"
     "@formatjs/intl-durationformat": "npm:0.10.18"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.11"
     "@formatjs/intl-listformat": "npm:8.3.13"
     "@formatjs/intl-locale": "npm:5.3.10"
-    "@formatjs/intl-numberformat": "npm:9.3.14"
+    "@formatjs/intl-numberformat": "npm:9.4.0"
     "@formatjs/intl-pluralrules": "npm:6.3.13"
     "@formatjs/intl-relativetimeformat": "npm:12.3.13"
     "@fullcalendar/core": "npm:6.1.21"
