@@ -2,7 +2,7 @@ import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-analytics";
 import "../components/ha-button";
@@ -65,7 +65,9 @@ class OnboardingAnalytics extends LitElement {
     });
   }
 
-  private _preferencesChanged(event: CustomEvent): void {
+  private _preferencesChanged(
+    event: HASSDomEvent<HASSDomEvents["analytics-preferences-changed"]>
+  ): void {
     this._analyticsDetails = {
       ...this._analyticsDetails!,
       preferences: event.detail.preferences,
