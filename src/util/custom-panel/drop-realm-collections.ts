@@ -3,7 +3,7 @@ import type { Connection } from "home-assistant-js-websocket";
 /** Duck-typed shape of a `getCollection()` result cached on a `Connection`. */
 interface CachedCollection {
   refresh: () => Promise<unknown>;
-  subscribe: (subscriber: (state: any) => void) => () => void;
+  subscribe: (subscriber: (state: unknown) => void) => () => void;
 }
 
 const isCachedCollection = (value: unknown): value is CachedCollection =>
