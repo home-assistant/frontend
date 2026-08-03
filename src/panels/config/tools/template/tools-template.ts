@@ -9,6 +9,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
@@ -419,7 +420,7 @@ ${
     `;
   }
 
-  private _splitRepositioned(ev: Event) {
+  private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
     this._splitPosition = (ev.target as HaSplitPanel).position;
     this._storeSplitPosition();
   }
