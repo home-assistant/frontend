@@ -280,7 +280,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
     }
 
     this._loading = true;
-    const button = ev.currentTarget as HaProgressButton;
+    const button = ev.currentTarget;
     this._error = undefined;
     this._encryptionKeyWrong = false;
 

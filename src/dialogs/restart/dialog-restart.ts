@@ -346,8 +346,7 @@ class DialogRestart extends LitElement {
       return;
     }
     this._loadingBackupInfo = true;
-    const action = (ev.currentTarget as HaListItemButton & { action: string })
-      .action as "restart" | "reboot" | "shutdown" | "restart-safe-mode";
+    const action = ev.currentTarget.action;
 
     const backupState = await this._loadBackupState();
 
