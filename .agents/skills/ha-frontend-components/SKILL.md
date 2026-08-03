@@ -7,6 +7,42 @@ description: Home Assistant frontend component patterns. Use when implementing o
 
 Use this skill when creating or reviewing Home Assistant UI components and common interaction patterns.
 
+## Event Handling
+
+Use the event types from `src/common/dom/fire_event.ts` instead of plain `Event`, generic `CustomEvent`, or element casts when they express the handler contract:
+
+- Use `HASSDomCurrentTargetEvent<T>` to read the element on which the listener was registered through `ev.currentTarget`.
+- Use `HASSDomTargetEvent<T>` only to read the element that originated the event through `ev.target`.
+- Use `HASSDomEvent<T>` to read a custom event payload through `ev.detail`.
+
+Import event and element types with `import type`:
+
+```ts
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../common/dom/fire_event";
+import type { HaCheckbox } from "../components/ha-checkbox";
+import type { HaRadioGroup } from "../components/radio/ha-radio-group";
+```
+
+Type the handler so the selected property can be read directly. Do not cast `ev.currentTarget` or assign it to a single-use variable:
+
+```ts
+private _scopeChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>): void {
+  this._scope = ev.currentTarget.value;
+}
+
+private _checkedChanged(ev: HASSDomTargetEvent<HaCheckbox>): void {
+  this._checked = ev.target.checked;
+}
+
+private _valueChanged(ev: HASSDomEvent<{ value: string }>): void {
+  this._value = ev.detail.value;
+}
+```
+
 ## Dialogs
 
 Open dialogs through the fire-event pattern:
