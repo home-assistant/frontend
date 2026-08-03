@@ -169,7 +169,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
           <div class="flex">
             <ha-checkbox
               .checked=${this._checked}
-              @change=${this._checkedCanged}
+              @change=${this._checkedChanged}
               .disabled=${isCreate || !canUpdate}
             ></ha-checkbox>
             <ha-input
@@ -341,7 +341,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     return new Date(tzDate.getTime());
   }
 
-  private _checkedCanged(ev: HASSDomTargetEvent<HaCheckbox>) {
+  private _checkedChanged(ev: HASSDomTargetEvent<HaCheckbox>) {
     this._checked = ev.target.checked;
     this._updateDirtyState(this._currentState());
   }

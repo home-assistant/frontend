@@ -327,10 +327,8 @@ export class RecurrenceRuleEditor extends LitElement {
     `;
   }
 
-  private _onIntervalChange(
-    e: HASSDomTargetEvent<Omit<HaInput, "value"> & { value: number }>
-  ) {
-    this._interval = e.target.value;
+  private _onIntervalChange(e: HASSDomTargetEvent<HaInput>) {
+    this._interval = Number(e.target.value);
   }
 
   private _onRepeatSelected(e: HaSelectSelectEvent<RepeatFrequency>) {
@@ -396,10 +394,8 @@ export class RecurrenceRuleEditor extends LitElement {
     e.stopPropagation();
   }
 
-  private _onCountChange(
-    e: HASSDomTargetEvent<Omit<HaInput, "value"> & { value: number }>
-  ) {
-    this._count = e.target.value;
+  private _onCountChange(e: HASSDomTargetEvent<HaInput>) {
+    this._count = Number(e.target.value);
   }
 
   private _onUntilChange(e: ValueChangedEvent<string>) {
