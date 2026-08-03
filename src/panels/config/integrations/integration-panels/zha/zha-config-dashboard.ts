@@ -14,6 +14,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { animationStyles } from "../../../../../resources/theme/animations.globals";
 import "../../../../../components/ha-alert";
@@ -413,8 +414,11 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
-  private async _createAndDownloadBackup(ev: Event): Promise<void> {
-    const button = ev.currentTarget as HaProgressButton;
+  private async _createAndDownloadBackup(
+    ev: HASSDomCurrentTargetEvent<HaProgressButton>
+  ): Promise<void> {
+    // Captured up front: currentTarget is null once the first await resolves.
+    const button = ev.currentTarget;
     let backup_and_metadata: ZHANetworkBackupAndMetadata;
 
     // Reading the backup from the coordinator can take 5-30 seconds.
