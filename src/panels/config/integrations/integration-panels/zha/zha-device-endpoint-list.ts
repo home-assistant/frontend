@@ -12,6 +12,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-list";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
@@ -274,9 +275,9 @@ export class ZHADeviceEndpointList extends LitElement {
   }
 
   private _handleFilterChanged(
-    ev: HASSDomCurrentTargetEvent<HTMLInputElement>
+    ev: HASSDomCurrentTargetEvent<HaInputSearch>
   ): void {
-    this._filter = (ev.currentTarget as HTMLInputElement).value;
+    this._filter = ev.currentTarget.value ?? "";
   }
 
   private _handleItemSelected(

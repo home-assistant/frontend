@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type {
   HASSDomCurrentTargetEvent,
-  HASSDomTargetEvent,
 } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
@@ -11,7 +10,9 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import "../../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../../components/ha-switch";
 import type { ZHAConfiguration } from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
@@ -22,6 +23,8 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 
 const PREDEFINED_TIMEOUTS = [1800, 3600, 7200, 21600, 43200, 86400];
+type ZHASwitchChangeEvent = HASSDomCurrentTargetEvent<HaSwitch>;
+type ZHAInputChangeEvent = HASSDomCurrentTargetEvent<HaInput>;
 
 @customElement("zha-options-page")
 class ZHAOptionsPage extends LitElement {
@@ -349,69 +352,53 @@ class ZHAOptionsPage extends LitElement {
     `;
   }
 
-  private _enableIdentifyOnJoinChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const checked = (ev.target as HTMLInputElement).checked;
-    this._configuration!.data.zha_options.enable_identify_on_join = checked;
+  private _enableIdentifyOnJoinChanged(ev: ZHASwitchChangeEvent): void {
+    this._configuration!.data.zha_options.enable_identify_on_join =
+      ev.currentTarget.checked;
     this.requestUpdate();
   }
 
-  private _enhancedLightTransitionChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const checked = (ev.target as HTMLInputElement).checked;
-    this._configuration!.data.zha_options.enhanced_light_transition = checked;
+  private _enhancedLightTransitionChanged(ev: ZHASwitchChangeEvent): void {
+    this._configuration!.data.zha_options.enhanced_light_transition =
+      ev.currentTarget.checked;
     this.requestUpdate();
   }
 
-  private _lightTransitioningFlagChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const checked = (ev.target as HTMLInputElement).checked;
-    this._configuration!.data.zha_options.light_transitioning_flag = checked;
+  private _lightTransitioningFlagChanged(ev: ZHASwitchChangeEvent): void {
+    this._configuration!.data.zha_options.light_transitioning_flag =
+      ev.currentTarget.checked;
     this.requestUpdate();
   }
 
-  private _groupMembersAssumeStateChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const checked = (ev.target as HTMLInputElement).checked;
-    this._configuration!.data.zha_options.group_members_assume_state = checked;
+  private _groupMembersAssumeStateChanged(ev: ZHASwitchChangeEvent): void {
+    this._configuration!.data.zha_options.group_members_assume_state =
+      ev.currentTarget.checked;
     this.requestUpdate();
   }
 
-  private _enableMainsStartupPollingChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const checked = (ev.target as HTMLInputElement).checked;
+  private _enableMainsStartupPollingChanged(ev: ZHASwitchChangeEvent): void {
     this._configuration!.data.zha_options.enable_mains_startup_polling =
-      checked;
+      ev.currentTarget.checked;
     this.requestUpdate();
   }
 
-  private _defaultLightTransitionChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const value = Number((ev.target as HTMLInputElement).value);
-    this._configuration!.data.zha_options.default_light_transition = value;
+  private _defaultLightTransitionChanged(ev: ZHAInputChangeEvent): void {
+    this._configuration!.data.zha_options.default_light_transition = Number(
+      ev.currentTarget.value
+    );
     this.requestUpdate();
   }
 
-  private _customMainsSecondsChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const seconds = Number((ev.target as HTMLInputElement).value);
-    this._configuration!.data.zha_options.consider_unavailable_mains = seconds;
+  private _customMainsSecondsChanged(ev: ZHAInputChangeEvent): void {
+    this._configuration!.data.zha_options.consider_unavailable_mains = Number(
+      ev.currentTarget.value
+    );
     this.requestUpdate();
   }
 
-  private _customBatterySecondsChanged(
-    ev: HASSDomTargetEvent<HTMLInputElement>
-  ): void {
-    const seconds = Number((ev.target as HTMLInputElement).value);
+  private _customBatterySecondsChanged(ev: ZHAInputChangeEvent): void {
     this._configuration!.data.zha_options.consider_unavailable_battery =
-      seconds;
+      Number(ev.currentTarget.value);
     this.requestUpdate();
   }
 
