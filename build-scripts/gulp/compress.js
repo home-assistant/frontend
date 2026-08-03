@@ -6,54 +6,247 @@ import brotli from "gulp-brotli";
 import zopfli from "gulp-zopfli-green";
 import paths from "../paths.cjs";
 
-const filesGlob = "*.{js,json,css,svg,xml}";
-const brotliOptions = {
-  skipLarger: true,
-  params: {
-    [constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
-  },
-};
-const zopfliOptions = { threshold: 150 };
-
-const compressModern = (rootDir, modernDir, compress) =>
+const compressSingle = (path, rootDir, compress) =>
   gulp
-    .src([`${modernDir}/**/${filesGlob}`, `${rootDir}/sw-modern.js`], {
+    .src(path, {
       base: rootDir,
       allowEmpty: true,
     })
-    .pipe(compress === "zopfli" ? zopfli(zopfliOptions) : brotli(brotliOptions))
-    .pipe(gulp.dest(rootDir));
-
-const compressOther = (rootDir, modernDir, compress) =>
-  gulp
-    .src(
-      [
-        `${rootDir}/**/${filesGlob}`,
-        `!${modernDir}/**/${filesGlob}`,
-        `!${rootDir}/{sw-modern,service_worker}.js`,
-        `${rootDir}/{authorize,onboarding}.html`,
-      ],
-      { base: rootDir, allowEmpty: true }
+    .pipe(
+      compress === "zopfli"
+        ? zopfli({ threshold: 150 })
+        : brotli({
+            skipLarger: true,
+            params: {
+              [constants.BROTLI_PARAM_QUALITY]: constants.BROTLI_MAX_QUALITY,
+            },
+          })
     )
-    .pipe(compress === "zopfli" ? zopfli(zopfliOptions) : brotli(brotliOptions))
     .pipe(gulp.dest(rootDir));
 
-const compressAppModernBrotli = () =>
-  compressModern(paths.app_output_root, paths.app_output_latest, "brotli");
-const compressAppModernZopfli = () =>
-  compressModern(paths.app_output_root, paths.app_output_latest, "zopfli");
+const compressModernBrotliSwModern = () =>
+  compressSingle(
+    [`${paths.app_output_root}/sw-modern.js`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressModernBrotliJs = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.js`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressModernBrotliJSON = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.json`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressModernBrotliCSS = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.css`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressModernBrotliSVG = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.svg`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressModernBrotliXML = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.xml`],
+    paths.app_output_root,
+    "brotli"
+  );
 
-const compressAppOtherBrotli = () =>
-  compressOther(paths.app_output_root, paths.app_output_latest, "brotli");
-const compressAppOtherZopfli = () =>
-  compressOther(paths.app_output_root, paths.app_output_latest, "zopfli");
+const compressModernZopliSwModern = () =>
+  compressSingle(
+    [`${paths.app_output_root}/sw-modern.js`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressModernZopliJs = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.js`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressModernZopliJSON = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.json`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressModernZopliCSS = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.css`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressModernZopliSVG = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.svg`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressModernZopliXML = () =>
+  compressSingle(
+    [`${paths.app_output_latest}/**/*.xml`],
+    paths.app_output_root,
+    "zopli"
+  );
+
+const compressOtherBrotliAuthorize = () =>
+  compressSingle(
+    [`${paths.app_output_root}/authorize.html`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliOnboarding = () =>
+  compressSingle(
+    [`${paths.app_output_root}/onboarding.html`],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliJS = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.js`,
+      `!${paths.app_output_latest}/**/*.js`,
+      `!${paths.app_output_root}/{sw-modern,service_worker}.js`,
+    ],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliJSON = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.json`,
+      `!${paths.app_output_latest}/**/*.json`,
+    ],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliCSS = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.css`,
+      `!${paths.app_output_latest}/**/*.css`,
+    ],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliSVG = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.svg`,
+      `!${paths.app_output_latest}/**/*.svg`,
+    ],
+    paths.app_output_root,
+    "brotli"
+  );
+const compressOtherBrotliXML = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.xml`,
+      `!${paths.app_output_latest}/**/*.xml`,
+    ],
+    paths.app_output_root,
+    "brotli"
+  );
+
+const compressOtherZopliAuthorize = () =>
+  compressSingle(
+    [`${paths.app_output_root}/authorize.html`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliOnboarding = () =>
+  compressSingle(
+    [`${paths.app_output_root}/onboarding.html`],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliJS = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.js`,
+      `!${paths.app_output_latest}/**/*.js`,
+      `!${paths.app_output_root}/{sw-modern,service_worker}.js`,
+    ],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliJSON = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.json`,
+      `!${paths.app_output_latest}/**/*.json`,
+    ],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliCSS = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.css`,
+      `!${paths.app_output_latest}/**/*.css`,
+    ],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliSVG = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.svg`,
+      `!${paths.app_output_latest}/**/*.svg`,
+    ],
+    paths.app_output_root,
+    "zopli"
+  );
+const compressOtherZopliXML = () =>
+  compressSingle(
+    [
+      `${paths.app_output_root}/**/*.xml`,
+      `!${paths.app_output_latest}/**/*.xml`,
+    ],
+    paths.app_output_root,
+    "zopli"
+  );
 
 gulp.task(
   "compress-app",
   gulp.parallel(
-    compressAppModernBrotli,
-    compressAppOtherBrotli,
-    compressAppModernZopfli,
-    compressAppOtherZopfli
+    compressModernBrotliSwModern,
+    compressModernBrotliJs,
+    compressModernBrotliJSON,
+    compressModernBrotliCSS,
+    compressModernBrotliSVG,
+    compressModernBrotliXML,
+
+    compressModernZopliSwModern,
+    compressModernZopliJs,
+    compressModernZopliJSON,
+    compressModernZopliCSS,
+    compressModernZopliSVG,
+    compressModernZopliXML,
+
+    compressOtherBrotliAuthorize,
+    compressOtherBrotliOnboarding,
+    compressOtherBrotliJS,
+    compressOtherBrotliJSON,
+    compressOtherBrotliCSS,
+    compressOtherBrotliSVG,
+    compressOtherBrotliXML,
+
+    compressOtherZopliAuthorize,
+    compressOtherZopliOnboarding,
+    compressOtherZopliJS,
+    compressOtherZopliJSON,
+    compressOtherZopliCSS,
+    compressOtherZopliSVG,
+    compressOtherZopliXML
   )
 );
