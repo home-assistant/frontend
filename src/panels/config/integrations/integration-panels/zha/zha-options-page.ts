@@ -1,9 +1,7 @@
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type {
-  HASSDomCurrentTargetEvent,
-} from "../../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-md-list";
@@ -397,8 +395,9 @@ class ZHAOptionsPage extends LitElement {
   }
 
   private _customBatterySecondsChanged(ev: ZHAInputChangeEvent): void {
-    this._configuration!.data.zha_options.consider_unavailable_battery =
-      Number(ev.currentTarget.value);
+    this._configuration!.data.zha_options.consider_unavailable_battery = Number(
+      ev.currentTarget.value
+    );
     this.requestUpdate();
   }
 

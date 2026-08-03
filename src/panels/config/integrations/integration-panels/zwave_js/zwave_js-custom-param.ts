@@ -132,7 +132,9 @@ class ZWaveJSCustomParam extends LitElement {
   }
 
   private _customParamNumberChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
-    this._customParamNumber = this._tryParseNumber(ev.currentTarget.value ?? "");
+    this._customParamNumber = this._tryParseNumber(
+      ev.currentTarget.value ?? ""
+    );
   }
 
   private _customValueSizeChanged(ev: HaSelectSelectEvent) {
