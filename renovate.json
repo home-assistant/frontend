@@ -8,10 +8,10 @@
     ":prConcurrentLimit10",
     ":semanticCommitsDisabled",
     "group:monorepos",
-    "group:recommended",
-    "security:minimumReleaseAgeNpm"
+    "group:recommended"
   ],
   "enabledManagers": ["npm", "nvm", "custom.regex"],
+  "minimumReleaseAge": "3 days",
   "postUpdateOptions": ["yarnDedupeHighest"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
