@@ -45,6 +45,7 @@ import {
 } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { panelIsReady } from "../../layouts/panel-ready";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
@@ -161,6 +162,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _initialReady = false;
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachResizeObserver());
@@ -274,6 +277,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         ids: navigateIds,
         current: this._currentItem,
       });
+      this._signalInitialReady();
     } else {
       if (!currentProm) {
         currentProm = this._fetchData(
@@ -289,6 +293,7 @@ export class HaMediaPlayerBrowse extends LitElement {
             ids: navigateIds,
             current: item,
           });
+          this._signalInitialReady();
         },
         (err) => {
           // When we change entity ID, we will first try to see if the new entity is
@@ -322,8 +327,10 @@ export class HaMediaPlayerBrowse extends LitElement {
               ),
               code: "entity_not_found",
             });
+            this._signalInitialReady();
           } else {
             this._setError(err);
+            this._signalInitialReady();
           }
         }
       );
@@ -1145,6 +1152,21 @@ export class HaMediaPlayerBrowse extends LitElement {
     fireEvent(this, "close-dialog");
   }
 
+  private _signalInitialReady(): void {
+    if (this._initialReady) {
+      return;
+    }
+    this._initialReady = true;
+    const root = this.getRootNode();
+    panelIsReady(
+      root instanceof ShadowRoot &&
+        root.host instanceof HTMLElement &&
+        root.host.tagName.startsWith("HA-PANEL-")
+        ? root.host
+        : this
+    );
+  }
+
   private _setError(error: any) {
     if (!this.dialog) {
       this._error = error;
@@ -1209,8 +1231,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _animateHeaderHeight() {
-    let start;
-    const animate = (time) => {
+    let start: number | undefined;
+    const animate = (time: number) => {
       if (start === undefined) {
         start = time;
       }

@@ -1312,18 +1312,18 @@
           "invalid_duration": "The duration of the event is not valid. Please check start and end date.",
           "not_all_required_fields": "Not all required fields are filled in",
           "end_auto_adjusted": "Event end was adjusted to prevent negative duration",
+          "recurrence_range": {
+            "this_event": "Only this event",
+            "this_and_future": "This and all future events"
+          },
           "confirm_delete": {
             "delete": "Delete event",
-            "delete_this": "Delete only this event",
-            "delete_future": "Delete all future events",
             "prompt": "Do you want to delete this event?",
-            "recurring_prompt": "Do you want to delete only this event, or this and all future occurrences of the event?"
+            "recurring_prompt": "Which events do you want to delete?"
           },
           "confirm_update": {
             "update": "Update event",
-            "update_this": "Update only this event",
-            "update_future": "Update all future events",
-            "recurring_prompt": "Do you want to update only this event, or this and all future occurrences of the event?"
+            "recurring_prompt": "Which events do you want to update?"
           },
           "repeat": {
             "label": "Repeat",

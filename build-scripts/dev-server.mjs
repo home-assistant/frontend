@@ -27,8 +27,10 @@ import { fileURLToPath } from "node:url";
 import {
   LIFECYCLE_MODE_FLAGS,
   acquireProcessRecord,
+  detectCodingAgent,
   isProcessRecordAlive,
   outputLog,
+  offerToStopProcessRecord,
   processStartTime,
   readProcessRecord,
   releaseProcessRecord,
@@ -123,30 +125,6 @@ const READY_TIMEOUT_MS =
     ? readyTimeoutSeconds * 1000
     : 180_000;
 
-// Detect a coding agent from a small set of environment markers set by common
-// agent CLIs (env-only; no process-ancestry detection).
-const detectAgent = () => {
-  const env = process.env;
-  const has = (name) => Boolean(env[name]);
-  const eq = (name, value) => env[name] === value;
-  const signals = {
-    opencode: () =>
-      [
-        "OPENCODE",
-        "OPENCODE_BIN_PATH",
-        "OPENCODE_SERVER",
-        "OPENCODE_APP_INFO",
-      ].some(has),
-    "claude-code": () => has("CLAUDECODE"),
-    cursor: () => has("CURSOR_TRACE_ID"),
-    "github-copilot": () =>
-      eq("TERM_PROGRAM", "vscode") && eq("GIT_PAGER", "cat"),
-    // Convention shared by several agents (Crush, Amp, ...).
-    generic: () => has("AGENT") || has("AI_AGENT"),
-  };
-  return Object.keys(signals).find((id) => signals[id]());
-};
-
 const usage = () => {
   const suites = [...SUITES.keys()].join("|");
   process.stderr.write(
@@ -218,6 +196,7 @@ const acquireSuite = (suite) => {
   const record = {
     pid: process.pid,
     startTime: processStartTime(process.pid),
+    processGroup: false,
     kind: "dev",
     suite,
     starting: true,
@@ -288,12 +267,29 @@ const reportProcessConflict = (suite, existing) => {
   );
 };
 
-const acquireSuiteForStart = (suite) => {
+const stopCommandFor = (owner) =>
+  owner?.kind === "build"
+    ? "yarn build --stop"
+    : owner?.kind === "dev"
+      ? `yarn ${SUITES.get(owner.suite)?.alias ?? "dev"} --stop`
+      : undefined;
+
+const acquireSuiteForStart = async (suite) => {
   const lock = acquireSuite(suite);
   if (lock.token) {
     return lock;
   }
   reportProcessConflict(suite, lock.existing);
+  if (
+    await offerToStopProcessRecord({
+      file: workflowLockFile,
+      owner: lock.existing,
+      ownerDescription: describeOutputOwner(lock.existing),
+      stopCommand: stopCommandFor(lock.existing),
+    })
+  ) {
+    return acquireSuiteForStart(suite);
+  }
   return {
     code:
       lock.existing?.kind === "dev" &&
@@ -441,7 +437,7 @@ const isHttpServing = async (port, timeoutMs = 1000) => {
 
 const runForegroundHealth = async (suite, cfg, fetchTranslations = false) => {
   const { port } = cfg;
-  const lock = acquireSuiteForStart(suite);
+  const lock = await acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
   }
@@ -480,7 +476,7 @@ const runForegroundHealth = async (suite, cfg, fetchTranslations = false) => {
 
 const runBackgroundHealth = async (suite, cfg, fetchTranslations = false) => {
   const { port } = cfg;
-  const lock = acquireSuiteForStart(suite);
+  const lock = await acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
   }
@@ -569,7 +565,7 @@ const runForegroundProcess = async (
   passthrough,
   fetchTranslations = false
 ) => {
-  const lock = acquireSuiteForStart(suite);
+  const lock = await acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
   }
@@ -597,7 +593,7 @@ const runBackgroundProcess = async (
   passthrough,
   fetchTranslations = false
 ) => {
-  const lock = acquireSuiteForStart(suite);
+  const lock = await acquireSuiteForStart(suite);
   if (!lock.token) {
     return lock.code;
   }
@@ -716,7 +712,7 @@ const main = async () => {
     mode === "foreground" &&
     !["0", "false"].includes(process.env.HA_DEV_BACKGROUND)
   ) {
-    const agent = detectAgent();
+    const agent = detectCodingAgent();
     if (agent) {
       process.stdout.write(
         `Detected coding agent (${agent}); starting in the background. ` +
