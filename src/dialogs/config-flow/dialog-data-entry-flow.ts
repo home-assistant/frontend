@@ -70,8 +70,10 @@ declare global {
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "flow-update": HASSDomEvent<FlowUpdateEvent>;
-    "flow-step-footer-state-changed": HASSDomEvent<FlowStepFooterStateChangedEvent>;
+    "flow-update": HASSDomEvent<HASSDomEvents["flow-update"]>;
+    "flow-step-footer-state-changed": HASSDomEvent<
+      HASSDomEvents["flow-step-footer-state-changed"]
+    >;
   }
 }
 
@@ -741,7 +743,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
   };
 
   private _handleFooterStateChanged = (
-    ev: HASSDomEvent<FlowStepFooterStateChangedEvent>
+    ev: HASSDomEvent<HASSDomEvents["flow-step-footer-state-changed"]>
   ) => {
     if (ev.detail.loading !== undefined) {
       this._formStepLoading = ev.detail.loading;

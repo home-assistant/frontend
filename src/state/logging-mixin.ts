@@ -15,7 +15,7 @@ declare global {
     write_log: WriteLogParams;
   }
   interface HTMLElementEventMap {
-    write_log: HASSDomEvent<WriteLogParams>;
+    write_log: HASSDomEvent<HASSDomEvents["write_log"]>;
   }
 }
 

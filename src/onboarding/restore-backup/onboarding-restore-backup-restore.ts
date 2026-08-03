@@ -2,6 +2,10 @@ import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
@@ -9,6 +13,7 @@ import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import "../../components/item/ha-row-item";
 import {
   getPreferredAgentForDownload,
@@ -19,6 +24,7 @@ import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import "../../panels/config/backup/components/ha-backup-data-picker";
 import "../../panels/config/backup/components/ha-backup-formfield-label";
 import { onBoardingStyles } from "../styles";
+import type { ValueChangedEvent } from "../../types";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
@@ -247,16 +253,20 @@ class OnboardingRestoreBackupRestore extends LitElement {
     fireEvent(this, "sign-out");
   }
 
-  private _selectedBackupChanged(ev: CustomEvent) {
+  private _selectedBackupChanged(ev: ValueChangedEvent<BackupData>) {
     ev.stopPropagation();
     this._selectedData = ev.detail.value;
   }
 
-  private _encryptionKeyChanged(ev): void {
+  private _encryptionKeyChanged(
+    ev: HASSDomTargetEvent<Omit<HaInput, "value"> & { value: string }>
+  ): void {
     this._encryptionKey = ev.target.value;
   }
 
-  private async _startRestore(ev: CustomEvent): Promise<void> {
+  private async _startRestore(
+    ev: HASSDomCurrentTargetEvent<HaProgressButton>
+  ): Promise<void> {
     const agentId = Object.keys(this.backup.agents)[0];
     const backupProtected = this.backup.agents[agentId].protected;
 
