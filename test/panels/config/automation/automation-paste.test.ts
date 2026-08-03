@@ -143,6 +143,120 @@ actions:
       actions: [{ variables: {} }],
     },
   },
+  {
+    name: "full automation config [append]",
+    config: {
+      variables: { x: 1 },
+      trigger_variables: { y: 2 },
+      triggers: [{ trigger: "time", at: "1:00:00" }],
+      conditions: [
+        {
+          condition: "window.is_open",
+          target: { entity_id: "binary_sensor.window" },
+        },
+      ],
+      actions: [{ stop: "" }],
+    },
+    paste: `
+variables:
+  foo: "bar"
+trigger_variables:
+  z: 3
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.front_door
+conditions:
+  - "{{ true }}"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway
+`,
+    response: "append",
+    expected: {
+      variables: {
+        foo: "bar",
+        x: 1,
+      },
+      trigger_variables: {
+        y: 2,
+        z: 3,
+      },
+      triggers: [
+        { trigger: "time", at: "1:00:00" },
+        {
+          trigger: "state",
+          entity_id: "binary_sensor.front_door",
+        },
+      ],
+      conditions: [
+        {
+          condition: "window.is_open",
+          target: { entity_id: "binary_sensor.window" },
+        },
+        "{{ true }}",
+      ],
+      actions: [
+        { stop: "" },
+        {
+          action: "light.turn_on",
+          target: { entity_id: "light.hallway" },
+        },
+      ],
+    },
+  },
+  {
+    name: "full automation config [replace]",
+    config: {
+      variables: { x: 1 },
+      trigger_variables: { y: 2 },
+      triggers: [{ trigger: "time", at: "1:00:00" }],
+      conditions: [
+        {
+          condition: "window.is_open",
+          target: { entity_id: "binary_sensor.window" },
+        },
+      ],
+      actions: [{ stop: "" }],
+    },
+    paste: `
+variables:
+  foo: "bar"
+trigger_variables:
+  z: 3
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.front_door
+conditions:
+  - "{{ true }}"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway
+`,
+    response: "replace",
+    expected: {
+      variables: {
+        foo: "bar",
+      },
+      trigger_variables: {
+        z: 3,
+      },
+      triggers: [
+        {
+          trigger: "state",
+          entity_id: "binary_sensor.front_door",
+        },
+      ],
+      conditions: ["{{ true }}"],
+      actions: [
+        {
+          action: "light.turn_on",
+          target: { entity_id: "light.hallway" },
+        },
+      ],
+    },
+  },
 ];
 
 vi.mock(
@@ -173,25 +287,38 @@ const makePasteEvent = (text: string): ClipboardEvent => {
 };
 
 describe("manual automation paste", () => {
+  let dialogResponse: string | undefined;
   beforeEach(() => {
-    vi.mocked(showPasteReplaceDialog).mockImplementation(() => {
-      throw new Error("showPasteReplaceDialog should not have been called");
+    vi.clearAllMocks();
+    dialogResponse = undefined;
+    vi.mocked(showPasteReplaceDialog).mockImplementation((_ctx, options) => {
+      if (dialogResponse === "append") {
+        options.onAppend();
+        return;
+      }
+      if (dialogResponse === "replace") {
+        options.onReplace();
+        return;
+      }
+      throw new Error("Did not expect dialog to be raised");
     });
   });
 
   test.each(pasteCases)(
     "pastes $name into an empty editor",
-    async ({ paste, expected }) => {
+    async ({ config, paste, expected, response }) => {
       const el = document.createElement(
         "manual-automation-editor"
       ) as HaManualAutomationEditor;
-
+      dialogResponse = response;
       el.hass = createMockHass();
-      el.config = {
-        triggers: [],
-        conditions: [],
-        actions: [],
-      } as any;
+      el.config =
+        config ??
+        ({
+          triggers: [],
+          conditions: [],
+          actions: [],
+        } as any);
 
       const valueChanged = new Promise<CustomEvent>((resolve) => {
         el.addEventListener("value-changed", resolve as EventListener, {
@@ -201,6 +328,8 @@ describe("manual automation paste", () => {
 
       // Call the protected method through `any` to avoid full DOM lifecycle.
       await (el as any).handlePaste(makePasteEvent(paste));
+
+      expect(showPasteReplaceDialog).toHaveBeenCalledTimes(response ? 1 : 0);
 
       const ev = await valueChanged;
       expect(ev.detail.value).toEqual(expected);

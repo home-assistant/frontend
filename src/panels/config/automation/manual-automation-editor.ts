@@ -398,6 +398,11 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     if (!workingCopy) {
       return;
     }
+    ["variables", "trigger_variables"].forEach((key) => {
+      if (key in config) {
+        workingCopy[key] = { ...workingCopy[key], ...config[key] };
+      }
+    });
 
     if ("triggers" in config) {
       workingCopy.triggers = ensureArray(workingCopy.triggers || []).concat(
