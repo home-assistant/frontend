@@ -73,13 +73,6 @@ private _keyDown(
 Dispatch Home Assistant component events with `fireEvent()` instead of constructing `Event` or `CustomEvent` directly. Register the event name and detail type by augmenting `HASSDomEvents`; use `undefined` when an event has no detail. `fireEvent()` constrains event names and supplied detail, and events bubble and cross shadow boundaries by default:
 
 ```ts
-declare global {
-  interface HASSDomEvents {
-    "item-selected": { id: string };
-    "refresh-requested": undefined;
-  }
-}
-
 fireEvent(this, "item-selected", { id: item.id });
 fireEvent(this, "refresh-requested");
 ```
@@ -87,12 +80,6 @@ fireEvent(this, "refresh-requested");
 When an event is already registered, derive handler and listener types from its registration rather than repeating the payload shape:
 
 ```ts
-declare global {
-  interface HTMLElementEventMap {
-    "item-selected": HASSDomEvent<HASSDomEvents["item-selected"]>;
-  }
-}
-
 private _itemSelected(
   ev: HASSDomEvent<HASSDomEvents["item-selected"]>
 ): void {
@@ -101,6 +88,21 @@ private _itemSelected(
 ```
 
 `HASSDomEvents` types `fireEvent()` calls. Augment `HTMLElementEventMap` for typed listeners on HTML elements, or `GlobalEventHandlersEventMap` when the event is handled on global event targets.
+
+In component files, prefer placing global event declarations after the class at the bottom of the file. Preserve the existing placement when editing established files; foundational type, helper, and mixin files commonly keep declarations near the top before their consumers.
+
+```ts
+declare global {
+  interface HASSDomEvents {
+    "item-selected": { id: string };
+    "refresh-requested": undefined;
+  }
+
+  interface HTMLElementEventMap {
+    "item-selected": HASSDomEvent<HASSDomEvents["item-selected"]>;
+  }
+}
+```
 
 ## Dialogs
 
