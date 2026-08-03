@@ -36,7 +36,7 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
     protected willUpdate(changedProperties: PropertyValues<this>): void {
       super.willUpdate(changedProperties);
 
-      if (this.isDirtyState) {
+      if (this.isDirtyState && this.isConnected) {
         window.addEventListener("click", this._handleClick, true);
         window.addEventListener("beforeunload", this._handleUnload);
       } else {
