@@ -644,6 +644,7 @@ class HaConfigAreaPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/areas/dashboard"
         .header=${html`${
           area.icon
             ? html`<ha-icon

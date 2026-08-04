@@ -128,6 +128,7 @@ class AssistDevicesPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/voice-assistants/assistants"
         .header=${this.hass.localize(
           "ui.panel.config.voice_assistants.assistants.pipeline.devices.title"
         )}

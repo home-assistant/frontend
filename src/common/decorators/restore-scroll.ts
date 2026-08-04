@@ -1,8 +1,9 @@
 import type { ReactiveElement } from "lit";
+import { updateHistoryState } from "../navigate";
 import { throttle } from "../util/throttle";
 
 const throttleReplaceState = throttle((value) => {
-  history.replaceState({ scrollPosition: value }, "");
+  updateHistoryState({ scrollPosition: value });
 }, 300);
 
 export function restoreScroll(selector: string) {

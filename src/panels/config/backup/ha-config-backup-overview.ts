@@ -74,8 +74,6 @@ class HaConfigBackupOverview extends LitElement {
 
   @state() private _config?: BackupConfig;
 
-  private _searchParms = new URLSearchParams(window.location.search);
-
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
@@ -206,9 +204,7 @@ class HaConfigBackupOverview extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config/system"
-        }
+        back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.overview.header")}

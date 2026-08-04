@@ -175,6 +175,7 @@ export class HaConfigLovelaceResources extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config/lovelace/dashboards"
         .tabs=${lovelaceResourcesTabs}
         .columns=${this._columns(this.hass.language, this.hass.localize)}
         .data=${this._resources}

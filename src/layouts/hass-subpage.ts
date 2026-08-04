@@ -4,6 +4,7 @@ import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { goBack } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import "../components/ha-icon-button-arrow-prev";
@@ -37,19 +38,14 @@ class HassSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${
-            this.mainPage || history.state?.root
+            this.mainPage || (!backPath && history.state?.root)
               ? html`<ha-menu-button></ha-menu-button>`
-              : backPath
-                ? html`
-                    <ha-icon-button-arrow-prev
-                      href=${backPath}
-                    ></ha-icon-button-arrow-prev>
-                  `
-                : html`
-                    <ha-icon-button-arrow-prev
-                      @click=${this._backTapped}
-                    ></ha-icon-button-arrow-prev>
-                  `
+              : html`
+                  <ha-icon-button-arrow-prev
+                    .href=${backPath}
+                    @click=${this._backTapped}
+                  ></ha-icon-button-arrow-prev>
+                `
           }
 
           <div class="main-title">
@@ -79,12 +75,21 @@ class HassSubpage extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _backTapped(): void {
+  private _backTapped(ev: MouseEvent): void {
+    const backPath = sanitizeNavigationPath(this.backPath);
+
+    // Middle click, ctrl and cmd open the parent in a new tab, let the anchor
+    // handle those.
+    if (backPath && !isNavigationClick(ev)) {
+      return;
+    }
+
     if (this.backCallback) {
       this.backCallback();
       return;
     }
-    goBack();
+
+    goBack(backPath);
   }
 
   static get styles(): CSSResultGroup {

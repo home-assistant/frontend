@@ -175,17 +175,12 @@ export class HassTabsSubpage extends LitElement {
             ${
               this.mainPage || (!backPath && history.state?.root)
                 ? html`<ha-menu-button></ha-menu-button>`
-                : backPath
-                  ? html`
-                      <ha-icon-button-arrow-prev
-                        .href=${backPath}
-                      ></ha-icon-button-arrow-prev>
-                    `
-                  : html`
-                      <ha-icon-button-arrow-prev
-                        @click=${this._backTapped}
-                      ></ha-icon-button-arrow-prev>
-                    `
+                : html`
+                    <ha-icon-button-arrow-prev
+                      .href=${backPath}
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
             }
             ${
               this._narrow || !this.showTabs
@@ -246,12 +241,21 @@ export class HassTabsSubpage extends LitElement {
     this._content.focus({ preventScroll: true });
   }
 
-  private _backTapped(): void {
+  private _backTapped(ev: MouseEvent): void {
+    const backPath = sanitizeNavigationPath(this.backPath);
+
+    // Middle click, ctrl and cmd open the parent in a new tab, let the anchor
+    // handle those.
+    if (backPath && !isNavigationClick(ev)) {
+      return;
+    }
+
     if (this.backCallback) {
       this.backCallback();
       return;
     }
-    goBack();
+
+    goBack(backPath);
   }
 
   private _isActiveTabPath(tabPath: string, currentPath: string): boolean {
