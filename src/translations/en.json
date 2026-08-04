@@ -10095,6 +10095,7 @@
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
+              "expand_legend": "Expand legend",
               "fit_mode": "Fit mode",
               "fit_mode_options": {
                 "contain": "Scaled (Contain)",
