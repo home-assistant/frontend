@@ -119,10 +119,15 @@ const ENTITIES = [
   },
 ];
 
-type InvalidEntityFilterCardConfig = Pick<EntityFilterCardConfig, "type"> &
-  Partial<Omit<EntityFilterCardConfig, "type">>;
+type StateFilterEntityFilterCardConfig = Pick<
+  EntityFilterCardConfig,
+  "type" | "entities" | "card" | "show_empty"
+> & {
+  conditions?: never;
+  state_filter: NonNullable<EntityFilterCardConfig["state_filter"]>;
+};
 
-const CONFIGS = [
+const VALID_CONFIGS = [
   {
     heading: "Unfiltered entities",
     config: {
@@ -280,6 +285,13 @@ const CONFIGS = [
       ],
     },
   },
+] satisfies DemoCardConfig<
+  | EntitiesCardConfig
+  | EntityFilterCardConfig
+  | StateFilterEntityFilterCardConfig
+>[];
+
+const INVALID_CONFIGS = [
   {
     heading: "Error: Entities must be specified",
     config: { type: "entity-filter" },
@@ -292,8 +304,11 @@ const CONFIGS = [
     },
   },
 ] satisfies DemoCardConfig<
-  EntitiesCardConfig | EntityFilterCardConfig | InvalidEntityFilterCardConfig
+  | Pick<EntityFilterCardConfig, "type">
+  | Pick<EntityFilterCardConfig, "type" | "entities">
 >[];
+
+const CONFIGS = [...VALID_CONFIGS, ...INVALID_CONFIGS];
 
 @customElement("demo-lovelace-entity-filter-card")
 class DemoEntityFilter extends LitElement {
