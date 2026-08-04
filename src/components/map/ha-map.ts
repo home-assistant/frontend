@@ -4,6 +4,7 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type {
   Circle,
   CircleMarker,
+  ControlPosition,
   LatLngExpression,
   LatLngTuple,
   Layer,
@@ -92,6 +93,15 @@ export interface HaMapEntity {
   focus?: boolean;
 }
 
+export const MAP_CARD_SCALE_RULER_POSITION = [
+  "none",
+  "top_right",
+  "bottom_left",
+  "bottom_right",
+] as const;
+export type MapCardScaleRulerPosition =
+  (typeof MAP_CARD_SCALE_RULER_POSITION)[number];
+
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
   @state()
@@ -146,6 +156,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "cluster-markers", type: Boolean })
   public clusterMarkers = true;
+
+  @property({ attribute: "scale-ruler-position", type: String })
+  public scaleRulerPosition: MapCardScaleRulerPosition = "none";
 
   @state() private _loaded = false;
 
@@ -309,6 +322,7 @@ export class HaMap extends ReactiveElement {
         zoom: this.zoom,
       });
       this._updateMapStyle();
+      this._drawScaleRuler();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
           setTimeout(() => {
@@ -804,6 +818,19 @@ export class HaMap extends ReactiveElement {
     }
 
     this._mapZones.forEach((marker) => map.addLayer(marker));
+  }
+
+  private _drawScaleRuler(): void {
+    if (this.scaleRulerPosition !== "none") {
+      const scaleRuler = this.Leaflet!.control.scale();
+      const position = {
+        top_right: "topright",
+        bottom_left: "bottomleft",
+        bottom_right: "bottomright",
+      }[this.scaleRulerPosition] as ControlPosition;
+      scaleRuler.setPosition(position);
+      this.leafletMap!.addControl(scaleRuler);
+    }
   }
 
   private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {

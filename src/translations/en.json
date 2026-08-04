@@ -10200,6 +10200,13 @@
                 "light": "Light",
                 "dark": "Dark"
               },
+              "scale_ruler": "Scale ruler",
+              "scale_ruler_positions": {
+                "none": "Hidden",
+                "top_right": "Top right",
+                "bottom_left": "Bottom left",
+                "bottom_right": "Bottom right"
+              },
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
               "fit_zones": "Fit zones",

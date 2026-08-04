@@ -218,6 +218,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
+            .scaleRulerPosition=${this._config.scale_ruler || "none"}
             interactive-zones
             render-passive
           ></ha-map>
