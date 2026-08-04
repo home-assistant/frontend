@@ -20,6 +20,7 @@ type HaFormDataContainerChangedEvent = ValueChangedEvent<HaFormDataContainer>;
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
   constant: () => import("./ha-form-constant"),
+  divider: () => import("./ha-form-divider"),
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),
