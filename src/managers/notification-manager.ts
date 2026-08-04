@@ -126,9 +126,17 @@ class NotificationManager extends LitElement {
     if (!this._notifications.length) {
       return nothing;
     }
+    const bottomOffset = Math.max(
+      ...this._notifications.map(
+        ({ parameters }) => parameters.bottomOffset ?? 0
+      )
+    );
     return html`
       <div
         class="stack"
+        style=${styleMap({
+          "--notification-stack-bottom-offset": `${bottomOffset}px`,
+        })}
         popover=${ifDefined(popoverSupported ? "manual" : undefined)}
       >
         ${repeat(
@@ -137,9 +145,6 @@ class NotificationManager extends LitElement {
           ({ key, parameters }) => html`
             <ha-toast
               data-notification-key=${key}
-              style=${styleMap({
-                marginBlockEnd: `${parameters.bottomOffset ?? 0}px`,
-              })}
               .labelText=${
                 typeof parameters.message !== "string"
                   ? this.hass.localize(
@@ -278,8 +283,13 @@ class NotificationManager extends LitElement {
   static override styles = css`
     .stack {
       position: fixed;
-      inset: auto auto
-        calc(var(--safe-area-inset-bottom, 0px) + var(--ha-space-4)) 50%;
+      inset-block-start: auto;
+      inset-inline-end: auto;
+      inset-block-end: calc(
+        var(--safe-area-inset-bottom, 0px) + var(--ha-space-4) +
+          var(--notification-stack-bottom-offset, 0px)
+      );
+      inset-inline-start: 50%;
       margin: 0;
       padding: 0;
       border: none;

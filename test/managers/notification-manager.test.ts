@@ -73,9 +73,12 @@ describe("notification-manager", () => {
     await manager.showDialog({ message: "Configuration saved" });
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
     expect(toast.labelText).toBe("Configuration saved");
     expect(toast.timeoutMs).toBe(4000);
-    expect(toast.style.marginBlockEnd).toBe("0px");
+    expect(
+      stack.style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("0px");
     expect(toast.show).toHaveBeenCalledOnce();
   });
 
@@ -90,8 +93,11 @@ describe("notification-manager", () => {
     });
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
     expect(toast.timeoutMs).toBe(-1);
-    expect(toast.style.marginBlockEnd).toBe("16px");
+    expect(
+      stack.style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("16px");
 
     manager.shadowRoot!.querySelector<HTMLElement>("ha-icon-button")!.click();
     expect(toast.hide).toHaveBeenCalledWith("dismiss");
@@ -241,6 +247,26 @@ describe("notification-manager", () => {
       "First",
       "Second",
     ]);
+  });
+
+  it("uses the largest bottom offset for the notification stack", async () => {
+    const manager = await mountManager();
+    await manager.showDialog({
+      id: "first",
+      message: "First",
+      bottomOffset: 16,
+    });
+    await manager.showDialog({
+      id: "second",
+      message: "Second",
+      bottomOffset: 48,
+    });
+
+    expect(
+      manager
+        .shadowRoot!.querySelector<HTMLElement>(".stack")!
+        .style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("48px");
   });
 
   it("closes only the toast matching a duration-zero ID", async () => {
