@@ -103,7 +103,9 @@ class HuiTargetHumidityCardFeature
     }
   }
 
-  private _step = 1;
+  private get _step() {
+    return this._stateObj!.attributes.target_humidity_step ?? 1;
+  }
 
   private get _min() {
     return this._stateObj!.attributes.min_humidity ?? 0;
