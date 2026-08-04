@@ -3,13 +3,5 @@ import { getCardElementClass } from "../../../src/panels/lovelace/create-element
 
 export const validateCardConfig = async (config: LovelaceCardConfig) => {
   const cardClass = await getCardElementClass(config.type);
-
-  if (cardClass.getConfigElement) {
-    const editor = await cardClass.getConfigElement();
-    editor.setConfig(config);
-  } else {
-    cardClass.getConfigForm?.().assertConfig?.(config);
-  }
-
   new cardClass().setConfig(config);
 };

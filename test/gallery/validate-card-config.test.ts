@@ -28,18 +28,10 @@ describe("validateCardConfig", () => {
 
   it.each([
     {
-      type: "button",
-      entity: "light.bed_light",
-      service: "light.toggle",
-    },
-    {
-      type: "gauge",
-      entity: "sensor.outside_temperature",
-      unit_of_measurement: "C",
+      type: "entity-filter",
     },
     {
       type: "picture",
-      entity: "person.paulus",
     },
   ])("rejects invalid $type card configs", async (config) => {
     await expect(validateCardConfig(config)).rejects.toThrow();

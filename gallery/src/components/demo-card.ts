@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import "../../../src/components/ha-alert";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
@@ -28,6 +29,8 @@ class DemoCard extends LitElement {
 
   @state() private _size?: number;
 
+  @state() private _configError?: string;
+
   @query("hui-card", false) private _card?: HuiCard;
 
   private _yamlConfig = memoizeOne((config: LovelaceCardConfig) =>
@@ -41,11 +44,12 @@ class DemoCard extends LitElement {
       if (this.config.expectConfigError) {
         return;
       }
-      throw err;
+      this._configError = err instanceof Error ? err.message : String(err);
+      return;
     }
 
     if (this.config.expectConfigError) {
-      throw new Error(`Expected config error for ${this.config.heading}`);
+      this._configError = `Expected config error for ${this.config.heading}`;
     }
   }
 
@@ -59,6 +63,11 @@ class DemoCard extends LitElement {
             : ""
         }
       </h2>
+      ${
+        this._configError
+          ? html`<ha-alert alert-type="error">${this._configError}</ha-alert>`
+          : nothing
+      }
       <div class="root">
         <hui-card
           .config=${this.config.config}
@@ -99,6 +108,9 @@ class DemoCard extends LitElement {
     h2 small {
       font-size: 0.5em;
       color: var(--primary-text-color);
+    }
+    ha-alert {
+      margin-bottom: 16px;
     }
     hui-card {
       max-width: 400px;
