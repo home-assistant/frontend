@@ -3,8 +3,8 @@
 import { constants } from "node:zlib";
 import gulp from "gulp";
 import brotli from "gulp-brotli";
-import zopfli from "gulp-zopfli-green";
 import paths from "../paths.cjs";
+import zopfli from "../zopfli.mjs";
 
 const filesGlob = "*.{js,json,css,svg,xml}";
 const brotliOptions = {
