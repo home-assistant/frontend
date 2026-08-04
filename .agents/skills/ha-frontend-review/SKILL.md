@@ -53,7 +53,7 @@ Readiness and invalidation:
 Repository-owned contracts:
 
 - Consult the public [frontend developer documentation](https://developers.home-assistant.io/docs/frontend/) for documented architecture, data flow, design, and development workflows.
-- For new leaf components, cross-load `ha-frontend-contexts` and verify they consume narrow contexts instead of introducing a broad `hass` property; containers and external APIs may still require `hass`.
+- For new leaf components, load `ha-frontend-contexts` and verify they consume narrow contexts instead of introducing a broad `hass` property; containers and external APIs may still require `hass`.
 - Verify backend assumptions against the owning Core, Supervisor, or WebSocket implementation, and component assumptions against the exported component contract.
 - Prefer canonical repository helpers and test setup over duplicate local implementations.
 - Promote AI-review concerns into durable guidance only when supported by code evidence, reproduced behavior, an accepted corrective commit, or human-maintainer validation.
