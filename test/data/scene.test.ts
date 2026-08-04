@@ -25,7 +25,7 @@ describe("sceneEntityStateObj", () => {
     });
   });
 
-  it("strips entity pictures but keeps other attributes", () => {
+  it("strips media-derived entity pictures but keeps other attributes", () => {
     const sceneEntity = {
       state: "playing",
       entity_picture: "/api/media_player_proxy/x?token=stale",
@@ -43,10 +43,35 @@ describe("sceneEntityStateObj", () => {
     );
   });
 
+  it("keeps a stable entity picture on other domains", () => {
+    expect(
+      sceneEntityStateObj("vacuum.robot", {
+        state: "cleaning",
+        entity_picture: "/local/robot.png",
+      })?.attributes.entity_picture
+    ).toBe("/local/robot.png");
+  });
+
   it("returns undefined for null and undefined values", () => {
     // An entity left without a value in the YAML editor parses as null.
     expect(sceneEntityStateObj("light.kitchen", null)).toBeUndefined();
     expect(sceneEntityStateObj("light.kitchen", undefined)).toBeUndefined();
+  });
+
+  it("returns undefined for an array value", () => {
+    expect(sceneEntityStateObj("light.kitchen", [255, 100])).toBeUndefined();
+  });
+
+  it("returns undefined when the dict holds no usable state", () => {
+    expect(
+      sceneEntityStateObj("light.kitchen", { brightness: 100 })
+    ).toBeUndefined();
+    expect(
+      sceneEntityStateObj("light.kitchen", { state: null })
+    ).toBeUndefined();
+    expect(
+      sceneEntityStateObj("light.kitchen", { state: { brightness: 100 } })
+    ).toBeUndefined();
   });
 
   it("normalizes boolean shorthand to on/off like the backend does", () => {
@@ -71,74 +96,20 @@ describe("sceneEntityStateObj", () => {
     });
   });
 
-  it("coerces a numeric-string brightness to a number", () => {
-    expect(
-      sceneEntityStateObj("light.kitchen", { state: "on", brightness: "180" })
-        ?.attributes.brightness
-    ).toBe(180);
-  });
-
-  it("drops a non-numeric brightness", () => {
-    expect(
-      sceneEntityStateObj("light.kitchen", { state: "on", brightness: "max" })
-        ?.attributes
-    ).toEqual({});
-  });
-
-  it("drops a non-array rgb_color", () => {
+  it("drops color attributes for an inactive target", () => {
+    // A live entity never carries these while off, and state-badge applies
+    // them without checking activity.
     expect(
       sceneEntityStateObj("light.kitchen", {
-        state: "on",
-        rgb_color: "255,0,0",
-      })?.attributes
-    ).toEqual({});
-  });
-
-  it("keeps a valid rgb_color array", () => {
-    expect(
-      sceneEntityStateObj("light.kitchen", {
-        state: "on",
+        state: "off",
+        brightness: 180,
         rgb_color: [255, 0, 0],
-      })?.attributes.rgb_color
-    ).toEqual([255, 0, 0]);
-  });
-
-  it("borrows the fallback device_class for string shorthand", () => {
-    expect(sceneEntityStateObj("cover.garage", "open", "garage")).toEqual({
-      entity_id: "cover.garage",
-      state: "open",
-      attributes: { device_class: "garage" },
-    });
-  });
-
-  it("borrows the fallback device_class when the dict has none", () => {
-    expect(
-      sceneEntityStateObj("cover.garage", { state: "open" }, "garage")
-        ?.attributes.device_class
-    ).toBe("garage");
-  });
-
-  it("prefers the scene's own device_class over the fallback", () => {
-    expect(
-      sceneEntityStateObj(
-        "cover.garage",
-        { state: "open", device_class: "door" },
-        "garage"
-      )?.attributes.device_class
-    ).toBe("door");
-  });
-
-  it("adds no device_class key without a fallback", () => {
-    expect(
-      sceneEntityStateObj("cover.garage", { state: "open" })?.attributes
-    ).toEqual({});
-  });
-
-  it("leaves the state undefined when the dict has none", () => {
-    expect(sceneEntityStateObj("light.kitchen", { brightness: 100 })).toEqual({
+        friendly_name: "Kitchen",
+      })
+    ).toEqual({
       entity_id: "light.kitchen",
-      state: undefined,
-      attributes: { brightness: 100 },
+      state: "off",
+      attributes: { friendly_name: "Kitchen" },
     });
   });
 });

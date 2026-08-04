@@ -465,10 +465,16 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               }
                               .noninteractive=${this._mode === "review"}
                             >
-                              <state-badge
-                                .stateObj=${badgeStateObj}
-                                slot="graphic"
-                              ></state-badge>
+                              ${
+                                badgeStateObj
+                                  ? html`
+                                      <state-badge
+                                        .stateObj=${badgeStateObj}
+                                        slot="graphic"
+                                      ></state-badge>
+                                    `
+                                  : nothing
+                              }
                               ${primary}
                               ${
                                 secondary
@@ -567,10 +573,16 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                   }
                                   .noninteractive=${this._mode === "review"}
                                 >
-                                  <state-badge
-                                    .stateObj=${badgeStateObj}
-                                    slot="graphic"
-                                  ></state-badge>
+                                  ${
+                                    badgeStateObj
+                                      ? html`
+                                          <state-badge
+                                            .stateObj=${badgeStateObj}
+                                            slot="graphic"
+                                          ></state-badge>
+                                        `
+                                      : nothing
+                                  }
                                   ${primary}
                                   ${
                                     secondary
@@ -1184,30 +1196,30 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   // Memoized per config so re-renders reuse the same object references and
-  // the state badges skip work when nothing changed. The live device_class
-  // read is deliberately outside the memoize key: it is static per entity,
-  // and keying on hass would defeat the caching this exists for.
+  // the state badges skip work when nothing changed.
   private _sceneStateObjs = memoizeOne((config?: SceneConfig) => {
     const objs: Record<string, HassEntity | undefined> = {};
     for (const entityId of Object.keys(config?.entities ?? {})) {
       objs[entityId] = sceneEntityStateObj(
         entityId,
-        config!.entities[entityId],
-        this.hass.states[entityId]?.attributes.device_class
+        config!.entities[entityId]
       );
     }
     return objs;
   });
 
-  // Picks the state the row's icon should reflect: the live state in live mode,
-  // the scene's target state in review mode.
+  // Picks the state the row's icon should reflect: the live state in live
+  // mode, the scene's stored target in review mode. Undefined in review mode
+  // when the scene holds no usable target for the entity - the row then
+  // renders no badge rather than a live state that could be mistaken for a
+  // target.
   private _badgeStateObj(
     entityId: string,
     entityStateObj: HassEntity
-  ): HassEntity {
+  ): HassEntity | undefined {
     return this._mode === "live"
       ? entityStateObj
-      : (this._sceneStateObjs(this._config)[entityId] ?? entityStateObj);
+      : this._sceneStateObjs(this._config)[entityId];
   }
 
   private _generateConfigFromLive() {
