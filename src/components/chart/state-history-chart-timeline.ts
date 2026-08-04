@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
-  ECElementEvent,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -21,7 +20,7 @@ import echarts from "../../resources/echarts/echarts";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -145,9 +144,11 @@ export class StateHistoryChartTimeline extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    return html`${seriesName
-        ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
-        : nothing}<ha-chart-tooltip-marker
+    return html`${
+        seriesName
+          ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+          : nothing
+      }<ha-chart-tooltip-marker
         .color=${String(color ?? "")}
         .rtl=${rtl}
       ></ha-chart-tooltip-marker
@@ -269,7 +270,7 @@ export class StateHistoryChartTimeline extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
@@ -383,7 +384,9 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartData = datasets;
   }
 
-  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+  private _handleChartClick(
+    e: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ): void {
     if (e.detail.targetType === "axisLabel") {
       const dataset = this._chartData[e.detail.dataIndex];
       if (dataset) {

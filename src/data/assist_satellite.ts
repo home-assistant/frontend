@@ -3,7 +3,7 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 
-export const enum AssistSatelliteEntityFeature {
+export enum AssistSatelliteEntityFeature {
   ANNOUNCE = 1,
 }
 

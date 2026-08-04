@@ -23,7 +23,7 @@ class StateCardSelect extends LitElement {
     }));
 
     return html`
-      <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
+      <state-badge .stateObj=${this.stateObj}></state-badge>
       <ha-control-select-menu
         .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}

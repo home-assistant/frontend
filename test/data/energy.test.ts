@@ -1,5 +1,8 @@
+import { startOfDay } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { assert, describe, it } from "vitest";
 
+import { calcDate } from "../../src/common/datetime/calc_date";
 import {
   type FrontendLocaleData,
   NumberFormat,
@@ -13,6 +16,8 @@ import {
   formatConsumptionShort,
   calculateSolarConsumedGauge,
   formatPowerShort,
+  getNextEnergyPeriodStart,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../src/data/energy";
 import type { HomeAssistant } from "../../src/types";
 
@@ -851,6 +856,91 @@ describe("Self-consumed solar gauge tests", () => {
     assert.equal(
       Math.round(value!),
       Math.round((expectedNumerator / expectedDenominator) * 100)
+    );
+  });
+});
+
+describe("getNextEnergyPeriodStart", () => {
+  const locale: FrontendLocaleData = {
+    language: "en",
+    number_format: NumberFormat.language,
+    time_format: TimeFormat.language,
+    date_format: DateFormat.language,
+    time_zone: TimeZone.server,
+    first_weekday: FirstWeekday.language,
+  };
+  // Pin the time zone (via TimeZone.server) so the test does not depend on the
+  // machine's local zone.
+  const config = { time_zone: "America/New_York" } as HassConfig;
+
+  const isMidnight = (date: Date) =>
+    calcDate(date, startOfDay, locale, config).getTime() === date.getTime();
+
+  it("rolls the real-time view over at midnight, statistics an hour later", () => {
+    const now = new Date("2026-06-19T15:30:00-04:00");
+
+    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
+    const statistics = getNextEnergyPeriodStart(false, now, locale, config);
+
+    // Real-time rolls over exactly at the next midnight.
+    assert.isTrue(isMidnight(realTime));
+    assert.equal(
+      realTime.getTime(),
+      new Date("2026-06-20T00:00:00-04:00").getTime()
+    );
+
+    // Statistics roll over an hour after midnight, on the same day boundary.
+    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000 - 1);
+    assert.equal(
+      calcDate(statistics, startOfDay, locale, config).getTime(),
+      realTime.getTime()
+    );
+  });
+
+  it("advances the real-time view to the next midnight when called after midnight", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+
+    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
+
+    assert.isTrue(isMidnight(realTime));
+    // Next midnight is June 21, not the already-passed June 20 midnight.
+    assert.equal(
+      realTime.getTime(),
+      new Date("2026-06-21T00:00:00-04:00").getTime()
+    );
+  });
+});
+
+describe("getEnergyDefaultPeriodStorageKey", () => {
+  it("uses an explicit collection key", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey(
+        { panelUrl: "energy" } as HomeAssistant,
+        "energy_dashboard"
+      ),
+      "energy-default-period-_energy_dashboard"
+    );
+  });
+
+  it("scopes to the panel when no collection key is given", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({
+        panelUrl: "my-dashboard",
+      } as HomeAssistant),
+      "energy-default-period-_energy_my-dashboard"
+    );
+  });
+
+  it("falls back to the global key without a panel url", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant),
+      "energy-default-period-_energy"
+    );
+  });
+
+  it("rejects a collection key with the wrong prefix", () => {
+    assert.throws(() =>
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant, "dashboard")
     );
   });
 });

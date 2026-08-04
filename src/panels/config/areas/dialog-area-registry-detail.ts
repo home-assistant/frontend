@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
@@ -54,9 +55,20 @@ const SENSOR_DOMAINS = ["sensor"];
 const TEMPERATURE_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_TEMPERATURE];
 const HUMIDITY_DEVICE_CLASSES = [SENSOR_DEVICE_CLASS_HUMIDITY];
 
+interface AreaFormState {
+  name: string;
+  aliases: string[];
+  labels: string[];
+  picture: string | null;
+  icon: string | null;
+  floor: string | null;
+  temperatureEntity: string | null;
+  humidityEntity: string | null;
+}
+
 @customElement("dialog-area-registry-detail")
 class DialogAreaDetail
-  extends LitElement
+  extends DirtyStateProviderMixin<AreaFormState>()(LitElement)
   implements HassDialog<AreaRegistryDetailDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -116,7 +128,21 @@ class DialogAreaDetail
       this._humidityEntity = null;
     }
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): AreaFormState {
+    return {
+      name: this._name,
+      aliases: this._aliases,
+      labels: this._labels,
+      picture: this._picture,
+      icon: this._icon,
+      floor: this._floor,
+      temperatureEntity: this._temperatureEntity,
+      humidityEntity: this._humidityEntity,
+    };
   }
 
   public closeDialog(): boolean {
@@ -132,16 +158,18 @@ class DialogAreaDetail
 
   private _renderSettings(entry: AreaRegistryEntry | undefined) {
     return html`
-      ${entry
-        ? html`
-            <ha-settings-row>
-              <span slot="heading">
-                ${this.hass.localize("ui.panel.config.areas.editor.area_id")}
-              </span>
-              <span slot="description"> ${entry.area_id} </span>
-            </ha-settings-row>
-          `
-        : nothing}
+      ${
+        entry
+          ? html`
+              <ha-settings-row>
+                <span slot="heading">
+                  ${this.hass.localize("ui.panel.config.areas.editor.area_id")}
+                </span>
+                <span slot="description"> ${entry.area_id} </span>
+              </ha-settings-row>
+            `
+          : nothing
+      }
 
       <ha-input
         autofocus
@@ -225,7 +253,6 @@ class DialogAreaDetail
       >
         <div class="content">
           <ha-entity-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.areas.editor.temperature_entity"
             )}
@@ -240,7 +267,6 @@ class DialogAreaDetail
           ></ha-entity-picker>
 
           <ha-entity-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.areas.editor.humidity_entity"
             )}
@@ -326,6 +352,8 @@ class DialogAreaDetail
     if (processed.floor) {
       this._floor = processed.floor;
     }
+
+    this._updateDirtyState(this._currentState());
   }
 
   protected render() {
@@ -340,10 +368,12 @@ class DialogAreaDetail
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
-        header-title=${entry
-          ? this.hass.localize("ui.panel.config.areas.editor.update_area")
-          : this.hass.localize("ui.panel.config.areas.editor.create_area")}
-        prevent-scrim-close
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.areas.editor.update_area")
+            : this.hass.localize("ui.panel.config.areas.editor.create_area")
+        }
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-suggest-with-ai-button
@@ -353,42 +383,52 @@ class DialogAreaDetail
           @suggestion=${this._handleSuggestion}
         ></ha-suggest-with-ai-button>
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
             ${this._renderSettings(entry)} ${this._renderAliasExpansion()}
             ${!isNew ? this._renderRelatedEntitiesExpansion() : nothing}
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${!isNew
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
+          ${
+            !isNew
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteArea}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass.localize("ui.common.delete")}
+                  </ha-button>
+                `
+              : html`<ha-button
                   appearance="plain"
-                  @click=${this._deleteArea}
-                  .disabled=${this._submitting}
+                  slot="secondaryAction"
+                  @click=${this.closeDialog}
                 >
-                  ${this.hass.localize("ui.common.delete")}
-                </ha-button>
-              `
-            : html`<ha-button
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>`}
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>`
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${
+              nameInvalid ||
+              this._submitting ||
+              (!!this._params?.entry && !this.isDirtyState)
+            }
           >
-            ${entry
-              ? this.hass.localize("ui.common.save")
-              : this.hass.localize("ui.common.create")}
+            ${
+              entry
+                ? this.hass.localize("ui.common.save")
+                : this.hass.localize("ui.common.create")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -418,36 +458,43 @@ class DialogAreaDetail
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _floorChanged(ev) {
     this._error = undefined;
     this._floor = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _iconChanged(ev) {
     this._error = undefined;
     this._icon = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _labelsChanged(ev) {
     this._error = undefined;
     this._labels = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _aliasesChanged(ev: CustomEvent): void {
     this._aliases = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _sensorChanged(ev: CustomEvent): void {
     const deviceClass = (ev.target as HaEntityPicker).includeDeviceClasses![0];
     const key = `_${deviceClass}Entity`;
     this[key] = ev.detail.value || null;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry() {
@@ -469,6 +516,7 @@ class DialogAreaDetail
       } else {
         await this._params!.updateEntry!(values);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =

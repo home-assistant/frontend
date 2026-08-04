@@ -5,18 +5,20 @@ import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { fetchHttpConfig } from "../data/http";
+import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
+import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
 import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import {
-  removeLaunchScreen,
-  renderLaunchScreenInfoBox,
-} from "../util/launch-screen";
+import { renderLaunchScreenContent } from "../util/launch-screen";
+import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -27,6 +29,21 @@ import "./home-assistant-main";
 const useHash = __DEMO__;
 const curPath = () =>
   useHash ? location.hash.substring(1) : location.pathname;
+
+// Developer tools was renamed to Tools (/config/tools) in 2026.8; it had moved
+// from /developer-tools to /config in 2026.2. Redirect both old locations to
+// the new one. Applied on the initial route and on every navigation so
+// bookmarks and external links to the old URLs resolve too, not just in-app
+// navigation.
+const redirectLegacyToolsPath = (path: string): string => {
+  if (path.startsWith("/config/developer-tools")) {
+    return path.replace("/config/developer-tools", "/config/tools");
+  }
+  if (path.startsWith("/developer-tools")) {
+    return path.replace("/developer-tools", "/config/tools");
+  }
+  return path;
+};
 
 const panelUrl = (path: string) => {
   const dividerPos = path.indexOf("/", 1);
@@ -39,6 +56,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   @state() private _databaseMigration?: boolean;
 
+  private _httpPendingDialogOpen = false;
+
+  private _initError = false;
+
+  private _onboardingSurveyChecked = false;
+
   private _panelUrl: string;
 
   @storage({ key: "ha-version", state: false, subscribe: false })
@@ -50,7 +73,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   constructor() {
     super();
-    const path = curPath();
+    const path = redirectLegacyToolsPath(curPath());
 
     this._route = {
       prefix: "",
@@ -70,13 +93,34 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._databaseMigration === undefined &&
       changedProps.has("hass") &&
       this.hass?.config &&
-      changedProps.get("hass")?.config !== this.hass?.config
+      oldHass?.config !== this.hass.config
     ) {
       this.checkDataBaseMigration();
+    }
+    // Wait for `hass.user` to populate so the admin guard can run; it arrives
+    // asynchronously after `hass.config`.
+    if (
+      changedProps.has("hass") &&
+      this.hass?.user &&
+      oldHass?.user !== this.hass.user
+    ) {
+      this.checkHttpPendingConfig();
+    }
+    if (
+      changedProps.has("hass") &&
+      !this._onboardingSurveyChecked &&
+      this.hass?.user &&
+      this.hass.systemData
+    ) {
+      this._onboardingSurveyChecked = true;
+      if (!__DEMO__) {
+        checkOnboardingSurveyToast(this, this.hass);
+      }
     }
   }
 
@@ -89,7 +133,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
-      removeLaunchScreen();
+      // partial-panel-resolver removes the launch screen after the first panel
+      // is ready. Native apps request instant removal because their own splash
+      // screen covers the frontend until frontend/loaded is sent.
     }
     super.update(changedProps);
   }
@@ -106,10 +152,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     // Navigation
     const updateRoute = (path = curPath()) => {
-      // Developer tools panel was moved to config in 2026.2
-      if (path.startsWith("/developer-tools")) {
-        path = path.replace("/developer-tools", "/config/developer-tools");
-      }
+      path = redirectLegacyToolsPath(path);
       if (this._route && path === this._route.path) {
         return;
       }
@@ -126,11 +169,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     window.addEventListener("location-changed", () => updateRoute());
 
     // Handle history changes
-    if (useHash) {
-      window.addEventListener("hashchange", () => updateRoute());
-    } else {
-      window.addEventListener("popstate", () => updateRoute());
-    }
+    window.addEventListener("popstate", () => updateRoute());
 
     // Handle clicking on links
     window.addEventListener("click", (ev) => {
@@ -145,6 +184,11 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (this.render !== this.renderHass) {
       this._renderInitInfo(false);
     }
+    this.addEventListener("translations-updated", () => {
+      if (this.render !== this.renderHass) {
+        this._renderInitInfo(this._initError);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -208,6 +252,39 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
+  protected async checkHttpPendingConfig() {
+    if (__DEMO__ || this._httpPendingDialogOpen) {
+      return;
+    }
+    if (!this.hass?.user?.is_admin) {
+      return;
+    }
+    let httpConfig: HttpConfigState;
+    try {
+      httpConfig = await fetchHttpConfig(this.hass);
+    } catch (_err) {
+      // The check re-runs on the next reconnect; ignore transient failures.
+      return;
+    }
+    // Only prompt for an active trial. A pending config with an error was
+    // already reverted/failed and is kept only for display in the config form,
+    // so it must not pop the confirm/revert dialog.
+    if (
+      !httpConfig.pending ||
+      httpConfig.pending.error ||
+      this._httpPendingDialogOpen
+    ) {
+      return;
+    }
+    this._httpPendingDialogOpen = true;
+    showHttpPendingConfigDialog(this, {
+      state: httpConfig,
+      onResolved: () => {
+        this._httpPendingDialogOpen = false;
+      },
+    });
+  }
+
   protected async checkDataBaseMigration() {
     if (__DEMO__) {
       this._databaseMigration = false;
@@ -239,7 +316,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async _initializeHass() {
     try {
-      let result;
+      let result: Awaited<Window["hassConnection"]>;
 
       if (window.hassConnection) {
         result = await window.hassConnection;
@@ -312,11 +389,25 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   private _renderInitInfo(error: boolean) {
-    renderLaunchScreenInfoBox(
+    this._initError = error;
+    renderLaunchScreenContent(
       html`<ha-init-page
         .error=${error}
         .migration=${this._databaseMigration}
-      ></ha-init-page>`
+        .localize=${this._launchScreenLocalize}
+      ></ha-init-page>`,
+      this._launchScreenAttribution
+    );
+  }
+
+  private get _launchScreenLocalize(): LocalizeFunc | undefined {
+    return (this.hass ?? this._pendingHass).localize;
+  }
+
+  private get _launchScreenAttribution() {
+    return (
+      this._launchScreenLocalize?.("ui.init.project_from") ||
+      "A project from the"
     );
   }
 }

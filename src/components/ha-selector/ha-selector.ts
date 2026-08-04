@@ -65,8 +65,10 @@ const LOAD_ELEMENTS = {
   location: () => import("./ha-selector-location"),
   color_temp: () => import("./ha-selector-color-temp"),
   ui_action: () => import("./ha-selector-ui-action"),
+  ui_clock_date_format: () => import("./ha-selector-ui-clock-date-format"),
   ui_color: () => import("./ha-selector-ui-color"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
+  ui_time_format: () => import("./ha-selector-ui-time-format"),
 };
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);

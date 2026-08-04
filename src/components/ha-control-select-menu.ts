@@ -71,9 +71,11 @@ export class HaControlSelectMenu extends LitElement {
     >
       ${this._renderIcon()}
       <div class="content">
-        ${this.hideLabel
-          ? nothing
-          : html`<p id="label" class="label">${this.label}</p>`}
+        ${
+          this.hideLabel
+            ? nothing
+            : html`<p id="label" class="label">${this.label}</p>`
+        }
         ${selectedText ? html`<p class="value">${selectedText}</p>` : nothing}
       </div>
       ${this._renderArrow()}
@@ -84,13 +86,18 @@ export class HaControlSelectMenu extends LitElement {
     html`<ha-dropdown-item
       .value=${option.value}
       .selected=${this.value === option.value}
-      >${option.iconPath
-        ? html`<ha-svg-icon slot="icon" .path=${option.iconPath}></ha-svg-icon>`
-        : option.icon
-          ? html`<ha-icon slot="icon" .icon=${option.icon}></ha-icon>`
-          : this.renderIcon
-            ? html`<span slot="icon">${this.renderIcon(option.value)}</span>`
-            : nothing}
+      >${
+        option.iconPath
+          ? html`<ha-svg-icon
+              slot="icon"
+              .path=${option.iconPath}
+            ></ha-svg-icon>`
+          : option.icon
+            ? html`<ha-icon slot="icon" .icon=${option.icon}></ha-icon>`
+            : this.renderIcon
+              ? html`<span slot="icon">${this.renderIcon(option.value)}</span>`
+              : nothing
+      }
       ${option.label}</ha-dropdown-item
     >`;
 
@@ -112,18 +119,20 @@ export class HaControlSelectMenu extends LitElement {
 
     return html`
       <div class="icon">
-        ${value?.iconPath
-          ? html`<ha-svg-icon
-              slot="icon"
-              .path=${value.iconPath}
-            ></ha-svg-icon>`
-          : value?.icon
-            ? html`<ha-icon slot="icon" .icon=${value.icon}></ha-icon>`
-            : this.renderIcon && this.value
-              ? this.renderIcon(this.value)
-              : defaultIcon
-                ? html`<slot name="icon"></slot>`
-                : nothing}
+        ${
+          value?.iconPath
+            ? html`<ha-svg-icon
+                slot="icon"
+                .path=${value.iconPath}
+              ></ha-svg-icon>`
+            : value?.icon
+              ? html`<ha-icon slot="icon" .icon=${value.icon}></ha-icon>`
+              : this.renderIcon && this.value
+                ? this.renderIcon(this.value)
+                : defaultIcon
+                  ? html`<slot name="icon"></slot>`
+                  : nothing
+        }
       </div>
     `;
   }
@@ -183,6 +192,7 @@ export class HaControlSelectMenu extends LitElement {
         gap: 10px;
         width: 100%;
         user-select: none;
+        font-family: var(--ha-font-family-body, inherit);
         font-style: normal;
         font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;

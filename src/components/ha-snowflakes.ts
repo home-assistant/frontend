@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../types";
 import { subscribeLabFeature } from "../data/labs";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -78,17 +79,17 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
         ${this._snowflakes.map(
           (flake) => html`
             <svg
-              class="snowflake ${this.narrow && flake.id >= 30
-                ? "hide-narrow"
-                : ""}"
-              style="
-                left: ${flake.left}%;
-                width: ${flake.size}px;
-                height: ${flake.size}px;
-                animation-duration: ${flake.duration}s;
-                animation-delay: ${flake.delay}s;
-                --rotation: ${flake.rotation}deg;
-              "
+              class="snowflake ${
+                this.narrow && flake.id >= 30 ? "hide-narrow" : ""
+              }"
+              style=${styleMap({
+                left: `${flake.left}%`,
+                width: `${flake.size}px`,
+                height: `${flake.size}px`,
+                "animation-duration": `${flake.duration}s`,
+                "animation-delay": `${flake.delay}s`,
+                "--rotation": `${flake.rotation}deg`,
+              })}
               viewBox="0 0 16 16"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

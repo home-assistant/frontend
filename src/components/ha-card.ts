@@ -74,9 +74,11 @@ export class HaCard extends LitElement {
 
   protected render() {
     return html`
-      ${this.header
-        ? html`<h1 class="card-header">${this.header}</h1>`
-        : nothing}
+      ${
+        this.header
+          ? html`<h1 class="card-header">${this.header}</h1>`
+          : nothing
+      }
       <slot></slot>
     `;
   }

@@ -41,7 +41,7 @@ export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
   });
 
 export const getSignedPath = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   path: string
 ): Promise<SignedPath> => hass.callWS({ type: "auth/sign_path", path });
 
@@ -87,7 +87,7 @@ export const redirectWithAuthCode = (
   // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
   if (!url.includes("?")) {
     url += "?";
-  } else if (!url.endsWith("&")) {
+  } else if (!url.endsWith("?") && !url.endsWith("&")) {
     url += "&";
   }
 

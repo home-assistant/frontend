@@ -21,7 +21,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public disabled = false;
 
   public static get defaultConfig(): WaitAction {
-    return { wait_template: "", continue_on_timeout: true };
+    return { wait_template: "" };
   }
 
   private _schema = memoizeOne(
@@ -44,6 +44,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
+          default: true,
         },
       ] as const satisfies readonly HaFormSchema[]
   );

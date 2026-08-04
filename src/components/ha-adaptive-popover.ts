@@ -89,9 +89,11 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         @wa-after-hide=${this._handlePopoverAfterHide}
       >
         <div class="popover-surface" @click=${this._handlePopoverClick}>
-          ${this.withoutHeader
-            ? nothing
-            : html`<slot name="header">${this._renderHeaderContent()}</slot>`}
+          ${
+            this.withoutHeader
+              ? nothing
+              : html`<slot name="header">${this._renderHeaderContent()}</slot>`
+          }
           <div class="content-wrapper">
             <div class="body"><slot></slot></div>
           </div>

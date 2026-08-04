@@ -8,6 +8,7 @@ import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
+import { applyDefaultColor } from "../common/entity-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -23,7 +24,8 @@ import type {
   LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
-import type { EntitiesCardConfig } from "./types";
+import { migrateEntitiesCardConfig } from "./migrate-card-config";
+import type { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { haStyleScrollbar } from "../../../resources/styles";
 
 export const computeShowHeaderToggle = <
@@ -48,6 +50,8 @@ export const computeShowHeaderToggle = <
   }
   return !!config.show_header_toggle;
 };
+
+export { migrateEntitiesCardConfig };
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -153,11 +157,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       throw new Error("Entities must be specified");
     }
 
-    const entities = processConfigEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = config;
+    this._config = { color: "state", ...migratedConfig };
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header
@@ -190,8 +195,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("_hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntitiesCardConfig
-      | undefined;
+      EntitiesCardConfig | undefined;
 
     if (
       (changedProps.has("_hass") &&
@@ -210,47 +214,61 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${this._headerElement
-          ? html`<div class="header-footer header">${this._headerElement}</div>`
-          : ""}
-        ${!this._config.title && !this._showHeaderToggle && !this._config.icon
-          ? ""
-          : html`
-              <h1 class="card-header">
-                <div class="name">
-                  ${this._config.icon
-                    ? html`
-                        <ha-icon
-                          class="icon"
-                          .icon=${this._config.icon}
-                        ></ha-icon>
-                      `
-                    : ""}
-                  ${this._config.title}
-                </div>
-                ${!this._showHeaderToggle
-                  ? nothing
-                  : html`
-                      <hui-entities-toggle
-                        .hass=${this._hass}
-                        .entities=${(
-                          this._configEntities!.filter(
-                            (conf) => "entity" in conf
-                          ) as EntityConfig[]
-                        ).map((conf) => conf.entity)}
-                      ></hui-entities-toggle>
-                    `}
-              </h1>
-            `}
+        ${
+          this._headerElement
+            ? html`<div class="header-footer header">
+                ${this._headerElement}
+              </div>`
+            : ""
+        }
+        ${
+          !this._config.title && !this._showHeaderToggle && !this._config.icon
+            ? ""
+            : html`
+                <h1 class="card-header">
+                  <div class="name">
+                    ${
+                      this._config.icon
+                        ? html`
+                            <ha-icon
+                              class="icon"
+                              .icon=${this._config.icon}
+                            ></ha-icon>
+                          `
+                        : ""
+                    }
+                    ${this._config.title}
+                  </div>
+                  ${
+                    !this._showHeaderToggle
+                      ? nothing
+                      : html`
+                          <hui-entities-toggle
+                            .hass=${this._hass}
+                            .entities=${(
+                              this._configEntities!.filter(
+                                (conf) => "entity" in conf
+                              ) as EntityConfig[]
+                            ).map((conf) => conf.entity)}
+                          ></hui-entities-toggle>
+                        `
+                  }
+                </h1>
+              `
+        }
         <div id="states" class="card-content ha-scrollbar">
           ${this._configEntities!.map((entityConf) =>
             this._renderEntity(entityConf)
           )}
         </div>
 
-        ${this._footerElement
-          ? html`<div class="header-footer footer">${this._footerElement}</div>`
-          : ""}
+        ${
+          this._footerElement
+            ? html`<div class="header-footer footer">
+                ${this._footerElement}
+              </div>`
+            : ""
+        }
       </ha-card>
     `;
   }
@@ -326,18 +344,18 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `,
   ];
 
-  private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
-    const element = createRowElement(
-      (!("type" in entityConf) || entityConf.type === "conditional") &&
-        "state_color" in this._config!
-        ? ({
-            state_color: this._config.state_color,
-            ...(entityConf as EntityConfig),
-          } as EntityConfig)
-        : entityConf.type === "perform-action"
-          ? { ...entityConf, type: "call-service" }
-          : entityConf
+  private _rowConfig(entityConf: LovelaceRowConfig): LovelaceRowConfig {
+    if (entityConf.type === "perform-action") {
+      return { ...entityConf, type: "call-service" };
+    }
+    return applyDefaultColor(
+      entityConf as EntitiesCardEntityConfig,
+      this._config!.color
     );
+  }
+
+  private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+    const element = createRowElement(this._rowConfig(entityConf));
     if (this._hass) {
       element.hass = this._hass;
     }

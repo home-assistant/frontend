@@ -9,6 +9,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
@@ -16,7 +17,7 @@ import type { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
 
 @customElement("image-cropper-dialog")
 export class HaImagecropperDialog
-  extends LitElement
+  extends DirtyStateProviderMixin<Cropper.Data>()(LitElement)
   implements HassDialog<HaImageCropperDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -29,6 +30,8 @@ export class HaImagecropperDialog
 
   private _cropper?: Cropper;
 
+  private _cropReady = false;
+
   @state() private _isTargetAspectRatio?: boolean;
 
   public showDialog(params: HaImageCropperDialogParams): void {
@@ -40,6 +43,7 @@ export class HaImagecropperDialog
     this._open = false;
     this._cropper?.destroy();
     this._cropper = undefined;
+    this._cropReady = false;
     this._isTargetAspectRatio = false;
     return true;
   }
@@ -50,6 +54,7 @@ export class HaImagecropperDialog
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (!changedProperties.has("_params") || !this._params) {
       return;
     }
@@ -63,6 +68,13 @@ export class HaImagecropperDialog
         ready: () => {
           this._isTargetAspectRatio = this._checkMatchAspectRatio();
           URL.revokeObjectURL(this._image!.src);
+          this._initDirtyTracking({ type: "deep" }, this._cropper!.getData());
+          this._cropReady = true;
+        },
+        crop: () => {
+          if (this._cropReady) {
+            this._updateDirtyState(this._cropper!.getData());
+          }
         },
       });
     } else {
@@ -100,6 +112,7 @@ export class HaImagecropperDialog
         header-title=${this.hass.localize(
           "ui.dialogs.image_cropper.crop_image"
         )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div
@@ -119,17 +132,19 @@ export class HaImagecropperDialog
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          ${this._isTargetAspectRatio
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this._useOriginal}
-                >
-                  ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._isTargetAspectRatio
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this._useOriginal}
+                  >
+                    ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button slot="primaryAction" @click=${this._cropImage}>
             ${this.hass.localize("ui.dialogs.image_cropper.crop")}
           </ha-button>

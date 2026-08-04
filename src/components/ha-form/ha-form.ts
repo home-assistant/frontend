@@ -1,16 +1,26 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import { getHiddenFields } from "./conditions";
+import type {
+  HaFormData,
+  HaFormDataContainer,
+  HaFormElement,
+  HaFormSchema,
+} from "./types";
+
+type HaFormDataChangedEvent = ValueChangedEvent<HaFormData>;
+type HaFormDataContainerChangedEvent = ValueChangedEvent<HaFormDataContainer>;
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
   constant: () => import("./ha-form-constant"),
+  divider: () => import("./ha-form-divider"),
   float: () => import("./ha-form-float"),
   grid: () => import("./ha-form-grid"),
   expandable: () => import("./ha-form-expandable"),
@@ -98,7 +108,12 @@ export class HaForm extends LitElement implements HaFormElement {
     let isValid = true;
     let firstInvalidElement: HTMLElement | undefined;
 
-    this.schema.forEach((item, index) => {
+    const hiddenFields = getHiddenFields(this.schema, this.data);
+    const visibleSchema = this.schema.filter(
+      (item) => !hiddenFields.has(item.name)
+    );
+
+    visibleSchema.forEach((item, index) => {
       const element = elements[index];
       if (!element) {
         return;
@@ -152,63 +167,75 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
+    const renderHiddenFields = getHiddenFields(this.schema, this.data);
+
     return html`
       <div class="root" part="root">
-        ${this.error && this.error.base
-          ? html`
-              <ha-alert alert-type="error">
-                ${this._computeError(this.error.base, this.schema)}
-              </ha-alert>
-            `
-          : ""}
+        ${
+          this.error && this.error.base
+            ? html`
+                <ha-alert alert-type="error">
+                  ${this._computeError(this.error.base, this.schema)}
+                </ha-alert>
+              `
+            : ""
+        }
         ${this.schema.map((item) => {
+          if (renderHiddenFields.has(item.name)) {
+            return nothing;
+          }
+
           const error = getError(this.error, item);
           const warning = getWarning(this.warning, item);
 
           return html`
-            ${error
-              ? html`
-                  <ha-alert own-margin alert-type="error">
-                    ${this._computeError(error, item)}
-                  </ha-alert>
-                `
-              : warning
+            ${
+              error
                 ? html`
-                    <ha-alert own-margin alert-type="warning">
-                      ${this._computeWarning(warning, item)}
+                    <ha-alert own-margin alert-type="error">
+                      ${this._computeError(error, item)}
                     </ha-alert>
                   `
-                : ""}
-            ${"selector" in item
-              ? html`<ha-selector
-                  .schema=${item}
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .name=${item.name}
-                  .selector=${item.selector}
-                  .value=${getValue(this.data, item)}
-                  .label=${this._computeLabel(item, this.data)}
-                  .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? undefined : item.default}
-                  .helper=${this._computeHelper(item)}
-                  .localizeValue=${this.localizeValue}
-                  .required=${item.required || false}
-                  .context=${this._generateContext(item)}
-                ></ha-selector>`
-              : dynamicElement(this.fieldElementName(item.type), {
-                  schema: item,
-                  data: getValue(this.data, item),
-                  label: this._computeLabel(item, this.data),
-                  helper: this._computeHelper(item),
-                  disabled: this.disabled || item.disabled || false,
-                  hass: this.hass,
-                  localize: this.hass?.localize,
-                  computeLabel: this.computeLabel,
-                  computeHelper: this.computeHelper,
-                  localizeValue: this.localizeValue,
-                  context: this._generateContext(item),
-                  ...this.getFormProperties(),
-                })}
+                : warning
+                  ? html`
+                      <ha-alert own-margin alert-type="warning">
+                        ${this._computeWarning(warning, item)}
+                      </ha-alert>
+                    `
+                  : ""
+            }
+            ${
+              "selector" in item
+                ? html`<ha-selector
+                    .schema=${item}
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .name=${item.name}
+                    .selector=${item.selector}
+                    .value=${getValue(this.data, item)}
+                    .label=${this._computeLabel(item, this.data)}
+                    .disabled=${item.disabled || this.disabled || false}
+                    .placeholder=${item.required ? undefined : item.default}
+                    .helper=${this._computeHelper(item)}
+                    .localizeValue=${this.localizeValue}
+                    .required=${item.required || false}
+                    .context=${this._generateContext(item)}
+                  ></ha-selector>`
+                : dynamicElement(this.fieldElementName(item.type), {
+                    schema: item,
+                    data: getValue(this.data, item),
+                    label: this._computeLabel(item, this.data),
+                    helper: this._computeHelper(item),
+                    disabled: this.disabled || item.disabled || false,
+                    hass: this.hass,
+                    localize: this.hass?.localize,
+                    computeLabel: this.computeLabel,
+                    computeHelper: this.computeHelper,
+                    localizeValue: this.localizeValue,
+                    context: this._generateContext(item),
+                    ...this.getFormProperties(),
+                  })
+            }
           `;
         })}
       </div>
@@ -243,16 +270,18 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected addValueChangedListener(element: Element | ShadowRoot) {
-    element.addEventListener("value-changed", (ev) => {
+    element.addEventListener("value-changed", (ev: Event) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
       if (ev.target === this) return;
 
+      const changeEv = ev as
+        HaFormDataChangedEvent | HaFormDataContainerChangedEvent;
       const newValue =
         !schema.name || ("flatten" in schema && schema.flatten)
-          ? ev.detail.value
-          : { [schema.name]: ev.detail.value };
+          ? (changeEv.detail.value as HaFormDataContainer)
+          : { [schema.name]: changeEv.detail.value as HaFormData };
 
       this.data = {
         ...this.data,

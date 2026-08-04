@@ -359,11 +359,13 @@ export class HuiDistributionCard
               role="button"
               aria-pressed=${!item.isHidden}
               aria-disabled=${item.isDisabled}
-              aria-label=${item.isDisabled
-                ? `${item.name} (unavailable)`
-                : item.isHidden
-                  ? `Show ${item.name}`
-                  : `Hide ${item.name}`}
+              aria-label=${
+                item.isDisabled
+                  ? `${item.name} (unavailable)`
+                  : item.isHidden
+                    ? `Show ${item.name}`
+                    : `Hide ${item.name}`
+              }
               tabindex=${item.isDisabled ? -1 : 0}
               @click=${this._handleLegendClick}
               @keydown=${this._handleLegendKeydown}
@@ -373,34 +375,40 @@ export class HuiDistributionCard
                 style=${styleMap({ backgroundColor: item.color })}
               ></div>
               <span class="label">${item.name}</span>
-              ${item.formattedValue
-                ? html`<span class="value">${item.formattedValue}</span>`
-                : nothing}
+              ${
+                item.formattedValue
+                  ? html`<span class="value">${item.formattedValue}</span>`
+                  : nothing
+              }
             </li>
           `;
         })}
-        ${legendItems.length > overflowLimit
-          ? html`
-              <li>
-                <ha-assist-chip
-                  @click=${this._toggleExpandLegend}
-                  filled
-                  .label=${this._expandLegend
-                    ? this.hass!.localize(
-                        "ui.components.history_charts.collapse_legend"
-                      )
-                    : `${this.hass!.localize(
-                        "ui.components.history_charts.expand_legend"
-                      )} (${legendItems.length - overflowLimit})`}
-                >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${this._expandLegend ? mdiChevronUp : mdiChevronDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              </li>
-            `
-          : nothing}
+        ${
+          legendItems.length > overflowLimit
+            ? html`
+                <li>
+                  <ha-assist-chip
+                    @click=${this._toggleExpandLegend}
+                    filled
+                    .label=${
+                      this._expandLegend
+                        ? this.hass!.localize(
+                            "ui.components.history_charts.collapse_legend"
+                          )
+                        : `${this.hass!.localize(
+                            "ui.components.history_charts.expand_legend"
+                          )} (${legendItems.length - overflowLimit})`
+                    }
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${this._expandLegend ? mdiChevronUp : mdiChevronDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                </li>
+              `
+            : nothing
+        }
       </ul>
     `;
   }
@@ -461,24 +469,26 @@ export class HuiDistributionCard
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
-          ${segmentData.segments.length === 0
-            ? html`
-                <div class="empty-state">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.distribution.no_data"
-                  )}
-                </div>
-              `
-            : html`
-                <ha-segmented-bar
-                  .heading=${""}
-                  .segments=${segmentData.segments}
-                  .hiddenSegments=${segmentData.hiddenIndices}
-                  bar-clickable
-                  hide-legend
-                  @segment-clicked=${this._handleSegmentClick}
-                ></ha-segmented-bar>
-              `}
+          ${
+            segmentData.segments.length === 0
+              ? html`
+                  <div class="empty-state">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.cards.distribution.no_data"
+                    )}
+                  </div>
+                `
+              : html`
+                  <ha-segmented-bar
+                    .heading=${""}
+                    .segments=${segmentData.segments}
+                    .hiddenSegments=${segmentData.hiddenIndices}
+                    bar-clickable
+                    hide-legend
+                    @segment-clicked=${this._handleSegmentClick}
+                  ></ha-segmented-bar>
+                `
+          }
 
           <!-- Legend -->
           ${this._renderLegend()}

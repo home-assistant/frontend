@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -52,9 +52,11 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .heading=${this.hass.localize("ui.panel.profile.themes.header")}
         .description=${html`
-          ${!hasThemes
-            ? this.hass.localize("ui.panel.profile.themes.error_no_theme")
-            : nothing}
+          ${
+            !hasThemes
+              ? this.hass.localize("ui.panel.profile.themes.error_no_theme")
+              : nothing
+          }
           <a
             href=${documentationUrl(
               this.hass,
@@ -91,28 +93,30 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
         include-default
         @theme-settings-changed=${this._themeSettingsChanged}
       ></ha-theme-settings>
-      ${showMigration
-        ? html`
-            <ha-settings-row .narrow=${this.narrow}>
-              <span slot="heading">
-                ${this.hass.localize("ui.panel.profile.themes.migrate_header")}
-              </span>
-              <span slot="description">
-                ${this.hass.localize(
-                  "ui.panel.profile.themes.migrate_description"
-                )}
-              </span>
-              <ha-button
-                appearance="plain"
-                size="s"
-                .disabled=${this._migrating}
-                @click=${this._migrateThemePreferences}
-              >
-                ${this.hass.localize("ui.panel.profile.themes.migrate_button")}
-              </ha-button>
-            </ha-settings-row>
-          `
-        : nothing}
+      ${
+        showMigration
+          ? html`
+              <ha-settings-row .narrow=${this.narrow}>
+                <span slot="heading">
+                  ${this.hass.localize("ui.panel.profile.themes.migrate_header")}
+                </span>
+                <span slot="description">
+                  ${this.hass.localize(
+                    "ui.panel.profile.themes.migrate_description"
+                  )}
+                </span>
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  .disabled=${this._migrating}
+                  @click=${this._migrateThemePreferences}
+                >
+                  ${this.hass.localize("ui.panel.profile.themes.migrate_button")}
+                </ha-button>
+              </ha-settings-row>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -144,12 +148,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       this._migrating = false;
     }
   }
-
-  static styles = css`
-    a {
-      color: var(--primary-color);
-    }
-  `;
 }
 
 declare global {

@@ -25,25 +25,27 @@ export function getAssistantsTableColumn<T>(
     maxWidth: "112px",
     valueColumn: "assistants_sortable_key",
     template: (entry: any) =>
-      html`${entry.assistants.length !== 0
-        ? html`<div style="display: flex; gap: var(--ha-space-1);">
-            ${availableAssistants.map((vaId) => {
-              const supported =
-                !supportedEntities?.[vaId] ||
-                supportedEntities[vaId].includes(entry.entity_id);
-              const manual = entry.manAssistants?.includes(vaId);
-              return getAssistantsTableColumnIcon(
-                entry.entity_id,
-                entry.assistants.includes(vaId),
-                vaId,
-                hass,
-                entitiesToCheck,
-                manual,
-                !supported
-              );
-            })}
-          </div>`
-        : nothing}`,
+      html`${
+        entry.assistants.length !== 0
+          ? html`<div style="display: flex; gap: var(--ha-space-1);">
+              ${availableAssistants.map((vaId) => {
+                const supported =
+                  !supportedEntities?.[vaId] ||
+                  supportedEntities[vaId].includes(entry.entity_id);
+                const manual = entry.manAssistants?.includes(vaId);
+                return getAssistantsTableColumnIcon(
+                  entry.entity_id,
+                  entry.assistants.includes(vaId),
+                  vaId,
+                  hass,
+                  entitiesToCheck,
+                  manual,
+                  !supported
+                );
+              })}
+            </div>`
+          : nothing
+      }`,
   };
 }
 

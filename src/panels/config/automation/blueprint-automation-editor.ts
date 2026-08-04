@@ -1,13 +1,18 @@
+import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import { saveFabStyles } from "./styles";
 
@@ -19,7 +24,9 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ type: Boolean }) public dirty = false;
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
 
   protected get _config(): BlueprintAutomationConfig {
     return this.config;
@@ -27,38 +34,42 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <ha-button
-                appearance="plain"
-                size="s"
-                slot="action"
-                @click=${this._enable}
-              >
+      ${
+        this.stateObj?.state === "off"
+          ? html`
+              <ha-alert alert-type="info">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
+                  "ui.panel.config.automation.editor.disabled"
                 )}
-              </ha-button>
-            </ha-alert>
-          `
-        : ""}
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  slot="action"
+                  @click=${this._enable}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.enable"
+                  )}
+                </ha-button>
+              </ha-alert>
+            `
+          : ""
+      }
+      ${
+        this.config.description
+          ? html`<ha-markdown
+              class="description"
+              breaks
+              .content=${this.config.description}
+            ></ha-markdown>`
+          : nothing
+      }
       ${this.renderCard()}
 
       <ha-button
         slot="fab"
         size="l"
-        class=${this.dirty ? "dirty" : ""}
+        class=${this._dirtyState?.isDirty ? "dirty" : ""}
         .disabled=${this.saving}
         @click=${this._saveAutomation}
       >

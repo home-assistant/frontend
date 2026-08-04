@@ -3,7 +3,9 @@ import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { goBack } from "../common/navigate";
+import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyleScrollbar } from "../resources/styles";
@@ -29,22 +31,26 @@ class HassSubpage extends LitElement {
   @restoreScroll(".content") private _savedScrollPos?: number;
 
   protected render(): TemplateResult {
+    const backPath = sanitizeNavigationPath(this.backPath);
+
     return html`
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
-          ${this.mainPage || history.state?.root
-            ? html`<ha-menu-button></ha-menu-button>`
-            : this.backPath
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    href=${this.backPath}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._backTapped}
-                  ></ha-icon-button-arrow-prev>
-                `}
+          ${
+            this.mainPage || history.state?.root
+              ? html`<ha-menu-button></ha-menu-button>`
+              : backPath
+                ? html`
+                    <ha-icon-button-arrow-prev
+                      href=${backPath}
+                    ></ha-icon-button-arrow-prev>
+                  `
+                : html`
+                    <ha-icon-button-arrow-prev
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
+          }
 
           <div class="main-title">
             <slot name="header">${this.header}</slot>
@@ -69,7 +75,7 @@ class HassSubpage extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 

@@ -27,6 +27,10 @@ import {
   getDevices,
   type DevicePickerItem,
 } from "../data/device/device_picker";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import {
   entityComboBoxKeys,
@@ -122,6 +126,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
@@ -211,6 +219,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._loadConfigEntries();
     }
 
+    const devicesChanged =
+      changedProps.has("hass") &&
+      this.hass.devices !== changedProps.get("hass")?.devices;
+    if (
+      (changedProps.has("value") || devicesChanged) &&
+      this.hass &&
+      this._compositeSplits === undefined &&
+      !this._loadingCompositeSplits &&
+      this.value?.device_id &&
+      ensureArray(this.value.device_id).some(
+        (deviceId) => !this.hass.devices[deviceId]
+      )
+    ) {
+      // A referenced device is missing from the registry; it might be a legacy
+      // composite device that was split. Fetch the split map to offer a fix.
+      this._loadCompositeSplits();
+    }
+
     if (
       this._pendingEntityId &&
       changedProps.has("hass") &&
@@ -259,71 +285,82 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="items">
-        ${floorIds.length
-          ? floorIds.map(
-              (floor_id) => html`
-                <ha-target-picker-value-chip
-                  .hass=${this.hass}
-                  type="floor"
-                  .itemId=${floor_id}
-                  @remove-target-item=${this._handleRemove}
-                  @expand-target-item=${this._handleExpand}
-                ></ha-target-picker-value-chip>
-              `
-            )
-          : nothing}
-        ${areaIds.length
-          ? areaIds.map(
-              (area_id) => html`
-                <ha-target-picker-value-chip
-                  .hass=${this.hass}
-                  type="area"
-                  .itemId=${area_id}
-                  @remove-target-item=${this._handleRemove}
-                  @expand-target-item=${this._handleExpand}
-                ></ha-target-picker-value-chip>
-              `
-            )
-          : nothing}
-        ${deviceIds.length
-          ? deviceIds.map(
-              (device_id) => html`
-                <ha-target-picker-value-chip
-                  .hass=${this.hass}
-                  type="device"
-                  .itemId=${device_id}
-                  @remove-target-item=${this._handleRemove}
-                  @expand-target-item=${this._handleExpand}
-                ></ha-target-picker-value-chip>
-              `
-            )
-          : nothing}
-        ${entityIds.length
-          ? entityIds.map(
-              (entity_id) => html`
-                <ha-target-picker-value-chip
-                  .hass=${this.hass}
-                  type="entity"
-                  .itemId=${entity_id}
-                  @remove-target-item=${this._handleRemove}
-                  @expand-target-item=${this._handleExpand}
-                ></ha-target-picker-value-chip>
-              `
-            )
-          : nothing}
-        ${labelIds.length
-          ? labelIds.map(
-              (label_id) => html`
-                <ha-target-picker-value-chip
-                  .hass=${this.hass}
-                  type="label"
-                  .itemId=${label_id}
-                  @remove-target-item=${this._handleRemove}
-                  @expand-target-item=${this._handleExpand}
-                ></ha-target-picker-value-chip>
-              `
-            )
-          : nothing}
+        ${
+          floorIds.length
+            ? floorIds.map(
+                (floor_id) => html`
+                  <ha-target-picker-value-chip
+                    .hass=${this.hass}
+                    type="floor"
+                    .itemId=${floor_id}
+                    @remove-target-item=${this._handleRemove}
+                    @expand-target-item=${this._handleExpand}
+                  ></ha-target-picker-value-chip>
+                `
+              )
+            : nothing
+        }
+        ${
+          areaIds.length
+            ? areaIds.map(
+                (area_id) => html`
+                  <ha-target-picker-value-chip
+                    .hass=${this.hass}
+                    type="area"
+                    .itemId=${area_id}
+                    @remove-target-item=${this._handleRemove}
+                    @expand-target-item=${this._handleExpand}
+                  ></ha-target-picker-value-chip>
+                `
+              )
+            : nothing
+        }
+        ${
+          deviceIds.length
+            ? deviceIds.map(
+                (device_id) => html`
+                  <ha-target-picker-value-chip
+                    .hass=${this.hass}
+                    type="device"
+                    .itemId=${device_id}
+                    .compositeSplits=${this._compositeSplits}
+                    @remove-target-item=${this._handleRemove}
+                    @expand-target-item=${this._handleExpand}
+                  ></ha-target-picker-value-chip>
+                `
+              )
+            : nothing
+        }
+        ${
+          entityIds.length
+            ? entityIds.map(
+                (entity_id) => html`
+                  <ha-target-picker-value-chip
+                    .hass=${this.hass}
+                    type="entity"
+                    .itemId=${entity_id}
+                    @remove-target-item=${this._handleRemove}
+                    @expand-target-item=${this._handleExpand}
+                  ></ha-target-picker-value-chip>
+                `
+              )
+            : nothing
+        }
+        ${
+          labelIds.length
+            ? labelIds.map(
+                (label_id) => html`
+                  <ha-target-picker-value-chip
+                    .hass=${this.hass}
+                    type="label"
+                    .itemId=${label_id}
+                    @remove-target-item=${this._handleRemove}
+                    @expand-target-item=${this._handleExpand}
+                  ></ha-target-picker-value-chip>
+                `
+              )
+            : nothing
+        }
       </div>
     `;
   }
@@ -355,77 +392,87 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="item-groups">
-        ${entityIds.length
-          ? html`
-              <ha-target-picker-item-group
-                @remove-target-item=${this._handleRemove}
-                @replace-target-item=${this._handleReplace}
-                type="entity"
-                .hass=${this.hass}
-                .items=${{ entity: entityIds }}
-                .deviceFilter=${this.deviceFilter}
-                .entityFilter=${this.entityFilter}
-                .includeDomains=${this.includeDomains}
-                .includeDeviceClasses=${this.includeDeviceClasses}
-                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-              >
-              </ha-target-picker-item-group>
-            `
-          : nothing}
-        ${deviceIds.length
-          ? html`
-              <ha-target-picker-item-group
-                @remove-target-item=${this._handleRemove}
-                @replace-target-item=${this._handleReplace}
-                type="device"
-                .hass=${this.hass}
-                .items=${{ device: deviceIds }}
-                .deviceFilter=${this.deviceFilter}
-                .entityFilter=${this.entityFilter}
-                .includeDomains=${this.includeDomains}
-                .includeDeviceClasses=${this.includeDeviceClasses}
-                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-              >
-              </ha-target-picker-item-group>
-            `
-          : nothing}
-        ${floorIds.length || areaIds.length
-          ? html`
-              <ha-target-picker-item-group
-                @remove-target-item=${this._handleRemove}
-                @replace-target-item=${this._handleReplace}
-                type="area"
-                .hass=${this.hass}
-                .items=${{
-                  floor: floorIds,
-                  area: areaIds,
-                }}
-                .deviceFilter=${this.deviceFilter}
-                .entityFilter=${this.entityFilter}
-                .includeDomains=${this.includeDomains}
-                .includeDeviceClasses=${this.includeDeviceClasses}
-                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-              >
-              </ha-target-picker-item-group>
-            `
-          : nothing}
-        ${labelIds.length
-          ? html`
-              <ha-target-picker-item-group
-                @remove-target-item=${this._handleRemove}
-                @replace-target-item=${this._handleReplace}
-                type="label"
-                .hass=${this.hass}
-                .items=${{ label: labelIds }}
-                .deviceFilter=${this.deviceFilter}
-                .entityFilter=${this.entityFilter}
-                .includeDomains=${this.includeDomains}
-                .includeDeviceClasses=${this.includeDeviceClasses}
-                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-              >
-              </ha-target-picker-item-group>
-            `
-          : nothing}
+        ${
+          entityIds.length
+            ? html`
+                <ha-target-picker-item-group
+                  @remove-target-item=${this._handleRemove}
+                  @replace-target-item=${this._handleReplace}
+                  type="entity"
+                  .hass=${this.hass}
+                  .items=${{ entity: entityIds }}
+                  .deviceFilter=${this.deviceFilter}
+                  .entityFilter=${this.entityFilter}
+                  .includeDomains=${this.includeDomains}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                >
+                </ha-target-picker-item-group>
+              `
+            : nothing
+        }
+        ${
+          deviceIds.length
+            ? html`
+                <ha-target-picker-item-group
+                  @remove-target-item=${this._handleRemove}
+                  @replace-target-item=${this._handleReplace}
+                  @migrate-target-item=${this._handleMigrate}
+                  type="device"
+                  .hass=${this.hass}
+                  .items=${{ device: deviceIds }}
+                  .deviceFilter=${this.deviceFilter}
+                  .entityFilter=${this.entityFilter}
+                  .includeDomains=${this.includeDomains}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                  .compositeSplits=${this._compositeSplits}
+                >
+                </ha-target-picker-item-group>
+              `
+            : nothing
+        }
+        ${
+          floorIds.length || areaIds.length
+            ? html`
+                <ha-target-picker-item-group
+                  @remove-target-item=${this._handleRemove}
+                  @replace-target-item=${this._handleReplace}
+                  type="area"
+                  .hass=${this.hass}
+                  .items=${{
+                    floor: floorIds,
+                    area: areaIds,
+                  }}
+                  .deviceFilter=${this.deviceFilter}
+                  .entityFilter=${this.entityFilter}
+                  .includeDomains=${this.includeDomains}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                >
+                </ha-target-picker-item-group>
+              `
+            : nothing
+        }
+        ${
+          labelIds.length
+            ? html`
+                <ha-target-picker-item-group
+                  @remove-target-item=${this._handleRemove}
+                  @replace-target-item=${this._handleReplace}
+                  type="label"
+                  .hass=${this.hass}
+                  .items=${{ label: labelIds }}
+                  .deviceFilter=${this.deviceFilter}
+                  .entityFilter=${this.entityFilter}
+                  .includeDomains=${this.includeDomains}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                >
+                </ha-target-picker-item-group>
+              `
+            : nothing
+        }
       </div>
     `;
   }
@@ -461,6 +508,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div class="add-target-wrapper">
         <ha-generic-picker
           .hass=${this.hass}
+          popover-placement="bottom-start"
           .disabled=${this.disabled}
           .autofocus=${this.autofocus}
           .helper=${this.helper}
@@ -852,11 +900,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     const type = getTargetComboBoxItemType(firstItem as PickerComboBoxItem);
     const translationType:
-      | "areas"
-      | "entities"
-      | "devices"
-      | "labels"
-      | undefined =
+      "areas" | "entities" | "devices" | "labels" | undefined =
       type === "area" || type === "floor"
         ? "areas"
         : type === "entity"
@@ -914,10 +958,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         replaceTarget?.type === "label" ? replaceTarget.id : undefined;
 
       const items: (
-        | string
-        | FloorComboBoxItem
-        | EntityComboBoxItem
-        | PickerComboBoxItem
+        string | FloorComboBoxItem | EntityComboBoxItem | PickerComboBoxItem
       )[] = [];
 
       if (!filterType || filterType === "entity") {
@@ -1116,7 +1157,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return multiTermSortedSearch(
         items,
         searchTerm,
-        weightedKeys,
         (item) => item.id,
         fuseIndex
       );
@@ -1164,6 +1204,31 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     );
   }
 
+  private async _loadCompositeSplits() {
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
+  }
+
+  private _handleMigrate(
+    ev: HASSDomEvent<HASSDomEvents["migrate-target-item"]>
+  ) {
+    const { id, replacements } = ev.detail;
+    let value = this._removeItem(this.value, "device", id);
+    for (const replacement of replacements) {
+      value = this._addTargetToValue(value, {
+        type: "device",
+        id: replacement,
+      });
+    }
+    fireEvent(this, "value-changed", { value });
+  }
+
   private _renderRow = (
     item:
       | PickerComboBoxItem
@@ -1199,90 +1264,102 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
-        style=${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? "--md-list-item-leading-space: var(--ha-space-12);"
-          : ""}
+        style=${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            : ""
+        }
       >
-        ${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? html`
-              <ha-tree-indicator
-                style=${styleMap({
-                  width: "var(--ha-space-12)",
-                  position: "absolute",
-                  top: "0",
-                  left: rtl ? undefined : "var(--ha-space-1)",
-                  right: rtl ? "var(--ha-space-1)" : undefined,
-                  transform: rtl ? "scaleX(-1)" : "",
-                })}
-                .end=${(
-                  item as FloorComboBoxItem & { last?: boolean | undefined }
-                ).last}
-                slot="start"
-              ></ha-tree-indicator>
-            `
-          : nothing}
-        ${item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : type === "entity" && (item as EntityComboBoxItem).stateObj
-              ? html`
-                  <state-badge
-                    slot="start"
-                    .stateObj=${(item as EntityComboBoxItem).stateObj}
-                    .hass=${this.hass}
-                  ></state-badge>
-                `
-              : type === "device" && (item as DevicePickerItem).domain
+        ${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? html`
+                <ha-tree-indicator
+                  style=${styleMap({
+                    width: "var(--ha-space-12)",
+                    position: "absolute",
+                    top: "0",
+                    left: rtl ? undefined : "var(--ha-space-1)",
+                    right: rtl ? "var(--ha-space-1)" : undefined,
+                    transform: rtl ? "scaleX(-1)" : "",
+                  })}
+                  .end=${
+                    (item as FloorComboBoxItem & { last?: boolean | undefined })
+                      .last
+                  }
+                  slot="start"
+                ></ha-tree-indicator>
+              `
+            : nothing
+        }
+        ${
+          item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>`
+              : type === "entity" && (item as EntityComboBoxItem).stateObj
                 ? html`
-                    <img
+                    <state-badge
                       slot="start"
-                      alt=""
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                      src=${brandsUrl(
-                        {
-                          domain: (item as DevicePickerItem).domain!,
-                          type: "icon",
-                          darkOptimized: this.hass.themes.darkMode,
-                        },
-                        this.hass.auth.data.hassUrl
-                      )}
-                    />
+                      .stateObj=${(item as EntityComboBoxItem).stateObj}
+                    ></state-badge>
                   `
-                : type === "floor"
-                  ? html`<ha-floor-icon
-                      slot="start"
-                      .floor=${(item as FloorComboBoxItem).floor!}
-                    ></ha-floor-icon>`
-                  : type === "area"
-                    ? html`<ha-svg-icon
+                : type === "device" && (item as DevicePickerItem).domain
+                  ? html`
+                      <img
                         slot="start"
-                        .path=${item.icon_path || mdiTextureBox}
-                      ></ha-svg-icon>`
-                    : nothing}
+                        alt=""
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                        src=${brandsUrl(
+                          {
+                            domain: (item as DevicePickerItem).domain!,
+                            type: "icon",
+                            darkOptimized: this.hass.themes.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
+                      />
+                    `
+                  : type === "floor"
+                    ? html`<ha-floor-icon
+                        slot="start"
+                        .floor=${(item as FloorComboBoxItem).floor!}
+                      ></ha-floor-icon>`
+                    : type === "area"
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${item.icon_path || mdiTextureBox}
+                        ></ha-svg-icon>`
+                      : nothing
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${(item as EntityComboBoxItem).stateObj && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${(item as EntityComboBoxItem).stateObj?.entity_id}
-              </span>
-            `
-          : nothing}
-        ${(item as EntityComboBoxItem).domain_name &&
-        (type !== "entity" || !showEntityId)
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).stateObj && showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${(item as EntityComboBoxItem).stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).domain_name &&
+          (type !== "entity" || !showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -1319,7 +1396,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     .item-groups {
       overflow: hidden;
-      border: 2px solid var(--divider-color);
+      border: var(--ha-border-width-sm) solid var(--divider-color);
       border-radius: var(--ha-border-radius-lg);
     }
   `;
@@ -1334,6 +1411,7 @@ declare global {
     "remove-target-item": TargetItem;
     "expand-target-item": TargetItem;
     "replace-target-item": TargetItem;
+    "migrate-target-item": { id: string; replacements: string[] };
     "remove-target-group": string;
   }
 }

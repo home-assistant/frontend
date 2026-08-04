@@ -85,42 +85,52 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                     .available=${addon.available}
                     .installed=${addon.installed}
                     .tags=${tags}
-                    .icon=${addon.installed && addon.update_available
-                      ? mdiArrowUpBoldCircle
-                      : mdiPuzzle}
-                    .iconTitle=${addon.installed
-                      ? addon.update_available
-                        ? this.hass.localize(
-                            "ui.panel.config.apps.state.update_available"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.apps.state.installed"
-                          )
-                      : addon.available
-                        ? this.hass.localize(
-                            "ui.panel.config.apps.state.not_installed"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.apps.state.not_available"
-                          )}
-                    .iconClass=${addon.installed
-                      ? addon.update_available
-                        ? "update"
-                        : "installed"
-                      : !addon.available
-                        ? "not_available"
-                        : ""}
-                    .iconImage=${addon.icon
-                      ? `/api/hassio/addons/${addon.slug}/icon`
-                      : undefined}
+                    .icon=${
+                      addon.installed && addon.update_available
+                        ? mdiArrowUpBoldCircle
+                        : mdiPuzzle
+                    }
+                    .iconTitle=${
+                      addon.installed
+                        ? addon.update_available
+                          ? this.hass.localize(
+                              "ui.panel.config.apps.state.update_available"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.apps.state.installed"
+                            )
+                        : addon.available
+                          ? this.hass.localize(
+                              "ui.panel.config.apps.state.not_installed"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.apps.state.not_available"
+                            )
+                    }
+                    .iconClass=${
+                      addon.installed
+                        ? addon.update_available
+                          ? "update"
+                          : "installed"
+                        : !addon.available
+                          ? "not_available"
+                          : ""
+                    }
+                    .iconImage=${
+                      addon.icon
+                        ? `/api/hassio/addons/${addon.slug}/icon`
+                        : undefined
+                    }
                     .showTopbar=${addon.installed || !addon.available}
-                    .topbarClass=${addon.installed
-                      ? addon.update_available
-                        ? "update"
-                        : "installed"
-                      : !addon.available
-                        ? "unavailable"
-                        : ""}
+                    .topbarClass=${
+                      addon.installed
+                        ? addon.update_available
+                          ? "update"
+                          : "installed"
+                        : !addon.available
+                          ? "unavailable"
+                          : ""
+                    }
                   ></supervisor-apps-card-content>
                 </div>
               </ha-card>

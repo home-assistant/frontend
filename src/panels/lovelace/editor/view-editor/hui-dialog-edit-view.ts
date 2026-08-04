@@ -36,6 +36,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -63,7 +64,9 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
-export class HuiDialogEditView extends LitElement {
+export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: EditViewDialogParams;
@@ -75,8 +78,6 @@ export class HuiDialogEditView extends LitElement {
   @state() private _saving = false;
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
-
-  @state() private _dirty = false;
 
   @state() private _valid = true;
 
@@ -93,6 +94,7 @@ export class HuiDialogEditView extends LitElement {
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const viewConfig = {
         ...this._config,
@@ -109,21 +111,20 @@ export class HuiDialogEditView extends LitElement {
       this._config = {
         type: SECTIONS_VIEW_LAYOUT,
       };
-      this._dirty = false;
-      return;
-    }
+    } else {
+      this._lovelace = this._params.lovelace;
 
-    this._lovelace = this._params.lovelace;
-
-    const view = this._lovelace.config.views[this._params.viewIndex];
-    // Todo : add better support for strategy views
-    if (isStrategyView(view)) {
-      const { strategy, ...viewConfig } = view;
-      this._config = viewConfig;
-      return;
+      const view = this._lovelace.config.views[this._params.viewIndex];
+      // Todo : add better support for strategy views
+      if (isStrategyView(view)) {
+        const { strategy, ...viewConfig } = view;
+        this._config = viewConfig;
+      } else {
+        this._config = view;
+        this._currentType = this._type;
+      }
     }
-    this._config = view;
-    this._currentType = this._type;
+    this._initDirtyTracking({ type: "deep" }, this._config);
   }
 
   public closeDialog(): void {
@@ -134,7 +135,6 @@ export class HuiDialogEditView extends LitElement {
     this._params = undefined;
     this._config = {};
     this._yamlMode = false;
-    this._dirty = false;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -171,7 +171,6 @@ export class HuiDialogEditView extends LitElement {
           content = html`
             <hui-view-editor
               .isNew=${this._params.viewIndex === undefined}
-              .hass=${this.hass}
               .config=${this._config}
               @view-config-changed=${this._viewConfigChanged}
             ></hui-view-editor>
@@ -211,7 +210,7 @@ export class HuiDialogEditView extends LitElement {
       <ha-dialog
         .open=${this._open}
         width="large"
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
@@ -251,81 +250,96 @@ export class HuiDialogEditView extends LitElement {
               ></ha-svg-icon>
             </ha-dropdown-item>
           </ha-dropdown>
-          ${convertToSection
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
-                  )}
-                  <ha-button
-                    size="s"
-                    slot="action"
-                    @click=${this._convertToSection}
-                  >
+          ${
+            convertToSection
+              ? html`
+                  <ha-alert alert-type="info">
                     ${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.convert_view"
+                      "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
                     )}
-                  </ha-button>
-                </ha-alert>
-              `
-            : nothing}
-          ${convertNotSupported
-            ? html`
-                <ha-alert alert-type="warning">
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.section_to_card_not_supported"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
-          ${!this._yamlMode
-            ? html`<ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                ${TABS.map(
-                  (tab) => html`
-                    <ha-tab-group-tab
-                      slot="nav"
-                      .panel=${tab}
-                      .active=${this._currTab === tab}
+                    <ha-button
+                      size="s"
+                      slot="action"
+                      @click=${this._convertToSection}
                     >
                       ${this.hass!.localize(
-                        `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
+                        "ui.panel.lovelace.editor.edit_view.convert_view"
                       )}
-                    </ha-tab-group-tab>
-                  `
-                )}
-              </ha-tab-group>`
-            : nothing}
+                    </ha-button>
+                  </ha-alert>
+                `
+              : nothing
+          }
+          ${
+            convertNotSupported
+              ? html`
+                  <ha-alert alert-type="warning">
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.section_to_card_not_supported"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
+          ${
+            !this._yamlMode
+              ? html`<ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                  ${TABS.map(
+                    (tab) => html`
+                      <ha-tab-group-tab
+                        slot="nav"
+                        .panel=${tab}
+                        .active=${this._currTab === tab}
+                      >
+                        ${this.hass!.localize(
+                          `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
+                        )}
+                      </ha-tab-group-tab>
+                    `
+                  )}
+                </ha-tab-group>`
+              : nothing
+          }
         </ha-dialog-header>
         ${content}
         <ha-dialog-footer slot="footer">
-          ${this._params.viewIndex !== undefined
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._deleteConfirm}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_view.delete"
-                  )}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._params.viewIndex !== undefined
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteConfirm}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.delete"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             class="save"
             slot="primaryAction"
-            ?disabled=${!this._config ||
-            this._saving ||
-            !this._dirty ||
-            !this._valid ||
-            convertToSection ||
-            convertNotSupported}
+            ?disabled=${
+              !this._config ||
+              this._saving ||
+              !this.isDirtyState ||
+              !this._valid ||
+              convertToSection ||
+              convertNotSupported
+            }
             @click=${this._save}
           >
-            ${this._saving
-              ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
-              : nothing}
+            ${
+              this._saving
+                ? html`<ha-spinner
+                    size="small"
+                    aria-label="Saving"
+                  ></ha-spinner>`
+                : nothing
+            }
             ${this.hass!.localize("ui.common.save")}</ha-button
           >
         </ha-dialog-footer>
@@ -598,8 +612,9 @@ export class HuiDialogEditView extends LitElement {
       if (ev.detail.valid !== undefined) {
         this._valid = ev.detail.valid;
       }
-      this._config = ev.detail.config;
-      this._dirty = true;
+      const config: LovelaceViewConfig = ev.detail.config;
+      this._config = config;
+      this._updateDirtyState(config);
     }
   }
 
@@ -607,12 +622,13 @@ export class HuiDialogEditView extends LitElement {
     ev: HASSDomEvent<ViewVisibilityChangeEvent>
   ): void {
     if (ev.detail.visible && this._config) {
-      this._config = {
+      const config: LovelaceViewConfig = {
         ...this._config,
         visible: ev.detail.visible,
       };
+      this._config = config;
+      this._updateDirtyState(config);
     }
-    this._dirty = true;
   }
 
   private _viewYamlChanged(ev: CustomEvent) {
@@ -620,8 +636,9 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
-    this._dirty = true;
+    const config: LovelaceViewConfig = ev.detail.value;
+    this._config = config;
+    this._updateDirtyState(config);
   }
 
   private _isConfigChanged(): boolean {

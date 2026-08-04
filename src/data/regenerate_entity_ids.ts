@@ -58,26 +58,36 @@ export const regenerateEntityIds = async (
             </table>
           </div>
         </ha-expansion-panel>
-        ${dialogCantRename.length
-          ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
-              <span slot="header"
-                >${hass.localize("ui.dialogs.recreate_entity_ids.cant_rename", {
-                  count: dialogCantRename.length,
-                })}</span
-              >
-              ${dialogCantRename}
-            </ha-expansion-panel>`
-          : nothing}
-        ${dialogNoRename.length
-          ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
-              <span slot="header"
-                >${hass.localize("ui.dialogs.recreate_entity_ids.wont_change", {
-                  count: dialogNoRename.length,
-                })}</span
-              >
-              ${dialogNoRename}
-            </ha-expansion-panel>`
-          : nothing}`,
+        ${
+          dialogCantRename.length
+            ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
+                <span slot="header"
+                  >${hass.localize(
+                    "ui.dialogs.recreate_entity_ids.cant_rename",
+                    {
+                      count: dialogCantRename.length,
+                    }
+                  )}</span
+                >
+                ${dialogCantRename}
+              </ha-expansion-panel>`
+            : nothing
+        }
+        ${
+          dialogNoRename.length
+            ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
+                <span slot="header"
+                  >${hass.localize(
+                    "ui.dialogs.recreate_entity_ids.wont_change",
+                    {
+                      count: dialogNoRename.length,
+                    }
+                  )}</span
+                >
+                ${dialogNoRename}
+              </ha-expansion-panel>`
+            : nothing
+        }`,
       confirmText: hass.localize("ui.common.update"),
       dismissText: hass.localize("ui.common.cancel"),
       destructive: true,
@@ -104,26 +114,30 @@ export const regenerateEntityIds = async (
       title: hass.localize(
         "ui.dialogs.recreate_entity_ids.confirm_no_renamable_entity_ids"
       ),
-      text: html`${dialogCantRename.length
-        ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
-            <span slot="header"
-              >${hass.localize("ui.dialogs.recreate_entity_ids.cant_rename", {
-                count: dialogCantRename.length,
-              })}</span
-            >
-            ${dialogCantRename}
-          </ha-expansion-panel>`
-        : nothing}
-      ${dialogNoRename.length
-        ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
-            <span slot="header"
-              >${hass.localize("ui.dialogs.recreate_entity_ids.wont_change", {
-                count: dialogNoRename.length,
-              })}</span
-            >
-            ${dialogNoRename}
-          </ha-expansion-panel>`
-        : nothing}`,
+      text: html`${
+        dialogCantRename.length
+          ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
+              <span slot="header"
+                >${hass.localize("ui.dialogs.recreate_entity_ids.cant_rename", {
+                  count: dialogCantRename.length,
+                })}</span
+              >
+              ${dialogCantRename}
+            </ha-expansion-panel>`
+          : nothing
+      }
+      ${
+        dialogNoRename.length
+          ? html`<ha-expansion-panel outlined style="margin-top: 8px;">
+              <span slot="header"
+                >${hass.localize("ui.dialogs.recreate_entity_ids.wont_change", {
+                  count: dialogNoRename.length,
+                })}</span
+              >
+              ${dialogNoRename}
+            </ha-expansion-panel>`
+          : nothing
+      }`,
     });
   }
 };

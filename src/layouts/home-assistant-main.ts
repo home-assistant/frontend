@@ -71,13 +71,15 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
-        ${isPanelReady
-          ? html`<partial-panel-resolver
-              .hass=${this.hass}
-              .route=${this.route}
-              slot="appContent"
-            ></partial-panel-resolver>`
-          : nothing}
+        ${
+          isPanelReady
+            ? html`<partial-panel-resolver
+                .hass=${this.hass}
+                .route=${this.route}
+                slot="appContent"
+              ></partial-panel-resolver>`
+            : nothing
+        }
       </ha-drawer>
     `;
   }

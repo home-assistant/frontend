@@ -2,10 +2,20 @@ import { ContextProvider } from "@lit/context";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
-import { buildRelatedIdSets } from "../common/search/related-context";
+import {
+  buildRelatedIdSets,
+  type RelatedIdSets,
+} from "../common/search/related-context";
 import { relatedContext, type RelatedContextItem } from "../data/context";
 import { findRelated } from "../data/search";
 import type { HassBaseEl } from "./hass-base-mixin";
+
+declare global {
+  interface Window {
+    /** Debugging aid: snapshot of the related context currently provided. */
+    haContext?: { related?: RelatedIdSets };
+  }
+}
 
 /**
  * Standalone context provider for `relatedContext`.
@@ -13,6 +23,9 @@ import type { HassBaseEl } from "./hass-base-mixin";
  * Listens for `hass-related-context` events fired by child components,
  * resolves the related entities/devices/areas via `findRelated`, and
  * provides the resolved `RelatedIdSets` to context consumers.
+ *
+ * The current value is mirrored to `window.haContext?.related` to make debugging
+ * from the console easier.
  *
  * Clears on actual page navigation (pathname change), not on dialog
  * history manipulation (`popstate` from dialog close).
@@ -63,11 +76,14 @@ export class RelatedContextProvider {
   }
 
   private _onRelatedContext = (
-    ev: HASSDomEvent<RelatedContextItem | undefined>
+    ev: HASSDomEvent<HASSDomEvents["hass-related-context"]>
   ): void => {
-    this._relatedContext = ev.detail;
-    this._contextPathname = mainWindow.location.pathname;
-    this._resolveRelatedContext(this._relatedContext);
+    // `fireEvent` coerces an undefined detail to `{}`, so a clear arrives
+    // without an itemId; normalise that back to undefined.
+    const context = ev.detail?.itemId ? ev.detail : undefined;
+    this._relatedContext = context;
+    this._contextPathname = context ? mainWindow.location.pathname : undefined;
+    this._resolveRelatedContext(context);
   };
 
   /**
@@ -84,7 +100,7 @@ export class RelatedContextProvider {
     }
     this._relatedContext = undefined;
     this._contextPathname = undefined;
-    this._provider.setValue(undefined);
+    this._setValue(undefined);
   };
 
   private _contextMatches = (context?: RelatedContextItem): boolean =>
@@ -95,7 +111,7 @@ export class RelatedContextProvider {
     context?: RelatedContextItem
   ): Promise<void> => {
     if (!context || !this._host.hass) {
-      this._provider.setValue(undefined);
+      this._setValue(undefined);
       return;
     }
 
@@ -105,12 +121,19 @@ export class RelatedContextProvider {
         context.itemId
       );
       if (this._contextMatches(context)) {
-        this._provider.setValue(buildRelatedIdSets(related));
+        this._setValue(buildRelatedIdSets(related, context));
       }
     } catch (_err) {
       if (this._contextMatches(context)) {
-        this._provider.setValue(undefined);
+        this._setValue(undefined);
       }
     }
   };
+
+  // Mirror the provided value to `window.haContext?.related` for console debugging.
+  private _setValue(value: RelatedIdSets | undefined): void {
+    this._provider.setValue(value);
+    const windowContext = (window.haContext ??= {});
+    windowContext.related = value;
+  }
 }

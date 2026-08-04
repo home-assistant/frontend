@@ -66,26 +66,30 @@ export class HaConversationAgentPicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize(
-          "ui.components.conversation-agent-picker.conversation_agent"
-        )}
+        .label=${
+          this.label ||
+          this.hass!.localize(
+            "ui.components.conversation-agent-picker.conversation_agent"
+          )
+        }
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
         @selected=${this._changed}
         .options=${options}
       ></ha-select
-      >${(this._subConfigEntry &&
-        this._configEntry?.supported_subentry_types[
-          this._subConfigEntry.subentry_type
-        ]?.supports_reconfigure) ||
-      this._configEntry?.supports_options
-        ? html`<ha-icon-button
-            .path=${mdiCog}
-            @click=${this._openOptionsFlow}
-          ></ha-icon-button>`
-        : ""}
+      >${
+        (this._subConfigEntry &&
+          this._configEntry?.supported_subentry_types[
+            this._subConfigEntry.subentry_type
+          ]?.supports_reconfigure) ||
+        this._configEntry?.supports_options
+          ? html`<ha-icon-button
+              .path=${mdiCog}
+              @click=${this._openOptionsFlow}
+            ></ha-icon-button>`
+          : ""
+      }
     `;
   }
 

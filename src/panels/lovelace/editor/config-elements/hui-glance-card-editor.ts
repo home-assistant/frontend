@@ -11,11 +11,17 @@ import {
   string,
   union,
 } from "superstruct";
+import memoizeOne from "memoize-one";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  SchemaUnion,
+  HaFormSchema,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { migrateGlanceCardConfig } from "../../cards/hui-glance-card";
 import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
@@ -26,6 +32,8 @@ import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import { TIMESTAMP_STATE_DOMAINS } from "../../../../common/const";
+import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../../data/sensor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,63 +44,10 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     show_icon: optional(boolean()),
-    state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesConfigStruct),
   })
 );
-
-const SUB_FORM = {
-  schema: [
-    { name: "entity", selector: { entity: {} }, required: true },
-    {
-      name: "name",
-      selector: { entity_name: {} },
-      context: {
-        entity: "entity",
-      },
-    },
-    {
-      type: "grid",
-      name: "",
-      schema: [
-        {
-          name: "icon",
-          selector: {
-            icon: {},
-          },
-          context: {
-            icon_entity: "entity",
-          },
-        },
-        { name: "show_last_changed", selector: { boolean: {} } },
-        { name: "show_state", selector: { boolean: {} }, default: true },
-      ],
-    },
-    {
-      name: "tap_action",
-      selector: {
-        ui_action: {
-          default_action: "more-info",
-        },
-      },
-      context: ACTION_RELATED_CONTEXT,
-    },
-    {
-      name: "",
-      type: "optional_actions",
-      flatten: true,
-      schema: (["hold_action", "double_tap_action"] as const).map((action) => ({
-        name: action,
-        selector: {
-          ui_action: {
-            default_action: "none" as const,
-          },
-        },
-        context: ACTION_RELATED_CONTEXT,
-      })),
-    },
-  ] as const,
-};
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
@@ -114,7 +69,16 @@ const SCHEMA = [
       { name: "show_state", selector: { boolean: {} } },
     ],
   },
-  { name: "state_color", selector: { boolean: {} } },
+  {
+    name: "color",
+    selector: {
+      ui_color: {
+        default_color: "state",
+        include_state: true,
+        include_none: true,
+      },
+    },
+  },
 ] as const;
 
 @customElement("hui-glance-card-editor")
@@ -131,10 +95,85 @@ export class HuiGlanceCardEditor
   @state() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    const migratedConfig = migrateGlanceCardConfig(config);
+    assert(migratedConfig, cardConfigStruct);
+    this._config = migratedConfig;
+    this._configEntities = processEditorEntities(migratedConfig.entities);
   }
+
+  private _subForm = memoizeOne((showTimeFormat?: boolean) => ({
+    schema: [
+      { name: "entity", selector: { entity: {} }, required: true },
+      {
+        name: "name",
+        selector: { entity_name: {} },
+        context: {
+          entity: "entity",
+        },
+      },
+      {
+        type: "grid",
+        name: "",
+        schema: [
+          {
+            name: "icon",
+            selector: {
+              icon: {},
+            },
+            context: {
+              icon_entity: "entity",
+            },
+          },
+          {
+            name: "color",
+            selector: {
+              ui_color: {
+                include_state: true,
+                include_none: true,
+              },
+            },
+          },
+          { name: "show_last_changed", selector: { boolean: {} } },
+          { name: "show_state", selector: { boolean: {} }, default: true },
+        ],
+      },
+      ...(showTimeFormat
+        ? ([
+            {
+              name: "time_format",
+              selector: {
+                ui_time_format: {},
+              },
+            },
+          ] as const satisfies readonly HaFormSchema[])
+        : []),
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: (["hold_action", "double_tap_action"] as const).map(
+          (action) => ({
+            name: action,
+            selector: {
+              ui_action: {
+                default_action: "none" as const,
+              },
+            },
+            context: ACTION_RELATED_CONTEXT,
+          })
+        ),
+      },
+    ] as const,
+  }));
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -142,11 +181,20 @@ export class HuiGlanceCardEditor
     }
 
     if (this._subElementEditorConfig) {
+      const entity =
+        this._configEntities![this._subElementEditorConfig.index!]?.entity;
+      const domain = entity ? computeDomain(entity) : "";
+      const showTimeFormat =
+        TIMESTAMP_STATE_DOMAINS.has(domain) ||
+        (domain === "sensor" &&
+          SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+            this.hass.states[entity]?.attributes.device_class
+          ));
       return html`
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .form=${SUB_FORM}
+          .form=${this._subForm(showTimeFormat)}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >

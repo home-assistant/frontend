@@ -1,3 +1,4 @@
+import { SENSOR_NUMERIC_DEVICE_CLASSES } from "./sensor_numeric_device_classes";
 import type { HomeAssistant } from "../types";
 
 export const SENSOR_DEVICE_CLASS_BATTERY = "battery";
@@ -11,6 +12,9 @@ export const SENSOR_TIMESTAMP_DEVICE_CLASSES: (string | undefined)[] = [
   "uptime",
 ];
 
+export const isNumericSensorDeviceClass = (deviceClass?: string): boolean =>
+  deviceClass != null && SENSOR_NUMERIC_DEVICE_CLASSES.includes(deviceClass);
+
 export interface SensorDeviceClassUnits {
   units: string[];
 }
@@ -23,28 +27,3 @@ export const getSensorDeviceClassConvertibleUnits = (
     type: "sensor/device_class_convertible_units",
     device_class: deviceClass,
   });
-
-export interface SensorNumericDeviceClasses {
-  numeric_device_classes: string[];
-}
-
-let sensorNumericDeviceClassesCache:
-  | Promise<SensorNumericDeviceClasses>
-  | undefined;
-
-export const getSensorNumericDeviceClasses = async (
-  hass: HomeAssistant
-): Promise<SensorNumericDeviceClasses> => {
-  if (sensorNumericDeviceClassesCache) {
-    return sensorNumericDeviceClassesCache;
-  }
-  sensorNumericDeviceClassesCache = hass
-    .callWS<SensorNumericDeviceClasses>({
-      type: "sensor/numeric_device_classes",
-    })
-    .catch((err: Error) => {
-      sensorNumericDeviceClassesCache = undefined;
-      throw err;
-    });
-  return sensorNumericDeviceClassesCache!;
-};

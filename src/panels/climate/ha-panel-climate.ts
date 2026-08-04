@@ -1,12 +1,10 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
@@ -33,6 +31,8 @@ class PanelClimate extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
+
+  private _childPanelReady?: ChildPanelReady;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -90,36 +90,29 @@ class PanelClimate extends LitElement {
     this._setLovelace();
   };
 
-  private _back(ev) {
-    ev.stopPropagation();
-    goBack();
-  }
-
   protected render() {
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._searchParams.has("historyBack")
-          ? html`
-              <ha-icon-button-arrow-prev
-                @click=${this._back}
-                slot="navigationIcon"
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${this._searchParams.has("historyBack")}
+      >
         <div slot="title">${this.hass.localize("panel.climate")}</div>
-        ${this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing}
+        ${
+          this._lovelace
+            ? html`
+                <hui-view-container .hass=${this.hass}>
+                  <hui-view-background .hass=${this.hass}>
+                  </hui-view-background>
+                  <hui-view
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .lovelace=${this._lovelace}
+                    .index=${this._viewIndex}
+                  ></hui-view
+                ></hui-view-container>
+              `
+            : nothing
+        }
       </ha-top-app-bar-fixed>
     `;
   }
@@ -137,6 +130,7 @@ class PanelClimate extends LitElement {
       return;
     }
 
+    this._childPanelReady ??= new ChildPanelReady(this);
     this._lovelace = {
       config: config,
       rawConfig: rawConfig,

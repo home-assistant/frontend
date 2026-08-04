@@ -1,4 +1,3 @@
-/* global process */
 // Tasks to generate entry HTML
 
 import {
@@ -59,6 +58,12 @@ const getCommonTemplateVars = () => {
   return {
     modernRegex: compileRegex(browserRegexes.concat(haMacOSRegex)).toString(),
     hassUrl: process.env.HASS_URL || "",
+    // Single source for the stale-build recovery patterns, shared with the
+    // bundled src/util/recover-stale-build.ts and injected into the inline
+    // boot guard (_bootstrap_recovery.html.template).
+    staleBuildPatterns: fs.readJsonSync(
+      resolve(paths.root_dir, "src/util/stale-build-patterns.json")
+    ),
   };
 };
 
@@ -108,6 +113,9 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Dev entries are unhashed, so the stale-index recovery guard has
+          // nothing to key off and rebuild churn could cause spurious reloads.
+          useCacheRecovery: false,
           latestEntryJS: entries.map(
             (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
@@ -147,10 +155,15 @@ const genPagesProdTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
+          // Recover from a stale index.html that pins deleted hashed entry
+          // bundles (see _bootstrap_recovery.html.template).
+          useCacheRecovery: true,
           latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+          es5EntryJS: outputES5
+            ? entries.map((entry) => es5Manifest[`${entry}.js`])
+            : [],
           latestCustomPanelJS: latestManifest["custom-panel.js"],
-          es5CustomPanelJS: es5Manifest["custom-panel.js"],
+          es5CustomPanelJS: outputES5 ? es5Manifest["custom-panel.js"] : "",
         }
       );
       minifiedHTML.push(
@@ -182,6 +195,17 @@ gulp.task(
     paths.app_output_root,
     paths.app_output_latest,
     paths.app_output_es5
+  )
+);
+
+gulp.task(
+  "gen-pages-app-prod-modern",
+  genPagesProdTask(
+    APP_PAGE_ENTRIES,
+    paths.root_dir,
+    paths.app_output_root,
+    paths.app_output_latest,
+    undefined
   )
 );
 
@@ -226,6 +250,16 @@ gulp.task(
   )
 );
 
+gulp.task(
+  "gen-pages-demo-prod-e2e",
+  genPagesProdTask(
+    DEMO_PAGE_ENTRIES,
+    paths.demo_dir,
+    paths.demo_output_root,
+    paths.demo_output_latest
+  )
+);
+
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
 gulp.task(
@@ -266,5 +300,26 @@ gulp.task(
     paths.landingPage_output_root,
     paths.landingPage_output_latest,
     paths.landingPage_output_es5
+  )
+);
+
+const E2E_TEST_APP_PAGE_ENTRIES = { "index.html": ["main"] };
+
+gulp.task(
+  "gen-pages-e2e-test-app-dev",
+  genPagesDevTask(
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root
+  )
+);
+
+gulp.task(
+  "gen-pages-e2e-test-app-prod",
+  genPagesProdTask(
+    E2E_TEST_APP_PAGE_ENTRIES,
+    paths.e2eTestApp_dir,
+    paths.e2eTestApp_output_root,
+    paths.e2eTestApp_output_latest
   )
 );

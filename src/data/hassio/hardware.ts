@@ -1,7 +1,4 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
 
 export interface HassioHardwareAudioDevice {
   device?: string | null;
@@ -30,38 +27,18 @@ export interface HassioHardwareInfo {
 
 export const fetchHassioHardwareAudio = async (
   hass: HomeAssistant
-): Promise<HassioHardwareAudioList> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/hardware/audio`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
-      "GET",
-      "hassio/hardware/audio"
-    )
-  );
-};
+): Promise<HassioHardwareAudioList> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/hardware/audio`,
+    method: "get",
+  });
 
 export const fetchHassioHardwareInfo = async (
   hass: HomeAssistant
-): Promise<HassioHardwareInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/hardware/info`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioHardwareInfo>>(
-      "GET",
-      "hassio/hardware/info"
-    )
-  );
-};
+): Promise<HassioHardwareInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/hardware/info`,
+    method: "get",
+  });

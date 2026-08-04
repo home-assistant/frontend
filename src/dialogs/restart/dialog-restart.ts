@@ -10,6 +10,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/animation/ha-fade-in";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
@@ -118,132 +119,146 @@ class DialogRestart extends LitElement {
       >
         <div class="content">
           <div class="action-loader">
-            ${this._loadingBackupInfo
-              ? html`<ha-fade-in .delay=${250}>
-                  <ha-progress-bar indeterminate></ha-progress-bar>
-                </ha-fade-in>`
-              : nothing}
+            ${
+              this._loadingBackupInfo
+                ? html`<ha-fade-in .delay=${250}>
+                    <ha-progress-bar indeterminate></ha-progress-bar>
+                  </ha-fade-in>`
+                : nothing
+            }
           </div>
-          ${this._loadingHostInfo
-            ? html`
-                <div class="loader">
-                  <ha-spinner></ha-spinner>
-                </div>
-              `
-            : html`
-                <ha-list-base dialogInitialFocus>
-                  <ha-list-item-button
-                    @click=${this._reload}
-                    .disabled=${this._loadingBackupInfo}
-                  >
-                    <div slot="headline">
-                      ${this.hass.localize("ui.dialogs.restart.reload.title")}
-                    </div>
-                    <div slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.dialogs.restart.reload.description"
-                      )}
-                    </div>
-                    <div slot="start" class="icon-background reload">
-                      <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-list-item-button>
-                  <ha-list-item-button
-                    .action=${"restart"}
-                    @click=${this._handleAction}
-                    .disabled=${this._loadingBackupInfo}
-                  >
-                    <div slot="start" class="icon-background restart">
-                      <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-                    </div>
-                    <div slot="headline">
-                      ${this.hass.localize("ui.dialogs.restart.restart.title")}
-                    </div>
-                    <div slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.dialogs.restart.restart.description"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-list-item-button>
-                </ha-list-base>
-                <ha-expansion-panel
-                  .header=${this.hass.localize(
-                    "ui.dialogs.restart.advanced_options"
-                  )}
-                >
-                  <ha-list-base>
-                    ${showRebootShutdown
-                      ? html`
-                          <ha-list-item-button
-                            .action=${"reboot"}
-                            @click=${this._handleAction}
-                            .disabled=${this._loadingBackupInfo}
-                          >
-                            <div slot="start" class="icon-background reboot">
-                              <ha-svg-icon .path=${mdiPowerCycle}></ha-svg-icon>
-                            </div>
-                            <div slot="headline">
-                              ${this.hass.localize(
-                                "ui.dialogs.restart.reboot.title"
-                              )}
-                            </div>
-                            <div slot="supporting-text">
-                              ${this.hass.localize(
-                                "ui.dialogs.restart.reboot.description"
-                              )}
-                            </div>
-                            <ha-icon-next slot="end"></ha-icon-next>
-                          </ha-list-item-button>
-                          <ha-list-item-button
-                            .action=${"shutdown"}
-                            @click=${this._handleAction}
-                            .disabled=${this._loadingBackupInfo}
-                          >
-                            <div slot="start" class="icon-background shutdown">
-                              <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                            </div>
-                            <div slot="headline">
-                              ${this.hass.localize(
-                                "ui.dialogs.restart.shutdown.title"
-                              )}
-                            </div>
-                            <div slot="supporting-text">
-                              ${this.hass.localize(
-                                "ui.dialogs.restart.shutdown.description"
-                              )}
-                            </div>
-                            <ha-icon-next slot="end"></ha-icon-next>
-                          </ha-list-item-button>
-                        `
-                      : nothing}
+          ${
+            this._loadingHostInfo
+              ? html`
+                  <div class="loader">
+                    <ha-spinner></ha-spinner>
+                  </div>
+                `
+              : html`
+                  <ha-list-base dialogInitialFocus>
                     <ha-list-item-button
-                      .action=${"restart-safe-mode"}
-                      @click=${this._handleAction}
+                      @click=${this._reload}
                       .disabled=${this._loadingBackupInfo}
                     >
-                      <div
-                        slot="start"
-                        class="icon-background restart-safe-mode"
-                      >
-                        <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
-                      </div>
                       <div slot="headline">
-                        ${this.hass.localize(
-                          "ui.dialogs.restart.restart-safe-mode.title"
-                        )}
+                        ${this.hass.localize("ui.dialogs.restart.reload.title")}
                       </div>
                       <div slot="supporting-text">
                         ${this.hass.localize(
-                          "ui.dialogs.restart.restart-safe-mode.description"
+                          "ui.dialogs.restart.reload.description"
+                        )}
+                      </div>
+                      <div slot="start" class="icon-background reload">
+                        <ha-svg-icon .path=${mdiAutoFix}></ha-svg-icon>
+                      </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
+                    <ha-list-item-button
+                      .action=${"restart"}
+                      @click=${this._handleAction}
+                      .disabled=${this._loadingBackupInfo}
+                    >
+                      <div slot="start" class="icon-background restart">
+                        <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
+                      </div>
+                      <div slot="headline">
+                        ${this.hass.localize("ui.dialogs.restart.restart.title")}
+                      </div>
+                      <div slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.dialogs.restart.restart.description"
                         )}
                       </div>
                       <ha-icon-next slot="end"></ha-icon-next>
                     </ha-list-item-button>
                   </ha-list-base>
-                </ha-expansion-panel>
-              `}
+                  <ha-expansion-panel
+                    .header=${this.hass.localize(
+                      "ui.dialogs.restart.more_options"
+                    )}
+                  >
+                    <ha-list-base>
+                      ${
+                        showRebootShutdown
+                          ? html`
+                              <ha-list-item-button
+                                .action=${"reboot"}
+                                @click=${this._handleAction}
+                                .disabled=${this._loadingBackupInfo}
+                              >
+                                <div
+                                  slot="start"
+                                  class="icon-background reboot"
+                                >
+                                  <ha-svg-icon
+                                    .path=${mdiPowerCycle}
+                                  ></ha-svg-icon>
+                                </div>
+                                <div slot="headline">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.restart.reboot.title"
+                                  )}
+                                </div>
+                                <div slot="supporting-text">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.restart.reboot.description"
+                                  )}
+                                </div>
+                                <ha-icon-next slot="end"></ha-icon-next>
+                              </ha-list-item-button>
+                              <ha-list-item-button
+                                .action=${"shutdown"}
+                                @click=${this._handleAction}
+                                .disabled=${this._loadingBackupInfo}
+                              >
+                                <div
+                                  slot="start"
+                                  class="icon-background shutdown"
+                                >
+                                  <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                                </div>
+                                <div slot="headline">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.restart.shutdown.title"
+                                  )}
+                                </div>
+                                <div slot="supporting-text">
+                                  ${this.hass.localize(
+                                    "ui.dialogs.restart.shutdown.description"
+                                  )}
+                                </div>
+                                <ha-icon-next slot="end"></ha-icon-next>
+                              </ha-list-item-button>
+                            `
+                          : nothing
+                      }
+                      <ha-list-item-button
+                        .action=${"restart-safe-mode"}
+                        @click=${this._handleAction}
+                        .disabled=${this._loadingBackupInfo}
+                      >
+                        <div
+                          slot="start"
+                          class="icon-background restart-safe-mode"
+                        >
+                          <ha-svg-icon .path=${mdiLifebuoy}></ha-svg-icon>
+                        </div>
+                        <div slot="headline">
+                          ${this.hass.localize(
+                            "ui.dialogs.restart.restart-safe-mode.title"
+                          )}
+                        </div>
+                        <div slot="supporting-text">
+                          ${this.hass.localize(
+                            "ui.dialogs.restart.restart-safe-mode.description"
+                          )}
+                        </div>
+                        <ha-icon-next slot="end"></ha-icon-next>
+                      </ha-list-item-button>
+                    </ha-list-base>
+                  </ha-expansion-panel>
+                `
+          }
         </div>
       </ha-adaptive-dialog>
     `;
@@ -320,13 +335,18 @@ class DialogRestart extends LitElement {
       }
     };
 
-  private async _handleAction(ev: Event) {
+  private async _handleAction(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemButton & {
+        action: "restart" | "reboot" | "shutdown" | "restart-safe-mode";
+      }
+    >
+  ) {
     if (this._loadingBackupInfo) {
       return;
     }
     this._loadingBackupInfo = true;
-    const action = (ev.currentTarget as HaListItemButton & { action: string })
-      .action as "restart" | "reboot" | "shutdown" | "restart-safe-mode";
+    const action = ev.currentTarget.action;
 
     const backupState = await this._loadBackupState();
 
@@ -338,9 +358,11 @@ class DialogRestart extends LitElement {
       title: this.hass.localize(`ui.dialogs.restart.${action}.confirm_title`),
       text: html`${this.hass.localize(
         `ui.dialogs.restart.${action}.confirm_description`
-      )}${backupProgressMessage
-        ? html`<br /><br /><ha-alert>${backupProgressMessage}</ha-alert>`
-        : nothing}`,
+      )}${
+        backupProgressMessage
+          ? html`<br /><br /><ha-alert>${backupProgressMessage}</ha-alert>`
+          : nothing
+      }`,
       confirmText: this.hass.localize(
         `ui.dialogs.restart.${action}.confirm_action${backupState === "idle" ? "" : "_backup"}`
       ),
@@ -353,7 +375,7 @@ class DialogRestart extends LitElement {
 
     this._dialogOpen = false;
 
-    let actionFunc;
+    let actionFunc: () => Promise<void>;
 
     if (["restart", "restart-safe-mode"].includes(action)) {
       const serviceData =

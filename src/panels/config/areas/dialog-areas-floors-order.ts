@@ -25,6 +25,7 @@ import {
   updateAreaRegistryEntry,
 } from "../../../data/area/area_registry";
 import { reorderFloorRegistryEntries } from "../../../data/floor_registry";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -37,8 +38,15 @@ interface FloorChange {
   floorId: string | null;
 }
 
+interface OrderState {
+  floors: { id: string; areas: string[] }[];
+  areas: string[];
+}
+
 @customElement("dialog-areas-floors-order")
-class DialogAreasFloorsOrder extends LitElement {
+class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -59,6 +67,20 @@ class DialogAreasFloorsOrder extends LitElement {
       Object.values(this.hass.floors),
       Object.values(this.hass.areas)
     );
+    this._initDirtyTracking({ type: "deep" }, this._currentOrder());
+  }
+
+  private _currentOrder(): OrderState {
+    if (!this._hierarchy) {
+      return { floors: [], areas: [] };
+    }
+    return {
+      floors: this._hierarchy.floors.map((floor) => ({
+        id: floor.id,
+        areas: [...floor.areas],
+      })),
+      areas: [...this._hierarchy.areas],
+    };
   }
 
   public closeDialog(): void {
@@ -89,6 +111,7 @@ class DialogAreasFloorsOrder extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -119,7 +142,7 @@ class DialogAreasFloorsOrder extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving}
+            .disabled=${this._saving || !this.isDirtyState}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
@@ -153,13 +176,15 @@ class DialogAreasFloorsOrder extends LitElement {
           .floor=${floor.id}
         >
           <ha-md-list>
-            ${floor.areas.length > 0
-              ? floor.areas.map((areaId) => this._renderArea(areaId))
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.config.areas.dialog.empty_floor"
-                  )}
-                </p>`}
+            ${
+              floor.areas.length > 0
+                ? floor.areas.map((areaId) => this._renderArea(areaId))
+                : html`<p class="empty">
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.dialog.empty_floor"
+                    )}
+                  </p>`
+            }
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -171,15 +196,17 @@ class DialogAreasFloorsOrder extends LitElement {
 
     return html`
       <div class="floor unassigned">
-        ${hasFloors
-          ? html`<div class="floor-header">
-              <span class="floor-name">
-                ${this.hass.localize(
-                  "ui.panel.config.areas.dialog.other_areas"
-                )}
-              </span>
-            </div>`
-          : nothing}
+        ${
+          hasFloors
+            ? html`<div class="floor-header">
+                <span class="floor-name">
+                  ${this.hass.localize(
+                    "ui.panel.config.areas.dialog.other_areas"
+                  )}
+                </span>
+              </div>`
+            : nothing
+        }
         <ha-sortable
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
@@ -189,13 +216,17 @@ class DialogAreasFloorsOrder extends LitElement {
           .floor=${UNASSIGNED_FLOOR}
         >
           <ha-md-list>
-            ${this._hierarchy!.areas.length > 0
-              ? this._hierarchy!.areas.map((areaId) => this._renderArea(areaId))
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.config.areas.dialog.empty_unassigned"
-                  )}
-                </p>`}
+            ${
+              this._hierarchy!.areas.length > 0
+                ? this._hierarchy!.areas.map((areaId) =>
+                    this._renderArea(areaId)
+                  )
+                : html`<p class="empty">
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.dialog.empty_unassigned"
+                    )}
+                  </p>`
+            }
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -210,12 +241,14 @@ class DialogAreasFloorsOrder extends LitElement {
 
     return html`
       <ha-md-list-item .sortableData=${area}>
-        ${area.icon
-          ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
-          : html`<ha-svg-icon
-              slot="start"
-              .path=${mdiTextureBox}
-            ></ha-svg-icon>`}
+        ${
+          area.icon
+            ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${mdiTextureBox}
+              ></ha-svg-icon>`
+        }
         <span slot="headline">${area.name}</span>
         <ha-svg-icon
           class="area-handle"
@@ -241,6 +274,7 @@ class DialogAreasFloorsOrder extends LitElement {
       ...this._hierarchy,
       floors: newFloors,
     };
+    this._updateDirtyState(this._currentOrder());
   }
 
   private _areaMoved(ev: CustomEvent): void {
@@ -278,6 +312,7 @@ class DialogAreasFloorsOrder extends LitElement {
         }),
       };
     }
+    this._updateDirtyState(this._currentOrder());
   }
 
   private _areaAdded(ev: CustomEvent): void {
@@ -320,6 +355,7 @@ class DialogAreasFloorsOrder extends LitElement {
       }),
       areas: newUnassignedAreas,
     };
+    this._updateDirtyState(this._currentOrder());
   }
 
   private _computeFloorChanges(): FloorChange[] {
@@ -375,6 +411,7 @@ class DialogAreasFloorsOrder extends LitElement {
       await reorderAreaRegistryEntries(this.hass, areaOrder);
       await reorderFloorRegistryEntries(this.hass, floorOrder);
 
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       showToast(this, {

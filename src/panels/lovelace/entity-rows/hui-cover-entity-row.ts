@@ -45,15 +45,17 @@ class HuiCoverEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${isTiltOnly(stateObj)
-          ? html`
-              <ha-cover-tilt-controls
-                .stateObj=${stateObj}
-              ></ha-cover-tilt-controls>
-            `
-          : html`
-              <ha-cover-controls .stateObj=${stateObj}></ha-cover-controls>
-            `}
+        ${
+          isTiltOnly(stateObj)
+            ? html`
+                <ha-cover-tilt-controls
+                  .stateObj=${stateObj}
+                ></ha-cover-tilt-controls>
+              `
+            : html`
+                <ha-cover-controls .stateObj=${stateObj}></ha-cover-controls>
+              `
+        }
       </hui-generic-entity-row>
     `;
   }

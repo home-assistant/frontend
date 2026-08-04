@@ -11,6 +11,13 @@ export interface DirtyStateContext<
   /** Whether any contributor's current slice differs from its initial snapshot */
   isDirty: boolean;
   /**
+   * Like `isDirty`, but treats `false` and `undefined`/absent object keys as
+   * the same value, so a toggle that ends at its off-default (e.g.
+   * `show_entity_picture: false`) reads as clean and does not warn on a scrim
+   * close. `isDirty` still reports the raw change so save can stay enabled.
+   */
+  isEffectiveDirty: boolean;
+  /**
    * Push a state slice. The first push for a slice sets its baseline.
    * Subsequent pushes are compared against that baseline using the provider's
    * compare strategy.
@@ -29,3 +36,13 @@ export interface DirtyStateContext<
  * boundary.
  */
 export const dirtyStateContext = createContext<DirtyStateContext>("dirtyState");
+
+declare global {
+  interface Window {
+    isDirtyState?: boolean;
+  }
+
+  interface HASSDomEvents {
+    "dirty-state-changed": { isDirty: boolean };
+  }
+}

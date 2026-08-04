@@ -1,5 +1,23 @@
 import type { LineSeriesOption } from "echarts";
 
+type Point = NonNullable<LineSeriesOption["data"]>[number];
+
+interface MeanFrame {
+  sumX: number;
+  sumY: number;
+  count: number;
+  isArray: boolean;
+}
+
+interface MinMaxFrame {
+  minPoint: Point;
+  minX: number;
+  minY: number;
+  maxPoint: Point;
+  maxX: number;
+  maxY: number;
+}
+
 export function downSampleLineData<
   T extends [number, number] | NonNullable<LineSeriesOption["data"]>[number],
 >(
@@ -18,12 +36,52 @@ export function downSampleLineData<
   const min = minX ?? getPointData(data[0]!)[0];
   const max = maxX ?? getPointData(data[data.length - 1]!)[0];
   const step = Math.ceil((max - min) / Math.floor(maxDetails));
+  if (!Number.isFinite(step) || step <= 0) {
+    // a degenerate frame size would put every point in a single frame
+    return data;
+  }
 
-  // Group points into frames
-  const frames = new Map<
-    number,
-    { point: (typeof data)[number]; x: number; y: number }[]
-  >();
+  if (useMean) {
+    // Group points into frames, accumulating sums in insertion order.
+    const frames = new Map<number, MeanFrame>();
+
+    for (const point of data) {
+      const pointData = getPointData(point);
+      if (!Array.isArray(pointData)) continue;
+      const x = Number(pointData[0]);
+      const y = Number(pointData[1]);
+      if (isNaN(x) || isNaN(y)) continue;
+
+      const frameIndex = Math.floor((x - min) / step);
+      const frame = frames.get(frameIndex);
+      if (!frame) {
+        frames.set(frameIndex, {
+          sumX: x,
+          sumY: y,
+          count: 1,
+          isArray: Array.isArray(pointData),
+        });
+      } else {
+        frame.sumX += x;
+        frame.sumY += y;
+        frame.count += 1;
+      }
+    }
+
+    const result: T[] = [];
+    for (const frame of frames.values()) {
+      const meanX = frame.sumX / frame.count;
+      const meanY = frame.sumY / frame.count;
+      const meanPoint = (
+        frame.isArray ? [meanX, meanY] : { value: [meanX, meanY] }
+      ) as T;
+      result.push(meanPoint);
+    }
+    return result;
+  }
+
+  // Min/max mode: track the min and max point per frame in insertion order.
+  const frames = new Map<number, MinMaxFrame>();
 
   for (const point of data) {
     const pointData = getPointData(point);
@@ -35,53 +93,39 @@ export function downSampleLineData<
     const frameIndex = Math.floor((x - min) / step);
     const frame = frames.get(frameIndex);
     if (!frame) {
-      frames.set(frameIndex, [{ point, x, y }]);
+      frames.set(frameIndex, {
+        minPoint: point,
+        minX: x,
+        minY: y,
+        maxPoint: point,
+        maxX: x,
+        maxY: y,
+      });
     } else {
-      frame.push({ point, x, y });
+      // Match the original strict-less / strict-greater comparisons so the
+      // first occurrence wins on ties.
+      if (y < frame.minY) {
+        frame.minPoint = point;
+        frame.minX = x;
+        frame.minY = y;
+      }
+      if (y > frame.maxY) {
+        frame.maxPoint = point;
+        frame.maxX = x;
+        frame.maxY = y;
+      }
     }
   }
 
-  // Convert frames back to points
   const result: T[] = [];
-
-  if (useMean) {
-    // Use mean values for each frame
-    for (const [_i, framePoints] of frames) {
-      const sumY = framePoints.reduce((acc, p) => acc + p.y, 0);
-      const meanY = sumY / framePoints.length;
-      const sumX = framePoints.reduce((acc, p) => acc + p.x, 0);
-      const meanX = sumX / framePoints.length;
-
-      const firstPoint = framePoints[0].point;
-      const pointData = getPointData(firstPoint);
-      const meanPoint = (
-        Array.isArray(pointData) ? [meanX, meanY] : { value: [meanX, meanY] }
-      ) as T;
-      result.push(meanPoint);
+  for (const frame of frames.values()) {
+    // The order of the data must be preserved so max may be before min
+    if (frame.minX > frame.maxX) {
+      result.push(frame.maxPoint as T);
     }
-  } else {
-    // Use min/max values for each frame
-    for (const [_i, framePoints] of frames) {
-      let minPoint = framePoints[0];
-      let maxPoint = framePoints[0];
-
-      for (const p of framePoints) {
-        if (p.y < minPoint.y) {
-          minPoint = p;
-        }
-        if (p.y > maxPoint.y) {
-          maxPoint = p;
-        }
-      }
-
-      // The order of the data must be preserved so max may be before min
-      if (minPoint.x > maxPoint.x) {
-        result.push(maxPoint.point);
-      }
-      result.push(minPoint.point);
-      if (minPoint.x < maxPoint.x) {
-        result.push(maxPoint.point);
-      }
+    result.push(frame.minPoint as T);
+    if (frame.minX < frame.maxX) {
+      result.push(frame.maxPoint as T);
     }
   }
 

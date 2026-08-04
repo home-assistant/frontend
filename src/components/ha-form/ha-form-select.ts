@@ -4,13 +4,27 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-selector/ha-selector-select";
 import type {
   HaFormElement,
   HaFormSelectData,
   HaFormSelectSchema,
 } from "./types";
+
+/**
+ * The underlying select returns option values as strings. Map a selected value
+ * back to its original option value so the source type is retained (for example
+ * a number coming from a backend `vol.In` schema), falling back to the value
+ * itself when no option matches.
+ */
+export const matchSelectOptionValue = (
+  options: HaFormSelectSchema["options"],
+  value: string
+): HaFormSelectData => {
+  const option = options.find((opt) => String(opt[0]) === String(value));
+  return option ? option[0] : value;
+};
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -64,16 +78,18 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    let value: string | undefined = ev.detail.value;
-
-    if (value === this.data) {
-      return;
-    }
+    let value: HaFormSelectData | undefined = ev.detail.value;
 
     if (value === "") {
       value = undefined;
+    } else if (value != null) {
+      value = matchSelectOptionValue(this.schema.options, value);
+    }
+
+    if (value === this.data) {
+      return;
     }
 
     fireEvent(this, "value-changed", {

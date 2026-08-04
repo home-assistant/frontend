@@ -26,6 +26,7 @@ import {
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import "./entity-voice-settings";
@@ -37,14 +38,19 @@ interface FilteredEntity {
 }
 
 @customElement("dialog-expose-entity")
-class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
-  LitElement
+class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
+  DialogMixin<ExposeEntityDialogParams>(LitElement)
 ) {
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
 
   @state() private _dialogReady = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._initDirtyTracking({ type: "deep" }, this._selected);
+  }
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -87,7 +93,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
         open
         header-title=${header}
         header-subtitle=${subtitle}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @after-show=${this._loadVirtualizer}
       >
         <ha-input-search
@@ -96,18 +102,20 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
           @input=${this._filterChanged}
         ></ha-input-search>
         <ha-list multi>
-          ${this._dialogReady
-            ? html` <lit-virtualizer
-                scroller
-                class="ha-scrollbar"
-                @click=${this._itemClicked}
-                @keydown=${this._handleItemKeydown}
-                .items=${entities}
-                .renderItem=${this._renderItem}
-                .keyFunction=${this._keyFunction}
-              >
-              </lit-virtualizer>`
-            : nothing}
+          ${
+            this._dialogReady
+              ? html` <lit-virtualizer
+                  scroller
+                  class="ha-scrollbar"
+                  @click=${this._itemClicked}
+                  @keydown=${this._handleItemKeydown}
+                  .items=${entities}
+                  .renderItem=${this._renderItem}
+                  .keyFunction=${this._keyFunction}
+                >
+                </lit-virtualizer>`
+              : nothing
+          }
         </ha-list>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -149,6 +157,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
     } else {
       this._selected = this._selected.filter((item) => item !== entityId);
     }
+    this._updateDirtyState(this._selected);
   };
 
   private _handleItemKeydown(ev: KeyboardEvent) {
@@ -256,22 +265,27 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
           .stateObj=${entityState}
         ></ha-state-icon>
         ${primary}
-        ${context || showEntityId
-          ? html`<span slot="secondary">
-              ${context}
-              ${showEntityId
-                ? html`<br /><span class="entity-id"
-                      >${entityState.entity_id}</span
-                    >`
-                : nothing}
-            </span>`
-          : nothing}
+        ${
+          context || showEntityId
+            ? html`<span slot="secondary">
+                ${context}
+                ${
+                  showEntityId
+                    ? html`<br /><span class="entity-id"
+                          >${entityState.entity_id}</span
+                        >`
+                    : nothing
+                }
+              </span>`
+            : nothing
+        }
       </ha-check-list-item>
     `;
   };
 
   private _expose() {
     this.params!.exposeEntities(this._selected);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

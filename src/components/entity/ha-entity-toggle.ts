@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -6,12 +7,13 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { apiContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
+import { getToggleAction } from "../../common/entity/get_toggle_action";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -29,8 +31,8 @@ const isOn = (stateObj?: HassEntity) =>
 
 @customElement("ha-entity-toggle")
 export class HaEntityToggle extends LitElement {
-  // hass is not a property so that we only re-render on stateObj changes
-  public hass?: HomeAssistant;
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -53,9 +55,9 @@ export class HaEntityToggle extends LitElement {
           .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
-          class=${!this._isOn && this.stateObj.state !== UNKNOWN
-            ? "state-active"
-            : ""}
+          class=${
+            !this._isOn && this.stateObj.state !== UNKNOWN ? "state-active" : ""
+          }
         ></ha-icon-button>
         <ha-icon-button
           .label=${`Turn ${computeStateName(this.stateObj)} on`}
@@ -118,30 +120,15 @@ export class HaEntityToggle extends LitElement {
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
   private async _callService(turnOn): Promise<void> {
-    if (!this.hass || !this.stateObj) {
+    if (!this._api || !this.stateObj) {
       return;
     }
     forwardHaptic(this, "light");
     const stateDomain = computeStateDomain(this.stateObj);
-    let serviceDomain;
-    let service;
 
-    if (stateDomain === "lock") {
-      serviceDomain = "lock";
-      service = turnOn ? "unlock" : "lock";
-    } else if (stateDomain === "cover") {
-      serviceDomain = "cover";
-      service = turnOn ? "open_cover" : "close_cover";
-    } else if (stateDomain === "valve") {
-      serviceDomain = "valve";
-      service = turnOn ? "open_valve" : "close_valve";
-    } else if (stateDomain === "group") {
-      serviceDomain = "homeassistant";
-      service = turnOn ? "turn_on" : "turn_off";
-    } else {
-      serviceDomain = stateDomain;
-      service = turnOn ? "turn_on" : "turn_off";
-    }
+    const serviceDomain =
+      stateDomain === "group" ? "homeassistant" : stateDomain;
+    const service = getToggleAction(stateDomain, turnOn);
 
     const currentState = this.stateObj;
 
@@ -149,7 +136,7 @@ export class HaEntityToggle extends LitElement {
     this._isOn = turnOn;
 
     try {
-      await this.hass.callService(serviceDomain, service, {
+      await this._api.callService(serviceDomain, service, {
         entity_id: this.stateObj.entity_id,
       });
     } finally {

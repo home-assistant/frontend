@@ -96,12 +96,12 @@ export class HaFloorSelector extends LitElement {
           .label=${this.label}
           .helper=${this.helper}
           no-add
-          .deviceFilter=${this.selector.floor?.device
-            ? this._filterDevices
-            : undefined}
-          .entityFilter=${this.selector.floor?.entity
-            ? this._filterEntities
-            : undefined}
+          .deviceFilter=${
+            this.selector.floor?.device ? this._filterDevices : undefined
+          }
+          .entityFilter=${
+            this.selector.floor?.entity ? this._filterEntities : undefined
+          }
           .disabled=${this.disabled}
           .required=${this.required}
         ></ha-floor-picker>
@@ -115,12 +115,12 @@ export class HaFloorSelector extends LitElement {
         .helper=${this.helper}
         .pickFloorLabel=${this.label}
         no-add
-        .deviceFilter=${this.selector.floor?.device
-          ? this._filterDevices
-          : undefined}
-        .entityFilter=${this.selector.floor?.entity
-          ? this._filterEntities
-          : undefined}
+        .deviceFilter=${
+          this.selector.floor?.device ? this._filterDevices : undefined
+        }
+        .entityFilter=${
+          this.selector.floor?.entity ? this._filterEntities : undefined
+        }
         .disabled=${this.disabled}
         .required=${this.required}
       ></ha-floors-picker>
@@ -133,7 +133,13 @@ export class HaFloorSelector extends LitElement {
     }
 
     return ensureArray(this.selector.floor.entity).some((filter) =>
-      filterSelectorEntities(filter, entity, this._entitySources)
+      filterSelectorEntities(
+        filter,
+        entity,
+        this._entitySources,
+        this.hass.entities,
+        this.hass.devices
+      )
     );
   };
 

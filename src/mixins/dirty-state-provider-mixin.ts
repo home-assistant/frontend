@@ -1,7 +1,8 @@
 import { provide } from "@lit/context";
 import deepClone from "deep-clone-simple";
-import type { LitElement } from "lit";
+import type { LitElement, PropertyValues } from "lit";
 import { state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
 import {
@@ -17,6 +18,18 @@ export type CompareStrategy<State> =
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
+const connectedDirtyStateProviders = new Map<object, boolean>();
+
+const publishGlobalDirtyState = (): void => {
+  const isDirty = Array.from(connectedDirtyStateProviders.values()).some(
+    Boolean
+  );
+  if (isDirty !== window.isDirtyState) {
+    window.isDirtyState = isDirty;
+    fireEvent(window, "dirty-state-changed", { isDirty });
+  }
+};
+
 /**
  * Mixin that provides dirty-state tracking via Lit context.
  *
@@ -25,6 +38,18 @@ export type CompareStrategy<State> =
  * strategy. `isDirty` is true when any slice differs from its initial value,
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
+ *
+ * Connected providers contribute to the global dirty state. It remains dirty
+ * while any provider has unsaved changes.
+ *
+ * `isEffectiveDirty` runs the same comparison, but first passes each slice's
+ * initial and current value through the optional `effectiveNormalize` function
+ * given to `_initDirtyTracking`. Provide a normalizer that collapses values you
+ * consider equivalent (e.g. a config with a toggle left at its default vs the
+ * key being absent) so they do not read as dirty. Without a normalizer it is
+ * identical to `isDirty`. Use `isEffectiveDirtyState` to decide whether closing
+ * needs a "discard changes?" prompt, and `isDirtyState` to decide whether save
+ * is enabled.
  *
  * @example Eager init for the provider's own slice:
  * ```ts
@@ -63,22 +88,38 @@ export const DirtyStateProviderMixin =
     class DirtyStateProviderMixinClass extends superClass {
       private _dirtySlices = new Map<
         Key | DefaultDirtyStateKey,
-        { initial: State; current: State }
+        { initial: State; current: State; normalizedInitial: State }
       >();
 
       private _dirtyCompareFn: (a: State, b: State) => boolean = deepEqual;
 
       private _dirtyCloneFn: (value: State) => State = (value) => value;
 
+      private _effectiveNormalize?: (value: State) => State;
+
       @provide({ context: dirtyStateContext })
       @state()
       private _dirtyStateContext: DirtyStateContext<State, Key> =
         this._buildContextValue();
 
+      private _normalizeEffective(value: State): State {
+        return this._effectiveNormalize
+          ? this._effectiveNormalize(value)
+          : value;
+      }
+
       private _buildContextValue(): DirtyStateContext<State, Key> {
+        const slices = Array.from(this._dirtySlices.values());
         return {
-          isDirty: Array.from(this._dirtySlices.values()).some(
+          isDirty: slices.some(
             ({ initial, current }) => !this._dirtyCompareFn(initial, current)
+          ),
+          isEffectiveDirty: slices.some(
+            ({ normalizedInitial, current }) =>
+              !this._dirtyCompareFn(
+                normalizedInitial,
+                this._normalizeEffective(current)
+              )
           ),
           setState: (value: State, key: Key) => {
             this._writeSlice(key, value);
@@ -93,13 +134,33 @@ export const DirtyStateProviderMixin =
         this._dirtyStateContext = this._buildContextValue();
       }
 
+      public connectedCallback(): void {
+        super.connectedCallback();
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
+      }
+
+      protected updated(changedProperties: PropertyValues<this>): void {
+        super.updated(changedProperties);
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
+      }
+
+      public disconnectedCallback(): void {
+        connectedDirtyStateProviders.delete(this);
+        publishGlobalDirtyState();
+        super.disconnectedCallback();
+      }
+
       private _writeSlice(key: Key | DefaultDirtyStateKey, value: State): void {
         const slice = this._dirtySlices.get(key);
         if (!slice) {
           // First push for this key becomes the baseline.
+          const initial = this._dirtyCloneFn(value);
           this._dirtySlices.set(key, {
-            initial: this._dirtyCloneFn(value),
+            initial,
             current: value,
+            normalizedInitial: this._normalizeEffective(initial),
           });
           this._publishContext();
           return;
@@ -119,12 +180,19 @@ export const DirtyStateProviderMixin =
        * push for any key (via the provider helper or a consumer's `setState`)
        * becomes that key's baseline.
        *
+       * `effectiveNormalize` transforms a slice value before the
+       * `isEffectiveDirty` comparison, letting the caller treat values it
+       * considers equivalent as clean (e.g. a config with a toggle at its
+       * default vs the key being absent). It does not affect `isDirty`.
+       *
        * Call again to reset (e.g. when the underlying entity changes).
        */
       protected _initDirtyTracking(
         strategy: CompareStrategy<State>,
-        initialState?: State
+        initialState?: State,
+        effectiveNormalize?: (value: State) => State
       ): void {
+        this._effectiveNormalize = effectiveNormalize;
         switch (strategy.type) {
           case "deep":
             this._dirtyCompareFn = (a, b) => deepEqual(a, b);
@@ -140,9 +208,11 @@ export const DirtyStateProviderMixin =
         }
         this._dirtySlices.clear();
         if (initialState !== undefined) {
+          const initial = this._dirtyCloneFn(initialState);
           this._dirtySlices.set(DEFAULT_DIRTY_STATE_KEY, {
-            initial: this._dirtyCloneFn(initialState),
+            initial,
             current: initialState,
+            normalizedInitial: this._normalizeEffective(initial),
           });
         }
         this._publishContext();
@@ -164,6 +234,7 @@ export const DirtyStateProviderMixin =
       protected _markDirtyStateClean(): void {
         for (const slice of this._dirtySlices.values()) {
           slice.initial = this._dirtyCloneFn(slice.current);
+          slice.normalizedInitial = this._normalizeEffective(slice.initial);
         }
         this._publishContext();
       }
@@ -184,6 +255,17 @@ export const DirtyStateProviderMixin =
        */
       public get isDirtyState(): boolean {
         return this._dirtyStateContext.isDirty;
+      }
+
+      /**
+       * Like `isDirtyState`, but compares values after the `effectiveNormalize`
+       * function passed to `_initDirtyTracking`, so values the caller treats as
+       * equivalent (e.g. a toggle left at its default) do not read as dirty. Use
+       * it to decide whether closing needs a "discard changes?" prompt, while
+       * `isDirtyState` decides whether save is enabled.
+       */
+      public get isEffectiveDirtyState(): boolean {
+        return this._dirtyStateContext.isEffectiveDirty;
       }
     }
     return DirtyStateProviderMixinClass;

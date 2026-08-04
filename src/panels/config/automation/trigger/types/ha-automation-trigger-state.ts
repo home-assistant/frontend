@@ -80,7 +80,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                 "available_modes",
                 "code_arm_required",
                 "code_format",
-                "color_modes",
                 "device_class",
                 "editable",
                 "effect_list",
@@ -174,7 +173,19 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
             },
           },
         },
-        { name: "for", selector: { duration: {} } },
+        {
+          name: "for",
+          selector: {
+            choose: {
+              translation_key:
+                "ui.panel.config.automation.editor.triggers.type.state.for_type",
+              choices: {
+                duration: { selector: { duration: {} } },
+                template: { selector: { template: {} } },
+              },
+            },
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
@@ -190,7 +201,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       delete this.trigger.for.milliseconds;
     }
     // Check for templates in trigger. If found, revert to YAML mode.
-    if (this.trigger && hasTemplate(this.trigger)) {
+    // Exclude "for" since the UI now supports templates there via choose.
+    const { for: _for, ...triggerWithoutFor } = this.trigger;
+    if (triggerWithoutFor && hasTemplate(triggerWithoutFor)) {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -207,13 +220,38 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     return true;
   }
 
-  protected render() {
-    const trgFor = createDurationData(this.trigger.for);
+  private _wrapForValue(
+    forValue: StateTrigger["for"]
+  ): Record<string, unknown> | undefined {
+    if (forValue === undefined) {
+      return undefined;
+    }
+    if (typeof forValue === "string" && hasTemplate(forValue)) {
+      return { active_choice: "template", template: forValue };
+    }
+    return {
+      active_choice: "duration",
+      duration: createDurationData(forValue),
+    };
+  }
 
+  private _unwrapForValue(
+    forValue: Record<string, unknown> | undefined
+  ): StateTrigger["for"] {
+    if (!forValue || !forValue.active_choice) {
+      return forValue as StateTrigger["for"];
+    }
+    if (forValue.active_choice === "template") {
+      return forValue.template as string;
+    }
+    return forValue.duration as StateTrigger["for"];
+  }
+
+  protected render() {
     const data = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
-      for: trgFor,
+      for: this._wrapForValue(this.trigger.for),
     };
 
     data.to = this._normalizeStates(this.trigger.to, data.attribute);
@@ -230,6 +268,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${schema}
+        .localizeValue=${this.hass.localize}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .disabled=${this.disabled}
@@ -240,6 +279,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
+
+    newTrigger.for = this._unwrapForValue(newTrigger.for);
 
     newTrigger.to = this._applyAnyStateExclusive(
       newTrigger.to,

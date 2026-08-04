@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import { mdiCog, mdiMenu } from "@mdi/js";
 import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -19,6 +20,22 @@ import "../../src/components/ha-svg-icon";
 import "../../src/components/ha-top-app-bar-fixed";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
+import {
+  apiContext,
+  areasContext,
+  configContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  servicesContext,
+  statesContext,
+  uiContext,
+} from "../../src/data/context";
+import { updateHassGroups } from "../../src/data/context/updateContext";
 import type { HomeAssistant, ThemeSettings } from "../../src/types";
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import {
@@ -40,15 +57,26 @@ interface GalleryPage {
   demo?: unknown;
 }
 
+interface GallerySidebarSubsection {
+  header: string;
+  pages: string[];
+}
+
 interface GallerySidebarGroup {
   category: string;
   header?: string;
   icon?: string;
-  pages: string[];
+  pages?: string[];
+  subsections?: GallerySidebarSubsection[];
 }
 
+const groupPages = (group: GallerySidebarGroup): string[] =>
+  group.subsections
+    ? group.subsections.flatMap((subsection) => subsection.pages)
+    : (group.pages ?? []);
+
 const GALLERY_SIDEBAR = SIDEBAR as GallerySidebarGroup[];
-const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${GALLERY_SIDEBAR[0].pages[0]}`;
+const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${groupPages(GALLERY_SIDEBAR[0])[0]}`;
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
 
@@ -102,6 +130,65 @@ class HaGallery extends LitElement {
 
   @state() private _drawerOpen = !this._narrow;
 
+  // Fallback Lit context providers for the whole gallery. The real app's root
+  // element provides these via `contextMixin`; here we mirror that so demos
+  // which render context-consuming components without setting up their own hass
+  // (e.g. bare component demos) still resolve `localize`, formatters, config,
+  // etc. instead of throwing during init. Demos that call `provideHass`
+  // register their own providers closer in the tree, which take precedence.
+  private _contextProviders = {
+    registries: new ContextProvider(this, { context: registriesContext }),
+    internationalization: new ContextProvider(this, {
+      context: internationalizationContext,
+    }),
+    api: new ContextProvider(this, { context: apiContext }),
+    connection: new ContextProvider(this, { context: connectionContext }),
+    ui: new ContextProvider(this, { context: uiContext }),
+    config: new ContextProvider(this, { context: configContext }),
+    formatters: new ContextProvider(this, { context: formattersContext }),
+  };
+
+  // The individual (non-grouped) contexts contextMixin also provides. Components
+  // such as ha-area-picker / ha-entity-picker consume these directly, so the
+  // fallback must cover them too.
+  private _singleContextProviders = {
+    states: new ContextProvider(this, { context: statesContext }),
+    services: new ContextProvider(this, { context: servicesContext }),
+    entities: new ContextProvider(this, { context: entitiesContext }),
+    devices: new ContextProvider(this, { context: devicesContext }),
+    areas: new ContextProvider(this, { context: areasContext }),
+    floors: new ContextProvider(this, { context: floorsContext }),
+  };
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    // Refresh the fallback contexts before each render so theme/page changes in
+    // the gallery hass propagate to consuming components.
+    const hass = this._galleryHass;
+    (
+      Object.keys(
+        this._contextProviders
+      ) as (keyof typeof this._contextProviders)[]
+    ).forEach((group) => {
+      const provider = this._contextProviders[group];
+      provider.setValue(
+        (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+          hass,
+          provider.value
+        )
+      );
+    });
+    (
+      Object.keys(
+        this._singleContextProviders
+      ) as (keyof typeof this._singleContextProviders)[]
+    ).forEach((key) => {
+      (this._singleContextProviders[key] as ContextProvider<any>).setValue(
+        hass[key]
+      );
+    });
+  }
+
   render() {
     const isSettingsPage = this._page === SETTINGS_PAGE;
     const page = isSettingsPage ? undefined : PAGES[this._page];
@@ -124,38 +211,46 @@ class HaGallery extends LitElement {
         </ha-sidebar>
         <div slot="appContent" class="app-content">
           <ha-top-app-bar-fixed .narrow=${this._narrow}>
-            ${this._narrow || !this._drawerOpen
-              ? html`<ha-icon-button
-                  slot="navigationIcon"
-                  @click=${this._toggleDrawer}
-                  .path=${mdiMenu}
-                ></ha-icon-button>`
-              : nothing}
+            ${
+              this._narrow || !this._drawerOpen
+                ? html`<ha-icon-button
+                    slot="navigationIcon"
+                    @click=${this._toggleDrawer}
+                    .path=${mdiMenu}
+                  ></ha-icon-button>`
+                : nothing
+            }
 
             <div slot="title">
-              ${isSettingsPage
-                ? "Settings"
-                : page?.metadata.title || this._page.split("/")[1]}
+              ${
+                isSettingsPage
+                  ? "Settings"
+                  : page?.metadata.title || this._page.split("/")[1]
+              }
             </div>
             <div class="content">
-              ${isSettingsPage
-                ? html`<gallery-settings
-                    .hass=${this._galleryHass}
-                    .themeSettings=${this._themeSettings}
-                    .narrow=${this._narrow}
-                    .rtl=${this._rtl}
-                    @theme-settings-changed=${this._themeSettingsChanged}
-                    @gallery-rtl-changed=${this._rtlChanged}
-                  ></gallery-settings>`
-                : html`
-                    ${page?.description
-                      ? html`
-                          <page-description .page=${this._page}>
-                          </page-description>
-                        `
-                      : nothing}
-                    ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
-                  `}
+              ${
+                isSettingsPage
+                  ? html`<gallery-settings
+                      .hass=${this._galleryHass}
+                      .themeSettings=${this._themeSettings}
+                      .narrow=${this._narrow}
+                      .rtl=${this._rtl}
+                      @theme-settings-changed=${this._themeSettingsChanged}
+                      @gallery-rtl-changed=${this._rtlChanged}
+                    ></gallery-settings>`
+                  : html`
+                      ${
+                        page?.description
+                          ? html`
+                              <page-description .page=${this._page}>
+                              </page-description>
+                            `
+                          : nothing
+                      }
+                      ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+                    `
+              }
             </div>
             ${isSettingsPage || !page ? nothing : this._renderPageFooter(page)}
           </ha-top-app-bar-fixed>
@@ -284,26 +379,15 @@ class HaGallery extends LitElement {
     const sidebar: unknown[] = [];
 
     for (const group of GALLERY_SIDEBAR) {
-      const links: unknown[] = [];
-      const expanded = group.pages.some(
+      const expanded = groupPages(group).some(
         (page) => this._page === `${group.category}/${page}`
       );
 
-      for (const page of group.pages) {
-        const key = `${group.category}/${page}`;
-        if (!(key in PAGES)) {
-          console.error("Undefined page referenced in sidebar.js:", key);
-          continue;
-        }
-        links.push(
-          this._renderPageLink(
-            key,
-            PAGES[key].metadata.title || page,
-            group.header ? undefined : "main-navigation",
-            group.header ? undefined : group.icon
+      const content = group.subsections
+        ? group.subsections.map((subsection) =>
+            this._renderSidebarSubsection(group, subsection)
           )
-        );
-      }
+        : this._renderPageLinks(group, group.pages ?? []);
 
       sidebar.push(
         group.header
@@ -314,21 +398,53 @@ class HaGallery extends LitElement {
                 .header=${group.header}
                 ?expanded=${expanded}
               >
-                ${group.icon
-                  ? html`<ha-svg-icon
-                      slot="leading-icon"
-                      class="gallery-sidebar-icon"
-                      .path=${group.icon}
-                    ></ha-svg-icon>`
-                  : nothing}
-                ${links}
+                ${
+                  group.icon
+                    ? html`<ha-svg-icon
+                        slot="leading-icon"
+                        class="gallery-sidebar-icon"
+                        .path=${group.icon}
+                      ></ha-svg-icon>`
+                    : nothing
+                }
+                ${content}
               </ha-expansion-panel>
             `
-          : links
+          : content
       );
     }
 
     return sidebar;
+  }
+
+  private _renderSidebarSubsection(
+    group: GallerySidebarGroup,
+    subsection: GallerySidebarSubsection
+  ) {
+    return html`
+      <div class="gallery-sidebar-subheader">${subsection.header}</div>
+      ${this._renderPageLinks(group, subsection.pages)}
+    `;
+  }
+
+  private _renderPageLinks(group: GallerySidebarGroup, pages: string[]) {
+    const links: unknown[] = [];
+    for (const page of pages) {
+      const key = `${group.category}/${page}`;
+      if (!(key in PAGES)) {
+        console.error("Undefined page referenced in sidebar.js:", key);
+        continue;
+      }
+      links.push(
+        this._renderPageLink(
+          key,
+          PAGES[key].metadata.title || page,
+          group.header ? undefined : "main-navigation",
+          group.header ? undefined : group.icon
+        )
+      );
+    }
+    return links;
   }
 
   private _renderPageLink(
@@ -348,9 +464,11 @@ class HaGallery extends LitElement {
         ?selected=${this._page === page}
         href=${`#${page}`}
       >
-        ${iconPath
-          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
-          : nothing}
+        ${
+          iconPath
+            ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+            : nothing
+        }
         <span slot="headline">${title}</span>
       </ha-list-item-button>
     `;
@@ -381,23 +499,30 @@ class HaGallery extends LitElement {
           Suggest an edit to this page, or provide/view feedback for this page.
         </div>
         <div>
-          ${page.description || Object.keys(page.metadata).length > 0
-            ? html`
-                <a
-                  href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                  target="_blank"
-                >
-                  Edit text
-                </a>
-              `
-            : nothing}
-          ${page.demo
-            ? html`
-                <a href=${`${GITHUB_DEMO_URL}${this._page}.ts`} target="_blank">
-                  Edit demo
-                </a>
-              `
-            : nothing}
+          ${
+            page.description || Object.keys(page.metadata).length > 0
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                    target="_blank"
+                  >
+                    Edit text
+                  </a>
+                `
+              : nothing
+          }
+          ${
+            page.demo
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
+                    target="_blank"
+                  >
+                    Edit demo
+                  </a>
+                `
+              : nothing
+          }
         </div>
       </div>
     </div>`;
@@ -546,6 +671,21 @@ class HaGallery extends LitElement {
       callWS: async () => undefined,
       fetchWithAuth: async () => new Response(),
       sendWS: () => undefined,
+      formatEntityState: (stateObj, stateValue) =>
+        (stateValue != null ? stateValue : stateObj.state) ?? "",
+      formatEntityStateToParts: (stateObj, stateValue) => [
+        {
+          type: "value",
+          value: (stateValue != null ? stateValue : stateObj.state) ?? "",
+        },
+      ],
+      formatEntityAttributeName: (_stateObj, attribute) => attribute,
+      formatEntityAttributeValue: (stateObj, attribute, value) =>
+        value != null ? value : (stateObj.attributes[attribute] ?? ""),
+      formatEntityName: (stateObj, type) =>
+        typeof type === "string"
+          ? type
+          : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     } as unknown as HomeAssistant;
   }
 
@@ -583,6 +723,16 @@ class HaGallery extends LitElement {
       .gallery-sidebar-section .gallery-nav-item {
         margin-inline-start: var(--ha-space-4);
         width: var(--ha-sidebar-expanded-section-item-width, 248px);
+      }
+
+      .gallery-sidebar-subheader {
+        margin: var(--ha-space-2) var(--ha-space-4) var(--ha-space-1);
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-medium);
+        line-height: var(--ha-line-height-condensed);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       .gallery-sidebar-icon,

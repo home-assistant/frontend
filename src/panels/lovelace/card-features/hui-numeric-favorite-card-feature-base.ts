@@ -1,27 +1,48 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type {
+  Connection,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import type { LocalizeKeys } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import "../../../components/ha-control-select";
+import { apiContext, connectionContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConnection,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const OPTION_MIN_WIDTH = 30;
 
 type NumericFavoriteEntity = HassEntity & {
   attributes: HassEntity["attributes"] & {
@@ -47,6 +68,15 @@ export interface NumericFavoriteCardFeatureDefinition<
   featureLabelKey: LocalizeKeys;
 }
 
+const supportsNumericFavoriteCardFeatureFromState = <
+  TEntity extends NumericFavoriteEntity,
+>(
+  stateObj: TEntity,
+  definition: NumericFavoriteCardFeatureDefinition<TEntity>
+) =>
+  computeDomain(stateObj.entity_id) === definition.domain &&
+  definition.supportsPosition(stateObj);
+
 export const supportsNumericFavoriteCardFeature = <
   TEntity extends NumericFavoriteEntity,
 >(
@@ -62,10 +92,7 @@ export const supportsNumericFavoriteCardFeature = <
     return false;
   }
 
-  return (
-    computeDomain(stateObj.entity_id) === definition.domain &&
-    definition.supportsPosition(stateObj)
-  );
+  return supportsNumericFavoriteCardFeatureFromState(stateObj, definition);
 };
 
 export abstract class HuiNumericFavoriteCardFeatureBase<
@@ -75,11 +102,28 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  protected _stateObj?: TEntity;
+
+  @state()
+  @consumeLocalize()
+  protected _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  protected _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  protected _connection?: Connection;
 
   @state() protected _config?: TConfig;
 
@@ -93,15 +137,17 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
 
   private _subscribedConnection?: HomeAssistant["connection"];
 
+  private _resizeController = new ResizeController<number | undefined>(this, {
+    callback: (entries: { contentRect?: { width: number } }[]) => {
+      const width = entries[0]?.contentRect?.width;
+      if (!width) {
+        return undefined;
+      }
+      return Math.max(1, Math.floor(width / OPTION_MIN_WIDTH));
+    },
+  });
+
   protected abstract get _definition(): NumericFavoriteCardFeatureDefinition<TEntity>;
-
-  protected get _stateObj(): TEntity | undefined {
-    if (!this.hass || !this.context?.entity_id) {
-      return undefined;
-    }
-
-    return this.hass.states[this.context.entity_id] as TEntity | undefined;
-  }
 
   public connectedCallback() {
     super.connectedCallback();
@@ -121,38 +167,14 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
     this._config = config as TConfig;
   }
 
-  protected willUpdate(changedProp: PropertyValues<this>): void {
+  protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
 
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = this.context?.entity_id
-        ? (oldHass?.states[this.context.entity_id] as TEntity | undefined)
-        : undefined;
-
-      if (oldStateObj !== this._stateObj) {
-        this._currentPosition = this._definition.getCurrentValue(
-          this._stateObj
-        );
-      }
+    if (changedProp.has("_stateObj") && this._stateObj) {
+      this._currentPosition = this._definition.getCurrentValue(this._stateObj);
     }
 
-    if (
-      changedProp.has("context") &&
-      (changedProp.get("context") as LovelaceCardFeatureContext | undefined)
-        ?.entity_id !== this.context?.entity_id
-    ) {
-      this._refreshEntitySubscription();
-    }
-
-    if (
-      changedProp.has("hass") &&
-      (changedProp.get("hass") as HomeAssistant | undefined)?.connection !==
-        this.hass?.connection
-    ) {
+    if (changedProp.has("context") || changedProp.has("_connection")) {
       this._refreshEntitySubscription();
     }
   }
@@ -169,12 +191,8 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   }
 
   private async _loadEntityEntry(entityId: string): Promise<void> {
-    if (!this.hass) {
-      return;
-    }
-
     try {
-      const entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
+      const entry = await getExtendedEntityRegistryEntry(this._api, entityId);
 
       if (this.context?.entity_id === entityId) {
         this._entry = entry;
@@ -193,7 +211,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
 
     try {
       this._unsubEntityRegistry = subscribeEntityRegistry(
-        this.hass!.connection,
+        this._connection!,
         async (entries) => {
           if (this.context?.entity_id !== entityId) {
             return;
@@ -214,9 +232,9 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
 
   private async _ensureEntitySubscription(): Promise<void> {
     const entityId = this.context?.entity_id;
-    const connection = this.hass?.connection;
+    const connection = this._connection;
 
-    if (!this.hass || !entityId || !connection) {
+    if (!entityId || !connection) {
       this._unsubscribeEntityRegistry();
       this._subscribedEntityId = undefined;
       this._subscribedConnection = undefined;
@@ -243,7 +261,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   ) {
     const value = ev.detail.value;
 
-    if (value == null || !this.hass || !this._stateObj) {
+    if (value == null || !this._stateObj) {
       return;
     }
 
@@ -262,7 +280,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
     this._currentPosition = position;
 
     try {
-      await this.hass.callService(
+      await this._api.callService(
         this._definition.domain,
         this._definition.setPositionService,
         {
@@ -278,12 +296,10 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   protected render(): TemplateResult | null {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsNumericFavoriteCardFeature(
-        this.hass,
-        this.context,
+      !supportsNumericFavoriteCardFeatureFromState(
+        this._stateObj,
         this._definition
       )
     ) {
@@ -295,16 +311,18 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
         this._definition.defaultFavoritePositions
     );
 
-    const hass = this.hass;
-
-    if (positions.length === 0 || !hass) {
+    if (positions.length === 0) {
       return null;
     }
 
-    const options = positions.map((position) => ({
+    const maxVisible = this._resizeController.value;
+    const visiblePositions =
+      maxVisible != null ? positions.slice(0, maxVisible) : positions;
+
+    const options = visiblePositions.map((position) => ({
       value: String(position),
       label: `${position}%`,
-      ariaLabel: hass.localize(this._definition.setPositionLabelKey, {
+      ariaLabel: this._localize(this._definition.setPositionLabelKey, {
         value: `${position}%`,
       }),
     }));
@@ -322,7 +340,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
         .options=${options}
         .value=${currentValue}
         @value-changed=${this._valueChanged}
-        .label=${hass.localize(this._definition.featureLabelKey)}
+        .label=${this._localize(this._definition.featureLabelKey)}
         .disabled=${this._stateObj.state === UNAVAILABLE}
       >
       </ha-control-select>
@@ -330,6 +348,13 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   }
 
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: block;
+        }
+      `,
+    ];
   }
 }

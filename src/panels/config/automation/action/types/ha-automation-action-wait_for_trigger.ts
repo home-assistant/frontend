@@ -52,6 +52,7 @@ export class HaWaitForTriggerAction
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
+          default: true,
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -70,29 +71,33 @@ export class HaWaitForTriggerAction
           : "duration";
 
     return html`
-      ${this.inSidebar || (!this.inSidebar && !this.indent)
-        ? html`
-            <ha-form
+      ${
+        this.inSidebar || (!this.inSidebar && !this.indent)
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this.action}
+                .schema=${this._schema(timeoutType)}
+                .disabled=${this.disabled}
+                .computeLabel=${this._computeLabelCallback}
+              ></ha-form>
+            `
+          : nothing
+      }
+      ${
+        this.indent || (!this.inSidebar && !this.indent)
+          ? html`<ha-automation-trigger
+              class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
+              .triggers=${ensureArray(this.action.wait_for_trigger)}
               .hass=${this.hass}
-              .data=${this.action}
-              .schema=${this._schema(timeoutType)}
               .disabled=${this.disabled}
-              .computeLabel=${this._computeLabelCallback}
-            ></ha-form>
-          `
-        : nothing}
-      ${this.indent || (!this.inSidebar && !this.indent)
-        ? html`<ha-automation-trigger
-            class=${!this.inSidebar && !this.indent ? "expansion-panel" : ""}
-            .triggers=${ensureArray(this.action.wait_for_trigger)}
-            .hass=${this.hass}
-            .disabled=${this.disabled}
-            .name=${"wait_for_trigger"}
-            @value-changed=${this._valueChanged}
-            .optionsInSidebar=${this.indent}
-            .narrow=${this.narrow}
-          ></ha-automation-trigger>`
-        : nothing}
+              .name=${"wait_for_trigger"}
+              @value-changed=${this._valueChanged}
+              .optionsInSidebar=${this.indent}
+              .narrow=${this.narrow}
+            ></ha-automation-trigger>`
+          : nothing
+      }
     `;
   }
 

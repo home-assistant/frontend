@@ -19,7 +19,7 @@ import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import "./onboarding-location";
 
@@ -89,9 +89,11 @@ class OnboardingCoreConfig extends LitElement {
       </div>`;
     }
     return html`
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
 
       <p>
         ${this.onboardingLocalize(
@@ -130,7 +132,9 @@ class OnboardingCoreConfig extends LitElement {
     });
   }
 
-  private _handleFormChanged(ev: CustomEvent) {
+  private _handleFormChanged(
+    ev: ValueChangedEvent<{ country?: string; time_zone?: string }>
+  ) {
     const value = ev.detail.value as { country?: string; time_zone?: string };
     this._country = value.country || undefined;
     if (value.time_zone) {

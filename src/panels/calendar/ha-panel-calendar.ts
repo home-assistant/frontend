@@ -16,7 +16,6 @@ import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
@@ -36,6 +35,7 @@ import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
+import { panelIsReady } from "../../layouts/panel-ready";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { haStyle } from "../../resources/styles";
 import type { CalendarViewChanged, HomeAssistant } from "../../types";
@@ -78,6 +78,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   private _mql?: MediaQueryList;
 
+  private _initialReady = false;
+
   public connectedCallback() {
     super.connectedCallback();
     this._mql = window.matchMedia(
@@ -104,6 +106,10 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         this._entityRegistry = entities;
         // Refresh calendars when entity registry updates (includes color changes)
         this._calendars = getCalendars(this.hass, this, this._entityRegistry);
+        if (!this._initialReady) {
+          this._initialReady = true;
+          panelIsReady(this);
+        }
         // Resubscribe events if view dates are available (handles both initial load and color updates)
         if (this._start && this._end) {
           this._unsubscribeAll().then(() => {
@@ -119,7 +125,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     if (!this._entityRegistry) {
       return html`
         <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
-          <ha-menu-button slot="navigationIcon"></ha-menu-button>
           <div slot="title">
             ${this.hass.localize("ui.components.calendar.my_calendars")}
           </div>
@@ -154,49 +159,60 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button slot="navigationIcon"></ha-menu-button>
-
-        ${!showPane
-          ? html`<ha-dropdown slot="title">
-              <ha-button slot="trigger">
+        ${
+          !showPane
+            ? html`<ha-dropdown slot="title">
+                <ha-button slot="trigger">
+                  ${this.hass.localize("ui.components.calendar.my_calendars")}
+                  <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
+                </ha-button>
+                ${calendarItems}
+                ${
+                  this.hass.user?.is_admin
+                    ? html`<wa-divider></wa-divider>
+                        <ha-dropdown-item @click=${this._addCalendar}>
+                          <ha-svg-icon
+                            .path=${mdiPlus}
+                            slot="icon"
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
+                            "ui.components.calendar.create_calendar"
+                          )}
+                        </ha-dropdown-item>`
+                    : nothing
+                }
+              </ha-dropdown>`
+            : html`<div slot="title">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
-                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
-              </ha-button>
-              ${calendarItems}
-              ${this.hass.user?.is_admin
-                ? html`<wa-divider></wa-divider>
-                    <ha-dropdown-item @click=${this._addCalendar}>
-                      <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.components.calendar.create_calendar"
-                      )}
-                    </ha-dropdown-item>`
-                : nothing}
-            </ha-dropdown>`
-          : html`<div slot="title">
-              ${this.hass.localize("ui.components.calendar.my_calendars")}
-            </div>`}
+              </div>`
+        }
         <ha-icon-button
           slot="actionItems"
           .path=${mdiRefresh}
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane
-          ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${this
-                .hass.user?.is_admin
-                ? html`<ha-list-item
-                    graphic="icon"
-                    slot="pane-footer"
-                    @click=${this._addCalendar}
-                  >
-                    <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.components.calendar.create_calendar"
-                    )}
-                  </ha-list-item>`
-                : nothing}`
-          : nothing}
+        ${
+          showPane
+            ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${
+                  this.hass.user?.is_admin
+                    ? html`<ha-list-item
+                        graphic="icon"
+                        slot="pane-footer"
+                        @click=${this._addCalendar}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiPlus}
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.components.calendar.create_calendar"
+                        )}
+                      </ha-list-item>`
+                    : nothing
+                }`
+            : nothing
+        }
         <ha-full-calendar
           add-fab
           .events=${this._events}

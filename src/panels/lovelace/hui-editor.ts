@@ -1,4 +1,3 @@
-import { undoDepth } from "@codemirror/commands";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -17,6 +16,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { Lovelace } from "./types";
@@ -33,7 +33,9 @@ const strategyStruct = type({
 });
 
 @customElement("hui-editor")
-class LovelaceFullConfigEditor extends LitElement {
+class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
+  LitElement
+) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -43,8 +45,6 @@ class LovelaceFullConfigEditor extends LitElement {
   @property({ attribute: false }) public closeEditor?: () => void;
 
   @state() private _saving?: boolean;
-
-  @state() private _changed?: boolean;
 
   private _config?: LovelaceRawConfig;
 
@@ -66,19 +66,21 @@ class LovelaceFullConfigEditor extends LitElement {
           slot="actionItems"
           class="save-button
               ${classMap({
-            saved: this._saving === false || this._changed === true,
-          })}"
+                saved: this._saving === false || this.isDirtyState,
+              })}"
         >
-          ${this._changed
-            ? this.hass!.localize(
-                "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
-              )
-            : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")}
+          ${
+            this.isDirtyState
+              ? this.hass!.localize(
+                  "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+                )
+              : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")
+          }
         </div>
         <ha-button
           slot="actionItems"
           @click=${this._handleSave}
-          .disabled=${!this._changed}
+          .disabled=${!this.isDirtyState}
           >${this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.save"
           )}</ha-button
@@ -98,10 +100,11 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.setValue(this.lovelace!.rawConfig);
+    this._setValue();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
     if (
       !this._saving &&
@@ -110,8 +113,17 @@ class LovelaceFullConfigEditor extends LitElement {
       oldLovelace.rawConfig !== this.lovelace.rawConfig &&
       !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
-      this.yamlEditor.setValue(this.lovelace!.rawConfig);
+      this._setValue();
     }
+  }
+
+  private _setValue() {
+    this.yamlEditor.setValue(this.lovelace!.rawConfig);
+    // Baseline the dirty check against the loaded YAML so it resets on save.
+    this._initDirtyTracking(
+      { type: "custom", compare: (a, b) => a === b },
+      this.yamlEditor.yaml
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -158,17 +170,17 @@ class LovelaceFullConfigEditor extends LitElement {
   private _yamlChanged(ev: CustomEvent) {
     this._config = ev.detail.isValid ? ev.detail.value : undefined;
     this._yamlError = ev.detail.errorMsg;
-    this._changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
-    if (this._changed && !window.onbeforeunload) {
+    this._updateDirtyState(this.yamlEditor.yaml);
+    if (this.isDirtyState && !window.onbeforeunload) {
       window.onbeforeunload = () => true;
-    } else if (!this._changed && window.onbeforeunload) {
+    } else if (!this.isDirtyState && window.onbeforeunload) {
       window.onbeforeunload = null;
     }
   }
 
   private async _closeEditor() {
     if (
-      this._changed &&
+      this.isDirtyState &&
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
@@ -279,7 +291,7 @@ class LovelaceFullConfigEditor extends LitElement {
       });
     }
     window.onbeforeunload = null;
-    this._changed = false;
+    this._markDirtyStateClean();
     this._saving = false;
   }
 

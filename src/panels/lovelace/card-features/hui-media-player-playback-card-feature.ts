@@ -1,14 +1,22 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import { apiContext } from "../../../data/context";
 import type {
   ControlButton,
   MediaPlayerEntity,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -21,6 +29,13 @@ import type {
   MediaPlayerPlaybackCardFeatureConfig,
 } from "./types";
 
+const supportsMediaPlayerPlaybackCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "media_player";
+};
+
 export const supportsMediaPlayerPlaybackCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -29,8 +44,7 @@ export const supportsMediaPlayerPlaybackCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "media_player";
+  return supportsMediaPlayerPlaybackCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-media-player-playback-card-feature")
@@ -38,24 +52,25 @@ class HuiMediaPlayerPlaybackCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
 
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: MediaPlayerEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   @state() private _config?: MediaPlayerPlaybackCardFeatureConfig;
 
   @state() private _narrow?: boolean = false;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id] as
-      | MediaPlayerEntity
-      | undefined;
-  }
 
   static getStubConfig(): MediaPlayerPlaybackCardFeatureConfig {
     return {
@@ -83,25 +98,18 @@ class HuiMediaPlayerPlaybackCardFeature
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const entityId = this.context?.entity_id;
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
-      hasConfigChanged(this, changedProps) ||
-      (changedProps.has("hass") &&
-        (!oldHass ||
-          !entityId ||
-          oldHass.states[entityId] !== this.hass!.states[entityId]))
+      hasConfigChanged(this, changedProps) || changedProps.has("_stateObj")
     );
   }
 
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
-      !supportsMediaPlayerPlaybackCardFeature(this.hass, this.context) ||
-      !this._stateObj
+      !this._stateObj ||
+      !supportsMediaPlayerPlaybackCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -114,9 +122,7 @@ class HuiMediaPlayerPlaybackCardFeature
           (button) => html`
             <ha-control-button
               key=${button.action}
-              .label=${this.hass?.localize(
-                `ui.card.media_player.${button.action}`
-              )}
+              .label=${this._localize(`ui.card.media_player.${button.action}`)}
               .disabled=${button.disabled}
               @click=${this._action}
             >
@@ -133,8 +139,7 @@ class HuiMediaPlayerPlaybackCardFeature
       return;
     }
     const host = (this.getRootNode() as ShadowRoot).host as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     const width = host?.clientWidth ?? this.clientWidth ?? 0;
     this._narrow = width < 200;
   }
@@ -168,7 +173,7 @@ class HuiMediaPlayerPlaybackCardFeature
     if (!action) return;
 
     if (action === "volume_mute") {
-      this.hass!.callService("media_player", "volume_mute", {
+      this._api.callService("media_player", "volume_mute", {
         entity_id: this._stateObj.entity_id,
         is_volume_muted: !this._stateObj.attributes.is_volume_muted,
       });
@@ -176,7 +181,7 @@ class HuiMediaPlayerPlaybackCardFeature
     }
 
     if (action === "shuffle") {
-      this.hass!.callService("media_player", "shuffle_set", {
+      this._api.callService("media_player", "shuffle_set", {
         entity_id: this._stateObj.entity_id,
         shuffle: !this._stateObj.attributes.shuffle,
       });
@@ -185,14 +190,14 @@ class HuiMediaPlayerPlaybackCardFeature
 
     if (action === "repeat") {
       const repeat = this._stateObj.attributes.repeat ?? "off";
-      this.hass!.callService("media_player", "repeat_set", {
+      this._api.callService("media_player", "repeat_set", {
         entity_id: this._stateObj.entity_id,
         repeat: repeat === "off" ? "one" : repeat === "one" ? "all" : "off",
       });
       return;
     }
 
-    this.hass!.callService("media_player", action, {
+    this._api.callService("media_player", action, {
       entity_id: this._stateObj.entity_id,
     });
   }

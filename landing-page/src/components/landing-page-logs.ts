@@ -65,30 +65,34 @@ class LandingPageLogs extends LitElement {
         <ha-button appearance="plain" @click=${this._toggleLogDetails}>
           ${this.localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
-        ${this._show
-          ? html`<ha-icon-button
-              .label=${this.localize("logs.download_logs")}
-              .path=${mdiDownload}
-              @click=${this._downloadLogs}
-            ></ha-icon-button>`
-          : nothing}
+        ${
+          this._show
+            ? html`<ha-icon-button
+                .label=${this.localize("logs.download_logs")}
+                .path=${mdiDownload}
+                @click=${this._downloadLogs}
+              ></ha-icon-button>`
+            : nothing
+        }
       </div>
-      ${this._error
-        ? html`
-            <ha-alert
-              alert-type="error"
-              .title=${this.localize("logs.fetch_error")}
-            >
-              <ha-button
-                size="small"
-                variant="danger"
-                @click=${this._startLogStream}
+      ${
+        this._error
+          ? html`
+              <ha-alert
+                alert-type="error"
+                .title=${this.localize("logs.fetch_error")}
               >
-                ${this.localize("logs.retry")}
-              </ha-button>
-            </ha-alert>
-          `
-        : nothing}
+                <ha-button
+                  size="small"
+                  variant="danger"
+                  @click=${this._startLogStream}
+                >
+                  ${this.localize("logs.retry")}
+                </ha-button>
+              </ha-alert>
+            `
+          : nothing
+      }
       <div
         class=${classMap({
           logs: true,

@@ -20,12 +20,24 @@ import {
   createUser,
   deleteUser,
 } from "../../../data/user";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import type { AddUserDialogParams } from "./show-dialog-add-user";
 
+interface AddUserFormState {
+  name?: string;
+  username?: string;
+  password?: string;
+  passwordConfirm?: string;
+  isAdmin?: boolean;
+  localOnly?: boolean;
+}
+
 @customElement("dialog-add-user")
-export class DialogAddUser extends LitElement {
+export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loading = false;
@@ -70,6 +82,18 @@ export class DialogAddUser extends LitElement {
     }
 
     this._open = true;
+
+    this._initDirtyTracking(
+      { type: "shallow" },
+      {
+        name: this._name,
+        username: this._username,
+        password: "",
+        passwordConfirm: "",
+        isAdmin: false,
+        localOnly: false,
+      }
+    );
   }
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
@@ -89,7 +113,7 @@ export class DialogAddUser extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
@@ -97,23 +121,25 @@ export class DialogAddUser extends LitElement {
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-          ${this._allowChangeName
-            ? html`<ha-input
-                class="name"
-                name="name"
-                .label=${this.hass.localize(
-                  "ui.panel.config.users.editor.name"
-                )}
-                .value=${this._name}
-                required
-                .validationMessage=${this.hass.localize(
-                  "ui.common.error_required"
-                )}
-                @input=${this._handleValueChanged}
-                @blur=${this._maybePopulateUsername}
-                autofocus
-              ></ha-input>`
-            : ""}
+          ${
+            this._allowChangeName
+              ? html`<ha-input
+                  class="name"
+                  name="name"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.users.editor.name"
+                  )}
+                  .value=${this._name}
+                  required
+                  .validationMessage=${this.hass.localize(
+                    "ui.common.error_required"
+                  )}
+                  @input=${this._handleValueChanged}
+                  @blur=${this._maybePopulateUsername}
+                  autofocus
+                ></ha-input>`
+              : ""
+          }
           <ha-input
             class="username"
             name="username"
@@ -150,9 +176,11 @@ export class DialogAddUser extends LitElement {
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
-            .invalid=${this._password !== "" &&
-            this._passwordConfirm !== "" &&
-            this._passwordConfirm !== this._password}
+            .invalid=${
+              this._password !== "" &&
+              this._passwordConfirm !== "" &&
+              this._passwordConfirm !== this._password
+            }
             .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
@@ -189,15 +217,17 @@ export class DialogAddUser extends LitElement {
               @change=${this._adminChanged}
             ></ha-switch>
           </ha-row-item>
-          ${!this._isAdmin
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.users.users_privileges_note"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
+          ${
+            !this._isAdmin
+              ? html`
+                  <ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.users.users_privileges_note"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -210,10 +240,12 @@ export class DialogAddUser extends LitElement {
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._name ||
-            !this._username ||
-            !this._password ||
-            this._password !== this._passwordConfirm}
+            .disabled=${
+              !this._name ||
+              !this._username ||
+              !this._password ||
+              this._password !== this._passwordConfirm
+            }
             @click=${this._createUser}
             .loading=${this._loading}
           >
@@ -242,6 +274,7 @@ export class DialogAddUser extends LitElement {
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
+      this._publishDirtyState();
     }
   }
 
@@ -249,16 +282,30 @@ export class DialogAddUser extends LitElement {
     this._error = undefined;
     const target = ev.target as HaInput;
     this[`_${target.name}`] = target.value;
+    this._publishDirtyState();
   }
 
   private async _adminChanged(ev: Event): Promise<void> {
     const target = ev.target as HaSwitch;
     this._isAdmin = target.checked;
+    this._publishDirtyState();
   }
 
   private _localOnlyChanged(ev: Event): void {
     const target = ev.target as HaSwitch;
     this._localOnly = target.checked;
+    this._publishDirtyState();
+  }
+
+  private _publishDirtyState(): void {
+    this._updateDirtyState({
+      name: this._name,
+      username: this._username,
+      password: this._password,
+      passwordConfirm: this._passwordConfirm,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    });
   }
 
   private async _createUser(ev: Event) {
@@ -306,6 +353,7 @@ export class DialogAddUser extends LitElement {
       },
     ];
     this._params!.userAddedCallback(user);
+    this._markDirtyStateClean();
     this._close();
   }
 

@@ -1,4 +1,3 @@
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { TemplateTrigger } from "../../../../../data/automation";
@@ -11,7 +10,19 @@ import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SCHEMA = [
   { name: "value_template", required: true, selector: { template: {} } },
-  { name: "for", selector: { duration: {} } },
+  {
+    name: "for",
+    selector: {
+      choose: {
+        translation_key:
+          "ui.panel.config.automation.editor.triggers.type.template.for_type",
+        choices: {
+          duration: { selector: { duration: {} } },
+          template: { selector: { template: {} } },
+        },
+      },
+    },
+  },
 ] as const;
 
 @customElement("ha-automation-trigger-template")
@@ -26,26 +37,37 @@ export class HaTemplateTrigger extends LitElement {
     return { trigger: "template", value_template: "" };
   }
 
-  public willUpdate(changedProperties: PropertyValues<this>) {
-    if (!changedProperties.has("trigger")) {
-      return;
+  private _wrapForValue(
+    forValue: TemplateTrigger["for"]
+  ): Record<string, unknown> | undefined {
+    if (forValue === undefined) {
+      return undefined;
     }
-    // Check for templates in trigger. If found, revert to YAML mode.
-    if (this.trigger && hasTemplate(this.trigger.for)) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
-      );
+    if (typeof forValue === "string" && hasTemplate(forValue)) {
+      return { active_choice: "template", template: forValue };
     }
+    return {
+      active_choice: "duration",
+      duration: createDurationData(forValue),
+    };
+  }
+
+  private _unwrapForValue(
+    forValue: Record<string, unknown> | undefined
+  ): TemplateTrigger["for"] {
+    if (!forValue || !forValue.active_choice) {
+      return forValue as TemplateTrigger["for"];
+    }
+    if (forValue.active_choice === "template") {
+      return forValue.template as string;
+    }
+    return forValue.duration as TemplateTrigger["for"];
   }
 
   protected render() {
-    const trgFor = createDurationData(this.trigger.for);
-
     const data = {
       ...this.trigger,
-      for: trgFor,
+      for: this._wrapForValue(this.trigger.for),
     };
 
     return html`
@@ -53,6 +75,7 @@ export class HaTemplateTrigger extends LitElement {
         .hass=${this.hass}
         .data=${data}
         .schema=${SCHEMA}
+        .localizeValue=${this.hass.localize}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
         .disabled=${this.disabled}
@@ -64,8 +87,11 @@ export class HaTemplateTrigger extends LitElement {
     ev.stopPropagation();
     const newTrigger = ev.detail.value;
 
+    newTrigger.for = this._unwrapForValue(newTrigger.for);
+
     if (
       newTrigger.for &&
+      typeof newTrigger.for === "object" &&
       Object.values(newTrigger.for).every((value) => value === 0)
     ) {
       delete newTrigger.for;

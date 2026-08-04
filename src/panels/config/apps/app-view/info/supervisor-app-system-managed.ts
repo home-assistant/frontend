@@ -30,15 +30,17 @@ class SupervisorAppSystemManaged extends LitElement {
         ${this.i18n.localize(
           "ui.panel.config.apps.dashboard.system_managed.description"
         )}
-        ${!this.hideButton
-          ? html`
-              <ha-button slot="action" @click=${this._takeControl}>
-                ${this.i18n.localize(
-                  "ui.panel.config.apps.dashboard.system_managed.take_control"
-                )}
-              </ha-button>
-            `
-          : nothing}
+        ${
+          !this.hideButton
+            ? html`
+                <ha-button slot="action" @click=${this._takeControl}>
+                  ${this.i18n.localize(
+                    "ui.panel.config.apps.dashboard.system_managed.take_control"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
       </ha-alert>
     `;
   }

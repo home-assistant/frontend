@@ -74,9 +74,11 @@ export class DemoAutomationDescribeCondition extends LitElement {
       <ha-card header="Conditions">
         <div class="condition">
           <span>
-            ${this._condition
-              ? describeCondition(this._condition, this.hass, [])
-              : "<invalid YAML>"}
+            ${
+              this._condition
+                ? describeCondition(this._condition, this.hass, [])
+                : "<invalid YAML>"
+            }
           </span>
           <ha-yaml-editor
             label="Condition Config"

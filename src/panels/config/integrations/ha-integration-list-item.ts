@@ -33,62 +33,73 @@ export class HaIntegrationListItem extends HaListItemButton {
       !integration.iot_standards;
     return html`
       <div part="start" class="start">
-        ${integration.is_discovered
-          ? html`<ha-svg-icon
-              class="discovered-icon"
-              .path=${mdiDevices}
-            ></ha-svg-icon>`
-          : html`<ha-domain-icon
-              brand-fallback
-              .domain=${integration.domain}
-            ></ha-domain-icon>`}
+        ${
+          integration.is_discovered
+            ? html`<ha-svg-icon
+                class="discovered-icon"
+                .path=${mdiDevices}
+              ></ha-svg-icon>`
+            : html`<ha-domain-icon
+                brand-fallback
+                .domain=${integration.domain}
+              ></ha-domain-icon>`
+        }
       </div>
       <div part="content" class="content">
         <div part="headline" class="headline">
-          ${integration.name ||
-          domainToName(this._localize, integration.domain)}
-          ${integration.is_helper
-            ? ` (${this._localize("ui.panel.config.integrations.config_entry.helper")})`
-            : nothing}
+          ${
+            integration.name || domainToName(this._localize, integration.domain)
+          }
+          ${
+            integration.is_helper
+              ? ` (${this._localize("ui.panel.config.integrations.config_entry.helper")})`
+              : nothing
+          }
         </div>
       </div>
       <div part="end" class="end">
-        ${integration.cloud
-          ? html`<ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
-              <ha-tooltip for="icon-cloud" placement="left">
-                ${this._localize(
-                  "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                )}
-              </ha-tooltip>`
-          : nothing}
-        ${!integration.is_built_in
-          ? html`<ha-svg-icon
-                id="icon-custom"
-                class=${integration.overwrites_built_in
-                  ? "overwrites"
-                  : "custom"}
-                .path=${mdiPackageVariant}
-              ></ha-svg-icon>
-              <ha-tooltip for="icon-custom" placement="left">
-                ${this._localize(
-                  integration.overwrites_built_in
-                    ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                    : "ui.panel.config.integrations.config_entry.custom_integration"
-                )}
-              </ha-tooltip>`
-          : nothing}
-        ${yamlOnly
-          ? html`<ha-svg-icon
-                id="icon-yaml"
-                .path=${mdiFileCodeOutline}
-                class="open-in-new"
-              ></ha-svg-icon>
-              <ha-tooltip for="icon-yaml" placement="left">
-                ${this._localize(
-                  "ui.panel.config.integrations.config_entry.yaml_only"
-                )}
-              </ha-tooltip>`
-          : html`<ha-icon-next></ha-icon-next>`}
+        ${
+          integration.cloud
+            ? html`<ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+                <ha-tooltip for="icon-cloud" placement="left">
+                  ${this._localize(
+                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                  )}
+                </ha-tooltip>`
+            : nothing
+        }
+        ${
+          !integration.is_built_in
+            ? html`<ha-svg-icon
+                  id="icon-custom"
+                  class=${
+                    integration.overwrites_built_in ? "overwrites" : "custom"
+                  }
+                  .path=${mdiPackageVariant}
+                ></ha-svg-icon>
+                <ha-tooltip for="icon-custom" placement="left">
+                  ${this._localize(
+                    integration.overwrites_built_in
+                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                      : "ui.panel.config.integrations.config_entry.custom_integration"
+                  )}
+                </ha-tooltip>`
+            : nothing
+        }
+        ${
+          yamlOnly
+            ? html`<ha-svg-icon
+                  id="icon-yaml"
+                  .path=${mdiFileCodeOutline}
+                  class="open-in-new"
+                ></ha-svg-icon>
+                <ha-tooltip for="icon-yaml" placement="left">
+                  ${this._localize(
+                    "ui.panel.config.integrations.config_entry.yaml_only"
+                  )}
+                </ha-tooltip>`
+            : html`<ha-icon-next></ha-icon-next>`
+        }
       </div>
     `;
   }

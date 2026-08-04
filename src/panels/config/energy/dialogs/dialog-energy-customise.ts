@@ -23,6 +23,7 @@ import {
   saveFrontendSystemData,
 } from "../../../../data/frontend";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import { showToast } from "../../../../util/toast";
 import type {
@@ -45,7 +46,7 @@ const VIEW_GROUPS: { view: EnergyViewPath; labelKey: LocalizeKeys }[] = [
 
 @customElement("dialog-energy-customise")
 export class DialogEnergyCustomise
-  extends LitElement
+  extends DirtyStateProviderMixin<string[]>()(LitElement)
   implements HassDialog<EnergyCustomiseDialogParams>
 {
   @state()
@@ -107,6 +108,7 @@ export class DialogEnergyCustomise
       this._error = err?.message || "Unknown error";
       this._hidden = new Set();
     }
+    this._initDirtyTracking({ type: "deep" }, [...this._hidden].sort());
   }
 
   protected render() {
@@ -120,16 +122,18 @@ export class DialogEnergyCustomise
         .headerTitle=${this._i18n.localize(
           "ui.panel.config.energy.customise.title"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${!this._hidden
-          ? html`<div class="loading">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`
-          : this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : html`<div class="groups">${this._renderGroups()}</div>`}
+        ${
+          !this._hidden
+            ? html`<div class="loading">
+                <ha-spinner size="large"></ha-spinner>
+              </div>`
+            : this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : html`<div class="groups">${this._renderGroups()}</div>`
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -143,7 +147,12 @@ export class DialogEnergyCustomise
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting || !this._hidden || !!this._error}
+            .disabled=${
+              this._submitting ||
+              !this._hidden ||
+              !!this._error ||
+              !this.isDirtyState
+            }
           >
             ${this._i18n.localize("ui.common.save")}
           </ha-button>
@@ -191,15 +200,17 @@ export class DialogEnergyCustomise
           @change=${this._toggleCard}
         ></ha-switch>
       </ha-settings-row>
-      ${applicable
-        ? nothing
-        : html`
-            <ha-tooltip .for=${rowId} placement="top">
-              ${this._i18n.localize(
-                "ui.panel.config.energy.customise.unavailable"
-              )}
-            </ha-tooltip>
-          `}
+      ${
+        applicable
+          ? nothing
+          : html`
+              <ha-tooltip .for=${rowId} placement="top">
+                ${this._i18n.localize(
+                  "ui.panel.config.energy.customise.unavailable"
+                )}
+              </ha-tooltip>
+            `
+      }
     `;
   }
 
@@ -216,6 +227,7 @@ export class DialogEnergyCustomise
       next.add(cardKey);
     }
     this._hidden = next;
+    this._updateDirtyState([...this._hidden].sort());
   };
 
   private async _save(): Promise<void> {
@@ -228,6 +240,7 @@ export class DialogEnergyCustomise
       await saveFrontendSystemData(this._connection.connection, "energy", {
         hidden_cards: hidden.length ? hidden : undefined,
       });
+      this._markDirtyStateClean();
       this._params?.saveCallback?.();
       this.closeDialog();
     } catch (_err) {

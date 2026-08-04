@@ -320,26 +320,30 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
-          ${!isRemoteScanner
-            ? html`<ha-icon-button
-                slot="end"
-                .path=${mdiCogOutline}
-                .entry=${entry}
-                @click=${this._openOptionFlow}
-                .label=${this.hass.localize(
-                  "ui.panel.config.bluetooth.option_flow"
-                )}
-              ></ha-icon-button>`
-            : nothing}
+          ${
+            !isRemoteScanner
+              ? html`<ha-icon-button
+                  slot="end"
+                  .path=${mdiCogOutline}
+                  .entry=${entry}
+                  @click=${this._openOptionFlow}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.bluetooth.option_flow"
+                  )}
+                ></ha-icon-button>`
+              : nothing
+          }
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-md-list-item>
-        ${hasMismatch && scannerDetails
-          ? this._renderScannerMismatchWarning(
-              deviceName,
-              scannerState,
-              scannerType
-            )
-          : nothing}
+        ${
+          hasMismatch && scannerDetails
+            ? this._renderScannerMismatchWarning(
+                deviceName,
+                scannerState,
+                scannerType
+              )
+            : nothing
+        }
       `;
     });
   }

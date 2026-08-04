@@ -1,7 +1,5 @@
 import type { PropertyValues } from "lit";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeFormatFunctions } from "../common/translations/entity-state";
-import { getSensorNumericDeviceClasses } from "../data/sensor";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
@@ -36,47 +34,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
     }
 
     private _updateFormatFunctions = async () => {
-      if (!this.hass || !this.hass.config) {
+      if (!this.hass?.config) {
         return;
       }
 
-      let sensorNumericDeviceClasses: string[] = [];
-
-      if (isComponentLoaded(this.hass.config, "sensor")) {
-        try {
-          sensorNumericDeviceClasses = (
-            await getSensorNumericDeviceClasses(this.hass)
-          ).numeric_device_classes;
-        } catch (_err: any) {
-          // ignore
-        }
-      }
-
-      const {
-        formatEntityState,
-        formatEntityStateToParts,
-        formatEntityAttributeName,
-        formatEntityAttributeValue,
-        formatEntityAttributeValueToParts,
-        formatEntityName,
-      } = await computeFormatFunctions(
+      const formatFunctions = await computeFormatFunctions(
         this.hass.localize,
         this.hass.locale,
         this.hass.config,
         this.hass.entities,
         this.hass.devices,
         this.hass.areas,
-        this.hass.floors,
-        sensorNumericDeviceClasses
+        this.hass.floors
       );
-      this._updateHass({
-        formatEntityState,
-        formatEntityStateToParts,
-        formatEntityAttributeName,
-        formatEntityAttributeValue,
-        formatEntityAttributeValueToParts,
-        formatEntityName,
-      });
+      this._updateHass(formatFunctions);
     };
   }
   return StateDisplayMixin;

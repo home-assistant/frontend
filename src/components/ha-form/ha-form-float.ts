@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../input/ha-input";
 import type { HaInput } from "../input/ha-input";
@@ -48,14 +49,18 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .validationMessage=${this.schema.required
-          ? this.localize?.("ui.common.error_required")
-          : undefined}
+        .validationMessage=${
+          this.schema.required
+            ? this.localize?.("ui.common.error_required")
+            : undefined
+        }
         @input=${this._handleInput}
       >
-        ${this.schema.description?.suffix
-          ? html`<span slot="end">${this.schema.description?.suffix}</span>`
-          : nothing}
+        ${
+          this.schema.description?.suffix
+            ? html`<span slot="end">${this.schema.description?.suffix}</span>`
+            : nothing
+        }
       </ha-input>
     `;
   }
@@ -66,7 +71,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     }
   }
 
-  private _handleInput(ev: InputEvent) {
+  private _handleInput(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     const source = ev.target as HaInput;
     const rawValue = (source.value ?? "").replace(",", ".");
 

@@ -173,7 +173,6 @@ export class HaAreaControlsPicker extends LitElement {
             domainItems = multiTermSortedSearch(
               domainItems,
               searchString,
-              this._domainSearchKeys,
               (item) => item.id,
               fuseIndex
             );
@@ -226,7 +225,6 @@ export class HaAreaControlsPicker extends LitElement {
             entityItems = multiTermSortedSearch(
               entityItems,
               searchString,
-              this._entitySearchKeys,
               (item) => item.id,
               fuseIndex
             );
@@ -261,27 +259,33 @@ export class HaAreaControlsPicker extends LitElement {
 
   private _rowRenderer = (item: AreaControlPickerItem) => html`
     <ha-combo-box-item type="button" compact>
-      ${item.type === "entity" && item.stateObj
-        ? html`<ha-state-icon
-            slot="start"
-            .stateObj=${item.stateObj}
-          ></ha-state-icon>`
-        : item.domain
-          ? html`<ha-domain-icon
+      ${
+        item.type === "entity" && item.stateObj
+          ? html`<ha-state-icon
               slot="start"
-              .domain=${item.domain}
-              .deviceClass=${item.deviceClass}
-            ></ha-domain-icon>`
-          : nothing}
+              .stateObj=${item.stateObj}
+            ></ha-state-icon>`
+          : item.domain
+            ? html`<ha-domain-icon
+                slot="start"
+                .domain=${item.domain}
+                .deviceClass=${item.deviceClass}
+              ></ha-domain-icon>`
+            : nothing
+      }
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.type === "entity" && item.stateObj
-        ? html`<span slot="supporting-text" class="code">
-            ${item.stateObj.entity_id}
-          </span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
+      ${
+        item.type === "entity" && item.stateObj
+          ? html`<span slot="supporting-text" class="code">
+              ${item.stateObj.entity_id}
+            </span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

@@ -2,12 +2,20 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
+import { goBack } from "../common/navigate";
+import { haStyleScrollbar } from "../resources/styles";
+import "./ha-icon-button-arrow-prev";
+import "./ha-menu-button";
 
 const PASSIVE_EVENT_OPTIONS = { passive: true } as const;
 
 export const haTopAppBarFixedStyles = css`
   :host {
     display: block;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
     --total-top-app-bar-height: calc(
       var(--header-height, 0px) + var(--sub-row-height, 0px)
     );
@@ -18,10 +26,11 @@ export const haTopAppBarFixedStyles = css`
     box-sizing: border-box;
     color: var(--app-header-text-color, #fff);
     background-color: var(--app-header-background-color, var(--primary-color));
-    position: fixed;
+    position: absolute;
     top: 0;
+    inset-inline-start: 0;
     inset-inline-end: 0;
-    width: var(--ha-top-app-bar-width, 100%);
+    width: 100%;
     z-index: 4;
     padding-top: var(--safe-area-inset-top);
     padding-right: var(--safe-area-inset-right);
@@ -113,17 +122,17 @@ export const haTopAppBarFixedStyles = css`
   }
 
   .top-app-bar-fixed-adjust {
-    height: calc(
-      100vh - var(--total-top-app-bar-height, 0px) - var(
-          --safe-area-inset-top,
-          0px
-        ) - var(--safe-area-inset-bottom, 0px)
-    );
-    padding-top: calc(
+    box-sizing: border-box;
+    position: absolute;
+    top: calc(
       var(--total-top-app-bar-height, 0px) + var(--safe-area-inset-top, 0px)
     );
+    bottom: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     padding-bottom: var(--safe-area-inset-bottom);
     padding-right: var(--safe-area-inset-right);
+    overflow: auto;
   }
 
   :host([narrow]) .top-app-bar-fixed-adjust {
@@ -135,11 +144,15 @@ export const haTopAppBarFixedStyles = css`
 export class HaTopAppBarFixed extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: "back-button", type: Boolean }) backButton = false;
+
   @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @query(".top-app-bar") protected _barElement!: HTMLElement;
 
   @query(".sub-row") protected _subRowElement?: HTMLElement;
+
+  @query(".top-app-bar-fixed-adjust") protected _scrollElement?: HTMLElement;
 
   @state() private _hasSubRow = false;
 
@@ -149,14 +162,13 @@ export class HaTopAppBarFixed extends LitElement {
 
   @property({ attribute: false })
   public get scrollTarget(): HTMLElement | Window {
-    return this._scrollTarget || window;
+    return this._scrollTarget || this._scrollElement || window;
   }
 
   public set scrollTarget(value: HTMLElement | Window) {
     const old = this.scrollTarget;
     this._unregisterListeners();
     this._scrollTarget = value;
-    this._updateBarPosition();
     this.requestUpdate("scrollTarget", old);
     if (this.isConnected) {
       this._registerListeners();
@@ -178,7 +190,6 @@ export class HaTopAppBarFixed extends LitElement {
     if (this.hasUpdated) {
       this._observeSubRowHeight();
       this._updateSubRowHeight();
-      this._updateBarPosition();
       this._registerListeners();
       this._syncScrollState();
     }
@@ -198,22 +209,26 @@ export class HaTopAppBarFixed extends LitElement {
         })}"
       >
         <div class="row">
-          ${paneHeader
-            ? html`<section class="section" id="title">
-                <slot name="navigationIcon"></slot>
-                ${title}
-              </section>`
-            : nothing}
+          ${
+            paneHeader
+              ? html`<section class="section" id="title">
+                  ${this._renderNavigationIcon()} ${title}
+                </section>`
+              : nothing
+          }
           <section class="section" id="navigation">
-            ${paneHeader
-              ? nothing
-              : html`<slot name="navigationIcon"></slot> ${this.centerTitle
-                    ? nothing
-                    : title}`}
+            ${
+              paneHeader
+                ? nothing
+                : html`${this._renderNavigationIcon()}
+                  ${this.centerTitle ? nothing : title}`
+            }
           </section>
-          ${!paneHeader && this.centerTitle
-            ? html`<section class="section center">${title}</section>`
-            : nothing}
+          ${
+            !paneHeader && this.centerTitle
+              ? html`<section class="section center">${title}</section>`
+              : nothing
+          }
           <section class="section end" id="actions" role="toolbar">
             <slot name="actionItems"></slot>
           </section>
@@ -225,8 +240,24 @@ export class HaTopAppBarFixed extends LitElement {
     `;
   }
 
+  private _renderNavigationIcon() {
+    return html`
+      <slot name="navigationIcon">
+        ${
+          this.backButton
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._handleBackClick}
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`<ha-menu-button></ha-menu-button>`
+        }
+      </slot>
+    `;
+  }
+
   protected _renderContent() {
-    return html`<div class="top-app-bar-fixed-adjust">
+    return html`<div class="top-app-bar-fixed-adjust ha-scrollbar">
       <slot></slot>
     </div>`;
   }
@@ -235,7 +266,6 @@ export class HaTopAppBarFixed extends LitElement {
     super.firstUpdated(changedProperties);
     this._observeSubRowHeight();
     this._updateSubRowHeight();
-    this._updateBarPosition();
     this._registerListeners();
     this._syncScrollState();
   }
@@ -253,13 +283,6 @@ export class HaTopAppBarFixed extends LitElement {
     this._unregisterListeners();
   }
 
-  protected _updateBarPosition() {
-    if (this._barElement) {
-      this._barElement.style.position =
-        this.scrollTarget === window ? "" : "absolute";
-    }
-  }
-
   protected _syncScrollState = () => {
     const scrollTop =
       this.scrollTarget instanceof Window
@@ -267,6 +290,11 @@ export class HaTopAppBarFixed extends LitElement {
         : this.scrollTarget.scrollTop;
     this._barElement?.classList.toggle("scrolled", scrollTop > 0);
   };
+
+  private _handleBackClick(ev: Event) {
+    ev.stopPropagation();
+    goBack();
+  }
 
   protected _registerListeners() {
     this.scrollTarget.addEventListener(
@@ -297,7 +325,9 @@ export class HaTopAppBarFixed extends LitElement {
     this._subRowResizeObserver = undefined;
   }
 
-  private _subRowSlotChanged = (ev: Event) => {
+  private _subRowSlotChanged = (
+    ev: HASSDomCurrentTargetEvent<HTMLSlotElement>
+  ) => {
     const slot = ev.currentTarget as HTMLSlotElement;
     this._hasSubRow = slot
       .assignedNodes({ flatten: true })
@@ -314,7 +344,10 @@ export class HaTopAppBarFixed extends LitElement {
     this.style.setProperty("--sub-row-height", `${subRowHeight}px`);
   };
 
-  static override styles: CSSResultGroup = haTopAppBarFixedStyles;
+  static override styles: CSSResultGroup = [
+    haStyleScrollbar,
+    haTopAppBarFixedStyles,
+  ];
 }
 
 declare global {

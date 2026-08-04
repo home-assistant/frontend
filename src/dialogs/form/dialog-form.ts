@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import deepClone from "deep-clone-simple";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -7,20 +7,23 @@ import "../../components/ha-button";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
+import type { HaForm } from "../../components/ha-form/ha-form";
 
 interface StackEntry {
   params: FormDialogParams;
   data: FormDialogData;
   nestedField?: string;
+  error?: Record<string, string>;
 }
 
 @customElement("dialog-form")
 export class DialogForm
-  extends LitElement
+  extends DirtyStateProviderMixin<FormDialogData>()(LitElement)
   implements HassDialog<FormDialogData>
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -35,10 +38,16 @@ export class DialogForm
 
   @state() private _stack: StackEntry[] = [];
 
+  @state() private _error?: Record<string, string>;
+
+  @query("ha-form") private _form?: HaForm;
+
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
     this._data = params.data || {};
     this._open = true;
+    this._error = undefined;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): boolean {
@@ -57,11 +66,18 @@ export class DialogForm
     const origin = ev.composedPath()[0] as HTMLElement & { name?: string };
     this._stack = [
       ...this._stack,
-      { params: this._params!, data: this._data, nestedField: origin?.name },
+      {
+        params: this._params!,
+        data: this._data,
+        nestedField: origin?.name,
+        error: this._error,
+      },
     ];
     const nested = ev.detail.dialogParams as FormDialogParams;
     this._params = nested;
     this._data = nested?.data || {};
+    this._error = undefined;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   };
 
   private _popStack(): string | undefined {
@@ -72,6 +88,8 @@ export class DialogForm
     this._stack = this._stack.slice(0, -1);
     this._params = prev.params;
     this._data = prev.data;
+    this._error = prev.error;
+    this._initDirtyTracking({ type: "deep" }, this._data);
     return prev.nestedField;
   }
 
@@ -84,10 +102,18 @@ export class DialogForm
     this._params = undefined;
     this._data = {};
     this._open = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _submit(): void {
+    if (this._form && !this._form.reportValidity()) {
+      this._error = {
+        base: this.hass!.localize("ui.components.form.validation_failed"),
+      };
+      return;
+    }
+
     this._closeState = "submitted";
     const submit = this._params?.submit;
     const data = this._data;
@@ -115,6 +141,8 @@ export class DialogForm
       : data;
 
     this._data = deepClone({ ...this._data, [nestedField]: newValue });
+    this._error = undefined;
+    this._updateDirtyState(this._data);
   }
 
   private _cancel(): void {
@@ -131,6 +159,8 @@ export class DialogForm
 
   private _valueChanged(ev: CustomEvent): void {
     this._data = ev.detail.value;
+    this._error = undefined;
+    this._updateDirtyState(this._data);
   }
 
   protected render() {
@@ -142,7 +172,7 @@ export class DialogForm
       <ha-dialog
         .open=${this._open}
         header-title=${this._params.title}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-form
@@ -152,6 +182,7 @@ export class DialogForm
           .computeHelper=${this._params.computeHelper}
           .data=${this._data}
           .schema=${this._params.schema}
+          .error=${this._error}
           @value-changed=${this._valueChanged}
           @show-dialog=${this._handleNestedShowDialog}
         >

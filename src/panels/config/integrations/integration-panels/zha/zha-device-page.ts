@@ -115,8 +115,10 @@ class ZHADevicePage extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          .error=${this._error ||
-          this.hass.localize("ui.panel.config.zha.device_page.not_found")}
+          .error=${
+            this._error ||
+            this.hass.localize("ui.panel.config.zha.device_page.not_found")
+          }
         ></hass-error-screen>
       `;
     }

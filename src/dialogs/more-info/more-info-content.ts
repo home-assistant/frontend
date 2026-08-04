@@ -22,6 +22,7 @@ interface EntityInfo {
   entityId: string;
   entityName: string | undefined;
   areaId: string | undefined;
+  deviceId: string | undefined;
 }
 
 @customElement("more-info-content")
@@ -67,15 +68,17 @@ class MoreInfoContent extends LitElement {
         editMode: this.editMode,
         data: this.data,
       })}
-      ${memberIds?.length
-        ? html`
-            <hui-section
-              .hass=${this.hass}
-              .config=${this._entitiesSectionConfig(memberIds)}
-            >
-            </hui-section>
-          `
-        : nothing}
+      ${
+        memberIds?.length
+          ? html`
+              <hui-section
+                .hass=${this.hass}
+                .config=${this._entitiesSectionConfig(memberIds)}
+              >
+              </hui-section>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -120,7 +123,7 @@ class MoreInfoContent extends LitElement {
           hass.entities,
           hass.devices
         );
-        const { area } = getEntityContext(
+        const { area, device } = getEntityContext(
           stateObj,
           hass.entities,
           hass.devices,
@@ -128,7 +131,8 @@ class MoreInfoContent extends LitElement {
           hass.floors
         );
         const areaId = area?.area_id;
-        return { entityId, entityName, areaId };
+        const deviceId = device?.id;
+        return { entityId, entityName, areaId, deviceId };
       })
       .filter(Boolean) as EntityInfo[];
 
@@ -140,10 +144,20 @@ class MoreInfoContent extends LitElement {
     const areaIds = new Set(entityInfos.map((info) => info.areaId));
     const allSameArea = areaIds.size === 1;
 
-    // Build name and state content config based on conditions
-    const name: EntityNameItem[] = [{ type: "device" }];
+    // Check if all entities belong to the same device
+    const deviceIds = new Set(entityInfos.map((info) => info.deviceId));
+    const allSameDevice = deviceIds.size === 1;
 
-    if (!allSameEntityName) {
+    // Build name and state content config based on conditions. The device name
+    // is redundant when every member belongs to the same device, so omit it
+    // (and fall back to the entity name so the tile still has a label).
+    const name: EntityNameItem[] = [];
+
+    if (!allSameDevice) {
+      name.push({ type: "device" });
+    }
+
+    if (!allSameEntityName || allSameDevice) {
       name.push({ type: "entity" });
     }
 

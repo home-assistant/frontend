@@ -58,8 +58,7 @@ export interface SupervisorCIFSMountRequestParams extends SupervisorCIFSMount {
 }
 
 export type SupervisorMountRequestParams =
-  | SupervisorNFSMountRequestParams
-  | SupervisorCIFSMountRequestParams;
+  SupervisorNFSMountRequestParams | SupervisorCIFSMountRequestParams;
 
 export interface SupervisorMounts {
   default_backup_mount: string | null;

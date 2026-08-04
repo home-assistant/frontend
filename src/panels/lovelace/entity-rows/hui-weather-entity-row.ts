@@ -23,6 +23,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import "../../../state-display/state-display";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -136,13 +137,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
             : undefined
         )}
       >
-        ${weatherStateIcon ||
-        html`
-          <ha-state-icon
-            class="weather-icon"
-            .stateObj=${stateObj}
-          ></ha-state-icon>
-        `}
+        ${
+          weatherStateIcon ||
+          html`
+            <ha-state-icon
+              class="weather-icon"
+              .stateObj=${stateObj}
+            ></ha-state-icon>
+          `
+        }
       </div>
       <div
         class="info ${classMap({
@@ -156,29 +159,23 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         ${name}
-        ${hasSecondary
-          ? html`
-              <div class="secondary">
-                ${this._config.secondary_info === "entity-id"
-                  ? stateObj.entity_id
-                  : this._config.secondary_info === "last-changed"
-                    ? html`
-                        <ha-relative-time
-                          .datetime=${stateObj.last_changed}
-                          capitalize
-                        ></ha-relative-time>
-                      `
-                    : this._config.secondary_info === "last-updated"
-                      ? html`
-                          <ha-relative-time
-                            .datetime=${stateObj.last_updated}
-                            capitalize
-                          ></ha-relative-time>
-                        `
-                      : ""}
-              </div>
-            `
-          : ""}
+        ${
+          hasSecondary
+            ? html`
+                <div class="secondary">
+                  <state-display
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                    .content=${this._config.secondary_info}
+                    .timeFormat=${this._config.time_format}
+                    .name=${name}
+                    timestamp-tooltip
+                  >
+                  </state-display>
+                </div>
+              `
+            : ""
+        }
       </div>
       <div
         class="attributes ${classMap({
@@ -191,12 +188,14 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         <div>
-          ${stateObj.state === UNAVAILABLE ||
-          stateObj.state === UNKNOWN ||
-          stateObj.attributes.temperature === undefined ||
-          stateObj.attributes.temperature === null
-            ? this.hass.formatEntityState(stateObj)
-            : this.hass.formatEntityAttributeValue(stateObj, "temperature")}
+          ${
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN ||
+            stateObj.attributes.temperature === undefined ||
+            stateObj.attributes.temperature === null
+              ? this.hass.formatEntityState(stateObj)
+              : this.hass.formatEntityAttributeValue(stateObj, "temperature")
+          }
         </div>
         <div class="secondary">
           ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}

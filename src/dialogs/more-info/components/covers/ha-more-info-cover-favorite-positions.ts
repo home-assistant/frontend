@@ -1,11 +1,16 @@
+import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
+import { apiContext, configContext } from "../../../../data/context";
 import type { CoverEntity } from "../../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
@@ -20,7 +25,11 @@ import type {
   ExtEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+} from "../../../../types";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -46,7 +55,20 @@ const favoriteKindFromEvent = (ev: Event): FavoriteKind =>
 
 @customElement("ha-more-info-cover-favorite-positions")
 export class HaMoreInfoCoverFavoritePositions extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HomeAssistant["user"]>({
+    transformer: ({ user }) => user,
+  })
+  private _user!: HomeAssistant["user"];
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
@@ -85,7 +107,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     key: FavoriteLocalizeKey,
     values?: Record<string, string | number>
   ): string {
-    return this.hass.localize(
+    return this._localize(
       `ui.dialogs.more_info_control.cover.${kind === "position" ? "favorite_position" : "favorite_tilt_position"}.${key}`,
       values
     );
@@ -124,7 +146,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     }
 
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this._api,
       this.entry.entity_id,
       {
         options_domain: "cover",
@@ -169,14 +191,14 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
     }
 
     if (kind === "position") {
-      this.hass.callService("cover", "set_cover_position", {
+      this._api.callService("cover", "set_cover_position", {
         entity_id: this.stateObj.entity_id,
         position: favorite,
       });
       return;
     }
 
-    this.hass.callService("cover", "set_cover_tilt_position", {
+    this._api.callService("cover", "set_cover_tilt_position", {
       entity_id: this.stateObj.entity_id,
       tilt_position: favorite,
     });
@@ -191,7 +213,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
         kind,
         value === undefined ? "add_title" : "edit_title"
       ),
-      inputLabel: this.hass.localize(
+      inputLabel: this._localize(
         kind === "position"
           ? "ui.card.cover.position"
           : "ui.card.cover.tilt_position"
@@ -311,7 +333,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     const { action, index } = ev.detail;
 
-    if (action === "hold" && this.hass.user?.is_admin) {
+    if (action === "hold" && this._user?.is_admin) {
       fireEvent(this, "toggle-edit-mode", true);
       return;
     }
@@ -376,10 +398,10 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
           .deleteLabel=${this._deleteLabel(kind)}
           .editMode=${this.editMode ?? false}
           .disabled=${this.stateObj.state === UNAVAILABLE}
-          .isAdmin=${Boolean(this.hass.user?.is_admin)}
+          .isAdmin=${Boolean(this._user?.is_admin)}
           .showDone=${showDone}
           .addLabel=${this._localizeFavorite(kind, "add")}
-          .doneLabel=${this.hass.localize(
+          .doneLabel=${this._localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
           @favorite-item-action=${this._handleFavoriteAction}
@@ -412,24 +434,28 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     return html`
       <div class="groups">
-        ${supportsPosition
-          ? this._renderKindSection(
-              "position",
-              this.hass.localize("ui.card.cover.position"),
-              this._favoritePositions,
-              showDoneOnPosition,
-              showLabels
-            )
-          : nothing}
-        ${supportsTiltPosition
-          ? this._renderKindSection(
-              "tilt",
-              this.hass.localize("ui.card.cover.tilt_position"),
-              this._favoriteTiltPositions,
-              true,
-              showLabels
-            )
-          : nothing}
+        ${
+          supportsPosition
+            ? this._renderKindSection(
+                "position",
+                this._localize("ui.card.cover.position"),
+                this._favoritePositions,
+                showDoneOnPosition,
+                showLabels
+              )
+            : nothing
+        }
+        ${
+          supportsTiltPosition
+            ? this._renderKindSection(
+                "tilt",
+                this._localize("ui.card.cover.tilt_position"),
+                this._favoriteTiltPositions,
+                true,
+                showLabels
+              )
+            : nothing
+        }
       </div>
     `;
   }

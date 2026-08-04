@@ -8,6 +8,7 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { narrowViewportContext } from "../data/context";
 import { getDefaultPanel } from "../data/panel";
 import type { CustomPanelInfo } from "../data/panel_custom";
@@ -17,29 +18,67 @@ import type { RouteOptions, RouterOptions } from "./hass-router-page";
 import { HassRouterPage } from "./hass-router-page";
 
 const CACHE_URL_PATHS = ["lovelace", "home", "config"];
+const PANEL_READY_TIMEOUT = 2000;
+const DASHBOARD_READY_TIMEOUT = 5000;
 const COMPONENTS = {
-  app: () => import("../panels/app/ha-panel-app"),
-  energy: () => import("../panels/energy/ha-panel-energy"),
-  calendar: () => import("../panels/calendar/ha-panel-calendar"),
-  config: () => import("../panels/config/ha-panel-config"),
-  custom: () => import("../panels/custom/ha-panel-custom"),
-  lovelace: () => import("../panels/lovelace/ha-panel-lovelace"),
-  history: () => import("../panels/history/ha-panel-history"),
-  iframe: () => import("../panels/iframe/ha-panel-iframe"),
-  logbook: () => import("../panels/logbook/ha-panel-logbook"),
-  map: () => import("../panels/map/ha-panel-map"),
-  my: () => import("../panels/my/ha-panel-my"),
-  profile: () => import("../panels/profile/ha-panel-profile"),
-  todo: () => import("../panels/todo/ha-panel-todo"),
-  "media-browser": () =>
-    import("../panels/media-browser/ha-panel-media-browser"),
-  light: () => import("../panels/light/ha-panel-light"),
-  security: () => import("../panels/security/ha-panel-security"),
-  climate: () => import("../panels/climate/ha-panel-climate"),
-  maintenance: () => import("../panels/maintenance/ha-panel-maintenance"),
-  home: () => import("../panels/home/ha-panel-home"),
-  notfound: () => import("../panels/notfound/ha-panel-notfound"),
-};
+  app: { load: () => import("../panels/app/ha-panel-app") },
+  energy: {
+    load: () => import("../panels/energy/ha-panel-energy"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  calendar: {
+    load: () => import("../panels/calendar/ha-panel-calendar"),
+    waitForReady: true,
+  },
+  config: { load: () => import("../panels/config/ha-panel-config") },
+  custom: { load: () => import("../panels/custom/ha-panel-custom") },
+  lovelace: {
+    load: () => import("../panels/lovelace/ha-panel-lovelace"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  history: { load: () => import("../panels/history/ha-panel-history") },
+  iframe: { load: () => import("../panels/iframe/ha-panel-iframe") },
+  logbook: { load: () => import("../panels/logbook/ha-panel-logbook") },
+  map: { load: () => import("../panels/map/ha-panel-map") },
+  my: { load: () => import("../panels/my/ha-panel-my") },
+  profile: { load: () => import("../panels/profile/ha-panel-profile") },
+  todo: { load: () => import("../panels/todo/ha-panel-todo") },
+  "media-browser": {
+    load: () => import("../panels/media-browser/ha-panel-media-browser"),
+    waitForReady: true,
+  },
+  light: {
+    load: () => import("../panels/light/ha-panel-light"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  security: {
+    load: () => import("../panels/security/ha-panel-security"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  climate: {
+    load: () => import("../panels/climate/ha-panel-climate"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  maintenance: {
+    load: () => import("../panels/maintenance/ha-panel-maintenance"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  home: {
+    load: () => import("../panels/home/ha-panel-home"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
+  notfound: { load: () => import("../panels/notfound/ha-panel-notfound") },
+} satisfies Record<
+  string,
+  Pick<RouteOptions, "load" | "waitForReady"> & { readyTimeout?: number }
+>;
 
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
@@ -124,13 +163,12 @@ class PartialPanelResolver extends HassRouterPage {
   private _getRoutes(panels: Panels): RouterOptions {
     const routes: RouterOptions["routes"] = {};
     Object.values(panels).forEach((panel) => {
+      const component = COMPONENTS[panel.component_name];
       const data: RouteOptions = {
         tag: `ha-panel-${panel.component_name}`,
         cache: CACHE_URL_PATHS.includes(panel.url_path),
+        ...(component ?? {}),
       };
-      if (panel.component_name in COMPONENTS) {
-        data.load = COMPONENTS[panel.component_name];
-      }
       routes[panel.url_path] = data;
     });
 
@@ -219,8 +257,20 @@ class PartialPanelResolver extends HassRouterPage {
       )
     ) {
       await this.rebuild();
-      await this.pageRendered;
-      removeLaunchScreen();
+      const component =
+        COMPONENTS[this.hass.panels[this._currentPage].component_name];
+      await promiseTimeout(
+        component?.readyTimeout ?? PANEL_READY_TIMEOUT,
+        this.pageRendered
+      ).catch(() => undefined);
+      // Only fire frontend/loaded when this call actually removed the launch
+      // screen, so later panel updates do not fire it again. Native apps remove
+      // it instantly because their own splash screen is still visible.
+      if (
+        removeLaunchScreen(!!this.hass.auth.external?.config.hasSplashscreen)
+      ) {
+        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+      }
     }
   }
 }

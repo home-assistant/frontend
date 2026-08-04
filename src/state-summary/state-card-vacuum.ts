@@ -25,10 +25,7 @@ class StateCardVacuum extends LitElement {
         >
         </state-info>
 
-        <ha-vacuum-state
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-        ></ha-vacuum-state>
+        <ha-vacuum-state .stateObj=${this.stateObj}></ha-vacuum-state>
       </div>
     `;
   }

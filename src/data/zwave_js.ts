@@ -94,18 +94,18 @@ enum NodeType {
 }
 
 enum RFRegion {
-  "Europe" = 0x00,
-  "USA" = 0x01,
+  Europe = 0x00,
+  USA = 0x01,
   "Australia/New Zealand" = 0x02,
   "Hong Kong" = 0x03,
-  "India" = 0x05,
-  "Israel" = 0x06,
-  "Russia" = 0x07,
-  "China" = 0x08,
+  India = 0x05,
+  Israel = 0x06,
+  Russia = 0x07,
+  China = 0x08,
   "USA (Long Range)" = 0x09,
-  "Japan" = 0x20,
-  "Korea" = 0x21,
-  "Unknown" = 0xfe,
+  Japan = 0x20,
+  Korea = 0x21,
+  Unknown = 0xfe,
   "Default (EU)" = 0xff,
 }
 
@@ -272,7 +272,7 @@ export interface ZWaveJSNodeConfigParam {
   property: number;
   property_key: number | null;
   endpoint: number;
-  value: any;
+  value: number | null;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
 }
@@ -314,6 +314,11 @@ export interface ZWaveJSSetConfigParamResult {
   error?: string;
 }
 
+export interface ZwaveJSNodeConfigParameterUpdate {
+  id: string;
+  value: number | null;
+}
+
 export interface ZWaveJSDataCollectionStatus {
   enabled: boolean;
   opted_in: boolean;
@@ -322,6 +327,7 @@ export interface ZWaveJSDataCollectionStatus {
 export interface ZWaveJSRefreshNodeStatusMessage {
   event: string;
   stage?: string;
+  progress?: number;
 }
 
 export interface ZWaveJSRebuildRoutesStatusMessage {
@@ -728,6 +734,16 @@ export const fetchZwaveNodeConfigParameters = (
 ): Promise<ZWaveJSNodeConfigParams> =>
   hass.callWS({
     type: "zwave_js/get_config_parameters",
+    device_id,
+  });
+
+export const subscribeZwaveNodeConfigParameterUpdates = (
+  hass: HomeAssistant,
+  device_id: string,
+  callback: (update: ZwaveJSNodeConfigParameterUpdate) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callback, {
+    type: "zwave_js/subscribe_config_parameter_updates",
     device_id,
   });
 

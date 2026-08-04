@@ -37,8 +37,9 @@ export class HaSelectorAttribute extends LitElement {
     return html`
       <ha-entity-attribute-picker
         .hass=${this.hass}
-        .entityId=${this.selector.attribute?.entity_id ||
-        this.context?.filter_entity}
+        .entityId=${
+          this.selector.attribute?.entity_id || this.context?.filter_entity
+        }
         .hideAttributes=${this.selector.attribute?.hide_attributes}
         .value=${this.value}
         .label=${this.label}

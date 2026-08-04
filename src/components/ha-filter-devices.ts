@@ -1,15 +1,23 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import {
+  apiContext,
+  devicesContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
@@ -24,7 +32,24 @@ interface HaFilterDevicesItem extends HaListVirtualizedItem {
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  @state()
+  private _devicesReg!: ContextType<typeof devicesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -75,32 +100,42 @@ export class HaFilterDevices extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.devices.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                  @keydown=${this._handleClearFilterKeydown}
-                ></ha-icon-button>`
-            : nothing}
+          ${this._localize("ui.panel.config.devices.caption")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                    @keydown=${this._handleClearFilterKeydown}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-                @keydown=${this._handleSearchKeydown}
-              >
-              </ha-input-search>
-              <ha-list-selectable-virtualized
-                multi
-                .rows=${this._devices(this.hass.devices, this._filter || "")}
-                .rowRenderer=${this._renderItem}
-                @ha-list-item-selected=${this._handleAdded}
-                @ha-list-item-deselected=${this._handleRemoved}
-              ></ha-list-selectable-virtualized>`
-          : nothing}
+        ${
+          this._shouldRender
+            ? html`<ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                  @keydown=${this._handleSearchKeydown}
+                >
+                </ha-input-search>
+                <ha-list-selectable-virtualized
+                  multi
+                  .rows=${this._devices(
+                    this._devicesReg,
+                    this._filter || "",
+                    this._localize,
+                    this._states,
+                    this._i18n.locale.language
+                  )}
+                  .rowRenderer=${this._renderItem}
+                  @ha-list-item-selected=${this._handleAdded}
+                  @ha-list-item-deselected=${this._handleRemoved}
+                ></ha-list-selectable-virtualized>`
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }
@@ -121,13 +156,24 @@ export class HaFilterDevices extends LitElement {
   private _handleAdded(ev: CustomEvent<number>) {
     this.value = [
       ...(this.value ?? []),
-      this._devices(this.hass.devices, this._filter || "")[ev.detail].id,
+      this._devices(
+        this._devicesReg,
+        this._filter || "",
+        this._localize,
+        this._states,
+        this._i18n.locale.language
+      )[ev.detail].id,
     ];
   }
 
   private _handleRemoved(ev: CustomEvent<number>) {
-    const id = this._devices(this.hass.devices, this._filter || "")[ev.detail]
-      .id;
+    const id = this._devices(
+      this._devicesReg,
+      this._filter || "",
+      this._localize,
+      this._states,
+      this._i18n.locale.language
+    )[ev.detail].id;
     this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
   }
 
@@ -153,27 +199,24 @@ export class HaFilterDevices extends LitElement {
 
   private _devices = memoizeOne(
     (
-      devices: HomeAssistant["devices"],
-      filter: string
+      devices: ContextType<typeof devicesContext>,
+      filter: string,
+      localize: LocalizeFunc,
+      states: ContextType<typeof statesContext>,
+      language: string | undefined
     ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
       return values
         .map((device) => ({
           id: device.id,
           interactive: true,
-          name: computeDeviceNameDisplay(
-            device,
-            this.hass.localize,
-            this.hass.states
-          ),
+          name: computeDeviceNameDisplay(device, localize, states),
         }))
         .filter(
           ({ name }) =>
             !filter || name.toLowerCase().includes(filter.toLowerCase())
         )
-        .sort((a, b) =>
-          stringCompare(a.name, b.name, this.hass.locale.language)
-        );
+        .sort((a, b) => stringCompare(a.name, b.name, language));
     }
   );
 
@@ -194,7 +237,7 @@ export class HaFilterDevices extends LitElement {
     for (const deviceId of this.value) {
       value.push(deviceId);
       if (this.type) {
-        relatedPromises.push(findRelated(this.hass, "device", deviceId));
+        relatedPromises.push(findRelated(this._api, "device", deviceId));
       }
     }
     const results = await Promise.all(relatedPromises);

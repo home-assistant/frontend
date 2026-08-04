@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import "./ha-tooltip";
 
 export interface Segment {
@@ -42,28 +43,32 @@ class HaSegmentedBar extends LitElement {
     }, 0);
     return html`
       <div class="container">
-        ${this.heading || this.description
-          ? html`
-              <div class="heading">
-                <div class="title">
-                  <span>${this.heading}</span>
-                  <span>${this.description}</span>
+        ${
+          this.heading || this.description
+            ? html`
+                <div class="heading">
+                  <div class="title">
+                    <span>${this.heading}</span>
+                    <span>${this.description}</span>
+                  </div>
+                  <slot name="extra"></slot>
                 </div>
-                <slot name="extra"></slot>
-              </div>
-            `
-          : nothing}
+              `
+            : nothing
+        }
         <div class="bar">
           ${this.segments.map(
             (segment, index) => html`
-              ${this.hideTooltip || !segment.label
-                ? nothing
-                : html`
-                    <ha-tooltip for="segment-${index}" placement="top">
-                      ${segment.label}
-                      (${((segment.value / totalValue) * 100).toFixed(1)}%)
-                    </ha-tooltip>
-                  `}
+              ${
+                this.hideTooltip || !segment.label
+                  ? nothing
+                  : html`
+                      <ha-tooltip for="segment-${index}" placement="top">
+                        ${segment.label}
+                        (${((segment.value / totalValue) * 100).toFixed(1)}%)
+                      </ha-tooltip>
+                    `
+              }
               <div
                 id="segment-${index}"
                 class=${classMap({ clickable: this.barClickable })}
@@ -80,41 +85,45 @@ class HaSegmentedBar extends LitElement {
             `
           )}
         </div>
-        ${this.hideLegend
-          ? nothing
-          : html`
-              <ul class="legend">
-                ${this.segments.map((segment, index) =>
-                  segment.label
-                    ? html`
-                        <li
-                          class=${classMap({
-                            clickable: this.clickable,
-                            hidden: this.hiddenSegments?.includes(index),
-                          })}
-                          data-index=${index}
-                          @click=${this.clickable
-                            ? this._handleLegendClick
-                            : nothing}
-                        >
-                          <div
-                            class="bullet"
-                            style=${styleMap({
-                              backgroundColor: segment.color,
+        ${
+          this.hideLegend
+            ? nothing
+            : html`
+                <ul class="legend">
+                  ${this.segments.map((segment, index) =>
+                    segment.label
+                      ? html`
+                          <li
+                            class=${classMap({
+                              clickable: this.clickable,
+                              hidden: this.hiddenSegments?.includes(index),
                             })}
-                          ></div>
-                          <span class="label">${segment.label}</span>
-                        </li>
-                      `
-                    : nothing
-                )}
-              </ul>
-            `}
+                            data-index=${index}
+                            @click=${
+                              this.clickable ? this._handleLegendClick : nothing
+                            }
+                          >
+                            <div
+                              class="bullet"
+                              style=${styleMap({
+                                backgroundColor: segment.color,
+                              })}
+                            ></div>
+                            <span class="label">${segment.label}</span>
+                          </li>
+                        `
+                      : nothing
+                  )}
+                </ul>
+              `
+        }
       </div>
     `;
   }
 
-  private _handleSegmentClick(ev: Event): void {
+  private _handleSegmentClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement>
+  ): void {
     const target = ev.currentTarget as HTMLElement;
     const index = Number(target.dataset.index);
     const segment = this.segments[index];
@@ -123,7 +132,7 @@ class HaSegmentedBar extends LitElement {
     }
   }
 
-  private _handleLegendClick(ev: Event): void {
+  private _handleLegendClick(ev: HASSDomCurrentTargetEvent<HTMLElement>): void {
     const target = ev.currentTarget as HTMLElement;
     const index = Number(target.dataset.index);
     const segment = this.segments[index];

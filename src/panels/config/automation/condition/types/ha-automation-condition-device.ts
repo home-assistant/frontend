@@ -13,11 +13,16 @@ import type {
   DeviceCondition,
 } from "../../../../../data/device/device_automation";
 import {
+  deviceAutomationEditorMode,
   deviceAutomationsEqual,
   fetchDeviceConditionCapabilities,
   localizeExtraFieldsComputeHelperCallback,
   localizeExtraFieldsComputeLabelCallback,
 } from "../../../../../data/device/device_automation";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
@@ -32,6 +37,10 @@ export class HaDeviceCondition extends LitElement {
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -60,14 +69,19 @@ export class HaDeviceCondition extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues<this>) {
-    if (!changedProperties.has("condition")) {
-      return true;
+  public shouldUpdate(_changedProperties: PropertyValues<this>) {
+    const mode = deviceAutomationEditorMode(
+      this.hass,
+      this.condition.device_id,
+      this._compositeSplits
+    );
+    if (mode === "loading") {
+      // The device is missing; wait for the composite split map before deciding
+      // whether it is a replaced device (editable) or genuinely unknown (YAML).
+      this._loadCompositeSplits();
+      return false;
     }
-    if (
-      this.condition.device_id &&
-      !(this.condition.device_id in this.hass.devices)
-    ) {
+    if (mode === "unknown-device") {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -80,6 +94,20 @@ export class HaDeviceCondition extends LitElement {
       return false;
     }
     return true;
+  }
+
+  private async _loadCompositeSplits() {
+    if (this._loadingCompositeSplits) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
   }
 
   protected render() {
@@ -105,25 +133,27 @@ export class HaDeviceCondition extends LitElement {
           "ui.panel.config.automation.editor.conditions.type.device.condition"
         )}
       ></ha-device-condition-picker>
-      ${this._capabilities?.extra_fields
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.condition, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass.localize,
-                this.condition
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass.localize,
-                this.condition
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.condition, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.condition
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.condition
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 

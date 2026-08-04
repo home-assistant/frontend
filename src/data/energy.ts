@@ -42,6 +42,12 @@ import {
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
+// Collection key for the statistics-based energy dashboard views (Overview,
+// Electricity, Gas, Water).
+export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+// Collection key for the real-time "Now" view (live power + 5-minute stats).
+export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
+
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
 
@@ -167,6 +173,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
+  capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -612,8 +619,7 @@ const getEnergyData = async (
 
   let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
   let _fossilEnergyConsumptionCompare:
-    | undefined
-    | Promise<FossilEnergyConsumption>;
+    undefined | Promise<FossilEnergyConsumption>;
   if (co2SignalEntity !== undefined) {
     _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
@@ -787,9 +793,41 @@ const findEnergyDataCollection = (
   return (hass.connection as any)[key];
 };
 
+// The last-picked preset is remembered per energy collection, so each dashboard
+// reopens on its own default period. Derived from the connection key so the read
+// and write sides cannot drift apart.
+export const getEnergyDefaultPeriodStorageKey = (
+  hass: HomeAssistant,
+  collectionKey?: string
+): string => {
+  const [key] = convertCollectionKeyToConnection(hass, collectionKey);
+  return `energy-default-period-${key}`;
+};
+
+// When does the collection's day period need to roll over to the next day?
+// With `midnightRollover` (the real-time "Now" view) it rolls over right at
+// midnight. Otherwise it waits an hour, until the new day's first hourly
+// statistic exists — rolling over at midnight would show an empty graph.
+export const getNextEnergyPeriodStart = (
+  midnightRollover: boolean,
+  now: Date,
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"]
+): Date => {
+  const dayEnd = calcDate(now, endOfDay, locale, config);
+  return midnightRollover ? addMilliseconds(dayEnd, 1) : addHours(dayEnd, 1);
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  options: { prefs?: EnergyPreferences; key?: string } = {}
+  options: {
+    prefs?: EnergyPreferences;
+    key?: string;
+    // The real-time "Now" view opts in to rolling its day period over at
+    // midnight rather than an hour later (it shows live data, so it always
+    // tracks today and never falls back to yesterday in the first hour).
+    midnightRollover?: boolean;
+  } = {}
 ): EnergyCollection => {
   const [key, collectionKey] = convertCollectionKeyToConnection(
     hass,
@@ -798,6 +836,8 @@ export const getEnergyDataCollection = (
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
+
+  const midnightRollover = options.midnightRollover ?? false;
 
   energyCollectionKeys.add(collectionKey);
 
@@ -814,6 +854,8 @@ export const getEnergyDataCollection = (
           if (err.code === "not_found") {
             return {
               prefs: EMPTY_PREFERENCES,
+              start: collection.start,
+              end: collection.end,
             } as EnergyData;
           }
           throw err;
@@ -857,12 +899,17 @@ export const getEnergyDataCollection = (
 
   const now = new Date();
   const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
-  // Set start to start of today if we have data for today, otherwise yesterday
+  // Set start to start of today if we have data for today, otherwise yesterday.
+  // The real-time "Now" view always tracks today; it shows live data even
+  // before today's first statistic exists, so it never falls back to yesterday.
   const preferredPeriod =
-    (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
-    "today";
+    (localStorage.getItem(
+      getEnergyDefaultPeriodStorageKey(hass, options.key)
+    ) as DateRange) || "today";
   const period =
-    preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
+    preferredPeriod === "today" && hour === "0" && !midnightRollover
+      ? "yesterday"
+      : preferredPeriod;
 
   const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
@@ -886,10 +933,12 @@ export const getEnergyDataCollection = (
         collection.refresh();
         scheduleUpdatePeriod();
       },
-      addHours(
-        calcDate(new Date(), endOfDay, hass.locale, hass.config),
-        1
-      ).getTime() - Date.now() // Switch to next day an hour after the day changed
+      getNextEnergyPeriodStart(
+        midnightRollover,
+        new Date(),
+        hass.locale,
+        hass.config
+      ).getTime() - Date.now()
     );
   };
   scheduleUpdatePeriod();
@@ -1121,14 +1170,12 @@ const getSummedDataPartial = (
   const timestamps = new Set<number>();
   Object.entries(statIds).forEach(([key, subStatIds]) => {
     const totalStats: Record<number, number> = {};
-    const sets: Record<string, Record<number, number>> = {};
     let sum = 0;
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {
         return;
       }
-      const set = {};
       stats.forEach((stat) => {
         if (stat.change === null || stat.change === undefined) {
           return;
@@ -1139,7 +1186,6 @@ const getSummedDataPartial = (
           stat.start in totalStats ? totalStats[stat.start] + val : val;
         timestamps.add(stat.start);
       });
-      sets[id] = set;
     });
     summedData[key] = totalStats;
     summedData.total[key] = sum;
@@ -1190,6 +1236,13 @@ const computeConsumptionDataPartial = (
     },
   };
 
+  const fromGrid = data.from_grid;
+  const toGrid = data.to_grid;
+  const solarData = data.solar;
+  const toBattery = data.to_battery;
+  const fromBattery = data.from_battery;
+  const total = outData.total;
+
   data.timestamps.forEach((t) => {
     const {
       grid_to_battery,
@@ -1201,29 +1254,29 @@ const computeConsumptionDataPartial = (
       solar_to_battery,
       solar_to_grid,
     } = computeConsumptionSingle({
-      from_grid: data.from_grid && (data.from_grid[t] ?? 0),
-      to_grid: data.to_grid && (data.to_grid[t] ?? 0),
-      solar: data.solar && (data.solar[t] ?? 0),
-      to_battery: data.to_battery && (data.to_battery[t] ?? 0),
-      from_battery: data.from_battery && (data.from_battery[t] ?? 0),
+      from_grid: fromGrid && (fromGrid[t] ?? 0),
+      to_grid: toGrid && (toGrid[t] ?? 0),
+      solar: solarData && (solarData[t] ?? 0),
+      to_battery: toBattery && (toBattery[t] ?? 0),
+      from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
     outData.used_total[t] = used_total;
-    outData.total.used_total += used_total;
+    total.used_total += used_total;
     outData.grid_to_battery[t] = grid_to_battery;
-    outData.total.grid_to_battery += grid_to_battery;
+    total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
-    outData.total.battery_to_grid += battery_to_grid;
+    total.battery_to_grid += battery_to_grid;
     outData.used_battery![t] = used_battery;
-    outData.total.used_battery += used_battery;
+    total.used_battery += used_battery;
     outData.used_grid![t] = used_grid;
-    outData.total.used_grid += used_grid;
+    total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
-    outData.total.used_solar += used_solar;
+    total.used_solar += used_solar;
     outData.solar_to_battery[t] = solar_to_battery;
-    outData.total.solar_to_battery += solar_to_battery;
+    total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;
-    outData.total.solar_to_grid += solar_to_grid;
+    total.solar_to_grid += solar_to_grid;
   });
 
   return outData;

@@ -32,21 +32,19 @@ export class HuiMediaPlayerSoundModeCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (stateObj: MediaPlayerEntity | undefined, customize: boolean) =>
-      customizableListSchema({
-        field: "sound_modes",
-        customize,
-        options:
-          stateObj?.attributes.sound_mode_list?.map((mode) => ({
-            value: mode,
-            label: this.hass!.formatEntityAttributeValue(
-              stateObj,
-              "sound_mode",
-              mode
-            ),
-          })) ?? [],
-      })
+  private _schema = memoizeOne((stateObj: MediaPlayerEntity | undefined) =>
+    customizableListSchema({
+      field: "sound_modes",
+      options:
+        stateObj?.attributes.sound_mode_list?.map((mode) => ({
+          value: mode,
+          label: this.hass!.formatEntityAttributeValue(
+            stateObj,
+            "sound_mode",
+            mode
+          ),
+        })) ?? [],
+    })
   );
 
   protected render() {
@@ -56,12 +54,11 @@ export class HuiMediaPlayerSoundModeCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
     const data = customizableListData(this._config, "sound_modes");
-    const schema = this._schema(stateObj, data.customize);
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form
@@ -79,8 +76,7 @@ export class HuiMediaPlayerSoundModeCardFeatureEditor
   ): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
     const defaults = stateObj?.attributes.sound_mode_list ?? [];
     const config =

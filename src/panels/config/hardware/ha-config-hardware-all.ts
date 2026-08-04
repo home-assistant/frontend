@@ -99,8 +99,10 @@ class HaConfigHardwareAll extends LitElement {
         clickable
         .columns=${this._columns(this.hass.localize)}
         .data=${this._hardware ? this._data(this._hardware) : []}
-        .noDataText=${this._error ||
-        this.hass.localize("ui.panel.config.hardware.loading_system_data")}
+        .noDataText=${
+          this._error ||
+          this.hass.localize("ui.panel.config.hardware.loading_system_data")
+        }
         @row-click=${this._handleRowClicked}
       ></hass-tabs-subpage-data-table>
     `;

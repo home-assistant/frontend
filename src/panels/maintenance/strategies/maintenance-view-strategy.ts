@@ -32,7 +32,6 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   {
     domain: "binary_sensor",
     device_class: ["battery"],
-    entity_category: "none",
   },
 ];
 
@@ -61,7 +60,10 @@ export const filterLowBatteryEntities = (
     const deviceId = hass.entities[entityId]?.device_id;
     const entities = deviceId ? _deviceEntities(deviceId, hass.entities) : [];
 
-    const batteryChargingEntity = findBatteryChargingEntity(hass, entities);
+    const batteryChargingEntity = findBatteryChargingEntity(
+      hass.states,
+      entities
+    );
     const batteryCharging = batteryChargingEntity
       ? hass.states[batteryChargingEntity?.entity_id]
       : undefined;

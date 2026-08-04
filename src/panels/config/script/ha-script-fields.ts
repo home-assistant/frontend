@@ -29,27 +29,29 @@ export default class HaScriptFields extends LitElement {
 
   protected render() {
     return html`
-      ${this.fields
-        ? html`<div class="fields">
-            ${Object.entries(this.fields).map(
-              ([key, field]) => html`
-                <ha-script-field-row
-                  .key=${key}
-                  .excludeKeys=${Object.keys(this.fields).filter(
-                    (k) => k !== key
-                  )}
-                  .field=${field}
-                  .disabled=${this.disabled}
-                  @value-changed=${this._fieldChanged}
-                  .hass=${this.hass}
-                  .highlight=${this.highlightedFields?.[key] !== undefined}
-                  .narrow=${this.narrow}
-                >
-                </ha-script-field-row>
-              `
-            )}
-          </div> `
-        : nothing}
+      ${
+        this.fields
+          ? html`<div class="fields">
+              ${Object.entries(this.fields).map(
+                ([key, field]) => html`
+                  <ha-script-field-row
+                    .key=${key}
+                    .excludeKeys=${Object.keys(this.fields).filter(
+                      (k) => k !== key
+                    )}
+                    .field=${field}
+                    .disabled=${this.disabled}
+                    @value-changed=${this._fieldChanged}
+                    .hass=${this.hass}
+                    .highlight=${this.highlightedFields?.[key] !== undefined}
+                    .narrow=${this.narrow}
+                  >
+                  </ha-script-field-row>
+                `
+              )}
+            </div> `
+          : nothing
+      }
       <ha-button @click=${this._addField} .disabled=${this.disabled}>
         <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}

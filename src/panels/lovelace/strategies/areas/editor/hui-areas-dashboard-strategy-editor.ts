@@ -127,25 +127,26 @@ export class HuiAreasDashboardStrategyEditor
                 slot="leading-icon"
                 .icon=${AREA_STRATEGY_GROUP_ICONS[group]}
               ></ha-icon>
-              ${entities.length > 0
-                ? html`
-                    <ha-entities-display-editor
-                      .hass=${this.hass}
-                      .value=${value}
-                      .label=${group}
-                      @value-changed=${this._entitiesDisplayChanged}
-                      .group=${group}
-                      .area=${this._area}
-                      .entitiesIds=${entities}
-                    ></ha-entities-display-editor>
-                  `
-                : html`
-                    <p>
-                      ${this.hass!.localize(
-                        "ui.panel.lovelace.editor.strategy.areas.no_entities"
-                      )}
-                    </p>
-                  `}
+              ${
+                entities.length > 0
+                  ? html`
+                      <ha-entities-display-editor
+                        .value=${value}
+                        .label=${group}
+                        @value-changed=${this._entitiesDisplayChanged}
+                        .group=${group}
+                        .area=${this._area}
+                        .entitiesIds=${entities}
+                      ></ha-entities-display-editor>
+                    `
+                  : html`
+                      <p>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.strategy.areas.no_entities"
+                        )}
+                      </p>
+                    `
+              }
             </ha-expansion-panel>
           `;
         })}
@@ -162,7 +163,6 @@ export class HuiAreasDashboardStrategyEditor
 
     return html`
       <ha-areas-floors-display-editor
-        .hass=${this.hass}
         .value=${value}
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.areas.areas_display"

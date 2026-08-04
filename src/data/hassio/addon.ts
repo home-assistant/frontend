@@ -19,18 +19,9 @@ export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
 export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
 export type AddonStartup =
-  | "initialize"
-  | "system"
-  | "services"
-  | "application"
-  | "once";
+  "initialize" | "system" | "services" | "application" | "once";
 export type AddonState =
-  | "startup"
-  | "started"
-  | "stopped"
-  | "unknown"
-  | "error"
-  | null;
+  "startup" | "started" | "stopped" | "unknown" | "error" | null;
 export type AddonRepository = "core" | "local" | string;
 
 interface AddonFieldTranslation {
@@ -104,7 +95,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   options: Record<string, unknown>;
   privileged: any;
   protected: boolean;
-  rating: "1-8";
+  rating: number;
   schema: HaFormSchema[] | null;
   services_role: string[];
   signed: boolean;
@@ -149,7 +140,7 @@ export interface HassioAddonSetOptionParams {
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
   await hass.callWS({
     type: "supervisor/api",
-    endpoint: "/addons/reload",
+    endpoint: "/store/reload",
     method: "post",
   });
 };

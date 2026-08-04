@@ -91,8 +91,7 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     const oldValue = changedProperties.get("trigger") as
-      | undefined
-      | this["trigger"];
+      undefined | this["trigger"];
 
     // Fetch the manifest if we have a trigger selected and the trigger domain changed.
     // If no trigger is selected, clear the manifest.
@@ -181,64 +180,67 @@ export class HaPlatformTrigger extends LitElement {
       )
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/triggers/${this.trigger.trigger}`)
+      : this._manifest?.documentation;
+
     return html`
       <div class="description">
         ${description ? html`<p>${description}</p>` : nothing}
-        ${this._manifest
-          ? html`<a
-              href=${this._manifest.is_built_in
-                ? documentationUrl(
-                    this.hass,
-                    `/integrations/${this._manifest.domain}`
-                  )
-                : this._manifest.documentation}
-              title=${this.hass.localize(
-                "ui.components.service-control.integration_doc"
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                class="help-icon"
-              ></ha-icon-button>
-            </a>`
-          : nothing}
+        ${
+          documentationLink
+            ? html`<a
+                href=${documentationLink}
+                title=${this.hass.localize(
+                  "ui.components.service-control.integration_doc"
+                )}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  class="help-icon"
+                  .label=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
+                  )}
+                ></ha-icon-button>
+              </a>`
+            : nothing
+        }
       </div>
-      ${triggerDesc && "target" in triggerDesc
-        ? html`<ha-settings-row narrow>
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.components.service-control.target"
-              )}</span
-            ><ha-selector
+      ${
+        triggerDesc && "target" in triggerDesc
+          ? html`<ha-selector
+              class="target-selector"
               .hass=${this.hass}
               .selector=${this._targetSelector(triggerDesc.target)}
               .disabled=${this.disabled}
               @value-changed=${this._targetChanged}
               .value=${this.trigger?.target}
-            ></ha-selector
-          ></ha-settings-row>`
-        : nothing}
-      ${shouldRenderDataYaml
-        ? html`<ha-yaml-editor
-            .label=${this.hass.localize(
-              "ui.components.service-control.action_data"
-            )}
-            .name=${"data"}
-            .readOnly=${this.disabled}
-            .defaultValue=${this.trigger?.options}
-            @value-changed=${this._dataChanged}
-          ></ha-yaml-editor>`
-        : Object.entries(triggerDesc.fields).map(([fieldName, dataField]) =>
-            this._renderField(
-              fieldName,
-              dataField,
-              hasOptional,
-              domain,
-              triggerName
+            ></ha-selector>`
+          : nothing
+      }
+      ${
+        shouldRenderDataYaml
+          ? html`<ha-yaml-editor
+              .label=${this.hass.localize(
+                "ui.components.service-control.action_data"
+              )}
+              .name=${"data"}
+              .readOnly=${this.disabled}
+              .defaultValue=${this.trigger?.options}
+              @value-changed=${this._dataChanged}
+            ></ha-yaml-editor>`
+          : Object.entries(triggerDesc.fields).map(([fieldName, dataField]) =>
+              this._renderField(
+                fieldName,
+                dataField,
+                hasOptional,
+                domain,
+                triggerName
+              )
             )
-          )}
+      }
     `;
   }
 
@@ -277,49 +279,59 @@ export class HaPlatformTrigger extends LitElement {
     );
 
     return html`<ha-settings-row narrow>
-      ${!showOptional
-        ? hasOptional
-          ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-          : nothing
-        : html`<ha-checkbox
-            .key=${fieldName}
-            .checked=${this._checkedKeys.has(fieldName) ||
-            (this.trigger?.options &&
-              this.trigger.options[fieldName] !== undefined)}
-            .disabled=${this.disabled}
-            @change=${this._checkboxChanged}
-            slot="prefix"
-          ></ha-checkbox>`}
+      ${
+        !showOptional
+          ? hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : nothing
+          : html`<ha-checkbox
+              .key=${fieldName}
+              .checked=${
+                this._checkedKeys.has(fieldName) ||
+                (this.trigger?.options &&
+                  this.trigger.options[fieldName] !== undefined)
+              }
+              .disabled=${this.disabled}
+              @change=${this._checkboxChanged}
+              slot="prefix"
+            ></ha-checkbox>`
+      }
       <span
         slot="heading"
         class=${showOptional ? "clickable" : ""}
         @click=${showOptional ? this._toggleCheckbox : undefined}
-        >${this.hass.localize(
-          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-        ) || fieldName}</span
+        >${
+          this.hass.localize(
+            `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
+          ) || fieldName
+        }</span
       >
-      ${description
-        ? html`<span
-            class=${showOptional ? "clickable" : ""}
-            @click=${showOptional ? this._toggleCheckbox : undefined}
-            slot="description"
-            >${description}</span
-          >`
-        : nothing}
+      ${
+        description
+          ? html`<span
+              class=${showOptional ? "clickable" : ""}
+              @click=${showOptional ? this._toggleCheckbox : undefined}
+              slot="description"
+              >${description}</span
+            >`
+          : nothing
+      }
       <ha-selector
-        .disabled=${this.disabled ||
-        (showOptional &&
-          !this._checkedKeys.has(fieldName) &&
-          (!this.trigger?.options ||
-            this.trigger.options[fieldName] === undefined))}
+        .disabled=${
+          this.disabled ||
+          (showOptional &&
+            !this._checkedKeys.has(fieldName) &&
+            (!this.trigger?.options ||
+              this.trigger.options[fieldName] === undefined))
+        }
         .hass=${this.hass}
         .selector=${selector}
         .context=${this._generateContext(dataField)}
         .key=${fieldName}
         @value-changed=${this._dataChanged}
-        .value=${this.trigger?.options
-          ? this.trigger.options[fieldName]
-          : undefined}
+        .value=${
+          this.trigger?.options ? this.trigger.options[fieldName] : undefined
+        }
         .placeholder=${dataField.default}
         .localizeValue=${this._localizeValueCallback}
         .required=${dataField.required}
@@ -527,6 +539,14 @@ export class HaPlatformTrigger extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

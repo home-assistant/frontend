@@ -22,8 +22,7 @@ import type {
 const barCodeListeners = new Set<
   (
     msg:
-      | EMIncomingMessageBarCodeScanResult
-      | EMIncomingMessageBarCodeScanAborted
+      EMIncomingMessageBarCodeScanResult | EMIncomingMessageBarCodeScanAborted
   ) => boolean
 >();
 
@@ -43,8 +42,7 @@ export const attachExternalToApp = (hassMainEl: HomeAssistantMain) => {
 export const addExternalBarCodeListener = (
   listener: (
     msg:
-      | EMIncomingMessageBarCodeScanResult
-      | EMIncomingMessageBarCodeScanAborted
+      EMIncomingMessageBarCodeScanResult | EMIncomingMessageBarCodeScanAborted
   ) => boolean
 ) => {
   barCodeListeners.add(listener);
@@ -123,6 +121,14 @@ declare global {
   }
 
   interface GlobalEventHandlersEventMap {
-    "matter-commission-finish": HASSDomEvent<MatterCommissionFinish>;
+    "improv-discovered-device": HASSDomEvent<
+      HASSDomEvents["improv-discovered-device"]
+    >;
+    "improv-device-setup-done": HASSDomEvent<
+      HASSDomEvents["improv-device-setup-done"]
+    >;
+    "matter-commission-finish": HASSDomEvent<
+      HASSDomEvents["matter-commission-finish"]
+    >;
   }
 }
