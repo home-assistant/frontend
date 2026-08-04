@@ -7,6 +7,7 @@ import process from "node:process";
 import { Readable } from "node:stream";
 import gfxZopfli from "@gfx/zopfli";
 import { describe, expect, it } from "vitest";
+import { file, filler, run as runStream } from "./vinyl-stub.js";
 
 // Keep the pool small; it is created once, on the first factory call.
 process.env.ZOPFLI_WORKERS = "2";
@@ -15,28 +16,8 @@ const { default: zopfli } = await import("../../build-scripts/zopfli.mjs");
 
 const THRESHOLD = 150;
 
-// Stand-in for the vinyl files gulp.src yields in buffer mode.
-const file = (path, contents) => ({
-  path,
-  contents,
-  isNull() {
-    return this.contents === null;
-  },
-  isStream() {
-    return this.contents instanceof Readable;
-  },
-});
-
 const run = (files, options = { threshold: THRESHOLD }) =>
-  new Promise((resolve, reject) => {
-    const stream = zopfli(options);
-    const out = [];
-    stream.on("data", (result) => out.push(result));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(out));
-    files.forEach((entry) => stream.write(entry));
-    stream.end();
-  });
+  runStream(zopfli(options), files);
 
 // What the old in-process plugin did, for byte-for-byte comparison.
 const gzipInProcess = (contents) =>
@@ -45,8 +26,6 @@ const gzipInProcess = (contents) =>
       error ? reject(error) : resolve(Buffer.from(result))
     );
   });
-
-const filler = (length) => Buffer.alloc(length, "a");
 
 describe("zopfli worker pool", () => {
   it("appends .gz and matches in-process zopfli byte for byte", async () => {
