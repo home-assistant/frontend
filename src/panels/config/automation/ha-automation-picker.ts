@@ -348,19 +348,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           maxWidth: "82px",
           sortable: true,
           groupable: true,
+          hidden: narrow,
           type: "overflow",
           title: this.hass.localize("ui.panel.config.automation.picker.state"),
-          template: (automation) =>
-            narrow
-              ? automation.formatted_state
-              : html`
-                  <ha-switch
-                    @click=${stopPropagation}
-                    @change=${this._handleSwitchToggle}
-                    .automation=${automation}
-                    .checked=${automation.state === "on"}
-                  ></ha-switch>
-                `,
+          template: (automation) => html`
+            <ha-switch
+              @click=${stopPropagation}
+              @change=${this._handleSwitchToggle}
+              .automation=${automation}
+              .checked=${automation.state === "on"}
+            ></ha-switch>
+          `,
         },
         actions: {
           lastFixed: true,
