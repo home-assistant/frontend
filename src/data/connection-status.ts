@@ -9,7 +9,6 @@ export type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
 
 export interface ConnectionStatusDetail {
   status: ConnectionStatus;
-  // Version of the instance we are connected to, if known.
   haVersion?: string;
 }
 
