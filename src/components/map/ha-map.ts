@@ -919,6 +919,26 @@ export class HaMap extends ReactiveElement {
     .leaflet-bottom {
       z-index: 1 !important;
     }
+    .leaflet-control-scale {
+      cursor: unset !important;
+    }
+    .leaflet-control-scale-line {
+      font-size: var(--ha-font-size-s);
+      font-family: var(--ha-font-family-body);
+      color: var(--ha-color-black) !important;
+      background: color-mix(
+        in srgb,
+        var(--ha-color-white) 80%,
+        transparent
+      ) !important;
+      text-shadow: none !important;
+    }
+    .leaflet-left .leaflet-control-scale {
+      margin-left: 10px !important;
+    }
+    .leaflet-bottom .leaflet-control-scale {
+      margin-bottom: 10px !important;
+    }
     .leaflet-tooltip {
       padding: 8px;
       font-size: var(--ha-font-size-s);
