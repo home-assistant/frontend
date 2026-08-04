@@ -223,8 +223,8 @@ test("keeps the launch screen until initial panel content renders", async ({
     },
   ];
 
-  await cases.reduce(async (previousCase, readinessCase) => {
-    await previousCase;
+  for (const readinessCase of cases) {
+    // eslint-disable-next-line no-await-in-loop
     await test.step(readinessCase.name, async () => {
       await goToPanel(page, readinessCase.path);
 
@@ -254,7 +254,7 @@ test("keeps the launch screen until initial panel content renders", async ({
       await expect(readyContent).toBeAttached({ timeout: PANEL_TIMEOUT });
       await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
     });
-  }, Promise.resolve());
+  }
 });
 
 // ---------------------------------------------------------------------------

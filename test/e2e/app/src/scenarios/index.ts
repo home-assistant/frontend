@@ -190,14 +190,14 @@ const delayedIntegrationsScenario: Scenario = (hass) => {
 
   hass.mockWS(
     "config_entries/subscribe",
-    (_msg, _currentHass, onChange?: (updates: []) => void) => {
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
       window.resolveConfigEntries = () => onChange?.([]);
       return () => undefined;
     }
   );
   hass.mockWS(
     "config_entries/flow/subscribe",
-    (_msg, _currentHass, onChange?: (updates: []) => void) => {
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
       window.resolveConfigEntriesInProgress = () => onChange?.([]);
       return () => undefined;
     }
