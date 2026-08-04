@@ -247,7 +247,9 @@ class NotificationManager extends LitElement {
       return;
     }
     await this._getToast(key)?.hide();
-    this._removeNotification(key);
+    if (this._getNotification(key) === notification) {
+      this._removeNotification(key);
+    }
   }
 
   private _removeNotification(key: string) {

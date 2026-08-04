@@ -256,6 +256,33 @@ describe("notification-manager", () => {
     expect(toasts[0].labelText).toBe("Second");
   });
 
+  it("keeps a same-ID update that arrives while the previous toast closes", async () => {
+    const manager = await mountManager();
+    await manager.showDialog({ id: "status", message: "First" });
+    const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    let finishHide: () => void;
+    vi.mocked(toast.hide).mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finishHide = resolve;
+        })
+    );
+
+    const closing = manager.showDialog({
+      id: "status",
+      message: "",
+      duration: 0,
+    });
+    await Promise.resolve();
+    await manager.showDialog({ id: "status", message: "Second" });
+    finishHide!();
+    await closing;
+    await manager.updateComplete;
+
+    const remainingToast = manager.shadowRoot!.querySelector("ha-toast")!;
+    expect(remainingToast.labelText).toBe("Second");
+  });
+
   it("keeps a frontend update visible throughout server startup", async () => {
     const manager = await mountManager();
     await manager.showDialog({
