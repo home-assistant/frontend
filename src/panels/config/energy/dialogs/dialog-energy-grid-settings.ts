@@ -662,7 +662,7 @@ export class DialogEnergyGridSettings
   }
 
   private _numberCompensationChanged(
-    ev: HASSDomCurrentTargetEvent<HTMLInputElement>
+    ev: HASSDomCurrentTargetEvent<HaInput>
   ) {
     const input = ev.currentTarget as HTMLInputElement;
     const value = input.value ? parseFloat(input.value) : null;
