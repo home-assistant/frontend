@@ -186,6 +186,33 @@ const CONFIGS = [
     - zone.bushfire
     `,
   },
+  {
+    heading: "Scale ruler, top right",
+    config: `
+- type: map
+  scale_ruler: top_right
+  entities:
+    - zone.home
+  `,
+  },
+  {
+    heading: "Scale ruler, bottom left",
+    config: `
+  - type: map
+    scale_ruler: bottom_left
+    entities:
+      - zone.home
+  `,
+  },
+  {
+    heading: "Scale ruler, bottom right",
+    config: `
+- type: map
+  scale_ruler: bottom_right
+  entities:
+    - zone.home
+  `,
+  },
 ];
 
 @customElement("demo-lovelace-map-card")
