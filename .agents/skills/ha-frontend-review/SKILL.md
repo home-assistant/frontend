@@ -31,6 +31,33 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 
 ## Recurring Review Issues
 
+Scope and public surface:
+
+- Keep changes independently reviewable and limited to the requested area.
+- Prefer existing Home Assistant helpers, Lit primitives, and component seams over parallel implementations.
+- Challenge new public properties and optional feature surface when transient options or existing seams meet the requirement with less lifecycle and consistency cost.
+
+Stateful and asynchronous UI:
+
+- Review transitions in both directions, not only individual rendered states.
+- When controls reappear, restore valid defaults instead of retaining state that was only valid while they were hidden.
+- Establish immutable dirty-state baselines before asynchronous work, guard against stale responses, and preserve unsaved state in mounted editors.
+- Determine an action's current meaning before applying dirty-state checks, especially when an action can change between Save and Close.
+
+Readiness and invalidation:
+
+- Treat readiness as the first displayable terminal result, including stable empty and error states.
+- Register child readiness before resolving the parent, do not treat fallback work as terminal, and replay readiness correctly for cached or reused panels.
+- Ensure every value read by memoized output participates in its invalidation.
+
+Repository-owned contracts:
+
+- Consult the public [frontend developer documentation](https://developers.home-assistant.io/docs/frontend/) for documented architecture, data flow, design, and development workflows.
+- For new leaf components, cross-load `ha-frontend-contexts` and verify they consume narrow contexts instead of introducing a broad `hass` property; containers and external APIs may still require `hass`.
+- Verify backend assumptions against the owning Core, Supervisor, or WebSocket implementation, and component assumptions against the exported component contract.
+- Prefer canonical repository helpers and test setup over duplicate local implementations.
+- Promote AI-review concerns into durable guidance only when supported by code evidence, reproduced behavior, an accepted corrective commit, or human-maintainer validation.
+
 User experience and accessibility:
 
 - Forms need proper labels, helper text, and validation feedback.
@@ -70,4 +97,4 @@ Configuration and props:
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
-- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-events`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-user-facing-text` when a finding falls in that area.
+- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-events`, `ha-frontend-lit`, `ha-frontend-styling`, `ha-frontend-testing`, `ha-frontend-types`, or `ha-frontend-user-facing-text` when a finding falls in that area.
