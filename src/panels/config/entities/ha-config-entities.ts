@@ -993,7 +993,7 @@ export class HaConfigEntities extends LitElement {
         }
         <ha-filter-floor-areas
           type="entity"
-          .includeDisabledEntities=${true}
+          include-disabled-entities
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
