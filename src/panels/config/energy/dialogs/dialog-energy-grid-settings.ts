@@ -638,7 +638,7 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HTMLInputElement>) {
+  private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
     const input = ev.currentTarget as HTMLInputElement;
     const value = input.value ? parseFloat(input.value) : null;
     this._source = { ...this._source!, number_energy_price: value };
