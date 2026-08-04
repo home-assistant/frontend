@@ -122,7 +122,6 @@ interface EMOutgoingMessageConnectionStatus extends EMMessage {
   type: "connection-status";
   payload: {
     event: string;
-    // Version of the instance we are connected to, sent once authenticated
     ha_version?: string;
   };
 }
