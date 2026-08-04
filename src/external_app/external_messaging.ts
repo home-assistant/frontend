@@ -127,6 +127,13 @@ interface EMOutgoingMessageFrontendLoaded extends EMMessage {
   type: "frontend/loaded"; // Fired once the launch screen is removed; with hasSplashscreen this is after the first panel has rendered
 }
 
+interface EMOutgoingMessageConnectionAuthenticated extends EMMessage {
+  type: "connection/authenticated"; // Fired once the authenticated websocket connection to the instance is established
+  payload: {
+    ha_version: string;
+  };
+}
+
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
   type: "config_screen/show";
 }
@@ -204,6 +211,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageBarCodeClose
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
+  | EMOutgoingMessageConnectionAuthenticated
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageFrontendLoaded
   | EMOutgoingMessageExoplayerPlayHLS
