@@ -185,6 +185,25 @@ const delayedCalendarScenario: Scenario = (hass) => {
   hass.mockWS("config/entity_registry/list", () => registryPromise);
 };
 
+const delayedIntegrationsScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  hass.mockWS(
+    "config_entries/subscribe",
+    (_msg, _currentHass, onChange?: (updates: []) => void) => {
+      window.resolveConfigEntries = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+  hass.mockWS(
+    "config_entries/flow/subscribe",
+    (_msg, _currentHass, onChange?: (updates: []) => void) => {
+      window.resolveConfigEntriesInProgress = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+};
+
 const delayedMediaBrowseScenario: Scenario = (hass) => {
   addLaunchScreen();
 
@@ -230,6 +249,7 @@ export const scenarios: Record<string, Scenario> = {
   "custom-theme": customThemeScenario,
   "delayed-calendar": delayedCalendarScenario,
   "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
+  "delayed-integrations": delayedIntegrationsScenario,
   "delayed-media-browse": delayedMediaBrowseScenario,
   "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
   "light-more-info": lightMoreInfoScenario,
