@@ -833,6 +833,9 @@ export class HaMap extends ReactiveElement {
       scaleRuler.options.imperial = this._config.unit_system.length === UNIT_IN;
       scaleRuler.options.metric = this._config.unit_system.length !== UNIT_IN;
       this.leafletMap!.addControl(scaleRuler);
+      if (this.scaleRulerPosition === "bottom_right") {
+        this.leafletMap!.attributionControl.setPosition("bottomleft");
+      }
     }
   }
 
