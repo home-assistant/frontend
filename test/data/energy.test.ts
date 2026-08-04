@@ -17,6 +17,7 @@ import {
   calculateSolarConsumedGauge,
   formatPowerShort,
   getNextEnergyPeriodStart,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../src/data/energy";
 import type { HomeAssistant } from "../../src/types";
 
@@ -906,6 +907,40 @@ describe("getNextEnergyPeriodStart", () => {
     assert.equal(
       realTime.getTime(),
       new Date("2026-06-21T00:00:00-04:00").getTime()
+    );
+  });
+});
+
+describe("getEnergyDefaultPeriodStorageKey", () => {
+  it("uses an explicit collection key", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey(
+        { panelUrl: "energy" } as HomeAssistant,
+        "energy_dashboard"
+      ),
+      "energy-default-period-_energy_dashboard"
+    );
+  });
+
+  it("scopes to the panel when no collection key is given", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({
+        panelUrl: "my-dashboard",
+      } as HomeAssistant),
+      "energy-default-period-_energy_my-dashboard"
+    );
+  });
+
+  it("falls back to the global key without a panel url", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant),
+      "energy-default-period-_energy"
+    );
+  });
+
+  it("rejects a collection key with the wrong prefix", () => {
+    assert.throws(() =>
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant, "dashboard")
     );
   });
 });

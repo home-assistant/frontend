@@ -5616,12 +5616,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:1.9.21, @types/leaflet@npm:^1.9":
-  version: 1.9.21
-  resolution: "@types/leaflet@npm:1.9.21"
+"@types/leaflet@npm:1.9.22, @types/leaflet@npm:^1.9":
+  version: 1.9.22
+  resolution: "@types/leaflet@npm:1.9.22"
   dependencies:
     "@types/geojson": "npm:*"
-  checksum: 10/a02eff00db3cbc374c67fa7c0df6c564918482fa00407146bfea19f92600a4009f39af7bb9e3face39845979c133bb67b5bd972472720beef1f285596f47a6d1
+  checksum: 10/fdfe2f4a1adb2cd5e594320613d7673e8058928abb7caf0a79a6a9e58bc743cbefb2d1fa6d45e0a054d298a9f57632a04dd4e8c2c8e7ddfaa3c376d8f72b90a6
   languageName: node
   linkType: hard
 
@@ -9133,9 +9133,9 @@ __metadata:
   linkType: hard
 
 "fast-uri@npm:^3.0.1":
-  version: 3.1.4
-  resolution: "fast-uri@npm:3.1.4"
-  checksum: 10/1c1ff8e7b6f7b38e997b1528aa2c97e290e0173d51250bfe4e11a303e454fc297a287555b5cb2ded59dbfce7876855fb15994a1a6b439f2497a2b8926513e397
+  version: 3.1.5
+  resolution: "fast-uri@npm:3.1.5"
+  checksum: 10/784bef687ca3ecfb4587a05104a4d41101796f0fec72be47a9abed743b10109e69a24d1ad0854ee7d2705912dc2ca9d93e03d35b65df0a3da0339e05b5d83b5c
   languageName: node
   linkType: hard
 
@@ -9952,7 +9952,7 @@ __metadata:
     "@types/color-name": "npm:2.0.0"
     "@types/culori": "npm:4.0.1"
     "@types/html-minifier-terser": "npm:7.0.2"
-    "@types/leaflet": "npm:1.9.21"
+    "@types/leaflet": "npm:1.9.22"
     "@types/leaflet-draw": "npm:1.0.13"
     "@types/leaflet.markercluster": "npm:1.5.6"
     "@types/lodash.merge": "npm:4.6.9"
@@ -10008,14 +10008,14 @@ __metadata:
     husky: "npm:9.1.7"
     idb-keyval: "npm:6.3.0"
     intl-messageformat: "npm:11.2.13"
-    js-yaml: "npm:5.2.2"
+    js-yaml: "npm:5.2.3"
     jsdom: "npm:30.0.1"
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
     license-checker-rseidelsohn: "npm:5.0.1"
-    lint-staged: "npm:17.2.0"
+    lint-staged: "npm:17.3.0"
     lit: "npm:3.3.3"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.3"
@@ -10366,9 +10366,9 @@ __metadata:
   linkType: hard
 
 "ip-address@npm:^10.1.1":
-  version: 10.2.0
-  resolution: "ip-address@npm:10.2.0"
-  checksum: 10/12fec399e1af5753ac322e47a6d81a50d3a528b3abb17c09525b2a2edcaedcca628c40520706f7037bc4d8e951b0296c47e7b86d0a8e6e2335c8f0ba4afcfac1
+  version: 10.4.0
+  resolution: "ip-address@npm:10.4.0"
+  checksum: 10/8a286dd112a88c372b10c706caca14dcf5ed029a11c3911062ad8937ca0f951aa513ecacf82e15ffcf6343749ae6c079dd9741282fc94033a06ff1b7bd6ce69a
   languageName: node
   linkType: hard
 
@@ -10942,14 +10942,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:5.2.2":
-  version: 5.2.2
-  resolution: "js-yaml@npm:5.2.2"
+"js-yaml@npm:5.2.3":
+  version: 5.2.3
+  resolution: "js-yaml@npm:5.2.3"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.mjs
-  checksum: 10/2b4c2933af12c97e1c4894a4f27fe9b06dab70a64a96bb50624b4429bef6bf11008bde20d868bce52a36784473314efc30078ba6025b58cf7537961e23b1ae9c
+  checksum: 10/5d2562f2d7e7bc51bd678b43d2dbc3965129ac854222c794157369c8904d249cfc78325dff8fc64becb505a2506242548c54c8fa50cdb24554bb1a557e460004
   languageName: node
   linkType: hard
 
@@ -11408,9 +11408,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:17.2.0":
-  version: 17.2.0
-  resolution: "lint-staged@npm:17.2.0"
+"lint-staged@npm:17.3.0":
+  version: 17.3.0
+  resolution: "lint-staged@npm:17.3.0"
   dependencies:
     picomatch: "npm:^4.0.5"
     string-argv: "npm:^0.3.2"
@@ -11421,7 +11421,7 @@ __metadata:
       optional: true
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/7c26129d6dd27f20d8fc8d70b13252f15baf569124721d7f5e9ed289e054ed43f5cc2a35de4129b65a7c7f1ad4a5900859a7488f8a1f0b96428b995b29ec2ba8
+  checksum: 10/52510d48c6b4aabeb61f84ad77f785f3af17fbfa517be8881de45144723df873996d767d9a7cf3bee4057037960ea5236fe3ac47a5d60fa9538078061b254445
   languageName: node
   linkType: hard
 
@@ -11942,7 +11942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.3.12":
+"nanoid@npm:^3.3.16":
   version: 3.3.16
   resolution: "nanoid@npm:3.3.16"
   bin:
@@ -12832,13 +12832,13 @@ __metadata:
   linkType: hard
 
 "postcss@npm:^8.5.16":
-  version: 8.5.19
-  resolution: "postcss@npm:8.5.19"
+  version: 8.5.25
+  resolution: "postcss@npm:8.5.25"
   dependencies:
-    nanoid: "npm:^3.3.12"
+    nanoid: "npm:^3.3.16"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10/f51162887cd683afc02fa6c1f06b6485ebc18c62eec7dc2841c8fe0a0c4b53b9a834cc26aa1a233e87f0e3a10179db916a276464c0ee1d00354d1670ebc32953
+  checksum: 10/68aaeb314a1b2407e11e926acc0462b01b3e911d3d9e755d06adc5b2ececdefe8432dc3c3c93eacc07138952e17997d4674529061b8e3a338a7ac4c1accfdf98
   languageName: node
   linkType: hard
 
@@ -15050,9 +15050,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.25.0":
-  version: 6.27.0
-  resolution: "undici@npm:6.27.0"
-  checksum: 10/30c18cdb235edf4dd36f8aa3ace1ffaf44060289a7d62ad44c33180d2d74a224015d25574812f62ce9c625b5beb1b0b766495b650fedf356aca11eed7ce2c816
+  version: 6.28.0
+  resolution: "undici@npm:6.28.0"
+  checksum: 10/672a7a53bd1f6c80edb73b357ab36e98ef9e474024c442aab2b8ea2bc32f1103cab05525c78661ae724f3e1340e23d03efb9730fba28e76218ab0ec52e15d75a
   languageName: node
   linkType: hard
 

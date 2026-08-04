@@ -3,11 +3,19 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
 import { getHiddenFields } from "./conditions";
-import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import type {
+  HaFormData,
+  HaFormDataContainer,
+  HaFormElement,
+  HaFormSchema,
+} from "./types";
+
+type HaFormDataChangedEvent = ValueChangedEvent<HaFormData>;
+type HaFormDataContainerChangedEvent = ValueChangedEvent<HaFormDataContainer>;
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),
@@ -261,16 +269,18 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected addValueChangedListener(element: Element | ShadowRoot) {
-    element.addEventListener("value-changed", (ev) => {
+    element.addEventListener("value-changed", (ev: Event) => {
       ev.stopPropagation();
       const schema = (ev.target as HaFormElement).schema as HaFormSchema;
 
       if (ev.target === this) return;
 
+      const changeEv = ev as
+        HaFormDataChangedEvent | HaFormDataContainerChangedEvent;
       const newValue =
         !schema.name || ("flatten" in schema && schema.flatten)
-          ? ev.detail.value
-          : { [schema.name]: ev.detail.value };
+          ? (changeEv.detail.value as HaFormDataContainer)
+          : { [schema.name]: changeEv.detail.value as HaFormData };
 
       this.data = {
         ...this.data,

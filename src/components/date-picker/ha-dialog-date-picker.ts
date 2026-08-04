@@ -13,6 +13,10 @@ import {
 } from "../../common/datetime/format_date";
 import { valueToDate } from "../../common/datetime/value_to_date";
 import { transform } from "../../common/decorators/transform";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { configContext, internationalizationContext } from "../../data/context";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { HomeAssistantConfig } from "../../types";
@@ -167,7 +171,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     </ha-adaptive-popover>`;
   }
 
-  private _valueChanged(ev: Event) {
+  private _valueChanged(ev: HASSDomTargetEvent<CalendarDate>) {
     const dateElement = ev.target as CalendarDate;
     if (dateElement.value) {
       this._updateValue(dateElement.value);
@@ -198,7 +202,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     }
   }
 
-  private _focusChanged(ev: CustomEvent<Date>) {
+  private _focusChanged(ev: HASSDomEvent<Date>) {
     const date = ev.detail;
     this._pickerMonth = formatDateMonth(
       date,

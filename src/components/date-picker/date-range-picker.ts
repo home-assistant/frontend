@@ -15,6 +15,10 @@ import {
 } from "../../common/datetime/format_date";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { configContext, internationalizationContext } from "../../data/context";
 import { TimeZone } from "../../data/translation";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
@@ -307,7 +311,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     });
   }
 
-  private _focusChanged(ev: CustomEvent<Date>) {
+  private _focusChanged(ev: HASSDomEvent<Date>) {
     const date = ev.detail;
     this._pickerMonth = formatDateMonth(
       date,
@@ -322,13 +326,19 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._focusDate = undefined;
   }
 
-  private _handleChange(ev: CustomEvent) {
+  private _handleChange(
+    ev: HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
+  ) {
     const dateElement = ev.target as HTMLElementTagNameMap["calendar-range"];
     this._dateValue = dateElement.value;
     this._focusDate = undefined;
   }
 
-  private _clickDateRangeChip(ev: Event) {
+  private _clickDateRangeChip(
+    ev: HASSDomTargetEvent<
+      HaFilterChip & { index: number; range: [Date, Date] }
+    >
+  ) {
     const chip = ev.target as HaFilterChip & {
       index: number;
       range: [Date, Date];
@@ -336,7 +346,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._saveDateRangePreset(chip.range, chip.index);
   }
 
-  private _setDateRange(ev: CustomEvent<ActionDetail>) {
+  private _setDateRange(ev: HASSDomEvent<ActionDetail>) {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
@@ -355,7 +365,9 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     });
   }
 
-  private _handleChangeTime(ev: ValueChangedEvent<string>) {
+  private _handleChangeTime(
+    ev: ValueChangedEvent<string> & HASSDomTargetEvent<HaBaseTimeInput>
+  ) {
     ev.stopPropagation();
     const time = ev.detail.value;
     const target = ev.target as HaBaseTimeInput;

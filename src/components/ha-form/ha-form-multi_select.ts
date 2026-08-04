@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../ha-check-list-item";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
@@ -140,7 +141,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: HASSDomTargetEvent<HaCheckbox>): void {
     const { value, checked } = ev.target as HaCheckbox;
     this._handleValueChanged(value, checked);
   }

@@ -10,6 +10,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/animation/ha-fade-in";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
@@ -334,13 +335,18 @@ class DialogRestart extends LitElement {
       }
     };
 
-  private async _handleAction(ev: Event) {
+  private async _handleAction(
+    ev: HASSDomCurrentTargetEvent<
+      HaListItemButton & {
+        action: "restart" | "reboot" | "shutdown" | "restart-safe-mode";
+      }
+    >
+  ) {
     if (this._loadingBackupInfo) {
       return;
     }
     this._loadingBackupInfo = true;
-    const action = (ev.currentTarget as HaListItemButton & { action: string })
-      .action as "restart" | "reboot" | "shutdown" | "restart-safe-mode";
+    const action = ev.currentTarget.action;
 
     const backupState = await this._loadBackupState();
 
@@ -369,7 +375,7 @@ class DialogRestart extends LitElement {
 
     this._dialogOpen = false;
 
-    let actionFunc;
+    let actionFunc: () => Promise<void>;
 
     if (["restart", "restart-safe-mode"].includes(action)) {
       const serviceData =
