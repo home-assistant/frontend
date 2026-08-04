@@ -144,6 +144,35 @@ describe("ha-control-slider step bounds", () => {
     expect(el.steppedValue(46)).toBe(50);
   });
 
+  it("stays inside the bounds along the whole pointer path", () => {
+    // The pointer handlers compose these two, so they have to hold together.
+    const el = createSlider(RANGE);
+    expect(el.steppedValue(el.percentageToValue(1))).toBe(99);
+    expect(el.steppedValue(el.percentageToValue(0))).toBe(1);
+  });
+
+  it("does not overshoot the maximum with a fractional step", () => {
+    // A 91-speed fan: 91 * (100 / 91) used to land on 100.00000000000001.
+    const el = createSlider({ min: 0, max: 100, step: 100 / 91 });
+    expect(el.steppedValue(el.percentageToValue(1))).toBe(100);
+  });
+
+  it("shows and announces the bound, not the overshoot", async () => {
+    const el = await mountSlider({
+      ...RANGE,
+      value: 99,
+      tooltipMode: "always",
+    });
+    expect(el.shadowRoot!.querySelector(".tooltip")!.textContent!.trim()).toBe(
+      "99"
+    );
+    expect(
+      el
+        .shadowRoot!.querySelector('[role="slider"]')!
+        .getAttribute("aria-valuenow")
+    ).toBe("99");
+  });
+
   it("keeps paging inside the bounds", async () => {
     const el = await mountSlider({ ...RANGE, value: 91 });
     const values = changedValues(el);

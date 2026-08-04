@@ -98,6 +98,16 @@ describe("ha-control-number-buttons step bounds", () => {
     expect(values).toEqual([60]);
   });
 
+  it("keeps arrow keys inside the bounds", async () => {
+    const el = await mountButtons({ ...RANGE, value: 91 });
+    const values = changedValues(el);
+    await pressKey(el, "ArrowUp");
+    expect(values).toEqual([99]);
+    el.value = 11;
+    await pressKey(el, "ArrowDown");
+    expect(values).toEqual([99, 1]);
+  });
+
   it("pages by ten percent of the range, but at least one step", async () => {
     const wide = await mountButtons({ min: 10, max: 20, step: 1, value: 15 });
     const wideValues = changedValues(wide);
