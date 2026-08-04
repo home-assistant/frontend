@@ -6,7 +6,8 @@ import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import {
-  formatDateMonth,
+  formatCallyMonthYear,
+  formatDateMonthYear,
   formatDateShort,
   formatDateYear,
   formatISODateOnly,
@@ -56,13 +57,16 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     dateString: string;
   };
 
-  /** used to show month in calendar-date header */
-  @state() private _pickerMonth?: string;
+  /** used to show month and year in calendar-date header */
+  @state() private _pickerMonthYear?: string;
 
-  /** used to show year in calendar-date header */
-  @state() private _pickerYear?: string;
-
-  /** used for today to navigate focus in cally-calendar-date  */
+  /**
+   * used for today to navigate focus in cally-calendar-date
+   *
+   * Always mirrors the day calendar-date has focused, never cleared: once this
+   * has held a date, rendering `undefined` over it makes cally fall back to the
+   * selected value and page the calendar away from where the user is.
+   */
   @state() private _focusDate?: string;
 
   public connectedCallback() {
@@ -71,12 +75,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     if (this.params) {
       const date = valueToDate(this.params.value);
 
-      this._pickerYear = formatDateYear(
-        date,
-        this._i18n.locale,
-        this._hassConfig
-      );
-      this._pickerMonth = formatDateMonth(
+      this._pickerMonthYear = formatDateMonthYear(
         date,
         this._i18n.locale,
         this._hassConfig
@@ -84,7 +83,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
 
       this._value = this.params.value
         ? {
-            year: this._pickerYear,
+            year: formatDateYear(date, this._i18n.locale, this._hassConfig),
             title: formatDateShort(date, this._i18n.locale, this._hassConfig),
             dateString: formatISODateOnly(
               date,
@@ -140,9 +139,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           slot="previous"
         ></ha-icon-button-prev>
         <div class="heading" slot="heading">
-          <span class="month-year"
-            >${this._pickerMonth} ${this._pickerYear}</span
-          >
+          <span class="month-year">${this._pickerMonthYear}</span>
           <ha-icon-button
             @click=${this._setToday}
             .path=${mdiCalendarToday}
@@ -185,12 +182,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
 
     if (setFocusDay) {
       this._focusDate = this._value.dateString;
-      this._pickerMonth = formatDateMonth(
-        date,
-        this._i18n.locale,
-        this._hassConfig
-      );
-      this._pickerYear = formatDateYear(
+      this._pickerMonthYear = formatDateMonthYear(
         date,
         this._i18n.locale,
         this._hassConfig
@@ -199,18 +191,9 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   }
 
   private _focusChanged(ev: CustomEvent<Date>) {
-    const date = ev.detail;
-    this._pickerMonth = formatDateMonth(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._pickerYear = formatDateYear(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._focusDate = undefined;
+    const dateElement = ev.target as CalendarDate;
+    this._pickerMonthYear = formatCallyMonthYear(ev.detail, this._i18n.locale);
+    this._focusDate = dateElement.focusedDate;
   }
 
   private _clear() {
