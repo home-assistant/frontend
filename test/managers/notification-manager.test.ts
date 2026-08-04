@@ -97,15 +97,24 @@ describe("notification-manager", () => {
     expect(toast.hide).toHaveBeenCalledWith("dismiss");
   });
 
-  it("clears all notifications when duration is zero without an ID", async () => {
+  it("clears the latest anonymous notification when duration is zero without an ID", async () => {
     const manager = await mountManager();
     await manager.showDialog({ message: "First message", duration: -1 });
+    await manager.showDialog({
+      id: "identified",
+      message: "Identified message",
+      duration: -1,
+    });
     await manager.showDialog({ message: "Second message", duration: -1 });
 
     await manager.showDialog({ message: "", duration: 0 });
     await manager.updateComplete;
 
-    expect(manager.shadowRoot!.querySelector("ha-toast")).toBeNull();
+    expect(
+      [...manager.shadowRoot!.querySelectorAll("ha-toast")].map(
+        (toast) => toast.labelText
+      )
+    ).toEqual(["First message", "Identified message"]);
   });
 
   it.each([

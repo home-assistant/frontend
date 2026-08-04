@@ -70,9 +70,12 @@ class NotificationManager extends LitElement {
       if (parameters.id) {
         await this._closeNotification(`identified-${parameters.id}`);
       } else {
-        await Promise.all(
-          this._notifications.map(({ key }) => this._closeNotification(key))
-        );
+        const notification = [...this._notifications]
+          .reverse()
+          .find(({ parameters: { id } }) => !id);
+        if (notification) {
+          await this._closeNotification(notification.key);
+        }
       }
       return;
     }
