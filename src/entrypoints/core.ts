@@ -119,14 +119,6 @@ if (window.hassConnectionReady) {
   window.hassConnectionReady(window.hassConnection);
 }
 
-// Let the external app know we have an authenticated connection.
-window.hassConnection.then(({ auth, conn }) => {
-  (auth as ExternalAuth).external?.fireMessage({
-    type: "connection/authenticated",
-    payload: { ha_version: conn.haVersion },
-  });
-});
-
 // Start fetching some of the data that we will need.
 window.hassConnection.then(({ conn }) => {
   const noop = () => {

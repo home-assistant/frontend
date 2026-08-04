@@ -280,7 +280,7 @@ class HaPanelConfig extends HassRouterPage {
     if (isComponentLoaded(this.hass.config, "cloud")) {
       this._updateCloudStatus();
       this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
+        if (ev.detail.status === "connected") {
           this._updateCloudStatus();
         }
       });

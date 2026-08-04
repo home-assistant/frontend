@@ -232,7 +232,7 @@ export class LovelacePanel extends LitElement {
 
   private _handleConnectionStatus = (ev) => {
     // reload lovelace on reconnect so we are sure we have the latest config
-    if (ev.detail === "connected") {
+    if (ev.detail.status === "connected") {
       this._fetchConfig(false);
     }
   };

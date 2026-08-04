@@ -120,18 +120,15 @@ interface EMOutgoingMessageHaptic extends EMMessage {
 
 interface EMOutgoingMessageConnectionStatus extends EMMessage {
   type: "connection-status";
-  payload: { event: string };
+  payload: {
+    event: string;
+    // Version of the instance we are connected to, sent once authenticated
+    ha_version?: string;
+  };
 }
 
 interface EMOutgoingMessageFrontendLoaded extends EMMessage {
   type: "frontend/loaded"; // Fired once the launch screen is removed; with hasSplashscreen this is after the first panel has rendered
-}
-
-interface EMOutgoingMessageConnectionAuthenticated extends EMMessage {
-  type: "connection/authenticated"; // Fired once the authenticated websocket connection to the instance is established
-  payload: {
-    ha_version: string;
-  };
 }
 
 interface EMOutgoingMessageAppConfiguration extends EMMessage {
@@ -211,7 +208,6 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageBarCodeClose
   | EMOutgoingMessageBarCodeNotify
   | EMOutgoingMessageBarCodeScan
-  | EMOutgoingMessageConnectionAuthenticated
   | EMOutgoingMessageConnectionStatus
   | EMOutgoingMessageFrontendLoaded
   | EMOutgoingMessageExoplayerPlayHLS
@@ -408,7 +404,7 @@ export class ExternalMessaging {
     window.addEventListener("connection-status", (ev) =>
       this.fireMessage({
         type: "connection-status",
-        payload: { event: ev.detail },
+        payload: { event: ev.detail.status, ha_version: ev.detail.haVersion },
       })
     );
     this.config = await this.sendMessage<"config/get">({

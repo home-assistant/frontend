@@ -233,7 +233,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 
       const conn = this.hass!.connection;
 
-      broadcastConnectionStatus("connected");
+      broadcastConnectionStatus("connected", conn.haVersion);
 
       conn.addEventListener("ready", () => this.hassReconnected());
       conn.addEventListener("disconnected", () => this.hassDisconnected());
@@ -369,7 +369,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       super.hassReconnected();
 
       this._updateHass({ connected: true });
-      broadcastConnectionStatus("connected");
+      broadcastConnectionStatus("connected", this.hass!.connection.haVersion);
 
       this._refreshBrandsAccessToken();
 

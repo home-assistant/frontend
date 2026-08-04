@@ -44,7 +44,7 @@ import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import type { ConnectionStatus } from "../../../data/connection-status";
+import type { ConnectionStatusDetail } from "../../../data/connection-status";
 import {
   fetchErrorLog,
   getCoreLogFileDownloadUnavailableReason,
@@ -634,12 +634,14 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  private _handleConnectionStatus = (ev: HASSDomEvent<ConnectionStatus>) => {
-    if (ev.detail === "disconnected" && this._logStreamAborter) {
+  private _handleConnectionStatus = (
+    ev: HASSDomEvent<ConnectionStatusDetail>
+  ) => {
+    if (ev.detail.status === "disconnected" && this._logStreamAborter) {
       this._logStreamAborter.abort();
       this._loadingState = "loading";
     }
-    if (ev.detail === "connected") {
+    if (ev.detail.status === "connected") {
       this._loadLogs(true);
     }
   };

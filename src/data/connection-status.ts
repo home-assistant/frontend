@@ -7,10 +7,16 @@ import { fireEvent } from "../common/dom/fire_event";
 
 export type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
 
+export interface ConnectionStatusDetail {
+  status: ConnectionStatus;
+  // Version of the instance we are connected to, if known.
+  haVersion?: string;
+}
+
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "connection-status": ConnectionStatus;
+    "connection-status": ConnectionStatusDetail;
   }
 
   interface GlobalEventHandlersEventMap {
@@ -18,6 +24,9 @@ declare global {
   }
 }
 
-export const broadcastConnectionStatus = (status: ConnectionStatus) => {
-  fireEvent(window, "connection-status", status);
+export const broadcastConnectionStatus = (
+  status: ConnectionStatus,
+  haVersion?: string
+) => {
+  fireEvent(window, "connection-status", { status, haVersion });
 };
