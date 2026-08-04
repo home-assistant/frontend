@@ -154,14 +154,12 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             ${this.hass.localize("ui.panel.config.url.description")}
           </div>
 
+          <h4>
+            ${this.hass.localize("ui.panel.config.url.external_url_label")}
+          </h4>
           ${
             hasCloud
               ? html`
-                  <h4>
-                    ${this.hass.localize(
-                      "ui.panel.config.url.external_url_label"
-                    )}
-                  </h4>
                   <ha-md-list-item>
                     <span slot="headline"
                       >${this.hass.localize(
