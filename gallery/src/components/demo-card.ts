@@ -1,15 +1,18 @@
-import { load } from "js-yaml";
+import { dump } from "js-yaml";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
 
-export interface DemoCardConfig {
+export interface DemoCardConfig<
+  T extends LovelaceCardConfig = LovelaceCardConfig,
+> {
   heading: string;
-  config: string;
+  config: T;
 }
 
 @customElement("demo-card")
@@ -25,10 +28,9 @@ class DemoCard extends LitElement {
 
   @query("hui-card", false) private _card?: HuiCard;
 
-  private _config = memoizeOne((config: string) => {
-    const c = (load(config) as any)[0];
-    return c;
-  });
+  private _yamlConfig = memoizeOne((config: LovelaceCardConfig) =>
+    dump([config]).trim()
+  );
 
   render() {
     return html`
@@ -42,13 +44,13 @@ class DemoCard extends LitElement {
       </h2>
       <div class="root">
         <hui-card
-          .config=${this._config(this.config.config)}
+          .config=${this.config.config}
           .hass=${this.hass}
           @card-updated=${this._cardUpdated}
         ></hui-card>
         ${
           this.showConfig
-            ? html`<pre>${this.config.config.trim()}</pre>`
+            ? html`<pre>${this._yamlConfig(this.config.config)}</pre>`
             : nothing
         }
       </div>
