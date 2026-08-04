@@ -65,37 +65,37 @@ const compressModernZopliSwModern = () =>
   compressSingle(
     [`${paths.app_output_root}/sw-modern.js`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressModernZopliJs = () =>
   compressSingle(
     [`${paths.app_output_latest}/**/*.js`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressModernZopliJSON = () =>
   compressSingle(
     [`${paths.app_output_latest}/**/*.json`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressModernZopliCSS = () =>
   compressSingle(
     [`${paths.app_output_latest}/**/*.css`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressModernZopliSVG = () =>
   compressSingle(
     [`${paths.app_output_latest}/**/*.svg`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressModernZopliXML = () =>
   compressSingle(
     [`${paths.app_output_latest}/**/*.xml`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 
 const compressOtherBrotliAuthorize = () =>
@@ -161,13 +161,13 @@ const compressOtherZopliAuthorize = () =>
   compressSingle(
     [`${paths.app_output_root}/authorize.html`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliOnboarding = () =>
   compressSingle(
     [`${paths.app_output_root}/onboarding.html`],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliJS = () =>
   compressSingle(
@@ -177,7 +177,7 @@ const compressOtherZopliJS = () =>
       `!${paths.app_output_root}/{sw-modern,service_worker}.js`,
     ],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliJSON = () =>
   compressSingle(
@@ -186,7 +186,7 @@ const compressOtherZopliJSON = () =>
       `!${paths.app_output_latest}/**/*.json`,
     ],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliCSS = () =>
   compressSingle(
@@ -195,7 +195,7 @@ const compressOtherZopliCSS = () =>
       `!${paths.app_output_latest}/**/*.css`,
     ],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliSVG = () =>
   compressSingle(
@@ -204,7 +204,7 @@ const compressOtherZopliSVG = () =>
       `!${paths.app_output_latest}/**/*.svg`,
     ],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 const compressOtherZopliXML = () =>
   compressSingle(
@@ -213,7 +213,7 @@ const compressOtherZopliXML = () =>
       `!${paths.app_output_latest}/**/*.xml`,
     ],
     paths.app_output_root,
-    "zopli"
+    "zopfli"
   );
 
 gulp.task(
