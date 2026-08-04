@@ -37,8 +37,8 @@ const CONFIGS = [
     heading: "Error: Image required",
     config: {
       type: "picture",
-      entity: "person.paulus",
     },
+    expectConfigError: true,
   },
 ] satisfies DemoCardConfig<PictureCardConfig>[];
 

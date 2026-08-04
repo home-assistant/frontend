@@ -64,7 +64,10 @@ const CONFIGS = [
     config: {
       type: "button",
       entity: "light.bed_light",
-      service: "light.toggle",
+      tap_action: {
+        action: "perform-action",
+        perform_action: "light.toggle",
+      },
     },
   },
   {

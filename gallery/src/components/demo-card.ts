@@ -7,12 +7,14 @@ import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card"
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
+import { validateCardConfig } from "../common/validate-card-config";
 
 export interface DemoCardConfig<
   T extends LovelaceCardConfig = LovelaceCardConfig,
 > {
   heading: string;
   config: T;
+  expectConfigError?: boolean;
 }
 
 @customElement("demo-card")
@@ -31,6 +33,21 @@ class DemoCard extends LitElement {
   private _yamlConfig = memoizeOne((config: LovelaceCardConfig) =>
     dump([config]).trim()
   );
+
+  protected async firstUpdated() {
+    try {
+      await validateCardConfig(this.config.config);
+    } catch (err) {
+      if (this.config.expectConfigError) {
+        return;
+      }
+      throw err;
+    }
+
+    if (this.config.expectConfigError) {
+      throw new Error(`Expected config error for ${this.config.heading}`);
+    }
+  }
 
   render() {
     return html`

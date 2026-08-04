@@ -43,7 +43,7 @@ const CONFIGS = [
     config: {
       type: "gauge",
       entity: "sensor.outside_temperature",
-      unit_of_measurement: "C",
+      unit: "C",
       name: "Outside Temperature",
     },
   },

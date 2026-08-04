@@ -295,6 +295,7 @@ const INVALID_CONFIGS = [
   {
     heading: "Error: Entities must be specified",
     config: { type: "entity-filter" },
+    expectConfigError: true,
   },
   {
     heading: "Error: Incorrect filter config",
@@ -302,6 +303,7 @@ const INVALID_CONFIGS = [
       type: "entity-filter",
       entities: ["sensor.gas_station_lowest_price"],
     },
+    expectConfigError: true,
   },
 ] satisfies DemoCardConfig<
   | Pick<EntityFilterCardConfig, "type">
