@@ -639,8 +639,9 @@ export class DialogEnergyGridSettings
   }
 
   private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price: value };
     this._updateFormDirtyState();
   }
@@ -661,11 +662,10 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCompensationChanged(
-    ev: HASSDomCurrentTargetEvent<HaInput>
-  ) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+  private _numberCompensationChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price_export: value };
     this._updateFormDirtyState();
   }
