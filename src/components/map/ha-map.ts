@@ -175,6 +175,8 @@ export class HaMap extends ReactiveElement {
 
   private _pauseAutoFit = false;
 
+  private _pendingFit?: () => void;
+
   public connectedCallback(): void {
     this._pauseAutoFit = false;
     document.addEventListener("visibilitychange", this._handleVisibilityChange);
@@ -204,6 +206,7 @@ export class HaMap extends ReactiveElement {
       this.Leaflet = undefined;
     }
 
+    this._pendingFit = undefined;
     this._loaded = false;
 
     if (this._resizeObserver) {
@@ -347,6 +350,10 @@ export class HaMap extends ReactiveElement {
       return;
     }
 
+    if (this._deferIfUnsized(() => this.fitMap(options))) {
+      return;
+    }
+
     if (
       !this._mapFocusItems.length &&
       !this._mapFocusZones.length &&
@@ -387,11 +394,48 @@ export class HaMap extends ReactiveElement {
     }, PROGRAMMITIC_FIT_DELAY);
   }
 
+  // Leaflet derives the zoom level that fits given bounds from the current
+  // size of the map container. When the container has not been laid out yet,
+  // that size is 0x0 and the computed zoom collapses to the minimum, leaving
+  // the map zoomed out to the world even after the container gets its size.
+  // Defer fitting until the resize observer reports a usable size.
+  private _deferIfUnsized(fit: () => void): boolean {
+    const size = this.leafletMap!.getSize();
+    if (size.x > 0 && size.y > 0) {
+      this._pendingFit = undefined;
+      return false;
+    }
+    const container = this.leafletMap!.getContainer();
+    if (container.clientWidth > 0 && container.clientHeight > 0) {
+      // The container was laid out since Leaflet last measured it.
+      this.leafletMap!.invalidateSize(false);
+      this._pendingFit = undefined;
+      return false;
+    }
+    this._pendingFit = fit;
+    return true;
+  }
+
+  private _runPendingFit(): void {
+    if (!this._pendingFit || !this.leafletMap) {
+      return;
+    }
+    const size = this.leafletMap.getSize();
+    if (size.x > 0 && size.y > 0) {
+      const pendingFit = this._pendingFit;
+      this._pendingFit = undefined;
+      pendingFit();
+    }
+  }
+
   public fitBounds(
     boundingbox: LatLngExpression[],
     options?: { zoom?: number; pad?: number }
   ) {
     if (!this.leafletMap || !this.Leaflet) {
+      return;
+    }
+    if (this._deferIfUnsized(() => this.fitBounds(boundingbox, options))) {
       return;
     }
     const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
@@ -773,6 +817,7 @@ export class HaMap extends ReactiveElement {
     if (!this._resizeObserver) {
       this._resizeObserver = new ResizeObserver(() => {
         this.leafletMap?.invalidateSize({ debounceMoveend: true });
+        this._runPendingFit();
       });
     }
     this._resizeObserver.observe(this);
