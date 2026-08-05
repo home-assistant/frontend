@@ -305,7 +305,8 @@ gulp.task(
 
 const E2E_TEST_APP_PAGE_ENTRIES = {
   "index.html": ["main"],
-  "onboarding.html": ["main"],
+  "dashboard.html": ["dashboard"],
+  "onboarding.html": ["onboarding"],
 };
 
 gulp.task(

@@ -16,11 +16,12 @@ test.use({ serviceWorkers: "block" });
 
 test("completes onboarding and opens the default dashboard", async ({
   page,
+  baseURL,
 }) => {
   const errors = trackPageErrors(page);
   const calls = await setupOnboardingMocks(page);
 
-  await test.step("welcome", () => openOnboarding(page));
+  await test.step("welcome", () => openOnboarding(page, baseURL!));
   await test.step("create account", () => createOwner(page));
   await test.step("configure Home Assistant", () => completeCoreConfig(page));
   await test.step("choose analytics", () => completeAnalytics(page));
@@ -54,7 +55,9 @@ test("completes onboarding and opens the default dashboard", async ({
   });
   expect(calls.integration).toMatchObject({
     client_id: expect.any(String),
-    redirect_uri: expect.stringContaining("/?auth_callback=1"),
+    redirect_uri: expect.stringContaining("/dashboard.html?auth_callback=1"),
   });
+  expect(calls.tokenRequests).toHaveLength(2);
+  expect(calls.tokenRequests[1]).toContain("dashboard-auth-code");
   expectNoPageErrors(errors);
 });

@@ -1,5 +1,6 @@
 import { expect, type Page, type WebSocketRoute } from "@playwright/test";
 import { demoConfig } from "../../../../src/fake_data/demo_config";
+import { demoPanels } from "../../../../src/fake_data/demo_panels";
 import { PANEL_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
 
 interface WebSocketMessage {
@@ -16,6 +17,7 @@ export interface OnboardingCalls {
   analyticsCompleted?: boolean;
   systemData?: Record<string, unknown>;
   integration?: Record<string, unknown>;
+  tokenRequests: string[];
 }
 
 export const onboardingData = {
@@ -56,14 +58,19 @@ const subscriptionResults: Record<string, unknown> = {
   "config_entries/flow/subscribe": [],
   "config_entries/subscribe": [],
   "frontend/subscribe_system_data": { value: null },
-  "frontend/subscribe_user_data": { value: null },
+  "frontend/subscribe_user_data": { value: { default_panel: "lovelace" } },
+  "labs/subscribe": { enabled: false },
+  "persistent_notification/subscribe": {
+    type: "current",
+    notifications: {},
+  },
   subscribe_entities: { a: {} },
 };
 
 const commandResults: Record<string, unknown> = {
   "analytics/preferences": {},
   "auth/current_user": currentUser,
-  "brands/access_token": { access_token: "brands-token", expires_in: 3600 },
+  "brands/access_token": { token: "brands-token" },
   "config/area_registry/list": [],
   "config/core/update": demoConfig,
   "config/device_registry/list": [],
@@ -80,8 +87,23 @@ const commandResults: Record<string, unknown> = {
   },
   "frontend/set_system_data": undefined,
   get_config: demoConfig,
-  get_panels: {},
+  get_panels: { lovelace: demoPanels.lovelace },
   get_services: {},
+  "lovelace/config": {
+    views: [
+      {
+        title: "Home",
+        cards: [{ type: "heading", heading: "Onboarding complete" }],
+      },
+    ],
+  },
+  "lovelace/info": { resource_mode: "storage" },
+  "lovelace/resources": [],
+  "recorder/info": {
+    migration_in_progress: false,
+    migration_is_live: false,
+  },
+  "repairs/list_issues": { issues: [] },
   supported_features: undefined,
 };
 
@@ -152,7 +174,7 @@ const handleWebSocketMessage = (
 export async function setupOnboardingMocks(
   page: Page
 ): Promise<OnboardingCalls> {
-  const calls: OnboardingCalls = {};
+  const calls: OnboardingCalls = { tokenRequests: [] };
 
   await page.route("**/api/onboarding**", async (route) => {
     const request = route.request();
@@ -192,16 +214,17 @@ export async function setupOnboardingMocks(
     await route.abort("failed");
   });
 
-  await page.route("**/auth/token", (route) =>
-    route.fulfill({
+  await page.route("**/auth/token", (route) => {
+    calls.tokenRequests.push(route.request().postData() ?? "");
+    return route.fulfill({
       json: {
         access_token: "access-token",
         expires_in: 1800,
         refresh_token: "refresh-token",
         token_type: "Bearer",
       },
-    })
-  );
+    });
+  });
   await page.route("**/auth/revoke", (route) => route.fulfill({ status: 200 }));
   await page.routeWebSocket("**/api/websocket", (socket) => {
     socket.onMessage((message) =>
@@ -212,8 +235,14 @@ export async function setupOnboardingMocks(
   return calls;
 }
 
-export async function openOnboarding(page: Page) {
-  await page.goto("/onboarding.html");
+export async function openOnboarding(page: Page, baseURL: string) {
+  const origin = new URL(baseURL).origin;
+  const state = btoa(
+    JSON.stringify({ hassUrl: origin, clientId: `${origin}/` })
+  );
+  await page.goto(
+    `/onboarding.html?client_id=${encodeURIComponent(`${origin}/`)}&redirect_uri=${encodeURIComponent(`${origin}/dashboard.html?auth_callback=1`)}&state=${encodeURIComponent(state)}`
+  );
   await expect(page.locator("onboarding-welcome")).toBeAttached({
     timeout: SHELL_TIMEOUT,
   });
@@ -275,13 +304,13 @@ export async function finishIntegrations(page: Page) {
 }
 
 export async function expectDefaultDashboard(page: Page) {
-  await expect(page).toHaveURL(/auth_callback=1.*code=dashboard-auth-code/, {
+  await expect(page).toHaveURL(/\/dashboard\.html#\/lovelace$/, {
     timeout: PANEL_TIMEOUT,
   });
-  await expect(page.locator("ha-test")).toBeAttached({
+  await expect(page.locator("home-assistant")).toBeAttached({
     timeout: SHELL_TIMEOUT,
   });
-  await expect(page.locator("hui-card, hui-tile-card").first()).toBeAttached({
-    timeout: PANEL_TIMEOUT,
-  });
+  await expect(
+    page.getByText("Onboarding complete", { exact: true })
+  ).toBeVisible({ timeout: PANEL_TIMEOUT });
 }
