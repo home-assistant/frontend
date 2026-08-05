@@ -49,7 +49,7 @@ import type {
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
-import { UNIT_IN } from "../../common/const";
+import { UNIT_KM } from "../../common/const";
 
 declare global {
   // for fire event
@@ -824,14 +824,15 @@ export class HaMap extends ReactiveElement {
   private _drawScaleRuler(): void {
     if (this.scaleRulerPosition !== "none") {
       const scaleRuler = this.Leaflet!.control.scale();
+      const useMetric = this._config?.unit_system?.length === UNIT_KM;
       const position = {
         top_right: "topright",
         bottom_left: "bottomleft",
         bottom_right: "bottomright",
       }[this.scaleRulerPosition] as ControlPosition;
       scaleRuler.setPosition(position);
-      scaleRuler.options.imperial = this._config.unit_system.length === UNIT_IN;
-      scaleRuler.options.metric = this._config.unit_system.length !== UNIT_IN;
+      scaleRuler.options.metric = useMetric;
+      scaleRuler.options.imperial = !useMetric;
       this.leafletMap!.addControl(scaleRuler);
       if (this.scaleRulerPosition === "bottom_right") {
         this.leafletMap!.attributionControl.setPosition("bottomleft");
