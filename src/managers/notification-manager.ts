@@ -267,10 +267,15 @@ class NotificationManager extends LitElement {
   }
 
   private _showStack() {
-    if (!popoverSupported || this._stack?.matches(":popover-open")) {
+    if (!popoverSupported || !this._stack) {
       return;
     }
-    this._stack?.showPopover();
+    // Top-layer order is order of entry — re-enter so we paint above any
+    // dialog backdrop opened since the stack was first shown.
+    if (this._stack.matches(":popover-open")) {
+      this._stack.hidePopover();
+    }
+    this._stack.showPopover();
   }
 
   private _hideStack() {
