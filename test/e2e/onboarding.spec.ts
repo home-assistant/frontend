@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { demoConfig } from "../../src/fake_data/demo_config";
 import {
   completeAnalytics,
   completeCoreConfig,
   createOwner,
   expectDefaultDashboard,
   finishIntegrations,
+  onboardingData,
   openOnboarding,
   setupOnboardingMocks,
 } from "./app/src/onboarding";
@@ -25,21 +27,16 @@ test("completes onboarding and opens the default dashboard", async ({
   await test.step("finish integrations", () => finishIntegrations(page));
   await test.step("open default dashboard", () => expectDefaultDashboard(page));
 
-  expect(calls.user).toMatchObject({
-    name: "Test Owner",
-    username: "test-owner",
-    password: "test-password",
-    language: "en",
-  });
+  expect(calls.user).toMatchObject(onboardingData.user);
   expect(calls.coreConfig).toMatchObject({
     type: "config/core/update",
-    latitude: 52.3731,
-    longitude: 4.8903,
-    elevation: 2,
-    unit_system: "metric",
-    time_zone: "Europe/Amsterdam",
-    currency: "EUR",
-    country: "NL",
+    latitude: onboardingData.location.latitude,
+    longitude: onboardingData.location.longitude,
+    elevation: onboardingData.location.elevation,
+    unit_system: onboardingData.location.unitSystem,
+    time_zone: onboardingData.location.timeZone,
+    currency: onboardingData.location.currency,
+    country: onboardingData.location.country,
   });
   expect(calls.coreConfigCompleted).toBe(true);
   expect(calls.analyticsPreferences).toMatchObject({
@@ -51,7 +48,7 @@ test("completes onboarding and opens the default dashboard", async ({
     type: "frontend/set_system_data",
     key: "core",
     value: {
-      onboarded_version: "DEMO",
+      onboarded_version: demoConfig.version,
       onboarded_date: expect.any(String),
     },
   });

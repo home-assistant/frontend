@@ -18,6 +18,24 @@ export interface OnboardingCalls {
   integration?: Record<string, unknown>;
 }
 
+export const onboardingData = {
+  user: {
+    name: "Test Owner",
+    username: "test-owner",
+    password: "test-password",
+    language: "en",
+  },
+  location: {
+    latitude: 52.3731,
+    longitude: 4.8903,
+    elevation: 2,
+    country: "NL",
+    currency: "EUR",
+    timeZone: "Europe/Amsterdam",
+    unitSystem: "metric",
+  },
+} as const;
+
 const onboardingSteps = [
   { step: "user", done: false },
   { step: "core_config", done: false },
@@ -31,7 +49,7 @@ const currentUser = {
   is_admin: true,
   is_owner: true,
   mfa_modules: [],
-  name: "Test Owner",
+  name: onboardingData.user.name,
 };
 
 const subscriptionResults: Record<string, unknown> = {
@@ -201,10 +219,10 @@ export async function createOwner(page: Page) {
 
   const inputs = page.locator("onboarding-create-user ha-input >> input");
   await expect(inputs).toHaveCount(4, { timeout: PANEL_TIMEOUT });
-  await inputs.nth(0).fill("Test Owner");
-  await inputs.nth(1).fill("test-owner");
-  await inputs.nth(2).fill("test-password");
-  await inputs.nth(3).fill("test-password");
+  await inputs.nth(0).fill(onboardingData.user.name);
+  await inputs.nth(1).fill(onboardingData.user.username);
+  await inputs.nth(2).fill(onboardingData.user.password);
+  await inputs.nth(3).fill(onboardingData.user.password);
   await page
     .locator("onboarding-create-user")
     .getByRole("button", { name: "Create account", exact: true })
@@ -214,23 +232,23 @@ export async function createOwner(page: Page) {
 export async function completeCoreConfig(page: Page) {
   const location = page.locator("onboarding-location");
   await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
-  await location.evaluate((element) => {
+  await location.evaluate((element, locationData) => {
     element.dispatchEvent(
       new CustomEvent("value-changed", {
         bubbles: true,
         composed: true,
         detail: {
           value: {
-            location: [52.3731, 4.8903],
-            country: "NL",
-            elevation: "2",
-            timezone: "Europe/Amsterdam",
-            currency: "EUR",
+            location: [locationData.latitude, locationData.longitude],
+            country: locationData.country,
+            elevation: String(locationData.elevation),
+            timezone: locationData.timeZone,
+            currency: locationData.currency,
           },
         },
       })
     );
-  });
+  }, onboardingData.location);
 }
 
 export async function completeAnalytics(page: Page) {
