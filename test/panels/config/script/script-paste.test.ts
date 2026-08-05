@@ -4,6 +4,7 @@ import "../../../../src/panels/config/script/manual-script-editor";
 import type { HaManualScriptEditor } from "../../../../src/panels/config/script/manual-script-editor";
 import { createMockHass } from "../../../fixtures/hass";
 import { showPasteReplaceDialog } from "../../../../src/panels/config/automation/paste-replace-dialog/show-dialog-paste-replace";
+import { PASTED_CONFIG_TOAST_ID } from "../../../../src/panels/config/automation/ha-manual-editor-mixin";
 
 const pasteCases = [
   {
@@ -163,6 +164,8 @@ describe("manual automation paste", () => {
           once: true,
         });
       });
+      const notification = vi.fn();
+      el.addEventListener("hass-notification", notification);
 
       // Call the protected method through `any` to avoid full DOM lifecycle.
       await (el as any).handlePaste(makePasteEvent(paste));
@@ -171,6 +174,9 @@ describe("manual automation paste", () => {
 
       const ev = await valueChanged;
       expect(ev.detail.value).toEqual(expected);
+      expect(notification.mock.calls[0][0].detail.id).toBe(
+        PASTED_CONFIG_TOAST_ID
+      );
     }
   );
 });

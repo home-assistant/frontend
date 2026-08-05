@@ -60,14 +60,6 @@ const mountManager = async () => {
   return host.shadowRoot!.querySelector("notification-manager")!;
 };
 
-const deferred = () => {
-  let resolve: () => void;
-  const promise = new Promise<void>((res) => {
-    resolve = res;
-  });
-  return { promise, resolve: resolve! };
-};
-
 afterEach(() => {
   host?.remove();
   host = undefined;
@@ -81,9 +73,12 @@ describe("notification-manager", () => {
     await manager.showDialog({ message: "Configuration saved" });
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
     expect(toast.labelText).toBe("Configuration saved");
     expect(toast.timeoutMs).toBe(4000);
-    expect(toast.bottomOffset).toBe(0);
+    expect(
+      stack.style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("0px");
     expect(toast.show).toHaveBeenCalledOnce();
   });
 
@@ -98,21 +93,34 @@ describe("notification-manager", () => {
     });
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
+    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
     expect(toast.timeoutMs).toBe(-1);
-    expect(toast.bottomOffset).toBe(16);
+    expect(
+      stack.style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("16px");
 
     manager.shadowRoot!.querySelector<HTMLElement>("ha-icon-button")!.click();
     expect(toast.hide).toHaveBeenCalledWith("dismiss");
   });
 
-  it("clears the current notification when duration is zero", async () => {
+  it("clears the latest anonymous notification when duration is zero without an ID", async () => {
     const manager = await mountManager();
     await manager.showDialog({ message: "First message", duration: -1 });
+    await manager.showDialog({
+      id: "identified",
+      message: "Identified message",
+      duration: -1,
+    });
+    await manager.showDialog({ message: "Second message", duration: -1 });
 
     await manager.showDialog({ message: "", duration: 0 });
     await manager.updateComplete;
 
-    expect(manager.shadowRoot!.querySelector("ha-toast")).toBeNull();
+    expect(
+      [...manager.shadowRoot!.querySelectorAll("ha-toast")].map(
+        (toast) => toast.labelText
+      )
+    ).toEqual(["First message", "Identified message"]);
   });
 
   it.each([
@@ -190,6 +198,32 @@ describe("notification-manager", () => {
     expect(primary).toHaveBeenCalledOnce();
   });
 
+  it("invokes the action belonging to the selected stacked toast", async () => {
+    const manager = await mountManager();
+    const firstAction = vi.fn();
+    const secondAction = vi.fn();
+    await manager.showDialog({
+      id: "first",
+      message: "First",
+      action: { action: firstAction, text: "First action" },
+      duration: -1,
+    });
+    await manager.showDialog({
+      id: "second",
+      message: "Second",
+      action: { action: secondAction, text: "Second action" },
+      duration: -1,
+    });
+
+    manager.shadowRoot!.querySelectorAll("ha-button")[1].click();
+
+    expect(secondAction).toHaveBeenCalledOnce();
+    expect(firstAction).not.toHaveBeenCalled();
+    expect(
+      manager.shadowRoot!.querySelectorAll("ha-toast")[1].hide
+    ).toHaveBeenCalledWith("action");
+  });
+
   it("keeps a same-ID toast visible while replacing its content", async () => {
     const manager = await mountManager();
     await manager.showDialog({ id: "status", message: "First" });
@@ -202,31 +236,114 @@ describe("notification-manager", () => {
     expect(toast.labelText).toBe("Second");
   });
 
-  it("hides a toast before replacing it with a different ID", async () => {
+  it("stacks toasts with different IDs", async () => {
     const manager = await mountManager();
     await manager.showDialog({ id: "first", message: "First" });
-    const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-    vi.mocked(toast.hide).mockClear();
-
     await manager.showDialog({ id: "second", message: "Second" });
 
-    expect(toast.hide).toHaveBeenCalledOnce();
-    expect(toast.labelText).toBe("Second");
+    const toasts = manager.shadowRoot!.querySelectorAll("ha-toast");
+    expect(toasts).toHaveLength(2);
+    expect([...toasts].map((toast) => toast.labelText)).toEqual([
+      "First",
+      "Second",
+    ]);
   });
 
-  it("ignores a stale replacement after a newer notification starts", async () => {
+  it("uses the largest bottom offset for the notification stack", async () => {
+    const manager = await mountManager();
+    await manager.showDialog({
+      id: "first",
+      message: "First",
+      bottomOffset: 16,
+    });
+    await manager.showDialog({
+      id: "second",
+      message: "Second",
+      bottomOffset: 48,
+    });
+
+    expect(
+      manager
+        .shadowRoot!.querySelector<HTMLElement>(".stack")!
+        .style.getPropertyValue("--notification-stack-bottom-offset")
+    ).toBe("48px");
+  });
+
+  it("closes only the toast matching a duration-zero ID", async () => {
     const manager = await mountManager();
     await manager.showDialog({ id: "first", message: "First" });
+    await manager.showDialog({ id: "second", message: "Second" });
+
+    await manager.showDialog({ id: "first", message: "", duration: 0 });
+    await manager.updateComplete;
+
+    const toasts = manager.shadowRoot!.querySelectorAll("ha-toast");
+    expect(toasts).toHaveLength(1);
+    expect(toasts[0].labelText).toBe("Second");
+  });
+
+  it("keeps a same-ID update that arrives while the previous toast closes", async () => {
+    const manager = await mountManager();
+    await manager.showDialog({ id: "status", message: "First" });
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-    const delayedHide = deferred();
-    vi.mocked(toast.hide).mockReturnValueOnce(delayedHide.promise);
+    let finishHide: () => void;
+    vi.mocked(toast.hide).mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          finishHide = resolve;
+        })
+    );
 
-    const staleShow = manager.showDialog({ id: "second", message: "Second" });
-    await manager.showDialog({ id: "third", message: "Third" });
-    delayedHide.resolve();
-    await staleShow;
+    const closing = manager.showDialog({
+      id: "status",
+      message: "",
+      duration: 0,
+    });
+    await Promise.resolve();
+    await manager.showDialog({ id: "status", message: "Second" });
+    finishHide!();
+    await closing;
+    await manager.updateComplete;
 
-    expect(toast.labelText).toBe("Third");
+    const remainingToast = manager.shadowRoot!.querySelector("ha-toast")!;
+    expect(remainingToast.labelText).toBe("Second");
+  });
+
+  it("keeps a frontend update visible throughout server startup", async () => {
+    const manager = await mountManager();
+    await manager.showDialog({
+      id: "frontend-update-available",
+      message: "Frontend update available",
+      duration: -1,
+    });
+    await manager.showDialog({
+      id: "server-startup",
+      message: "Home Assistant is starting",
+      duration: -1,
+    });
+    await manager.showDialog({
+      id: "server-startup",
+      message: "Starting recorder",
+      duration: -1,
+    });
+
+    expect(
+      [...manager.shadowRoot!.querySelectorAll("ha-toast")].map(
+        (toast) => toast.labelText
+      )
+    ).toEqual(["Frontend update available", "Starting recorder"]);
+
+    await manager.showDialog({
+      id: "server-startup",
+      message: "Home Assistant started",
+      duration: 5000,
+    });
+
+    expect(
+      [...manager.shadowRoot!.querySelectorAll("ha-toast")].map(
+        (toast) => toast.labelText
+      )
+    ).toEqual(["Frontend update available", "Home Assistant started"]);
   });
 
   it("clears rendered state after the toast closes", async () => {
