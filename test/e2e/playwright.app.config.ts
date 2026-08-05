@@ -6,7 +6,7 @@ const APP_BASE_URL = `http://localhost:${APP_PORT}`;
 
 export default defineConfig({
   testDir: ".",
-  testMatch: "app.spec.ts",
+  testMatch: ["app.spec.ts", "onboarding.spec.ts"],
 
   timeout: 60_000,
   expect: { timeout: 15_000 },
