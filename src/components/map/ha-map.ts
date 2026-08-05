@@ -909,10 +909,10 @@ export class HaMap extends ReactiveElement {
     .leaflet-control-scale-line {
       font-size: var(--ha-font-size-s);
       font-family: var(--ha-font-family-body);
-      color: var(--ha-color-black) !important;
+      color: var(--ha-color-on-surface-default) !important;
       background: color-mix(
         in srgb,
-        var(--ha-color-white) 80%,
+        var(--ha-color-surface-default) 80%,
         transparent
       ) !important;
       text-shadow: none !important;
