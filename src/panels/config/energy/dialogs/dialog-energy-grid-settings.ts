@@ -2,6 +2,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
@@ -593,7 +597,9 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _handleImportCostTypeChanged(ev: Event) {
+  private _handleImportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
     this._importCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
@@ -605,7 +611,9 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _handleExportCostTypeChanged(ev: Event) {
+  private _handleExportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
     this._exportCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
@@ -630,9 +638,10 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCostChanged(ev: Event) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+  private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price: value };
     this._updateFormDirtyState();
   }
@@ -653,15 +662,16 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCompensationChanged(ev: Event) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+  private _numberCompensationChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price_export: value };
     this._updateFormDirtyState();
   }
 
   private _handlePowerConfigChanged(
-    ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
+    ev: HASSDomEvent<HASSDomEvents["power-config-changed"]>
   ) {
     this._powerType = ev.detail.powerType;
     this._powerConfig = ev.detail.powerConfig;

@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
@@ -291,7 +292,7 @@ export class DialogEnergySolarSettings
             );
   }
 
-  private _handleForecastChanged(ev: Event) {
+  private _handleForecastChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
     this._forecast = (ev.currentTarget as HaRadioGroup).value === "true";
     this._updateFormDirtyState();
   }

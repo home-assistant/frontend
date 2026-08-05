@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -361,12 +362,12 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _toggleCloud(ev: Event) {
+  private _toggleCloud(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
     this._cloudChecked = (ev.currentTarget as HaSwitch).checked;
     this._showCustomExternalUrl = !this._cloudChecked;
   }
 
-  private _toggleInternalAutomatic(ev: Event) {
+  private _toggleInternalAutomatic(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
     this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
   }
 
