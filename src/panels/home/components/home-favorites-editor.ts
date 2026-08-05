@@ -7,6 +7,7 @@ import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "./home-favorite-entity-list-item";
 
@@ -19,6 +20,11 @@ export class HomeFavoritesEditor extends LitElement {
   @property() public label?: string;
 
   @property() public helper?: string;
+
+  @property({ attribute: false })
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   protected render() {
     return html`
@@ -50,10 +56,14 @@ export class HomeFavoritesEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         add-button
-        .addButtonLabel=${this.hass.localize(
-          "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-        )}
+        .addButtonLabel=${
+          this.addButtonLabel ??
+          this.hass.localize(
+            "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
+          )
+        }
         .excludeEntities=${this.favorites}
+        .entityFilter=${this.entityFilter}
         @value-changed=${this._add}
       ></ha-entity-picker>
     `;

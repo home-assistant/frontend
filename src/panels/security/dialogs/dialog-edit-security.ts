@@ -1,5 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
-import { css, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -7,13 +8,31 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon";
 import type { SecurityFrontendSystemData } from "../../../data/frontend";
-import { internationalizationContext } from "../../../data/context";
+import {
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { ValueChangedEvent } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import "../../home/components/home-favorites-editor";
 import "../components/security-alerts-editor";
+import { isSecurityPanelEntity } from "../strategies/security-view-strategy";
 import type { EditSecurityDialogParams } from "./show-dialog-edit-security";
+
+type SecurityDialogHass = Pick<
+  HomeAssistant,
+  | "states"
+  | "entities"
+  | "devices"
+  | "areas"
+  | "floors"
+  | "language"
+  | "translationMetadata"
+  | "localize"
+>;
 
 @customElement("dialog-edit-security")
 export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontendSystemData>()(
@@ -27,6 +46,31 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  private _hassData?: SecurityDialogHass;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("_states") ||
+      changedProps.has("_registries") ||
+      changedProps.has("_i18n")
+    ) {
+      this._hassData = {
+        states: this._states,
+        ...this._registries,
+        ...this._i18n,
+      };
+    }
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (!this.params) {
@@ -34,6 +78,9 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
     }
     this._state = {
       ...this.params.config,
+      ...(this.params.config.favorite_entities
+        ? { favorite_entities: [...this.params.config.favorite_entities] }
+        : {}),
       alert_entities: this.params.config.alert_entities
         ? [...this.params.config.alert_entities]
         : [],
@@ -86,6 +133,30 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
         expanded
         no-collapse
         .header=${this._i18n.localize(
+          "ui.panel.security.editor.favorite_entities"
+        )}
+        .secondary=${this._i18n.localize(
+          "ui.panel.security.editor.favorite_entities_description"
+        )}
+      >
+        <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
+        <div class="expansion-content">
+          <home-favorites-editor
+            .hass=${this._hassData}
+            .favorites=${this._state?.favorite_entities ?? []}
+            .entityFilter=${this._alertEntityFilter}
+            .addButtonLabel=${this._i18n.localize(
+              "ui.panel.security.editor.add_favorite_entity"
+            )}
+            @value-changed=${this._favoriteEntitiesChanged}
+          ></home-favorites-editor>
+        </div>
+      </ha-expansion-panel>
+      <ha-expansion-panel
+        outlined
+        expanded
+        no-collapse
+        .header=${this._i18n.localize(
           "ui.panel.security.editor.active_alert_entities"
         )}
         .secondary=${this._i18n.localize(
@@ -113,6 +184,19 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
     this._updateDirtyState(this._state);
   }
 
+  private _favoriteEntitiesChanged(
+    ev: ValueChangedEvent<SecurityFrontendSystemData["favorite_entities"]>
+  ): void {
+    this._state = {
+      ...this._state,
+      favorite_entities: ev.detail.value,
+    };
+    this._updateDirtyState(this._state);
+  }
+
+  private _alertEntityFilter = (entity: HassEntity) =>
+    this._hassData ? isSecurityPanelEntity(this._hassData, entity) : false;
+
   private async _save(): Promise<void> {
     if (!this.params || !this._state) return;
 
@@ -121,6 +205,9 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
     try {
       await this.params.saveConfig({
         ...this.params.config,
+        favorite_entities: this._state.favorite_entities?.length
+          ? this._state.favorite_entities
+          : undefined,
         alert_entities: this._state.alert_entities?.length
           ? this._state.alert_entities
           : undefined,
@@ -146,6 +233,10 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
         --expansion-panel-content-padding: 0;
         border-radius: var(--ha-border-radius-md);
         --ha-card-border-radius: var(--ha-border-radius-md);
+      }
+
+      ha-expansion-panel + ha-expansion-panel {
+        margin-top: var(--ha-space-4);
       }
 
       .expansion-content {

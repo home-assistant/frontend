@@ -183,6 +183,7 @@ class PanelSecurity extends LitElement {
         strategy: {
           ...SECURITY_LOVELACE_VIEW_CONFIG.strategy,
           alert_entities: this._config?.alert_entities,
+          favorite_entities: this._config?.favorite_entities,
         },
       },
       this.hass

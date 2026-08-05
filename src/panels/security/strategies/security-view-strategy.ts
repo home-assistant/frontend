@@ -25,6 +25,7 @@ import { computeSecurityAlertCardConfig } from "./security-alerts";
 export interface SecurityViewStrategyConfig {
   type: "security";
   alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
 }
 
 export const securityEntityFilters: EntityFilter[] = [
@@ -163,6 +164,30 @@ export class SecurityViewStrategy extends ReactiveElement {
     );
 
     const entities = findEntities(allEntities, securityFilters);
+
+    const favoriteEntities = (config.favorite_entities ?? []).filter(
+      (entityId) =>
+        hass.states[entityId] &&
+        isSecurityPanelEntity(hass, hass.states[entityId])
+    );
+
+    if (favoriteEntities.length > 0) {
+      const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+      sections.push({
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.favorites"
+            ),
+            heading_style: "title",
+          },
+          ...favoriteEntities.map(computeTileCard),
+        ],
+      });
+    }
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
