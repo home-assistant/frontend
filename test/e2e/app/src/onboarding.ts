@@ -86,7 +86,14 @@ const commandResults: Record<string, unknown> = {
 };
 
 const sendResult = (socket: WebSocketRoute, id: number, result: unknown) => {
-  socket.send(JSON.stringify({ id, type: "result", success: true, result }));
+  socket.send(
+    JSON.stringify({
+      id,
+      type: "result",
+      success: true,
+      result: result ?? null,
+    })
+  );
 };
 
 const handleWebSocketMessage = (
