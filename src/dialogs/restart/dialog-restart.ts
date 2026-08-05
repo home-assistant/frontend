@@ -36,10 +36,8 @@ import {
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, ServiceCallRequest } from "../../types";
 import { showToast } from "../../util/toast";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../generic/show-dialog-box";
+import { showAlertDialog } from "../generic/show-dialog-box";
+import { showConfirmRestartDialog } from "./show-dialog-confirm-restart";
 import { showRestartWaitDialog } from "./show-dialog-restart";
 
 @customElement("dialog-restart")
@@ -354,7 +352,7 @@ class DialogRestart extends LitElement {
 
     this._loadingBackupInfo = false;
 
-    const confirmed = await showConfirmationDialog(this, {
+    const confirmed = await showConfirmRestartDialog(this, {
       title: this.hass.localize(`ui.dialogs.restart.${action}.confirm_title`),
       text: html`${this.hass.localize(
         `ui.dialogs.restart.${action}.confirm_description`
@@ -366,7 +364,6 @@ class DialogRestart extends LitElement {
       confirmText: this.hass.localize(
         `ui.dialogs.restart.${action}.confirm_action${backupState === "idle" ? "" : "_backup"}`
       ),
-      destructive: true,
     });
 
     if (!confirmed) {
