@@ -17,6 +17,9 @@ const rspackConfigPath = fileURLToPath(
   new URL("./rspack.config.cjs", import.meta.url)
 );
 
+// Applies everywhere, including the files exempted from the history rule below.
+const restrictedSyntax = ["LabeledStatement", "WithStatement"];
+
 export default tseslint.config(
   js.configs.recommended,
   eslintConfigPrettier,
@@ -113,8 +116,7 @@ export default tseslint.config(
       "no-restricted-globals": [2, "event"],
       "no-restricted-syntax": [
         "error",
-        "LabeledStatement",
-        "WithStatement",
+        ...restrictedSyntax,
         {
           selector:
             "CallExpression[callee.property.name=/^(push|replace)State$/]",
@@ -247,7 +249,7 @@ export default tseslint.config(
       "test/**/*.ts",
     ],
     rules: {
-      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+      "no-restricted-syntax": ["error", ...restrictedSyntax],
     },
   },
   {

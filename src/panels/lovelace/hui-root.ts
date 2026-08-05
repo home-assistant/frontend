@@ -27,7 +27,6 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -76,6 +75,7 @@ import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-di
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
+import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -889,32 +889,42 @@ class HUIRoot extends LitElement {
   };
 
   private _goBack(): void {
-    const views = this.lovelace?.config.views ?? [];
-    // Falling back to the first view only makes sense when it is a real view.
-    const fallbackPath = views[0]?.subview ? undefined : this.route?.prefix;
+    const configuredBackPath = this._configuredBackPath;
+    if (configuredBackPath) {
+      // The dashboard author picked this destination, it wins over wherever
+      // the user came from.
+      navigate(configuredBackPath, { replace: true });
+      return;
+    }
 
-    goBack(this._backPath ?? fallbackPath);
+    const views = this.lovelace?.config.views ?? [];
+    // Falling back to the dashboard root only makes sense when its first view
+    // is a real one.
+    goBack(views[0]?.subview ? undefined : this.route?.prefix);
   }
 
   private _handleBackClick(ev: MouseEvent): void {
-    if (this._backPath && !isNavigationClick(ev)) {
-      return;
-    }
-    this._goBack();
+    handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
-  private get _backPath(): string | undefined {
+  /** Destination set in the dashboard config, if any. */
+  private get _configuredBackPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    const backPath = sanitizeNavigationPath(
-      curViewConfig?.back_path ?? this.backPath
-    );
+    return sanitizeNavigationPath(curViewConfig?.back_path ?? this.backPath);
+  }
 
-    if (backPath) {
-      return backPath;
+  private get _backPath(): string | undefined {
+    if (this._configuredBackPath) {
+      return this._configuredBackPath;
     }
+
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
     return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
 

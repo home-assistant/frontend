@@ -4,9 +4,8 @@ import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
-import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { goBack } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
+import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyleScrollbar } from "../resources/styles";
@@ -76,20 +75,7 @@ class HassSubpage extends LitElement {
   }
 
   private _backTapped(ev: MouseEvent): void {
-    const backPath = sanitizeNavigationPath(this.backPath);
-
-    // Middle click, ctrl and cmd open the parent in a new tab, let the anchor
-    // handle those.
-    if (backPath && !isNavigationClick(ev)) {
-      return;
-    }
-
-    if (this.backCallback) {
-      this.backCallback();
-      return;
-    }
-
-    goBack(backPath);
+    handleBackClick(ev, this.backPath, this.backCallback);
   }
 
   static get styles(): CSSResultGroup {

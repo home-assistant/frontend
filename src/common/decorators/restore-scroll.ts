@@ -1,5 +1,5 @@
 import type { ReactiveElement } from "lit";
-import { updateHistoryState } from "../navigate";
+import { getHistoryState, updateHistoryState } from "../navigate";
 import { throttle } from "../util/throttle";
 
 const throttleReplaceState = throttle((value) => {
@@ -40,7 +40,8 @@ export function restoreScroll(selector: string) {
       newDescriptor = {
         get(this: ReactiveElement) {
           return (
-            this[`__${String(propertyKey)}`] || history.state?.scrollPosition
+            this[`__${String(propertyKey)}`] ||
+            getHistoryState()?.scrollPosition
           );
         },
         set(this: ReactiveElement, value) {

@@ -40,7 +40,11 @@ import {
   getEntityEntryContext,
 } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate, updateHistoryState } from "../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
@@ -270,7 +274,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   private _setView(view: MoreInfoView) {
     updateHistoryState({
       dialogParams: {
-        ...history.state?.dialogParams,
+        ...getHistoryState()?.dialogParams,
         view,
       },
     });

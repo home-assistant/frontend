@@ -19,6 +19,12 @@ export interface NavigateOptions {
 const DIALOG_WAIT_TIMEOUT = 500;
 
 /**
+ * State of the current history entry. Always read through this, the app writes
+ * to the main window and a panel running in an iframe has its own history.
+ */
+export const getHistoryState = (): any => mainWindow.history.state;
+
+/**
  * Merge into the current history entry's state, keeping what is already there.
  * Entries carry the app's own bookkeeping (`from`, `root`, dialog state), so
  * they must never be replaced wholesale.
@@ -104,7 +110,19 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
       path
     );
   } else {
-    history.pushState({ ...options?.data, from: currentPath() }, "", path);
+    const { data } = options ?? {};
+    // Only objects survive being merged with `from`. Callers outside the app
+    // pass whatever they want, so keep anything else under a key rather than
+    // letting the spread mangle it.
+    const mergeable =
+      data === undefined || (typeof data === "object" && data !== null);
+    history.pushState(
+      mergeable
+        ? { ...data, from: currentPath() }
+        : { data, from: currentPath() },
+      "",
+      path
+    );
   }
 
   fireEvent(mainWindow, "location-changed", {
@@ -139,5 +157,5 @@ export const goBack = async (fallbackPath?: string): Promise<void> => {
     return;
   }
 
-  navigate(fallbackPath || "/", { replace: true });
+  await navigate(fallbackPath || "/", { replace: true });
 };
