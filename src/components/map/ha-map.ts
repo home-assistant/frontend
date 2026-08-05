@@ -917,6 +917,22 @@ export class HaMap extends ReactiveElement {
       ) !important;
       text-shadow: none !important;
     }
+    #map.forced-light .leaflet-control-scale-line {
+      color: var(--ha-color-neutral-05) !important;
+      background: color-mix(
+        in srgb,
+        var(--ha-color-white) 80%,
+        transparent
+      ) !important;
+    }
+    #map.forced-dark .leaflet-control-scale-line {
+      color: var(--ha-color-neutral-95) !important;
+      background: color-mix(
+        in srgb,
+        var(--ha-color-neutral-10) 80%,
+        transparent
+      ) !important;
+    }
     .leaflet-left .leaflet-control-scale {
       margin-left: 10px !important;
     }
