@@ -106,6 +106,7 @@ class HaPanelConfig extends HassRouterPage {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+        waitForReady: true,
       },
       labels: {
         tag: "ha-config-labels",
