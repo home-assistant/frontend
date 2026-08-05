@@ -2,7 +2,7 @@
 
 import { constants } from "node:zlib";
 import gulp from "gulp";
-import brotli from "gulp-brotli";
+import brotli from "../brotli.mjs";
 import paths from "../paths.cjs";
 import zopfli from "../zopfli.mjs";
 
