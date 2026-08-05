@@ -12,6 +12,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/radio/ha-radio-group";
 import "../../../../components/input/ha-input";
+import { domainToName } from "../../../../data/integration";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -234,7 +235,7 @@ export class DialogEnergySolarSettings
                             },
                             this.hass.auth.data.hassUrl
                           )}
-                        />${entry.title}
+                        />${entry.title || domainToName(this.hass.localize, entry.domain)}
                       </div>
                     </ha-checkbox>`
                 )}
