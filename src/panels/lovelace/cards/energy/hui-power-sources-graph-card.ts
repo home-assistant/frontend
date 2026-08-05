@@ -121,6 +121,7 @@ export class HuiPowerSourcesGraphCard
               this._legendData,
               this._yAxisFractionDigits
             )}
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
             !this._chartData.some((dataset) => dataset.data!.length)
