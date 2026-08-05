@@ -58,6 +58,8 @@ const CONFIG_PANEL_COMMANDS = [
   "search/related",
   "tag/list",
   "assist_pipeline/",
+  "config/entity_registry/settings/",
+  "slugify",
 ];
 
 @customElement("ha-demo")
