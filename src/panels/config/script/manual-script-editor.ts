@@ -33,7 +33,10 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showEditorToast } from "../automation/editor-toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
-import { ManualEditorMixin } from "../automation/ha-manual-editor-mixin";
+import {
+  ManualEditorMixin,
+  PASTED_CONFIG_TOAST_ID,
+} from "../automation/ha-manual-editor-mixin";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -335,6 +338,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
   protected showPastedToastWithUndo() {
     showEditorToast(this, {
+      id: PASTED_CONFIG_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.config.script.editor.paste_toast_message"
       ),
