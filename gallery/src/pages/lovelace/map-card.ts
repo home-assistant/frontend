@@ -175,26 +175,10 @@ const CONFIGS = [
     },
   },
   {
-    heading: "Scale ruler, top right",
+    heading: "Scale ruler",
     config: {
       type: "map",
-      scale_ruler: "top_right",
-      entities: ["zone.home"],
-    },
-  },
-  {
-    heading: "Scale ruler, bottom left",
-    config: {
-      type: "map",
-      scale_ruler: "bottom_left",
-      entities: ["zone.home"],
-    },
-  },
-  {
-    heading: "Scale ruler, bottom right",
-    config: {
-      type: "map",
-      scale_ruler: "bottom_right",
+      scale_ruler: true,
       entities: ["zone.home"],
     },
   },

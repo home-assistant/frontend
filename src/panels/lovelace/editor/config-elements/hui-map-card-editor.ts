@@ -31,10 +31,7 @@ import type {
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-selector/ha-selector-select";
 import "../../../../components/ha-switch";
-import {
-  MAP_CARD_MARKER_LABEL_MODES,
-  MAP_CARD_SCALE_RULER_POSITION,
-} from "../../../../components/map/ha-map";
+import { MAP_CARD_MARKER_LABEL_MODES } from "../../../../components/map/ha-map";
 import type { SelectSelector } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { THEME_MODES } from "../../../../types";
@@ -96,7 +93,7 @@ const cardConfigStruct = assign(
     dark_mode: optional(boolean()), // legacy option
     theme_mode: optional(string()),
     conditions: optional(any()),
-    scale_ruler: optional(string()),
+    scale_ruler: optional(boolean()),
   })
 );
 
@@ -149,22 +146,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                   selector: { number: { mode: "box", min: 0 } },
                 },
                 {
-                  name: "scale_ruler",
-                  selector: {
-                    select: {
-                      mode: "dropdown",
-                      options: MAP_CARD_SCALE_RULER_POSITION.map(
-                        (scaleRulerPosition) => ({
-                          value: scaleRulerPosition,
-                          label: localize(
-                            `ui.panel.lovelace.editor.card.map.scale_ruler_positions.${scaleRulerPosition}`
-                          ),
-                        })
-                      ),
-                    },
-                  },
-                },
-                {
                   name: "theme_mode",
                   selector: {
                     select: {
@@ -183,6 +164,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                   default: DEFAULT_HOURS_TO_SHOW,
                   selector: { number: { mode: "box", min: 0 } },
                 },
+                { name: "scale_ruler", selector: { boolean: {} } },
                 { name: "auto_fit", selector: { boolean: {} } },
                 { name: "fit_zones", selector: { boolean: {} } },
                 { name: "cluster", default: true, selector: { boolean: {} } },
