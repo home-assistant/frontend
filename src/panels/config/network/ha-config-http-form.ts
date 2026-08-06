@@ -462,7 +462,7 @@ class HaConfigHttpForm extends LitElement {
             "ui.panel.config.network.http.restart_address.text"
           )}
         </p>
-        <a href=${url} rel="noreferrer noopener">${url}</a>
+        <a href=${url} target="_blank" rel="noreferrer noopener">${url}</a>
         <p class="dialog-note">
           ${this.hass.localize(
             "ui.panel.config.network.http.restart_address.note"
