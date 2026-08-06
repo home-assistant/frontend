@@ -124,22 +124,26 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected update(changedProps: PropertyValues<this>) {
-    if (
-      this.hass?.states &&
-      this.hass.config &&
-      this.hass.services &&
-      this._databaseMigration === false
-    ) {
+    const removingLaunchScreen =
+      !!this.hass?.states &&
+      !!this.hass.config &&
+      !!this.hass.services &&
+      this._databaseMigration === false;
+    if (removingLaunchScreen) {
       this.render = this.renderHass;
       this.update = super.update;
       // partial-panel-resolver removes the launch screen after the first panel
       // is ready. Native apps request instant removal because their own splash
       // screen covers the frontend until frontend/loaded is sent.
-      // The launch screen is gone now, so it's safe to surface the HTTP pending
-      // config dialog; showing it earlier gets it torn out by this swap.
-      this.checkHttpPendingConfig();
     }
     super.update(changedProps);
+    if (removingLaunchScreen) {
+      // Surface the HTTP pending config dialog only after super.update() has
+      // committed the render swap above, which clears the launch screen from
+      // the shadow root. Appending the dialog before that render would let it
+      // tear the freshly-added dialog straight back out of the DOM.
+      this.checkHttpPendingConfig();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
