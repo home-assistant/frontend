@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
@@ -14,10 +15,12 @@ import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
+  subscribeFrontendSystemData,
   type HomeFrontendSystemData,
   type SecurityFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
@@ -36,7 +39,7 @@ import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
 import { hasLegacyOverviewPanel } from "../../data/panel";
 
 @customElement("ha-panel-home")
-class PanelHome extends LitElement {
+class PanelHome extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -56,6 +59,25 @@ class PanelHome extends LitElement {
   @query(".banner") private _banner?: HTMLElement;
 
   private _loadConfigPromise?: Promise<void>;
+
+  public hassSubscribe() {
+    return [
+      subscribeFrontendSystemData(
+        this.hass.connection,
+        "security",
+        ({ value }) => {
+          const config = value || {};
+          if (deepEqual(config, this._securityConfig)) {
+            return;
+          }
+          this._securityConfig = config;
+          if (this.hasUpdated) {
+            this._setLovelace();
+          }
+        }
+      ),
+    ];
+  }
 
   private get _showBanner(): boolean {
     // Don't show if already dismissed
