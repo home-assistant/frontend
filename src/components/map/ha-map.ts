@@ -4,6 +4,7 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type {
   Circle,
   CircleMarker,
+  Control,
   LatLngExpression,
   LatLngTuple,
   Layer,
@@ -48,6 +49,7 @@ import type {
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+import { UNIT_KM } from "../../common/const";
 
 declare global {
   // for fire event
@@ -147,6 +149,9 @@ export class HaMap extends ReactiveElement {
   @property({ attribute: "cluster-markers", type: Boolean })
   public clusterMarkers = true;
 
+  @property({ attribute: "scale-ruler", type: Boolean })
+  public scaleRuler = false;
+
   @state() private _loaded = false;
 
   @query("#map") private _mapElement?: HTMLElement;
@@ -166,6 +171,8 @@ export class HaMap extends ReactiveElement {
   private _mapFocusZones: (Marker | Circle)[] = [];
 
   private _mapCluster: MarkerClusterGroup | undefined;
+
+  private _scaleRulerControl?: Control.Scale;
 
   private _mapPaths: (Polyline | CircleMarker)[] = [];
 
@@ -206,6 +213,8 @@ export class HaMap extends ReactiveElement {
       this.Leaflet = undefined;
     }
 
+    // the control went away with the map, so don't hold on to it
+    this._scaleRulerControl = undefined;
     this._pendingFit = undefined;
     this._loaded = false;
 
@@ -241,6 +250,16 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("clusterMarkers")) {
       this._drawEntities();
+    }
+
+    const oldConfig = changedProps.get("_config") as HassConfig | undefined;
+    if (
+      changedProps.has("_loaded") ||
+      changedProps.has("scaleRuler") ||
+      (changedProps.has("_config") &&
+        oldConfig?.unit_system?.length !== this._config?.unit_system?.length)
+    ) {
+      this._drawScaleRuler();
     }
 
     if (changedProps.has("_loaded") || changedProps.has("paths")) {
@@ -806,6 +825,25 @@ export class HaMap extends ReactiveElement {
     this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
+  private _drawScaleRuler(): void {
+    if (this._scaleRulerControl) {
+      this.leafletMap?.removeControl(this._scaleRulerControl);
+      this._scaleRulerControl = undefined;
+    }
+
+    if (!this.scaleRuler || !this.leafletMap || !this.Leaflet) {
+      return;
+    }
+
+    const metric = this._config?.unit_system?.length === UNIT_KM;
+    this._scaleRulerControl = this.Leaflet.control.scale({
+      position: "bottomleft",
+      metric,
+      imperial: !metric,
+    });
+    this._scaleRulerControl.addTo(this.leafletMap);
+  }
+
   private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {
     const markerSizeVarValue =
       computedStyles.getPropertyValue("--ha-marker-size");
@@ -885,6 +923,37 @@ export class HaMap extends ReactiveElement {
     .leaflet-top,
     .leaflet-bottom {
       z-index: 1 !important;
+    }
+    .leaflet-control-scale {
+      cursor: unset !important;
+    }
+    .leaflet-control-scale-line {
+      --scale-ruler-color: var(--ha-color-on-surface-default);
+      --scale-ruler-surface: var(--ha-color-surface-default);
+      font-size: var(--ha-font-size-s);
+      font-family: var(--ha-font-family-body);
+      color: var(--scale-ruler-color) !important;
+      background: color-mix(
+        in srgb,
+        var(--scale-ruler-surface) 80%,
+        transparent
+      ) !important;
+      text-shadow: none !important;
+    }
+    /* the theme tokens follow the page, so forced modes need the opposite values */
+    #map.forced-light .leaflet-control-scale-line {
+      --scale-ruler-color: var(--ha-color-neutral-05);
+      --scale-ruler-surface: var(--ha-color-white);
+    }
+    #map.forced-dark .leaflet-control-scale-line {
+      --scale-ruler-color: var(--ha-color-neutral-95);
+      --scale-ruler-surface: var(--ha-color-neutral-10);
+    }
+    .leaflet-left .leaflet-control-scale {
+      margin-left: 10px !important;
+    }
+    .leaflet-bottom .leaflet-control-scale {
+      margin-bottom: 10px !important;
     }
     .leaflet-tooltip {
       padding: 8px;

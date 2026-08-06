@@ -422,6 +422,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   theme_mode?: ThemeMode;
   cluster?: boolean;
   conditions?: Condition[];
+  scale_ruler?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

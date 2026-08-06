@@ -174,6 +174,14 @@ const CONFIGS = [
       entities: ["zone.bushfire"],
     },
   },
+  {
+    heading: "Scale ruler",
+    config: {
+      type: "map",
+      scale_ruler: true,
+      entities: ["zone.home"],
+    },
+  },
 ] satisfies DemoCardConfig<MapCardConfig>[];
 
 @customElement("demo-lovelace-map-card")

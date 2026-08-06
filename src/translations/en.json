@@ -10201,6 +10201,7 @@
                 "light": "Light",
                 "dark": "Dark"
               },
+              "scale_ruler": "Scale ruler",
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
               "fit_zones": "Fit zones",
