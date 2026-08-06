@@ -4918,9 +4918,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/dev-server@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@rspack/dev-server@npm:2.1.0"
+"@rspack/dev-server@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@rspack/dev-server@npm:2.2.0"
   dependencies:
     "@rspack/dev-middleware": "npm:^2.0.3"
   peerDependencies:
@@ -4929,7 +4929,7 @@ __metadata:
   peerDependenciesMeta:
     selfsigned:
       optional: true
-  checksum: 10/402d4f96c60beaba354081a36b053c3cf7c1dda7fddab791031dc4206b9873b98437895d5a6a68247e07cb8a5922a1770143c560772dfdaa00ba90a5396251d8
+  checksum: 10/edfc57223fad64c43c96be95b0b6650194ac2e02d929bef649d524faa9c618233afe8f970ac2e21c77e1b92f6c65dac20f06817e73a9bd661f43c73057ae6b6b
   languageName: node
   linkType: hard
 
@@ -9928,7 +9928,7 @@ __metadata:
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.6.1"
     "@rspack/core": "npm:2.1.7"
-    "@rspack/dev-server": "npm:2.1.0"
+    "@rspack/dev-server": "npm:2.2.0"
     "@swc/helpers": "npm:0.5.23"
     "@thomasloven/round-slider": "npm:0.6.0"
     "@tsparticles/engine": "npm:4.3.2"
