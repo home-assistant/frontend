@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/input/ha-input";
 import "../../../../components/radio/ha-radio-group";
@@ -77,37 +78,47 @@ class HaInputBooleanForm extends LitElement {
           )}
           .disabled=${this.disabled}
         ></ha-icon-picker>
-        <ha-radio-group
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.input_boolean.initial"
+        <ha-expansion-panel
+          header=${this.hass.localize(
+            "ui.dialogs.helper_settings.generic.more_options"
           )}
-          .value=${
-            this._initial === undefined
-              ? "restore"
-              : this._initial
-                ? "on"
-                : "off"
-          }
-          .disabled=${this.disabled}
-          name="initial"
-          @change=${this._initialChanged}
+          outlined
         >
-          <ha-radio-option value="restore">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_boolean.restore"
+          <ha-radio-group
+            .label=${this.hass.localize(
+              "ui.dialogs.helper_settings.input_boolean.initial"
             )}
-          </ha-radio-option>
-          <ha-radio-option value="on">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_boolean.turn_on"
+            .hint=${this.hass.localize(
+              "ui.dialogs.helper_settings.input_boolean.initial_helper"
             )}
-          </ha-radio-option>
-          <ha-radio-option value="off">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.input_boolean.turn_off"
-            )}
-          </ha-radio-option>
-        </ha-radio-group>
+            .value=${
+              this._initial === undefined
+                ? "restore"
+                : this._initial
+                  ? "on"
+                  : "off"
+            }
+            .disabled=${this.disabled}
+            name="initial"
+            @change=${this._initialChanged}
+          >
+            <ha-radio-option value="restore">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.input_boolean.restore"
+              )}
+            </ha-radio-option>
+            <ha-radio-option value="on">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.input_boolean.turn_on"
+              )}
+            </ha-radio-option>
+            <ha-radio-option value="off">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.input_boolean.turn_off"
+              )}
+            </ha-radio-option>
+          </ha-radio-group>
+        </ha-expansion-panel>
       </div>
     `;
   }
@@ -163,8 +174,11 @@ class HaInputBooleanForm extends LitElement {
         ha-input {
           margin: var(--ha-space-2) 0;
         }
-        ha-radio-group {
-          margin-top: var(--ha-space-5);
+        ha-expansion-panel {
+          margin-top: var(--ha-space-4);
+        }
+        ha-expansion-panel ha-radio-group {
+          margin: var(--ha-space-4) 0;
         }
       `,
     ];
