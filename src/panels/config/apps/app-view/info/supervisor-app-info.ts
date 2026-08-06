@@ -42,6 +42,7 @@ import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { navigate } from "../../../../../common/navigate";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../../../common/url/sanitize-http-url";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/chips/ha-assist-chip";
 import "../../../../../components/chips/ha-chip-set";
@@ -225,20 +226,33 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.current_version",
                         { version: this._currentAddon.version }
                       )}
-                      <div class="changelog" @click=${this._openChangelog}>
-                        (<span class="changelog-link"
-                          >${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.changelog"
-                          )}</span
-                        >)
-                      </div>
+                      ${
+                        this._currentAddon.changelog
+                          ? html`<div
+                              class="changelog"
+                              @click=${this._openChangelog}
+                            >
+                              (<span class="changelog-link"
+                                >${this.i18n.localize(
+                                  "ui.panel.config.apps.dashboard.changelog"
+                                )}</span
+                              >)
+                            </div>`
+                          : nothing
+                      }
                     `
                   : html`${this._currentAddon.version_latest}
-                      <span class="changelog-link" @click=${this._openChangelog}
-                        >${this.i18n.localize(
-                          "ui.panel.config.apps.dashboard.changelog"
-                        )}</span
-                      >`
+                    ${
+                      this._currentAddon.changelog
+                        ? html`<span
+                            class="changelog-link"
+                            @click=${this._openChangelog}
+                            >${this.i18n.localize(
+                              "ui.panel.config.apps.dashboard.changelog"
+                            )}</span
+                          >`
+                        : nothing
+                    }`
               }
             </div>
           </div>
@@ -536,7 +550,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             "ui.panel.config.apps.dashboard.visit_app_page",
             {
               name: html`<a
-                href=${this._currentAddon.url!}
+                href=${ifDefined(sanitizeHttpUrl(this._currentAddon.url))}
                 target="_blank"
                 rel="noreferrer"
                 >${getAppDisplayName(
@@ -1094,7 +1108,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   private get _pathWebui(): string | null {
     const addon = this._currentAddon as HassioAddonDetails;
-    return addon.webui!.replace("[HOST]", document.location.hostname);
+    return (
+      sanitizeHttpUrl(
+        addon.webui!.replace("[HOST]", document.location.hostname)
+      ) ?? null
+    );
   }
 
   private get _computeShowWebUI(): boolean | "" | null {

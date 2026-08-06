@@ -37,7 +37,7 @@ import { subscribeUser } from "../data/ws-user";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "../components/progress/ha-progress-bar";
@@ -80,8 +80,8 @@ declare global {
   }
 
   interface GlobalEventHandlersEventMap {
-    "onboarding-step": HASSDomEvent<OnboardingEvent>;
-    "onboarding-progress": HASSDomEvent<OnboardingProgressEvent>;
+    "onboarding-step": HASSDomEvent<HASSDomEvents["onboarding-step"]>;
+    "onboarding-progress": HASSDomEvent<HASSDomEvents["onboarding-progress"]>;
   }
 }
 
@@ -332,7 +332,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
   }
 
-  private _handleProgress(ev: HASSDomEvent<OnboardingProgressEvent>) {
+  private _handleProgress(
+    ev: HASSDomEvent<HASSDomEvents["onboarding-progress"]>
+  ) {
     const stepSize = 100 / this._steps!.length;
     if (ev.detail.increase) {
       this._progress += ev.detail.increase * stepSize;
@@ -345,7 +347,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
   }
 
-  private async _handleStepDone(ev: HASSDomEvent<OnboardingEvent>) {
+  private async _handleStepDone(
+    ev: HASSDomEvent<HASSDomEvents["onboarding-step"]>
+  ) {
     const stepResult = ev.detail;
     this._steps = this._steps!.map((step) =>
       step.step === stepResult.type ? { ...step, done: true } : step
@@ -479,7 +483,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     });
   }
 
-  private _languageChanged(ev: CustomEvent) {
+  private _languageChanged(ev: ValueChangedEvent<string>) {
     const language = ev.detail.value;
     this.language = language;
     if (this.hass) {

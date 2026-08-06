@@ -82,12 +82,14 @@ class HaPanelConfig extends HassRouterPage {
       info: {
         tag: "ha-config-info",
         load: () => import("./info/ha-config-info"),
+        waitForReady: true,
       },
       // customize was removed in 2021.12, fallback to dashboard
       customize: "dashboard",
       dashboard: {
         tag: "ha-config-dashboard",
         load: () => import("./dashboard/ha-config-dashboard"),
+        waitForReady: true,
       },
       entities: {
         tag: "ha-config-entities",
@@ -104,6 +106,7 @@ class HaPanelConfig extends HassRouterPage {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+        waitForReady: true,
       },
       labels: {
         tag: "ha-config-labels",
@@ -169,6 +172,10 @@ class HaPanelConfig extends HassRouterPage {
       "ai-tasks": {
         tag: "ha-config-section-ai-tasks",
         load: () => import("./core/ha-config-section-ai-tasks"),
+      },
+      "entity-id-format": {
+        tag: "ha-config-section-entity-id-format",
+        load: () => import("./core/ha-config-section-entity-id-format"),
       },
       zha: {
         tag: "zha-config-dashboard-router",

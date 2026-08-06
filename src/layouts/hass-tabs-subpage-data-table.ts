@@ -17,7 +17,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
@@ -740,7 +740,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   };
 
-  private _handleSearchChange(ev: InputEvent) {
+  private _handleSearchChange(
+    ev: InputEvent & HASSDomTargetEvent<HaInputSearch>
+  ) {
     const target = ev.target as HaInputSearch;
     if (this.filter === target.value) {
       return;

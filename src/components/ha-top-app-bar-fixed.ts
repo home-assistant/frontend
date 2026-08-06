@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { goBack } from "../common/navigate";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-icon-button-arrow-prev";
@@ -324,7 +325,9 @@ export class HaTopAppBarFixed extends LitElement {
     this._subRowResizeObserver = undefined;
   }
 
-  private _subRowSlotChanged = (ev: Event) => {
+  private _subRowSlotChanged = (
+    ev: HASSDomCurrentTargetEvent<HTMLSlotElement>
+  ) => {
     const slot = ev.currentTarget as HTMLSlotElement;
     this._hasSubRow = slot
       .assignedNodes({ flatten: true })

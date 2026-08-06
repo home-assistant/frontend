@@ -84,6 +84,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: TileCardConfig;
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
@@ -143,7 +145,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _handleIconAction(ev: CustomEvent) {
+  private _handleIconAction(ev: ActionHandlerEvent) {
     ev.stopPropagation();
     const config = {
       entity: this._config!.entity,
@@ -313,11 +315,15 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const hasImage = Boolean(imageUrl);
 
+    const fixedInfoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${this._hasCardAction}
           .actionHandlerOptions=${{
             hasHold: hasAction(this._config!.hold_action),

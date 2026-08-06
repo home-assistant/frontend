@@ -187,6 +187,7 @@ export class HaSelectSelector extends LitElement {
                             .idx=${idx}
                             @remove=${this._removeItem}
                             .label=${label}
+                            .title=${label}
                             selected
                           >
                             ${

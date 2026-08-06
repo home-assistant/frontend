@@ -1,5 +1,10 @@
-import type { ExtEntityRegistryEntry } from "../../../../../src/data/entity/entity_registry";
 import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
+import type {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+} from "../../../../../src/data/entity/entity_registry";
+import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
+import type { MediaPlayerItem } from "../../../../../src/data/media-player";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -124,6 +129,117 @@ const quickSearchAssistScenario: Scenario = async (hass) => {
   });
 };
 
+const addLaunchScreen = () => {
+  const launchScreen = document.createElement("div");
+  launchScreen.id = "ha-launch-screen";
+  document.body.prepend(launchScreen);
+};
+
+const delayedLovelaceScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const config: LovelaceRawConfig = {
+    views: [
+      {
+        title: "Home",
+        cards: [{ type: "markdown", content: "Dashboard ready" }],
+      },
+    ],
+  };
+  let resolveConfig: ((config: LovelaceRawConfig) => void) | undefined;
+  const configPromise = new Promise<LovelaceRawConfig>((resolve) => {
+    resolveConfig = resolve;
+  });
+
+  window.resolveLovelaceConfig = () => resolveConfig?.(config);
+  hass.mockWS("lovelace/config", () => configPromise);
+};
+
+const delayedGeneratedDashboardScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const loadFragmentTranslation = hass.loadFragmentTranslation;
+  let resolveTranslation: (() => void) | undefined;
+  const translationReady = new Promise<void>((resolve) => {
+    resolveTranslation = resolve;
+  });
+
+  hass.loadFragmentTranslation = async (fragment) => {
+    if (fragment === "lovelace") {
+      await translationReady;
+    }
+    return loadFragmentTranslation(fragment);
+  };
+  window.resolveGeneratedDashboard = resolveTranslation;
+};
+
+const delayedCalendarScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  let resolveRegistry: ((entries: EntityRegistryEntry[]) => void) | undefined;
+  const registryPromise = new Promise<EntityRegistryEntry[]>((resolve) => {
+    resolveRegistry = resolve;
+  });
+
+  window.resolveCalendarRegistry = () => resolveRegistry?.([]);
+  hass.mockWS("config/entity_registry/list", () => registryPromise);
+};
+
+const delayedIntegrationsScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  hass.mockWS(
+    "config_entries/subscribe",
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
+      window.resolveConfigEntries = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+  hass.mockWS(
+    "config_entries/flow/subscribe",
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
+      window.resolveConfigEntriesInProgress = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+};
+
+const delayedMediaBrowseScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const root: MediaPlayerItem = {
+    title: "Media",
+    media_content_id: "media-source://media_source",
+    media_content_type: "app",
+    media_class: "directory",
+    can_play: false,
+    can_expand: true,
+    can_search: false,
+    children: [],
+  };
+  let resolveBrowse: ((item: MediaPlayerItem) => void) | undefined;
+  const browsePromise = new Promise<MediaPlayerItem>((resolve) => {
+    resolveBrowse = resolve;
+  });
+
+  window.resolveMediaBrowse = () => resolveBrowse?.(root);
+  hass.mockWS("media_source/browse_media", () => browsePromise);
+};
+
+const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  let rejectBrowse:
+    ((reason: { code: string; message: string }) => void) | undefined;
+  const browsePromise = new Promise<MediaPlayerItem>((_resolve, reject) => {
+    rejectBrowse = reject;
+  });
+
+  window.rejectMediaBrowse = () =>
+    rejectBrowse?.({ code: "unknown_error", message: "Browse failed" });
+  hass.mockWS("media_source/browse_media", () => browsePromise);
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -131,6 +247,12 @@ export const scenarios: Record<string, Scenario> = {
   "non-admin": nonAdminScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
+  "delayed-calendar": delayedCalendarScenario,
+  "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
+  "delayed-integrations": delayedIntegrationsScenario,
+  "delayed-media-browse": delayedMediaBrowseScenario,
+  "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
   "light-more-info": lightMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
+  "delayed-lovelace": delayedLovelaceScenario,
 };

@@ -1,6 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { LightCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
@@ -44,40 +46,40 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Switchable Light",
-    config: `
-- type: light
-  entity: light.bed_light
-    `,
+    config: {
+      type: "light",
+      entity: "light.bed_light",
+    },
   },
   {
     heading: "Dimmable Light On",
-    config: `
-- type: light
-  entity: light.dim_on
-    `,
+    config: {
+      type: "light",
+      entity: "light.dim_on",
+    },
   },
   {
     heading: "Dimmable Light Off",
-    config: `
-- type: light
-  entity: light.dim_off
-    `,
+    config: {
+      type: "light",
+      entity: "light.dim_off",
+    },
   },
   {
     heading: "Unavailable",
-    config: `
-- type: light
-  entity: light.unavailable
-    `,
+    config: {
+      type: "light",
+      entity: "light.unavailable",
+    },
   },
   {
     heading: "Non existing",
-    config: `
-- type: light
-  entity: light.nonexisting
-    `,
+    config: {
+      type: "light",
+      entity: "light.nonexisting",
+    },
   },
-];
+] satisfies DemoCardConfig<LightCardConfig>[];
 
 @customElement("demo-lovelace-light-card")
 class DemoLightEntity extends LitElement {

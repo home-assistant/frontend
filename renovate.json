@@ -8,10 +8,10 @@
     ":prConcurrentLimit10",
     ":semanticCommitsDisabled",
     "group:monorepos",
-    "group:recommended",
-    "security:minimumReleaseAgeNpm"
+    "group:recommended"
   ],
   "enabledManagers": ["npm", "nvm", "custom.regex"],
+  "minimumReleaseAge": "3 days",
   "postUpdateOptions": ["yarnDedupeHighest"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
@@ -106,7 +106,8 @@
     {
       "description": "Group Playwright package and CI container updates",
       "groupName": "Playwright",
-      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"]
+      "matchPackageNames": ["@playwright/test", "mcr.microsoft.com/playwright"],
+      "minimumGroupSize": 5
     }
   ]
 }

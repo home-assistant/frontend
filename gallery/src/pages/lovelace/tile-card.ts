@@ -1,6 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
@@ -11,6 +12,7 @@ import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
 import { FanEntityFeature } from "../../../../src/data/fan";
+import type { TileCardConfig } from "../../../../src/panels/lovelace/cards/types";
 
 const ENTITIES = [
   {
@@ -166,284 +168,257 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Basic example",
-    config: `
-- type: tile
-  entity: switch.tv_outlet
-    `,
+    config: {
+      type: "tile",
+      entity: "switch.tv_outlet",
+    },
   },
   {
     heading: "Vertical example",
-    config: `
-- type: tile
-  entity: switch.tv_outlet
-  vertical: true
-    `,
+    config: {
+      type: "tile",
+      entity: "switch.tv_outlet",
+      vertical: true,
+    },
   },
   {
     heading: "Custom color",
-    config: `
-- type: tile
-  entity: switch.tv_outlet
-  color: pink
-    `,
+    config: {
+      type: "tile",
+      entity: "switch.tv_outlet",
+      color: "pink",
+    },
   },
   {
     heading: "Whole tile tap action",
-    config: `
-- type: tile
-  entity: switch.tv_outlet
-  color: pink
-  tap_action:
-    action: toggle
-  icon_tap_action:
-    action: none
-    `,
+    config: {
+      type: "tile",
+      entity: "switch.tv_outlet",
+      color: "pink",
+      tap_action: {
+        action: "toggle",
+      },
+      icon_tap_action: {
+        action: "none",
+      },
+    },
   },
   {
     heading: "Unknown entity",
-    config: `
-- type: tile
-  entity: light.unknown
-    `,
+    config: {
+      type: "tile",
+      entity: "light.unknown",
+    },
   },
   {
     heading: "Unavailable entity",
-    config: `
-- type: tile
-  entity: light.unavailable
-    `,
+    config: {
+      type: "tile",
+      entity: "light.unavailable",
+    },
   },
   {
     heading: "Climate",
-    config: `
-- type: tile
-  entity: climate.thermostat
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.thermostat",
+    },
   },
   {
     heading: "Person",
-    config: `
-- type: tile
-  entity: person.paulus
-    `,
+    config: {
+      type: "tile",
+      entity: "person.paulus",
+    },
   },
   {
     heading: "Light brightness feature",
-    config: `
-- type: tile
-  entity: light.bed_light
-  features:
-    - type: "light-brightness"
-    `,
+    config: {
+      type: "tile",
+      entity: "light.bed_light",
+      features: [{ type: "light-brightness" }],
+    },
   },
   {
     heading: "Light color temperature feature",
-    config: `
-- type: tile
-  entity: light.bed_light
-  features:
-    - type: "color-temp"
-    `,
+    config: {
+      type: "tile",
+      entity: "light.bed_light",
+      features: [{ type: "light-color-temp" }],
+    },
   },
   {
     heading: "Lock commands feature",
-    config: `
-- type: tile
-  entity: lock.front_door
-  features:
-    - type: "lock-commands"
-    `,
+    config: {
+      type: "tile",
+      entity: "lock.front_door",
+      features: [{ type: "lock-commands" }],
+    },
   },
   {
     heading: "Lock open door feature",
-    config: `
-- type: tile
-  entity: lock.front_door
-  features:
-    - type: "lock-open-door"
-    `,
+    config: {
+      type: "tile",
+      entity: "lock.front_door",
+      features: [{ type: "lock-open-door" }],
+    },
   },
   {
     heading: "Media player volume slider feature",
-    config: `
-- type: tile
-  entity: media_player.living_room
-  features:
-    - type: "media-player-volume-slider"
-    `,
+    config: {
+      type: "tile",
+      entity: "media_player.living_room",
+      features: [{ type: "media-player-volume-slider" }],
+    },
   },
   {
     heading: "Vacuum commands feature",
-    config: `
-- type: tile
-  entity: vacuum.first_floor_vacuum
-  features:
-    - type: "vacuum-commands"
-      commands:
-        - start_pause
-        - stop
-        - return_home
-    `,
+    config: {
+      type: "tile",
+      entity: "vacuum.first_floor_vacuum",
+      features: [
+        {
+          type: "vacuum-commands",
+          commands: ["start_pause", "stop", "return_home"],
+        },
+      ],
+    },
   },
   {
     heading: "Cover open close feature",
-    config: `
-- type: tile
-  entity: cover.kitchen_shutter
-  features:
-    - type: "cover-open-close"
-    `,
+    config: {
+      type: "tile",
+      entity: "cover.kitchen_shutter",
+      features: [{ type: "cover-open-close" }],
+    },
   },
   {
     heading: "Cover tilt feature",
-    config: `
-- type: tile
-  entity: cover.pergola_roof
-  features:
-  - type: "cover-tilt"
-    `,
+    config: {
+      type: "tile",
+      entity: "cover.pergola_roof",
+      features: [{ type: "cover-tilt" }],
+    },
   },
   {
     heading: "Number buttons feature",
-    config: `
-- type: tile
-  entity: input_number.counter
-  features:
-  - type: numeric-input
-    style: buttons
-    `,
+    config: {
+      type: "tile",
+      entity: "input_number.counter",
+      features: [{ type: "numeric-input", style: "buttons" }],
+    },
   },
   {
     heading: "Dual thermostat feature",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features:
-  - type: target-temperature
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features: [{ type: "target-temperature" }],
+    },
   },
   {
     heading: "Fan direction feature",
-    config: `
-- type: tile
-  entity: fan.fan_demo
-  features:
-  - type: fan-direction
-    `,
+    config: {
+      type: "tile",
+      entity: "fan.fan_demo",
+      features: [{ type: "fan-direction" }],
+    },
   },
   {
     heading: "Fan speed feature",
-    config: `
-- type: tile
-  entity: fan.fan_demo
-  features:
-  - type: fan-speed
-    `,
+    config: {
+      type: "tile",
+      entity: "fan.fan_demo",
+      features: [{ type: "fan-speed" }],
+    },
   },
   {
     heading: "Fan oscillate feature",
-    config: `
-- type: tile
-  entity: fan.fan_demo
-  features:
-  - type: fan-oscillate
-    `,
+    config: {
+      type: "tile",
+      entity: "fan.fan_demo",
+      features: [{ type: "fan-oscillate" }],
+    },
   },
   {
     heading: "Inline features: one feature",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: inline
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [{ type: "climate-hvac-modes", style: "dropdown" }],
+    },
   },
   {
     heading: "Inline features: two features",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: inline
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-  - type: climate-preset-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+      ],
+    },
   },
   {
     heading: "Inline features: three features",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: inline
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-  - type: climate-preset-modes
-    style: dropdown
-  - type: climate-fan-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+      ],
+    },
   },
   {
     heading: "Inline features: four features",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: inline
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-  - type: climate-preset-modes
-    style: dropdown
-  - type: climate-fan-modes
-    style: dropdown
-  - type: climate-swing-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+      ],
+    },
   },
   {
     heading: "Inline features: five features",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: inline
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-  - type: climate-preset-modes
-    style: dropdown
-  - type: climate-fan-modes
-    style: dropdown
-  - type: climate-swing-modes
-    style: dropdown
-  - type: climate-swing-horizontal-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+        { type: "climate-swing-horizontal-modes", style: "dropdown" },
+      ],
+    },
   },
   {
     heading: "Bottom features: five features",
-    config: `
-- type: tile
-  entity: climate.dual_thermostat
-  features_position: bottom
-  features:
-  - type: climate-hvac-modes
-    style: dropdown
-  - type: climate-preset-modes
-    style: dropdown
-  - type: climate-fan-modes
-    style: dropdown
-  - type: climate-swing-modes
-    style: dropdown
-  - type: climate-swing-horizontal-modes
-    style: dropdown
-    `,
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "bottom",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+        { type: "climate-swing-horizontal-modes", style: "dropdown" },
+      ],
+    },
   },
-];
+] satisfies DemoCardConfig<TileCardConfig>[];
 
 @customElement("demo-lovelace-tile-card")
 class DemoTile extends LitElement {

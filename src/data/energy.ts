@@ -173,6 +173,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
+  capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -792,6 +793,17 @@ const findEnergyDataCollection = (
   return (hass.connection as any)[key];
 };
 
+// The last-picked preset is remembered per energy collection, so each dashboard
+// reopens on its own default period. Derived from the connection key so the read
+// and write sides cannot drift apart.
+export const getEnergyDefaultPeriodStorageKey = (
+  hass: HomeAssistant,
+  collectionKey?: string
+): string => {
+  const [key] = convertCollectionKeyToConnection(hass, collectionKey);
+  return `energy-default-period-${key}`;
+};
+
 // When does the collection's day period need to roll over to the next day?
 // With `midnightRollover` (the real-time "Now" view) it rolls over right at
 // midnight. Otherwise it waits an hour, until the new day's first hourly
@@ -891,8 +903,9 @@ export const getEnergyDataCollection = (
   // The real-time "Now" view always tracks today; it shows live data even
   // before today's first statistic exists, so it never falls back to yesterday.
   const preferredPeriod =
-    (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
-    "today";
+    (localStorage.getItem(
+      getEnergyDefaultPeriodStorageKey(hass, options.key)
+    ) as DateRange) || "today";
   const period =
     preferredPeriod === "today" && hour === "0" && !midnightRollover
       ? "yesterday"

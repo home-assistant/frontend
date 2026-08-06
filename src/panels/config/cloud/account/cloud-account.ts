@@ -68,6 +68,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config"
         header="Home Assistant Cloud"
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>

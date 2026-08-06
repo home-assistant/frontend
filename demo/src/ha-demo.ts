@@ -16,6 +16,8 @@ import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockHardware } from "./stubs/hardware";
+import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
@@ -30,7 +32,6 @@ import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
 import { mockUsagePrediction } from "./stubs/usage_prediction";
-import "./cloud/cloud-demo-controls";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
@@ -57,6 +58,8 @@ const CONFIG_PANEL_COMMANDS = [
   "search/related",
   "tag/list",
   "assist_pipeline/",
+  "config/entity_registry/settings/",
+  "slugify",
 ];
 
 @customElement("ha-demo")
@@ -73,10 +76,6 @@ export class HaDemo extends HomeAssistantAppEl {
     // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
     const hass = provideHass(this, initial, true, false);
 
-    // The cloud account page only fetches backup config and the webhook count
-    // when those integrations are loaded. Enable them here (demo only) so the
-    // mocked backup/config/info and webhook/list are queried. usage_prediction
-    // is needed for common-controls sections in strategy dashboards.
     hass.updateHass({
       config: {
         ...hass.config,
@@ -85,15 +84,13 @@ export class HaDemo extends HomeAssistantAppEl {
           "backup",
           "webhook",
           "usage_prediction",
+          "assist_pipeline",
+          "hassio",
+          "hardware",
         ],
       },
     });
 
-    // Demo-only floating panel to flip the mocked cloud state. Mounted once at
-    // the document level; it shows itself only on the cloud panel.
-    if (!document.querySelector("cloud-demo-controls")) {
-      document.body.appendChild(document.createElement("cloud-demo-controls"));
-    }
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
@@ -112,6 +109,8 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockHardware(hass);
+    mockHassioSupervisor(hass);
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);

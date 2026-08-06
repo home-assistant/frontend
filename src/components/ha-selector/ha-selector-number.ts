@@ -131,6 +131,7 @@ export class HaNumberSelector extends LitElement {
           .hint=${isBox ? this.helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
+          .validationMessage=${this.selector.number?.validation_message}
           type="number"
           autoValidate
           .withoutSpinButtons=${!isBox}

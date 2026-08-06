@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
@@ -108,7 +108,7 @@ class StepFlowForm extends LitElement {
             : nothing
         }
         ${
-          step.data_schema.length
+          step.data_schema.length || this._errors
             ? html`<ha-form
                 ${ref(this._formRef)}
                 ?autofocus=${this.autoFocus}
@@ -153,7 +153,7 @@ class StepFlowForm extends LitElement {
     `;
   }
 
-  private _setError(ev: CustomEvent) {
+  private _setError(ev: HASSDomEvent<DataEntryFlowStepForm["errors"]>) {
     this._previewErrors = ev.detail;
   }
 

@@ -6,7 +6,7 @@ const APP_BASE_URL = `http://localhost:${APP_PORT}`;
 
 export default defineConfig({
   testDir: ".",
-  testMatch: "app.spec.ts",
+  testMatch: ["app.spec.ts", "onboarding.spec.ts"],
 
   timeout: 60_000,
   expect: { timeout: 15_000 },
@@ -38,8 +38,8 @@ export default defineConfig({
 
   webServer: {
     command: process.env.CI
-      ? `npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`
-      : `./node_modules/.bin/gulp build-e2e-test-app && npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`,
+      ? `npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s -c ../serve.json`
+      : `./node_modules/.bin/gulp build-e2e-test-app && npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s -c ../serve.json`,
     url: APP_BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: process.env.CI ? 30_000 : 600_000,

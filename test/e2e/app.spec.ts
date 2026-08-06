@@ -161,6 +161,102 @@ test.describe("Quick search", () => {
 
 defineRouteSmokeTests(appRouteSmokeGroups);
 
+test("keeps the launch screen until initial panel content renders", async ({
+  page,
+}) => {
+  const cases: {
+    name: string;
+    path: string;
+    loadingSelector: string;
+    readySelector: string;
+    resolvers: (
+      | "rejectMediaBrowse"
+      | "resolveCalendarRegistry"
+      | "resolveConfigEntries"
+      | "resolveConfigEntriesInProgress"
+      | "resolveGeneratedDashboard"
+      | "resolveLovelaceConfig"
+      | "resolveMediaBrowse"
+    )[];
+  }[] = [
+    {
+      name: "calendar",
+      path: "/?scenario=delayed-calendar#/calendar",
+      loadingSelector: "ha-panel-calendar ha-spinner",
+      readySelector: "ha-full-calendar",
+      resolvers: ["resolveCalendarRegistry"],
+    },
+    {
+      name: "media browser",
+      path: "/?scenario=delayed-media-browse#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      readySelector: "ha-media-player-browse .no-items",
+      resolvers: ["resolveMediaBrowse"],
+    },
+    {
+      name: "integrations",
+      path: "/?scenario=delayed-integrations#/config/integrations",
+      loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
+      readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
+      resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "media browser error",
+      path: "/?scenario=delayed-media-browse-error#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      readySelector: "ha-media-player-browse ha-alert",
+      resolvers: ["rejectMediaBrowse"],
+    },
+    {
+      name: "generated dashboard",
+      path: "/?scenario=delayed-generated-dashboard#/climate",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-view",
+      resolvers: ["resolveGeneratedDashboard"],
+    },
+    {
+      name: "Lovelace dashboard",
+      path: "/?scenario=delayed-lovelace#/lovelace",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveLovelaceConfig"],
+    },
+  ];
+
+  for (const readinessCase of cases) {
+    // eslint-disable-next-line no-await-in-loop
+    await test.step(readinessCase.name, async () => {
+      await goToPanel(page, readinessCase.path);
+
+      const launchScreen = page.locator("#ha-launch-screen");
+      const loadingScreen = page.locator(readinessCase.loadingSelector);
+      const readyContent = page.locator(readinessCase.readySelector).first();
+      await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(loadingScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(readyContent).not.toBeAttached();
+
+      await readinessCase.resolvers.reduce(
+        async (previousResolver, resolver, index) => {
+          await previousResolver;
+          await page.evaluate((resolverName) => {
+            window[resolverName]?.();
+          }, resolver);
+
+          if (index < readinessCase.resolvers.length - 1) {
+            await expect(launchScreen).toBeAttached();
+            await expect(loadingScreen).toBeAttached();
+            await expect(readyContent).not.toBeAttached();
+          }
+        },
+        Promise.resolve()
+      );
+
+      await expect(readyContent).toBeAttached({ timeout: PANEL_TIMEOUT });
+      await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+    });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Lovelace
 // ---------------------------------------------------------------------------

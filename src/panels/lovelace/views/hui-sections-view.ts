@@ -87,11 +87,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       if (!totalWidth) return 1;
 
       const style = getComputedStyle(this);
+      const wrapper = this.shadowRoot!.querySelector(".wrapper")!;
+      const wrapperStyle = getComputedStyle(wrapper);
       const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
-      const paddingLeft = parsePx(containerStyle.paddingLeft);
-      const paddingRight = parsePx(containerStyle.paddingRight);
+      const paddingLeft = parsePx(wrapperStyle.paddingLeft);
+      const paddingRight = parsePx(wrapperStyle.paddingRight);
       const padding = paddingLeft + paddingRight;
       const minColumnWidth = parsePx(
         style.getPropertyValue("--column-min-width")
@@ -176,6 +178,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
     const hasSidebar =
       this._config?.sidebar && (this._sidebarVisible || editMode);
+    const singleColumn = this._maxColumns <= 1;
+
+    // The tab switcher is opt-in: a sidebar enables it by labelling both tabs,
+    // otherwise the sidebar stacks below the content.
+    const useSidebarTabs = Boolean(
+      singleColumn &&
+      hasSidebar &&
+      this._config?.sidebar?.content_label &&
+      this._config?.sidebar?.sidebar_label
+    );
 
     const totalSectionCount =
       this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
@@ -184,9 +196,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       Math.min(this._maxColumns, totalSectionCount),
       1
     );
-    // On mobile with sidebar, use full width for whichever view is active
-    const contentColumnCount =
-      hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
+
+    const contentColumnCount = hasSidebar
+      ? Math.max(1, columnCount - 1)
+      : columnCount;
 
     const sectionNeedsMargin = computeSectionsBackgroundAlignment(
       sections,
@@ -198,7 +211,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         class="wrapper ${classMap({
           "top-margin": Boolean(this._config?.top_margin),
           "has-sidebar": Boolean(hasSidebar),
-          narrow: this.narrow,
+          "single-column": singleColumn,
+          "has-sidebar-tabs": useSidebarTabs,
         })}"
         style=${styleMap({
           "--column-count": columnCount,
@@ -213,9 +227,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .config=${this._config?.header}
         ></hui-view-header>
         ${
-          this.narrow && hasSidebar
+          useSidebarTabs
             ? html`
-                <div class="mobile-tabs">
+                <div class="sidebar-tabs">
                   <ha-control-select
                     .value=${this._sidebarTabActive ? "sidebar" : "content"}
                     @value-changed=${this._viewChanged}
@@ -246,7 +260,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             <div
               class="content ${classMap({
                 dense: Boolean(this._config?.dense_section_placement),
-                "mobile-hidden": this.narrow && this._sidebarTabActive,
+                hidden: useSidebarTabs && this._sidebarTabActive,
               })}"
             >
               ${repeat(
@@ -333,8 +347,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
               ? html`
                   <hui-view-sidebar
                     class=${classMap({
-                      "mobile-hidden":
-                        !hasSidebar || (this.narrow && !this._sidebarTabActive),
+                      hidden:
+                        !hasSidebar ||
+                        (useSidebarTabs && !this._sidebarTabActive),
                     })}
                     .hass=${this.hass}
                     .badges=${this.badges}
@@ -602,8 +617,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         [sidebar-start] 1fr;
     }
 
-    /* On mobile with sidebar, content and sidebar both take full width */
-    .wrapper.narrow.has-sidebar .container {
+    /* With a single column, content and sidebar stack at full width */
+    .wrapper.single-column.has-sidebar .container {
       grid-template-columns: 1fr;
     }
 
@@ -611,18 +626,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       grid-column: sidebar-start / -1;
     }
 
-    .wrapper.narrow hui-view-sidebar {
+    .wrapper.single-column hui-view-sidebar {
       grid-column: 1 / -1;
+    }
+
+    .wrapper.has-sidebar-tabs hui-view-sidebar {
       padding-bottom: calc(
         var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
     }
 
-    .mobile-hidden {
+    .hidden {
       display: none !important;
     }
 
-    .mobile-tabs {
+    .sidebar-tabs {
       position: fixed;
       bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
       left: 50%;
@@ -631,7 +649,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       z-index: 1;
     }
 
-    .mobile-tabs ha-control-select {
+    .sidebar-tabs ha-control-select {
       width: max-content;
       min-width: 280px;
       max-width: 90%;
@@ -659,11 +677,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
     }
 
-    .wrapper.narrow .content {
+    .wrapper.single-column .content {
       grid-column: 1 / -1;
     }
 
-    .wrapper.narrow.has-sidebar .content {
+    .wrapper.has-sidebar-tabs .content {
       padding-bottom: calc(
         var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
