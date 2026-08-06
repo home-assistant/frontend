@@ -62,6 +62,15 @@ describe("sceneEntityStateObj", () => {
     expect(sceneEntityStateObj("light.kitchen", [255, 100])).toBeUndefined();
   });
 
+  it("returns undefined for a numeric value", () => {
+    // The backend only accepts string and boolean states, so a number never
+    // becomes a target the scene can apply.
+    expect(sceneEntityStateObj("input_number.x", 23)).toBeUndefined();
+    expect(
+      sceneEntityStateObj("input_number.x", { state: 23 })
+    ).toBeUndefined();
+  });
+
   it("returns undefined when the dict holds no usable state", () => {
     expect(
       sceneEntityStateObj("light.kitchen", { brightness: 100 })
@@ -84,14 +93,6 @@ describe("sceneEntityStateObj", () => {
     expect(sceneEntityStateObj("light.kitchen", { state: true })).toEqual({
       entity_id: "light.kitchen",
       state: "on",
-      attributes: {},
-    });
-  });
-
-  it("stringifies numeric shorthand", () => {
-    expect(sceneEntityStateObj("input_number.x", 23)).toEqual({
-      entity_id: "input_number.x",
-      state: "23",
       attributes: {},
     });
   });

@@ -71,10 +71,10 @@ export type SceneMetaData = Record<
 >;
 
 // Hand-edited scenes.yaml is parsed as YAML 1.1 by the backend, so unquoted
-// on/off arrive here as booleans and bare numbers as numbers. The backend
-// applies boolean states as on/off; mirror that so the badge reflects what
-// activating the scene will actually do. Values that cannot represent a
-// state (null, arrays, objects) yield undefined.
+// on/off arrive here as booleans. The backend applies boolean states as
+// on/off; mirror that so the badge reflects what activating the scene will
+// actually do. Everything else the backend rejects (numbers, null, arrays,
+// objects) yields undefined.
 const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
   if (typeof sceneState === "boolean") {
     return sceneState ? "on" : "off";
