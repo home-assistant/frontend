@@ -236,7 +236,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        back-path="/config/scene/dashboard"
         .backCallback=${this._backTapped}
         .header=${
           this._config?.name ||

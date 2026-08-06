@@ -215,7 +215,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backPath=${this.dashboardPath}
         .backCallback=${this.backTapped}
         .header=${
           this.config.alias ||
