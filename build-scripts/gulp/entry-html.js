@@ -303,7 +303,11 @@ gulp.task(
   )
 );
 
-const E2E_TEST_APP_PAGE_ENTRIES = { "index.html": ["main"] };
+const E2E_TEST_APP_PAGE_ENTRIES = {
+  "index.html": ["main"],
+  "dashboard.html": ["dashboard"],
+  "onboarding.html": ["onboarding"],
+};
 
 gulp.task(
   "gen-pages-e2e-test-app-dev",
