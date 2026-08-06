@@ -82,9 +82,6 @@ const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
   if (typeof sceneState === "string") {
     return sceneState;
   }
-  if (typeof sceneState === "number") {
-    return String(sceneState);
-  }
   return undefined;
 };
 
