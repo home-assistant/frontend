@@ -891,8 +891,6 @@ class HUIRoot extends LitElement {
   private _goBack(): void {
     const configuredBackPath = this._configuredBackPath;
     if (configuredBackPath) {
-      // The dashboard author picked this destination, it wins over wherever
-      // the user came from.
       navigate(configuredBackPath, { replace: true });
       return;
     }
@@ -907,7 +905,6 @@ class HUIRoot extends LitElement {
     handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
-  /** Destination set in the dashboard config, if any. */
   private get _configuredBackPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =

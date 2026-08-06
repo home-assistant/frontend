@@ -1,7 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { goBack } from "../common/navigate";
+import { getHistoryState, goBack } from "../common/navigate";
 import "../components/ha-button";
 import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
@@ -27,7 +27,7 @@ class HassErrorScreen extends LitElement {
     return html`
       <ha-top-app-bar-fixed
         .narrow=${this.narrow}
-        .backButton=${!(this.rootnav || history.state?.root)}
+        .backButton=${!(this.rootnav || getHistoryState()?.root)}
       >
         ${this._renderContent()}
       </ha-top-app-bar-fixed>

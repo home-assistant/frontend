@@ -8,8 +8,7 @@ vi.mock("../../src/dialogs/make-dialog-manager", () => ({
   closeAllDialogs: vi.fn(async () => true),
 }));
 
-// Sets up a raw entry the way a document load does, which is exactly what the
-// helpers in common/navigate refuse to produce.
+// Fabricates a raw entry like a document load, which navigate() never produces.
 const setEntry = (path: string, state: unknown = null) => {
   window.history.replaceState(state, "", path);
 };
@@ -73,8 +72,6 @@ describe("goBack", () => {
   });
 
   it("falls back to the given path when the previous entry is not ours", async () => {
-    // A login redirect lands on the page through location.assign, leaving
-    // /auth/authorize behind: going back there would leave the app.
     const back = vi
       .spyOn(window.history, "back")
       .mockImplementation(() => undefined);

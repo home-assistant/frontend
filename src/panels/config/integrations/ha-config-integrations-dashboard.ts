@@ -14,7 +14,11 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate, updateHistoryState } from "../../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
@@ -163,7 +167,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     window.location.hash.substring(1)
   );
 
-  @state() private _filter: string = history.state?.filter || "";
+  @state() private _filter: string = getHistoryState()?.filter || "";
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 

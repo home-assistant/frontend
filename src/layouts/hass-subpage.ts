@@ -4,6 +4,7 @@ import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
+import { getHistoryState } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
@@ -37,7 +38,7 @@ class HassSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${
-            this.mainPage || (!backPath && history.state?.root)
+            this.mainPage || (!backPath && getHistoryState()?.root)
               ? html`<ha-menu-button></ha-menu-button>`
               : html`
                   <ha-icon-button-arrow-prev

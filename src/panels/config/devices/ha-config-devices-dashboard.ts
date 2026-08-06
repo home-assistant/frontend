@@ -23,7 +23,11 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate, updateHistoryState } from "../../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
@@ -142,7 +146,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = history.state?.filter || "";
+  private _filter: string = getHistoryState()?.filter || "";
 
   @state()
   private _filters: DataTableFilters = {};
@@ -262,7 +266,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
 
     this._fromUrl = true;
-    this._filter = history.state?.filter || "";
+    this._filter = getHistoryState()?.filter || "";
 
     this._filters = {
       "ha-filter-states": {

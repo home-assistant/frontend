@@ -24,7 +24,7 @@ import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { navigate } from "../../../common/navigate";
+import { getHistoryState, navigate } from "../../../common/navigate";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -1007,7 +1007,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
 
     this._fromUrl = true;
-    this._filter = history.state?.filter || "";
+    this._filter = getHistoryState()?.filter || "";
 
     this._filters = {
       "ha-filter-floor-areas": area ? { areas: [area] } : undefined,

@@ -14,8 +14,9 @@ export const handleBackClick = (
 ): void => {
   const path = sanitizeNavigationPath(backPath);
 
-  // Middle click, ctrl and cmd open the parent in a new tab, let the anchor
-  // handle those.
+  // Ctrl, cmd and shift click open the parent in a new tab or window: let
+  // the anchor handle those. A plain click is handled here instead, and
+  // isNavigationClick calls preventDefault so the anchor stays inert.
   if (path && !isNavigationClick(ev)) {
     return;
   }

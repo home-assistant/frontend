@@ -215,6 +215,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .backPath=${this.dashboardPath}
         .backCallback=${this.backTapped}
         .header=${
           this.config.alias ||
@@ -986,7 +987,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private async _delete() {
     if (this.automationId) {
       await deleteAutomation(this.hass, this.automationId);
-      goBack("/config");
+      goBack(this.dashboardPath);
     }
   }
 

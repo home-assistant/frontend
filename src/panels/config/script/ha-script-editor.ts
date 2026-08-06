@@ -175,6 +175,7 @@ export class HaScriptEditor extends SubscribeMixin(
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .backPath=${this.dashboardPath}
         .backCallback=${this.backTapped}
         .header=${
           this.config.alias ||
@@ -896,7 +897,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
-    goBack("/config");
+    goBack(this.dashboardPath);
   }
 
   private async _promptScriptAlias(): Promise<boolean> {

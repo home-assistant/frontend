@@ -39,7 +39,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { updateHistoryState } from "../../../common/navigate";
+import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -193,7 +193,7 @@ export class HaConfigEntities extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = history.state?.filter || "";
+  private _filter: string = getHistoryState()?.filter || "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -1110,7 +1110,7 @@ export class HaConfigEntities extends LitElement {
     }
 
     this._fromUrl = true;
-    this._filter = history.state?.filter || "";
+    this._filter = getHistoryState()?.filter || "";
 
     this._filters = {
       "ha-filter-states": [],

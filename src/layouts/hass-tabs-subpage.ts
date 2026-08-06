@@ -14,7 +14,7 @@ import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { navigate } from "../common/navigate";
+import { getHistoryState, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import { handleBackClick } from "./back-navigation";
@@ -174,7 +174,7 @@ export class HassTabsSubpage extends LitElement {
         <slot name="toolbar">
           <div class="toolbar-content">
             ${
-              this.mainPage || (!backPath && history.state?.root)
+              this.mainPage || (!backPath && getHistoryState()?.root)
                 ? html`<ha-menu-button></ha-menu-button>`
                 : html`
                     <ha-icon-button-arrow-prev
