@@ -1,9 +1,13 @@
+import { mdiInformationOutline } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/input/ha-input";
 import "../../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
@@ -85,12 +89,6 @@ class HaInputBooleanForm extends LitElement {
           outlined
         >
           <ha-radio-group
-            .label=${this.hass.localize(
-              "ui.dialogs.helper_settings.input_boolean.initial"
-            )}
-            .hint=${this.hass.localize(
-              "ui.dialogs.helper_settings.input_boolean.initial_helper"
-            )}
             .value=${
               this._initial === undefined
                 ? "restore"
@@ -102,6 +100,18 @@ class HaInputBooleanForm extends LitElement {
             name="initial"
             @change=${this._initialChanged}
           >
+            <span slot="label">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.input_boolean.initial"
+              )}
+              <ha-svg-icon
+                id="initial-note"
+                tabindex="0"
+                class="note-icon"
+                .path=${mdiInformationOutline}
+                @click=${stopPropagation}
+              ></ha-svg-icon>
+            </span>
             <ha-radio-option value="restore">
               ${this.hass.localize(
                 "ui.dialogs.helper_settings.input_boolean.restore"
@@ -118,6 +128,11 @@ class HaInputBooleanForm extends LitElement {
               )}
             </ha-radio-option>
           </ha-radio-group>
+          <ha-tooltip for="initial-note" placement="top">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_boolean.initial_helper"
+            )}
+          </ha-tooltip>
         </ha-expansion-panel>
       </div>
     `;
@@ -179,6 +194,12 @@ class HaInputBooleanForm extends LitElement {
         }
         ha-expansion-panel ha-radio-group {
           margin: var(--ha-space-4) 0;
+        }
+        .note-icon {
+          margin-inline-start: var(--ha-space-1);
+          color: var(--secondary-text-color);
+          --mdc-icon-size: 18px;
+          vertical-align: middle;
         }
       `,
     ];
