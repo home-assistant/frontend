@@ -4,6 +4,7 @@ import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type {
   Circle,
   CircleMarker,
+  Control,
   LatLngExpression,
   LatLngTuple,
   Layer,
@@ -171,6 +172,8 @@ export class HaMap extends ReactiveElement {
 
   private _mapCluster: MarkerClusterGroup | undefined;
 
+  private _scaleRulerControl?: Control.Scale;
+
   private _mapPaths: (Polyline | CircleMarker)[] = [];
 
   private _clickCount = 0;
@@ -210,6 +213,8 @@ export class HaMap extends ReactiveElement {
       this.Leaflet = undefined;
     }
 
+    // the control went away with the map, so don't hold on to it
+    this._scaleRulerControl = undefined;
     this._pendingFit = undefined;
     this._loaded = false;
 
@@ -245,6 +250,16 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("clusterMarkers")) {
       this._drawEntities();
+    }
+
+    const oldConfig = changedProps.get("_config") as HassConfig | undefined;
+    if (
+      changedProps.has("_loaded") ||
+      changedProps.has("scaleRuler") ||
+      (changedProps.has("_config") &&
+        oldConfig?.unit_system?.length !== this._config?.unit_system?.length)
+    ) {
+      this._drawScaleRuler();
     }
 
     if (changedProps.has("_loaded") || changedProps.has("paths")) {
@@ -313,7 +328,6 @@ export class HaMap extends ReactiveElement {
         zoom: this.zoom,
       });
       this._updateMapStyle();
-      this._drawScaleRuler();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
           setTimeout(() => {
@@ -812,15 +826,22 @@ export class HaMap extends ReactiveElement {
   }
 
   private _drawScaleRuler(): void {
-    if (this.scaleRuler) {
-      const scaleRuler = this.Leaflet!.control.scale();
-      const rulerPosition = "bottomleft";
-      scaleRuler.setPosition(rulerPosition);
-      const useMetric = this._config?.unit_system?.length === UNIT_KM;
-      scaleRuler.options.metric = useMetric;
-      scaleRuler.options.imperial = !useMetric;
-      this.leafletMap!.addControl(scaleRuler);
+    if (this._scaleRulerControl) {
+      this.leafletMap?.removeControl(this._scaleRulerControl);
+      this._scaleRulerControl = undefined;
     }
+
+    if (!this.scaleRuler || !this.leafletMap || !this.Leaflet) {
+      return;
+    }
+
+    const metric = this._config?.unit_system?.length === UNIT_KM;
+    this._scaleRulerControl = this.Leaflet.control.scale({
+      position: "bottomleft",
+      metric,
+      imperial: !metric,
+    });
+    this._scaleRulerControl.addTo(this.leafletMap);
   }
 
   private _getMarkerSize(computedStyles: CSSStyleDeclaration): number {
@@ -907,31 +928,26 @@ export class HaMap extends ReactiveElement {
       cursor: unset !important;
     }
     .leaflet-control-scale-line {
+      --scale-ruler-color: var(--ha-color-on-surface-default);
+      --scale-ruler-surface: var(--ha-color-surface-default);
       font-size: var(--ha-font-size-s);
       font-family: var(--ha-font-family-body);
-      color: var(--ha-color-on-surface-default) !important;
+      color: var(--scale-ruler-color) !important;
       background: color-mix(
         in srgb,
-        var(--ha-color-surface-default) 80%,
+        var(--scale-ruler-surface) 80%,
         transparent
       ) !important;
       text-shadow: none !important;
     }
+    /* the theme tokens follow the page, so forced modes need the opposite values */
     #map.forced-light .leaflet-control-scale-line {
-      color: var(--ha-color-neutral-05) !important;
-      background: color-mix(
-        in srgb,
-        var(--ha-color-white) 80%,
-        transparent
-      ) !important;
+      --scale-ruler-color: var(--ha-color-neutral-05);
+      --scale-ruler-surface: var(--ha-color-white);
     }
     #map.forced-dark .leaflet-control-scale-line {
-      color: var(--ha-color-neutral-95) !important;
-      background: color-mix(
-        in srgb,
-        var(--ha-color-neutral-10) 80%,
-        transparent
-      ) !important;
+      --scale-ruler-color: var(--ha-color-neutral-95);
+      --scale-ruler-surface: var(--ha-color-neutral-10);
     }
     .leaflet-left .leaflet-control-scale {
       margin-left: 10px !important;
