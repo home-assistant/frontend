@@ -12,7 +12,7 @@ declare global {
 
 export interface NavigateOptions {
   replace?: boolean;
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 // max time to wait for dialogs to close before navigating
@@ -80,6 +80,17 @@ const ensureDialogsClosed = async (timestamp: number): Promise<boolean> => {
   return ensureDialogsClosed(timestamp);
 };
 
+const buildHistoryState = (
+  data: Record<string, unknown> | undefined,
+  from?: string
+) => {
+  const state = typeof data === "object" ? data : undefined;
+  if (from === undefined) {
+    return state ?? null;
+  }
+  return { ...state, from };
+};
+
 export const navigate = async (path: string, options?: NavigateOptions) => {
   const canProceed = await ensureDialogsClosed(Date.now());
   if (!canProceed) {
@@ -103,23 +114,11 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   if (replace) {
     // A replaced entry keeps its predecessor, so it keeps `from`.
     const { root, from } = history.state ?? {};
-    const state = root ? { root: true } : (options?.data ?? null);
-    history.replaceState(
-      from === undefined ? state : { ...state, from },
-      "",
-      path
-    );
+    const data = root ? { root: true } : options?.data;
+    history.replaceState(buildHistoryState(data, from), "", path);
   } else {
-    const { data } = options ?? {};
-    // Only objects survive being merged with `from`. Callers outside the app
-    // pass whatever they want, so keep anything else under a key rather than
-    // letting the spread mangle it.
-    const mergeable =
-      data === undefined || (typeof data === "object" && data !== null);
     history.pushState(
-      mergeable
-        ? { ...data, from: currentPath() }
-        : { data, from: currentPath() },
+      buildHistoryState(options?.data, currentPath()),
       "",
       path
     );

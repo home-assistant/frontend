@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { NavigateOptions } from "../../src/common/navigate";
 import { canGoBack, goBack, navigate } from "../../src/common/navigate";
 
 // navigate() closes open dialogs before touching history.
@@ -32,6 +33,12 @@ describe("navigate", () => {
       scrollPosition: 42,
       from: "/config",
     });
+  });
+
+  it("ignores caller data that is not an object", async () => {
+    await navigate("/config/areas", { data: 42 } as unknown as NavigateOptions);
+
+    expect(window.history.state).toEqual({ from: "/config" });
   });
 
   it("keeps the stamp when replacing, the predecessor is unchanged", async () => {
