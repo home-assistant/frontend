@@ -102,13 +102,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.checkDataBaseMigration();
     }
-    // Wait for `hass.user` to populate so the admin guard can run; it arrives
-    // asynchronously after `hass.config`.
-    if (
-      changedProps.has("hass") &&
-      this.hass?.user &&
-      oldHass?.user !== this.hass.user
-    ) {
+    // Wait for `hass.user` to first populate so the admin guard can run; it
+    // arrives asynchronously after `hass.config`. `hass.user` also gets a fresh
+    // reference at runtime (reconnect, profile refresh via subscribeUser), so
+    // only trigger on the initial population (null -> user). Reconnect re-checks
+    // come from connection-mixin, the launch-screen swap re-check from update().
+    if (changedProps.has("hass") && this.hass?.user && !oldHass?.user) {
       this.checkHttpPendingConfig();
     }
     if (
@@ -136,6 +135,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       // partial-panel-resolver removes the launch screen after the first panel
       // is ready. Native apps request instant removal because their own splash
       // screen covers the frontend until frontend/loaded is sent.
+      // The launch screen is gone now, so it's safe to surface the HTTP pending
+      // config dialog; showing it earlier gets it torn out by this swap.
+      this.checkHttpPendingConfig();
     }
     super.update(changedProps);
   }
@@ -254,6 +256,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected async checkHttpPendingConfig() {
     if (__DEMO__ || this._httpPendingDialogOpen) {
+      return;
+    }
+    // Only show once the main UI is rendered. During startup the root swaps
+    // the launch screen for the app, which clears its shadow root and would
+    // tear the freshly-appended dialog straight back out of the DOM (closing
+    // it). When called too early we skip; the swap in update() re-runs this.
+    if (this.render !== this.renderHass) {
       return;
     }
     if (!this.hass?.user?.is_admin) {
