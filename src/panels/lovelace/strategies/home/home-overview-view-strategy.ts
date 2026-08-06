@@ -11,6 +11,7 @@ import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
+import type { SecurityAlertEntityConfig } from "../../../../data/frontend";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -30,6 +31,7 @@ import type {
   HomeSummaryCard,
   MarkdownCardConfig,
   RepairsCardConfig,
+  SecurityAlertsCardConfig,
   ShortcutCardConfig,
   TileCardConfig,
   UpdatesCardConfig,
@@ -46,6 +48,7 @@ import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
+  alert_entities?: SecurityAlertEntityConfig[];
   favorite_entities?: string[];
   home_panel?: boolean;
   hide_welcome_message?: boolean;
@@ -500,8 +503,24 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           }
         : undefined;
 
+    const alertsSection: LovelaceSectionConfig | undefined = config
+      .alert_entities?.length
+      ? {
+          type: "grid",
+          column_span: maxColumns,
+          cards: [
+            {
+              type: "security-alerts",
+              alert_entities: config.alert_entities,
+              horizontal: true,
+              grid_options: { columns: "full" },
+            } satisfies SecurityAlertsCardConfig,
+          ],
+        }
+      : undefined;
+
     // No sections, show empty state
-    if (floorsSections.length === 0) {
+    if (floorsSections.length === 0 && !alertsSection) {
       return {
         type: "panel",
         cards: [
@@ -553,9 +572,12 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     }
 
     const sections = (
-      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        LovelaceSectionRawConfig | undefined
-      )[]
+      [
+        alertsSection,
+        favoritesSection,
+        mobileSummarySection,
+        ...floorsSections,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
