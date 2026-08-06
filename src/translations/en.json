@@ -3854,7 +3854,7 @@
               },
               "disable_view_transition": {
                 "title": "Disable view transitions",
-                "description": "Disable animated view transitions to prevent browser crash when using browser dev tools."
+                "description": "Disable animated view transitions to prevent browser crash when using browser developer tools."
               },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
@@ -3899,7 +3899,7 @@
             },
             "actions": {
               "title": "Actions",
-              "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
+              "description": "The actions tool allows you to perform any action available in Home Assistant.",
               "call_service": "Perform action",
               "response": "Response",
               "column_parameter": "Parameter",
