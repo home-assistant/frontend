@@ -7004,7 +7004,6 @@
             "allow_login_description": "Allow access using username and password.",
             "create_new_user": "Create a new username",
             "link_existing_user": "Link an existing username",
-            "no_unassigned_users": "No unassigned users found. Please create a new user.",
             "username": "[%key:ui::panel::config::users::editor::username%]",
             "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",

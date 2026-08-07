@@ -452,6 +452,35 @@ class DialogPersonDetail
     if (target.checked) {
       target.checked = false;
 
+      const users = await fetchUsers(this.hass);
+      const currentLinkedUsers = new Set(
+        Object.values(this.hass.states)
+          .filter(
+            (s) =>
+              computeDomain(s.entity_id) === "person" && s.attributes.user_id
+          )
+          .map((s) => s.attributes.user_id)
+      );
+      const eligibleUsers = users.filter(
+        (u) =>
+          !currentLinkedUsers.has(u.id) && !u.system_generated && u.username
+      );
+      const addUserDialog = () =>
+        showAddUserDialog(this, {
+          userAddedCallback: async (user?: User) => {
+            if (user) {
+              target.checked = true;
+              this._linkUser(user, true);
+            }
+          },
+          name: this._name,
+        });
+
+      if (eligibleUsers.length === 0) {
+        addUserDialog();
+        return;
+      }
+
       showListItemsDialog(this, {
         title: this.hass.localize("ui.panel.config.person.detail.allow_login"),
         items: [
@@ -460,16 +489,7 @@ class DialogPersonDetail
             label: this.hass.localize(
               "ui.panel.config.person.detail.create_new_user"
             ),
-            action: () =>
-              showAddUserDialog(this, {
-                userAddedCallback: async (user?: User) => {
-                  if (user) {
-                    target.checked = true;
-                    this._linkUser(user, true);
-                  }
-                },
-                name: this._name,
-              }),
+            action: () => addUserDialog,
           },
           {
             iconPath: mdiAccount,
@@ -477,32 +497,6 @@ class DialogPersonDetail
               "ui.panel.config.person.detail.link_existing_user"
             ),
             action: async () => {
-              const users = await fetchUsers(this.hass);
-              const currentLinkedUsers = new Set(
-                Object.values(this.hass.states)
-                  .filter(
-                    (s) =>
-                      computeDomain(s.entity_id) === "person" &&
-                      s.attributes.user_id
-                  )
-                  .map((s) => s.attributes.user_id)
-              );
-              const eligibleUsers = users.filter(
-                (u) =>
-                  !currentLinkedUsers.has(u.id) &&
-                  !u.system_generated &&
-                  u.username
-              );
-
-              if (eligibleUsers.length === 0) {
-                showAlertDialog(this, {
-                  text: this.hass.localize(
-                    "ui.panel.config.person.detail.no_unassigned_users"
-                  ),
-                });
-                return;
-              }
-
               const selected = await showFormDialog(this, {
                 title: this.hass.localize(
                   "ui.panel.config.person.detail.link_existing_user"
