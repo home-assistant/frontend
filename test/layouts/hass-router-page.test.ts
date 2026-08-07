@@ -93,6 +93,33 @@ class SwapRouter extends HassRouterPage {
   }
 }
 
+let resolveRaceAlphaImport: () => void;
+const raceAlphaImport = new Promise<void>((resolve) => {
+  resolveRaceAlphaImport = resolve;
+});
+
+let resolveRaceBetaImport: () => void;
+const raceBetaImport = new Promise<void>((resolve) => {
+  resolveRaceBetaImport = resolve;
+});
+
+// A router where both routes have to load their module, used to check that a
+// stale load resolving late does not stop `pageRendered` from waiting for the
+// current route.
+class RaceRouter extends HassRouterPage {
+  protected routerOptions: RouterOptions = {
+    showLoading: true,
+    routes: {
+      alpha: { tag: "test-race-alpha-panel", load: () => raceAlphaImport },
+      beta: { tag: "test-race-beta-panel", load: () => raceBetaImport },
+    },
+  };
+
+  public get rendered() {
+    return this.pageRendered;
+  }
+}
+
 customElements.define("test-router", TestRouter);
 customElements.define("test-immediate-panel", ImmediatePanel);
 customElements.define("test-deferred-panel", DeferredPanel);
@@ -101,6 +128,7 @@ customElements.define("test-prop-panel", PropPanel);
 customElements.define("test-swap-router", SwapRouter);
 customElements.define("test-swap-first-panel", SwapFirstPanel);
 customElements.define("test-swap-second-panel", SwapSecondPanel);
+customElements.define("test-race-router", RaceRouter);
 
 let router: TestRouter | undefined;
 
@@ -226,6 +254,44 @@ describe("HassRouterPage update propagation during load", () => {
 
     element.remove();
   });
+
+  it("keeps waiting for the current panel's load when a stale load resolves", async () => {
+    const element = document.createElement("test-race-router") as RaceRouter;
+    element.route = { prefix: "", path: "/alpha" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    // Navigate to beta while alpha's module is still loading.
+    element.route = { prefix: "", path: "/beta" };
+    await element.updateComplete;
+
+    // The stale alpha load resolves late. It must not clear the tracking for
+    // the current (beta) load, or `pageRendered` would resolve too early.
+    resolveRaceAlphaImport();
+    customElements.define(
+      "test-race-alpha-panel",
+      class extends HTMLElement {}
+    );
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    let betaReady = false;
+    element.rendered.then(() => {
+      betaReady = true;
+    });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    expect(betaReady).toBe(false);
+
+    // Beta finishing loading resolves it.
+    resolveRaceBetaImport();
+    customElements.define("test-race-beta-panel", class extends HTMLElement {});
+    await expect(element.rendered).resolves.toBeUndefined();
+
+    element.remove();
+  });
 });
 
 declare global {
@@ -239,5 +305,6 @@ declare global {
     "test-swap-router": SwapRouter;
     "test-swap-first-panel": SwapFirstPanel;
     "test-swap-second-panel": SwapSecondPanel;
+    "test-race-router": RaceRouter;
   }
 }

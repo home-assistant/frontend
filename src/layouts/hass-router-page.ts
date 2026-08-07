@@ -192,7 +192,10 @@ export class HassRouterPage extends ReactiveElement {
     // It will be automatically upgraded when loading done.
     if (!routerOptions.showLoading) {
       const loadComplete = () => {
-        this._currentLoadProm = undefined;
+        // Ignore a stale load that resolves after a newer navigation took over.
+        if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
+        }
       };
       this._currentLoadProm = loadProm.then(loadComplete, loadComplete);
       // The new panel is shown right away, so keep forwarding updates to it
@@ -223,11 +226,11 @@ export class HassRouterPage extends ReactiveElement {
 
     this._currentLoadProm = loadProm.then(
       () => {
-        this._currentLoadProm = undefined;
-        // Check if we're still trying to show the same page.
+        // Ignore a stale load that resolves after a newer navigation took over.
         if (this._currentPage !== newPage) {
           return;
         }
+        this._currentLoadProm = undefined;
 
         created = true;
         this._createPanel(
@@ -240,8 +243,8 @@ export class HassRouterPage extends ReactiveElement {
         this._replacingPanel = false;
       },
       () => {
-        this._currentLoadProm = undefined;
         if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
           this._replacingPanel = false;
         }
       }
