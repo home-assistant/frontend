@@ -10628,6 +10628,11 @@
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
               },
+              "vacuum-fan-speed": {
+                "label": "Vacuum fan speed",
+                "fan_speeds": "Fan speeds",
+                "customize": "Customize fan speeds"
+              },
               "valve-open-close": {
                 "label": "Valve open/close"
               },
