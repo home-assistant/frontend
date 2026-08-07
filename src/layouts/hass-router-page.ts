@@ -55,6 +55,13 @@ export class HassRouterPage extends ReactiveElement {
 
   private _currentLoadProm?: Promise<void>;
 
+  // True while a route change is loading and the outgoing panel (or a loading
+  // screen) is still shown, waiting to be replaced. While true we don't forward
+  // property updates, because they are meant for the incoming panel. It stays
+  // false when the new panel is shown immediately (no loading screen), so that
+  // panel keeps receiving updates while its module finishes loading.
+  private _replacingPanel = false;
+
   private _panelReady = new PanelReady();
 
   private _cache = {};
@@ -79,9 +86,9 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     if (!changedProps.has("route")) {
-      // Do not update if we have a currentLoadProm, because that means
-      // that there is still an old panel shown and we're moving to a new one.
-      if (this.lastChild && !this._currentLoadProm) {
+      // Skip while the outgoing panel is still shown for a pending route
+      // change; the update is meant for the incoming panel, not this one.
+      if (this.lastChild && !this._replacingPanel) {
         this.updatePageEl(this.lastChild, changedProps);
       }
       return;
@@ -188,6 +195,9 @@ export class HassRouterPage extends ReactiveElement {
         this._currentLoadProm = undefined;
       };
       this._currentLoadProm = loadProm.then(loadComplete, loadComplete);
+      // The new panel is shown right away, so keep forwarding updates to it
+      // while its module loads.
+      this._replacingPanel = false;
       this._createPanel(routerOptions, newPage, routeOptions);
       return;
     }
@@ -195,6 +205,9 @@ export class HassRouterPage extends ReactiveElement {
     // We are only going to show the loading screen after some time.
     // That way we won't have a double fast flash on fast connections.
     let created = false;
+    // The outgoing panel stays shown until the new one has loaded; don't
+    // forward updates to it in the meantime.
+    this._replacingPanel = true;
 
     this._showLoadingScreenTimeout = window.setTimeout(() => {
       if (created || this._currentPage !== newPage) {
@@ -223,9 +236,14 @@ export class HassRouterPage extends ReactiveElement {
           // @ts-ignore TS forgot this is not a string.
           routeOptions
         );
+        // The new panel is now shown; resume forwarding updates to it.
+        this._replacingPanel = false;
       },
       () => {
         this._currentLoadProm = undefined;
+        if (this._currentPage === newPage) {
+          this._replacingPanel = false;
+        }
       }
     );
   }
