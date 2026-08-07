@@ -89,6 +89,8 @@ class DialogPersonDetail
 
   @state() private _open = false;
 
+  private _linkedExistingUser = false;
+
   private _deviceTrackersAvailable = memoizeOne((hass) =>
     Object.keys(hass.states).some(
       (entityId) =>
@@ -144,7 +146,7 @@ class DialogPersonDetail
   private _dialogClosed() {
     // If we do not have a person ID yet (= person creation dialog was just cancelled), but
     // we already created a user ID for it, delete it now to not have it "free floating".
-    if (!this._personExists && this._userId) {
+    if (!this._personExists && this._userId && !this._linkedExistingUser) {
       const callback = this._params?.refreshUsers;
       deleteUser(this.hass, this._userId).then(() => {
         callback?.();
@@ -431,6 +433,7 @@ class DialogPersonDetail
   }
 
   private async _linkUser(user: User, newUser: boolean) {
+    this._linkedExistingUser = !newUser;
     if (this._params!.entry && this._params!.updateEntry) {
       await this._params!.updateEntry({ user_id: user.id });
     }
