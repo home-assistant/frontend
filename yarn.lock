@@ -10008,7 +10008,7 @@ __metadata:
     lodash.template: "npm:4.18.1"
     luxon: "npm:3.7.2"
     map-stream: "npm:0.0.7"
-    marked: "npm:18.0.7"
+    marked: "npm:18.0.9"
     memoize-one: "npm:6.0.0"
     minify-literals: "npm:2.1.0"
     node-vibrant: "npm:4.0.4"
@@ -11651,12 +11651,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:18.0.7":
-  version: 18.0.7
-  resolution: "marked@npm:18.0.7"
+"marked@npm:18.0.9":
+  version: 18.0.9
+  resolution: "marked@npm:18.0.9"
   bin:
     marked: bin/marked.js
-  checksum: 10/7ea7b8556a9e8cab2881b194815a7550c61d77639c6b8f8d9022f96790fd2b289b2ea28969cea6e01c24c3b8ec822373288ee02b7c50f178bc3ec79aa42d05f1
+  checksum: 10/99d337c50acd57034734f8460f25b28e9658b15627f950092707cb443b840f0bd29fe343bf211b948e643303c34abdb5b5a12cf5245a846635750697524bb747
   languageName: node
   linkType: hard
 
