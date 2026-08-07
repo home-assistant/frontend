@@ -52,7 +52,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "timer":
       return compareState === "active";
     case "camera":
-      return compareState === "streaming";
+      return compareState !== "idle";
   }
 
   return true;
