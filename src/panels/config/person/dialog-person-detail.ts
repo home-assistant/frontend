@@ -1,4 +1,4 @@
-import { mdiPencil } from "@mdi/js";
+import { mdiAccount, mdiAccountPlus, mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,6 +19,7 @@ import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
 import {
   deleteUser,
+  fetchUsers,
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
   updateUser,
@@ -36,6 +37,9 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
 import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
+import { showListItemsDialog } from "../../../dialogs/dialog-list-items/show-list-items-dialog";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { showFormDialog } from "../../../dialogs/form/show-form-dialog";
 
 const includeDomains = ["device_tracker"];
 
@@ -426,26 +430,107 @@ class DialogPersonDetail
     this._updateDirtyState(this._currentState());
   }
 
+  private async _linkUser(user: User, newUser: boolean) {
+    if (this._params!.entry && this._params!.updateEntry) {
+      await this._params!.updateEntry({ user_id: user.id });
+    }
+    if (newUser) {
+      this._params?.refreshUsers?.();
+    }
+    this._user = user;
+    this._userId = user.id;
+    this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+    this._localOnly = user.local_only;
+    this._updateDirtyState(this._currentState());
+  }
+
   private async _allowLoginChanged(ev): Promise<void> {
     const target = ev.target;
     if (target.checked) {
       target.checked = false;
-      showAddUserDialog(this, {
-        userAddedCallback: async (user?: User) => {
-          if (user) {
-            target.checked = true;
-            if (this._params!.entry && this._params!.updateEntry) {
-              await this._params!.updateEntry({ user_id: user.id });
-            }
-            this._params?.refreshUsers?.();
-            this._user = user;
-            this._userId = user.id;
-            this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
-            this._localOnly = user.local_only;
-            this._updateDirtyState(this._currentState());
-          }
-        },
-        name: this._name,
+
+      showListItemsDialog(this, {
+        title: this.hass.localize("ui.panel.config.person.detail.allow_login"),
+        items: [
+          {
+            iconPath: mdiAccountPlus,
+            label: this.hass.localize(
+              "ui.panel.config.person.detail.create_new_user"
+            ),
+            action: () =>
+              showAddUserDialog(this, {
+                userAddedCallback: async (user?: User) => {
+                  if (user) {
+                    target.checked = true;
+                    this._linkUser(user, true);
+                  }
+                },
+                name: this._name,
+              }),
+          },
+          {
+            iconPath: mdiAccount,
+            label: this.hass.localize(
+              "ui.panel.config.person.detail.link_existing_user"
+            ),
+            action: async () => {
+              const users = await fetchUsers(this.hass);
+              const currentLinkedUsers = new Set(
+                Object.values(this.hass.states)
+                  .filter(
+                    (s) =>
+                      computeDomain(s.entity_id) === "person" &&
+                      s.attributes.user_id
+                  )
+                  .map((s) => s.attributes.user_id)
+              );
+              const eligibleUsers = users.filter(
+                (u) =>
+                  !currentLinkedUsers.has(u.id) &&
+                  !u.system_generated &&
+                  u.username
+              );
+
+              if (eligibleUsers.length === 0) {
+                showAlertDialog(this, {
+                  text: this.hass.localize(
+                    "ui.panel.config.person.detail.no_unassigned_users"
+                  ),
+                });
+                return;
+              }
+
+              const selected = await showFormDialog(this, {
+                title: this.hass.localize(
+                  "ui.panel.config.person.detail.link_existing_user"
+                ),
+                schema: [
+                  {
+                    name: "user",
+                    selector: {
+                      select: {
+                        options: eligibleUsers.map((u) => ({
+                          value: u.id,
+                          label: `${u.name} (${u.username})`,
+                        })),
+                      },
+                    },
+                    required: true,
+                  },
+                ],
+                computeLabel: () =>
+                  this.hass.localize("ui.panel.config.person.detail.username"),
+                data: {},
+              });
+              if (selected) {
+                this._linkUser(
+                  eligibleUsers.find((u) => selected.user === u.id)!,
+                  false
+                );
+              }
+            },
+          },
+        ],
       });
     } else if (this._userId) {
       if (
