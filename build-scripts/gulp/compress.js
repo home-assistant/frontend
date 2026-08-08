@@ -3,6 +3,7 @@
 import { constants } from "node:zlib";
 import gulp from "gulp";
 import brotli from "../brotli.mjs";
+import { pruneCache } from "../compress-cache.mjs";
 import paths from "../paths.cjs";
 import zopfli from "../zopfli.mjs";
 
@@ -57,3 +58,7 @@ gulp.task(
     compressAppOtherZopfli
   )
 );
+
+// Drop cache entries this build didn't use, keeping the compression cache
+// bounded. No-op unless COMPRESS_CACHE_DIR is set.
+gulp.task("prune-compress-cache", () => pruneCache());
