@@ -2142,6 +2142,13 @@
           "icon": "Icon",
           "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
+        "input_boolean": {
+          "initial": "Each time Home Assistant starts",
+          "initial_helper": "Changing this does not affect the toggle right now.",
+          "restore": "Restore previous state",
+          "turn_on": "Turn on",
+          "turn_off": "Turn off"
+        },
         "input_datetime": {
           "date": "Date",
           "time": "Time",
