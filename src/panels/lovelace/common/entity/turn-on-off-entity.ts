@@ -10,7 +10,7 @@ export const turnOnOffEntity = (
   const stateDomain = computeDomain(entityId);
   const serviceDomain = stateDomain === "group" ? "homeassistant" : stateDomain;
 
-  const service = getToggleAction(stateDomain, turnOn);
+  const service = getToggleAction(stateDomain, turnOn, hass.states[entityId]);
 
   return hass.callService(serviceDomain, service, { entity_id: entityId });
 };
