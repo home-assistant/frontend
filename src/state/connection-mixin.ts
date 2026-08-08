@@ -300,7 +300,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         const updatedAreas = preserveUnchangedRecord(
           this.hass?.areas,
           areas,
-          deepEqual
+          deepEqual,
+          true
         );
         if (updatedAreas !== this.hass?.areas) {
           this._updateHass({ areas: updatedAreas });
@@ -314,7 +315,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         const updatedFloors = preserveUnchangedRecord(
           this.hass?.floors,
           floors,
-          deepEqual
+          deepEqual,
+          true
         );
         if (updatedFloors !== this.hass?.floors) {
           this._updateHass({ floors: updatedFloors });
