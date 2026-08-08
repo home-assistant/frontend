@@ -25,7 +25,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       import("../dialogs/more-info/ha-more-info-dialog");
     }
 
-    private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
+    private async _handleMoreInfo(
+      ev: HASSDomEvent<HASSDomEvents["hass-more-info"]>
+    ) {
       showDialog(
         this,
         "ha-more-info-dialog",

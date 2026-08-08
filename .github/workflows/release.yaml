@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@e3fb68ebda13d88a0d695082f471ba2c83d025fb # master
+        uses: home-assistant/actions/helpers/verify-version@ab22029681aa532bfe7de5774a9972d67bfbd2c0 # master
 
       - name: Setup Node and install
         uses: ./.github/actions/setup
@@ -76,19 +76,21 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           version=$(echo "$GITHUB_REF" | awk -F"/" '{print $NF}' )
-          # Wait for the package to become available on PyPI
-          echo "Waiting for home-assistant-frontend==$version to appear on PyPI..."
+          # Wait for the exact wheel to appear on the simple index (the surface
+          # the wheels build's pip uses). The JSON API can report a version as
+          # available before it propagates here, which fails the wheels build.
+          wheel="home_assistant_frontend-${version}-py3-none-any.whl"
+          echo "Waiting for $wheel to appear on the PyPI simple index..."
           for i in $(seq 1 30); do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/home-assistant-frontend/$version/json")
-            if [ "$status" = "200" ]; then
-              echo "Package is available on PyPI!"
+            if curl -sf "https://pypi.org/simple/home-assistant-frontend/" | grep -qF "$wheel"; then
+              echo "Package is available on the PyPI simple index!"
               break
             fi
             if [ "$i" = "30" ]; then
               echo "Timed out waiting for package to appear on PyPI"
               exit 1
             fi
-            echo "Not available yet (HTTP $status), retrying in 30 seconds... ($i/30)"
+            echo "Not available yet, retrying in 30 seconds... ($i/30)"
             sleep 30
           done
           echo "home-assistant-frontend==$version" > ./requirements.txt

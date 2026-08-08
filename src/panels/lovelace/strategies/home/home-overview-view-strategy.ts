@@ -587,10 +587,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       ...(sidebarSection && {
         sidebar: {
           sections: [sidebarSection],
-          content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
-          sidebar_label: hass.localize(
-            "ui.panel.lovelace.strategy.home.summaries"
-          ),
           visibility: [LARGE_SCREEN_CONDITION],
         },
       }),

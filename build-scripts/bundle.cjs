@@ -311,7 +311,15 @@ module.exports.config = {
     return {
       name: "e2e-test-app" + nameSuffix(latestBuild),
       entry: {
+        dashboard: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/dashboard-entrypoint.ts"
+        ),
         main: path.resolve(paths.e2eTestApp_dir, "src/entrypoint.ts"),
+        onboarding: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/onboarding-entrypoint.ts"
+        ),
       },
       outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
       publicPath: publicPath(latestBuild),

@@ -15,7 +15,7 @@ import type { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for add event listener
   interface HTMLElementEventMap {
-    settheme: HASSDomEvent<Partial<HomeAssistant["selectedTheme"]>>;
+    settheme: HASSDomEvent<HASSDomEvents["settheme"]>;
   }
   interface HASSDomEvents {
     settheme: Partial<HomeAssistant["selectedTheme"]>;
