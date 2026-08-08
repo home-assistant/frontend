@@ -123,8 +123,9 @@ export class HuiCardPicker extends LitElement {
       };
       const fuse = new Fuse(cards, options);
       cards = fuse.search(filter).map((result) => result.item);
-      return cardElements.filter((cardElement: CardElement) =>
-        cards.includes(cardElement.card)
+      return cardElements.filter(
+        (cardElement: CardElement) =>
+          cards.includes(cardElement.card) && cardElement.card.type !== "manual"
       );
     }
   );
@@ -140,7 +141,9 @@ export class HuiCardPicker extends LitElement {
     (cardElements: CardElement[]): CardElement[] =>
       cardElements.filter(
         (cardElement: CardElement) =>
-          !cardElement.card.isCustom && !cardElement.card.isEnergy
+          !cardElement.card.isCustom &&
+          !cardElement.card.isEnergy &&
+          !(cardElement.card.type === "manual")
       )
   );
 
@@ -149,6 +152,12 @@ export class HuiCardPicker extends LitElement {
       cardElements.filter(
         (cardElement: CardElement) => cardElement.card.isEnergy
       )
+  );
+
+  private _manualCard = memoizeOne((cardElements: CardElement[]): CardElement =>
+    cardElements.find(
+      (cardElement: CardElement) => cardElement.card.type === "manual"
+    )!
   );
 
   private _favoriteCards(): CardElement[] {
@@ -160,9 +169,10 @@ export class HuiCardPicker extends LitElement {
   // A preview is a live DOM node, so every section a card shows up in needs
   // its own element.
   private _toCardElement(card: Card): CardElement {
+    const config = card.type === "manual" ? { type: "" } : undefined;
     return {
       card,
-      element: html`${until(this._renderCardElement(card), SPINNER)}`,
+      element: html`${until(this._renderCardElement(card, config), SPINNER)}`,
     };
   }
 
@@ -194,6 +204,7 @@ export class HuiCardPicker extends LitElement {
     const othersCards = this._otherCards(this._cards);
     const energyCardsItems = this._energyCards(this._cards);
     const customCardsItems = this._customCards(this._cards);
+    const manualCard = this._manualCard(this._cards);
 
     return html`
       <ha-input-search
@@ -334,25 +345,7 @@ export class HuiCardPicker extends LitElement {
                 }
               `
         }
-        <div class="cards-container">
-          <div
-            class="card manual"
-            @click=${this._cardPicked}
-            .config=${{ type: "" }}
-          >
-            <div class="card-header">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual`
-              )}
-            </div>
-            <div class="preview description">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.generic.manual_description`
-              )}
-            </div>
-            <ha-ripple></ha-ripple>
-          </div>
-        </div>
+        <div class="cards-container">${this._renderCard(manualCard, true)}</div>
       </div>
     `;
   }
@@ -443,6 +436,13 @@ export class HuiCardPicker extends LitElement {
           )
       );
     }
+    cards = cards.concat({
+      type: "manual",
+      name: this.hass!.localize("ui.panel.lovelace.editor.card.generic.manual"),
+      description: this.hass!.localize(
+        "ui.panel.lovelace.editor.card.generic.manual_description"
+      ),
+    });
     this._cards = cards.map((card: Card) => this._toCardElement(card));
     this._suggestedCards = cards
       .filter((card: Card) => card.isSuggested)
@@ -481,12 +481,12 @@ export class HuiCardPicker extends LitElement {
     }
   );
 
-  private _renderCard(cardElement: CardElement): TemplateResult {
+  private _renderCard(cardElement: CardElement, wide = false): TemplateResult {
     const key = cardKey(cardElement.card);
     const favorite = this._favorites.includes(key);
 
     return html`
-      <div class="card" tabindex="0">
+      <div class="card ${classMap({ "full-width": wide })}" tabindex="0">
         ${cardElement.element}
         <ha-icon-button
           class="favorite ${classMap({ selected: favorite })}"
@@ -832,7 +832,7 @@ export class HuiCardPicker extends LitElement {
           );
         }
 
-        .manual {
+        .full-width {
           max-width: none;
           grid-column: 1 / -1;
         }

@@ -15,7 +15,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import type { ImageElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
 import { ACTION_RELATED_CONTEXT } from "../../../components/hui-action-editor";
@@ -159,7 +159,7 @@ export class HuiImageElementEditor
       : {}),
   }));
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<ImageElementConfig>): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 

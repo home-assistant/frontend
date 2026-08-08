@@ -1,4 +1,5 @@
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -54,6 +55,10 @@ import type { ImprovDiscoveredDevice } from "../../../external_app/external_mess
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import type { HassTabsSubpage } from "../../../layouts/hass-tabs-subpage";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -167,6 +172,17 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
   @query("hass-tabs-subpage") private _tabsSubpage?: HassTabsSubpage;
+
+  private _resolveInitialRender?: () => void;
+
+  private _initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
+  private _childReadyRegistered = false;
+
+  @consume({ context: childPanelReadyContext, subscribe: true })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -388,6 +404,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   protected updated(changed: PropertyValues<this>) {
     super.updated(changed);
+    if (!this._childReadyRegistered && this._registerChildPanelReady) {
+      this._registerChildPanelReady(this._initialRenderComplete);
+      this._childReadyRegistered = true;
+    }
     if (changed.has("route")) {
       this._handleRouteChanged();
     }
@@ -415,6 +435,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
 
     if (this.configEntries && this.configEntriesInProgress) {
+      this._resolveInitialRender?.();
+      this._resolveInitialRender = undefined;
+
       const activeElement = deepActiveElement();
 
       if (

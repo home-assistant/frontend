@@ -19,7 +19,7 @@ import type { LanguageScore, LanguageScores } from "../../data/conversation";
 import { getLanguageScores, listAgents } from "../../data/conversation";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
@@ -265,8 +265,8 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
   }
 
   private async _createCloudPipeline(useLanguage: boolean): Promise<boolean> {
-    let cloudTtsEntityId;
-    let cloudSttEntityId;
+    let cloudTtsEntityId: string | undefined;
+    let cloudSttEntityId: string | undefined;
     for (const entity of Object.values(this.hass.entities)) {
       if (entity.platform === "cloud") {
         const domain = computeDomain(entity.entity_id);
@@ -327,7 +327,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
         const ttsVoices = await listTTSVoices(
           this.hass,
-          cloudTtsEntityId,
+          cloudTtsEntityId!,
           ttsEngine.supported_languages[0]
         );
 
@@ -357,9 +357,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           language: (this.language || this.hass.config.language).split("-")[0],
           conversation_engine: "conversation.home_assistant",
           conversation_language: agent.supported_languages[0],
-          stt_engine: cloudSttEntityId,
+          stt_engine: cloudSttEntityId!,
           stt_language: sttEngine.supported_languages[0],
-          tts_engine: cloudTtsEntityId,
+          tts_engine: cloudTtsEntityId!,
           tts_language: ttsEngine.supported_languages[0],
           tts_voice: ttsVoices.voices![0].voice_id,
           wake_word_entity: null,
@@ -380,7 +380,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(
+    ev: ValueChangedEvent<(typeof OPTIONS)[number] | undefined>
+  ) {
     this._value = ev.detail.value;
   }
 
@@ -410,7 +412,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     fireEvent(this, "next-step", { step: STEP.LOCAL, option: this._value });
   }
 
-  private _languageChanged(ev: CustomEvent) {
+  private _languageChanged(ev: ValueChangedEvent<string | undefined>) {
     if (!ev.detail.value) {
       return;
     }

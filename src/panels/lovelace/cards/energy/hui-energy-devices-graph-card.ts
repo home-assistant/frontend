@@ -192,6 +192,7 @@ export class HuiEnergyDevicesGraphCard
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
+            .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}

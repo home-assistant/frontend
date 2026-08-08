@@ -4,7 +4,7 @@
  * Run with:
  *   yarn test:e2e:app
  */
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import {
   appSidebar,
   appSidebarConfig,
@@ -161,65 +161,100 @@ test.describe("Quick search", () => {
 
 defineRouteSmokeTests(appRouteSmokeGroups);
 
-const assertInitialReadiness = async (
-  page: Page,
-  options: {
+test("keeps the launch screen until initial panel content renders", async ({
+  page,
+}) => {
+  const cases: {
+    name: string;
     path: string;
     loadingSelector: string;
-    resolver:
-      "rejectMediaBrowse" | "resolveCalendarRegistry" | "resolveMediaBrowse";
     readySelector: string;
-  }
-) => {
-  await goToPanel(page, options.path);
-
-  const launchScreen = page.locator("#ha-launch-screen");
-  await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-  await expect(page.locator(options.loadingSelector)).toBeAttached({
-    timeout: QUICK_TIMEOUT,
-  });
-
-  await page.evaluate((resolver) => window[resolver]?.(), options.resolver);
-
-  await expect(page.locator(options.readySelector)).toBeAttached({
-    timeout: PANEL_TIMEOUT,
-  });
-  await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-};
-
-test.describe("Initial readiness", () => {
-  test("keeps the launch screen until calendar content renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+    resolvers: (
+      | "rejectMediaBrowse"
+      | "resolveCalendarRegistry"
+      | "resolveConfigEntries"
+      | "resolveConfigEntriesInProgress"
+      | "resolveGeneratedDashboard"
+      | "resolveLovelaceConfig"
+      | "resolveMediaBrowse"
+    )[];
+  }[] = [
+    {
+      name: "calendar",
       path: "/?scenario=delayed-calendar#/calendar",
       loadingSelector: "ha-panel-calendar ha-spinner",
-      resolver: "resolveCalendarRegistry",
       readySelector: "ha-full-calendar",
-    });
-  });
-
-  test("keeps the launch screen until media content renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+      resolvers: ["resolveCalendarRegistry"],
+    },
+    {
+      name: "media browser",
       path: "/?scenario=delayed-media-browse#/media-browser/browser",
       loadingSelector: "ha-media-player-browse > ha-spinner",
-      resolver: "resolveMediaBrowse",
       readySelector: "ha-media-player-browse .no-items",
-    });
-  });
-
-  test("keeps the launch screen until a media error renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+      resolvers: ["resolveMediaBrowse"],
+    },
+    {
+      name: "integrations",
+      path: "/?scenario=delayed-integrations#/config/integrations",
+      loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
+      readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
+      resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "media browser error",
       path: "/?scenario=delayed-media-browse-error#/media-browser/browser",
       loadingSelector: "ha-media-player-browse > ha-spinner",
-      resolver: "rejectMediaBrowse",
       readySelector: "ha-media-player-browse ha-alert",
+      resolvers: ["rejectMediaBrowse"],
+    },
+    {
+      name: "generated dashboard",
+      path: "/?scenario=delayed-generated-dashboard#/climate",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-view",
+      resolvers: ["resolveGeneratedDashboard"],
+    },
+    {
+      name: "Lovelace dashboard",
+      path: "/?scenario=delayed-lovelace#/lovelace",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveLovelaceConfig"],
+    },
+  ];
+
+  for (const readinessCase of cases) {
+    // eslint-disable-next-line no-await-in-loop
+    await test.step(readinessCase.name, async () => {
+      await goToPanel(page, readinessCase.path);
+
+      const launchScreen = page.locator("#ha-launch-screen");
+      const loadingScreen = page.locator(readinessCase.loadingSelector);
+      const readyContent = page.locator(readinessCase.readySelector).first();
+      await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(loadingScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(readyContent).not.toBeAttached();
+
+      await readinessCase.resolvers.reduce(
+        async (previousResolver, resolver, index) => {
+          await previousResolver;
+          await page.evaluate((resolverName) => {
+            window[resolverName]?.();
+          }, resolver);
+
+          if (index < readinessCase.resolvers.length - 1) {
+            await expect(launchScreen).toBeAttached();
+            await expect(loadingScreen).toBeAttached();
+            await expect(readyContent).not.toBeAttached();
+          }
+        },
+        Promise.resolve()
+      );
+
+      await expect(readyContent).toBeAttached({ timeout: PANEL_TIMEOUT });
+      await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
     });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -227,40 +262,6 @@ test.describe("Initial readiness", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Lovelace dashboard", () => {
-  test("keeps the launch screen until generated content renders", async ({
-    page,
-  }) => {
-    await goToPanel(page, "/?scenario=delayed-generated-dashboard#/climate");
-
-    const launchScreen = page.locator("#ha-launch-screen");
-    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(page.locator("hui-view")).not.toBeAttached();
-
-    await page.evaluate(() => window.resolveGeneratedDashboard?.());
-
-    await expect(page.locator("hui-view")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-  });
-
-  test("keeps the launch screen until initial content renders", async ({
-    page,
-  }) => {
-    await goToPanel(page, "/?scenario=delayed-lovelace#/lovelace");
-
-    const launchScreen = page.locator("#ha-launch-screen");
-    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(page.locator("hui-card")).not.toBeAttached();
-
-    await page.evaluate(() => window.resolveLovelaceConfig?.());
-
-    await expect(page.locator("hui-card").first()).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-  });
-
   test("renders cards", async ({ page }) => {
     await goToPanel(page, "/lovelace");
     // At least one card should appear
