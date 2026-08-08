@@ -85,6 +85,10 @@ export class HuiImage extends LitElement {
 
   private _cameraUpdater?: number;
 
+  private _cameraImageEtag?: string;
+
+  private _cameraImageObjectUrl?: string;
+
   private _ratio: {
     w: number;
     h: number;
@@ -105,6 +109,7 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
     this._imageVisible = undefined;
+    this._clearCameraImage();
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
@@ -121,7 +126,7 @@ export class HuiImage extends LitElement {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
         this._loadState = LoadState.Loading;
-        this._cameraImageSrc = undefined;
+        this._clearCameraImage();
         this._loadedImageSrc = undefined;
       }
     }
@@ -442,15 +447,58 @@ export class HuiImage extends LitElement {
     } else {
       height = Math.ceil(this._lastImageHeight * devicePixelRatio);
     }
-    this._cameraImageSrc = await fetchThumbnailUrlWithCache(
+    const url = await fetchThumbnailUrlWithCache(
       this.hass,
       this.cameraImage,
       width,
       height
     );
-    if (this._cameraImageSrc === undefined) {
-      this._onImageError();
+    // The signed URL is regenerated on every poll, so the browser cache can
+    // never revalidate it. Send If-None-Match ourselves instead.
+    const headers: Record<string, string> = {};
+    if (this._cameraImageEtag) {
+      headers["If-None-Match"] = this._cameraImageEtag;
     }
+
+    let response: Response;
+    try {
+      response = await fetch(url, { headers });
+    } catch (_err) {
+      this._onImageError();
+      return;
+    }
+
+    // Unchanged since the last poll. Keeping the current object URL avoids
+    // restarting animated images (GIF/WebP) part-way through playback. The
+    // empty body still has to be consumed, or the request is torn down as
+    // aborted and the connection cannot be reused.
+    if (response.status === 304) {
+      await response.arrayBuffer();
+      return;
+    }
+
+    if (!response.ok) {
+      this._onImageError();
+      return;
+    }
+
+    this._cameraImageEtag = response.headers.get("etag") ?? undefined;
+
+    const previousObjectUrl = this._cameraImageObjectUrl;
+    this._cameraImageObjectUrl = URL.createObjectURL(await response.blob());
+    this._cameraImageSrc = this._cameraImageObjectUrl;
+    if (previousObjectUrl) {
+      URL.revokeObjectURL(previousObjectUrl);
+    }
+  }
+
+  private _clearCameraImage(): void {
+    if (this._cameraImageObjectUrl) {
+      URL.revokeObjectURL(this._cameraImageObjectUrl);
+      this._cameraImageObjectUrl = undefined;
+    }
+    this._cameraImageEtag = undefined;
+    this._cameraImageSrc = undefined;
   }
 
   static styles = css`
