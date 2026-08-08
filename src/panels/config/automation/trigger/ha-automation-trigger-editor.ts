@@ -48,11 +48,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
       <div
         class=${classMap({
           "card-content": true,
-          disabled:
-            this.disabled ||
-            ("enabled" in this.trigger &&
-              this.trigger.enabled === false &&
-              !this.yamlMode),
+          disabled: this.disabled,
           yaml: yamlMode,
           card: !this.inSidebar,
         })}

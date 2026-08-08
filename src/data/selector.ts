@@ -397,6 +397,9 @@ export interface NumberSelector {
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
+    // Shown instead of the browser's native message when the value fails
+    // min/max/step constraint validation.
+    validation_message?: string;
   } | null;
 }
 

@@ -3,7 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../common/language/format_language";
 import "../../components/chips/ha-assist-chip";
@@ -18,7 +18,7 @@ import { getLanguageScores } from "../../data/conversation";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
@@ -337,7 +337,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._language = ev.detail.item.value;
   }
 
-  private _languageChanged(ev: CustomEvent) {
+  private _languageChanged(ev: ValueChangedEvent<string | undefined>) {
     if (!ev.detail.value) {
       return;
     }
@@ -351,7 +351,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._step = this._previousSteps.pop()!;
   }
 
-  private async _goToNextStep(ev?: CustomEvent) {
+  private async _goToNextStep(ev?: HASSDomEvent<HASSDomEvents["next-step"]>) {
     if (ev?.detail?.updateConfig) {
       await this._fetchAssistConfiguration();
     }

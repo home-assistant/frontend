@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
@@ -211,7 +212,9 @@ class DialogMatterLockManage extends LitElement {
     `;
   }
 
-  private _handleUserClick(ev: Event): void {
+  private _handleUserClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { user: MatterLockUser }>
+  ): void {
     // Ignore clicks that originated from the delete button
     const path = ev.composedPath();
     if (path.some((el) => (el as HTMLElement).tagName === "HA-ICON-BUTTON")) {
@@ -221,7 +224,9 @@ class DialogMatterLockManage extends LitElement {
     this._editUser(user);
   }
 
-  private _handleDeleteUserClick(ev: Event): void {
+  private _handleDeleteUserClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { user: MatterLockUser }>
+  ): void {
     ev.preventDefault();
     ev.stopPropagation();
     const user = (ev.currentTarget as any).user as MatterLockUser;

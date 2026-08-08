@@ -94,6 +94,8 @@ declare global {
     __mockHass: MockHomeAssistant;
     rejectMediaBrowse?: () => void;
     resolveCalendarRegistry?: () => void;
+    resolveConfigEntries?: () => void;
+    resolveConfigEntriesInProgress?: () => void;
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;

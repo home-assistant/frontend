@@ -228,6 +228,7 @@ export default [
       "entity-state",
       "ha-markdown",
       "integration-card",
+      "cloud-account",
       "box-shadow",
       "util-long-press",
       "remove-delete-add-create",

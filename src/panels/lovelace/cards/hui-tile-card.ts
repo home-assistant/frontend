@@ -147,7 +147,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _handleIconAction(ev: CustomEvent) {
+  private _handleIconAction(ev: ActionHandlerEvent) {
     ev.stopPropagation();
     const config = {
       entity: this._config!.entity,

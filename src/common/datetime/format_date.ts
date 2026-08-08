@@ -283,3 +283,26 @@ export const formatCallyDateRange = (
 
   return `${startDate}/${endDate}`;
 };
+
+/**
+ * August 2021, for calendar days coming out of cally.
+ *
+ * cally hands out calendar days as `Date` objects anchored to UTC midnight, and
+ * formats its own headings in UTC too. Anything derived from a cally event has
+ * to be formatted the same way: the resolved time zone shifts the day back for
+ * negative UTC offsets, which becomes a wrong month — and in January a wrong
+ * year — whenever the day is the 1st.
+ */
+export const formatCallyMonthYear = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatCallyMonthYearMem(locale.language).format(dateObj);
+
+const formatCallyMonthYearMem = memoizeOne(
+  (language: string) =>
+    new Intl.DateTimeFormat(language, {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    })
+);

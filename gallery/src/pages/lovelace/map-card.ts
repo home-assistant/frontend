@@ -1,7 +1,9 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { MapCardConfig } from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 
 const ENTITIES = [
@@ -86,107 +88,101 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Without title",
-    config: `
-- type: map
-  entities:
-    - entity: device_tracker.demo_paulus
-    - device_tracker.demo_home_boy
-    - zone.home
-    `,
+    config: {
+      type: "map",
+      entities: [
+        { entity: "device_tracker.demo_paulus" },
+        "device_tracker.demo_home_boy",
+        "zone.home",
+      ],
+    },
   },
   {
     heading: "With title",
-    config: `
-- type: map
-  entities:
-    - entity: device_tracker.demo_paulus
-    - zone.home
-  title: Where is Paulus?
-    `,
+    config: {
+      type: "map",
+      entities: [{ entity: "device_tracker.demo_paulus" }, "zone.home"],
+      title: "Where is Paulus?",
+    },
   },
   {
     heading: "Height-Width 1:2",
-    config: `
-- type: map
-  entities:
-    - entity: device_tracker.demo_paulus
-    - zone.home
-  aspect_ratio: 50%
-    `,
+    config: {
+      type: "map",
+      entities: [{ entity: "device_tracker.demo_paulus" }, "zone.home"],
+      aspect_ratio: "50%",
+    },
   },
   {
     heading: "Default Zoom",
-    config: `
-- type: map
-  default_zoom: 12
-  entities:
-    - entity: device_tracker.demo_paulus
-    - zone.home
-    `,
+    config: {
+      type: "map",
+      default_zoom: 12,
+      entities: [{ entity: "device_tracker.demo_paulus" }, "zone.home"],
+    },
   },
   {
     heading: "Default Zoom too High",
-    config: `
-- type: map
-  default_zoom: 20
-  entities:
-    - entity: device_tracker.demo_paulus
-    - zone.home
-    `,
+    config: {
+      type: "map",
+      default_zoom: 20,
+      entities: [{ entity: "device_tracker.demo_paulus" }, "zone.home"],
+    },
   },
   {
     heading: "Single Marker",
-    config: `
-- type: map
-  entities:
-    - device_tracker.demo_paulus
-    `,
+    config: {
+      type: "map",
+      entities: ["device_tracker.demo_paulus"],
+    },
   },
   {
     heading: "Single Marker Default Zoom",
-    config: `
-- type: map
-  default_zoom: 8
-  entities:
-    - device_tracker.demo_paulus
-    `,
+    config: {
+      type: "map",
+      default_zoom: 8,
+      entities: ["device_tracker.demo_paulus"],
+    },
   },
   {
     heading: "No Entities",
-    config: `
-- type: map
-  entities:
-    - light.bed_light
-    `,
+    config: {
+      type: "map",
+      entities: ["light.bed_light"],
+    },
   },
   {
     heading: "No Entities, Default Zoom",
-    config: `
-- type: map
-  default_zoom: 8
-  entities:
-    - light.bed_light
-    `,
+    config: {
+      type: "map",
+      default_zoom: 8,
+      entities: ["light.bed_light"],
+    },
   },
   {
     heading: "Geo Location Entities",
-    config: `
-- type: map
-  geo_location_sources:
-    - bushfire_demo
-    `,
+    config: {
+      type: "map",
+      geo_location_sources: ["bushfire_demo"],
+    },
   },
   {
     heading: "Geo Location Entities with Home Zone",
-    config: `
-- type: map
-  geo_location_sources:
-    - bushfire_demo
-  entities:
-    - zone.bushfire
-    `,
+    config: {
+      type: "map",
+      geo_location_sources: ["bushfire_demo"],
+      entities: ["zone.bushfire"],
+    },
   },
-];
+  {
+    heading: "Scale ruler",
+    config: {
+      type: "map",
+      scale_ruler: true,
+      entities: ["zone.home"],
+    },
+  },
+] satisfies DemoCardConfig<MapCardConfig>[];
 
 @customElement("demo-lovelace-map-card")
 class DemoMap extends LitElement {

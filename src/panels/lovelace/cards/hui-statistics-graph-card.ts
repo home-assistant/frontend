@@ -296,6 +296,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       await this._getStatisticsMetaData(this._entityIds);
     }
     await this._getStatistics();
+    if (!this.isConnected) {
+      this._interval = undefined;
+      return;
+    }
     // statistics are created every hour
     if (!this._config?.energy_date_selection) {
       this._interval = window.setInterval(

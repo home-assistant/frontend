@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
@@ -7,6 +8,7 @@ import { navigate } from "../common/navigate";
 import type { CustomPanelInfo } from "../data/panel_custom";
 import { baseEntrypointStyles } from "../resources/styles";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
+import { dropRealmCollections } from "../util/custom-panel/drop-realm-collections";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 
@@ -29,8 +31,14 @@ window.loadES5Adapter = () => {
 
 let panelEl: HTMLElement | undefined;
 let initialized = false;
+// Kept so we can clean up after ourselves on pagehide without depending on
+// `window.parent.customPanel`, which `_cleanupPanel()` may already have deleted.
+let connection: Connection | undefined;
 
 function setProperties(properties) {
+  if (properties.hass?.connection) {
+    connection = properties.hass.connection;
+  }
   if (!panelEl) {
     return;
   }
@@ -149,5 +157,10 @@ window.addEventListener("pagehide", () => {
   // allow disconnected callback to fire
   while (document.body.lastChild) {
     document.body.removeChild(document.body.lastChild);
+  }
+  // The connection is owned by the main window and outlives this realm, so any
+  // collection we created on it has to go with us.
+  if (connection) {
+    dropRealmCollections(connection);
   }
 });
