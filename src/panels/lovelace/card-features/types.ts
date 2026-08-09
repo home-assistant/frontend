@@ -47,6 +47,11 @@ export interface LightColorFavoritesCardFeatureConfig {
   type: "light-color-favorites";
 }
 
+export interface LightEffectCardFeatureConfig {
+  type: "light-effect";
+  effects?: string[];
+}
+
 export interface LockCommandsCardFeatureConfig {
   type: "lock-commands";
 }
@@ -341,6 +346,7 @@ export type LovelaceCardFeatureConfig =
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
+  | LightEffectCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig

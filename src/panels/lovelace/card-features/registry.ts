@@ -26,6 +26,7 @@ import { supportsLawnMowerCommandCardFeature } from "./hui-lawn-mower-commands-c
 import { supportsLightBrightnessCardFeature } from "./hui-light-brightness-card-feature";
 import { supportsLightColorFavoritesCardFeature } from "./hui-light-color-favorites-card-feature";
 import { supportsLightColorTempCardFeature } from "./hui-light-color-temp-card-feature";
+import { supportsLightEffectCardFeature } from "./hui-light-effect-card-feature";
 import { supportsLockCommandsCardFeature } from "./hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "./hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "./hui-media-player-playback-card-feature";
@@ -88,6 +89,7 @@ export const UI_FEATURE_TYPES = [
   "light-brightness",
   "light-color-temp",
   "light-color-favorites",
+  "light-effect",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -143,6 +145,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "light-color-favorites": supportsLightColorFavoritesCardFeature,
+  "light-effect": supportsLightEffectCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
