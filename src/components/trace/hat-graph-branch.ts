@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
 
 interface BranchConfig {
@@ -31,7 +32,7 @@ export class HatGraphBranch extends LitElement {
 
   private _maxHeight = 0;
 
-  private _updateBranches(ev: Event) {
+  private _updateBranches(ev: HASSDomTargetEvent<HTMLSlotElement>) {
     let total_width = 0;
     const heights: number[] = [];
     const branches: BranchConfig[] = [];

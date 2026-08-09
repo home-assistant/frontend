@@ -2,13 +2,10 @@ import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
 import type { EChartsType } from "echarts/core";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
-import type {
-  CallbackDataParams,
-  ECElementEvent,
-} from "echarts/types/src/util/types";
+import type { CallbackDataParams } from "echarts/types/src/util/types";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
 import type { HaECOption } from "../../resources/echarts/echarts";
@@ -121,11 +118,15 @@ export class HaSankeyChart extends LitElement {
     return null;
   };
 
-  private _handleChartSankeyRoam = (ev: CustomEvent) => {
+  private _handleChartSankeyRoam = (
+    ev: HASSDomEvent<HASSDomEvents["chart-sankeyroam"]>
+  ) => {
     this._currentZoom = ev.detail.zoom;
   };
 
-  private _handleChartClick = (ev: CustomEvent<ECElementEvent>) => {
+  private _handleChartClick = (
+    ev: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ) => {
     const detail = ev.detail;
     // Only handle node clicks (not links)
     if (detail.dataType !== "node") {

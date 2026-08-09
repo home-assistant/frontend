@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import type {
   Adapter,
   IPv4ConfiguredAddress,
@@ -101,7 +102,9 @@ export class HaNetwork extends LitElement {
     `;
   }
 
-  private _handleAutoConfigureCheckboxClick(ev: Event) {
+  private _handleAutoConfigureCheckboxClick(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox>
+  ) {
     const checkbox = ev.currentTarget as HaCheckbox;
     if (this.networkConfig === undefined) {
       return;
@@ -127,7 +130,9 @@ export class HaNetwork extends LitElement {
     });
   }
 
-  private _handleAdapterCheckboxClick(ev: Event) {
+  private _handleAdapterCheckboxClick(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox>
+  ) {
     const checkbox = ev.currentTarget as HaCheckbox;
     const adapter_name = checkbox.id;
     if (this.networkConfig === undefined) {

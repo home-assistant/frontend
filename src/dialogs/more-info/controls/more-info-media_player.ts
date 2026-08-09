@@ -17,6 +17,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -872,12 +873,14 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private async _handleMediaSeekChanged(e: Event): Promise<void> {
+  private async _handleMediaSeekChanged(
+    e: HASSDomTargetEvent<HaSlider>
+  ): Promise<void> {
     if (!this.stateObj) {
       return;
     }
 
-    const newValue = (e.target as any).value;
+    const newValue = e.target.value;
     this._api.callService("media_player", "media_seek", {
       entity_id: this.stateObj.entity_id,
       seek_position: newValue,

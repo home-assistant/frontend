@@ -189,6 +189,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
@@ -208,11 +209,13 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
+  expand_legend?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
   max_devices?: number;
+  expand_legend?: boolean;
 }
 
 export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
@@ -244,6 +247,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -418,6 +422,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   theme_mode?: ThemeMode;
   cluster?: boolean;
   conditions?: Condition[];
+  scale_ruler?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

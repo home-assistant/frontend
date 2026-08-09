@@ -2142,6 +2142,13 @@
           "icon": "Icon",
           "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
+        "input_boolean": {
+          "initial": "Each time Home Assistant starts",
+          "initial_helper": "Changing this does not affect the toggle right now.",
+          "restore": "Restore previous state",
+          "turn_on": "Turn on",
+          "turn_off": "Turn off"
+        },
         "input_datetime": {
           "date": "Date",
           "time": "Time",
@@ -3854,7 +3861,7 @@
               },
               "disable_view_transition": {
                 "title": "Disable view transitions",
-                "description": "Disable animated view transitions to prevent browser crash when using browser dev tools."
+                "description": "Disable animated view transitions to prevent browser crash when using browser developer tools."
               },
               "entity_diagnostic": {
                 "title": "Entity diagnostic",
@@ -3899,7 +3906,7 @@
             },
             "actions": {
               "title": "Actions",
-              "description": "The actions dev tool allows you to perform any action available in Home Assistant.",
+              "description": "The actions tool allows you to perform any action available in Home Assistant.",
               "call_service": "Perform action",
               "response": "Response",
               "column_parameter": "Parameter",
@@ -7557,6 +7564,9 @@
             "download_backup": "Download backup",
             "download_backup_description": "Save your Zigbee network configuration to a file",
             "download_backup_action": "Download",
+            "backup_failed": "Failed to create backup",
+            "backup_incomplete_title": "Backup is incomplete",
+            "backup_incomplete_text": "A backup has been created but it is incomplete and cannot be restored. This is a limitation of your adapter's firmware.",
             "migrate_radio": "Migrate adapter",
             "migrate_radio_description": "Move your Zigbee network to a different adapter",
             "migrate_radio_action": "Migrate",
@@ -8763,8 +8773,10 @@
             "save_error": "Could not save the HTTP configuration.",
             "port_warning": "Clients such as the Home Assistant mobile apps will lose their connection until you update the URL in their settings. If Home Assistant is not confirmed reachable on the new port, the change is rolled back automatically after 5 minutes.",
             "server_host_warning": "Leave this empty to listen on all interfaces. If you set specific addresses, Home Assistant is only reachable through those — binding it only to an address that other devices can't reach (for example localhost) will make it unreachable from those devices.",
-            "invalid_host": "Enter a valid IP address.",
+            "invalid_host": "Enter a valid IP address or hostname.",
             "invalid_network": "Enter a valid IP address or network.",
+            "invalid_port": "Enter a port number between 1 and 65535.",
+            "invalid_login_attempts_threshold": "Enter a number between -1 and 1000.",
             "running_default": "Your saved HTTP configuration could not be applied, so Home Assistant is running on the built-in default configuration.",
             "reverted_not_confirmed": "The last HTTP configuration change was not confirmed in time and was rolled back. Home Assistant is running on the previous configuration.",
             "reverted_failed": "The last HTTP configuration change could not be applied and was rolled back. Home Assistant is running on the previous configuration. Reason: {error}",
@@ -8803,7 +8815,7 @@
             },
             "helpers": {
               "server_port": "The port Home Assistant listens on. Default is {port}.",
-              "server_host": "IP addresses to bind to. Leave empty to listen on all interfaces.",
+              "server_host": "IP addresses or hostnames to bind to. Leave empty to listen on all interfaces.",
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
               "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
@@ -8996,8 +9008,6 @@
             "others": "Others",
             "scenes": "Scenes",
             "automations": "Automations",
-            "for_you": "For you",
-            "home": "Home",
             "favorites": "Favorites",
             "welcome_title": "No devices here yet",
             "welcome_content": "Add lights, switches, sensors, or other smart home devices to get started.",
@@ -10092,6 +10102,7 @@
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
+              "expand_legend": "Expand legend",
               "fit_mode": "Fit mode",
               "fit_mode_options": {
                 "contain": "Scaled (Contain)",
@@ -10197,6 +10208,7 @@
                 "light": "Light",
                 "dark": "Dark"
               },
+              "scale_ruler": "Scale ruler",
               "default_zoom": "Default zoom",
               "auto_fit": "Auto fit",
               "fit_zones": "Fit zones",
