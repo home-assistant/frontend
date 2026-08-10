@@ -5,11 +5,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
-import { fireEvent } from "../../common/dom/fire_event";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import { navigate } from "../../common/navigate";
-import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
+import { computeServiceLabel } from "../../data/compute-service-info";
 import type { LogbookEntry } from "../../data/logbook";
 import { createHistoricState, localizeTriggerSource } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -26,6 +26,8 @@ import {
   nodeColor,
 } from "./logbook-entry-model";
 import {
+  entityNameButtonStyle,
+  renderEntityName,
   renderLogbookCauseIcon,
   renderLogbookGlyph,
 } from "./logbook-entry-templates";
@@ -95,11 +97,25 @@ class HaLogbookChain extends LitElement {
             ? "ui.components.logbook.script_ran"
             : "ui.components.logbook.automation_triggered"
         );
+    const traceLink = computeTraceLink(
+      this.traceContexts,
+      this.subject.context_id
+    );
     return html`
       <div class="chain-row">
         <span class="chain-node run">${renderLogbookCauseIcon(cause)}</span>
         <span class="chain-content">
-          ${this._renderName(cause.name, cause.entityId)}
+          ${renderEntityName(this.hass, cause.name, cause.entityId)}
+          ${
+            traceLink
+              ? html`<a
+                  class="trace-link"
+                  href=${traceLink}
+                  @click=${this._traceClicked}
+                  >${this.hass.localize("ui.components.logbook.view_trace")}</a
+                >`
+              : nothing
+          }
           ${sub ? html`<span class="chain-secondary">${sub}</span>` : nothing}
         </span>
       </div>
@@ -149,7 +165,7 @@ class HaLogbookChain extends LitElement {
           ${this._renderOriginIcon(origin, historicStateObj)}
         </span>
         <span class="chain-content">
-          ${this._renderName(name, origin.entityId)}
+          ${renderEntityName(this.hass, name, origin.entityId)}
           ${
             secondary
               ? html`<span class="chain-secondary">${secondary}</span>`
@@ -181,9 +197,10 @@ class HaLogbookChain extends LitElement {
       originRow.context_service
     ) {
       return this.hass.localize("ui.dialogs.logbook_detail.action_used", {
-        name: this._actionName(
-          originRow.context_domain,
-          originRow.context_service
+        name: computeServiceLabel(
+          this.hass.localize,
+          this.hass.services,
+          `${originRow.context_domain}.${originRow.context_service}`
         ),
       });
     }
@@ -225,7 +242,7 @@ class HaLogbookChain extends LitElement {
           ${renderLogbookGlyph(this.hass, row, item.glyph)}
         </span>
         <span class="chain-content">
-          ${this._renderName(item.name, row.entity_id)}
+          ${renderEntityName(this.hass, item.name, row.entity_id)}
           ${
             traceLink
               ? html`<a
@@ -268,7 +285,7 @@ class HaLogbookChain extends LitElement {
           ${renderLogbookGlyph(this.hass, row, item.glyph)}
         </span>
         <span class="chain-content">
-          ${this._renderName(item.name, row.entity_id)}
+          ${renderEntityName(this.hass, item.name, row.entity_id)}
           ${
             item.context
               ? html`<span class="chain-secondary">${item.context}</span>`
@@ -287,51 +304,20 @@ class HaLogbookChain extends LitElement {
     `;
   }
 
-  private _renderName(name: string | undefined, entityId?: string) {
-    if (entityId && entityId in this.hass.states) {
-      return html`<button
-        class="link name"
-        .entityId=${entityId}
-        @click=${this._entityClicked}
-      >
-        ${name}
-      </button>`;
-    }
-    return html`<span class="name">${name}</span>`;
-  }
-
-  private _actionName(domain: string, service: string) {
-    return (
-      this.hass.localize(
-        `component.${domain}.services.${service}.name` as LocalizeKeys
-      ) ||
-      this.hass.services[domain]?.[service]?.name ||
-      `${domain}.${service}`
-    );
-  }
-
-  private _entityClicked(ev: Event) {
-    const entityId = (ev.currentTarget as HTMLElement & { entityId?: string })
-      .entityId;
-    if (!entityId) {
-      return;
-    }
-    fireEvent(this, "hass-more-info", { entityId });
-  }
-
   private _traceClicked(ev: MouseEvent) {
-    if (ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey) {
+    const href = isNavigationClick(ev);
+    if (!href) {
       return;
     }
-    ev.preventDefault();
     // navigate() closes the dialogs above this chain.
-    navigate((ev.currentTarget as HTMLAnchorElement).getAttribute("href")!);
+    navigate(href);
   }
 
   static get styles(): CSSResultGroup {
     return [
       haStyle,
       buttonLinkStyle,
+      entityNameButtonStyle,
       css`
         :host {
           display: block;
@@ -430,16 +416,6 @@ class HaLogbookChain extends LitElement {
           text-overflow: ellipsis;
           white-space: nowrap;
           text-align: start;
-        }
-
-        button.link.name {
-          color: var(--primary-text-color);
-          text-align: inherit;
-          text-decoration: none;
-        }
-
-        button.link.name:hover {
-          text-decoration: underline;
         }
 
         .chain-secondary {

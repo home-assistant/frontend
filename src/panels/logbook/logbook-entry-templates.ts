@@ -1,6 +1,8 @@
 import { mdiCast, mdiCloud, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
-import { html, nothing } from "lit";
+import { css, html, nothing } from "lit";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-domain-icon";
 import "../../components/ha-state-icon";
@@ -84,6 +86,48 @@ const brandImage = (
     hass.auth.data.hassUrl
   );
 };
+
+const entityNameClicked = (ev: Event) => {
+  const target = ev.currentTarget as HTMLElement & { entityId?: string };
+  if (!target.entityId) {
+    return;
+  }
+  fireEvent(target, "hass-more-info", { entityId: target.entityId });
+};
+
+// The event bubbles from the button, so an enclosing dialog can react to it
+// (ha-adaptive-dialog closes on hass-more-info).
+export const renderEntityName = (
+  hass: HomeAssistant,
+  name: string | undefined,
+  entityId?: string
+) => {
+  if (entityId && entityId in hass.states) {
+    return html`<button
+      class="link name"
+      .entityId=${entityId}
+      @click=${entityNameClicked}
+    >
+      ${name}
+    </button>`;
+  }
+  return html`<span class="name">${name}</span>`;
+};
+
+export const entityNameButtonStyle = css`
+  button.link.name {
+    color: var(--primary-text-color);
+    text-align: inherit;
+    text-decoration: none;
+  }
+
+  button.link.name:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const transitionArrow = (hass: HomeAssistant) =>
+  computeRTL(hass.language, hass.translationMetadata.translations) ? "←" : "→";
 
 export const renderLogbookGlyph = (
   hass: HomeAssistant,

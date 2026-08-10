@@ -2,11 +2,11 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-relative-time";
@@ -24,6 +24,11 @@ import type { LogbookChain } from "./logbook-chain-resolver";
 import { resolveLogbookChain } from "./logbook-chain-resolver";
 import type { LogbookItem } from "./logbook-entry-model";
 import { computeLogbookItem } from "./logbook-entry-model";
+import {
+  entityNameButtonStyle,
+  renderEntityName,
+  transitionArrow,
+} from "./logbook-entry-templates";
 import type { LogbookDetailDialogParams } from "./show-dialog-logbook-detail";
 
 @customElement("dialog-logbook-detail")
@@ -71,21 +76,21 @@ class DialogLogbookDetail
     const options = { userIdToName, systemUserIds };
     const resolveWithoutFetch = () =>
       resolveLogbookChain(this.hass, entry, options, async () => []);
+    let chain: LogbookChain;
+    let errored = false;
     try {
-      const chain = isComponentLoaded(this.hass.config, "logbook")
+      chain = isComponentLoaded(this.hass.config, "logbook")
         ? await resolveLogbookChain(this.hass, entry, options)
         : await resolveWithoutFetch();
-      if (this._params?.entry !== entry) {
-        return;
-      }
-      this._chain = chain;
     } catch {
-      if (this._params?.entry !== entry) {
-        return;
-      }
-      this._error = true;
-      this._chain = await resolveWithoutFetch();
+      errored = true;
+      chain = await resolveWithoutFetch();
     }
+    if (this._params?.entry !== entry) {
+      return;
+    }
+    this._error = errored;
+    this._chain = chain;
   }
 
   protected render() {
@@ -115,7 +120,7 @@ class DialogLogbookDetail
       ? this.hass.states[entry.entity_id]
       : undefined;
     const transition = this._transitionValues(item, entry, stateObj);
-    const when = new Date(item.when);
+    const when = this._entryDate(item.when);
     const subjectKey =
       item.category === "entity"
         ? "entity"
@@ -134,7 +139,7 @@ class DialogLogbookDetail
             )}
           </span>
           <span class="value">
-            ${this._renderName(item.name, entry.entity_id)}
+            ${renderEntityName(this.hass, item.name, entry.entity_id)}
             ${
               item.context
                 ? html`<span class="sub">${item.context}</span>`
@@ -154,7 +159,9 @@ class DialogLogbookDetail
                       transition.oldState
                         ? html`<span class="old-state"
                               >${transition.oldState}</span
-                            ><span class="arrow">${this._arrow()}</span>`
+                            ><span class="arrow"
+                              >${transitionArrow(this.hass)}</span
+                            >`
                         : nothing
                     }<span class="new-state">${transition.newState}</span>
                   </span>
@@ -217,27 +224,7 @@ class DialogLogbookDetail
     `;
   }
 
-  private _renderName(name: string | undefined, entityId?: string) {
-    if (entityId && entityId in this.hass.states) {
-      return html`<button
-        class="link name"
-        .entityId=${entityId}
-        @click=${this._entityClicked}
-      >
-        ${name}
-      </button>`;
-    }
-    return html`<span class="name">${name}</span>`;
-  }
-
-  private _arrow() {
-    return computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    )
-      ? "←"
-      : "→";
-  }
+  private _entryDate = memoizeOne((when: number) => new Date(when));
 
   private _transitionValues(
     item: LogbookItem,
@@ -260,16 +247,6 @@ class DialogLogbookDetail
     return { oldState, newState };
   }
 
-  private _entityClicked(ev: Event) {
-    const entityId = (ev.currentTarget as HTMLElement & { entityId?: string })
-      .entityId;
-    if (!entityId) {
-      return;
-    }
-    this.closeDialog();
-    fireEvent(this, "hass-more-info", { entityId });
-  }
-
   private _moreInfoOpened() {
     this.closeDialog();
   }
@@ -279,6 +256,7 @@ class DialogLogbookDetail
       haStyle,
       haStyleDialog,
       buttonLinkStyle,
+      entityNameButtonStyle,
       css`
         .content {
           display: flex;
@@ -322,16 +300,6 @@ class DialogLogbookDetail
 
         .value .name {
           font-weight: var(--ha-font-weight-medium);
-        }
-
-        button.link.name {
-          color: var(--primary-text-color);
-          text-align: inherit;
-          text-decoration: none;
-        }
-
-        button.link.name:hover {
-          text-decoration: underline;
         }
 
         .sub {
