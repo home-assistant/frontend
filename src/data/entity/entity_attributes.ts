@@ -26,6 +26,7 @@ export const STATE_ATTRIBUTES = [
   "supported_features",
   "unit_of_measurement",
   "available_tones",
+  "supported_speeds",
 ];
 
 export const STATE_ATTRIBUTES_DOMAIN_CLASS = {
