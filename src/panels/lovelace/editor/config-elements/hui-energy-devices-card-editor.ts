@@ -38,6 +38,7 @@ const cardConfigStruct = assign(
     max_devices: optional(number()),
     modes: optional(array(union([literal("bar"), literal("pie")]))),
     hide_compound_stats: optional(boolean()),
+    expand_legend: optional(boolean()),
   })
 );
 
@@ -89,6 +90,11 @@ export class HuiEnergyDevicesCardEditor
             name: "hide_compound_stats",
             required: false,
             visible: { field: "type", value: "energy-devices-graph" },
+            selector: { boolean: {} },
+          },
+          {
+            name: "expand_legend",
+            required: false,
             selector: { boolean: {} },
           },
           {

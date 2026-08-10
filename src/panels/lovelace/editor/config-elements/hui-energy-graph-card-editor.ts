@@ -41,6 +41,19 @@ const SCHEMA: HaFormSchema[] = [
     selector: { boolean: {} },
   },
   {
+    name: "expand_legend",
+    visible: [
+      {
+        field: "type",
+        operator: "in",
+        value: ["power-sources-graph", "energy-usage-graph"],
+      },
+      { field: "show_legend", operator: "not_eq", value: false },
+    ],
+    required: false,
+    selector: { boolean: {} },
+  },
+  {
     name: "link_dashboard",
     visible: { field: "type", value: "energy-distribution" },
     required: false,
@@ -73,6 +86,7 @@ const cardConfigStruct = assign(
     title: optional(string()),
     collection_key: optional(string()),
     show_legend: optional(boolean()),
+    expand_legend: optional(boolean()),
     link_dashboard: optional(boolean()),
   })
 );

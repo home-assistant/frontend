@@ -35,6 +35,8 @@ import type HaAutomationSidebar from "./ha-automation-sidebar";
 
 export const SIDEBAR_DEFAULT_WIDTH = 500;
 
+export const PASTED_CONFIG_TOAST_ID = "pasted-config";
+
 export const ManualEditorMixin = <TConfig>(
   superClass: Constructor<LitElement>
 ) => {
@@ -237,6 +239,7 @@ export const ManualEditorMixin = <TConfig>(
       this.pastedConfig = undefined;
 
       showToast(this, {
+        id: PASTED_CONFIG_TOAST_ID,
         message: "",
         duration: 0,
       });

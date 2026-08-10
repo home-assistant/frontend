@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -451,7 +452,9 @@ export class BluetoothAdapterInfoPage extends LitElement {
     return this._formatModeLabel(scannerState.current_mode);
   }
 
-  private async _handleEnable(ev: Event) {
+  private async _handleEnable(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entry: ConfigEntry }>
+  ) {
     const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };
     const entryId = button.entry.entry_id;
     try {
@@ -474,7 +477,9 @@ export class BluetoothAdapterInfoPage extends LitElement {
     }
   }
 
-  private _openOptionFlow(ev: Event) {
+  private _openOptionFlow(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entry: ConfigEntry }>
+  ) {
     ev.preventDefault();
     ev.stopPropagation();
     const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };

@@ -17,6 +17,8 @@ import {
 import { apiContext, connectionContext } from "../data/context";
 import "./ha-alert";
 
+const HIDDEN_CLEANUP_DELAY = 60000;
+
 /**
  * A WebRTC stream is established by first sending an offer through a signal
  * path via an integration. An answer is returned, then the rest of the stream
@@ -68,13 +70,22 @@ class HaWebRtcPlayer extends LitElement {
 
   private _candidatesList: RTCIceCandidate[] = [];
 
+  private _hiddenCleanupTimeout?: number;
+
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
       // video is playing in picture-in-picture mode, don't do anything
       return;
     }
     if (document.hidden) {
-      this._cleanUp();
+      this._hiddenCleanupTimeout = window.setTimeout(() => {
+        this._hiddenCleanupTimeout = undefined;
+        this._cleanUp();
+      }, HIDDEN_CLEANUP_DELAY);
+    } else if (this._hiddenCleanupTimeout) {
+      // stream was not cleaned up yet, just cancel the cleanup
+      clearTimeout(this._hiddenCleanupTimeout);
+      this._hiddenCleanupTimeout = undefined;
     } else {
       this._startWebRtc();
     }
@@ -116,6 +127,8 @@ class HaWebRtcPlayer extends LitElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
+    clearTimeout(this._hiddenCleanupTimeout);
+    this._hiddenCleanupTimeout = undefined;
     this._cleanUp();
   }
 

@@ -46,6 +46,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     ["climate-swing-modes"],
     ["climate-swing-horizontal-modes"],
     ["target-temperature"],
+    ["target-humidity"],
   ],
   media_player: [
     TILE_VARIANT,
