@@ -11,6 +11,8 @@ import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-relative-time";
 import "../../components/ha-spinner";
+import "../../components/item/ha-list-item-value";
+import "../../components/list/ha-grouped-list";
 import { fetchDateWS } from "../../data/history";
 import type { LogbookEntry } from "../../data/logbook";
 import type { HassDialog } from "../../dialogs/make-dialog-manager";
@@ -170,69 +172,60 @@ class DialogLogbookDetail
           : "integration";
 
     return html`
-      <div class="box">
-        <div class="row">
-          <span class="label">
-            ${this.hass.localize(
-              `ui.dialogs.logbook_detail.${subjectKey}` as LocalizeKeys
-            )}
-          </span>
-          <span class="value">
-            ${renderEntityName(this.hass, item.name, entry.entity_id)}
-            ${
-              item.context
-                ? html`<span class="sub">${item.context}</span>`
-                : nothing
-            }
-          </span>
-        </div>
+      <ha-grouped-list>
+        <ha-list-item-value
+          .label=${this.hass.localize(
+            `ui.dialogs.logbook_detail.${subjectKey}` as LocalizeKeys
+          )}
+        >
+          ${renderEntityName(this.hass, item.name, entry.entity_id)}
+          ${
+            item.context
+              ? html`<span class="sub">${item.context}</span>`
+              : nothing
+          }
+        </ha-list-item-value>
         ${
           transition
             ? html`
-                <div class="row">
-                  <span class="label">
-                    ${this.hass.localize("ui.dialogs.logbook_detail.state")}
-                  </span>
-                  <span class="value">
-                    ${
-                      transition.oldState
-                        ? html`<span class="old-state"
-                              >${transition.oldState}</span
-                            ><span class="arrow"
-                              >${transitionArrow(this.hass)}</span
-                            >`
-                        : nothing
-                    }<span class="new-state">${transition.newState}</span>
-                  </span>
-                </div>
+                <ha-list-item-value
+                  .label=${this.hass.localize(
+                    "ui.dialogs.logbook_detail.state"
+                  )}
+                >
+                  ${
+                    transition.oldState
+                      ? html`<span class="old-state"
+                            >${transition.oldState}</span
+                          ><span class="arrow"
+                            >${transitionArrow(this.hass)}</span
+                          >`
+                      : nothing
+                  }<span class="new-state">${transition.newState}</span>
+                </ha-list-item-value>
               `
             : item.value
               ? html`
-                  <div class="row">
-                    <span class="label">
-                      ${this.hass.localize("ui.dialogs.logbook_detail.event")}
-                    </span>
-                    <span class="value">${item.value.text}</span>
-                  </div>
+                  <ha-list-item-value
+                    .label=${this.hass.localize(
+                      "ui.dialogs.logbook_detail.event"
+                    )}
+                  >
+                    ${item.value.text}
+                  </ha-list-item-value>
                 `
               : nothing
         }
-        <div class="row">
-          <span class="label">
-            ${this.hass.localize("ui.dialogs.logbook_detail.time")}
+        <ha-list-item-value
+          class="time-value"
+          .label=${this.hass.localize("ui.dialogs.logbook_detail.time")}
+        >
+          ${formatDateTimeWithSeconds(when, this.hass.locale, this.hass.config)}
+          <span class="sub">
+            <ha-relative-time .datetime=${when} capitalize></ha-relative-time>
           </span>
-          <span class="value time-value">
-            ${formatDateTimeWithSeconds(
-              when,
-              this.hass.locale,
-              this.hass.config
-            )}
-            <span class="sub">
-              <ha-relative-time .datetime=${when} capitalize></ha-relative-time>
-            </span>
-          </span>
-        </div>
-      </div>
+        </ha-list-item-value>
+      </ha-grouped-list>
     `;
   }
 
@@ -305,41 +298,7 @@ class DialogLogbookDetail
           gap: var(--ha-space-4);
         }
 
-        .box {
-          border: 1px solid var(--divider-color);
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          overflow: hidden;
-        }
-
-        .box > .row + .row {
-          border-top: 1px solid var(--divider-color);
-        }
-
-        .row {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          min-height: 48px;
-          padding: var(--ha-space-2) var(--ha-space-4);
-          box-sizing: border-box;
-        }
-
-        .row .label {
-          color: var(--secondary-text-color);
-          flex-shrink: 0;
-        }
-
-        .row .value {
-          flex: 1;
-          min-width: 0;
-          text-align: end;
-          overflow-wrap: anywhere;
-        }
-
-        .value .name {
+        ha-list-item-value .name {
           font-weight: var(--ha-font-weight-medium);
         }
 
