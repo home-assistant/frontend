@@ -36,6 +36,10 @@ export const classifyLogbookEntry = (
   return "integration";
 };
 
+// A run row is the acting automation or script; every other row is an effect.
+export const isRunRow = (item: LogbookEntry): boolean =>
+  classifyLogbookEntry(item) === "automation";
+
 // How much naming detail an entity row shows, from least to most. The value is
 // the broadest part shown: `none` (name hidden), `entity`, `device` (device ▸
 // entity), `area` (area ▸ device ▸ entity).
