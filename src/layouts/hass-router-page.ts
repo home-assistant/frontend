@@ -189,10 +189,15 @@ export class HassRouterPage extends ReactiveElement {
       const message = err instanceof Error ? err.message : String(err ?? "");
       const stale = recoverFromStaleBuild(message, this);
 
-      // Show error screen, offering a reload action for a stale build.
-      this.appendChild(
-        this.createErrorScreen(`Error while loading page ${newPage}.`, stale)
+      // Show error screen, offering a reload action for a stale build. Set
+      // `showReload` on the returned element rather than through
+      // createErrorScreen's signature, so router subclasses that override
+      // createErrorScreen (e.g. ToolsRouter) can't drop it.
+      const errorScreen = this.createErrorScreen(
+        `Error while loading page ${newPage}.`
       );
+      errorScreen.showReload = stale;
+      this.appendChild(errorScreen);
     });
 
     // If we don't show loading screen, just show the panel.
@@ -292,11 +297,10 @@ export class HassRouterPage extends ReactiveElement {
     return document.createElement("hass-loading-screen");
   }
 
-  protected createErrorScreen(error: string, showReload = false) {
+  protected createErrorScreen(error: string) {
     import("./hass-error-screen");
     const errorEl = document.createElement("hass-error-screen");
     errorEl.error = error;
-    errorEl.showReload = showReload;
     return errorEl;
   }
 

@@ -5,7 +5,7 @@ import { goBack } from "../common/navigate";
 import "../components/ha-button";
 import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
-import { reloadFresh } from "../util/recover-stale-build";
+import { reloadForUpdate } from "../util/recover-stale-build";
 import "../components/ha-alert";
 
 @customElement("hass-error-screen")
@@ -69,7 +69,9 @@ class HassErrorScreen extends LitElement {
   }
 
   private _handleReload(): void {
-    reloadFresh();
+    // Dirty-aware: reloads when clean, or defers with a toast when an editor
+    // has unsaved changes.
+    reloadForUpdate();
   }
 
   static get styles(): CSSResultGroup {

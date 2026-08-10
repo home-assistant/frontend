@@ -21,6 +21,7 @@ describe("recover-stale-build", () => {
   let root: HTMLElement;
   let notifications: ShowToastParams[];
   let serviceWorkerDescriptor: PropertyDescriptor | undefined;
+  let cachesDescriptor: PropertyDescriptor | undefined;
 
   const latestNotification = () => notifications[notifications.length - 1];
   const reloadMarker = () => sessionStorage.getItem(RELOAD_KEY);
@@ -32,11 +33,12 @@ describe("recover-stale-build", () => {
     sessionStorage.clear();
 
     // No controlling service worker → reloadFresh() takes the synchronous
-    // path (no unregister/caches work) straight to the (jsdom no-op) navigate.
+    // path straight to the (jsdom no-op) navigate.
     serviceWorkerDescriptor = Object.getOwnPropertyDescriptor(
       navigator,
       "serviceWorker"
     );
+    cachesDescriptor = Object.getOwnPropertyDescriptor(window, "caches");
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
       value: { controller: null },
@@ -66,7 +68,13 @@ describe("recover-stale-build", () => {
     } else {
       Reflect.deleteProperty(navigator, "serviceWorker");
     }
+    if (cachesDescriptor) {
+      Object.defineProperty(window, "caches", cachesDescriptor);
+    } else {
+      Reflect.deleteProperty(window, "caches");
+    }
     Reflect.deleteProperty(window, "externalApp");
+    Reflect.deleteProperty(window, "webkit");
     window.isDirtyState = false;
     globalThis.__DEV__ = false;
     globalThis.__DEMO__ = false;
@@ -125,43 +133,70 @@ describe("recover-stale-build", () => {
       expect(notifications).toHaveLength(0);
     });
 
-    it("uses the companion-app external command when a bridge is present", () => {
-      const externalBus = vi.fn();
+    it("drops the service worker and caches before reloading", async () => {
+      const unregister = vi.fn().mockResolvedValue(true);
+      Object.defineProperty(navigator, "serviceWorker", {
+        configurable: true,
+        value: {
+          controller: {},
+          getRegistrations: vi.fn().mockResolvedValue([{ unregister }]),
+        },
+      });
+      const cacheDelete = vi.fn().mockResolvedValue(true);
+      Object.defineProperty(window, "caches", {
+        configurable: true,
+        value: {
+          keys: vi.fn().mockResolvedValue(["a", "b"]),
+          delete: cacheDelete,
+        },
+      });
+
+      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+
+      await vi.waitFor(() => expect(unregister).toHaveBeenCalledOnce());
+      expect(cacheDelete).toHaveBeenCalledTimes(2);
+    });
+
+    it("uses the companion-app command when the WebKit bridge is present", () => {
+      const postMessage = vi.fn();
       (
         window as unknown as {
-          externalApp: { externalBus: typeof externalBus };
+          webkit: {
+            messageHandlers: {
+              externalBus: { postMessage: typeof postMessage };
+            };
+          };
         }
-      ).externalApp = { externalBus };
+      ).webkit = { messageHandlers: { externalBus: { postMessage } } };
 
       expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
 
       // Asks the native app to purge its cache and reload instead of the
-      // browser-only path.
-      expect(externalBus).toHaveBeenCalledOnce();
-      expect(externalBus.mock.calls[0][0]).toContain(
-        "frontend/reload_and_clear_cache"
-      );
+      // browser path.
+      expect(postMessage).toHaveBeenCalledOnce();
+      expect(postMessage.mock.calls[0][0]).toMatchObject({
+        type: "frontend/reload_and_clear_cache",
+      });
       expect(notifications).toHaveLength(0);
     });
 
-    it("shows a reload toast instead of reloading when dirty", () => {
+    it("defers with a toast instead of reloading when dirty", () => {
       window.isDirtyState = true;
 
       expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
 
-      // Took the toast branch, not the reload branch.
+      // Took the toast branch, not the reload branch, and the toast has no
+      // immediate-reload action that could discard unsaved work.
       expect(reloadMarker()).toBeNull();
       expect(latestNotification()).toMatchObject({
         id: "frontend-update-available",
         message: {
           translationKey: "ui.notification_toast.new_version_available_reload",
         },
-        action: {
-          text: { translationKey: "ui.notification_toast.update_now" },
-        },
         duration: -1,
         dismissable: false,
       });
+      expect(latestNotification().action).toBeUndefined();
     });
 
     it("does not reload again while the cooldown marker is set (loop guard)", async () => {
@@ -175,9 +210,10 @@ describe("recover-stale-build", () => {
       const reloaded: RecoverModule =
         await import("../../src/util/recover-stale-build");
 
-      reloaded.recoverFromStaleBuild("/frontend_latest/app.def67890.js", root);
-
-      // Guard blocked a second navigation: the marker is unchanged.
+      // Blocked by the cooldown → returns false so the caller still surfaces it.
+      expect(
+        reloaded.recoverFromStaleBuild("/frontend_latest/app.def67890.js", root)
+      ).toBe(false);
       expect(reloadMarker()).toBe(firstMarker);
     });
   });
