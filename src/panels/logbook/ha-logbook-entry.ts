@@ -9,7 +9,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-relative-time";
 import "../../components/ha-tooltip";
 import { UNAVAILABLE } from "../../data/entity/entity";
@@ -27,6 +26,7 @@ import { computeLogbookItem, nodeColor } from "./logbook-entry-model";
 import {
   renderLogbookCauseIcon,
   renderLogbookGlyph,
+  transitionArrow,
 } from "./logbook-entry-templates";
 
 type EntryLayout = "timeline" | "list" | "inline";
@@ -238,10 +238,6 @@ class HaLogbookEntry extends LitElement {
 
   private _renderTimeline(ctx: LogbookRenderItem) {
     const hideName = this.nameDetail === "none";
-    const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    );
     const valueIsState = ctx.value?.type === "state";
     const causePhrase = ctx.cause
       ? this._renderCausePhrase(ctx.cause)
@@ -256,7 +252,9 @@ class HaLogbookEntry extends LitElement {
                   >${
                     ctx.renderedValue
                       ? valueIsState
-                        ? html`<span class="arrow">${rtl ? "←" : "→"}</span>`
+                        ? html`<span class="arrow"
+                            >${transitionArrow(this.hass)}</span
+                          >`
                         : " "
                       : nothing
                   }`

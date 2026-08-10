@@ -1,5 +1,5 @@
 import type { LogbookEntry } from "../../data/logbook";
-import { getLogbookEvents } from "../../data/logbook";
+import { getLogbookDataFromServer } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
 import type { LogbookCause } from "./logbook-entry-model";
 import {
@@ -102,7 +102,7 @@ export const resolveLogbookChain = async (
   entry: LogbookEntry,
   options: ResolveOptions = {},
   fetchEvents: LogbookFetcher = (startDate, endDate, entityIds, contextId) =>
-    getLogbookEvents(hass, startDate, endDate, entityIds, contextId)
+    getLogbookDataFromServer(hass, startDate, endDate, entityIds, contextId)
 ): Promise<LogbookChain> => {
   const userIdToName = options.userIdToName ?? {};
   const { systemUserIds } = options;

@@ -339,8 +339,11 @@ const computeLogbookValue = (
       type: "state",
     };
   }
-  // Core sends run rows with a raw English message; use our own label.
-  const isAutomationRun = domain && TRIGGER_DOMAINS.includes(domain);
+  // Core sends run rows (carrying the automation/script entity) with a raw
+  // English message; use our own label. Domain-only entries (e.g. logbook.log)
+  // keep their custom message.
+  const isAutomationRun =
+    item.entity_id && domain && TRIGGER_DOMAINS.includes(domain);
   if (isAutomationRun) {
     return {
       text: hass.localize(

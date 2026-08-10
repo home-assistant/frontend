@@ -76,16 +76,7 @@ export const getLogbookDataForContext = async (
 ): Promise<LogbookEntry[]> =>
   getLogbookDataFromServer(hass, startDate, undefined, undefined, contextId);
 
-export const getLogbookEvents = (
-  hass: HomeAssistant,
-  startDate: string,
-  endDate?: string,
-  entityIds?: string[],
-  contextId?: string
-): Promise<LogbookEntry[]> =>
-  getLogbookDataFromServer(hass, startDate, endDate, entityIds, contextId);
-
-const getLogbookDataFromServer = (
+export const getLogbookDataFromServer = (
   hass: HomeAssistant,
   startDate: string,
   endDate?: string,

@@ -572,4 +572,16 @@ describe("computeLogbookItem run rows", () => {
       type: "state",
     });
   });
+
+  it("keeps the custom message of a domain-only entry (logbook.log)", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({ domain: "script", name: "Backup", message: "Backup finished" }),
+      {}
+    );
+    expect(model.value).toEqual({ text: "Backup finished", type: "message" });
+  });
 });

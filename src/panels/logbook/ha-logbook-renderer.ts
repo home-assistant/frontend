@@ -84,6 +84,8 @@ class HaLogbookRenderer extends LitElement {
     return (
       changedProps.has("entries") ||
       changedProps.has("noRowClick") ||
+      changedProps.has("userIdToName") ||
+      changedProps.has("systemUserIds") ||
       changedProps.has("_showRelative" as never) ||
       languageChanged
     );
@@ -112,7 +114,13 @@ class HaLogbookRenderer extends LitElement {
                 scroller
                 class="ha-scrollbar"
                 .items=${this.entries}
-                .renderItem=${this._getRenderRow(this._showRelative) as any}
+                .renderItem=${
+                  this._getRenderRow(
+                    this._showRelative,
+                    this.userIdToName,
+                    this.systemUserIds
+                  ) as any
+                }
               >
               </lit-virtualizer>`
             : this.entries.map((item, index) => this._renderItem(item, index))
@@ -121,9 +129,16 @@ class HaLogbookRenderer extends LitElement {
     `;
   }
 
+  // Memoized on every input the rows render from, so the virtualizer sees a
+  // new renderItem and refreshes already-rendered rows when one changes.
   private _getRenderRow = memoizeOne(
-    (_showRelative: boolean) => (item: LogbookEntry, index: number) =>
-      this._renderItem(item, index)
+    (
+      _showRelative: boolean,
+      _userIdToName: Record<string, string>,
+      _systemUserIds: Set<string>
+    ) =>
+      (item: LogbookEntry, index: number) =>
+        this._renderItem(item, index)
   );
 
   private _renderItem = (item: LogbookEntry, index: number) => {
@@ -177,8 +192,7 @@ class HaLogbookRenderer extends LitElement {
     }
     showLogbookDetailDialog(this, {
       entry: item,
-      previousState:
-        index >= 0 ? findPreviousState(this.entries, index) : undefined,
+      previousState: findPreviousState(this.entries, index),
       traceContexts: this.traceContexts,
       userIdToName: this.userIdToName,
       systemUserIds: this.systemUserIds,
