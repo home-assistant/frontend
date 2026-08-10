@@ -1,6 +1,12 @@
+/* eslint-disable -- FOR TESTING ONLY: tile card editor concept comparison; not for merge */
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant, TileCardLabConfig } from "./tile-card-lab-types";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-switch";
+import "./hui-card-features-editor";
+import "../card-editor/hui-card-visibility-editor";
+import "../card-editor/hui-card-layout-editor";
 
 type Tab = "config" | "visibility" | "layout";
 
@@ -208,9 +214,7 @@ export class TileLabConceptC extends LitElement {
   private _renderConfig() {
     const vertical = this.config?.vertical ?? false;
     return html`
-      ${this._entityForm()}
-
-      ${this._sectionHeading("Name")}
+      ${this._entityForm()} ${this._sectionHeading("Name")}
       <ha-form
         .hass=${this.hass}
         .data=${this.config}
@@ -263,7 +267,6 @@ export class TileLabConceptC extends LitElement {
         ],
         (v) => this._update({ vertical: v === "vertical" })
       )}
-
       ${this._sectionHeading("Display")}
       <ha-form
         .hass=${this.hass}
@@ -281,7 +284,6 @@ export class TileLabConceptC extends LitElement {
       ${this._switchRow("Hide state", this.config?.hide_state ?? false, (v) =>
         this._update({ hide_state: v })
       )}
-
       ${this._sectionHeading("Interactions")}
       <ha-form
         .hass=${this.hass}
@@ -453,9 +455,13 @@ export class TileLabConceptC extends LitElement {
     }
     .demo-unavailable {
       align-items: center;
-      background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.04));
+      background: var(
+        --input-fill-color,
+        rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.04)
+      );
       border-bottom: 1px solid var(--divider-color, #e0e0e0);
-      border-radius: var(--ha-border-radius-sm, 4px) var(--ha-border-radius-sm, 4px) 0 0;
+      border-radius: var(--ha-border-radius-sm, 4px)
+        var(--ha-border-radius-sm, 4px) 0 0;
       box-sizing: border-box;
       color: var(--secondary-text-color);
       display: flex;

@@ -1,3 +1,4 @@
+/* eslint-disable -- FOR TESTING ONLY: tile card editor concept comparison; not for merge */
 import { LitElement, html, css, nothing, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type {
@@ -211,7 +212,13 @@ export class TileCardLabEditor extends LitElement {
           `
         )}
       </div>
-      ${inHeader ? html`<style>${TileCardLabEditor._headerCss}</style>` : nothing}
+      ${
+        inHeader
+          ? html`<style>
+              ${TileCardLabEditor._headerCss}
+            </style>`
+          : nothing
+      }
     `;
   }
 
@@ -249,7 +256,9 @@ export class TileCardLabEditor extends LitElement {
   // baseline. HA's own Config/Visibility/Layout tabs stay visible around it.
   private _renderControl() {
     if (!this._controlEl) {
-      const el = document.createElement("hui-tile-card-editor") as HTMLElement & {
+      const el = document.createElement(
+        "hui-tile-card-editor"
+      ) as HTMLElement & {
         hass?: HomeAssistant;
         setConfig?: (config: TileCardLabConfig) => void;
       };
@@ -316,11 +325,13 @@ export class TileCardLabEditor extends LitElement {
       return nothing;
     }
     return html`
-      ${!this._headerReady
-        ? html`<div class="fallback-switcher">
-            ${this._switcherTemplate(false)}
-          </div>`
-        : nothing}
+      ${
+        !this._headerReady
+          ? html`<div class="fallback-switcher">
+              ${this._switcherTemplate(false)}
+            </div>`
+          : nothing
+      }
       <div class="concept-host">${this._renderConcept()}</div>
     `;
   }

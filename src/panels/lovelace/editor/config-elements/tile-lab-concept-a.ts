@@ -1,6 +1,12 @@
+/* eslint-disable -- FOR TESTING ONLY: tile card editor concept comparison; not for merge */
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant, TileCardLabConfig } from "./tile-card-lab-types";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-switch";
+import "./hui-card-features-editor";
+import "../card-editor/hui-card-visibility-editor";
+import "../card-editor/hui-card-layout-editor";
 
 type Tab = "essentials" | "appearance" | "layout" | "optional";
 
@@ -232,9 +238,7 @@ export class TileLabConceptA extends LitElement {
 
   private _renderEssentials() {
     return html`
-      ${this._entityForm()}
-
-      ${this._sectionBand("Name")}
+      ${this._entityForm()} ${this._sectionBand("Name")}
       <ha-form
         .hass=${this.hass}
         .data=${this.config}
@@ -314,7 +318,6 @@ export class TileLabConceptA extends LitElement {
           this._cardSize = v;
         }
       )}
-
       ${this._sectionBand("Extras")}
       ${this._switchRow(
         "Show entity picture",
@@ -329,7 +332,9 @@ export class TileLabConceptA extends LitElement {
 
   private _renderOptional() {
     return html`
-      <div class="info-band">Options below vary by entity and feature setup</div>
+      <div class="info-band">
+        Options below vary by entity and feature setup
+      </div>
 
       ${this._sectionBand("Interactions")}
       <ha-form
@@ -453,9 +458,13 @@ export class TileLabConceptA extends LitElement {
        custom-mode text field so switching modes never changes the height. */
     .name-unavailable {
       align-items: center;
-      background: var(--input-fill-color, rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.04));
+      background: var(
+        --input-fill-color,
+        rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.04)
+      );
       border-bottom: 1px solid var(--divider-color, #e0e0e0);
-      border-radius: var(--ha-border-radius-sm, 4px) var(--ha-border-radius-sm, 4px) 0 0;
+      border-radius: var(--ha-border-radius-sm, 4px)
+        var(--ha-border-radius-sm, 4px) 0 0;
       box-sizing: border-box;
       color: var(--secondary-text-color);
       display: flex;
