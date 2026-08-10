@@ -36,8 +36,14 @@ export const cacheEnabled = Boolean(rootDir);
 // rest is kept up to this budget, so nothing is dropped unless the cache is
 // genuinely too large. Override with COMPRESS_CACHE_MAX_BYTES.
 const DEFAULT_MAX_BYTES = 1024 * 1024 * 1024; // 1 GiB
-const maxBytes = () =>
-  Number(process.env.COMPRESS_CACHE_MAX_BYTES) || DEFAULT_MAX_BYTES;
+const maxBytes = () => {
+  // A valid, explicit budget wins — including 0, which keeps only the current
+  // build (evict everything else). An unset or invalid value uses the default.
+  const configured = Number(process.env.COMPRESS_CACHE_MAX_BYTES);
+  return Number.isFinite(configured) && configured >= 0
+    ? configured
+    : DEFAULT_MAX_BYTES;
+};
 
 // Every cache key touched this build, hits and writes alike, so a prune can pin
 // the current dist and never evict a file this build depends on.
@@ -73,8 +79,21 @@ const writeAtomic = async (dir, name, contents) => {
   await ensureDir(dir);
   tmpCounter += 1;
   const tmp = path.join(dir.path, `.${process.pid}-${tmpCounter}.tmp`);
+  const dest = path.join(dir.path, name);
   await writeFile(tmp, contents);
-  await rename(tmp, path.join(dir.path, name));
+  try {
+    await rename(tmp, dest);
+  } catch (error) {
+    // Two files with identical contents can miss and write the same entry at
+    // once. On POSIX the rename just overwrites, but Windows rejects a rename
+    // onto an existing path. Either way the destination already holds the same
+    // bytes (content-addressed), so drop our temp and treat it as done.
+    if (existsSync(dest)) {
+      await rm(tmp, { force: true });
+    } else {
+      throw error;
+    }
+  }
 };
 
 /**

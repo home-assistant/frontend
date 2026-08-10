@@ -59,6 +59,6 @@ gulp.task(
   )
 );
 
-// Drop cache entries this build didn't use, keeping the compression cache
-// bounded. No-op unless COMPRESS_CACHE_DIR is set.
+// Keep the compression cache under its size budget (LRU, this build pinned).
+// No-op unless COMPRESS_CACHE_DIR is set.
 gulp.task("prune-compress-cache", () => pruneCache());

@@ -69,10 +69,12 @@ jobs:
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
-      # The build prunes the cache to this dist's files, so saving keeps it
-      # bounded. A unique key always writes; restore-keys picks the newest.
+      # The build keeps the cache under its size budget, so saving stays bounded.
+      # A unique key always writes; restore-keys picks the newest on the next
+      # run. Not gated on the restore step: a transient restore failure (it is
+      # continue-on-error) must not stop us persisting a freshly built cache.
       - name: Save compression cache
-        if: always() && steps.compress-cache.outcome == 'success'
+        if: success()
         continue-on-error: true
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
