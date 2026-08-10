@@ -5,13 +5,22 @@
 // blocks the event loop for the whole compression step. Running one WASM
 // instance per worker parallelises it; the output bytes are unchanged.
 
+import { createRequire } from "node:module";
 import { availableParallelism } from "node:os";
 import { buffer as readStream } from "node:stream/consumers";
 import { Worker } from "node:worker_threads";
+import { withCache } from "./compress-cache.mjs";
 import { ParallelTransform } from "./parallel-transform.mjs";
 
 const WORKER_URL = new URL("./zopfli-worker.mjs", import.meta.url);
 const EXTENSION = ".gz";
+
+// Cache namespace tied to the zopfli version, since a different version can
+// produce different bytes for the same input.
+const ZOPFLI_VERSION = createRequire(import.meta.url)(
+  "@gfx/zopfli/package.json"
+).version;
+const NAMESPACE = `gzip-zopfli${ZOPFLI_VERSION}`;
 
 // Left empty on purpose: @gfx/zopfli then applies its own defaults, which is
 // what gulp-zopfli-green did, so compressed output stays byte-identical.
@@ -130,7 +139,9 @@ export default ({ threshold = 0 } = {}) => {
       // Passed through unrenamed and uncompressed, as gulp-zopfli-green did.
       return file;
     }
-    file.contents = await compress(file.contents);
+    file.contents = await withCache(NAMESPACE, file.contents, () =>
+      compress(file.contents)
+    );
     file.path += EXTENSION;
     return file;
   });

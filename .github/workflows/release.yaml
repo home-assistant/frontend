@@ -49,11 +49,37 @@ jobs:
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
 
+      # Restore the content-addressed compression cache. Unchanged chunks and
+      # static assets are then reused instead of re-run through brotli/zopfli.
+      - name: Restore compression cache
+        id: compress-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            compress-cache-${{ runner.os }}-
+
       - name: Build and release package
+        env:
+          COMPRESS_CACHE_DIR: ${{ github.workspace }}/.compress-cache
         run: |
           python3 -m pip install build
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
+
+      # The build keeps the cache under its size budget, so saving stays bounded.
+      # A unique key always writes; restore-keys picks the newest on the next
+      # run. Not gated on the restore step: a transient restore failure (it is
+      # continue-on-error) must not stop us persisting a freshly built cache.
+      - name: Save compression cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
