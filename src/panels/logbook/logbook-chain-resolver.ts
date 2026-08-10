@@ -48,7 +48,11 @@ const lookbackIso = (when: number) =>
 const justAfterIso = (when: number) =>
   new Date(when * 1000 + 1000).toISOString();
 
-// Effect rows never carry a context_id, run rows do.
+// Effect rows never carry a context_id, run rows do: the logbook processor
+// only emits it on rows described by the automation/script platforms. This
+// candidate discovery + verification is a workaround for that gap; once core
+// emits context_id on described rows too, the fast path by entry.context_id
+// covers every click and this can be deleted.
 const resolveRowsByContextEntity = async (
   entry: LogbookEntry,
   fetchEvents: LogbookFetcher

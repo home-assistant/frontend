@@ -81,6 +81,8 @@ describe("resolveLogbookChain", () => {
 
     const chain = await resolveLogbookChain(hass, effect, {}, fetch);
 
+    // One context fetch + one trigger fetch: no candidate discovery.
+    expect(calls).toHaveLength(2);
     expect(calls[0].contextId).toBe("ctx_run");
     expect(chain.runRow).toBe(run);
     expect(chain.rows).toEqual([run, effect]);
