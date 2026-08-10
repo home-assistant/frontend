@@ -3,11 +3,11 @@ import { getLogbookDataFromServer } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
 import type { LogbookCause } from "./logbook-entry-model";
 import {
-  classifyLogbookEntry,
   computeContextCause,
   computeLogbookCause,
   computeUserCause,
   isRunCause,
+  isRunRow,
   isSameLogbookEntry,
 } from "./logbook-entry-model";
 
@@ -126,7 +126,7 @@ export const resolveLogbookChain = async (
     rows = [entry];
   }
 
-  let runRow = rows.find((row) => classifyLogbookEntry(row) === "automation");
+  let runRow = rows.find(isRunRow);
   if (runRow && runRow !== entry && isSameLogbookEntry(entry, runRow)) {
     // The clicked feed copy carries the call_service description that the
     // fetched copy of the run row never has.

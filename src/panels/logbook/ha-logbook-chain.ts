@@ -18,10 +18,10 @@ import type { HomeAssistant } from "../../types";
 import type { LogbookChain } from "./logbook-chain-resolver";
 import type { LogbookCause } from "./logbook-entry-model";
 import {
-  classifyLogbookEntry,
   computeLogbookItem,
   computeTraceLink,
   entityDisplay,
+  isRunRow,
   isSameLogbookEntry,
   nodeColor,
 } from "./logbook-entry-model";
@@ -55,18 +55,20 @@ class HaLogbookChain extends LitElement {
       `;
     }
 
-    // An entity chain shows only its subject's rows; a run chain shows
-    // everything the run did.
-    const subjectIsRun = classifyLogbookEntry(this.subject) === "automation";
-    const visibleRows = subjectIsRun
-      ? rows
-      : rows.filter(
-          (row) =>
-            classifyLogbookEntry(row) === "automation" ||
-            (this.subject.entity_id
-              ? row.entity_id === this.subject.entity_id
-              : isSameLogbookEntry(row, this.subject))
-        );
+    // The chain is the subject's cause path: the runs recorded before its
+    // rows (user → automation → script → entity). Sibling effects and runs
+    // recorded after the subject are not causes and stay out.
+    const isSubjectRow = (row: LogbookEntry) =>
+      this.subject.entity_id
+        ? row.entity_id === this.subject.entity_id
+        : isSameLogbookEntry(row, this.subject);
+    const firstSubjectIndex = rows.findIndex(isSubjectRow);
+    const visibleRows = rows.filter(
+      (row, index) =>
+        isSubjectRow(row) ||
+        (isRunRow(row) &&
+          (firstSubjectIndex === -1 || index < firstSubjectIndex))
+    );
 
     return html`
       <div class="box">
@@ -80,7 +82,7 @@ class HaLogbookChain extends LitElement {
           )}
           ${syntheticRun ? this._renderSyntheticRunNode(syntheticRun) : nothing}
           ${visibleRows.map((row) =>
-            classifyLogbookEntry(row) === "automation"
+            isRunRow(row)
               ? this._renderRunNode(row)
               : this._renderEffectNode(row)
           )}
