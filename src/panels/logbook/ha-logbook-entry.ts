@@ -556,6 +556,7 @@ class HaLogbookEntry extends LitElement {
 
         .entry.clickable {
           cursor: pointer;
+          user-select: none;
         }
 
         .entry.clickable:hover {
