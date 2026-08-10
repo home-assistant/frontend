@@ -221,6 +221,11 @@ export interface VacuumCommandsCardFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export interface VacuumFanSpeedCardFeatureConfig {
+  type: "vacuum-fan-speed";
+  fan_speeds?: string[];
+}
+
 export interface ValveOpenCloseCardFeatureConfig {
   type: "valve-open-close";
 }
@@ -351,6 +356,7 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | VacuumFanSpeedCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig
   | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig

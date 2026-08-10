@@ -67,6 +67,7 @@ import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-f
 import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsVacuumFanSpeedCardFeature } from "../../card-features/hui-vacuum-fan-speed-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
 import { supportsValvePositionFavoriteCardFeature } from "../../card-features/hui-valve-position-favorite-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
@@ -130,6 +131,7 @@ const UI_FEATURE_TYPES = [
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
   "valve-open-close",
   "valve-position-favorite",
   "valve-position",
@@ -167,6 +169,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "trend-graph",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
   "valve-position-favorite",
   "water-heater-operation-modes",
 ]);
@@ -220,6 +223,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "vacuum-fan-speed": supportsVacuumFanSpeedCardFeature,
   "valve-open-close": supportsValveOpenCloseCardFeature,
   "valve-position-favorite": supportsValvePositionFavoriteCardFeature,
   "valve-position": supportsValvePositionCardFeature,
