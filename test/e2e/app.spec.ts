@@ -279,6 +279,85 @@ test.describe("Lovelace dashboard", () => {
   });
 });
 
+test.describe("Energy dashboard", () => {
+  test("returns to Energy after repeatedly opening the device dialog", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(
+      page,
+      "/?historyBack=1&backPath=%2Flovelace#/energy/overview"
+    );
+    const energyRoot = page.locator("ha-panel-energy hui-root");
+    await expect(energyRoot).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    const editDashboard = energyRoot.getByRole("button", {
+      name: /^Edit dashboard\b/,
+    });
+    const dashboardMenu = energyRoot.getByRole("button", {
+      name: "Open dashboard menu",
+    });
+    await expect(editDashboard.or(dashboardMenu)).toBeVisible({
+      timeout: QUICK_TIMEOUT,
+    });
+    if (await editDashboard.isVisible()) {
+      await editDashboard.click();
+    } else {
+      await dashboardMenu.click();
+      await page.getByRole("menuitem", { name: /^Edit dashboard\b/ }).click();
+    }
+
+    await expect(page.locator("ha-config-energy")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+
+    const backLink = page
+      .locator("ha-config-energy hass-tabs-subpage")
+      .getByRole("link", { name: "Back" });
+    await expect(backLink).toHaveAttribute(
+      "href",
+      "/config/lovelace/dashboards"
+    );
+
+    const addDevice = page
+      .locator("ha-energy-device-settings")
+      .locator("ha-button")
+      .first();
+    const openAndCancelDeviceDialog = async () => {
+      await addDevice.click();
+      const dialog = page.locator("dialog-energy-device-settings");
+      const cancel = dialog.locator("ha-dialog-footer ha-button").first();
+      await expect(cancel).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await cancel.click();
+      await expect(cancel).toBeHidden({ timeout: QUICK_TIMEOUT });
+    };
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+
+    await backLink.click();
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => ({
+            hash: window.location.hash,
+            search: window.location.search,
+          })),
+        { timeout: PANEL_TIMEOUT }
+      )
+      .toEqual({
+        hash: "#/energy/overview",
+        search: "?historyBack=1&backPath=%2Flovelace",
+      });
+    await expect(page.locator("ha-panel-energy")).toBeAttached();
+    await expect(
+      energyRoot.getByRole("link", { name: "Back" })
+    ).toHaveAttribute("href", "/lovelace");
+    expectNoPageErrors(errors);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // More-info dialog (light)
 // ---------------------------------------------------------------------------
