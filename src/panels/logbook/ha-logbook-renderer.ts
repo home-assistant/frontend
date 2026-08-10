@@ -16,7 +16,7 @@ import type { HomeAssistant } from "../../types";
 import "./ha-logbook-entry";
 import type { LogbookEntrySelectedDetail } from "./ha-logbook-entry";
 import type { LogbookNameDetail } from "./logbook-entry-model";
-import { findPreviousState, sameDay } from "./logbook-entry-model";
+import { sameDay } from "./logbook-entry-model";
 import { showLogbookDetailDialog } from "./show-dialog-logbook-detail";
 
 declare global {
@@ -161,7 +161,6 @@ class HaLogbookRenderer extends LitElement {
         <ha-logbook-entry
           .hass=${this.hass}
           .item=${item}
-          .index=${index}
           .userIdToName=${this.userIdToName}
           .systemUserIds=${this.systemUserIds}
           .narrow=${this.narrow}
@@ -184,15 +183,8 @@ class HaLogbookRenderer extends LitElement {
 
   private _handleEntrySelected(ev: HASSDomEvent<LogbookEntrySelectedDetail>) {
     ev.stopPropagation();
-    const { item } = ev.detail;
-    let index = ev.detail.index;
-    if (this.entries[index] !== item) {
-      // A recycled virtualizer row can deliver a stale index.
-      index = this.entries.indexOf(item);
-    }
     showLogbookDetailDialog(this, {
-      entry: item,
-      previousState: findPreviousState(this.entries, index),
+      entry: ev.detail.item,
       traceContexts: this.traceContexts,
       userIdToName: this.userIdToName,
       systemUserIds: this.systemUserIds,

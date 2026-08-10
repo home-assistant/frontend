@@ -6,7 +6,6 @@ import {
   entityDisplay,
   computeLogbookCause,
   computeLogbookGlyph,
-  findPreviousState,
   isSameLogbookEntry,
 } from "../../../src/panels/logbook/logbook-entry-model";
 import type { LogbookEntry } from "../../../src/data/logbook";
@@ -404,44 +403,6 @@ describe("computeLogbookItem", () => {
       {}
     );
     expect(model.value).toEqual({ text: "Ran", type: "state" });
-  });
-});
-
-describe("findPreviousState", () => {
-  const entries: LogbookEntry[] = [
-    entry({ when: 5, entity_id: "light.x", state: "on" }),
-    entry({ when: 4, entity_id: "sensor.y", state: "42" }),
-    entry({ when: 3, entity_id: "automation.z", domain: "automation" }),
-    entry({ when: 2, entity_id: "light.x", state: "off" }),
-    entry({ when: 1, entity_id: "light.x", state: "on" }),
-  ];
-
-  it("returns the nearest older state of the same entity", () => {
-    expect(findPreviousState(entries, 0)).toBe("off");
-    expect(findPreviousState(entries, 3)).toBe("on");
-  });
-
-  it("skips entries of other entities", () => {
-    expect(findPreviousState(entries, 1)).toBeUndefined();
-  });
-
-  it("skips state-less entries of the same entity", () => {
-    const list = [
-      entry({ when: 3, entity_id: "automation.z", state: "on" }),
-      entry({ when: 2, entity_id: "automation.z", domain: "automation" }),
-      entry({ when: 1, entity_id: "automation.z", state: "off" }),
-    ];
-    expect(findPreviousState(list, 0)).toBe("off");
-  });
-
-  it("returns undefined at the end of the list", () => {
-    expect(findPreviousState(entries, 4)).toBeUndefined();
-  });
-
-  it("returns undefined without an entity or for an out-of-range index", () => {
-    expect(findPreviousState(entries, 2)).toBeUndefined();
-    expect(findPreviousState(entries, 99)).toBeUndefined();
-    expect(findPreviousState([], 0)).toBeUndefined();
   });
 });
 

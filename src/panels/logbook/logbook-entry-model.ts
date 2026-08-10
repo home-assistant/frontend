@@ -103,24 +103,6 @@ const hasContext = (item: LogbookEntry) =>
 export const sameDay = (a?: LogbookEntry, b?: LogbookEntry) =>
   !!a?.when && !!b?.when && isSameDay(a.when * 1000, b.when * 1000);
 
-// Entries are sorted newest first.
-export const findPreviousState = (
-  entries: LogbookEntry[],
-  index: number
-): string | undefined => {
-  const entityId = entries[index]?.entity_id;
-  if (!entityId) {
-    return undefined;
-  }
-  for (let i = index + 1; i < entries.length; i++) {
-    const entry = entries[i];
-    if (entry.entity_id === entityId && entry.state !== undefined) {
-      return entry.state;
-    }
-  }
-  return undefined;
-};
-
 export const isSameLogbookEntry = (a: LogbookEntry, b: LogbookEntry) =>
   a.when === b.when &&
   a.entity_id === b.entity_id &&
