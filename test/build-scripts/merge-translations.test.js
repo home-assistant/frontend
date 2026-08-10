@@ -42,6 +42,34 @@ describe("restrictedMerge", () => {
       restrictedMerge({ a: { nested: "en" } }, { a: "not an object" })
     ).toEqual({ a: { nested: "en" } });
   });
+
+  it("ignores inherited overlay keys not owned by the base", () => {
+    // `toString` exists on the prototype, so `key in base` would be true, but
+    // it is not an own key of en.json and must be dropped.
+    expect(restrictedMerge({ a: "en" }, { a: "de", toString: "evil" })).toEqual(
+      {
+        a: "de",
+      }
+    );
+  });
+
+  it("does not pollute the prototype via __proto__ overlay keys", () => {
+    const base = { a: "en" };
+    const overlay = JSON.parse('{"a":"de","__proto__":{"polluted":"yes"}}');
+    restrictedMerge(base, overlay);
+    expect(base).toEqual({ a: "de" });
+    expect({}.polluted).toBeUndefined();
+  });
+
+  it("does not merge into a constructor overlay key", () => {
+    const base = { a: "en" };
+    const overlay = JSON.parse(
+      '{"a":"de","constructor":{"prototype":{"polluted":"yes"}}}'
+    );
+    restrictedMerge(base, overlay);
+    expect(base).toEqual({ a: "de" });
+    expect({}.polluted).toBeUndefined();
+  });
 });
 
 describe("mergeTranslations", () => {
