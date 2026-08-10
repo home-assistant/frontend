@@ -4,7 +4,6 @@ import type { TraceContexts } from "../../data/trace";
 
 export interface LogbookDetailDialogParams {
   entry: LogbookEntry;
-  previousState?: string;
   traceContexts?: TraceContexts;
   userIdToName?: Record<string, string>;
   systemUserIds?: Set<string>;

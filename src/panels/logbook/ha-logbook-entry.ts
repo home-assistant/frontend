@@ -37,7 +37,6 @@ interface LogbookRenderItem extends LogbookItem {
 }
 
 export interface LogbookEntrySelectedDetail {
-  index: number;
   item: LogbookEntry;
 }
 
@@ -58,8 +57,6 @@ class HaLogbookEntry extends LitElement {
     {};
 
   @property({ attribute: false }) public systemUserIds = new Set<string>();
-
-  @property({ attribute: false }) public index = -1;
 
   @property({ type: Boolean, attribute: "no-row-click" }) public noRowClick =
     false;
@@ -183,10 +180,7 @@ class HaLogbookEntry extends LitElement {
     if (this.noRowClick) {
       return;
     }
-    fireEvent(this, "logbook-entry-selected", {
-      index: this.index,
-      item: this.item,
-    });
+    fireEvent(this, "logbook-entry-selected", { item: this.item });
   }
 
   private _rowKeydown(ev: KeyboardEvent) {

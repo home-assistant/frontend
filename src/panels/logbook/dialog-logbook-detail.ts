@@ -11,6 +11,7 @@ import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
 import "../../components/ha-relative-time";
 import "../../components/ha-spinner";
+import { fetchDateWS } from "../../data/history";
 import type { LogbookEntry } from "../../data/logbook";
 import type { HassDialog } from "../../dialogs/make-dialog-manager";
 import {
@@ -44,12 +45,15 @@ class DialogLogbookDetail
 
   @state() private _chain?: LogbookChain;
 
+  @state() private _previousState?: string;
+
   @state() private _error = false;
 
   public showDialog(params: LogbookDetailDialogParams): void {
     this._params = params;
     this._open = true;
     this._chain = undefined;
+    this._previousState = undefined;
     this._error = false;
     if (
       params.entry.context_event_type === "call_service" &&
@@ -57,7 +61,7 @@ class DialogLogbookDetail
     ) {
       this.hass.loadBackendTranslation("services", params.entry.context_domain);
     }
-    this._loadChain();
+    this._loadDetails();
   }
 
   public closeDialog(): boolean {
@@ -71,26 +75,61 @@ class DialogLogbookDetail
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private async _loadChain() {
-    const { entry, userIdToName, systemUserIds } = this._params!;
-    const options = { userIdToName, systemUserIds };
-    const resolveWithoutFetch = () =>
-      resolveLogbookChain(this.hass, entry, options, async () => []);
-    let chain: LogbookChain;
-    let errored = false;
-    try {
-      chain = isComponentLoaded(this.hass.config, "logbook")
-        ? await resolveLogbookChain(this.hass, entry, options)
-        : await resolveWithoutFetch();
-    } catch {
-      errored = true;
-      chain = await resolveWithoutFetch();
-    }
+  // Both fetches resolve into a single render so the dialog reflows once.
+  private async _loadDetails() {
+    const { entry } = this._params!;
+    const [{ chain, errored }, previousState] = await Promise.all([
+      this._fetchChain(entry),
+      this._fetchPreviousState(entry),
+    ]);
     if (this._params?.entry !== entry) {
       return;
     }
     this._error = errored;
     this._chain = chain;
+    this._previousState = previousState;
+  }
+
+  private async _fetchChain(
+    entry: LogbookEntry
+  ): Promise<{ chain: LogbookChain; errored: boolean }> {
+    const { userIdToName, systemUserIds } = this._params!;
+    const options = { userIdToName, systemUserIds };
+    const resolveWithoutFetch = () =>
+      resolveLogbookChain(this.hass, entry, options, async () => []);
+    try {
+      const chain = isComponentLoaded(this.hass.config, "logbook")
+        ? await resolveLogbookChain(this.hass, entry, options)
+        : await resolveWithoutFetch();
+      return { chain, errored: false };
+    } catch {
+      return { chain: await resolveWithoutFetch(), errored: true };
+    }
+  }
+
+  // The feed the row was clicked in can be filtered or partially loaded, so
+  // the state active just before the entry is resolved from history instead.
+  private async _fetchPreviousState(
+    entry: LogbookEntry
+  ): Promise<string | undefined> {
+    if (
+      !entry.entity_id ||
+      entry.state === undefined ||
+      !isComponentLoaded(this.hass.config, "history")
+    ) {
+      return undefined;
+    }
+    const end = new Date(entry.when * 1000);
+    const start = new Date(end.getTime() - 1);
+    try {
+      const states = await fetchDateWS(this.hass, start, end, [
+        entry.entity_id,
+      ]);
+      return states[entry.entity_id]?.[0]?.s;
+    } catch {
+      // The row is still useful without an old state.
+      return undefined;
+    }
   }
 
   protected render() {
@@ -210,16 +249,18 @@ class DialogLogbookDetail
               </ha-alert>`
             : nothing
         }
-        ${
-          this._chain === undefined
-            ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
-            : html`<ha-logbook-chain
-                .hass=${this.hass}
-                .chain=${this._chain}
-                .subject=${entry}
-                .traceContexts=${this._params?.traceContexts ?? {}}
-              ></ha-logbook-chain>`
-        }
+        <div class="chain-area">
+          ${
+            this._chain === undefined
+              ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
+              : html`<ha-logbook-chain
+                  .hass=${this.hass}
+                  .chain=${this._chain}
+                  .subject=${entry}
+                  .traceContexts=${this._params?.traceContexts ?? {}}
+                ></ha-logbook-chain>`
+          }
+        </div>
       </div>
     `;
   }
@@ -237,7 +278,7 @@ class DialogLogbookDetail
     const newState = stateObj
       ? this.hass.formatEntityState(stateObj, entry.state)
       : entry.state;
-    const previousState = this._params?.previousState;
+    const previousState = this._previousState;
     const oldState =
       previousState !== undefined && previousState !== entry.state
         ? stateObj
@@ -335,10 +376,17 @@ class DialogLogbookDetail
           font-weight: var(--ha-font-weight-medium);
         }
 
+        /* Reserved at two chain rows, the typical chain height, so the swap
+           from spinner to content barely moves the dialog. */
+        .chain-area {
+          display: grid;
+          min-height: 114px;
+        }
+
         .loading {
           display: flex;
+          align-items: center;
           justify-content: center;
-          padding: var(--ha-space-4);
         }
       `,
     ];
