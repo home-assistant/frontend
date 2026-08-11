@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { mdiClockOutline, mdiHomeAssistant, mdiStateMachine } from "@mdi/js";
+import { mdiStateMachine } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -214,12 +214,6 @@ class HaLogbookChain extends LitElement {
       return stateObj
         ? html`<ha-state-icon .stateObj=${stateObj}></ha-state-icon>`
         : html`<ha-svg-icon .path=${mdiStateMachine}></ha-svg-icon>`;
-    }
-    if (origin.type === "scheduled") {
-      return html`<ha-svg-icon .path=${mdiClockOutline}></ha-svg-icon>`;
-    }
-    if (origin.type === "homeassistant") {
-      return html`<ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>`;
     }
     return renderLogbookCauseIcon(origin);
   }
