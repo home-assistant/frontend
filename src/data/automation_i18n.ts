@@ -117,6 +117,22 @@ const literalTimeToSeconds = (value: unknown): number | undefined => {
   return hours * 3600 + minutes * 60 + seconds;
 };
 
+const numericThresholdSuffix = (config: {
+  above?: number | string;
+  below?: number | string;
+}): "above" | "below" | "above_below" | undefined => {
+  if (config.above !== undefined && config.below !== undefined) {
+    return "above_below";
+  }
+  if (config.above !== undefined) {
+    return "above";
+  }
+  if (config.below !== undefined) {
+    return "below";
+  }
+  return undefined;
+};
+
 const formatNumericLimitValue = (
   hass: HomeAssistant,
   value?: number | string
@@ -130,18 +146,26 @@ const formatNumericLimitValue = (
     : value;
 };
 
+export interface DescribeOptions {
+  // Skip the user defined alias and describe the underlying config.
+  ignoreAlias?: boolean;
+  // Leave the entities out of the sentence, for rows that render them as
+  // target badges.
+  hideEntities?: boolean;
+}
+
 export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  options?: DescribeOptions
 ): string => {
   try {
     const description = tryDescribeTrigger(
       trigger,
       hass,
       entityRegistry,
-      ignoreAlias
+      options
     );
     if (typeof description !== "string") {
       throw new Error(String(description));
@@ -163,7 +187,7 @@ const tryDescribeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  options?: DescribeOptions
 ) => {
   if (isTriggerList(trigger)) {
     const triggers = ensureArray(trigger.triggers);
@@ -179,14 +203,15 @@ const tryDescribeTrigger = (
     });
   }
 
-  if (trigger.alias && !ignoreAlias) {
+  if (trigger.alias && !options?.ignoreAlias) {
     return trigger.alias;
   }
 
   const description = describeLegacyTrigger(
     trigger as LegacyTrigger,
     hass,
-    entityRegistry
+    entityRegistry,
+    options?.hideEntities
   );
 
   if (description) {
@@ -210,7 +235,8 @@ const tryDescribeTrigger = (
 const describeLegacyTrigger = (
   trigger: LegacyTrigger,
   hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[]
+  entityRegistry: EntityRegistryEntry[],
+  hideEntities = false
 ) => {
   // Event Trigger
   if (trigger.trigger === "event" && trigger.event_type) {
@@ -241,27 +267,15 @@ const describeLegacyTrigger = (
   }
 
   // Numeric State Trigger
-  if (trigger.trigger === "numeric_state" && trigger.entity_id) {
-    const entities: string[] = [];
+  if (
+    trigger.trigger === "numeric_state" &&
+    (trigger.entity_id || hideEntities)
+  ) {
     const states = hass.states;
 
     const stateObj = Array.isArray(trigger.entity_id)
       ? hass.states[trigger.entity_id[0]]
       : (hass.states[trigger.entity_id] as HassEntity | undefined);
-
-    if (Array.isArray(trigger.entity_id)) {
-      for (const entity of trigger.entity_id.values()) {
-        if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
-        }
-      }
-    } else if (trigger.entity_id) {
-      entities.push(
-        states[trigger.entity_id]
-          ? computeStateName(states[trigger.entity_id])
-          : trigger.entity_id
-      );
-    }
 
     const attribute = trigger.attribute
       ? stateObj
@@ -277,6 +291,39 @@ const describeLegacyTrigger = (
     const duration = trigger.for
       ? describeDuration(hass.locale, trigger.for)
       : undefined;
+
+    if (hideEntities) {
+      const suffix = numericThresholdSuffix(trigger);
+      if (!suffix) {
+        return hass.localize(
+          `${triggerTranslationBaseKey}.numeric_state.label`
+        );
+      }
+      return hass.localize(
+        `${triggerTranslationBaseKey}.numeric_state.description.crossed_${suffix}`,
+        {
+          attribute: attribute,
+          above: formatNumericLimitValue(hass, trigger.above),
+          below: formatNumericLimitValue(hass, trigger.below),
+          duration: duration,
+        }
+      );
+    }
+
+    const entities: string[] = [];
+    if (Array.isArray(trigger.entity_id)) {
+      for (const entity of trigger.entity_id.values()) {
+        if (states[entity]) {
+          entities.push(computeStateName(states[entity]) || entity);
+        }
+      }
+    } else if (trigger.entity_id) {
+      entities.push(
+        states[trigger.entity_id]
+          ? computeStateName(states[trigger.entity_id])
+          : trigger.entity_id
+      );
+    }
 
     if (trigger.above !== undefined && trigger.below !== undefined) {
       return hass.localize(
@@ -319,14 +366,14 @@ const describeLegacyTrigger = (
 
   // State Trigger
   if (trigger.trigger === "state") {
-    const entities: string[] = [];
     const states = hass.states;
+
+    const entityArray: string[] = ensureArray(trigger.entity_id);
+
+    const stateObj = hass.states[entityArray?.[0]] as HassEntity | undefined;
 
     let attribute = "";
     if (trigger.attribute) {
-      const stateObj = Array.isArray(trigger.entity_id)
-        ? hass.states[trigger.entity_id[0]]
-        : (hass.states[trigger.entity_id] as HassEntity | undefined);
       attribute = stateObj
         ? computeAttributeNameDisplay(
             hass.localize,
@@ -336,17 +383,6 @@ const describeLegacyTrigger = (
           )
         : trigger.attribute;
     }
-
-    const entityArray: string[] = ensureArray(trigger.entity_id);
-    if (entityArray) {
-      for (const entity of entityArray) {
-        if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
-        }
-      }
-    }
-
-    const stateObj = hass.states[entityArray[0]] as HassEntity | undefined;
 
     let fromChoice = "other";
     let fromString = "";
@@ -425,6 +461,32 @@ const describeLegacyTrigger = (
     let duration = "";
     if (trigger.for) {
       duration = describeDuration(hass.locale, trigger.for) ?? "";
+    }
+
+    if (hideEntities) {
+      return hass.localize(
+        `${triggerTranslationBaseKey}.state.description.changed`,
+        {
+          hasAttribute: attribute !== "" ? "true" : "false",
+          attribute: attribute,
+          anyChange: toChoice === "special" ? "true" : "false",
+          fromChoice: fromChoice,
+          fromString: fromString,
+          toChoice: toChoice,
+          toString: toString,
+          hasDuration: duration !== "" ? "true" : "false",
+          duration: duration,
+        }
+      );
+    }
+
+    const entities: string[] = [];
+    if (entityArray) {
+      for (const entity of entityArray) {
+        if (states[entity]) {
+          entities.push(computeStateName(states[entity]) || entity);
+        }
+      }
     }
 
     return hass.localize(
@@ -916,14 +978,14 @@ export const describeCondition = (
   condition: Condition,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  options?: DescribeOptions
 ): string => {
   try {
     const description = tryDescribeCondition(
       condition,
       hass,
       entityRegistry,
-      ignoreAlias
+      options
     );
     if (typeof description !== "string") {
       throw new Error(String(description));
@@ -945,7 +1007,7 @@ const tryDescribeCondition = (
   condition: Condition,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  options?: DescribeOptions
 ) => {
   if (typeof condition === "string" && hasTemplate(condition)) {
     return hass.localize(
@@ -953,7 +1015,7 @@ const tryDescribeCondition = (
     );
   }
 
-  if (condition.alias && !ignoreAlias) {
+  if (condition.alias && !options?.ignoreAlias) {
     return condition.alias;
   }
 
@@ -975,7 +1037,8 @@ const tryDescribeCondition = (
   const description = describeLegacyCondition(
     condition as LegacyCondition,
     hass,
-    entityRegistry
+    entityRegistry,
+    options?.hideEntities
   );
 
   if (description) {
@@ -1001,7 +1064,8 @@ const tryDescribeCondition = (
 const describeLegacyCondition = (
   condition: LegacyCondition,
   hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[]
+  entityRegistry: EntityRegistryEntry[],
+  hideEntities = false
 ) => {
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
@@ -1058,17 +1122,20 @@ const describeLegacyCondition = (
 
   // State Condition
   if (condition.condition === "state") {
-    if (!condition.entity_id) {
+    if (!condition.entity_id && !hideEntities) {
       return hass.localize(
         `${conditionsTranslationBaseKey}.state.description.no_entity`
       );
     }
 
+    const stateObj = hass.states[
+      Array.isArray(condition.entity_id)
+        ? condition.entity_id[0]
+        : condition.entity_id
+    ] as HassEntity | undefined;
+
     let attribute = "";
     if (condition.attribute) {
-      const stateObj = Array.isArray(condition.entity_id)
-        ? hass.states[condition.entity_id[0]]
-        : (hass.states[condition.entity_id] as HassEntity | undefined);
       attribute = stateObj
         ? computeAttributeNameDisplay(
             hass.localize,
@@ -1079,27 +1146,7 @@ const describeLegacyCondition = (
         : condition.attribute;
     }
 
-    const entities: string[] = [];
-    if (Array.isArray(condition.entity_id)) {
-      for (const entity of condition.entity_id.values()) {
-        if (hass.states[entity]) {
-          entities.push(computeStateName(hass.states[entity]) || entity);
-        }
-      }
-    } else if (condition.entity_id) {
-      entities.push(
-        hass.states[condition.entity_id]
-          ? computeStateName(hass.states[condition.entity_id])
-          : condition.entity_id
-      );
-    }
-
     const states: string[] = [];
-    const stateObj = hass.states[
-      Array.isArray(condition.entity_id)
-        ? condition.entity_id[0]
-        : condition.entity_id
-    ] as HassEntity | undefined;
     if (Array.isArray(condition.state)) {
       for (const state of condition.state.values()) {
         states.push(
@@ -1116,7 +1163,7 @@ const describeLegacyCondition = (
             : state
         );
       }
-    } else if (condition.state !== "") {
+    } else if (condition.state != null && condition.state !== "") {
       states.push(
         stateObj
           ? condition.attribute
@@ -1135,6 +1182,37 @@ const describeLegacyCondition = (
     let duration = "";
     if (condition.for) {
       duration = describeDuration(hass.locale, condition.for) || "";
+    }
+
+    if (hideEntities) {
+      if (states.length === 0) {
+        return hass.localize(`${conditionsTranslationBaseKey}.state.label`);
+      }
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.state.description.is`,
+        {
+          hasAttribute: attribute !== "" ? "true" : "false",
+          attribute: attribute,
+          states: formatListWithOrs(hass.locale, states),
+          hasDuration: duration !== "" ? "true" : "false",
+          duration: duration,
+        }
+      );
+    }
+
+    const entities: string[] = [];
+    if (Array.isArray(condition.entity_id)) {
+      for (const entity of condition.entity_id.values()) {
+        if (hass.states[entity]) {
+          entities.push(computeStateName(hass.states[entity]) || entity);
+        }
+      }
+    } else if (condition.entity_id) {
+      entities.push(
+        hass.states[condition.entity_id]
+          ? computeStateName(hass.states[condition.entity_id])
+          : condition.entity_id
+      );
     }
 
     return hass.localize(
@@ -1159,15 +1237,14 @@ const describeLegacyCondition = (
   }
 
   // Numeric State Condition
-  if (condition.condition === "numeric_state" && condition.entity_id) {
-    const entity_ids = ensureArray(condition.entity_id);
+  if (
+    condition.condition === "numeric_state" &&
+    (condition.entity_id || hideEntities)
+  ) {
+    const entity_ids = condition.entity_id
+      ? ensureArray(condition.entity_id)
+      : [];
     const stateObj = hass.states[entity_ids[0]] as HassEntity | undefined;
-    const entity = formatListWithAnds(
-      hass.locale,
-      entity_ids.map((id) =>
-        hass.states[id] ? computeStateName(hass.states[id]) : id || ""
-      )
-    );
 
     const attribute = condition.attribute
       ? stateObj
@@ -1179,6 +1256,30 @@ const describeLegacyCondition = (
           )
         : condition.attribute
       : undefined;
+
+    if (hideEntities) {
+      const suffix = numericThresholdSuffix(condition);
+      if (!suffix) {
+        return hass.localize(
+          `${conditionsTranslationBaseKey}.numeric_state.label`
+        );
+      }
+      return hass.localize(
+        `${conditionsTranslationBaseKey}.numeric_state.description.is_${suffix}`,
+        {
+          attribute,
+          above: formatNumericLimitValue(hass, condition.above),
+          below: formatNumericLimitValue(hass, condition.below),
+        }
+      );
+    }
+
+    const entity = formatListWithAnds(
+      hass.locale,
+      entity_ids.map((id) =>
+        hass.states[id] ? computeStateName(hass.states[id]) : id || ""
+      )
+    );
 
     if (condition.above !== undefined && condition.below !== undefined) {
       return hass.localize(
