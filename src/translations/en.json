@@ -694,6 +694,7 @@
         "automation_triggered": "Triggered",
         "script_ran": "Ran",
         "view_trace": "View trace",
+        "view_details": "View details",
         "trigger_type": {
           "calendar": "[%key:ui::panel::config::automation::editor::triggers::type::calendar::label%]",
           "conversation": "[%key:ui::panel::config::automation::editor::triggers::type::conversation::label%]",

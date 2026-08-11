@@ -437,7 +437,7 @@ export class HaTracePathDetails extends LitElement {
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}
-            no-row-click
+            no-detail
           ></ha-logbook-renderer>
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
