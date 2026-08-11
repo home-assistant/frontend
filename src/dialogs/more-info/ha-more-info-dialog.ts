@@ -1063,6 +1063,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           outline: none;
           flex: 1;
           overflow: auto;
+          /* Keep the content width constant when the scrollbar toggles;
+             otherwise width-dependent content can flicker at the overflow
+             threshold (#53228). */
+          scrollbar-gutter: stable;
         }
 
         .content-wrapper.settings-view .fade-bottom {
