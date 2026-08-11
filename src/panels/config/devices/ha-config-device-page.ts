@@ -1038,13 +1038,7 @@ export class HaConfigDevicePage extends LitElement {
           ${
             area
               ? html`<div class="header-name">
-                  <ha-tooltip for="area-button">
-                    ${this.hass.localize("ui.panel.config.devices.go_to_area", {
-                      area: area.name || "Unnamed Area",
-                    })}
-                  </ha-tooltip>
                   <ha-button
-                    id="area-button"
                     href="/config/areas/area/${area.area_id}"
                     size="s"
                     appearance="plain"
