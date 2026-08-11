@@ -22,7 +22,7 @@ import {
   type DisableConfigEntryResult,
 } from "../../../data/config_entries";
 import {
-  removeConfigEntryFromDevice,
+  removeDeviceFromRegistry,
   updateDeviceRegistryEntry,
   type DeviceRegistryEntry,
 } from "../../../data/device/device_registry";
@@ -315,7 +315,6 @@ class HaConfigEntryDeviceRow extends LitElement {
   };
 
   private _handleDeleteDevice = async () => {
-    const entry = this.entry;
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
       confirmText: this.hass.localize("ui.common.delete"),
@@ -328,11 +327,7 @@ class HaConfigEntryDeviceRow extends LitElement {
     }
 
     try {
-      await removeConfigEntryFromDevice(
-        this.hass!,
-        this.device.id,
-        entry.entry_id
-      );
+      await removeDeviceFromRegistry(this.hass!, this.device.id);
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.devices.error_delete"),
