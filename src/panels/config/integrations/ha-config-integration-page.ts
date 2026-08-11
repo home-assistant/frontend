@@ -1539,7 +1539,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-config-entry-row {
           display: block;
           margin-bottom: 16px;
-          scroll-margin-top: var(--ha-space-8);
+          scroll-margin-top: var(--ha-space-10);
         }
         a {
           text-decoration: none;
