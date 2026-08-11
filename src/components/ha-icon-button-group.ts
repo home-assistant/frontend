@@ -1,12 +1,22 @@
-import type { TemplateResult } from "lit";
+import { animate } from "@lit-labs/motion";
 import { css, html, LitElement } from "lit";
-import { customElement, query } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 
 const THUMB_SIZE = 40;
 
 @customElement("ha-icon-button-group")
 export class HaIconButtonGroup extends LitElement {
-  @query(".thumb") private _thumb?: HTMLDivElement;
+  @state() private _thumbX = 0;
+
+  @state() private _thumbVisible = false;
+
+  @state() private _thumbBorderOnly = false;
+
+  // When the thumb appears, only fade it in at its new position instead of
+  // also sliding it from wherever it was last visible.
+  private _thumbAppearing = false;
 
   private _observer = new MutationObserver(() => this._updateThumb());
 
@@ -15,11 +25,37 @@ export class HaIconButtonGroup extends LitElement {
     this._observer.disconnect();
   }
 
-  protected render(): TemplateResult {
+  protected render() {
     return html`
-      <div class="thumb"></div>
+      <div
+        class="thumb ${classMap({
+          visible: this._thumbVisible,
+          "border-only": this._thumbBorderOnly,
+        })}"
+        style=${styleMap({ left: `${this._thumbX}px` })}
+        ${animate(() => ({
+          properties: this._thumbAppearing ? ["opacity"] : ["left", "opacity"],
+          keyframeOptions: {
+            duration: this._animationDuration(),
+            easing: "ease-in-out",
+          },
+          skipInitial: true,
+        }))}
+      ></div>
       <slot @slotchange=${this._handleSlotchange}></slot>
     `;
+  }
+
+  protected updated() {
+    this._thumbAppearing = false;
+  }
+
+  private _animationDuration(): number {
+    return (
+      parseFloat(
+        getComputedStyle(this).getPropertyValue("--ha-animation-duration-fast")
+      ) || 150
+    );
   }
 
   private _handleSlotchange(ev: Event) {
@@ -28,7 +64,7 @@ export class HaIconButtonGroup extends LitElement {
     for (const el of slot.assignedElements()) {
       this._observer.observe(el, {
         attributes: true,
-        attributeFilter: ["selected"],
+        attributeFilter: ["selected", "disabled"],
       });
     }
     // Positions are only valid once the slotted buttons are laid out.
@@ -36,30 +72,18 @@ export class HaIconButtonGroup extends LitElement {
   }
 
   private _updateThumb() {
-    const thumb = this._thumb;
-    if (!thumb) {
-      return;
-    }
     const selected = this.querySelector<HTMLElement>(
       "ha-icon-button-toggle[selected]:not([disabled])"
     );
     if (!selected) {
-      thumb.style.opacity = "0";
+      this._thumbVisible = false;
       return;
     }
-    const x = selected.offsetLeft + (selected.offsetWidth - THUMB_SIZE) / 2;
-    thumb.classList.toggle("border-only", selected.hasAttribute("border-only"));
-    const appearing = thumb.style.opacity !== "1";
-    if (appearing) {
-      // Fade in at the target position instead of sliding in from the edge.
-      thumb.style.transition = "none";
-      thumb.style.transform = `translateX(${x}px)`;
-      thumb.getBoundingClientRect();
-      thumb.style.transition = "";
-    } else {
-      thumb.style.transform = `translateX(${x}px)`;
-    }
-    thumb.style.opacity = "1";
+    this._thumbAppearing = !this._thumbVisible;
+    this._thumbBorderOnly = selected.hasAttribute("border-only");
+    this._thumbX =
+      selected.offsetLeft + (selected.offsetWidth - THUMB_SIZE) / 2;
+    this._thumbVisible = true;
   }
 
   static styles = css`
@@ -80,7 +104,7 @@ export class HaIconButtonGroup extends LitElement {
     .thumb {
       position: absolute;
       top: calc(50% - 20px);
-      left: 0;
+      opacity: 0;
       width: 40px;
       height: 40px;
       border-radius: var(--ha-border-radius-circle);
@@ -88,11 +112,10 @@ export class HaIconButtonGroup extends LitElement {
         --ha-icon-button-group-thumb-color,
         var(--primary-text-color)
       );
-      opacity: 0;
       box-sizing: border-box;
-      transition:
-        transform var(--ha-animation-duration-fast) ease-in-out,
-        opacity var(--ha-animation-duration-fast) ease-in-out;
+    }
+    .thumb.visible {
+      opacity: 1;
     }
     .thumb.border-only {
       background-color: transparent;
