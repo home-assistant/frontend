@@ -52,8 +52,7 @@ class HaLogbookRenderer extends LitElement {
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
     false;
 
-  @property({ type: Boolean, attribute: "no-row-click" }) public noRowClick =
-    false;
+  @property({ type: Boolean, attribute: "no-detail" }) public noDetail = false;
 
   @property({ type: String, attribute: "name-detail" })
   public nameDetail?: LogbookNameDetail;
@@ -83,7 +82,7 @@ class HaLogbookRenderer extends LitElement {
 
     return (
       changedProps.has("entries") ||
-      changedProps.has("noRowClick") ||
+      changedProps.has("noDetail") ||
       changedProps.has("userIdToName") ||
       changedProps.has("systemUserIds") ||
       changedProps.has("_showRelative" as never) ||
@@ -171,7 +170,7 @@ class HaLogbookRenderer extends LitElement {
           .lastOfDay=${lastOfDay}
           .showRelative=${this._showRelative}
           .showCause=${this.showCause}
-          .noRowClick=${this.noRowClick}
+          .noDetail=${this.noDetail}
         ></ha-logbook-entry>
       </div>
     `;

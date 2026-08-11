@@ -2,7 +2,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -58,8 +57,7 @@ class HaLogbookEntry extends LitElement {
 
   @property({ attribute: false }) public systemUserIds = new Set<string>();
 
-  @property({ type: Boolean, attribute: "no-row-click" }) public noRowClick =
-    false;
+  @property({ type: Boolean, attribute: "no-detail" }) public noDetail = false;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -112,8 +110,6 @@ class HaLogbookEntry extends LitElement {
       renderedValue: this._renderValue(item.value, seenEntityIds),
     };
 
-    const clickable = !this.noRowClick;
-
     return html`
       <div
         class="entry ${classMap({
@@ -122,12 +118,7 @@ class HaLogbookEntry extends LitElement {
           "last-of-day": this.lastOfDay,
           [`category-${ctx.category}`]: true,
           "time-am-pm": useAmPm(this.hass.locale),
-          clickable,
         })}"
-        role=${ifDefined(clickable ? "button" : undefined)}
-        tabindex=${ifDefined(clickable ? "0" : undefined)}
-        @click=${this._rowClicked}
-        @keydown=${this._rowKeydown}
       >
         ${
           layout === "timeline"
@@ -163,42 +154,25 @@ class HaLogbookEntry extends LitElement {
     `;
   }
 
-  private _toggleTime(e: Event) {
-    e.stopPropagation();
+  private _toggleTime() {
     fireEvent(this, "logbook-toggle-time");
   }
 
   private _timeKeydown(e: KeyboardEvent) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      e.stopPropagation();
       fireEvent(this, "logbook-toggle-time");
     }
   }
 
-  private _rowClicked() {
-    if (this.noRowClick) {
-      return;
-    }
+  private _showDetail() {
     fireEvent(this, "logbook-entry-selected", { item: this.item });
-  }
-
-  private _rowKeydown(ev: KeyboardEvent) {
-    if (this.noRowClick || (ev.key !== "Enter" && ev.key !== " ")) {
-      return;
-    }
-    if (ev.target !== ev.currentTarget) {
-      return;
-    }
-    ev.preventDefault();
-    this._rowClicked();
   }
 
   private _entityClicked(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
     if (!entityId) return;
     ev.preventDefault();
-    ev.stopPropagation();
     fireEvent(this, "hass-more-info", { entityId });
   }
 
@@ -218,16 +192,33 @@ class HaLogbookEntry extends LitElement {
     renderedTime: TemplateResult | string
   ) {
     return html`<span class="trailing">
-      ${
-        cause
-          ? html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
-              <span class="cause-badge" id="cause-badge"
-                >${renderLogbookCauseIcon(cause)}</span
-              >`
-          : nothing
-      }
+      ${cause ? this._renderCauseBadge(cause) : nothing}
       ${this._renderTimeChip(renderedTime)}
     </span>`;
+  }
+
+  private _renderCauseBadge(cause: LogbookCause) {
+    const icon = renderLogbookCauseIcon(cause);
+    if (this.noDetail) {
+      return html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
+        <span class="cause-badge" id="cause-badge">${icon}</span>`;
+    }
+    return html`<button
+      class="cause-badge"
+      aria-label=${this.hass.localize("ui.components.logbook.view_details")}
+      @click=${this._showDetail}
+    >
+      ${icon}
+    </button>`;
+  }
+
+  private _renderDetailsLink() {
+    if (this.noDetail) {
+      return nothing;
+    }
+    return html`<button class="link details-link" @click=${this._showDetail}>
+      ${this.hass.localize("ui.components.logbook.view_details")}
+    </button>`;
   }
 
   private _renderTimeline(ctx: LogbookRenderItem) {
@@ -267,6 +258,7 @@ class HaLogbookEntry extends LitElement {
         causePhrase
           ? html`<div class="secondary">
               <span class="cause-phrase">${causePhrase}</span>
+              ${this.noDetail ? nothing : html`·`} ${this._renderDetailsLink()}
             </div>`
           : nothing
       }
@@ -296,7 +288,7 @@ class HaLogbookEntry extends LitElement {
       ${
         showThirdLine
           ? html`<div class="secondary">
-              ${this._renderListCauseLine(cause)}
+              ${this._renderListCauseLine(cause)} ${this._renderDetailsLink()}
             </div>`
           : nothing
       }
@@ -321,8 +313,8 @@ class HaLogbookEntry extends LitElement {
         }),
       };
       const prefix = prefixMap[cause.type];
-      return html`
-        ${prefix ? html`<span class="cause-prefix">${prefix}</span>` : nothing}
+      return html`<span class="cause-line">
+        ${prefix ?? nothing}
         <button
           class="link cause-entity"
           @click=${this._entityClicked}
@@ -330,11 +322,11 @@ class HaLogbookEntry extends LitElement {
         >
           ${cause.name}
         </button>
-      `;
+      </span>`;
     }
-    return html`
-      <span class="secondary-text">${this._renderCausePhrase(cause)}</span>
-    `;
+    return html`<span class="cause-line"
+      >${this._renderCausePhrase(cause)}</span
+    >`;
   }
 
   private _renderInline(ctx: LogbookRenderItem) {
@@ -552,20 +544,6 @@ class HaLogbookEntry extends LitElement {
             --logbook-category-integration-color,
             var(--teal-color)
           );
-        }
-
-        .entry.clickable {
-          cursor: pointer;
-          user-select: none;
-        }
-
-        .entry.clickable:hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
-        }
-
-        .entry.clickable:focus-visible {
-          outline: 2px solid var(--primary-color);
-          outline-offset: -2px;
         }
 
         .time {
@@ -847,6 +825,35 @@ class HaLogbookEntry extends LitElement {
           align-items: center;
         }
 
+        button.cause-badge {
+          border: none;
+          background: none;
+          color: inherit;
+          font: inherit;
+          /* Grow the hit target without moving the icons. */
+          padding: var(--ha-space-2);
+          margin: calc(-1 * var(--ha-space-2));
+          border-radius: var(--ha-border-radius-pill);
+          cursor: pointer;
+        }
+
+        button.cause-badge:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.06);
+        }
+
+        button.cause-badge:focus-visible {
+          outline: 2px solid var(--primary-color);
+        }
+
+        .details-link {
+          flex-shrink: 0;
+        }
+
+        button.link.details-link {
+          color: var(--primary-color);
+          font-weight: var(--ha-font-weight-normal);
+        }
+
         ha-relative-time {
           display: contents;
         }
@@ -884,17 +891,25 @@ class HaLogbookEntry extends LitElement {
           font-size: 9px;
         }
 
-        .cause-prefix {
-          flex-shrink: 0;
+        /* The cause reads as one sentence on one line: it truncates as a
+           whole and only the details link is kept out of the ellipsis. */
+        .cause-phrase {
+          flex: 0 1 auto;
+          min-width: 0;
           white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .cause-line {
+          flex: 1;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .cause-entity {
-          flex: 1;
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
           font-weight: var(--ha-font-weight-medium);
           color: var(--primary-text-color);
         }

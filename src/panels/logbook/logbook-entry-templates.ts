@@ -1,5 +1,12 @@
-import { mdiCast, mdiCloud, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
-import { css, html, nothing } from "lit";
+import {
+  mdiCast,
+  mdiCloud,
+  mdiPuzzle,
+  mdiRobot,
+  mdiScriptText,
+  mdiStateMachine,
+} from "@mdi/js";
+import { css, html } from "lit";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -49,7 +56,10 @@ export const renderLogbookCauseIcon = (cause: LogbookCause) => {
     ></ha-svg-icon>`;
   }
   if (cause.type === "state") {
-    return nothing;
+    return html`<ha-svg-icon
+      class="cause-icon"
+      .path=${mdiStateMachine}
+    ></ha-svg-icon>`;
   }
   if (cause.brandDomain) {
     return html`<ha-domain-icon
