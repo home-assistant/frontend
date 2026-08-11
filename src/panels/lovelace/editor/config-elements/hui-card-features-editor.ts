@@ -52,6 +52,7 @@ import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-hum
 import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
 import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsLightEffectCardFeature } from "../../card-features/hui-light-effect-card-feature";
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
@@ -114,6 +115,7 @@ const UI_FEATURE_TYPES = [
   "light-brightness",
   "light-color-temp",
   "light-color-favorites",
+  "light-effect",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -160,6 +162,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "lawn-mower-commands",
   "media-player-playback",
   "light-color-favorites",
+  "light-effect",
   "media-player-sound-mode",
   "media-player-source",
   "media-player-volume-buttons",
@@ -206,6 +209,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "light-color-favorites": supportsLightColorFavoritesCardFeature,
+  "light-effect": supportsLightEffectCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
