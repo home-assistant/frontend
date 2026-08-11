@@ -334,7 +334,8 @@ export class HaChartBase extends LitElement {
       // drop it and let the next focus rebuild it against the current set.
       if (
         this._sonification &&
-        (changedProps.has("_hiddenDatasets") || !canSonifyChart(this.data))
+        (changedProps.has("_hiddenDatasets") ||
+          !canSonifyChart(this.data, this._hiddenDatasets))
       ) {
         this._disposeSonification();
       }
@@ -364,7 +365,8 @@ export class HaChartBase extends LitElement {
 
   protected render() {
     const sonifiable =
-      !this._sonificationUnavailable && canSonifyChart(this.data);
+      !this._sonificationUnavailable &&
+      canSonifyChart(this.data, this._hiddenDatasets);
     return html`
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
@@ -567,6 +569,10 @@ export class HaChartBase extends LitElement {
   // Chart2Music adds ~45 kB gzipped, so it is only fetched once someone actually
   // moves keyboard focus into a chart.
   private async _handleChartFocus() {
+    // Dropping tabindex off the active element resets focus to the document and
+    // costs the user their place in the tab order, so stay programmatically
+    // focusable for as long as we hold focus, however we stop being sonifiable.
+    this._sonificationFocusHeld = true;
     if (this._sonification || this._sonificationLoading || !this.chart) {
       return;
     }
@@ -588,11 +594,6 @@ export class HaChartBase extends LitElement {
       }
       if (!sonification) {
         // Nothing came back, so stop offering a focus stop that leads nowhere.
-        // Stay programmatically focusable for as long as we hold focus though:
-        // dropping tabindex off the active element resets focus to the document
-        // and costs the user their place in the tab order.
-        this._sonificationFocusHeld =
-          this.shadowRoot?.activeElement === this._chartContainer;
         this._sonificationUnavailable = true;
         return;
       }

@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { canSonifyChart } from "../../../src/components/chart/chart-sonification";
 import type { HaECSeries } from "../../../src/resources/echarts/echarts";
 
-const series = (items: { type: string; data?: unknown[] }[]) =>
-  items as unknown as HaECSeries;
+const series = (
+  items: { type: string; id?: string; name?: string; data?: unknown[] }[]
+) => items as unknown as HaECSeries;
 
 describe("canSonifyChart", () => {
   it("accepts line and bar series that carry data", () => {
@@ -123,6 +124,18 @@ describe("canSonifyChart", () => {
         ])
       )
     ).toBe(false);
+  });
+
+  it("ignores the points of legend-hidden series", () => {
+    // Hiding a series strips its data before it reaches ECharts, so it cannot
+    // be navigated either.
+    const chart = series([
+      { type: "line", id: "a", data: [[0, 1]] },
+      { type: "line", name: "b", data: [[1, 2]] },
+    ]);
+    expect(canSonifyChart(chart, new Set())).toBe(true);
+    expect(canSonifyChart(chart, new Set(["b"]))).toBe(false);
+    expect(canSonifyChart(chart, new Set(["a", "b"]))).toBe(false);
   });
 
   it("rejects a series whose points are all gaps", () => {

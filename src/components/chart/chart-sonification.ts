@@ -71,13 +71,21 @@ const countNavigablePoints = (
   return total;
 };
 
-export const canSonifyChart = (data: HaECSeries): boolean => {
+export const canSonifyChart = (
+  data: HaECSeries,
+  // Legend-hidden series reach ECharts with their data stripped, so they cannot
+  // be sonified either.
+  hiddenDatasets?: ReadonlySet<string>
+): boolean => {
   const series = ensureArray(data);
+  const visible = hiddenDatasets?.size
+    ? series.filter((s) => !hiddenDatasets.has(String(s.id ?? s.name)))
+    : series;
   return (
     // Cards commonly push empty placeholder series, so judge the chart by the
     // points the extension can actually read — but every type has to be
     // convertible too.
-    countNavigablePoints(series) >= MIN_NAVIGABLE_POINTS &&
+    countNavigablePoints(visible) >= MIN_NAVIGABLE_POINTS &&
     series.every((s) => SONIFIABLE_SERIES_TYPES.has(s.type as string))
   );
 };
@@ -220,8 +228,8 @@ export const sonifyChart = async (
       errorCallback: options.onError,
       axes: { x, y },
     });
-  } catch (err: any) {
-    options.onError(err?.message ?? String(err));
+  } catch (err) {
+    options.onError(err instanceof Error ? err.message : String(err));
     return null;
   }
   if (!connection) {
