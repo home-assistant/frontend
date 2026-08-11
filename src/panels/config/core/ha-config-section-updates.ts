@@ -66,8 +66,6 @@ class HaConfigSectionUpdates extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @state() private _showSkipped = false;
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
@@ -155,9 +153,7 @@ class HaConfigSectionUpdates extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config/system"
-        }
+        back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}

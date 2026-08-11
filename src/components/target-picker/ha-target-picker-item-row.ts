@@ -52,7 +52,6 @@ import {
   type TargetType,
 } from "../../data/target";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
-import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
@@ -221,30 +220,28 @@ export class HaTargetPickerItemRow extends LitElement {
           ? html`
               <div slot="end" class="summary">
                 ${
-                  showEntities &&
-                  !this.expand &&
-                  entries?.referenced_entities.length
-                    ? html`<button
-                        class="main link"
+                  this.expand || !entries.referenced_entities.length
+                    ? html`<span class="main">
+                        ${this.hass.localize(
+                          "ui.components.target-picker.entities_count",
+                          {
+                            count: entries.referenced_entities.length,
+                          }
+                        )}
+                      </span>`
+                    : html`<ha-button
+                        appearance="filled"
+                        variant="brand"
+                        size="xs"
                         @click=${this._openDetails}
                       >
                         ${this.hass.localize(
                           "ui.components.target-picker.entities_count",
                           {
-                            count: entries?.referenced_entities.length,
+                            count: entries.referenced_entities.length,
                           }
                         )}
-                      </button>`
-                    : showEntities
-                      ? html`<span class="main">
-                          ${this.hass.localize(
-                            "ui.components.target-picker.entities_count",
-                            {
-                              count: entries?.referenced_entities.length,
-                            }
-                          )}
-                        </span>`
-                      : nothing
+                      </ha-button>`
                 }
               </div>
             `
@@ -812,7 +809,6 @@ export class HaTargetPickerItemRow extends LitElement {
   };
 
   static styles = [
-    buttonLinkStyle,
     css`
       :host {
         --md-list-item-top-space: 0;
@@ -881,16 +877,6 @@ export class HaTargetPickerItemRow extends LitElement {
       .summary .secondary {
         font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
-      }
-
-      button.link {
-        text-decoration: none;
-        color: var(--primary-color);
-      }
-
-      button.link:hover,
-      button.link:focus {
-        text-decoration: underline;
       }
 
       .state {

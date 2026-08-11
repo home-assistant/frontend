@@ -40,7 +40,11 @@ import {
   getEntityEntryContext,
 } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
@@ -268,16 +272,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _setView(view: MoreInfoView) {
-    history.replaceState(
-      {
-        ...history.state,
-        dialogParams: {
-          ...history.state?.dialogParams,
-          view,
-        },
+    updateHistoryState({
+      dialogParams: {
+        ...getHistoryState()?.dialogParams,
+        view,
       },
-      ""
-    );
+    });
     this._currView = view;
   }
 
@@ -1063,6 +1063,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           outline: none;
           flex: 1;
           overflow: auto;
+          /* Keep the content width constant when the scrollbar toggles;
+             otherwise width-dependent content can flicker at the overflow
+             threshold (#53228). */
+          scrollbar-gutter: stable;
         }
 
         .content-wrapper.settings-view .fade-bottom {

@@ -2142,6 +2142,13 @@
           "icon": "Icon",
           "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
+        "input_boolean": {
+          "initial": "Each time Home Assistant starts",
+          "initial_helper": "Changing this does not affect the toggle right now.",
+          "restore": "Restore previous state",
+          "turn_on": "Turn on",
+          "turn_off": "Turn off"
+        },
         "input_datetime": {
           "date": "Date",
           "time": "Time",
@@ -2536,6 +2543,7 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
+      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have saved or discarded your changes.",
       "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
@@ -7438,6 +7446,7 @@
           "updated": "Updated",
           "device": "Device",
           "device_information": "Device information",
+          "open_device": "Open device",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
@@ -10584,6 +10593,11 @@
               "light-color-temp": {
                 "label": "Light color temperature"
               },
+              "light-effect": {
+                "label": "Light effect",
+                "effects": "Effects",
+                "customize": "Customize effects"
+              },
               "lock-commands": {
                 "label": "Lock commands"
               },
@@ -10627,6 +10641,11 @@
                   "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
+              },
+              "vacuum-fan-speed": {
+                "label": "Vacuum fan speed",
+                "fan_speeds": "Fan speeds",
+                "customize": "Customize fan speeds"
               },
               "valve-open-close": {
                 "label": "Valve open/close"

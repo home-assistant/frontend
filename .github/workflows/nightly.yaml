@@ -42,7 +42,20 @@ jobs:
       - name: Bump version
         run: script/version_bump.js nightly
 
+      # Warm the shared compression cache so releases reuse it (see release.yaml).
+      - name: Restore compression cache
+        id: compress-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            compress-cache-${{ runner.os }}-
+
       - name: Build nightly Python wheels
+        env:
+          COMPRESS_CACHE_DIR: ${{ github.workspace }}/.compress-cache
         run: |
           pip install build
           yarn install
@@ -50,6 +63,16 @@ jobs:
           script/build_frontend
           rm -rf dist home_assistant_frontend.egg-info
           python3 -m build
+
+      # Not gated on the restore step: a transient restore failure (it is
+      # continue-on-error) must not stop us persisting a freshly built cache.
+      - name: Save compression cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Archive translations
         run: tar -czvf translations.tar.gz translations

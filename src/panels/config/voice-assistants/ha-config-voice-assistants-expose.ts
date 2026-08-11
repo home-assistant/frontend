@@ -492,9 +492,7 @@ export class VoiceAssistantsExpose extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
         .columns=${this._columns(

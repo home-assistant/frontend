@@ -14,7 +14,11 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate } from "../../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
@@ -163,9 +167,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     window.location.hash.substring(1)
   );
 
-  @state() private _searchParams = new URLSearchParams(window.location.search);
-
-  @state() private _filter: string = history.state?.filter || "";
+  @state() private _filter: string = getHistoryState()?.filter || "";
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
@@ -526,9 +528,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .backPath=${
-          this._searchParams.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
         has-fab
@@ -884,7 +884,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   private _handleSearchChange(ev: InputEvent) {
     this._filter = (ev.target as HaInputSearch).value ?? "";
-    history.replaceState({ filter: this._filter }, "");
+    updateHistoryState({ filter: this._filter });
   }
 
   private async _highlightEntry() {

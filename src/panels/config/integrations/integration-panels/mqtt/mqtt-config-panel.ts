@@ -61,7 +61,11 @@ export class MQTTConfigPanel extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
+      <hass-subpage
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        back-path="/config/integrations/integration/mqtt"
+      >
         <div class="content">
           <ha-card
             .header=${this.hass.localize("ui.panel.config.mqtt.settings_title")}

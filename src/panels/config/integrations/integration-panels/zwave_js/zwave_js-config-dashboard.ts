@@ -640,7 +640,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _handleBack(): void {
-    goBack("/config");
+    goBack("/config/integrations/integration/zwave_js");
   }
 
   private _fetchData = async () => {
