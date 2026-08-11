@@ -47,11 +47,9 @@ class HaLogbookChain extends LitElement {
 
     if (!origins.length && !runRow && !syntheticRun && rows.length <= 1) {
       return html`
-        <div class="box">
-          <p class="no-cause">
-            ${this.hass.localize("ui.dialogs.logbook_detail.no_known_cause")}
-          </p>
-        </div>
+        <p class="no-cause">
+          ${this.hass.localize("ui.dialogs.logbook_detail.no_known_cause")}
+        </p>
       `;
     }
 
@@ -71,22 +69,18 @@ class HaLogbookChain extends LitElement {
     );
 
     return html`
-      <div class="box">
-        <div class="chain">
-          ${origins.map((origin) =>
-            this._renderOriginNode(
-              origin,
-              runRow ?? this.subject,
-              origin.type === "state" ? triggerRow : undefined
-            )
-          )}
-          ${syntheticRun ? this._renderSyntheticRunNode(syntheticRun) : nothing}
-          ${visibleRows.map((row) =>
-            isRunRow(row)
-              ? this._renderRunNode(row)
-              : this._renderEffectNode(row)
-          )}
-        </div>
+      <div class="chain">
+        ${origins.map((origin) =>
+          this._renderOriginNode(
+            origin,
+            runRow ?? this.subject,
+            origin.type === "state" ? triggerRow : undefined
+          )
+        )}
+        ${syntheticRun ? this._renderSyntheticRunNode(syntheticRun) : nothing}
+        ${visibleRows.map((row) =>
+          isRunRow(row) ? this._renderRunNode(row) : this._renderEffectNode(row)
+        )}
       </div>
     `;
   }
@@ -317,15 +311,6 @@ class HaLogbookChain extends LitElement {
       css`
         :host {
           display: block;
-        }
-
-        .box {
-          border: 1px solid var(--divider-color);
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          overflow: hidden;
         }
 
         .chain-row {

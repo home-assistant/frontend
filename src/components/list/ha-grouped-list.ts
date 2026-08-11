@@ -53,20 +53,20 @@ export class HaGroupedList extends HaListBase {
     ...HaListBase.styles,
     css`
       .header {
-        margin: 0 0 var(--ha-space-2);
+        margin: 0 0 var(--ha-space-1) var(--ha-space-3);
         font-size: var(--ha-font-size-m);
         font-weight: var(--ha-font-weight-medium);
-        color: var(--primary-text-color);
+        color: var(--secondary-text-color);
       }
 
       .base {
-        border: 1px solid var(--divider-color);
+        border: var(--ha-border-width-sm) solid var(--divider-color);
         border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
         overflow: hidden;
       }
 
       ::slotted(:not(:first-child)) {
-        border-top: 1px solid var(--divider-color);
+        border-top: var(--ha-border-width-sm) solid var(--divider-color);
       }
     `,
   ];

@@ -231,17 +231,16 @@ class DialogLogbookDetail
 
   private _renderWhatHappened(entry: LogbookEntry) {
     return html`
-      <div class="section">
-        <h3 class="section-title">
-          ${this.hass.localize("ui.dialogs.logbook_detail.what_happened")}
-        </h3>
-        ${
-          this._error
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize("ui.components.logbook.retrieval_error")}
-              </ha-alert>`
-            : nothing
-        }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="warning">
+              ${this.hass.localize("ui.components.logbook.retrieval_error")}
+            </ha-alert>`
+          : nothing
+      }
+      <ha-grouped-list
+        .header=${this.hass.localize("ui.dialogs.logbook_detail.what_happened")}
+      >
         <div class="chain-area">
           ${
             this._chain === undefined
@@ -254,7 +253,7 @@ class DialogLogbookDetail
                 ></ha-logbook-chain>`
           }
         </div>
-      </div>
+      </ha-grouped-list>
     `;
   }
 
@@ -329,23 +328,18 @@ class DialogLogbookDetail
           display: contents;
         }
 
-        .section-title {
-          margin: 0 0 var(--ha-space-2);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
+        .chain-area {
+          display: grid;
         }
 
         /* Reserved at two chain rows, the typical chain height, so the swap
-           from spinner to content barely moves the dialog. */
-        .chain-area {
-          display: grid;
-          min-height: 114px;
-        }
-
+           from spinner to content barely moves the dialog. Only the spinner
+           reserves it — a resolved chain sizes to its own rows. */
         .loading {
           display: flex;
           align-items: center;
           justify-content: center;
+          min-height: 114px;
         }
       `,
     ];
