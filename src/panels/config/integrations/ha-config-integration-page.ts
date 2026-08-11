@@ -373,7 +373,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       : this._manifest?.documentation;
 
     return html`
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/integrations/dashboard"
+      >
         ${
           documentationLink
             ? html`

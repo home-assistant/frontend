@@ -27,8 +27,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import { goBack, navigate } from "../../common/navigate";
+import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
@@ -76,6 +75,7 @@ import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-di
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
+import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -677,11 +677,7 @@ class HUIRoot extends LitElement {
     );
 
   private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
+    replaceCurrentUrl(constructUrlCurrentPath(removeSearchParam(param)));
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -893,44 +889,39 @@ class HUIRoot extends LitElement {
   };
 
   private _goBack(): void {
-    const views = this.lovelace?.config.views ?? [];
-    const curViewConfig =
-      typeof this._curView === "number" ? views[this._curView] : undefined;
-
-    const backPath = sanitizeNavigationPath(
-      curViewConfig?.back_path ?? this.backPath
-    );
-
-    if (backPath) {
-      navigate(backPath, { replace: true });
-    } else if (history.length > 1) {
-      goBack();
-    } else if (!views[0].subview) {
-      navigate(this.route!.prefix, { replace: true });
-    } else {
-      navigate("/");
+    const configuredBackPath = this._configuredBackPath;
+    if (configuredBackPath) {
+      navigate(configuredBackPath, { replace: true });
+      return;
     }
+
+    const views = this.lovelace?.config.views ?? [];
+    // Falling back to the dashboard root only makes sense when its first view
+    // is a real one.
+    goBack(views[0]?.subview ? undefined : this.route?.prefix);
   }
 
   private _handleBackClick(ev: MouseEvent): void {
-    if (this._backPath && !isNavigationClick(ev)) {
-      return;
-    }
-    this._goBack();
+    handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
-  private get _backPath(): string | undefined {
+  private get _configuredBackPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    const backPath = sanitizeNavigationPath(
-      curViewConfig?.back_path ?? this.backPath
-    );
+    return sanitizeNavigationPath(curViewConfig?.back_path ?? this.backPath);
+  }
 
-    if (backPath) {
-      return backPath;
+  private get _backPath(): string | undefined {
+    if (this._configuredBackPath) {
+      return this._configuredBackPath;
     }
+
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
     return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
 

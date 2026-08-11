@@ -939,7 +939,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                 { err_no: err.status_code }
               ),
       });
-      goBack("/config");
+      goBack("/config/scene/dashboard");
       return;
     }
 
@@ -1084,7 +1084,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
-    afterNextRender(() => goBack("/config"));
+    afterNextRender(() => goBack("/config/scene/dashboard"));
   }
 
   private _deleteTapped(): void {
@@ -1111,7 +1111,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (this._mode === "live") {
       applyScene(this.hass, this._storedStates);
     }
-    goBack("/config");
+    goBack("/config/scene/dashboard");
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
