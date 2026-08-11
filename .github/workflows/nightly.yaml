@@ -38,6 +38,10 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The nightly only builds the app (build-app), which does not merge
+          # backend translations — those are the whole-project core export and by
+          # far the slowest part of this step. Skip it, as the release does.
+          SKIP_BACKEND_TRANSLATIONS: "1"
 
       - name: Bump version
         run: script/version_bump.js nightly
