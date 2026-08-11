@@ -55,6 +55,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/zha/dashboard"
         .header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
