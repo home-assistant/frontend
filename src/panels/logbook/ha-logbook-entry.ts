@@ -266,8 +266,7 @@ class HaLogbookEntry extends LitElement {
   }
 
   private _renderList(ctx: LogbookRenderItem) {
-    const cause =
-      this.showCause || ctx.category === "entity" ? ctx.cause : undefined;
+    const cause = ctx.cause;
     const showThirdLine = this.showCause && cause;
     return html`
       <div class="primary">
@@ -333,10 +332,7 @@ class HaLogbookEntry extends LitElement {
     return html`
       <div class="primary">
         <span class="primary-text">${ctx.renderedValue}</span>
-        ${this._renderTrailing(
-          ctx.category === "entity" ? ctx.cause : undefined,
-          ctx.renderedTime
-        )}
+        ${this._renderTrailing(ctx.cause, ctx.renderedTime)}
       </div>
     `;
   }
