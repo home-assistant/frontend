@@ -38,6 +38,11 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The wheel only builds the app (build-app), which does not merge
+          # backend translations. Skipping the whole-project backend export (as
+          # the release does) keeps this off the build's critical path; the full
+          # translations artifact is produced in parallel by the job below.
+          SKIP_BACKEND_TRANSLATIONS: "1"
 
       - name: Bump version
         run: script/version_bump.js nightly
@@ -74,15 +79,37 @@ jobs:
           path: .compress-cache
           key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - name: Archive translations
-        run: tar -czvf translations.tar.gz translations
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
+
+  # The full translations (including the slow backend/core export) are only
+  # needed for the uploaded artifact, not the wheel, so they are downloaded in
+  # parallel here instead of blocking the build above.
+  translations:
+    name: Translations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+        with:
+          immutable: false
+
+      - name: Download translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+
+      - name: Archive translations
+        run: tar -czvf translations.tar.gz translations
 
       - name: Upload translations
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
