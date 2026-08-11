@@ -11,6 +11,7 @@ import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { replaceCurrentUrl } from "../../../common/navigate";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import {
   extractSearchParam,
@@ -173,11 +174,7 @@ export const ManualEditorMixin = <TConfig>(
     }
 
     protected clearParam(param: string) {
-      window.history.replaceState(
-        null,
-        "",
-        constructUrlCurrentPath(removeSearchParam(param))
-      );
+      replaceCurrentUrl(constructUrlCurrentPath(removeSearchParam(param)));
     }
 
     protected async openSidebar(ev: CustomEvent<SidebarConfig>) {

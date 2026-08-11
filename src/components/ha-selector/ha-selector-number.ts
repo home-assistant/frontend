@@ -177,7 +177,7 @@ export class HaNumberSelector extends LitElement {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      direction: ltr;
+      direction: var(--direction);
     }
     ha-slider {
       flex: 1;
