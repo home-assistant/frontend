@@ -16,6 +16,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShapeOutline,
+  mdiTextureBox,
   mdiTools,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -44,6 +45,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
@@ -1036,12 +1038,33 @@ export class HaConfigDevicePage extends LitElement {
           ${
             area
               ? html`<div class="header-name">
-                  <a href="/config/areas/area/${area.area_id}"
-                    >${this.hass.localize(
+                  <ha-tooltip for="area-button">
+                    ${this.hass.localize("ui.panel.config.devices.go_to_area", {
+                      area: area.name || "Unnamed Area",
+                    })}
+                  </ha-tooltip>
+                  <ha-button
+                    id="area-button"
+                    href="/config/areas/area/${area.area_id}"
+                    size="s"
+                    appearance="plain"
+                  >
+                    ${
+                      area.icon
+                        ? html`<ha-icon
+                            slot="start"
+                            .icon=${area.icon}
+                          ></ha-icon>`
+                        : html`<ha-svg-icon
+                            slot="start"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`
+                    }
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.area",
                       { area: area.name || "Unnamed Area" }
-                    )}</a
-                  >
+                    )}
+                  </ha-button>
                 </div>`
               : ""
           }
@@ -1744,10 +1767,12 @@ export class HaConfigDevicePage extends LitElement {
         .header-name {
           display: flex;
           align-items: center;
-          padding-left: var(--ha-space-2);
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           direction: var(--direction);
+        }
+
+        .header-name ha-icon,
+        .header-name ha-svg-icon {
+          --mdc-icon-size: 18px;
         }
 
         .column,
