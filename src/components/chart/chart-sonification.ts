@@ -23,12 +23,20 @@ const SONIFIABLE_SERIES_TYPES = new Set(["bar", "line", "pie", "scatter"]);
 // Languages shipped by chart2music. Anything else falls back to its English.
 const SONIFICATION_LANGUAGES = new Set(["de", "en", "es", "fr", "hmn", "it"]);
 
-// Mirrors the extension's own reading of a point: it drops anything whose y is
-// not a real number, so a series of nothing but nulls converts to an empty group
-// and makes Chart2Music throw. Short-circuits on the first usable point.
-const hasNumericPoint = (data: unknown): boolean =>
-  Array.isArray(data) &&
-  data.some((raw) => {
+// Fewer than this and there is nothing to walk between, so a focus stop would
+// lead nowhere.
+const MIN_NAVIGABLE_POINTS = 2;
+
+// Mirrors the extension's own reading of a point: it takes `value` as [x, y] and
+// drops anything whose y is not a real number. That rejects gap-only series, and
+// also value-first pairs like the energy device charts' [amount, "sensor.foo"].
+// Counts no further than `limit` so this stays cheap on charts with many points.
+const countNumericPoints = (data: unknown, limit: number): number => {
+  if (!Array.isArray(data)) {
+    return 0;
+  }
+  let found = 0;
+  for (const raw of data) {
     let y: unknown = raw;
     if (Array.isArray(raw)) {
       y = raw.length > 1 ? raw[1] : raw[0];
@@ -40,15 +48,36 @@ const hasNumericPoint = (data: unknown): boolean =>
           : value[0]
         : value;
     }
-    return typeof y === "number" && !Number.isNaN(y);
-  });
+    if (typeof y === "number" && !Number.isNaN(y)) {
+      found += 1;
+      if (found >= limit) {
+        break;
+      }
+    }
+  }
+  return found;
+};
+
+const countNavigablePoints = (
+  series: readonly ({ data?: unknown } | undefined)[]
+): number => {
+  let total = 0;
+  for (const s of series) {
+    total += countNumericPoints(s?.data, MIN_NAVIGABLE_POINTS - total);
+    if (total >= MIN_NAVIGABLE_POINTS) {
+      break;
+    }
+  }
+  return total;
+};
 
 export const canSonifyChart = (data: HaECSeries): boolean => {
   const series = ensureArray(data);
   return (
-    // Cards commonly push empty placeholder series, so only require that
-    // something is plottable — but every type has to be convertible.
-    series.some((s) => hasNumericPoint(s.data)) &&
+    // Cards commonly push empty placeholder series, so judge the chart by the
+    // points the extension can actually read — but every type has to be
+    // convertible too.
+    countNavigablePoints(series) >= MIN_NAVIGABLE_POINTS &&
     series.every((s) => SONIFIABLE_SERIES_TYPES.has(s.type as string))
   );
 };
@@ -147,16 +176,16 @@ export const sonifyChart = async (
 
   // Chart2Music throws while validating a group with no points, which is what
   // placeholder, legend-hidden and all-null series turn into, so only offer it
-  // the series carrying at least one point it can read.
-  const seriesIndex: number[] = [];
-  ensureArray(chartOptions.series).forEach((s, index) => {
-    if (hasNumericPoint((s as HaECSeriesItem | undefined)?.data)) {
-      seriesIndex.push(index);
-    }
-  });
-  if (!seriesIndex.length) {
+  // the series carrying points it can read.
+  const allSeries = ensureArray(chartOptions.series) as (
+    HaECSeriesItem | undefined
+  )[];
+  const readable = allSeries.filter((s) => countNumericPoints(s?.data, 1));
+  // A single point is not navigable, so it does not earn a focus stop either.
+  if (countNavigablePoints(readable) < MIN_NAVIGABLE_POINTS) {
     return null;
   }
+  const seriesIndex = readable.map((s) => allSeries.indexOf(s));
 
   // Chart2Music always reads out an axis label, and the extension picks the wrong
   // axis to name when there is no category axis, so label both explicitly.
