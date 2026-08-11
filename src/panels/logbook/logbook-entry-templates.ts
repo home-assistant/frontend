@@ -1,5 +1,6 @@
 import {
   mdiCast,
+  mdiClockOutline,
   mdiCloud,
   mdiPuzzle,
   mdiRobot,
@@ -15,6 +16,7 @@ import "../../components/ha-domain-icon";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/user/ha-user-badge";
+import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import type { LogbookEntry } from "../../data/logbook";
 import type { User } from "../../data/user";
 import type { HomeAssistant } from "../../types";
@@ -59,6 +61,18 @@ export const renderLogbookCauseIcon = (cause: LogbookCause) => {
     return html`<ha-svg-icon
       class="cause-icon"
       .path=${mdiStateMachine}
+    ></ha-svg-icon>`;
+  }
+  if (cause.type === "scheduled") {
+    return html`<ha-svg-icon
+      class="cause-icon"
+      .path=${mdiClockOutline}
+    ></ha-svg-icon>`;
+  }
+  if (cause.type === "homeassistant") {
+    return html`<ha-svg-icon
+      class="cause-icon"
+      .path=${mdiHomeAssistant}
     ></ha-svg-icon>`;
   }
   if (cause.brandDomain) {
