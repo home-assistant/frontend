@@ -51,6 +51,8 @@ export class HaConfigLovelaceResources extends LitElement {
 
   @state() private _resources: LovelaceResource[] = [];
 
+  @state() private _loaded = false;
+
   @state() private _lovelaceInfo?: LovelaceInfo;
 
   @state()
@@ -134,7 +136,7 @@ export class HaConfigLovelaceResources extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || this._resources === undefined) {
+    if (!this.hass || !this._loaded) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
@@ -229,6 +231,7 @@ export class HaConfigLovelaceResources extends LitElement {
     ]);
     this._resources = resources;
     this._lovelaceInfo = lovelaceInfo;
+    this._loaded = true;
   }
 
   private _editResource(ev: CustomEvent) {
