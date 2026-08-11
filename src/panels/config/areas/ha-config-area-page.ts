@@ -903,7 +903,7 @@ class HaConfigAreaPage extends LitElement {
       destructive: true,
       confirm: async () => {
         await deleteAreaRegistryEntry(this.hass!, area!.area_id);
-        afterNextRender(() => goBack("/config"));
+        afterNextRender(() => goBack("/config/areas/dashboard"));
       },
     });
   }
