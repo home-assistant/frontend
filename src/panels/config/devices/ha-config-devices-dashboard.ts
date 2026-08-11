@@ -65,7 +65,7 @@ import type {
   DeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import {
-  removeConfigEntryFromDevice,
+  removeDeviceFromRegistry,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -1206,19 +1206,9 @@ ${rejected
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       confirm: async () => {
-        const proms: Promise<DeviceRegistryEntry>[] = [];
+        const proms: Promise<null>[] = [];
         this._selectedCanDelete.forEach((deviceId) => {
-          const entries = this.hass!.devices[deviceId]?.config_entries;
-          entries.forEach((entryId) => {
-            if (
-              this.entries.find((entry) => entry.entry_id === entryId)
-                ?.supports_remove_device
-            ) {
-              proms.push(
-                removeConfigEntryFromDevice(this.hass!, deviceId, entryId)
-              );
-            }
-          });
+          proms.push(removeDeviceFromRegistry(this.hass!, deviceId));
         });
         const results = await Promise.allSettled(proms);
         if (hasRejectedItems(results)) {

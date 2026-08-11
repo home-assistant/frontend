@@ -65,7 +65,7 @@ import {
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
-  removeConfigEntryFromDevice,
+  removeDeviceFromRegistry,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
@@ -1218,11 +1218,7 @@ export class HaConfigDevicePage extends LitElement {
             }
 
             try {
-              await removeConfigEntryFromDevice(
-                this.hass,
-                this.deviceId,
-                entry.entry_id
-              );
+              await removeDeviceFromRegistry(this.hass, this.deviceId);
             } catch (err: unknown) {
               showAlertDialog(this, {
                 title: this.hass.localize(
