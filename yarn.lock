@@ -7570,7 +7570,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chart2music@npm:1.20.0, chart2music@npm:^1.20.0":
+"chart2music@npm:^1.20.0":
   version: 1.20.0
   resolution: "chart2music@npm:1.20.0"
   dependencies:
@@ -10056,7 +10056,6 @@ __metadata:
     barcode-detector: "npm:3.2.1"
     browserslist-useragent-regexp: "npm:4.1.4"
     cally: "npm:0.9.2"
-    chart2music: "npm:1.20.0"
     color-name: "npm:2.1.1"
     comlink: "npm:4.4.2"
     core-js: "npm:3.50.0"
