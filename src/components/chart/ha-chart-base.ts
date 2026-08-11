@@ -154,7 +154,7 @@ export class HaChartBase extends LitElement {
 
   private _sonification?: ChartSonification;
 
-  private _sonificationLoading = false;
+  @state() private _sonificationLoading = false;
 
   @state() private _sonificationUnavailable = false;
 
@@ -387,6 +387,7 @@ export class HaChartBase extends LitElement {
                 ? this.hass.localize("ui.components.history_charts.chart")
                 : undefined
             )}
+            aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
             @focus=${this._handleChartFocus}
             @blur=${this._handleChartBlur}
           ></div>
