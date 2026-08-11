@@ -1063,12 +1063,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
           outline: none;
           flex: 1;
           overflow: auto;
-          /* Reserve the scrollbar gutter so toggling the scrollbar cannot
-             change the content width. Without this, on platforms with classic
-             (space-consuming) scrollbars the layout can enter a feedback loop
-             when the content height sits right at the overflow threshold:
-             scrollbar appears -> content narrows -> reflows to fit ->
-             scrollbar disappears -> content widens -> overflows again. */
+          /* Keep the content width constant when the scrollbar toggles;
+             otherwise width-dependent content can flicker at the overflow
+             threshold (#53228). */
           scrollbar-gutter: stable;
         }
 
