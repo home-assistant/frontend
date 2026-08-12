@@ -881,7 +881,6 @@ export class HaServiceControl extends LitElement {
               this.hass.states,
               Object.values(this.hass.entities),
               this.hass.devices[device],
-              this.hass.devices,
               targetSelector
             )
           );

@@ -81,6 +81,26 @@ export type DeviceRegistryListEntry =
 export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
   device.parent_device_id !== null;
 
+/**
+ * Devices whose effective area is the given area: devices with that area, and
+ * child devices that inherit it because they have no area of their own. Mirrors
+ * core's dr.async_entries_for_area, so a child device with a different explicit
+ * area is not part of its parent's area.
+ */
+export const devicesInEffectiveArea = (
+  devices: Record<string, DeviceRegistryEntry>,
+  areaId: string
+): DeviceRegistryEntry[] =>
+  Object.values(devices).filter((device) => {
+    if (device.area_id) {
+      return device.area_id === areaId;
+    }
+    if (device.parent_device_id) {
+      return devices[device.parent_device_id]?.area_id === areaId;
+    }
+    return false;
+  });
+
 export interface DeviceRowItem {
   device: DeviceRegistryEntry;
   isChild: boolean;

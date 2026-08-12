@@ -7,7 +7,10 @@ import type { CallWS, HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area/area_registry";
 import type { FloorComboBoxItem } from "./area_floor_picker";
 import type { DevicePickerItem } from "./device/device_picker";
-import type { DeviceRegistryEntry } from "./device/device_registry";
+import {
+  devicesInEffectiveArea,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
 import type { EntityComboBoxItem } from "./entity/entity_picker";
 import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
@@ -125,16 +128,13 @@ export const areaMeetsFilter = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   includeSecondary = false
 ): boolean => {
-  const areaDevices = Object.values(devices).filter(
-    (device) => device.area_id === area.area_id
-  );
+  const areaDevices = devicesInEffectiveArea(devices, area.area_id);
 
   if (
     areaDevices.some((device) =>
       deviceMeetsFilter(
         device,
         entities,
-        devices,
         deviceFilter,
         includeDomains,
         includeDeviceClasses,
@@ -172,7 +172,6 @@ export const areaMeetsFilter = (
 export const deviceMeetsFilter = (
   device: DeviceRegistryEntry,
   entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   includeDomains?: string[],
   includeDeviceClasses?: string[],
@@ -180,16 +179,11 @@ export const deviceMeetsFilter = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   includeSecondary = false
 ): boolean => {
-  // Targeting a device also targets its child devices, so a parent qualifies
-  // when it or any of its children has a matching entity.
-  const deviceIds = new Set<string>([device.id]);
-  for (const childDevice of Object.values(devices)) {
-    if (childDevice.parent_device_id === device.id) {
-      deviceIds.add(childDevice.id);
-    }
-  }
+  // Only the device's own entities: child devices are targeted through the
+  // device itself (see core's target resolution), not by making a parent match
+  // on behalf of a child.
   const devEntities = Object.values(entities).filter(
-    (entity) => entity.device_id !== null && deviceIds.has(entity.device_id!)
+    (entity) => entity.device_id === device.id
   );
 
   if (

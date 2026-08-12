@@ -28,6 +28,7 @@ import "../ha-alert";
 import "../ha-button";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
 import "../ha-svg-icon";
 import "../ha-tree-indicator";
 import { showDeviceReplacedDialog } from "./show-dialog-device-replaced";
@@ -220,6 +221,34 @@ export class HaDevicePicker extends LitElement {
       this.value
     );
 
+  // The fuzzy search ranks matches by relevance, which would pull a child device
+  // above its parent (the parent often only matches through the lower-weighted
+  // child names). Restore the nested order from the full item list and recompute
+  // which child is last, so the tree connectors stay correct while searching.
+  private _searchFn: PickerComboBoxSearchFn<DevicePickerItem> = (
+    _search,
+    filteredItems,
+    allItems
+  ) => {
+    const matchedIds = new Set(filteredItems.map((item) => item.id));
+    const ordered = allItems.filter((item) => matchedIds.has(item.id));
+    // Keep any items the search added that are not part of the nested list
+    // (for example the "no items available" placeholder or additional items).
+    const orderedIds = new Set(ordered.map((item) => item.id));
+    const extras = filteredItems.filter((item) => !orderedIds.has(item.id));
+
+    return [
+      ...ordered.map((item, index) => {
+        if (!item.is_child) {
+          return item;
+        }
+        const nextItem = ordered[index + 1];
+        return { ...item, last: !nextItem || !nextItem.is_child };
+      }),
+      ...extras,
+    ];
+  };
+
   private _valueRenderer = memoizeOne(
     (
       configEntriesLookup: Record<string, ConfigEntry>,
@@ -292,13 +321,15 @@ export class HaDevicePicker extends LitElement {
       <ha-combo-box-item
         type="button"
         style=${
-        item.is_child ? "--md-list-item-leading-space: var(--ha-space-12);" : ""
-      }
+          item.is_child
+            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            : ""
+        }
       >
         ${
-        item.is_child
-          ? html`<ha-tree-indicator
-              style=${styleMap({
+          item.is_child
+            ? html`<ha-tree-indicator
+                style=${styleMap({
                 width: "var(--ha-space-12)",
                 position: "absolute",
                 top: "0",
@@ -306,20 +337,20 @@ export class HaDevicePicker extends LitElement {
                 right: rtl ? "var(--ha-space-1)" : undefined,
                 transform: rtl ? "scaleX(-1)" : "",
               })}
-              .end=${item.last}
-              slot="start"
-            ></ha-tree-indicator>`
-          : nothing
-      }
-        ${
-        item.domain
-          ? html`
-              <img
+                .end=${item.last}
                 slot="start"
-                alt=""
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${brandsUrl(
+              ></ha-tree-indicator>`
+            : nothing
+        }
+        ${
+          item.domain
+            ? html`
+                <img
+                  slot="start"
+                  alt=""
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${brandsUrl(
                   {
                     domain: item.domain,
                     type: "icon",
@@ -327,26 +358,26 @@ export class HaDevicePicker extends LitElement {
                   },
                   this.hass.auth.data.hassUrl
                 )}
-              />
-            `
-          : nothing
-      }
+                />
+              `
+            : nothing
+        }
 
         <span slot="headline">${item.primary}</span>
         ${
-        item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing
-      }
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
         ${
-        item.domain_name
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${item.domain_name}
-              </div>
-            `
-          : nothing
-      }
+          item.domain_name
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${item.domain_name}
+                </div>
+              `
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -406,6 +437,7 @@ export class HaDevicePicker extends LitElement {
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
+        .searchFn=${this._searchFn}
         no-sort
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}

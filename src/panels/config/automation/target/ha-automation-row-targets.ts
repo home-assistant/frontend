@@ -194,7 +194,6 @@ export class HaAutomationRowTargets extends LitElement {
               this._states,
               entityRegistry,
               device,
-              this._registries.devices,
               targetSelector!
             )
           ) {

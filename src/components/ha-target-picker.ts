@@ -28,6 +28,7 @@ import {
   type DevicePickerItem,
 } from "../data/device/device_picker";
 import {
+  devicesInEffectiveArea,
   fetchDeviceCompositeSplits,
   type DeviceCompositeSplits,
 } from "../data/device/device_registry";
@@ -683,14 +684,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         }
       });
     } else if (type === "area") {
-      Object.values(this.hass.devices).forEach((device) => {
+      // Splitting an area yields its effective-area devices, so a child device
+      // that belongs to a different area is not pulled into this area.
+      devicesInEffectiveArea(this.hass.devices, itemId).forEach((device) => {
         if (
-          device.area_id === itemId &&
           !this.value!.device_id?.includes(device.id) &&
           deviceMeetsFilter(
             device,
             this.hass.entities,
-            this.hass.devices,
             this.deviceFilter,
             this.includeDomains,
             this.includeDeviceClasses,
@@ -769,7 +770,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           deviceMeetsFilter(
             device,
             this.hass.entities,
-            this.hass.devices,
             this.deviceFilter,
             this.includeDomains,
             this.includeDeviceClasses,

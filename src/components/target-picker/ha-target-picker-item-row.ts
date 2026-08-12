@@ -565,7 +565,6 @@ export class HaTargetPickerItemRow extends LitElement {
               deviceMeetsFilter(
                 device,
                 this.hass.entities,
-                this.hass.devices,
                 this.deviceFilter,
                 this.includeDomains,
                 this.includeDeviceClasses,
@@ -758,7 +757,6 @@ export class HaTargetPickerItemRow extends LitElement {
         deviceMeetsFilter(
           device,
           this.hass.entities,
-          this.hass.devices,
           this.deviceFilter,
           this.includeDomains,
           this.includeDeviceClasses,

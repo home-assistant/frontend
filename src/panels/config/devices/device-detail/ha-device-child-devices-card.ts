@@ -73,7 +73,11 @@ export class HaDeviceChildDevicesCard extends LitElement {
           ? childDevices
           : childDevices.slice(0, MAX_VISIBLE_CHILD_DEVICES)
         ).map((childDevice) => {
-          const area = getDeviceArea(childDevice, this.hass.areas);
+          const area = getDeviceArea(
+            childDevice,
+            this.hass.areas,
+            this.hass.devices
+          );
           const entityCount = entityCounts[childDevice.id] ?? 0;
           const secondary = [
             area?.name,
@@ -109,9 +113,9 @@ export class HaDeviceChildDevicesCard extends LitElement {
             ? html`
                 <button class="show-more" @click=${this._toggleShowAll}>
                   ${this.hass.localize(
-                  "ui.panel.config.devices.child_devices.show_more",
-                  { count: childDevices.length - MAX_VISIBLE_CHILD_DEVICES }
-                )}
+                    "ui.panel.config.devices.child_devices.show_more",
+                    { count: childDevices.length - MAX_VISIBLE_CHILD_DEVICES }
+                  )}
                 </button>
               `
             : ""

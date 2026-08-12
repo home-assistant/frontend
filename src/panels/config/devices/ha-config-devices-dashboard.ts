@@ -481,6 +481,15 @@ export class HaConfigDeviceDashboard extends LitElement {
           .map((lbl) => labelLookup!.get(lbl))
           .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
+        const parentDevice = device.parent_device_id
+          ? this.hass.devices[device.parent_device_id]
+          : undefined;
+        // The device that identifies this device's family: its parent for a
+        // child device, itself for a device that has children.
+        const familyParentDevice =
+          parentDevice ??
+          (deviceIdsWithChildren.has(device.id) ? device : undefined);
+
         const { areaName } = computeDeviceAreaLabel(
           device,
           this.hass.areas,
@@ -536,34 +545,29 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
-          parent_device_name:
-            device.parent_device_id &&
-            this.hass.devices[device.parent_device_id]
-              ? computeDeviceNameDisplay(
-                  this.hass.devices[device.parent_device_id],
-                  this.hass.localize,
-                  this.hass.states
-                )
-              : "",
+          parent_device_name: parentDevice
+            ? computeDeviceNameDisplay(
+                parentDevice,
+                this.hass.localize,
+                this.hass.states,
+                deviceEntityLookup[parentDevice.id]
+              )
+            : "",
           // Grouping key that keeps a device with its family: children group
           // under their parent's name, a parent groups under its own name, and
-          // standalone devices stay ungrouped.
-          device_family_name:
-            device.parent_device_id &&
-            this.hass.devices[device.parent_device_id]
-              ? computeDeviceNameDisplay(
-                  this.hass.devices[device.parent_device_id],
-                  this.hass.localize,
-                  this.hass.states
-                )
-              : deviceIdsWithChildren.has(device.id)
-                ? computeDeviceNameDisplay(
-                    device,
-                    this.hass.localize,
-                    this.hass.states,
-                    deviceEntityLookup[device.id]
-                  )
-                : undefined,
+          // standalone devices stay ungrouped. The name is always computed from
+          // the family's parent device with the same arguments, so a parent and
+          // its children can never end up in different groups. Like the area and
+          // floor columns, this groups on the display name rather than the id,
+          // because the data table renders the raw group value as its header.
+          device_family_name: familyParentDevice
+            ? computeDeviceNameDisplay(
+                familyParentDevice,
+                this.hass.localize,
+                this.hass.states,
+                deviceEntityLookup[familyParentDevice.id]
+              )
+            : undefined,
           firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
