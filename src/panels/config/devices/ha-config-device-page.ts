@@ -33,6 +33,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -442,7 +443,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
-    const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [

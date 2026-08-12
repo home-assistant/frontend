@@ -486,7 +486,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         );
 
         const floorArea =
-          getDeviceArea(device, areas) ??
+          getDeviceArea(device, areas, this.hass.devices) ??
           (device.via_device_id && this.hass.devices[device.via_device_id]
             ? getDeviceArea(this.hass.devices[device.via_device_id], areas)
             : undefined);

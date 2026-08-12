@@ -53,7 +53,8 @@ export const computeDeviceAreaLabel = (
   translationMetadata: HomeAssistant["translationMetadata"],
   viaDeviceEntities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[]
 ): DeviceAreaLabel => {
-  const area = getDeviceArea(device, areas);
+  // Pass devices so a child device inherits its parent's area.
+  const area = getDeviceArea(device, areas, devices);
 
   const viaDevice = device.via_device_id
     ? devices[device.via_device_id]
