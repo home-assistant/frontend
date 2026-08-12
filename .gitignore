@@ -7,6 +7,7 @@ dist/
 /hass_frontend/
 /translations/
 /.compress-cache/
+/.rspack-cache/
 # Composite action source, not build output
 !/.github/actions/build/
 
