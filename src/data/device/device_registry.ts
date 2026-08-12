@@ -84,6 +84,8 @@ export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
 export interface DeviceRowItem {
   device: DeviceRegistryEntry;
   isChild: boolean;
+  // True for the last child of a parent, so the tree connector draws its end.
+  isLastChild: boolean;
 }
 
 /**
@@ -115,10 +117,15 @@ export const groupDevicesByParent = (
 
   const result: DeviceRowItem[] = [];
   for (const device of topLevel) {
-    result.push({ device, isChild: false });
-    for (const child of childrenByParent.get(device.id) ?? []) {
-      result.push({ device: child, isChild: true });
-    }
+    result.push({ device, isChild: false, isLastChild: false });
+    const children = childrenByParent.get(device.id) ?? [];
+    children.forEach((child, index) => {
+      result.push({
+        device: child,
+        isChild: true,
+        isLastChild: index === children.length - 1,
+      });
+    });
   }
   return result;
 };

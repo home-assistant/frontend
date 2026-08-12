@@ -79,8 +79,9 @@ export const computeDeviceAreaLabel = (
     ? computeAreaName(viaDeviceArea)
     : undefined;
 
-  // A child device is a logical part of its parent; surface the parent name as
-  // context so the child is identifiable outside the nested list views.
+  // A child device is a logical part of its parent. We surface the parent name
+  // only as a search term (below) — not in the area label, which stays the pure
+  // (inherited) area. The nested tree rendering communicates the relationship.
   const parentDevice = device.parent_device_id
     ? devices[device.parent_device_id]
     : undefined;
@@ -89,18 +90,12 @@ export const computeDeviceAreaLabel = (
     : undefined;
 
   const isRTL = computeRTL(language, translationMetadata.translations);
-  const separator = isRTL ? " ◂ " : " ▸ ";
 
-  const areaNameText = area ? computeAreaName(area) : undefined;
-
-  const areaName = parentDeviceName
-    ? areaNameText
-      ? `${areaNameText}${separator}${parentDeviceName}`
-      : parentDeviceName
-    : areaNameText ||
-      (viaDeviceAreaName
-        ? `${viaDeviceAreaName}${separator}${viaDeviceName}`
-        : viaDeviceName || undefined);
+  const areaName = area
+    ? computeAreaName(area)
+    : viaDeviceAreaName
+      ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
+      : viaDeviceName || undefined;
 
   return { areaName, viaDeviceName, viaDeviceAreaName, parentDeviceName };
 };
@@ -134,6 +129,10 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
     name: "search_labels.parentDeviceName",
     weight: 3,
   },
+  {
+    name: "search_labels.childDeviceNames",
+    weight: 3,
+  },
 ];
 
 export const getDevices = (
@@ -158,14 +157,48 @@ export const getDevices = (
 
   let deviceEntityLookup: DeviceEntityDisplayLookup = {};
 
-  if (
-    includeDomains ||
-    excludeDomains ||
-    includeDeviceClasses ||
-    entityFilter
-  ) {
+  const filtersEntities =
+    includeDomains || excludeDomains || includeDeviceClasses || entityFilter;
+
+  if (filtersEntities) {
     deviceEntityLookup = getDeviceEntityDisplayLookup(entities);
   }
+
+  // Targeting a device also targets its child devices (a parent inherits its
+  // children's entities), so a device should match an entity-based filter when
+  // it OR any of its children has a matching entity. Build a parent -> children
+  // map and resolve each device's effective entity set accordingly. Nesting is
+  // single-level, so one hop covers it.
+  const filterChildrenByParent = new Map<string, DeviceRegistryEntry[]>();
+  if (filtersEntities) {
+    for (const device of devices) {
+      if (device.parent_device_id) {
+        const siblings = filterChildrenByParent.get(device.parent_device_id);
+        if (siblings) {
+          siblings.push(device);
+        } else {
+          filterChildrenByParent.set(device.parent_device_id, [device]);
+        }
+      }
+    }
+  }
+  const effectiveEntities = (
+    deviceId: string
+  ): EntityRegistryDisplayEntry[] => {
+    const own = deviceEntityLookup[deviceId] ?? [];
+    const children = filterChildrenByParent.get(deviceId);
+    if (!children) {
+      return own;
+    }
+    const combined = [...own];
+    for (const child of children) {
+      const childEntities = deviceEntityLookup[child.id];
+      if (childEntities) {
+        combined.push(...childEntities);
+      }
+    }
+    return combined;
+  };
 
   let inputDevices = devices.filter(
     (device) => device.id === value || !device.disabled_by
@@ -173,11 +206,11 @@ export const getDevices = (
 
   if (includeDomains) {
     inputDevices = inputDevices.filter((device) => {
-      const devEntities = deviceEntityLookup[device.id];
-      if (!devEntities || !devEntities.length) {
+      const devEntities = effectiveEntities(device.id);
+      if (!devEntities.length) {
         return false;
       }
-      return deviceEntityLookup[device.id].some((entity) =>
+      return devEntities.some((entity) =>
         includeDomains.includes(computeDomain(entity.entity_id))
       );
     });
@@ -185,11 +218,11 @@ export const getDevices = (
 
   if (excludeDomains) {
     inputDevices = inputDevices.filter((device) => {
-      const devEntities = deviceEntityLookup[device.id];
-      if (!devEntities || !devEntities.length) {
+      const devEntities = effectiveEntities(device.id);
+      if (!devEntities.length) {
         return true;
       }
-      return entities.every(
+      return devEntities.every(
         (entity) => !excludeDomains.includes(computeDomain(entity.entity_id))
       );
     });
@@ -203,11 +236,11 @@ export const getDevices = (
 
   if (includeDeviceClasses) {
     inputDevices = inputDevices.filter((device) => {
-      const devEntities = deviceEntityLookup[device.id];
-      if (!devEntities || !devEntities.length) {
+      const devEntities = effectiveEntities(device.id);
+      if (!devEntities.length) {
         return false;
       }
-      return deviceEntityLookup[device.id].some((entity) => {
+      return devEntities.some((entity) => {
         const stateObj = hass.states[entity.entity_id];
         if (!stateObj) {
           return false;
@@ -222,8 +255,8 @@ export const getDevices = (
 
   if (entityFilter) {
     inputDevices = inputDevices.filter((device) => {
-      const devEntities = deviceEntityLookup[device.id];
-      if (!devEntities || !devEntities.length) {
+      const devEntities = effectiveEntities(device.id);
+      if (!devEntities.length) {
         return false;
       }
       return devEntities.some((entity) => {
@@ -335,10 +368,22 @@ export const getDevices = (
 
   const ordered: DevicePickerItem[] = [];
   for (const device of topLevel) {
-    ordered.push(itemByDeviceId.get(device.id)!);
+    const parentItem = itemByDeviceId.get(device.id)!;
     const children = childrenByParent.get(device.id);
     if (children) {
       children.sort(compareByName);
+      // Add the children's names to the parent's search terms so a search that
+      // matches a child keeps the parent visible (mirrors how a floor stays
+      // visible when one of its areas matches).
+      ordered.push({
+        ...parentItem,
+        search_labels: {
+          ...parentItem.search_labels,
+          childDeviceNames: children
+            .map((child) => itemByDeviceId.get(child.id)!.primary)
+            .join(" "),
+        },
+      });
       children.forEach((child, index) => {
         ordered.push({
           ...itemByDeviceId.get(child.id)!,
@@ -346,6 +391,8 @@ export const getDevices = (
           last: index === children.length - 1,
         });
       });
+    } else {
+      ordered.push(parentItem);
     }
   }
 

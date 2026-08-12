@@ -481,7 +481,7 @@ export class HaConfigEntryRow extends LitElement {
                       ${
                         this._devicesExpanded
                           ? groupDevicesByParent(ownDevices).map(
-                              ({ device, isChild }) =>
+                              ({ device, isChild, isLastChild }) =>
                                 html`<ha-config-entry-device-row
                                   .hass=${this.hass}
                                   .narrow=${this.narrow}
@@ -489,6 +489,7 @@ export class HaConfigEntryRow extends LitElement {
                                   .device=${device}
                                   .entities=${entities}
                                   .isChild=${isChild}
+                                  .isLastChild=${isLastChild}
                                 ></ha-config-entry-device-row>`
                             )
                           : nothing
@@ -512,7 +513,7 @@ export class HaConfigEntryRow extends LitElement {
               )}`
             : html`
                 ${groupDevicesByParent(ownDevices).map(
-                  ({ device, isChild }) =>
+                  ({ device, isChild, isLastChild }) =>
                     html`<ha-config-entry-device-row
                       .hass=${this.hass}
                       .narrow=${this.narrow}
@@ -520,6 +521,7 @@ export class HaConfigEntryRow extends LitElement {
                       .device=${device}
                       .entities=${entities}
                       .isChild=${isChild}
+                      .isLastChild=${isLastChild}
                     ></ha-config-entry-device-row>`
                 )}
               `

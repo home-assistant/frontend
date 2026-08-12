@@ -459,6 +459,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         ? new Map(labelReg.map((label) => [label.label_id, label]))
         : undefined;
 
+      // Ids of devices that have at least one child device, so a parent can be
+      // grouped together with its children.
+      const deviceIdsWithChildren = new Set<string>();
+      for (const dev of Object.values(devices)) {
+        if (dev.parent_device_id) {
+          deviceIdsWithChildren.add(dev.parent_device_id);
+        }
+      }
+
       const formattedOutputDevices = outputDevices.map((device) => {
         const deviceEntries = sortConfigEntries(
           device.config_entries
@@ -527,6 +536,34 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
+          parent_device_name:
+            device.parent_device_id &&
+            this.hass.devices[device.parent_device_id]
+              ? computeDeviceNameDisplay(
+                  this.hass.devices[device.parent_device_id],
+                  this.hass.localize,
+                  this.hass.states
+                )
+              : "",
+          // Grouping key that keeps a device with its family: children group
+          // under their parent's name, a parent groups under its own name, and
+          // standalone devices stay ungrouped.
+          device_family_name:
+            device.parent_device_id &&
+            this.hass.devices[device.parent_device_id]
+              ? computeDeviceNameDisplay(
+                  this.hass.devices[device.parent_device_id],
+                  this.hass.localize,
+                  this.hass.states
+                )
+              : deviceIdsWithChildren.has(device.id)
+                ? computeDeviceNameDisplay(
+                    device,
+                    this.hass.localize,
+                    this.hass.states,
+                    deviceEntityLookup[device.id]
+                  )
+                : undefined,
           firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
@@ -588,6 +625,16 @@ export class HaConfigDeviceDashboard extends LitElement {
         minWidth: "150px",
         extraTemplate: (device) => html`
           ${
+            device.parent_device_name
+              ? html`<div style="color: var(--secondary-text-color);">
+                  ${localize(
+                    "ui.panel.config.devices.data_table.part_of_device",
+                    { name: device.parent_device_name }
+                  )}
+                </div>`
+              : nothing
+          }
+          ${
             device.label_entries.length
               ? html`
                   <ha-data-table-labels
@@ -606,6 +653,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         filterable: true,
         groupable: true,
         minWidth: "120px",
+      },
+      device_family_name: {
+        title: localize("ui.panel.config.devices.data_table.parent_device"),
+        // Keyed on the family name so grouping/sorting keeps a parent together
+        // with its children (grouping uses the column key directly). The cell
+        // only shows the parent name for child devices. Filterable stays on
+        // even when hidden, so searching a parent's name surfaces its children.
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        defaultHidden: true,
+        minWidth: "120px",
+        template: (device) => device.parent_device_name || "",
       },
       manufacturer: {
         title: localize("ui.panel.config.devices.data_table.manufacturer"),

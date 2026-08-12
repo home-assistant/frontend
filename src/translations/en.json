@@ -6893,6 +6893,8 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "parent_device": "Parent device",
+            "part_of_device": "Part of {name}",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",

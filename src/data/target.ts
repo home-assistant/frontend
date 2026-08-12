@@ -134,6 +134,7 @@ export const areaMeetsFilter = (
       deviceMeetsFilter(
         device,
         entities,
+        devices,
         deviceFilter,
         includeDomains,
         includeDeviceClasses,
@@ -171,6 +172,7 @@ export const areaMeetsFilter = (
 export const deviceMeetsFilter = (
   device: DeviceRegistryEntry,
   entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
   deviceFilter?: HaDevicePickerDeviceFilterFunc,
   includeDomains?: string[],
   includeDeviceClasses?: string[],
@@ -178,8 +180,16 @@ export const deviceMeetsFilter = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   includeSecondary = false
 ): boolean => {
+  // Targeting a device also targets its child devices, so a parent qualifies
+  // when it or any of its children has a matching entity.
+  const deviceIds = new Set<string>([device.id]);
+  for (const childDevice of Object.values(devices)) {
+    if (childDevice.parent_device_id === device.id) {
+      deviceIds.add(childDevice.id);
+    }
+  }
   const devEntities = Object.values(entities).filter(
-    (entity) => entity.device_id === device.id
+    (entity) => entity.device_id !== null && deviceIds.has(entity.device_id!)
   );
 
   if (

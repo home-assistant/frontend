@@ -55,6 +55,9 @@ class HaConfigEntryDeviceRow extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "is-child" })
   public isChild = false;
 
+  // The last child of its parent, so the tree connector draws its end.
+  @property({ attribute: false }) public isLastChild = false;
+
   protected render() {
     const device = this.device;
 
@@ -82,11 +85,16 @@ class HaConfigEntryDeviceRow extends LitElement {
           ? html`<ha-tree-indicator
               style=${styleMap({
                 position: "absolute",
-                top: "0",
-                left: rtl ? undefined : "26px",
-                right: rtl ? "26px" : undefined,
-                transform: rtl ? "scaleX(-1)" : "",
+                top: "50%",
+                // Align the connector under the parent device icon; the leading
+                // space (and thus the icon column) is smaller in narrow mode.
+                left: rtl ? undefined : this.narrow ? "4px" : "44px",
+                right: rtl ? (this.narrow ? "4px" : "44px") : undefined,
+                transform: rtl
+                  ? "translateY(-50%) scaleX(-1)"
+                  : "translateY(-50%)",
               })}
+              .end=${this.isLastChild}
               slot="start"
             ></ha-tree-indicator>`
           : nothing

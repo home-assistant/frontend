@@ -193,7 +193,7 @@ class HaConfigSubEntryRow extends LitElement {
         this._expanded
           ? html`
               ${groupDevicesByParent(devices).map(
-                ({ device, isChild }) =>
+                ({ device, isChild, isLastChild }) =>
                   html`<ha-config-entry-device-row
                     .hass=${this.hass}
                     .narrow=${this.narrow}
@@ -201,6 +201,7 @@ class HaConfigSubEntryRow extends LitElement {
                     .device=${device}
                     .entities=${this.entities}
                     .isChild=${isChild}
+                    .isLastChild=${isLastChild}
                   ></ha-config-entry-device-row>`
               )}
               ${services.map(

@@ -664,6 +664,7 @@ export const expandLabelTarget = (
         hass.states,
         Object.values(entities),
         device,
+        devices,
         targetSelector,
         entitySources
       )
@@ -733,6 +734,7 @@ export const expandAreaTarget = (
         hass.states,
         Object.values(entities),
         device,
+        devices,
         targetSelector,
         entitySources
       )
@@ -797,6 +799,7 @@ export const areaMeetsTargetSelector = (
         hass.states,
         Object.values(entities),
         device,
+        devices,
         targetSelector,
         entitySources
       )
@@ -829,6 +832,7 @@ export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
+  devices: HomeAssistant["devices"],
   targetSelector: TargetSelector,
   entitySources?: EntitySources
 ): boolean => {
@@ -846,8 +850,16 @@ export const deviceMeetsTargetSelector = (
     }
   }
   if (targetSelector.target?.entity) {
+    // Targeting a device also targets its child devices, so a parent qualifies
+    // when it or any of its children has a matching entity.
+    const deviceIds = new Set<string>([device.id]);
+    for (const childDevice of Object.values(devices)) {
+      if (childDevice.parent_device_id === device.id) {
+        deviceIds.add(childDevice.id);
+      }
+    }
     const entities = entityRegistry.filter(
-      (reg) => reg.device_id === device.id
+      (reg) => reg.device_id !== null && deviceIds.has(reg.device_id!)
     );
     return entities.some((entity) => {
       const entityState = states[entity.entity_id];
@@ -1141,6 +1153,16 @@ export const resolveEntityIDs = (
     );
     expanded.devices.forEach((id) => targetDevices.add(id));
     expanded.entities.forEach((id) => targetEntities.add(id));
+  });
+
+  // Targeting a device also targets its child devices (a parent inherits its
+  // children's entities), matching core's server-side target resolution. Add
+  // the children before expanding so their entities are included too. Nesting
+  // is single-level, so one pass is enough.
+  Object.values(devices).forEach((device) => {
+    if (device.parent_device_id && targetDevices.has(device.parent_device_id)) {
+      targetDevices.add(device.id);
+    }
   });
 
   targetDevices.forEach((deviceId) => {
