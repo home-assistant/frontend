@@ -330,13 +330,13 @@ export class HaDevicePicker extends LitElement {
           item.is_child
             ? html`<ha-tree-indicator
                 style=${styleMap({
-                width: "var(--ha-space-12)",
-                position: "absolute",
-                top: "0",
-                left: rtl ? undefined : "var(--ha-space-1)",
-                right: rtl ? "var(--ha-space-1)" : undefined,
-                transform: rtl ? "scaleX(-1)" : "",
-              })}
+                  width: "var(--ha-space-12)",
+                  position: "absolute",
+                  top: "0",
+                  left: rtl ? undefined : "var(--ha-space-1)",
+                  right: rtl ? "var(--ha-space-1)" : undefined,
+                  transform: rtl ? "scaleX(-1)" : "",
+                })}
                 .end=${item.last}
                 slot="start"
               ></ha-tree-indicator>`
@@ -351,13 +351,13 @@ export class HaDevicePicker extends LitElement {
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   src=${brandsUrl(
-                  {
-                    domain: item.domain,
-                    type: "icon",
-                    darkOptimized: this.hass.themes.darkMode,
-                  },
-                  this.hass.auth.data.hassUrl
-                )}
+                    {
+                      domain: item.domain,
+                      type: "icon",
+                      darkOptimized: this.hass.themes.darkMode,
+                    },
+                    this.hass.auth.data.hassUrl
+                  )}
                 />
               `
             : nothing
