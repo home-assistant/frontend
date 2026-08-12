@@ -11470,6 +11470,7 @@
         "analytics": {
           "header": "Help us help you",
           "finish": "Next",
+          "waiting": "Waiting for Home Assistant to finish starting up…",
           "preferences": {
             "base": {
               "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
