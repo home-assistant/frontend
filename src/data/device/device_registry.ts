@@ -81,6 +81,48 @@ export type DeviceRegistryListEntry =
 export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
   device.parent_device_id !== null;
 
+export interface DeviceRowItem {
+  device: DeviceRegistryEntry;
+  isChild: boolean;
+}
+
+/**
+ * Order a flat device list so each child directly follows its parent, flagging
+ * children for indented rendering. The incoming order of the top-level devices
+ * (and of the children within each parent) is preserved. A child whose parent
+ * is not in the list is treated as a top-level device.
+ */
+export const groupDevicesByParent = (
+  devices: DeviceRegistryEntry[]
+): DeviceRowItem[] => {
+  const presentIds = new Set(devices.map((device) => device.id));
+  const childrenByParent = new Map<string, DeviceRegistryEntry[]>();
+  const topLevel: DeviceRegistryEntry[] = [];
+
+  for (const device of devices) {
+    const parentId = device.parent_device_id;
+    if (parentId && presentIds.has(parentId)) {
+      const siblings = childrenByParent.get(parentId);
+      if (siblings) {
+        siblings.push(device);
+      } else {
+        childrenByParent.set(parentId, [device]);
+      }
+    } else {
+      topLevel.push(device);
+    }
+  }
+
+  const result: DeviceRowItem[] = [];
+  for (const device of topLevel) {
+    result.push({ device, isChild: false });
+    for (const child of childrenByParent.get(device.id) ?? []) {
+      result.push({ device: child, isChild: true });
+    }
+  }
+  return result;
+};
+
 export type DeviceEntityDisplayLookup = Record<
   string,
   EntityRegistryDisplayEntry[]

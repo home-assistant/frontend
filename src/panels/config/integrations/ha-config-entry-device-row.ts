@@ -10,12 +10,15 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-tree-indicator";
 import {
   disableConfigEntry,
   type ConfigEntry,
@@ -48,12 +51,21 @@ class HaConfigEntryDeviceRow extends LitElement {
 
   @property({ attribute: false }) public entities!: EntityRegistryEntry[];
 
+  // Rendered indented under its parent device.
+  @property({ type: Boolean, reflect: true, attribute: "is-child" })
+  public isChild = false;
+
   protected render() {
     const device = this.device;
 
     const entities = this._getEntities();
 
     const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
+
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const supportingText = [
       device.model || device.sw_version || device.manufacturer,
@@ -65,6 +77,20 @@ class HaConfigEntryDeviceRow extends LitElement {
       @click=${this._handleNavigateToDevice}
       class=${classMap({ disabled: Boolean(device.disabled_by) })}
     >
+      ${
+        this.isChild
+          ? html`<ha-tree-indicator
+              style=${styleMap({
+                position: "absolute",
+                top: "0",
+                left: rtl ? undefined : "26px",
+                right: rtl ? "26px" : undefined,
+                transform: rtl ? "scaleX(-1)" : "",
+              })}
+              slot="start"
+            ></ha-tree-indicator>`
+          : nothing
+      }
       <ha-svg-icon
         .path=${
           device.entry_type === "service"
@@ -351,11 +377,21 @@ class HaConfigEntryDeviceRow extends LitElement {
         --md-ripple-hover-color: transparent;
         --md-ripple-pressed-color: transparent;
       }
+      :host([is-child]) ha-md-list-item {
+        --md-list-item-leading-space: 88px;
+      }
       .disabled {
         opacity: 0.5;
       }
       :host([narrow]) ha-md-list-item {
         --md-list-item-leading-space: 16px;
+      }
+      :host([narrow][is-child]) ha-md-list-item {
+        --md-list-item-leading-space: 48px;
+      }
+      ha-tree-indicator {
+        width: 48px;
+        height: 48px;
       }
       .vertical-divider {
         height: 100%;

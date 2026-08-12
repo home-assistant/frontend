@@ -107,6 +107,7 @@ import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
+import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-linked-devices-card";
@@ -900,6 +901,10 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      <ha-device-child-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+      ></ha-device-child-devices-card>
       <ha-device-linked-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}

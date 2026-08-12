@@ -15,6 +15,7 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
+import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
@@ -191,14 +192,15 @@ class HaConfigSubEntryRow extends LitElement {
       ${
         this._expanded
           ? html`
-              ${devices.map(
-                (device) =>
+              ${groupDevicesByParent(devices).map(
+                ({ device, isChild }) =>
                   html`<ha-config-entry-device-row
                     .hass=${this.hass}
                     .narrow=${this.narrow}
                     .entry=${this.entry}
                     .device=${device}
                     .entities=${this.entities}
+                    .isChild=${isChild}
                   ></ha-config-entry-device-row>`
               )}
               ${services.map(

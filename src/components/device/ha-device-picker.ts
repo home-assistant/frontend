@@ -3,11 +3,13 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import {
   deviceComboBoxKeys,
@@ -27,6 +29,7 @@ import "../ha-button";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-svg-icon";
+import "../ha-tree-indicator";
 import { showDeviceReplacedDialog } from "./show-dialog-device-replaced";
 
 export type HaDevicePickerDeviceFilterFunc = (
@@ -128,6 +131,7 @@ export class HaDevicePicker extends LitElement {
         entityFilter,
         excludeDevices,
         value,
+        nested: true,
       })
   );
 
@@ -279,9 +283,35 @@ export class HaDevicePicker extends LitElement {
       }
   );
 
-  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
-    <ha-combo-box-item type="button">
-      ${
+  private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => {
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    return html`
+      <ha-combo-box-item
+        type="button"
+        style=${
+        item.is_child ? "--md-list-item-leading-space: var(--ha-space-12);" : ""
+      }
+      >
+        ${
+        item.is_child
+          ? html`<ha-tree-indicator
+              style=${styleMap({
+                width: "var(--ha-space-12)",
+                position: "absolute",
+                top: "0",
+                left: rtl ? undefined : "var(--ha-space-1)",
+                right: rtl ? "var(--ha-space-1)" : undefined,
+                transform: rtl ? "scaleX(-1)" : "",
+              })}
+              .end=${item.last}
+              slot="start"
+            ></ha-tree-indicator>`
+          : nothing
+      }
+        ${
         item.domain
           ? html`
               <img
@@ -302,13 +332,13 @@ export class HaDevicePicker extends LitElement {
           : nothing
       }
 
-      <span slot="headline">${item.primary}</span>
-      ${
+        <span slot="headline">${item.primary}</span>
+        ${
         item.secondary
           ? html`<span slot="supporting-text">${item.secondary}</span>`
           : nothing
       }
-      ${
+        ${
         item.domain_name
           ? html`
               <div slot="trailing-supporting-text" class="domain">
@@ -317,8 +347,9 @@ export class HaDevicePicker extends LitElement {
             `
           : nothing
       }
-    </ha-combo-box-item>
-  `;
+      </ha-combo-box-item>
+    `;
+  };
 
   protected render() {
     const placeholder =
@@ -375,6 +406,7 @@ export class HaDevicePicker extends LitElement {
         .value=${this.value}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
+        no-sort
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
         .searchKeys=${deviceComboBoxKeys}

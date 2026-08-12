@@ -3,6 +3,7 @@ import { computeDeviceNameDisplay } from "../../common/entity/compute_device_nam
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
@@ -24,12 +25,17 @@ import {
 export interface DevicePickerItem extends PickerComboBoxItem {
   domain?: string;
   domain_name?: string;
+  // Set when this device is a child rendered indented under its parent.
+  is_child?: boolean;
+  // Set on the last child of a parent so the tree connector draws its end.
+  last?: boolean;
 }
 
 export interface DeviceAreaLabel {
   areaName?: string;
   viaDeviceName?: string;
   viaDeviceAreaName?: string;
+  parentDeviceName?: string;
 }
 
 export interface GetDevicesOptions {
@@ -41,6 +47,10 @@ export interface GetDevicesOptions {
   excludeDevices?: string[];
   value?: string;
   idPrefix?: string;
+  // When set, order the result so children directly follow their parent and
+  // flag them for indented rendering. Requires the picker to disable its own
+  // sorting (no-sort) so this order is preserved.
+  nested?: boolean;
 }
 
 export const computeDeviceAreaLabel = (
@@ -69,15 +79,30 @@ export const computeDeviceAreaLabel = (
     ? computeAreaName(viaDeviceArea)
     : undefined;
 
+  // A child device is a logical part of its parent; surface the parent name as
+  // context so the child is identifiable outside the nested list views.
+  const parentDevice = device.parent_device_id
+    ? devices[device.parent_device_id]
+    : undefined;
+  const parentDeviceName = parentDevice
+    ? computeDeviceNameDisplay(parentDevice, localize, states)
+    : undefined;
+
   const isRTL = computeRTL(language, translationMetadata.translations);
+  const separator = isRTL ? " ◂ " : " ▸ ";
 
-  const areaName = area
-    ? computeAreaName(area)
-    : viaDeviceAreaName
-      ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
-      : viaDeviceName || undefined;
+  const areaNameText = area ? computeAreaName(area) : undefined;
 
-  return { areaName, viaDeviceName, viaDeviceAreaName };
+  const areaName = parentDeviceName
+    ? areaNameText
+      ? `${areaNameText}${separator}${parentDeviceName}`
+      : parentDeviceName
+    : areaNameText ||
+      (viaDeviceAreaName
+        ? `${viaDeviceAreaName}${separator}${viaDeviceName}`
+        : viaDeviceName || undefined);
+
+  return { areaName, viaDeviceName, viaDeviceAreaName, parentDeviceName };
 };
 
 export const deviceComboBoxKeys: FuseWeightedKey[] = [
@@ -105,6 +130,10 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
     name: "search_labels.viaDeviceArea",
     weight: 3,
   },
+  {
+    name: "search_labels.parentDeviceName",
+    weight: 3,
+  },
 ];
 
 export const getDevices = (
@@ -121,6 +150,7 @@ export const getDevices = (
     excludeDevices,
     value,
     idPrefix = "",
+    nested,
   } = options ?? {};
 
   const devices = Object.values(hass.devices);
@@ -222,7 +252,7 @@ export const getDevices = (
       deviceEntityLookup[device.id]
     );
 
-    const { areaName, viaDeviceName, viaDeviceAreaName } =
+    const { areaName, viaDeviceName, viaDeviceAreaName, parentDeviceName } =
       computeDeviceAreaLabel(
         device,
         hass.areas,
@@ -259,10 +289,65 @@ export const getDevices = (
         domainName: domainName || null,
         viaDeviceName: viaDeviceName || null,
         viaDeviceArea: viaDeviceAreaName || null,
+        parentDeviceName: parentDeviceName || null,
       },
       sorting_label: [primary, areaName, domainName].filter(Boolean).join("_"),
     };
   });
 
-  return outputDevices;
+  if (!nested) {
+    return outputDevices;
+  }
+
+  // Order children directly after their parent and flag them for indented
+  // rendering. outputDevices is 1:1 with inputDevices, so we can pair them up.
+  const itemByDeviceId = new Map<string, DevicePickerItem>();
+  inputDevices.forEach((device, index) => {
+    itemByDeviceId.set(device.id, outputDevices[index]);
+  });
+  const presentIds = new Set(inputDevices.map((device) => device.id));
+
+  const childrenByParent = new Map<string, DeviceRegistryEntry[]>();
+  const topLevel: DeviceRegistryEntry[] = [];
+  for (const device of inputDevices) {
+    const parentId = device.parent_device_id;
+    // A child whose parent was filtered out is shown as a top-level row.
+    if (parentId && presentIds.has(parentId)) {
+      const siblings = childrenByParent.get(parentId);
+      if (siblings) {
+        siblings.push(device);
+      } else {
+        childrenByParent.set(parentId, [device]);
+      }
+    } else {
+      topLevel.push(device);
+    }
+  }
+
+  const compareByName = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
+    caseInsensitiveStringCompare(
+      itemByDeviceId.get(a.id)!.primary,
+      itemByDeviceId.get(b.id)!.primary,
+      hass.locale.language
+    );
+
+  topLevel.sort(compareByName);
+
+  const ordered: DevicePickerItem[] = [];
+  for (const device of topLevel) {
+    ordered.push(itemByDeviceId.get(device.id)!);
+    const children = childrenByParent.get(device.id);
+    if (children) {
+      children.sort(compareByName);
+      children.forEach((child, index) => {
+        ordered.push({
+          ...itemByDeviceId.get(child.id)!,
+          is_child: true,
+          last: index === children.length - 1,
+        });
+      });
+    }
+  }
+
+  return ordered;
 };
