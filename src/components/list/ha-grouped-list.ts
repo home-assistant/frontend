@@ -19,6 +19,8 @@ import { HaListBase } from "./ha-list-base";
  * @csspart header - The header above the frame.
  * @csspart base - The framed `<div role="list">`.
  *
+ * @cssprop --ha-row-item-padding-inline - Horizontal padding of the rows, which the header aligns to. Defaults to `--ha-space-3`.
+ *
  * @attr {string} header - Header text rendered above the frame.
  */
 @customElement("ha-grouped-list")
@@ -52,8 +54,15 @@ export class HaGroupedList extends HaListBase {
   static styles = [
     ...HaListBase.styles,
     css`
+      :host {
+        --ha-row-item-padding-inline: var(--ha-space-3);
+      }
+
       .header {
-        margin: 0 0 var(--ha-space-1) var(--ha-space-3);
+        margin: 0 0 var(--ha-space-1);
+        margin-inline-start: calc(
+          var(--ha-row-item-padding-inline) + var(--ha-border-width-sm)
+        );
         font-size: var(--ha-font-size-m);
         font-weight: var(--ha-font-weight-medium);
         color: var(--secondary-text-color);
