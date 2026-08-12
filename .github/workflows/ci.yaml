@@ -20,10 +20,6 @@ concurrency:
 
 permissions:
   contents: read
-  # Lets a failing job cancel the rest of the run (see "Cancel the run on
-  # failure" steps). Read-only for pull requests from forks, so the cancel is a
-  # no-op there and the jobs simply run to completion.
-  actions: write
 
 jobs:
   prepare-dependencies:
@@ -80,12 +76,6 @@ jobs:
       - name: Check dependency licenses
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
         run: yarn run lint:licenses
-      - name: Cancel the run on failure
-        if: failure()
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
   test:
     name: Run tests
     needs: prepare-dependencies
@@ -105,18 +95,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Tests
         run: yarn run test
-      - name: Cancel the run on failure
-        if: failure()
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
   build:
     name: Build frontend
     # Runs alongside lint and test rather than after them: the build only needs
     # the dependency tree, and with the rspack cache it is no longer expensive
-    # enough to be worth serialising behind the other checks. If any job fails,
-    # it cancels the run, so a broken PR does not finish building.
+    # enough to be worth serialising behind the other checks. The
+    # cancel-on-failure job below stops the run as soon as a check fails, so a
+    # broken pull request does not finish building.
     needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
@@ -163,9 +148,54 @@ jobs:
           path: hass_frontend/
           if-no-files-found: error
           retention-days: 7
-      - name: Cancel the run on failure
-        if: failure()
-        continue-on-error: true
+
+  # Now that the checks run in parallel, a failing lint or test no longer stops
+  # the build from finishing on its own, so this watches them and cancels the
+  # whole run on the first failure.
+  #
+  # It is a separate job on purpose. Cancelling needs `actions: write`, and the
+  # other jobs check out the pull request and run its build scripts — handing
+  # them that scope would give PR-controlled code (or a compromised dependency)
+  # write access to Actions. This job never checks out the repository, so the
+  # elevated token stays away from PR code. It also cannot be a job that
+  # `needs` the checks: that would only start once they have all finished, which
+  # is exactly too late to cancel anything.
+  cancel-on-failure:
+    name: Cancel run on failure
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    timeout-minutes: 30
+    steps:
+      - name: Cancel the run when a check fails
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          watched='^(Lint and check format|Run tests|Build frontend)$'
+          while :; do
+            jobs=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --paginate --jq '.jobs[] | [.name, .status, (.conclusion // "")] | @tsv' \
+              2>/dev/null || true)
+
+            failed=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" \
+              '$1 ~ w && ($3 == "failure" || $3 == "timed_out") { print $1 }')
+            if [ -n "$failed" ]; then
+              echo "Cancelling the run, these checks failed:"
+              printf '%s\n' "$failed"
+              gh run cancel "$RUN_ID" --repo "$REPO" || true
+              exit 0
+            fi
+
+            found=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" '$1 ~ w' | wc -l)
+            running=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" \
+              '$1 ~ w && $2 != "completed" { print $1 }')
+            if [ "$found" -ge 3 ] && [ -z "$running" ]; then
+              echo "All checks finished without failure"
+              exit 0
+            fi
+
+            sleep 15
+          done
