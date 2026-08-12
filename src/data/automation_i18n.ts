@@ -94,6 +94,29 @@ const localizeTimeString = (
   }
 };
 
+// Seconds since midnight for a literal `HH:MM(:SS)` time, undefined for
+// anything else (entity ids contain a dot, and malformed input is ignored).
+const literalTimeToSeconds = (value: unknown): number | undefined => {
+  if (typeof value !== "string" || value.includes(".")) {
+    return undefined;
+  }
+  const chunks = value.split(":");
+  if (chunks.length < 2 || chunks.length > 3) {
+    return undefined;
+  }
+  const hours = Number(chunks[0]);
+  const minutes = Number(chunks[1]);
+  const seconds = chunks.length > 2 ? Number(chunks[2]) : 0;
+  if (
+    !Number.isFinite(hours) ||
+    !Number.isFinite(minutes) ||
+    !Number.isFinite(seconds)
+  ) {
+    return undefined;
+  }
+  return hours * 3600 + minutes * 60 + seconds;
+};
+
 const formatNumericLimitValue = (
   hass: HomeAssistant,
   value?: number | string
@@ -1232,12 +1255,16 @@ const describeLegacyCondition = (
 
       let hasTime = "";
       if (after !== undefined && before !== undefined) {
-        if (
-          typeof condition.after === "string" &&
-          !condition.after.includes(".") &&
-          typeof condition.before === "string" &&
-          !condition.before.includes(".") &&
-          condition.after > condition.before
+        const afterSeconds = literalTimeToSeconds(condition.after);
+        const beforeSeconds = literalTimeToSeconds(condition.before);
+        if (beforeSeconds === 0) {
+          // A window ending at midnight runs to the end of the day, so the
+          // "before" boundary adds nothing to the summary.
+          hasTime = "after";
+        } else if (
+          afterSeconds !== undefined &&
+          beforeSeconds !== undefined &&
+          afterSeconds > beforeSeconds
         ) {
           hasTime = "after_before_or";
         } else {
