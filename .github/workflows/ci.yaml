@@ -111,12 +111,26 @@ jobs:
         uses: ./.github/actions/setup
         with:
           node-modules-cache: true
+      # Read-only reuse of the rspack cache written by the nightly (see
+      # nightly.yaml). rspack itself decides what is still valid (version +
+      # buildDependencies + node_modules snapshot), so the GHA key just restores
+      # the latest nightly cache; no fingerprint, and no save step (CI never
+      # writes the shared cache).
+      - name: Restore rspack cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rspack-cache
+          key: rspack-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            rspack-cache-${{ runner.os }}-
       - name: Build Application
         uses: ./.github/actions/build
         with:
           target: build-app
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
+          rspack-cache: readonly
       - name: Upload bundle stats
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
