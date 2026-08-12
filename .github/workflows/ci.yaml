@@ -20,6 +20,10 @@ concurrency:
 
 permissions:
   contents: read
+  # Lets a failing job cancel the rest of the run (see "Cancel the run on
+  # failure" steps). Read-only for pull requests from forks, so the cancel is a
+  # no-op there and the jobs simply run to completion.
+  actions: write
 
 jobs:
   prepare-dependencies:
@@ -76,6 +80,12 @@ jobs:
       - name: Check dependency licenses
         if: ${{ !cancelled() && steps.build_resources.outcome == 'success' }}
         run: yarn run lint:licenses
+      - name: Cancel the run on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
   test:
     name: Run tests
     needs: prepare-dependencies
@@ -95,12 +105,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Tests
         run: yarn run test
+      - name: Cancel the run on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
   build:
     name: Build frontend
-    needs:
-      - prepare-dependencies
-      - lint
-      - test
+    # Runs alongside lint and test rather than after them: the build only needs
+    # the dependency tree, and with the rspack cache it is no longer expensive
+    # enough to be worth serialising behind the other checks. If any job fails,
+    # it cancels the run, so a broken PR does not finish building.
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
@@ -146,3 +163,9 @@ jobs:
           path: hass_frontend/
           if-no-files-found: error
           retention-days: 7
+      - name: Cancel the run on failure
+        if: failure()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run cancel "${{ github.run_id }}" --repo "${{ github.repository }}"
