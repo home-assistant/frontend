@@ -11,7 +11,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 import {
   isMediaSourceContentId,
-  resolveMediaSource,
+  resolveMediaSourceWithCache,
 } from "../../../../data/media_source";
 
 @customElement("hui-view-background-editor")
@@ -136,19 +136,33 @@ export class HuiViewBackgroundEditor extends LitElement {
         `${(background.opacity ?? 100) / 100}`
       );
 
-      const backgroundImage =
-        typeof background.image === "object"
-          ? background.image.media_content_id
-          : background.image;
+      const backgroundImage = this._currentBackgroundImage();
 
       if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
-        resolveMediaSource(this.hass, backgroundImage).then((result) => {
-          this._resolvedImage = result.url;
-        });
+        resolveMediaSourceWithCache(this.hass, backgroundImage).then(
+          (result) => {
+            // Discard if the image changed while resolving
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = result.url;
+            }
+          },
+          () => {
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = undefined;
+            }
+          }
+        );
       } else {
         this._resolvedImage = backgroundImage;
       }
     }
+  }
+
+  private _currentBackgroundImage(): string | undefined {
+    const background = this._backgroundData(this._config);
+    return typeof background.image === "object"
+      ? background.image.media_content_id
+      : background.image;
   }
 
   protected render() {
