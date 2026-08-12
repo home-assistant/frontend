@@ -24,12 +24,12 @@ const AREAS: HomeAssistant["areas"] = {
 describe("getDeviceArea", () => {
   it("returns the device's own area", () => {
     const dev = device({ id: "d1", area_id: "kitchen" });
-    assert.strictEqual(getDeviceArea(dev, AREAS)?.area_id, "kitchen");
+    assert.strictEqual(getDeviceArea(dev, AREAS, {})?.area_id, "kitchen");
   });
 
   it("returns undefined when the device has no area", () => {
     const dev = device({ id: "d1" });
-    assert.strictEqual(getDeviceArea(dev, AREAS), undefined);
+    assert.strictEqual(getDeviceArea(dev, AREAS, {}), undefined);
   });
 
   it("inherits the parent's area for a child without its own area", () => {
@@ -54,11 +54,6 @@ describe("getDeviceArea", () => {
       getDeviceArea(child, AREAS, devices)?.area_id,
       "kitchen"
     );
-  });
-
-  it("does not inherit when devices are not provided", () => {
-    const child = device({ id: "child", parent_device_id: "parent" });
-    assert.strictEqual(getDeviceArea(child, AREAS), undefined);
   });
 
   it("returns undefined when the parent also has no area", () => {

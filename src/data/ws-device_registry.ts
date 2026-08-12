@@ -11,10 +11,13 @@ import type {
 // A full device carries fields that stripped children never do; use one of
 // those as the discriminant. This keeps "is a stripped child" decoupled from
 // "has a parent", so a hypothetical full-featured sub-device would still be
-// treated as a complete entry.
+// treated as a complete entry. We key off `connections` rather than
+// `config_entries` because the latter is a deprecated compatibility field core
+// plans to drop; `connections` is present on every full device and never on a
+// stripped child.
 const isChildEntry = (
   entry: DeviceRegistryListEntry
-): entry is ChildDeviceRegistryEntry => !("config_entries" in entry);
+): entry is ChildDeviceRegistryEntry => !("connections" in entry);
 
 /**
  * Resolve the mixed device list from `config/device_registry/list` into a flat

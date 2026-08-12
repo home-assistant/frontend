@@ -53,7 +53,7 @@ class HaConfigEntryDeviceRow extends LitElement {
 
     const entities = this._getEntities();
 
-    const area = getDeviceArea(device, this.hass.areas);
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
     const supportingText = [
       device.model || device.sw_version || device.manufacturer,

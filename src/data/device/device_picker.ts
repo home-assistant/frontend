@@ -62,7 +62,9 @@ export const computeDeviceAreaLabel = (
   const viaDeviceName = viaDevice
     ? computeDeviceNameDisplay(viaDevice, localize, states, viaDeviceEntities)
     : undefined;
-  const viaDeviceArea = viaDevice ? getDeviceArea(viaDevice, areas) : undefined;
+  const viaDeviceArea = viaDevice
+    ? getDeviceArea(viaDevice, areas, devices)
+    : undefined;
   const viaDeviceAreaName = viaDeviceArea
     ? computeAreaName(viaDeviceArea)
     : undefined;
