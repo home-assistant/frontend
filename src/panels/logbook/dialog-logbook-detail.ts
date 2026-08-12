@@ -1,3 +1,4 @@
+import { mdiPuzzle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,30 +7,23 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-alert";
+import "../../components/ha-icon";
+import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import "../../components/ha-spinner";
 import { fetchDateWS } from "../../data/history";
 import type { LogbookEntry } from "../../data/logbook";
 import type { HassDialog } from "../../dialogs/make-dialog-manager";
-import {
-  buttonLinkStyle,
-  haStyle,
-  haStyleDialog,
-} from "../../resources/styles";
+import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-chain";
 import type { LogbookChain } from "./logbook-chain-resolver";
 import { resolveLogbookChain } from "./logbook-chain-resolver";
 import type { LogbookItem } from "./logbook-entry-model";
 import { computeLogbookItem } from "./logbook-entry-model";
-import {
-  entityNameButtonStyle,
-  renderEntityName,
-  transitionArrow,
-} from "./logbook-entry-templates";
+import { renderLogbookGlyph, transitionArrow } from "./logbook-entry-templates";
 import type { LogbookDetailDialogParams } from "./show-dialog-logbook-detail";
 
 @customElement("dialog-logbook-detail")
@@ -160,32 +154,10 @@ class DialogLogbookDetail
       : undefined;
     const transition = this._transitionValues(item, entry, stateObj);
     const when = this._entryDate(item.when);
-    const subjectKey =
-      item.category === "entity"
-        ? "entity"
-        : item.category === "automation"
-          ? entry.domain === "script"
-            ? "script"
-            : "automation"
-          : "integration";
 
     return html`
       <div class="box">
-        <div class="row">
-          <span class="label">
-            ${this.hass.localize(
-              `ui.dialogs.logbook_detail.${subjectKey}` as LocalizeKeys
-            )}
-          </span>
-          <span class="value">
-            ${renderEntityName(this.hass, item.name, entry.entity_id)}
-            ${
-              item.context
-                ? html`<span class="sub">${item.context}</span>`
-                : nothing
-            }
-          </span>
-        </div>
+        ${this._renderSubjectRow(item, entry)}
         ${
           transition
             ? html`
@@ -234,6 +206,51 @@ class DialogLogbookDetail
         </div>
       </div>
     `;
+  }
+
+  // Mirrors the target picker: icon, name, area ▸ device.
+  private _renderSubjectRow(item: LogbookItem, entry: LogbookEntry) {
+    const content = html`
+      <span class="subject-icon">
+        ${this._renderSubjectIcon(item, entry)}
+      </span>
+      <span class="subject-name">
+        <span class="name">${item.name}</span>
+        ${item.context ? html`<span class="sub">${item.context}</span>` : nothing}
+      </span>
+    `;
+
+    if (!entry.entity_id || !(entry.entity_id in this.hass.states)) {
+      return html`<div class="row subject">${content}</div>`;
+    }
+
+    return html`
+      <button
+        class="row subject clickable"
+        .entityId=${entry.entity_id}
+        @click=${this._entityClicked}
+      >
+        ${content}
+        <ha-icon-next class="chevron"></ha-icon-next>
+      </button>
+    `;
+  }
+
+  // The feed draws brand rows as a brands image, which stays blank for the
+  // integrations that have none. An integration domain resolves to no domain
+  // icon either, so fall back to the chain's own integration glyph.
+  private _renderSubjectIcon(item: LogbookItem, entry: LogbookEntry) {
+    if (item.glyph.type !== "brand") {
+      return renderLogbookGlyph(this.hass, entry, item.glyph);
+    }
+    return item.glyph.icon
+      ? html`<ha-icon .icon=${item.glyph.icon}></ha-icon>`
+      : html`<ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>`;
+  }
+
+  private _entityClicked(ev: Event) {
+    const target = ev.currentTarget as HTMLElement & { entityId: string };
+    fireEvent(target, "hass-more-info", { entityId: target.entityId });
   }
 
   private _renderWhatHappened(entry: LogbookEntry) {
@@ -296,8 +313,6 @@ class DialogLogbookDetail
     return [
       haStyle,
       haStyleDialog,
-      buttonLinkStyle,
-      entityNameButtonStyle,
       css`
         .content {
           display: flex;
@@ -339,8 +354,57 @@ class DialogLogbookDetail
           overflow-wrap: anywhere;
         }
 
-        .value .name {
+        .row.subject {
+          gap: var(--ha-space-3);
+          min-height: 56px;
+          width: 100%;
+          text-align: start;
+        }
+
+        button.row.subject {
+          border: none;
+          background: none;
+          color: inherit;
+          font: inherit;
+          cursor: pointer;
+        }
+
+        button.row.subject:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        }
+
+        .subject-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          width: 32px;
+          color: var(--secondary-text-color);
+          --state-icon-color: var(--secondary-text-color);
+        }
+
+        .subject-icon state-badge {
+          width: 32px;
+          height: 32px;
+          margin: 0;
+        }
+
+        .subject-name {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .subject-name .name {
+          display: block;
           font-weight: var(--ha-font-weight-medium);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .chevron {
+          flex-shrink: 0;
+          color: var(--secondary-text-color);
         }
 
         .sub {
@@ -377,9 +441,12 @@ class DialogLogbookDetail
         }
 
         /* Reserved at two chain rows, the typical chain height, so the swap
-           from spinner to content barely moves the dialog. */
+           from spinner to content barely moves the dialog. minmax(0, 1fr)
+           lets the chain shrink: a grid item defaults to its min-content
+           width, which a long automation name blows past. */
         .chain-area {
           display: grid;
+          grid-template-columns: minmax(0, 1fr);
           min-height: 114px;
         }
 

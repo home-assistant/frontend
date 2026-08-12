@@ -2,7 +2,7 @@ import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import memoizeOne from "memoize-one";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import { customElement, eventOptions, property } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
@@ -60,8 +60,6 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @state() private _showRelative = false;
-
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && this.virtualize) ||
@@ -85,7 +83,6 @@ class HaLogbookRenderer extends LitElement {
       changedProps.has("noDetail") ||
       changedProps.has("userIdToName") ||
       changedProps.has("systemUserIds") ||
-      changedProps.has("_showRelative" as never) ||
       languageChanged
     );
   }
@@ -103,7 +100,6 @@ class HaLogbookRenderer extends LitElement {
       <div
         class="container ha-scrollbar"
         @scroll=${this._saveScrollPos}
-        @logbook-toggle-time=${this._handleToggleTime}
         @logbook-entry-selected=${this._handleEntrySelected}
       >
         ${
@@ -115,7 +111,6 @@ class HaLogbookRenderer extends LitElement {
                 .items=${this.entries}
                 .renderItem=${
                   this._getRenderRow(
-                    this._showRelative,
                     this.userIdToName,
                     this.systemUserIds
                   ) as any
@@ -131,11 +126,7 @@ class HaLogbookRenderer extends LitElement {
   // Memoized on every input the rows render from, so the virtualizer sees a
   // new renderItem and refreshes already-rendered rows when one changes.
   private _getRenderRow = memoizeOne(
-    (
-      _showRelative: boolean,
-      _userIdToName: Record<string, string>,
-      _systemUserIds: Set<string>
-    ) =>
+    (_userIdToName: Record<string, string>, _systemUserIds: Set<string>) =>
       (item: LogbookEntry, index: number) =>
         this._renderItem(item, index)
   );
@@ -168,17 +159,12 @@ class HaLogbookRenderer extends LitElement {
           .nameDetail=${this.nameDetail}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
-          .showRelative=${this._showRelative}
           .showCause=${this.showCause}
           .noDetail=${this.noDetail}
         ></ha-logbook-entry>
       </div>
     `;
   };
-
-  private _handleToggleTime() {
-    this._showRelative = !this._showRelative;
-  }
 
   private _handleEntrySelected(ev: HASSDomEvent<LogbookEntrySelectedDetail>) {
     ev.stopPropagation();
