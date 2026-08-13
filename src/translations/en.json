@@ -6814,6 +6814,10 @@
             "heading": "Connected devices",
             "show_more": "+{count} devices not shown"
           },
+          "child_devices": {
+            "heading": "Sub-devices",
+            "show_more": "+{count} devices not shown"
+          },
           "linked_devices": {
             "heading": "Linked devices",
             "description": "These devices share hardware with this device and are managed by other integrations."
@@ -6895,6 +6899,8 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "parent_device": "Parent device",
+            "part_of_device": "Part of {name}",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -7187,6 +7193,7 @@
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
+            "part_of": "Part of",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version {version}",

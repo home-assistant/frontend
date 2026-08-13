@@ -81,6 +81,75 @@ export type DeviceRegistryListEntry =
 export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
   device.parent_device_id !== null;
 
+/**
+ * Devices whose effective area is the given area: devices with that area, and
+ * child devices that inherit it because they have no area of their own. Mirrors
+ * core's dr.async_entries_for_area, so a child device with a different explicit
+ * area is not part of its parent's area.
+ */
+export const devicesInEffectiveArea = (
+  devices: Record<string, DeviceRegistryEntry>,
+  areaId: string
+): DeviceRegistryEntry[] =>
+  Object.values(devices).filter((device) => {
+    if (device.area_id) {
+      return device.area_id === areaId;
+    }
+    if (device.parent_device_id) {
+      return devices[device.parent_device_id]?.area_id === areaId;
+    }
+    return false;
+  });
+
+export interface DeviceRowItem {
+  device: DeviceRegistryEntry;
+  isChild: boolean;
+  // True for the last child of a parent, so the tree connector draws its end.
+  isLastChild: boolean;
+}
+
+/**
+ * Order a flat device list so each child directly follows its parent, flagging
+ * children for indented rendering. The incoming order of the top-level devices
+ * (and of the children within each parent) is preserved. A child whose parent
+ * is not in the list is treated as a top-level device.
+ */
+export const groupDevicesByParent = (
+  devices: DeviceRegistryEntry[]
+): DeviceRowItem[] => {
+  const presentIds = new Set(devices.map((device) => device.id));
+  const childrenByParent = new Map<string, DeviceRegistryEntry[]>();
+  const topLevel: DeviceRegistryEntry[] = [];
+
+  for (const device of devices) {
+    const parentId = device.parent_device_id;
+    if (parentId && presentIds.has(parentId)) {
+      const siblings = childrenByParent.get(parentId);
+      if (siblings) {
+        siblings.push(device);
+      } else {
+        childrenByParent.set(parentId, [device]);
+      }
+    } else {
+      topLevel.push(device);
+    }
+  }
+
+  const result: DeviceRowItem[] = [];
+  for (const device of topLevel) {
+    result.push({ device, isChild: false, isLastChild: false });
+    const children = childrenByParent.get(device.id) ?? [];
+    children.forEach((child, index) => {
+      result.push({
+        device: child,
+        isChild: true,
+        isLastChild: index === children.length - 1,
+      });
+    });
+  }
+  return result;
+};
+
 export type DeviceEntityDisplayLookup = Record<
   string,
   EntityRegistryDisplayEntry[]
