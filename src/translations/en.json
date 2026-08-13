@@ -2085,7 +2085,7 @@
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart Home Assistant?",
-          "confirm_description": "Home Assistant will be restarted.",
+          "confirm_description": "All integrations will be reloaded.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
