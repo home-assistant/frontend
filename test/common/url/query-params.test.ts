@@ -278,11 +278,22 @@ describe("more-info query params", () => {
     );
   });
 
-  it("removes more-info query and hash state", () => {
+  it("removes more-info query params but preserves other hash state", () => {
     expect(
       removeMoreInfoUrl(
         "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#forecast=hourly"
       )
-    ).toBe("/lovelace/home?theme=dark");
+    ).toBe("/lovelace/home?theme=dark#forecast=hourly");
+  });
+
+  it("preserves an unrelated hash when creating a more-info url without a dialog hash", () => {
+    expect(
+      createMoreInfoUrl("/lovelace/home?theme=dark#some-anchor", {
+        entityId: "light.kitchen",
+        view: "info",
+      })
+    ).toBe(
+      "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info#some-anchor"
+    );
   });
 });

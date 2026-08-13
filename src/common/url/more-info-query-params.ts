@@ -49,7 +49,10 @@ export const createMoreInfoUrl = (
   url.searchParams.set(ENTITY_ID_PARAM, data.entityId);
   url.searchParams.set(VIEW_PARAM, data.view);
   if (!__DEMO__) {
-    url.hash = data.hash?.toString() ?? "";
+    const hashStr = data.hash?.toString() ?? "";
+    if (hashStr) {
+      url.hash = hashStr;
+    }
   }
 
   return `${url.pathname}${url.search}${url.hash}`;
@@ -59,9 +62,6 @@ export const removeMoreInfoUrl = (base: string): string => {
   const url = new URL(base, window.location.origin);
   url.searchParams.delete(ENTITY_ID_PARAM);
   url.searchParams.delete(VIEW_PARAM);
-  if (!__DEMO__) {
-    url.hash = "";
-  }
 
   return `${url.pathname}${url.search}${url.hash}`;
 };
