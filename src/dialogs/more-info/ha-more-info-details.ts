@@ -138,14 +138,6 @@ class HaMoreInfoDetails extends LitElement {
         value: this.params.entityId,
       },
       {
-        translationKey: "ui.dialogs.more_info_control.category",
-        value: this.entry?.entity_category
-          ? this.hass.localize(
-              `ui.panel.config.devices.entities.${this.entry.entity_category}`
-            )
-          : this.hass.localize("ui.common.none"),
-      },
-      {
         translationKey: "ui.dialogs.more_info_control.labels",
         value: labelNames.join(", ") || this.hass.localize("ui.common.none"),
       },
@@ -163,7 +155,6 @@ class HaMoreInfoDetails extends LitElement {
         : {}),
       entity: {
         entity_id: this.params.entityId,
-        category: this.entry?.entity_category ?? null,
         labels: labelNames,
       },
       ...stateYamlData,
