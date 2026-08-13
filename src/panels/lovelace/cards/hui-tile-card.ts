@@ -292,7 +292,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <ha-tile-container
           .featurePosition=${featurePosition}
-          .featureColumns=${features.columns}
           .vertical=${Boolean(this._config.vertical)}
           .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${this._hasCardAction}

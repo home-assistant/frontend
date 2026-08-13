@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -11,9 +11,6 @@ import "../ha-ripple";
 export class HaTileContainer extends LitElement {
   @property({ attribute: false })
   public featurePosition: "bottom" | "inline" = "bottom";
-
-  @property({ attribute: false })
-  public featureColumns = 0;
 
   @property({ type: Boolean })
   public vertical = false;
@@ -27,6 +24,13 @@ export class HaTileContainer extends LitElement {
 
   @property({ attribute: false })
   public actionHandlerOptions?: ActionHandlerOptions;
+
+  @state() private _hasFeatures = false;
+
+  private _handleFeaturesSlotChange(ev: Event) {
+    this._hasFeatures =
+      (ev.target as HTMLSlotElement).assignedElements().length > 0;
+  }
 
   private _handleFocus(ev: FocusEvent) {
     if ((ev.target as HTMLElement).matches(":focus-visible")) {
@@ -42,7 +46,7 @@ export class HaTileContainer extends LitElement {
     const inline = this.featurePosition === "inline";
     const containerClasses = {
       horizontal: inline,
-      stacked: inline && this.featureColumns > 0,
+      stacked: inline && this._hasFeatures,
       "fixed-height": this.fixedInfoHeight,
     };
     const contentClasses = {
@@ -74,7 +78,10 @@ export class HaTileContainer extends LitElement {
           </div>
           <slot name="features-inline"></slot>
         </div>
-        <slot name="features"></slot>
+        <slot
+          name="features"
+          @slotchange=${this._handleFeaturesSlotChange}
+        ></slot>
       </div>
     `;
   }
@@ -176,7 +183,7 @@ export class HaTileContainer extends LitElement {
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
     }
-    /* compact features unless the card reserves the height of a full features row */
+    /* compact features when the inline one is on its own, or when the card sizes to its content */
     .container.horizontal:not(.stacked) ::slotted([slot="features-inline"]),
     .container.horizontal:not(.fixed-height)
       ::slotted([slot="features-inline"]),
