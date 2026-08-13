@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiDownload,
   mdiFolderMultipleOutline,
+  mdiHeartPulse,
   mdiInformationOutline,
   mdiPlus,
   mdiShape,
@@ -334,6 +335,20 @@ class ZHAConfigDashboard extends LitElement {
               <div slot="supporting-text">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.network_info_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+            <ha-list-item-button href="/config/zha/network-health">
+              <ha-svg-icon slot="start" .path=${mdiHeartPulse}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_health_title"
+                )}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.network_health_description"
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
