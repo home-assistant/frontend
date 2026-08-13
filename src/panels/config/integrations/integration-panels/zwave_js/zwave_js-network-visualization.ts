@@ -183,7 +183,9 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     const { id, name } = data as any;
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
-    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
     return html`<ha-chart-tooltip-marker
         .color=${String((params as CallbackDataParams).color ?? "")}
       ></ha-chart-tooltip-marker>
@@ -295,7 +297,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         const device = this._devices[node.node_id] as
           DeviceRegistryEntry | undefined;
         const area = device
-          ? getDeviceArea(device, this.hass.areas)
+          ? getDeviceArea(device, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: String(node.node_id),

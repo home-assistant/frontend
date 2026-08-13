@@ -100,6 +100,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: "backyard",
@@ -124,6 +125,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: null,
@@ -148,6 +150,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
 ];
 

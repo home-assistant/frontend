@@ -15,6 +15,13 @@ export {
   subscribeDeviceRegistry,
 } from "../ws-device_registry";
 
+export type DeviceDisabler =
+  | "user"
+  | "integration"
+  | "config_entry"
+  // The device's parent device is disabled (child devices only).
+  | "device";
+
 export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
@@ -33,10 +40,46 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   area_id: string | null;
   name_by_user: string | null;
   entry_type: "service" | null;
-  disabled_by: "user" | "integration" | "config_entry" | null;
+  disabled_by: DeviceDisabler | null;
   configuration_url: string | null;
   primary_config_entry: string | null;
+  // Set when this device is a child (logical part) of another device.
+  // null for regular top-level devices.
+  parent_device_id: string | null;
 }
+
+/**
+ * A child device as it arrives over the wire from
+ * `config/device_registry/list`. A child is a lightweight logical part of a
+ * parent device (e.g. an outlet of a power strip); it only carries its own
+ * fields and inherits the rest from its parent. It is never stored in
+ * `hass.devices` in this shape — {@link resolveChildDevices} turns every child
+ * into a complete {@link DeviceRegistryEntry} at ingestion, so downstream code
+ * only ever sees full device entries.
+ */
+export interface ChildDeviceRegistryEntry extends RegistryEntry {
+  id: string;
+  config_entry_id: string;
+  config_subentry_id: string | null;
+  identifiers: [string, string][];
+  name: string | null;
+  name_by_user: string | null;
+  labels: string[];
+  area_id: string | null;
+  disabled_by: DeviceDisabler | null;
+  parent_device_id: string;
+}
+
+/**
+ * The raw, mixed list returned by `config/device_registry/list`: full devices
+ * and stripped children, discriminated by the presence of full-device fields.
+ */
+export type DeviceRegistryListEntry =
+  DeviceRegistryEntry | ChildDeviceRegistryEntry;
+
+/** Whether a resolved device entry is a child (logical part) of another device. */
+export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
+  device.parent_device_id !== null;
 
 export type DeviceEntityDisplayLookup = Record<
   string,

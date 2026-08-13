@@ -6794,7 +6794,8 @@
           "disabled_by": {
             "user": "user",
             "integration": "integration",
-            "config_entry": "config entry"
+            "config_entry": "config entry",
+            "device": "parent device"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
