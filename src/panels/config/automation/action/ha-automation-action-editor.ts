@@ -9,7 +9,7 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
-import { actionToYamlSchema } from "../yaml_schema_helpers";
+import { actionSchemaKey, actionToYamlSchema } from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import {
@@ -45,10 +45,10 @@ export default class HaAutomationActionEditor extends LitElement {
 
   private _actionYamlSchema = memoizeOne(
     (
-      action: Action,
+      actionKey: string | undefined,
       services: HomeAssistant["services"],
       localize: HomeAssistant["localize"]
-    ) => actionToYamlSchema(action, services, localize)
+    ) => actionToYamlSchema(actionKey, services, localize)
   );
 
   protected render() {
@@ -85,7 +85,7 @@ export default class HaAutomationActionEditor extends LitElement {
                   @value-changed=${this._onYamlChange}
                   .readOnly=${this.disabled}
                   .yamlFieldSchema=${this._actionYamlSchema(
-                    this.action,
+                    actionSchemaKey(this.action),
                     this.hass.services,
                     this.hass.localize
                   )}

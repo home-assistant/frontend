@@ -24,10 +24,13 @@ import type { EditorView, Tooltip } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
 import { NodeProp } from "@lezer/common";
 import type { HassEntities } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import type { AreaRegistryEntry } from "../data/area/area_registry";
 import type { DeviceRegistryEntry } from "../data/device/device_registry";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
+import type { SelectSelector } from "../data/selector";
+import type { LocalizeFunc } from "../common/translations/localize";
 import {
   buildAreaCompletions,
   buildDeviceCompletions,
@@ -38,8 +41,10 @@ import {
 import {
   buildArgTooltipDom,
   type HassArgHoverContext,
+  type JinjaArgType,
 } from "./jinja_ha_completions";
 import "../components/ha-code-editor-jinja-arg-hover";
+import "../components/ha-code-editor-yaml-hover";
 import type { YamlFieldSchema, YamlFieldSchemaMap } from "./yaml_field_schema";
 import { hasAllowUnknownFields } from "./yaml_field_schema";
 
@@ -78,57 +83,90 @@ function resolveFieldSchema(
 /** validFor pattern for value completions — matches any typed text. */
 const VALUE_VALID_FOR = /^.*$/;
 
+const BOOLEAN_COMPLETIONS: Completion[] = [
+  { label: "true", type: "keyword" },
+  { label: "false", type: "keyword" },
+];
+
+/** "Required" marker shown as the `detail` of a required key completion. */
+function requiredLabel(ctx: HaYamlCompletionContext): string | undefined {
+  return ctx.localize?.("ui.components.yaml-editor.schema.required");
+}
+
+// Registry-derived completion lists are rebuilt for every completion request,
+// and there can be thousands of entities — memoize on the registry identity so
+// typing doesn't remap the whole registry on each keystroke.
+const memoEntityCompletions = memoizeOne(buildEntityCompletions);
+const memoDeviceCompletions = memoizeOne(buildDeviceCompletions);
+const memoAreaCompletions = memoizeOne(buildAreaCompletions);
+const memoFloorCompletions = memoizeOne(buildFloorCompletions);
+const memoLabelCompletions = memoizeOne(buildLabelCompletions);
+
 function valueCompletionsForSelector(
   field: YamlFieldSchema,
   ctx: HaYamlCompletionContext
 ): Completion[] | null {
   const { selector } = field;
   if (!selector) return null;
-  const type = Object.keys(selector)[0] as string;
+  const type = Object.keys(selector)[0];
 
   if (type === "boolean") {
-    return [
-      { label: "true", type: "keyword" },
-      { label: "false", type: "keyword" },
-    ];
+    return BOOLEAN_COMPLETIONS;
   }
 
   if (type === "select") {
-    const opts = (selector as any).select?.options;
+    const opts = (selector as SelectSelector).select?.options;
     if (Array.isArray(opts)) {
-      return opts.map((o: any) => ({
-        label: typeof o === "object" ? String(o.value ?? o) : String(o),
-        type: "enum",
-        detail: typeof o === "object" && o.label ? o.label : undefined,
-      }));
+      return opts.map((option) =>
+        typeof option === "object"
+          ? { label: option.value, type: "enum", detail: option.label }
+          : { label: option, type: "enum" }
+      );
     }
   }
 
   if (type === "entity" && ctx.states) {
-    return buildEntityCompletions(ctx.states);
+    return memoEntityCompletions(ctx.states);
   }
 
   if (type === "device" && ctx.devices) {
-    return buildDeviceCompletions(ctx.devices);
+    return memoDeviceCompletions(ctx.devices);
   }
 
   if (type === "area" && ctx.areas) {
-    return buildAreaCompletions(ctx.areas);
+    return memoAreaCompletions(ctx.areas);
   }
 
   if (type === "floor" && ctx.floors) {
-    return buildFloorCompletions(ctx.floors);
+    return memoFloorCompletions(ctx.floors);
   }
 
   if (type === "label" && ctx.labels) {
-    return buildLabelCompletions(ctx.labels);
+    return memoLabelCompletions(ctx.labels);
   }
 
   if (type === "template") {
-    return [
-      { label: "{{ }}", type: "text", detail: "Jinja2 template" },
-      { label: "{% %}", type: "text", detail: "Jinja2 block" },
-    ];
+    return ctx.localize
+      ? [
+          {
+            label: "{{ }}",
+            type: "text",
+            detail: ctx.localize(
+              "ui.components.yaml-editor.schema.jinja_template"
+            ),
+          },
+          {
+            label: "{% %}",
+            type: "text",
+            detail: ctx.localize(
+              "ui.components.yaml-editor.schema.jinja_block"
+            ),
+          },
+        ]
+      : [
+          { label: "{{ }}", type: "text" },
+          { label: "{% %}", type: "text" },
+        ];
   }
 
   return null;
@@ -141,6 +179,8 @@ function valueCompletionsForSelector(
 export interface HaYamlCompletionContext {
   /** The current field schema map, or undefined when no schema is active. */
   schema?: YamlFieldSchemaMap;
+  /** Localize callback for the completion chrome (badges, type hints). */
+  localize?: LocalizeFunc;
   /** Optional entity states for EntitySelector completions. */
   states?: HassEntities;
   /** Optional device registry for DeviceSelector completions. */
@@ -258,7 +298,7 @@ export function haYamlCompletionSource(
               ([key, subField]) => ({
                 label: key,
                 type: "yaml-key",
-                detail: subField.required ? "required" : undefined,
+                detail: subField.required ? requiredLabel(ctx) : undefined,
                 info: subField.description,
                 apply: buildKeyApply(key, subField),
                 boost: subField.required ? 10 : 0,
@@ -309,7 +349,7 @@ export function haYamlCompletionSource(
               ).map(([key, subField]) => ({
                 label: key,
                 type: "yaml-key",
-                detail: subField.required ? "required" : undefined,
+                detail: subField.required ? requiredLabel(ctx) : undefined,
                 info: subField.description,
                 apply: buildKeyApply(key, subField),
                 boost: subField.required ? 10 : 0,
@@ -578,7 +618,7 @@ export function haYamlCompletionSource(
       .map(([key, field]) => ({
         label: key,
         type: "yaml-key",
-        detail: field.required ? "required" : undefined,
+        detail: field.required ? requiredLabel(ctx) : undefined,
         info: field.description,
         // Insert "key: " or "key:\n  " depending on selector type
         apply: buildKeyApply(key, field),
@@ -627,14 +667,27 @@ function getAncestorKeyPath(bm: SyntaxNode | null, doc: string): string[] {
 // Hover tooltip source
 // ---------------------------------------------------------------------------
 
+/**
+ * Selector types whose values are HA IDs, mapped to the Jinja arg type that
+ * knows how to render a rich tooltip for them.
+ */
+const SELECTOR_ARG_TYPES: Record<string, JinjaArgType | undefined> = {
+  entity: "entity_id",
+  device: "device_id",
+  area: "area_id",
+  floor: "floor_id",
+  label: "label_id",
+};
+
 export interface HaYamlHoverContext {
   /** The current field schema map. */
   schema: YamlFieldSchemaMap;
   /**
-   * Optional localise callback used to translate field names/descriptions
-   * that are i18n keys.  When absent, the raw string is displayed.
+   * Optional localize callback used to translate field descriptions that are
+   * i18n keys, and the tooltip's own labels. When absent, the raw string is
+   * displayed and the labels fall back to English.
    */
-  localize?: (key: string, ...args: unknown[]) => string;
+  localize?: LocalizeFunc;
   /** Optional HA context for rich entity/device/area value tooltips. */
   hassContext?: HassArgHoverContext;
 }
@@ -686,25 +739,10 @@ export function haYamlHoverSource(
         ]);
         if (field2?.selector) {
           const selectorType = Object.keys(field2.selector)[0];
-          const argType =
-            selectorType === "entity"
-              ? "entity_id"
-              : selectorType === "device"
-                ? "device_id"
-                : selectorType === "area"
-                  ? "area_id"
-                  : selectorType === "floor"
-                    ? "floor_id"
-                    : selectorType === "label"
-                      ? "label_id"
-                      : null;
+          const argType = SELECTOR_ARG_TYPES[selectorType];
           if (argType) {
             const value = nodeText(node, doc);
-            const dom = buildArgTooltipDom(
-              argType as any,
-              value,
-              ctx.hassContext
-            );
+            const dom = buildArgTooltipDom(argType, value, ctx.hassContext);
             if (dom) {
               return {
                 pos: node.from,
@@ -746,9 +784,9 @@ export function haYamlHoverSource(
     above: true,
     create() {
       const dom = document.createElement("ha-code-editor-yaml-hover");
-      (dom as any).fieldName = keyText;
-      (dom as any).fieldSchema = field;
-      if (ctx.localize) (dom as any).localize = ctx.localize;
+      dom.fieldName = keyText;
+      dom.fieldSchema = field;
+      dom.localize = ctx.localize;
       return { dom };
     },
   };
@@ -768,13 +806,15 @@ export interface Diagnostic {
 /**
  * Produces lint diagnostics for a YAML document given a field schema.
  *
- * Currently checks:
- *   - Unknown keys (warning)
- *   - Required keys that are missing (error — at document level only for now)
+ * Checks, at every mapping level the schema describes:
+ *   - Keys the schema doesn't know (warning), unless the level was marked with
+ *     `allowUnknownFields()`
+ *   - Required keys that are missing (error)
  */
 export function haYamlLintSource(
   view: EditorView,
-  schema: YamlFieldSchemaMap
+  schema: YamlFieldSchemaMap,
+  localize?: LocalizeFunc
 ): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const doc = view.state.doc.toString();
@@ -799,7 +839,10 @@ export function haYamlLintSource(
                 from: lit.from,
                 to: lit.to,
                 severity: "warning",
-                message: `Unknown field: "${key}"`,
+                message:
+                  localize?.("ui.components.yaml-editor.schema.unknown_field", {
+                    field: key,
+                  }) || `Unknown field: "${key}"`,
               });
             }
           } else {
@@ -815,17 +858,19 @@ export function haYamlLintSource(
       child = child.nextSibling;
     }
 
-    // Check for missing required fields (top-level only to avoid noise).
+    // Report required fields that are missing from this mapping. Anchored to
+    // the start of the mapping, since there is no key to point at.
     for (const [key, fieldDef] of Object.entries(schemaLevel)) {
       if (fieldDef.required && !presentKeys.has(key)) {
-        // Point to start of document if we have no better location.
-        const docNode = bmNode.parent;
-        const from = docNode?.from ?? 0;
+        const from = bmNode.parent?.from ?? 0;
         diagnostics.push({
           from,
           to: from + 1,
           severity: "error",
-          message: `Required field missing: "${key}"`,
+          message:
+            localize?.("ui.components.yaml-editor.schema.missing_field", {
+              field: key,
+            }) || `Required field missing: "${key}"`,
         });
       }
     }

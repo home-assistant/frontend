@@ -1435,7 +1435,16 @@
         "exit_fullscreen": "Exit fullscreen",
         "find_and_replace": "Find and replace",
         "test_on": "Turn on testing",
-        "test_off": "Turn off testing"
+        "test_off": "Turn off testing",
+        "schema": {
+          "required": "Required",
+          "example": "Example:",
+          "default": "Default:",
+          "unknown_field": "Unknown field: \"{field}\"",
+          "missing_field": "Required field missing: \"{field}\"",
+          "jinja_template": "Jinja2 template",
+          "jinja_block": "Jinja2 block"
+        }
       },
       "state-content-picker": {
         "state": "State",

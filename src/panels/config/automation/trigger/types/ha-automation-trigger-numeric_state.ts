@@ -8,6 +8,7 @@ import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 
 const SCHEMA = [
@@ -332,7 +333,7 @@ export class HaNumericStateTrigger extends LitElement {
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema: SchemaUnion<typeof SCHEMA>
   ): string => computeLabel(schema.name, this.hass.localize);
 
   static styles = css`

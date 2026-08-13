@@ -48,20 +48,19 @@ export default class HaAutomationConditionEditor extends LitElement {
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
   private _collapsibleElement?: ConditionElement;
 
+  // Memoized on the condition type rather than the condition itself: the
+  // condition object gets a new identity on every keystroke, and the schema
+  // only depends on its type.
   private _conditionYamlSchema = memoizeOne(
     (
-      condition: Condition,
+      conditionType: string,
       description: ConditionDescription | undefined,
       localize: HomeAssistant["localize"]
     ) => {
       if (!description) {
-        return builtInConditionSchema(condition.condition, localize);
+        return builtInConditionSchema(conditionType, localize);
       }
-      return conditionDescriptionToSchema(
-        condition.condition,
-        description,
-        localize
-      );
+      return conditionDescriptionToSchema(conditionType, description, localize);
     }
   );
 
@@ -104,7 +103,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   @value-changed=${this._onYamlChange}
                   .readOnly=${this.disabled}
                   .yamlFieldSchema=${this._conditionYamlSchema(
-                    condition,
+                    condition.condition,
                     this.description,
                     this.hass.localize
                   )}

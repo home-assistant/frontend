@@ -386,7 +386,12 @@ export class HaCodeEditor extends ReactiveElement {
     const schema = this.yamlFieldSchema;
     return [
       this._loadedCodeMirror.linter(
-        (view) => this._loadedCodeMirror!.haYamlLintSource(view, schema),
+        (view) =>
+          this._loadedCodeMirror!.haYamlLintSource(
+            view,
+            schema,
+            this._i18n?.localize
+          ),
         { delay: 500 }
       ),
     ];
@@ -507,9 +512,7 @@ export class HaCodeEditor extends ReactiveElement {
                 this.yamlFieldSchema
                   ? this._loadedCodeMirror!.haYamlHoverSource(view, pos, {
                       schema: this.yamlFieldSchema,
-                      localize: this._i18n?.localize as
-                        | ((key: string, ...args: unknown[]) => string)
-                        | undefined,
+                      localize: this._i18n?.localize,
                       hassContext: this._hassArgHoverContext(),
                     })
                   : null,
@@ -528,6 +531,7 @@ export class HaCodeEditor extends ReactiveElement {
         completionSources.push(
           this._loadedCodeMirror.haYamlCompletionSource(() => ({
             schema: this.yamlFieldSchema,
+            localize: this._i18n?.localize,
             states: this._states,
             devices: this._registries?.devices,
             areas: this._registries?.areas,

@@ -1,5 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
 import type { YamlFieldSchema } from "../resources/yaml_field_schema";
 
 /**
@@ -24,18 +28,16 @@ export class HaCodeEditorYamlHover extends LitElement {
    * Optional localize callback forwarded from the editor so translated
    * descriptions can be rendered.  When absent, strings are shown verbatim.
    */
-  @property({ attribute: false }) public localize?: (
-    key: string,
-    ...args: unknown[]
-  ) => string;
+  @property({ attribute: false }) public localize?: LocalizeFunc;
 
   render() {
     const schema = this.fieldSchema;
     if (!schema) return nothing;
 
     const description = schema.description
-      ? (this.localize ? this.localize(schema.description) : "") ||
-        schema.description
+      ? (this.localize
+          ? this.localize(schema.description as LocalizeKeys)
+          : "") || schema.description
       : undefined;
 
     const selectorType = schema.selector
@@ -45,27 +47,50 @@ export class HaCodeEditorYamlHover extends LitElement {
     return html`
       <div class="header">
         <code class="key">${this.fieldName}</code>
-        ${schema.required
-          ? html`<span class="badge required">required</span>`
-          : nothing}
-        ${selectorType
-          ? html`<span class="badge type">${selectorType}</span>`
-          : nothing}
+        ${
+          schema.required
+            ? html`<span class="badge required"
+                >${this._label("required", "required")}</span
+              >`
+            : nothing
+        }
+        ${
+          selectorType
+            ? html`<span class="badge type">${selectorType}</span>`
+            : nothing
+        }
       </div>
       ${description ? html`<div class="desc">${description}</div>` : nothing}
-      ${schema.example != null
-        ? html`<div class="meta">
-            <span class="meta-label">Example:</span>
-            <code>${String(schema.example)}</code>
-          </div>`
-        : nothing}
-      ${schema.default != null
-        ? html`<div class="meta">
-            <span class="meta-label">Default:</span>
-            <code>${String(schema.default)}</code>
-          </div>`
-        : nothing}
+      ${
+        schema.example != null
+          ? html`<div class="meta">
+              <span class="meta-label"
+                >${this._label("example", "Example:")}</span
+              >
+              <code>${String(schema.example)}</code>
+            </div>`
+          : nothing
+      }
+      ${
+        schema.default != null
+          ? html`<div class="meta">
+              <span class="meta-label"
+                >${this._label("default", "Default:")}</span
+              >
+              <code>${String(schema.default)}</code>
+            </div>`
+          : nothing
+      }
     `;
+  }
+
+  private _label(
+    key: "required" | "example" | "default",
+    fallback: string
+  ): string {
+    return (
+      this.localize?.(`ui.components.yaml-editor.schema.${key}`) || fallback
+    );
   }
 
   static styles = css`

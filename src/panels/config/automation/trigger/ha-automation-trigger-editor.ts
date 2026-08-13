@@ -42,17 +42,20 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
+  // Memoized on the trigger type rather than the trigger itself: the trigger
+  // object gets a new identity on every keystroke, and the schema only depends
+  // on its type.
   private _triggerYamlSchema = memoizeOne(
     (
-      trigger: Trigger,
+      triggerType: string | undefined,
       description: TriggerDescription | undefined,
       localize: HomeAssistant["localize"]
     ) => {
-      if (isTriggerList(trigger)) return undefined;
+      if (triggerType === undefined) return undefined;
       if (!description) {
-        return builtInTriggerSchema(trigger.trigger, localize);
+        return builtInTriggerSchema(triggerType, localize);
       }
-      return triggerDescriptionToSchema(trigger.trigger, description, localize);
+      return triggerDescriptionToSchema(triggerType, description, localize);
     }
   );
 
@@ -92,7 +95,9 @@ export default class HaAutomationTriggerEditor extends LitElement {
                   .defaultValue=${this.trigger}
                   .readOnly=${this.disabled}
                   .yamlFieldSchema=${this._triggerYamlSchema(
-                    this.trigger,
+                    isTriggerList(this.trigger)
+                      ? undefined
+                      : this.trigger.trigger,
                     this.description,
                     this.hass.localize
                   )}

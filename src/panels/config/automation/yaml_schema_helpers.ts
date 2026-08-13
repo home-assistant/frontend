@@ -18,6 +18,7 @@ import type {
   YamlFieldSchemaMap,
 } from "../../../resources/yaml_field_schema";
 import { allowUnknownFields } from "../../../resources/yaml_field_schema";
+import type { Selector, TargetSelector } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -826,21 +827,24 @@ export function builtInTriggerSchema(
 /**
  * Build a `target:` sub-schema from an optional target selector definition.
  * When `targetDef` is provided (e.g. `{ entity: [{ domain: ["light"] }] }`),
- * the `entity_id` selector is scoped to matching entities.
+ * its filters are forwarded so `entity_id` / `device_id` completions are
+ * scoped to matching entities and devices.
  */
 function buildTargetSchema(
-  targetDef?: Record<string, any> | null
+  targetDef?: TargetSelector["target"]
 ): YamlFieldSchema {
   return {
     description: "The target entities, devices, areas, floors, or labels.",
     fields: {
       entity_id: {
         description: "One or more entity IDs to target.",
-        selector: targetDef ? { entity: targetDef } : { entity: null },
+        selector: {
+          entity: { multiple: true, filter: targetDef?.entity },
+        },
       },
       device_id: {
         description: "One or more device IDs to target.",
-        selector: { device: null },
+        selector: { device: { multiple: true, filter: targetDef?.device } },
       },
       area_id: {
         description: "One or more area IDs to target.",
@@ -860,14 +864,13 @@ function buildTargetSchema(
 
 /**
  * Replace an `automation_behavior` selector with a plain `select` selector
- * so the YAML editor can offer value completions and tooltips.
- * Trigger mode: any | first | last
- * Condition mode: any | all
+ * so the YAML editor can offer value completions and tooltips. The options are
+ * the same ones ha-selector-automation_behavior offers.
  */
 function resolveSelector(
-  selector: Record<string, any> | undefined,
+  selector: Selector | undefined,
   mode: "trigger" | "condition"
-): Record<string, any> | undefined {
+): Selector | undefined {
   if (!selector) return selector;
 
   if ("automation_behavior" in selector) {
@@ -954,7 +957,7 @@ export function numericThresholdSchema(): YamlFieldSchemaMap {
 
 /** Return nested field schema for selectors that have structured sub-keys. */
 function selectorFields(
-  selector: Record<string, any> | undefined
+  selector: Selector | undefined
 ): YamlFieldSchemaMap | undefined {
   if (selector && "numeric_threshold" in selector) {
     return numericThresholdSchema();
@@ -1118,7 +1121,7 @@ export function serviceActionSchema(
   // Build target sub-field schemas, forwarding the service's target filter
   // (e.g. { entity: [{ domain: ["light"] }] }) into the entity_id selector
   // so completions are scoped to matching entities.
-  const targetDef = (serviceDef as any)?.target;
+  const targetDef = serviceDef?.target as TargetSelector["target"] | undefined;
 
   return {
     ...ACTION_BASE_FIELDS,
@@ -1140,45 +1143,64 @@ export function serviceActionSchema(
   };
 }
 
+/** Keys that identify a built-in (non service call) action. */
+const BUILT_IN_ACTION_KEYS = [
+  "delay",
+  "wait_template",
+  "wait_for_trigger",
+  "event",
+  "fire_event",
+  "condition",
+  "stop",
+  "repeat",
+  "choose",
+  "if",
+  "sequence",
+  "parallel",
+  "variables",
+  "set_conversation_response",
+] as const;
+
+/**
+ * The discriminator that decides which YAML field schema an action gets: the
+ * service name for service calls (`light.turn_on`), otherwise the built-in
+ * action key (`delay`, `choose`, …).
+ *
+ * Only depends on the shape of the action, not on its values, so callers can
+ * memoize `actionToYamlSchema` on it instead of on the action object — which
+ * gets a new identity on every keystroke in the YAML editor.
+ */
+export function actionSchemaKey(action: Action): string | undefined {
+  // Service/action calls have an "action" key holding "<domain>.<service>".
+  const actionName = (action as { action?: unknown }).action;
+  if (typeof actionName === "string") {
+    return actionName;
+  }
+  return BUILT_IN_ACTION_KEYS.find((key) => key in action);
+}
+
 /**
  * Derive the YAML field schema for any action, combining built-in schemas
  * with service-call schemas from hass.services.
+ *
+ * Takes the key from `actionSchemaKey()` rather than the action itself so the
+ * result is stable while the user edits the action's values.
  */
 export function actionToYamlSchema(
-  action: Action,
+  actionKey: string | undefined,
   services: HomeAssistant["services"],
   localize: HomeAssistant["localize"]
 ): YamlFieldSchemaMap | undefined {
-  // Service/action calls have an "action" or "service" key.
-  if ("action" in action && typeof (action as any).action === "string") {
-    const [domain, service] = ((action as any).action as string).split(".", 2);
+  if (actionKey?.includes(".")) {
+    const [domain, service] = actionKey.split(".", 2);
     if (domain && service) {
       return serviceActionSchema(domain, service, services, localize);
     }
-    // Unknown action string — return base fields only.
-    return allowUnknownFields({ ...ACTION_BASE_FIELDS });
-  }
-
-  // Detect action type from the primary key.
-  const actionKey = [
-    "delay",
-    "wait_template",
-    "wait_for_trigger",
-    "event",
-    "fire_event",
-    "condition",
-    "stop",
-    "repeat",
-    "choose",
-    "if",
-    "sequence",
-    "parallel",
-    "variables",
-    "set_conversation_response",
-  ].find((k) => k in (action as any));
-
-  if (actionKey) {
-    return builtInActionSchema(actionKey);
+  } else if (actionKey) {
+    const schema = builtInActionSchema(actionKey);
+    if (schema) {
+      return schema;
+    }
   }
 
   // Unknown — return base fields at minimum so hover/completions still work.
