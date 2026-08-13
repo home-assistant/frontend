@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -25,6 +25,13 @@ export class HaTileContainer extends LitElement {
   @property({ attribute: false })
   public actionHandlerOptions?: ActionHandlerOptions;
 
+  @state() private _hasFeatures = false;
+
+  private _handleFeaturesSlotChange(ev: Event) {
+    this._hasFeatures =
+      (ev.target as HTMLSlotElement).assignedElements().length > 0;
+  }
+
   private _handleFocus(ev: FocusEvent) {
     if ((ev.target as HTMLElement).matches(":focus-visible")) {
       this.setAttribute("focused", "");
@@ -36,8 +43,12 @@ export class HaTileContainer extends LitElement {
   }
 
   protected render() {
-    const rowOrientationClass =
-      this.featurePosition === "inline" ? "horizontal" : "";
+    const isInline = this.featurePosition === "inline";
+    const containerClasses = {
+      inline: isInline,
+      "has-features-below": isInline && this._hasFeatures,
+      "fixed-height": this.fixedInfoHeight,
+    };
     const contentClasses = {
       vertical: this.vertical,
       "fixed-info-height": this.fixedInfoHeight,
@@ -56,20 +67,21 @@ export class HaTileContainer extends LitElement {
         <ha-ripple .disabled=${!this.interactive}></ha-ripple>
       </div>
       <div
-        class="container"
+        class="container ${classMap(containerClasses)}"
         @action=${stopPropagation}
         @click=${stopPropagation}
       >
-        <div class="row ${rowOrientationClass}">
+        <div class="row">
           <div class="content ${classMap(contentClasses)}">
             <slot name="icon"></slot>
             <slot name="info" id="info"></slot>
           </div>
-          <slot name="features"></slot>
+          <slot name="features-inline"></slot>
         </div>
-        <div class="features-bottom">
-          <slot name="features-bottom"></slot>
-        </div>
+        <slot
+          name="features"
+          @slotchange=${this._handleFeaturesSlotChange}
+        ></slot>
       </div>
     `;
   }
@@ -108,7 +120,7 @@ export class HaTileContainer extends LitElement {
       flex: 1;
       min-width: 0;
     }
-    .row.horizontal {
+    .container.inline .row {
       flex-direction: row;
     }
 
@@ -164,24 +176,29 @@ export class HaTileContainer extends LitElement {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
 
-    .row.horizontal ::slotted([slot="features"]) {
+    .container.inline ::slotted([slot="features-inline"]) {
+      /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
-      --feature-height: var(--ha-space-9);
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
     }
-
-    .features-bottom {
-      display: flex;
-      flex-wrap: wrap;
-      column-gap: var(--ha-space-3);
-      padding: 0 var(--ha-space-3);
+    /* the inline feature keeps the icon height, unless the card reserves a row it can fill */
+    .container.inline:not(.has-features-below)
+      ::slotted([slot="features-inline"]),
+    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]) {
+      --feature-height: var(--ha-space-9);
     }
-    ::slotted([slot="features-bottom"]) {
-      flex: 1 1 calc(50% - var(--ha-space-3) / 2);
-      min-width: 0;
-      padding-bottom: var(--ha-space-3);
+
+    .container.inline.has-features-below ::slotted([slot="features"]) {
+      /* keep both columns under the inline feature, which sits on the grid track */
+      --ha-card-feature-column-gap: calc(
+        var(--column-gap, 0px) + var(--ha-space-3) * 2
+      );
+      --ha-card-feature-divider: 1px solid var(--ha-color-border-neutral-quiet);
+      --ha-card-feature-divider-inset: calc(
+        var(--ha-space-3) + var(--column-gap, 0px) / 2
+      );
     }
     [role="button"] {
       cursor: pointer;
