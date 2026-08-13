@@ -30,6 +30,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { decodeMoreInfoUrl } from "../../common/url/more-info-query-params";
 import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import {
   addSearchParam,
@@ -70,7 +71,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { isMoreInfoView } from "../../dialogs/more-info/const";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
@@ -724,18 +724,18 @@ class HUIRoot extends LitElement {
       this._clearParam("conversation");
       this._showVoiceCommandDialog();
     } else if (searchParams["more-info-entity-id"]) {
-      const entityId = searchParams["more-info-entity-id"];
-      const view = searchParams["more-info-view"];
-      this._clearParam("more-info-entity-id");
-      if (view) {
-        this._clearParam("more-info-view");
-      }
+      const { entityId, view, hash } = decodeMoreInfoUrl(
+        window.location.search,
+        window.location.hash
+      );
       // Wait for the next render to ensure the view is fully loaded
       // because the more info dialog is closed when the url changes
       afterNextRender(() => {
         showMoreInfoDialog(this, {
-          entityId,
-          view: isMoreInfoView(view) ? view : undefined,
+          entityId: entityId!,
+          view,
+          hash,
+          fromUrl: true,
         });
       });
     }

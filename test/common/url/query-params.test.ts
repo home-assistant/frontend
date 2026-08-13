@@ -15,6 +15,11 @@ import {
   type QueryParamConfig,
 } from "../../../src/common/url/query-params";
 import {
+  createMoreInfoUrl,
+  decodeMoreInfoUrl,
+  removeMoreInfoUrl,
+} from "../../../src/common/url/more-info-query-params";
+import {
   createTodoQueryString,
   decodeTodoQueryParams,
 } from "../../../src/common/url/todo-query-params";
@@ -238,5 +243,46 @@ describe("todo query params", () => {
     const decoded = decodeTodoQueryParams(original);
     const encoded = createTodoQueryString(decoded);
     expect(encoded).toBe("add_item=true&entity_id=todo.tasks");
+  });
+});
+
+describe("more-info query params", () => {
+  it("decodes the entity, view, and named hash params", () => {
+    const params = decodeMoreInfoUrl(
+      "?more-info-entity-id=weather.home&more-info-view=info",
+      "#forecast=hourly"
+    );
+
+    expect(params.entityId).toBe("weather.home");
+    expect(params.view).toBe("info");
+    expect(params.hash.get("forecast")).toBe("hourly");
+  });
+
+  it("ignores invalid views", () => {
+    expect(
+      decodeMoreInfoUrl(
+        "?more-info-entity-id=weather.home&more-info-view=forecast"
+      ).view
+    ).toBeUndefined();
+  });
+
+  it("creates a link without dropping unrelated query params", () => {
+    expect(
+      createMoreInfoUrl("/lovelace/home?theme=dark", {
+        entityId: "weather.home",
+        view: "info",
+        hash: new URLSearchParams({ forecast: "hourly" }),
+      })
+    ).toBe(
+      "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#forecast=hourly"
+    );
+  });
+
+  it("removes more-info query and hash state", () => {
+    expect(
+      removeMoreInfoUrl(
+        "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#forecast=hourly"
+      )
+    ).toBe("/lovelace/home?theme=dark");
   });
 });
