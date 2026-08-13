@@ -35,34 +35,33 @@ export interface YamlFieldSchema {
 /**
  * A map of YAML key → field schema. Passed to ha-yaml-editor / ha-code-editor.
  *
- * The optional `__allowUnknownFields` marker suppresses "unknown field"
- * lint warnings for this mapping level. Use it for schemas where the full
- * set of valid keys is not statically known (e.g. device triggers/conditions/
- * actions that accept integration-specific fields).
- *
- * Note: `__allowUnknownFields` is set as a non-enumerable property so it does
- * not appear in Object.keys() / Object.entries() iteration used for completions
- * and required-field checks.
+ * Keys are the YAML keys valid at this mapping level; see
+ * `allowUnknownFields()` for levels where that set is not statically known.
  */
 export type YamlFieldSchemaMap = Record<string, YamlFieldSchema>;
 
 /**
+ * Marks a map as accepting keys beyond the ones it lists. Kept on a symbol so
+ * it can never collide with a real YAML key, and so it stays out of the
+ * Object.keys() / Object.entries() iteration used for completions and
+ * required-field checks.
+ */
+const ALLOW_UNKNOWN_FIELDS = Symbol("allowUnknownFields");
+
+/**
  * Mark a `YamlFieldSchemaMap` so that the linter does not warn about unknown
- * keys at this mapping level. Returns the same object for convenience.
+ * keys at this mapping level. Use it for schemas where the full set of valid
+ * keys is not statically known (e.g. device triggers/conditions/actions that
+ * accept integration-specific fields). Returns the same object for convenience.
  */
 export function allowUnknownFields(
   map: YamlFieldSchemaMap
 ): YamlFieldSchemaMap {
-  Object.defineProperty(map, "__allowUnknownFields", {
-    value: true,
-    enumerable: false,
-    writable: false,
-    configurable: false,
-  });
+  (map as Record<symbol, boolean>)[ALLOW_UNKNOWN_FIELDS] = true;
   return map;
 }
 
 /** Return true if the map was marked via `allowUnknownFields()`. */
 export function hasAllowUnknownFields(map: YamlFieldSchemaMap): boolean {
-  return (map as any).__allowUnknownFields === true;
+  return (map as Record<symbol, boolean>)[ALLOW_UNKNOWN_FIELDS] === true;
 }

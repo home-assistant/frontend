@@ -31,8 +31,7 @@ import type { LabelRegistryEntry } from "../data/label/label_registry";
 export function buildEntityCompletions(states: HassEntities): Completion[] {
   return Object.keys(states).map((entityId) => {
     const friendlyName = states[entityId].attributes.friendly_name as
-      | string
-      | undefined;
+      string | undefined;
     return {
       type: "variable",
       label: friendlyName ? `${friendlyName} ${entityId}` : entityId,
