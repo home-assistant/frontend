@@ -164,6 +164,7 @@ export class HaCardConditionsEditor extends LitElement {
                   role="button"
                   tabindex="0"
                   aria-label=${this.hass.localize("ui.common.move")}
+                  aria-pressed=${this._rowSortSelected === idx}
                   .index=${idx}
                   @click=${stopPropagation}
                   @keydown=${this._handleDragKeydown}
