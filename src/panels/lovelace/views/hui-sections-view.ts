@@ -33,6 +33,10 @@ import {
 import type { HuiSection } from "../sections/hui-section";
 import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
+import {
+  computeSectionsColumnCount,
+  parseCssPx,
+} from "./compute-sections-column-count";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
@@ -40,8 +44,6 @@ import "./hui-view-sidebar";
 import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 
 export const DEFAULT_MAX_COLUMNS = 4;
-
-const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
 @customElement("hui-sections-view")
 export class SectionsView extends LitElement implements LovelaceViewElement {
@@ -93,18 +95,20 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
-      const paddingLeft = parsePx(wrapperStyle.paddingLeft);
-      const paddingRight = parsePx(wrapperStyle.paddingRight);
+      const paddingLeft = parseCssPx(wrapperStyle.paddingLeft);
+      const paddingRight = parseCssPx(wrapperStyle.paddingRight);
       const padding = paddingLeft + paddingRight;
-      const minColumnWidth = parsePx(
+      const minColumnWidth = parseCssPx(
         style.getPropertyValue("--column-min-width")
       );
-      const columnGap = parsePx(containerStyle.columnGap);
+      const columnGap = parseCssPx(containerStyle.columnGap);
 
-      const columns = Math.floor(
-        (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
+      return computeSectionsColumnCount(
+        totalWidth,
+        padding,
+        minColumnWidth,
+        columnGap
       );
-      return Math.max(columns, 1);
     },
   });
 
