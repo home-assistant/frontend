@@ -13,6 +13,7 @@ import "../../components/ha-icon";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import "../../components/ha-spinner";
+import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-base";
 import "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-value";
