@@ -1667,6 +1667,11 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "context": "Context",
+        "entity": "Entity",
+        "floor": "Floor",
+        "entity_id": "Entity ID",
+        "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
         "raw": "Raw",
