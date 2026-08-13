@@ -53,7 +53,7 @@ interface UpdateGroup {
   key: string;
   title: string;
   entities: UpdateEntity[];
-  showUpdateAll: boolean;
+  showUpdateButton: boolean;
 }
 
 const SYSTEM_KEY = "__system__";
@@ -218,7 +218,7 @@ class HaConfigSectionUpdates extends LitElement {
                       ${group.title}
                     </div>
                     ${
-                      group.showUpdateAll
+                      group.showUpdateButton
                         ? html`
                             <ha-button
                               appearance="plain"
@@ -227,10 +227,12 @@ class HaConfigSectionUpdates extends LitElement {
                               .disabled=${group.entities.every((entity) =>
                                 updateIsInstalling(entity)
                               )}
-                              @click=${this._updateAll}
+                              @click=${this._updateGroup}
                             >
                               ${this.hass.localize(
-                                "ui.panel.config.updates.update_all"
+                                group.entities.length > 1
+                                  ? "ui.panel.config.updates.update_all"
+                                  : "ui.common.update"
                               )}
                             </ha-button>
                           `
@@ -350,7 +352,7 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private async _updateAll(ev: Event) {
+  private async _updateGroup(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
     const entityIds = group.entities
       .filter((entity) => !updateIsInstalling(entity))
@@ -442,7 +444,7 @@ class HaConfigSectionUpdates extends LitElement {
           key: domain,
           title: domainToName(localize, domain),
           entities: entries,
-          showUpdateAll: entries.length > 1,
+          showUpdateButton: true,
         });
       });
 
@@ -457,7 +459,7 @@ class HaConfigSectionUpdates extends LitElement {
           key: SYSTEM_KEY,
           title: localize("ui.panel.config.updates.group_system"),
           entities: systemEntities,
-          showUpdateAll: false,
+          showUpdateButton: false,
         });
       }
 
@@ -468,7 +470,7 @@ class HaConfigSectionUpdates extends LitElement {
           key: APPS_KEY,
           title: localize("ui.panel.config.updates.group_apps"),
           entities: appEntities,
-          showUpdateAll: true,
+          showUpdateButton: true,
         });
       }
 
