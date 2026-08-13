@@ -622,6 +622,8 @@ export class HaAutomationRowTargets extends LitElement {
         var(--ha-color-border-neutral-quiet);
       overflow: hidden;
       height: 32px;
+      box-sizing: border-box;
+      font: inherit;
     }
     .target.warning {
       background: var(--ha-color-fill-warning-normal-resting);

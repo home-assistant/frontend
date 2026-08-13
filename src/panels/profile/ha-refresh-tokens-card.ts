@@ -209,7 +209,6 @@ class HaRefreshTokens extends LitElement {
           <ha-button
             variant="danger"
             appearance="filled"
-            size="s"
             @click=${this._deleteAllTokens}
           >
             ${this.hass.localize(
@@ -351,6 +350,10 @@ class HaRefreshTokens extends LitElement {
           background-color: var(--success-color);
           border-radius: var(--ha-border-radius-circle);
           margin-right: 6px;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

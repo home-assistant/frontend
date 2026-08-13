@@ -37,6 +37,16 @@ title: Button
 <ha-button size="s"> small </ha-button>
 ```
 
+### Icons in the `xs` size
+
+Avoid icons in `xs` buttons. At 24px the label carries the meaning on its own, and a
+16px glyph next to it adds visual noise without adding information.
+
+Use an icon only when the button needs to be recognized at a glance in a dense layout,
+and only when the glyph is a common one users can identify from its silhouette alone,
+such as close, add, or settings. A detailed or unfamiliar glyph is unreadable at this
+size and should be replaced by the label alone.
+
 ### API
 
 This component is based on the webawesome button component.

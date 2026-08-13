@@ -472,10 +472,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (disabled) {
       return;
     }
-    const newValue = value?.trim();
     const newTab = ev.ctrlKey || ev.metaKey;
 
-    this._fireSelectedEvents(newValue, index, newTab);
+    this._fireSelectedEvents(value, index, newTab);
   };
 
   private _fireSelectedEvents(value: string, index: number, newTab = false) {
