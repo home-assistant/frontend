@@ -85,14 +85,14 @@ class HaConfigEntryDeviceRow extends LitElement {
           ? html`<ha-tree-indicator
               style=${styleMap({
                 position: "absolute",
-                top: "50%",
+                // Span the full row height so consecutive children form one
+                // continuous line; the elbow sits at the vertical centre.
+                top: "0",
                 // Align the connector under the parent device icon; the leading
                 // space (and thus the icon column) is smaller in narrow mode.
                 left: rtl ? undefined : this.narrow ? "4px" : "44px",
                 right: rtl ? (this.narrow ? "4px" : "44px") : undefined,
-                transform: rtl
-                  ? "translateY(-50%) scaleX(-1)"
-                  : "translateY(-50%)",
+                transform: rtl ? "scaleX(-1)" : "",
               })}
               .end=${this.isLastChild}
               slot="start"
@@ -399,7 +399,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
       ha-tree-indicator {
         width: 48px;
-        height: 48px;
+        height: 100%;
       }
       .vertical-divider {
         height: 100%;
