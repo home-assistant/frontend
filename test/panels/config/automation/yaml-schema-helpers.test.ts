@@ -12,9 +12,60 @@ import {
   haFormSchemaToYamlFieldSchemaMap,
   serviceActionSchema,
 } from "../../../../src/panels/config/automation/yaml_schema_helpers";
+import type { YamlFieldSchemaMap } from "../../../../src/resources/yaml_field_schema";
 import { hasAllowUnknownFields } from "../../../../src/resources/yaml_field_schema";
+import en from "../../../../src/translations/en.json";
 
 const localize = ((key: string) => key) as HomeAssistant["localize"];
+
+const BUILT_IN_ACTION_TYPES = [
+  "delay",
+  "wait_template",
+  "wait_for_trigger",
+  "event",
+  "condition",
+  "stop",
+  "repeat",
+  "choose",
+  "if",
+  "sequence",
+  "parallel",
+  "variables",
+  "set_conversation_response",
+];
+
+const BUILT_IN_TRIGGER_TYPES = [
+  "state",
+  "numeric_state",
+  "event",
+  "homeassistant",
+  "template",
+  "time",
+  "time_pattern",
+  "sun",
+  "zone",
+  "tag",
+  "webhook",
+  "geo_location",
+  "calendar",
+  "persistent_notification",
+  "conversation",
+  "device",
+];
+
+const BUILT_IN_CONDITION_TYPES = [
+  "state",
+  "numeric_state",
+  "template",
+  "time",
+  "sun",
+  "zone",
+  "trigger",
+  "and",
+  "or",
+  "not",
+  "device",
+];
 
 describe("haFormSchemaToYamlFieldSchemaMap", () => {
   test("maps selector entries straight through", () => {
@@ -257,5 +308,57 @@ describe("builtInTriggerSchema / builtInConditionSchema", () => {
     expect(
       hasAllowUnknownFields(builtInTriggerSchema("state", localize)!)
     ).toBe(false);
+  });
+});
+
+describe("built-in field descriptions", () => {
+  // Built-in schemas carry translation keys as their description; the hover
+  // tooltip and completion info resolve them through localize(). A key that
+  // isn't in en.json would silently render as the raw key.
+  const resolve = (key: string): unknown =>
+    key
+      .split(".")
+      .reduce<any>((node, part) => (node ? node[part] : undefined), en);
+
+  const collect = (map: YamlFieldSchemaMap | undefined, into: string[]) => {
+    for (const field of Object.values(map ?? {})) {
+      if (field.description) into.push(field.description);
+      collect(field.fields, into);
+    }
+    return into;
+  };
+
+  const descriptionsOf = (map: YamlFieldSchemaMap | undefined) =>
+    collect(map, []);
+
+  test.each(BUILT_IN_ACTION_TYPES)("action %s", (type) => {
+    const keys = descriptionsOf(builtInActionSchema(type));
+    expect(keys.length).toBeGreaterThan(0);
+    keys.forEach((key) => expect(resolve(key), key).toBeTypeOf("string"));
+  });
+
+  test.each(BUILT_IN_TRIGGER_TYPES)("trigger %s", (type) => {
+    const keys = descriptionsOf(builtInTriggerSchema(type, localize));
+    expect(keys.length).toBeGreaterThan(0);
+    keys.forEach((key) => expect(resolve(key), key).toBeTypeOf("string"));
+  });
+
+  test.each(BUILT_IN_CONDITION_TYPES)("condition %s", (type) => {
+    const keys = descriptionsOf(builtInConditionSchema(type, localize));
+    expect(keys.length).toBeGreaterThan(0);
+    keys.forEach((key) => expect(resolve(key), key).toBeTypeOf("string"));
+  });
+
+  test("service action schema", () => {
+    const keys = descriptionsOf(
+      serviceActionSchema(
+        "light",
+        "turn_on",
+        {} as HomeAssistant["services"],
+        localize
+      )
+    );
+    expect(keys.length).toBeGreaterThan(0);
+    keys.forEach((key) => expect(resolve(key), key).toBeTypeOf("string"));
   });
 });

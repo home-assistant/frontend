@@ -20,7 +20,10 @@ import type {
 import { allowUnknownFields } from "../../../resources/yaml_field_schema";
 import type { Selector, TargetSelector } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
-import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import {
   TRIGGER_BEHAVIORS,
   CONDITION_BEHAVIORS,
@@ -192,26 +195,30 @@ export function haFormSchemaToYamlFieldSchemaMap(
 /** Common base fields present on every trigger. */
 const TRIGGER_BASE_FIELDS: YamlFieldSchemaMap = {
   trigger: {
-    description: "The trigger type (platform).",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.trigger_base.trigger",
     selector: { text: null },
     required: true,
   },
   id: {
     description:
-      "An optional ID for the trigger, used to identify it in conditions or templates.",
+      "ui.panel.config.automation.editor.yaml_schema.trigger_base.id",
     selector: { text: null },
   },
   alias: {
-    description: "A friendly name for this trigger.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.trigger_base.alias",
     selector: { text: null },
   },
   enabled: {
-    description: "Whether this trigger is enabled. Defaults to true.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.trigger_base.enabled",
     selector: { boolean: null },
     default: true,
   },
   variables: {
-    description: "Variables to set when this trigger fires.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.trigger_base.variables",
     selector: { object: null },
   },
 };
@@ -219,16 +226,19 @@ const TRIGGER_BASE_FIELDS: YamlFieldSchemaMap = {
 /** Common base fields present on every condition. */
 const CONDITION_BASE_FIELDS: YamlFieldSchemaMap = {
   condition: {
-    description: "The condition type.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.condition_base.condition",
     selector: { text: null },
     required: true,
   },
   alias: {
-    description: "A friendly name for this condition.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.condition_base.alias",
     selector: { text: null },
   },
   enabled: {
-    description: "Whether this condition is enabled. Defaults to true.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.condition_base.enabled",
     selector: { boolean: null },
     default: true,
   },
@@ -237,16 +247,19 @@ const CONDITION_BASE_FIELDS: YamlFieldSchemaMap = {
 /** Common base fields present on every action. */
 export const ACTION_BASE_FIELDS: YamlFieldSchemaMap = {
   alias: {
-    description: "A friendly name for this action.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.action_base.alias",
     selector: { text: null },
   },
   enabled: {
-    description: "Whether this action is enabled. Defaults to true.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.action_base.enabled",
     selector: { boolean: null },
     default: true,
   },
   continue_on_error: {
-    description: "If true, the automation continues even if this action fails.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.action_base.continue_on_error",
     selector: { boolean: null },
     default: false,
   },
@@ -260,7 +273,7 @@ const DELAY_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   delay: {
     description:
-      "Duration to wait. Can be a number (seconds), a time string (HH:MM:SS), or a mapping with hours/minutes/seconds/milliseconds.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.delay.delay",
     selector: { text: null },
     required: true,
     example: "00:00:30",
@@ -271,19 +284,19 @@ const WAIT_TEMPLATE_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   wait_template: {
     description:
-      "A Jinja2 template that must evaluate to true before continuing.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_template.wait_template",
     selector: { template: null },
     required: true,
   },
   timeout: {
     description:
-      "Maximum time to wait. After this the action continues (or stops if continue_on_timeout is false).",
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_template.timeout",
     selector: { text: null },
     example: "00:01:00",
   },
   continue_on_timeout: {
     description:
-      "Whether to continue when the timeout is reached. Defaults to true.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_template.continue_on_timeout",
     selector: { boolean: null },
     default: true,
   },
@@ -292,18 +305,20 @@ const WAIT_TEMPLATE_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const WAIT_FOR_TRIGGER_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   wait_for_trigger: {
-    description: "One or more triggers to wait for before continuing.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_for_trigger.wait_for_trigger",
     selector: { trigger: null },
     required: true,
   },
   timeout: {
-    description: "Maximum time to wait.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_for_trigger.timeout",
     selector: { text: null },
     example: "00:01:00",
   },
   continue_on_timeout: {
     description:
-      "Whether to continue when the timeout is reached. Defaults to true.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.wait_for_trigger.continue_on_timeout",
     selector: { boolean: null },
     default: true,
   },
@@ -312,17 +327,20 @@ const WAIT_FOR_TRIGGER_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const EVENT_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   event: {
-    description: "The event type to fire.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.event.event",
     selector: { text: null },
     required: true,
     example: "my_custom_event",
   },
   event_data: {
-    description: "Data to include with the event.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.event.event_data",
     selector: { object: null },
   },
   event_data_template: {
-    description: "Templated data to include with the event.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.event.event_data_template",
     selector: { object: null },
   },
 };
@@ -331,7 +349,7 @@ const CONDITION_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   condition: {
     description:
-      "The condition type to check. The automation stops if the condition is false.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.condition.condition",
     selector: { text: null },
     required: true,
   },
@@ -340,17 +358,19 @@ const CONDITION_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const STOP_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   stop: {
-    description: "Message to log when stopping the automation.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.stop.stop",
     selector: { text: null },
   },
   error: {
-    description: "If true, this is logged as an error. Defaults to false.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.stop.error",
     selector: { boolean: null },
     default: false,
   },
   response_variable: {
     description:
-      "Variable name to store when stopping and returning a response.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.stop.response_variable",
     selector: { text: null },
   },
 };
@@ -358,28 +378,34 @@ const STOP_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const REPEAT_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   repeat: {
-    description: "Repeat configuration — use count, while, until, or for_each.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.repeat.repeat",
     required: true,
     fields: {
       count: {
-        description: "Number of times to repeat.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.repeat.count",
         selector: { number: { min: 1 } },
         example: 5,
       },
       while: {
-        description: "Repeat while these conditions are true.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.repeat.while",
         selector: { condition: null },
       },
       until: {
-        description: "Repeat until these conditions are true.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.repeat.until",
         selector: { condition: null },
       },
       for_each: {
-        description: "List of items to iterate over.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.repeat.for_each",
         selector: { object: null },
       },
       sequence: {
-        description: "Actions to perform on each iteration.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.repeat.sequence",
         selector: { action: null },
         required: true,
       },
@@ -390,26 +416,31 @@ const REPEAT_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const CHOOSE_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   choose: {
-    description: "List of options; the first matching one is executed.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.choose.choose",
     required: true,
     fields: {
       conditions: {
-        description: "Conditions that must be met for this option to run.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.choose.conditions",
         selector: { condition: null },
       },
       sequence: {
-        description: "Actions to run if the conditions match.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.choose.sequence",
         selector: { action: null },
         required: true,
       },
       alias: {
-        description: "A friendly name for this option.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.actions.choose.alias",
         selector: { text: null },
       },
     },
   },
   default: {
-    description: "Actions to run when no option matched.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.choose.default",
     selector: { action: null },
   },
 };
@@ -417,17 +448,19 @@ const CHOOSE_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const IF_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   if: {
-    description: "Conditions to check.",
+    description: "ui.panel.config.automation.editor.yaml_schema.actions.if.if",
     selector: { condition: null },
     required: true,
   },
   then: {
-    description: "Actions to run when the condition is true.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.if.then",
     selector: { action: null },
     required: true,
   },
   else: {
-    description: "Actions to run when the condition is false.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.if.else",
     selector: { action: null },
   },
 };
@@ -435,7 +468,8 @@ const IF_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const SEQUENCE_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   sequence: {
-    description: "A list of actions to run in order.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.sequence.sequence",
     selector: { action: null },
     required: true,
   },
@@ -444,7 +478,8 @@ const SEQUENCE_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const PARALLEL_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   parallel: {
-    description: "A list of actions (or scripts) to run in parallel.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.parallel.parallel",
     selector: { action: null },
     required: true,
   },
@@ -454,7 +489,7 @@ const VARIABLES_ACTION_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   variables: {
     description:
-      "Key/value pairs to set as variables in the automation context.",
+      "ui.panel.config.automation.editor.yaml_schema.actions.variables.variables",
     selector: { object: null },
     required: true,
   },
@@ -463,7 +498,8 @@ const VARIABLES_ACTION_SCHEMA: YamlFieldSchemaMap = {
 const SET_CONVERSATION_RESPONSE_SCHEMA: YamlFieldSchemaMap = {
   ...ACTION_BASE_FIELDS,
   set_conversation_response: {
-    description: "The text response to return to the conversation agent.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.actions.set_conversation_response.set_conversation_response",
     selector: { text: { multiline: true } },
     required: true,
   },
@@ -572,14 +608,14 @@ export function builtInConditionSchema(
       return {
         ...CONDITION_BASE_FIELDS,
         entity_id: {
-          description: localize
-            ? localize("ui.components.entity.entity-picker.entity") || undefined
-            : "The person or device_tracker entity to check.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.conditions.zone.entity_id",
           selector: { entity: null },
           required: true,
         },
         zone: {
-          description: "The zone the entity must be in.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.conditions.zone.zone",
           selector: { entity: { domain: "zone" } },
           required: true,
         },
@@ -596,7 +632,8 @@ export function builtInConditionSchema(
       return {
         ...CONDITION_BASE_FIELDS,
         conditions: {
-          description: "All of these conditions must be true.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.conditions.and.conditions",
           selector: { condition: null },
           required: true,
         },
@@ -605,7 +642,8 @@ export function builtInConditionSchema(
       return {
         ...CONDITION_BASE_FIELDS,
         conditions: {
-          description: "At least one of these conditions must be true.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.conditions.or.conditions",
           selector: { condition: null },
           required: true,
         },
@@ -614,7 +652,8 @@ export function builtInConditionSchema(
       return {
         ...CONDITION_BASE_FIELDS,
         conditions: {
-          description: "None of these conditions must be true.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.conditions.not.conditions",
           selector: { condition: null },
           required: true,
         },
@@ -663,17 +702,20 @@ export function builtInTriggerSchema(
       return {
         ...TRIGGER_BASE_FIELDS,
         event_type: {
-          description: "The event type to listen for.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.event.event_type",
           selector: { text: null },
           required: true,
           example: "my_custom_event",
         },
         event_data: {
-          description: "Optional event data to match.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.event.event_data",
           selector: { object: null },
         },
         context: {
-          description: "Optional context to match (e.g. user_id).",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.event.context",
           selector: { object: null },
         },
       };
@@ -721,17 +763,20 @@ export function builtInTriggerSchema(
       return {
         ...TRIGGER_BASE_FIELDS,
         entity_id: {
-          description: "The person or device_tracker entity to watch.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.zone.entity_id",
           selector: { entity: null },
           required: true,
         },
         zone: {
-          description: "The zone to watch.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.zone.zone",
           selector: { entity: { domain: "zone" } },
           required: true,
         },
         event: {
-          description: "Whether to trigger on zone entry or exit.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.zone.event",
           selector: {
             select: {
               options: [
@@ -747,7 +792,8 @@ export function builtInTriggerSchema(
       return {
         ...TRIGGER_BASE_FIELDS,
         tag_id: {
-          description: "The NFC/QR tag ID(s) to watch.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.tag.tag_id",
           selector: { text: null },
           required: true,
         },
@@ -756,12 +802,14 @@ export function builtInTriggerSchema(
       return {
         ...TRIGGER_BASE_FIELDS,
         webhook_id: {
-          description: "The webhook ID. Will be part of the webhook URL.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.webhook.webhook_id",
           selector: { text: null },
           required: true,
         },
         allowed_methods: {
-          description: "HTTP methods that are accepted (default: POST, PUT).",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.webhook.allowed_methods",
           selector: {
             select: {
               multiple: true,
@@ -776,7 +824,7 @@ export function builtInTriggerSchema(
         },
         local_only: {
           description:
-            "Only allow requests from the local network. Defaults to true.",
+            "ui.panel.config.automation.editor.yaml_schema.triggers.webhook.local_only",
           selector: { boolean: null },
           default: true,
         },
@@ -809,7 +857,8 @@ export function builtInTriggerSchema(
       return {
         ...TRIGGER_BASE_FIELDS,
         command: {
-          description: "The voice command phrase(s) to match.",
+          description:
+            "ui.panel.config.automation.editor.yaml_schema.triggers.conversation.command",
           selector: { text: null },
           required: true,
         },
@@ -834,28 +883,33 @@ function buildTargetSchema(
   targetDef?: TargetSelector["target"]
 ): YamlFieldSchema {
   return {
-    description: "The target entities, devices, areas, floors, or labels.",
+    description: "ui.panel.config.automation.editor.yaml_schema.target.target",
     fields: {
       entity_id: {
-        description: "One or more entity IDs to target.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.target.entity_id",
         selector: {
           entity: { multiple: true, filter: targetDef?.entity },
         },
       },
       device_id: {
-        description: "One or more device IDs to target.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.target.device_id",
         selector: { device: { multiple: true, filter: targetDef?.device } },
       },
       area_id: {
-        description: "One or more area IDs to target.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.target.area_id",
         selector: { area: null },
       },
       floor_id: {
-        description: "One or more floor IDs to target.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.target.floor_id",
         selector: { floor: null },
       },
       label_id: {
-        description: "One or more label IDs to target.",
+        description:
+          "ui.panel.config.automation.editor.yaml_schema.target.label_id",
         selector: { label: {} },
       },
     },
@@ -893,7 +947,8 @@ function resolveSelector(
 /** Sub-schema for a single ThresholdValueEntry (value / value_min / value_max). */
 const THRESHOLD_VALUE_ENTRY_FIELDS: YamlFieldSchemaMap = {
   active_choice: {
-    description: "Whether to use a fixed number or an entity state.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.active_choice",
     selector: {
       select: {
         options: [
@@ -904,15 +959,18 @@ const THRESHOLD_VALUE_ENTRY_FIELDS: YamlFieldSchemaMap = {
     },
   },
   number: {
-    description: "Fixed numeric value.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.number",
     selector: { number: {} },
   },
   entity: {
-    description: "Entity whose state provides the value.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.entity",
     selector: { entity: null },
   },
   unit_of_measurement: {
-    description: "Unit of measurement.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.unit_of_measurement",
     selector: { text: null },
   },
 };
@@ -924,13 +982,15 @@ const THRESHOLD_VALUE_ENTRY_FIELDS: YamlFieldSchemaMap = {
  */
 export function numericThresholdSchema(): YamlFieldSchemaMap {
   const valueEntry: YamlFieldSchema = {
-    description: "Threshold value entry.",
+    description:
+      "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.value_entry",
     selector: { object: null },
     fields: THRESHOLD_VALUE_ENTRY_FIELDS,
   };
   return {
     type: {
-      description: "Comparison type.",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.type",
       selector: {
         select: {
           options: (
@@ -942,15 +1002,18 @@ export function numericThresholdSchema(): YamlFieldSchemaMap {
     },
     value: {
       ...valueEntry,
-      description: "Threshold value (for above / below types).",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.value",
     },
     value_min: {
       ...valueEntry,
-      description: "Lower bound (for between / outside types).",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.value_min",
     },
     value_max: {
       ...valueEntry,
-      description: "Upper bound (for between / outside types).",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.numeric_threshold.value_max",
     },
   };
 }
@@ -982,10 +1045,10 @@ export function triggerDescriptionToSchema(
   for (const [fieldName, field] of Object.entries(desc.fields)) {
     const localizedDesc =
       localize(
-        `component.${domain}.triggers.${name}.fields.${fieldName}.description` as any
+        `component.${domain}.triggers.${name}.fields.${fieldName}.description` as LocalizeKeys
       ) ||
       localize(
-        `component.${domain}.triggers._.fields.${fieldName}.description` as any
+        `component.${domain}.triggers._.fields.${fieldName}.description` as LocalizeKeys
       ) ||
       undefined;
 
@@ -1007,7 +1070,8 @@ export function triggerDescriptionToSchema(
     ...(Object.keys(fieldSchemas).length > 0
       ? {
           options: {
-            description: "Trigger options.",
+            description:
+              "ui.panel.config.automation.editor.yaml_schema.triggers.options",
             selector: { object: null },
             fields: fieldSchemas,
           },
@@ -1032,10 +1096,10 @@ export function conditionDescriptionToSchema(
   for (const [fieldName, field] of Object.entries(desc.fields)) {
     const localizedDesc =
       localize(
-        `component.${domain}.conditions.${name}.fields.${fieldName}.description` as any
+        `component.${domain}.conditions.${name}.fields.${fieldName}.description` as LocalizeKeys
       ) ||
       localize(
-        `component.${domain}.conditions._.fields.${fieldName}.description` as any
+        `component.${domain}.conditions._.fields.${fieldName}.description` as LocalizeKeys
       ) ||
       undefined;
 
@@ -1057,13 +1121,28 @@ export function conditionDescriptionToSchema(
     ...(Object.keys(fieldSchemas).length > 0
       ? {
           options: {
-            description: "Condition options.",
+            description:
+              "ui.panel.config.automation.editor.yaml_schema.conditions.options",
             selector: { object: null },
             fields: fieldSchemas,
           },
         }
       : {}),
   };
+}
+
+/**
+ * A field of a service description. `HassService["fields"]` types its values
+ * loosely; this is the shape the frontend actually gets, including the nested
+ * `fields` used by collapsible field groups.
+ */
+interface ServiceField {
+  description?: string;
+  selector?: unknown;
+  required?: boolean;
+  example?: unknown;
+  default?: unknown;
+  fields?: Record<string, ServiceField>;
 }
 
 /**
@@ -1080,41 +1159,34 @@ export function serviceActionSchema(
   const serviceDef = services?.[domain]?.[service];
   const fieldSchemas: YamlFieldSchemaMap = {};
 
-  if (serviceDef?.fields) {
-    for (const [fieldName, field] of Object.entries(serviceDef.fields)) {
-      const f = field as any;
-      // Fields that have a nested `fields` property are grouping containers
-      // (e.g. `advanced_fields` with `collapsed: true`). Hoist their children
-      // into the top-level data fields instead of treating the group itself
-      // as a key.
-      if (f.fields && typeof f.fields === "object") {
-        for (const [subFieldName, subField] of Object.entries(f.fields)) {
-          const sf = subField as any;
-          const localizedSubDesc =
-            localize(
-              `component.${domain}.services.${service}.fields.${subFieldName}.description` as any
-            ) || sf.description;
-          fieldSchemas[subFieldName] = {
-            description: localizedSubDesc || undefined,
-            selector: sf.selector,
-            required: sf.required && sf.default === undefined,
-            example: sf.example,
-            default: sf.default,
-          } satisfies YamlFieldSchema;
-        }
-      } else {
-        const localizedDesc =
-          localize(
-            `component.${domain}.services.${service}.fields.${fieldName}.description` as any
-          ) || f.description;
-        fieldSchemas[fieldName] = {
-          description: localizedDesc || undefined,
-          selector: f.selector,
-          required: f.required && f.default === undefined,
-          example: f.example,
-          default: f.default,
-        } satisfies YamlFieldSchema;
+  const addField = (fieldName: string, field: ServiceField) => {
+    fieldSchemas[fieldName] = {
+      description:
+        localize(
+          `component.${domain}.services.${service}.fields.${fieldName}.description` as LocalizeKeys
+        ) ||
+        field.description ||
+        undefined,
+      selector: field.selector as Selector | undefined,
+      required: field.required && field.default === undefined,
+      example: field.example,
+      default: field.default,
+    } satisfies YamlFieldSchema;
+  };
+
+  for (const [fieldName, field] of Object.entries(
+    (serviceDef?.fields ?? {}) as Record<string, ServiceField>
+  )) {
+    // Fields that have a nested `fields` property are grouping containers
+    // (e.g. `advanced_fields` with `collapsed: true`). Hoist their children
+    // into the top-level data fields instead of treating the group itself
+    // as a key.
+    if (field.fields && typeof field.fields === "object") {
+      for (const [subFieldName, subField] of Object.entries(field.fields)) {
+        addField(subFieldName, subField);
       }
+    } else {
+      addField(fieldName, field);
     }
   }
 
@@ -1126,18 +1198,21 @@ export function serviceActionSchema(
   return {
     ...ACTION_BASE_FIELDS,
     action: {
-      description: `The action to call (${domain}.${service}).`,
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.actions.service.action",
       selector: { text: null },
       required: true,
     },
     target: buildTargetSchema(targetDef),
     data: {
-      description: "Service call data (field values).",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.actions.service.data",
       fields: fieldSchemas,
       selector: { object: null },
     },
     response_variable: {
-      description: "Variable name to store the action response in.",
+      description:
+        "ui.panel.config.automation.editor.yaml_schema.actions.service.response_variable",
       selector: { text: null },
     },
   };

@@ -34,10 +34,11 @@ export class HaCodeEditorYamlHover extends LitElement {
     const schema = this.fieldSchema;
     if (!schema) return nothing;
 
+    // Built-in field descriptions are translation keys; descriptions coming
+    // from the backend are already translated and fall through unchanged.
     const description = schema.description
-      ? (this.localize
-          ? this.localize(schema.description as LocalizeKeys)
-          : "") || schema.description
+      ? this.localize?.(schema.description as LocalizeKeys) ||
+        schema.description
       : undefined;
 
     const selectorType = schema.selector
