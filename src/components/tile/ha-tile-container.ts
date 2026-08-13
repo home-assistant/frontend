@@ -183,11 +183,10 @@ export class HaTileContainer extends LitElement {
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
     }
-    /* compact features when the inline one is on its own, or when the card sizes to its content */
+    /* the inline feature keeps the icon height, unless the card reserves a row it can fill */
     .container.inline:not(.has-features-below)
       ::slotted([slot="features-inline"]),
-    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]),
-    .container.inline:not(.fixed-height) ::slotted([slot="features"]) {
+    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]) {
       --feature-height: var(--ha-space-9);
     }
 
