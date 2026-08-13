@@ -7,7 +7,8 @@ import { computeAttributeNameDisplay } from "../../common/entity/compute_attribu
 import checkValidDate from "../../common/datetime/check_valid_date";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import "../../components/ha-attribute-value";
-import "../../components/ha-card";
+import "../../components/item/ha-list-item-value";
+import "../../components/list/ha-grouped-list";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
@@ -69,43 +70,28 @@ class HaMoreInfoDetails extends LitElement {
                 in-dialog
               ></ha-yaml-editor>`
             : html`
-                <section class="section">
-                  <h2 class="section-title">
-                    ${this.hass.localize(
-                      "ui.components.entity.entity-state-picker.state"
-                    )}
-                  </h2>
-                  <ha-card>
-                    <div class="card-content">
-                      <div class="data-group">
-                        ${stateEntries.map(
-                          (entry) =>
-                            html`<div class="data-entry">
-                              <div class="key">
-                                ${this.hass.localize(entry.translationKey)}
-                              </div>
-                              <div class="value">${entry.value}</div>
-                            </div>`
-                        )}
-                      </div>
-                    </div>
-                  </ha-card>
-                </section>
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.components.entity.entity-state-picker.state"
+                  )}
+                >
+                  ${stateEntries.map(
+                    (entry) =>
+                      html`<ha-list-item-value
+                        .label=${this.hass.localize(entry.translationKey)}
+                      >
+                        ${entry.value}
+                      </ha-list-item-value>`
+                  )}
+                </ha-grouped-list>
 
-                <section class="section">
-                  <h2 class="section-title">
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.attributes"
-                    )}
-                  </h2>
-                  <ha-card>
-                    <div class="card-content">
-                      <div class="data-group">
-                        ${this._renderAttributes(attributes)}
-                      </div>
-                    </div>
-                  </ha-card>
-                </section>
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.dialogs.more_info_control.attributes"
+                  )}
+                >
+                  ${this._renderAttributes(attributes)}
+                </ha-grouped-list>
               `
         }
       </div>
@@ -192,28 +178,25 @@ class HaMoreInfoDetails extends LitElement {
 
     return attributes.map(
       (attribute) => html`
-        <div class="data-entry">
-          <div class="key">
-            ${computeAttributeNameDisplay(
-              this.hass.localize,
-              this._stateObj!,
-              this.hass.entities,
-              attribute
-            )}
-          </div>
-          <div class="value">
-            ${
-              attribute === "supported_features" && featureEnum
-                ? this._renderFeatures(featureEnum, this._stateObj!)
-                : html`
-                    <ha-attribute-value
-                      .attribute=${attribute}
-                      .stateObj=${this._stateObj}
-                    ></ha-attribute-value>
-                  `
-            }
-          </div>
-        </div>
+        <ha-list-item-value
+          .label=${computeAttributeNameDisplay(
+            this.hass.localize,
+            this._stateObj!,
+            this.hass.entities,
+            attribute
+          )}
+        >
+          ${
+            attribute === "supported_features" && featureEnum
+              ? this._renderFeatures(featureEnum, this._stateObj!)
+              : html`
+                  <ha-attribute-value
+                    .attribute=${attribute}
+                    .stateObj=${this._stateObj}
+                  ></ha-attribute-value>
+                `
+          }
+        </ha-list-item-value>
       `
     );
   }
@@ -247,47 +230,14 @@ class HaMoreInfoDetails extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
-    .section + .section {
+    ha-grouped-list + ha-grouped-list {
       margin-top: var(--ha-space-4);
-    }
-
-    .section-title {
-      margin: 0 0 var(--ha-space-2);
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-    }
-
-    .card-content {
-      padding: var(--ha-space-2) var(--ha-space-4);
-    }
-
-    .data-entry {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      padding: var(--ha-space-2) 0;
-      border-bottom: 1px solid var(--divider-color);
-    }
-
-    .data-group .data-entry:last-of-type {
-      border-bottom: none;
-    }
-
-    .data-entry .value {
-      max-width: 60%;
-      overflow-wrap: break-word;
-      text-align: right;
-    }
-
-    .key {
-      flex-grow: 1;
-      color: var(--secondary-text-color);
     }
 
     .empty {
       color: var(--secondary-text-color);
       text-align: center;
-      padding: var(--ha-space-2) 0;
+      padding: var(--ha-space-3) var(--ha-space-4);
     }
   `;
 }
