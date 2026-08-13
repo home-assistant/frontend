@@ -2078,6 +2078,8 @@
         "error_backup_state": "An error occurred while getting the current backup state. Error: {error}",
         "wait_for_upload": "Wait for backup upload to finish",
         "wait_for_restore": "Wait for backup restore to finish",
+        "interrupt_automations": "The following automations and scripts are currently running and will be interrupted:",
+        "no_interrupt_automations": "No automations or scripts are currently running.",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -2088,14 +2090,14 @@
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "All integrations will be reloaded.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
           "confirm_title": "Stop Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "Home Assistant will be stopped.",
           "confirm_action": "Stop"
         },
         "reboot": {
