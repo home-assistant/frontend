@@ -8,6 +8,7 @@ import {
   type HASSDomEvent,
 } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
@@ -248,6 +249,11 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<Dashb
 
     if (this._currTab === "tab-background" && showBackgroundTab) {
       return html`
+        ${
+          this._error?.base
+            ? html`<ha-alert alert-type="error">${this._error.base}</ha-alert>`
+            : nothing
+        }
         <hui-view-background-editor
           .hass=${this.hass}
           .config=${this._backgroundConfig}

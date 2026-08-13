@@ -35,98 +35,99 @@ export class HuiViewBackgroundEditor extends LitElement {
   private _localizeValueCallback = (key: string) =>
     this.hass.localize(key as Parameters<LocalizeFunc>[0]);
 
-  private _schema(showSettings: boolean) {
-    return [
-      {
-        name: "image",
-        selector: {
-          media: {
-            accept: ["image/*"] as string[],
-            clearable: true,
-            image_upload: true,
-            hide_content_type: true,
-            content_id_helper: this.hass.localize(
-              "ui.panel.lovelace.editor.card.picture.content_id_helper"
-            ),
+  private _schema = memoizeOne(
+    (showSettings: boolean) =>
+      [
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              clearable: true,
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: this.hass.localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
           },
         },
-      },
-      ...(showSettings
-        ? ([
-            {
-              name: "settings",
-              flatten: true,
-              expanded: true,
-              type: "expandable" as const,
-              schema: [
-                {
-                  name: "opacity",
-                  selector: {
-                    number: { min: 0, max: 100, mode: "slider", step: 10 },
-                  },
-                },
-                {
-                  name: "attachment",
-                  selector: {
-                    button_toggle: {
-                      translation_key:
-                        "ui.panel.lovelace.editor.edit_view.background.attachment",
-                      options: ["scroll", "fixed"],
+        ...(showSettings
+          ? ([
+              {
+                name: "settings",
+                flatten: true,
+                expanded: true,
+                type: "expandable" as const,
+                schema: [
+                  {
+                    name: "opacity",
+                    selector: {
+                      number: { min: 0, max: 100, mode: "slider", step: 10 },
                     },
                   },
-                },
-                {
-                  name: "size",
-                  required: true,
-                  selector: {
-                    select: {
-                      translation_key:
-                        "ui.panel.lovelace.editor.edit_view.background.size",
-                      options: ["auto", "cover", "contain"],
-                      mode: "dropdown",
+                  {
+                    name: "attachment",
+                    selector: {
+                      button_toggle: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.attachment",
+                        options: ["scroll", "fixed"],
+                      },
                     },
                   },
-                },
-                {
-                  name: "alignment",
-                  required: true,
-                  selector: {
-                    select: {
-                      translation_key:
-                        "ui.panel.lovelace.editor.edit_view.background.alignment",
-                      options: [
-                        "top left",
-                        "top center",
-                        "top right",
-                        "center left",
-                        "center",
-                        "center right",
-                        "bottom left",
-                        "bottom center",
-                        "bottom right",
-                      ],
-                      mode: "dropdown",
+                  {
+                    name: "size",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.size",
+                        options: ["auto", "cover", "contain"],
+                        mode: "dropdown",
+                      },
                     },
                   },
-                },
-                {
-                  name: "repeat",
-                  required: true,
-                  selector: {
-                    select: {
-                      translation_key:
-                        "ui.panel.lovelace.editor.edit_view.background.repeat",
-                      options: ["repeat", "no-repeat"],
-                      mode: "dropdown",
+                  {
+                    name: "alignment",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.alignment",
+                        options: [
+                          "top left",
+                          "top center",
+                          "top right",
+                          "center left",
+                          "center",
+                          "center right",
+                          "bottom left",
+                          "bottom center",
+                          "bottom right",
+                        ],
+                        mode: "dropdown",
+                      },
                     },
                   },
-                },
-              ],
-            },
-          ] as const)
-        : []),
-    ] as const;
-  }
+                  {
+                    name: "repeat",
+                    required: true,
+                    selector: {
+                      select: {
+                        translation_key:
+                          "ui.panel.lovelace.editor.edit_view.background.repeat",
+                        options: ["repeat", "no-repeat"],
+                        mode: "dropdown",
+                      },
+                    },
+                  },
+                ],
+              },
+            ] as const)
+          : []),
+      ] as const
+  );
 
   protected updated(changedProps: PropertyValues<this>) {
     if (
