@@ -1,7 +1,7 @@
 import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   consumeEntityState,
@@ -202,14 +202,7 @@ class HuiMediaPlayerPlaybackCardFeature
     });
   }
 
-  static styles = [
-    cardFeatureStyles,
-    css`
-      ha-control-button-group {
-        overflow: hidden;
-      }
-    `,
-  ];
+  static styles = cardFeatureStyles;
 }
 
 declare global {
