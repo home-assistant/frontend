@@ -556,13 +556,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  /* area controls need the full width, so only the first feature goes inline */
   private _featureLayout = memoizeOne((config: AreaCardConfig) =>
-    computeCardFeatureLayout(config.features, this._featurePosition(config), 1)
+    computeCardFeatureLayout(config.features, this._featurePosition(config))
   );
 
   private _featureRows = memoizeOne((config: AreaCardConfig) =>
-    computeCardFeatureRows(config.features, this._featurePosition(config), 1)
+    computeCardFeatureRows(config.features, this._featurePosition(config))
   );
 
   public willUpdate(changedProps: PropertyValues) {
@@ -733,7 +732,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                     .context=${this._featureContext}
                     .color=${this._config.color}
                     .features=${features.below}
-                    .position=${featurePosition}
+                    .position=${"bottom"}
                   ></hui-card-features>
                 `
               : nothing

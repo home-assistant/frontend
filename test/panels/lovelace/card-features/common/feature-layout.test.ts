@@ -46,10 +46,6 @@ describe("computeCardFeatureLayout", () => {
   it("caps the features below at two columns", () => {
     expect(computeCardFeatureLayout(features(5), "inline").columns).toBe(2);
   });
-
-  it("caps the columns to the given maximum", () => {
-    expect(computeCardFeatureLayout(features(5), "inline", 1).columns).toBe(1);
-  });
 });
 
 describe("computeCardFeatureRows", () => {
@@ -65,12 +61,5 @@ describe("computeCardFeatureRows", () => {
       computeCardFeatureRows(features(count), "inline")
     );
     expect(rows).toEqual([0, 0, 1, 1, 2, 2, 3]);
-  });
-
-  it("counts one row per feature below when capped to one column", () => {
-    const rows = [0, 1, 2, 3, 4].map((count) =>
-      computeCardFeatureRows(features(count), "inline", 1)
-    );
-    expect(rows).toEqual([0, 0, 1, 2, 3]);
   });
 });
