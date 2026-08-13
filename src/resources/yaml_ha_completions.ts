@@ -93,6 +93,22 @@ function requiredLabel(ctx: HaYamlCompletionContext): string | undefined {
   return ctx.localize?.("ui.components.yaml-editor.schema.required");
 }
 
+/**
+ * A field's description, translated when it is a translation key. Descriptions
+ * coming from the backend (service/trigger/condition descriptions) are already
+ * translated plain text and pass through unchanged.
+ */
+function describe(
+  field: YamlFieldSchema,
+  ctx: { localize?: LocalizeFunc }
+): string | undefined {
+  if (!field.description) return undefined;
+  return (
+    ctx.localize?.(field.description as Parameters<LocalizeFunc>[0]) ||
+    field.description
+  );
+}
+
 // Registry-derived completion lists are rebuilt for every completion request,
 // and there can be thousands of entities — memoize on the registry identity so
 // typing doesn't remap the whole registry on each keystroke.
@@ -299,7 +315,7 @@ export function haYamlCompletionSource(
                 label: key,
                 type: "yaml-key",
                 detail: subField.required ? requiredLabel(ctx) : undefined,
-                info: subField.description,
+                info: describe(subField, ctx),
                 apply: buildKeyApply(key, subField),
                 boost: subField.required ? 10 : 0,
               })
@@ -350,7 +366,7 @@ export function haYamlCompletionSource(
                 label: key,
                 type: "yaml-key",
                 detail: subField.required ? requiredLabel(ctx) : undefined,
-                info: subField.description,
+                info: describe(subField, ctx),
                 apply: buildKeyApply(key, subField),
                 boost: subField.required ? 10 : 0,
               }));
@@ -619,7 +635,7 @@ export function haYamlCompletionSource(
         label: key,
         type: "yaml-key",
         detail: field.required ? requiredLabel(ctx) : undefined,
-        info: field.description,
+        info: describe(field, ctx),
         // Insert "key: " or "key:\n  " depending on selector type
         apply: buildKeyApply(key, field),
         boost: field.required ? 10 : 0,
