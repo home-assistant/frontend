@@ -1,8 +1,9 @@
 import {
+  mdiChartBoxOutline,
   mdiDotsVertical,
   mdiDownload,
-  mdiFilterRemove,
   mdiImagePlus,
+  mdiTuneVariant,
 } from "@mdi/js";
 import { differenceInHours } from "date-fns";
 import type {
@@ -10,10 +11,11 @@ import type {
   UnsubscribeFunc,
 } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../common/decorators/storage";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -29,14 +31,25 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/date-picker/ha-date-range-picker";
+import "../../components/date-picker/ha-date-range-nav";
+import "../../components/ha-button";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
+import "../../components/ha-empty-state";
+import "../../components/ha-filter-pane-chip";
+import "../../components/ha-filter-pane";
 import "../../components/ha-icon-button";
+import {
+  applySourceFilters,
+  countSourceFilters,
+  countTargets,
+} from "../../components/ha-sources-picker";
+import type { SourceFilters } from "../../components/ha-sources-picker";
 import "../../components/ha-spinner";
-import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
+import type { EntitySources } from "../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -51,6 +64,8 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 import { csvSafeString, csvDownload } from "../../util/csv";
+
+const EMPTY_STATES: HomeAssistant["states"] = {};
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
@@ -77,6 +92,12 @@ class HaPanelHistory extends LitElement {
   private _storedTargetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
+
+  @state() private _filters: SourceFilters = {};
+
+  @state() private _showSources = false;
+
+  @state() private _entitySources?: EntitySources;
 
   @state() private _stateHistory?: HistoryResult;
 
@@ -119,7 +140,18 @@ class HaPanelHistory extends LitElement {
   }
 
   protected render() {
-    const entitiesSelected = this._getEntityIds().length > 0;
+    const targetCount = countTargets(this._targetPickerValue);
+    const sourceCount = targetCount + countSourceFilters(this._filters);
+    // History only shows something once a target is picked, so narrowing it
+    // down further does not make it any less empty.
+    const hasTargets = targetCount > 0;
+    const loading =
+      this._isLoading || (hasTargets && !this._mungedStateHistory);
+    const hasResults =
+      !!this._mungedStateHistory &&
+      (this._mungedStateHistory.line.length > 0 ||
+        this._mungedStateHistory.timeline.length > 0);
+
     return html`
       <ha-top-app-bar-fixed
         .narrow=${this.narrow}
@@ -128,13 +160,6 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
-        <ha-icon-button
-          slot="actionItems"
-          @click=${this._removeAll}
-          .disabled=${this._isLoading || !entitiesSelected}
-          .path=${mdiFilterRemove}
-          .label=${this.hass.localize("ui.panel.history.remove_all")}
-        ></ha-icon-button>
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -153,48 +178,106 @@ class HaPanelHistory extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
 
-        <div class="flex content ha-scrollbar">
-          <div class="filters">
-            <ha-date-range-picker
-              ?disabled=${this._isLoading}
-              .startDate=${this._startDate}
-              .endDate=${this._endDate}
-              extended-presets
-              time-picker
-              @value-changed=${this._dateRangeChanged}
-            ></ha-date-range-picker>
-            <ha-target-picker
-              .hass=${this.hass}
-              .value=${this._targetPickerValue}
-              .disabled=${this._isLoading}
-              add-on-top
-              @value-changed=${this._targetsChanged}
-              compact
-            ></ha-target-picker>
-          </div>
-          ${
-            this._isLoading
-              ? html`<div class="progress-wrapper">
-                  <ha-spinner></ha-spinner>
-                </div>`
-              : !entitiesSelected
-                ? html`<div class="start-search">
-                    ${this.hass.localize("ui.panel.history.start_search")}
-                  </div>`
-                : html`
-                    <state-history-charts
+        <div class="content">
+          <div class="main">
+            ${
+              this._showSources
+                ? html`<ha-filter-pane
+                    .narrow=${this.narrow}
+                    .label=${this.hass.localize("ui.panel.history.sources")}
+                    .path=${mdiTuneVariant}
+                    .count=${sourceCount}
+                    .resultCount=${this._getEntityIds().length}
+                    .disabled=${this._isLoading}
+                    @close-filter-pane=${this._closeSources}
+                    @clear-filter=${this._clearSources}
+                  >
+                    <ha-sources-picker
                       .hass=${this.hass}
-                      .historyData=${this._mungedStateHistory}
-                      .startTime=${this._startDate}
-                      .endTime=${this._endDate}
+                      .value=${this._targetPickerValue}
+                      .filters=${this._filters}
                       .narrow=${this.narrow}
-                      sync-charts
-                    >
-                    </state-history-charts>
-                  `
-          }
+                      .disabled=${this._isLoading}
+                      .description=${this.hass.localize(
+                        "ui.panel.history.no_targets"
+                      )}
+                      @value-changed=${this._targetsChanged}
+                      @source-filters-changed=${this._filtersChanged}
+                    ></ha-sources-picker>
+                  </ha-filter-pane>`
+                : nothing
+            }
+            <div class="content-column">
+              <div class="toolbar">
+                ${
+                  this._showSources && !this.narrow
+                    ? nothing
+                    : html`<ha-filter-pane-chip
+                        .label=${this.hass.localize("ui.panel.history.sources")}
+                        .path=${mdiTuneVariant}
+                        .count=${sourceCount}
+                        .active=${sourceCount > 0}
+                        .disabled=${this._isLoading}
+                        @click=${this._toggleSources}
+                      ></ha-filter-pane-chip>`
+                }
+                <ha-date-range-nav
+                  .disabled=${this._isLoading}
+                  .startDate=${this._startDate}
+                  .endDate=${this._endDate}
+                  extended-presets
+                  time-picker
+                  @value-changed=${this._dateRangeChanged}
+                ></ha-date-range-nav>
+              </div>
+              <div class="results ha-scrollbar">
+                ${
+                  loading
+                    ? html`<div class="progress-wrapper">
+                        <ha-spinner></ha-spinner>
+                      </div>`
+                    : !hasTargets || !hasResults
+                      ? this._renderEmptyState(hasTargets)
+                      : html`
+                          <state-history-charts
+                            .hass=${this.hass}
+                            .historyData=${this._mungedStateHistory}
+                            .startTime=${this._startDate}
+                            .endTime=${this._endDate}
+                            .narrow=${this.narrow}
+                            inside-labels
+                            sync-charts
+                          >
+                          </state-history-charts>
+                        `
+                }
+              </div>
+            </div>
+          </div>
         </div>
       </ha-top-app-bar-fixed>
+    `;
+  }
+
+  private _renderEmptyState(hasTargets: boolean) {
+    return html`
+      <ha-empty-state
+        .icon=${mdiChartBoxOutline}
+        .heading=${this.hass.localize(
+          hasTargets
+            ? "ui.panel.history.no_results_title"
+            : "ui.panel.history.start_search_title"
+        )}
+        .description=${this.hass.localize(
+          hasTargets
+            ? "ui.panel.history.no_results"
+            : "ui.panel.history.start_search"
+        )}
+      >
+        <ha-button appearance="plain" @click=${this._openSources}>
+          ${this.hass.localize("ui.panel.history.add_targets")}
+        </ha-button>
+      </ha-empty-state>
     `;
   }
 
@@ -242,6 +325,10 @@ class HaPanelHistory extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+    // Needed to map entities to their integration for the integration filter.
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
@@ -256,6 +343,8 @@ class HaPanelHistory extends LitElement {
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
       changedProps.has("_targetPickerValue") ||
+      changedProps.has("_filters") ||
+      changedProps.has("_entitySources") ||
       (!this._stateHistory &&
         (changedProps.has("_deviceEntityLookup") ||
           changedProps.has("_areaEntityLookup") ||
@@ -266,7 +355,26 @@ class HaPanelHistory extends LitElement {
     }
   }
 
-  private _removeAll() {
+  private _toggleSources() {
+    this._showSources = !this._showSources;
+  }
+
+  private _openSources() {
+    this._showSources = true;
+  }
+
+  private _closeSources() {
+    this._showSources = false;
+  }
+
+  private _filtersChanged(
+    ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
+  ) {
+    this._filters = ev.detail.value;
+  }
+
+  private _clearSources() {
+    this._filters = {};
     this._targetPickerValue = {};
     this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
@@ -379,20 +487,39 @@ class HaPanelHistory extends LitElement {
   private _getEntityIds(): string[] {
     return this.__getEntityIds(
       this._targetPickerValue,
+      this._filters,
       this.hass.entities,
       this.hass.devices,
-      this.hass.areas
+      this.hass.areas,
+      // Only the device class filter reads the states, so they stay out of the
+      // memoization key while it is not used.
+      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      this._entitySources
     );
   }
 
   private __getEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
+      filters: SourceFilters,
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"]
+      areas: HomeAssistant["areas"],
+      states: HomeAssistant["states"],
+      entitySources: EntitySources | undefined
     ): string[] =>
-      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+      applySourceFilters(
+        resolveEntityIDs(
+          this.hass,
+          targetPickerValue,
+          entities,
+          devices,
+          areas
+        ),
+        filters,
+        states,
+        entitySources
+      )
   );
 
   private _dateRangeChanged(ev) {
@@ -573,7 +700,15 @@ class HaPanelHistory extends LitElement {
           line-height: inherit;
         }
 
+        :host {
+          /* The picker of the target picker is wider than the pane. */
+          --ha-generic-picker-width: min(400px, calc(100vw - 32px));
+          --ha-generic-picker-max-width: 400px;
+        }
+
         .content {
+          display: flex;
+          flex-direction: column;
           height: calc(
             100vh - var(--header-height, 0px) - var(
                 --safe-area-inset-top,
@@ -581,13 +716,57 @@ class HaPanelHistory extends LitElement {
               ) - var(--safe-area-inset-bottom, 0px)
           );
           box-sizing: border-box;
-          overflow-x: hidden;
-          padding: 0 16px 16px;
+          overflow: hidden;
         }
 
-        :host([virtualize]) {
-          height: 100%;
-          --ha-generic-picker-max-width: 400px;
+        .main {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+
+        .content-column {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-width: 0;
+        }
+
+        /* Sits in the content column, so it shifts along with the pane. */
+        .toolbar {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+          box-sizing: border-box;
+          height: 56px;
+          flex-shrink: 0;
+          padding: 0 16px;
+          background: var(--primary-background-color);
+          border-bottom: 1px solid var(--divider-color);
+          direction: var(--direction);
+          /* Keep the controls at their size and scroll them if they do not fit. */
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .toolbar::-webkit-scrollbar {
+          display: none;
+        }
+
+        .toolbar > * {
+          flex-shrink: 0;
+        }
+
+        .results {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden auto;
+          padding: 16px 8px;
+        }
+
+        /* Line the charts up with the toolbar when there are no axis labels. */
+        :host([narrow]) .results {
+          padding-inline: 16px;
         }
 
         .progress-wrapper {
@@ -596,42 +775,6 @@ class HaPanelHistory extends LitElement {
           align-items: center;
           flex-direction: column;
           padding: 16px;
-        }
-
-        .filters {
-          display: flex;
-          align-items: flex-start;
-          margin-top: 16px;
-        }
-
-        ha-date-range-picker {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-          max-width: 100%;
-          direction: var(--direction);
-        }
-
-        ha-target-picker {
-          flex: 1;
-          max-width: 100%;
-          min-width: 0;
-        }
-
-        @media all and (max-width: 1025px) {
-          .filters {
-            flex-direction: column;
-          }
-          ha-date-range-picker {
-            width: 100%;
-            margin-bottom: 8px;
-          }
-        }
-
-        .start-search {
-          padding-top: 16px;
-          text-align: center;
-          color: var(--secondary-text-color);
         }
       `,
     ];

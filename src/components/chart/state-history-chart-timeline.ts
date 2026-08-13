@@ -22,6 +22,10 @@ import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 
+const ROW_HEIGHT = 30;
+// Rows with their name drawn above the bar need room for both.
+const ROW_HEIGHT_INSIDE_LABELS = 64;
+
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -37,6 +41,14 @@ export class StateHistoryChartTimeline extends LitElement {
   @property() public identifier?: string;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  /**
+   * Draw each row's name inside the plot, above its bar, instead of in a label
+   * column next to it. Gives long names the full width, at the cost of taller
+   * rows.
+   */
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -67,7 +79,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${`${this.data.length * 30 + 30}px`}
+        .height=${`${this.data.length * (this.insideLabels ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) + 30}px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
@@ -182,6 +194,7 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("showNames") ||
+      changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_yWidth")
     ) {
@@ -193,14 +206,19 @@ export class StateHistoryChartTimeline extends LitElement {
     const narrow = this.narrow;
     const showNames = this.chunked || this.showNames;
     const maxInternalLabelWidth = narrow ? 105 : 185;
-    const labelWidth = showNames
-      ? Math.max(this.paddingYAxis, this._yWidth)
-      : 0;
+    const insideLabels = this.insideLabels;
+    const labelWidth =
+      showNames && !insideLabels
+        ? Math.max(this.paddingYAxis, this._yWidth)
+        : 0;
     const labelMargin = 5;
     const rtl = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations
     );
+    // Inside labels take no width of their own, but the plot still lines up
+    // with the line charts that share the y-axis padding.
+    const plotPadding = insideLabels ? this.paddingYAxis : labelWidth;
     this._chartOptions = {
       xAxis: {
         type: "time",
@@ -224,37 +242,52 @@ export class StateHistoryChartTimeline extends LitElement {
         axisLine: {
           show: false,
         },
-        axisLabel: {
-          show: showNames,
-          width: labelWidth,
-          overflow: "truncate",
-          margin: labelMargin,
-          formatter: (id: string) => {
-            const label = this._chartData.find((d) => d.id === id)
-              ?.name as string;
-            const width = label
-              ? Math.min(
-                  measureTextWidth(label, 12) + labelMargin,
-                  maxInternalLabelWidth
-                )
-              : 0;
-            if (width > this._yWidth) {
-              this._yWidth = width;
-              fireEvent(this, "y-width-changed", {
-                value: this._yWidth,
-                chartIndex: this.chartIndex,
-              });
+        axisLabel: insideLabels
+          ? {
+              show: showNames,
+              inside: true,
+              margin: 0,
+              // Sits on the row's baseline, lifted above the bar.
+              padding: [0, rtl ? 2 : 0, 14, rtl ? 0 : 2],
+              align: rtl ? "right" : "left",
+              verticalAlign: "bottom",
+              formatter: (id: string) =>
+                (this._chartData.find((d) => d.id === id)?.name as string) ??
+                "",
+              hideOverlap: true,
             }
-            return label;
-          },
-          hideOverlap: true,
-        },
+          : {
+              show: showNames,
+              width: labelWidth,
+              overflow: "truncate",
+              margin: labelMargin,
+              formatter: (id: string) => {
+                const label = this._chartData.find((d) => d.id === id)
+                  ?.name as string;
+                const width = label
+                  ? Math.min(
+                      measureTextWidth(label, 12) + labelMargin,
+                      maxInternalLabelWidth
+                    )
+                  : 0;
+                if (width > this._yWidth) {
+                  this._yWidth = width;
+                  fireEvent(this, "y-width-changed", {
+                    value: this._yWidth,
+                    chartIndex: this.chartIndex,
+                  });
+                }
+                return label;
+              },
+              hideOverlap: true,
+            },
       },
       grid: {
-        top: 10,
+        // Room for the first row's name above its bar.
+        top: insideLabels ? 20 : 10,
         bottom: 30,
-        left: rtl ? 1 : labelWidth,
-        right: rtl ? labelWidth : 1,
+        left: rtl ? 1 : plotPadding,
+        right: rtl ? plotPadding : 1,
       },
       tooltip: {
         renderMode: "html",

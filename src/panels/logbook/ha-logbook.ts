@@ -38,6 +38,10 @@ const idsChanged = (oldIds?: string[], newIds?: string[]) => {
   );
 };
 
+/**
+ * @slot empty - Shown instead of the default text when there is no activity,
+ * for surfaces that can offer a way out (e.g. changing the filters).
+ */
 @customElement("ha-logbook")
 export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -126,9 +130,11 @@ export class HaLogbook extends LitElement {
     }
 
     if (this._logbookEntries.length === 0) {
-      return html`<div class="no-entries">
-        ${this.hass.localize("ui.components.logbook.entries_not_found")}
-      </div>`;
+      return html`<slot name="empty">
+        <div class="no-entries">
+          ${this.hass.localize("ui.components.logbook.entries_not_found")}
+        </div>
+      </slot>`;
     }
 
     return html`

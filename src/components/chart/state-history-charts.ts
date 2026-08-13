@@ -79,6 +79,10 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
+  /** Draw timeline row names above their bar instead of in a label column. */
+  @property({ attribute: "inside-labels", type: Boolean, reflect: true })
+  public insideLabels = false;
+
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
 
@@ -227,6 +231,7 @@ export class StateHistoryCharts extends LitElement {
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
         .showNames=${this.showNames}
+        .insideLabels=${this.insideLabels}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
@@ -422,6 +427,12 @@ export class StateHistoryCharts extends LitElement {
     .entry-container.line {
       flex: 1;
       padding-top: 8px;
+    }
+
+    /* Names inside the plot sit close to the chart above them, so the groups
+       need more room between them to stay apart. */
+    :host([inside-labels]) .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
     }
 
     .entry-container:hover {
