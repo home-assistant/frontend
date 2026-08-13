@@ -211,7 +211,7 @@ test("keeps the launch screen until initial panel content renders", async ({
       name: "generated dashboard",
       path: "/?scenario=delayed-generated-dashboard#/climate",
       loadingSelector: "#ha-launch-screen",
-      readySelector: "hui-view",
+      readySelector: "hui-card",
       resolvers: ["resolveGeneratedDashboard"],
     },
     {
