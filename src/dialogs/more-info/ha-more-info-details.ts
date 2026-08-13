@@ -124,11 +124,9 @@ class HaMoreInfoDetails extends LitElement {
       contextEntries.push({
         translationKey: "ui.components.related-items.integration",
         value: integrationName,
-        href: `/config/integrations/integration/${this.entry.platform}${
-          this.entry.config_entry_id
-            ? `#config_entry=${this.entry.config_entry_id}`
-            : ""
-        }`,
+        href: this.entry.config_entry_id
+          ? `/config/integrations/integration/${this.entry.platform}#config_entry=${this.entry.config_entry_id}`
+          : undefined,
       });
     }
 
