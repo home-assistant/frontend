@@ -5,8 +5,8 @@ import type {
 
 export interface CardFeatureLayout {
   inline: LovelaceCardFeatureConfig[];
-  stacked: LovelaceCardFeatureConfig[];
-  /** Columns filled by the stacked features, 0 when there are none */
+  below: LovelaceCardFeatureConfig[];
+  /** Columns filled by the below features, 0 when there are none */
   columns: number;
 }
 
@@ -17,17 +17,17 @@ export const computeCardFeatureLayout = (
   position: LovelaceCardFeaturePosition
 ): CardFeatureLayout => {
   if (position !== "inline") {
-    return { inline: [], stacked: features ?? [], columns: 1 };
+    return { inline: [], below: features ?? [], columns: 1 };
   }
   const inline = features?.slice(0, 1) ?? [];
-  const stacked = features?.slice(1) ?? [];
-  return { inline, stacked, columns: Math.min(stacked.length, INLINE_COLUMNS) };
+  const below = features?.slice(1) ?? [];
+  return { inline, below, columns: Math.min(below.length, INLINE_COLUMNS) };
 };
 
 export const computeCardFeatureRows = (
   features: LovelaceCardFeatureConfig[] | undefined,
   position: LovelaceCardFeaturePosition
 ): number => {
-  const { stacked, columns } = computeCardFeatureLayout(features, position);
-  return Math.ceil(stacked.length / Math.max(columns, 1));
+  const { below, columns } = computeCardFeatureLayout(features, position);
+  return Math.ceil(below.length / Math.max(columns, 1));
 };

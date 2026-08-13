@@ -349,7 +349,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               : nothing
           }
           ${
-            features.stacked.length > 0
+            features.below.length > 0
               ? html`
                   <hui-card-features
                     slot="features"
@@ -357,7 +357,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     .hass=${this.hass}
                     .context=${this._featureContext}
                     .color=${this._config.color}
-                    .features=${features.stacked}
+                    .features=${features.below}
                   ></hui-card-features>
                 `
               : nothing

@@ -12,14 +12,14 @@ describe("computeCardFeatureLayout", () => {
   it("stacks every feature in bottom position", () => {
     const layout = computeCardFeatureLayout(features(3), "bottom");
     expect(layout.inline).toHaveLength(0);
-    expect(layout.stacked).toHaveLength(3);
+    expect(layout.below).toHaveLength(3);
     expect(layout.columns).toBe(1);
   });
 
   it("handles a missing feature list", () => {
     expect(computeCardFeatureLayout(undefined, "inline")).toEqual({
       inline: [],
-      stacked: [],
+      below: [],
       columns: 0,
     });
   });
@@ -32,18 +32,18 @@ describe("computeCardFeatureLayout", () => {
     ];
     const layout = computeCardFeatureLayout(configs, "inline");
     expect(layout.inline).toEqual([configs[0]]);
-    expect(layout.stacked).toEqual([configs[1], configs[2]]);
+    expect(layout.below).toEqual([configs[1], configs[2]]);
   });
 
   it("fills no column when the inline feature is alone", () => {
     expect(computeCardFeatureLayout(features(1), "inline").columns).toBe(0);
   });
 
-  it("fills one column for a single stacked feature", () => {
+  it("fills one column for a single feature below", () => {
     expect(computeCardFeatureLayout(features(2), "inline").columns).toBe(1);
   });
 
-  it("caps the stacked features at two columns", () => {
+  it("caps the features below at two columns", () => {
     expect(computeCardFeatureLayout(features(5), "inline").columns).toBe(2);
   });
 });
