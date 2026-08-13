@@ -70,9 +70,11 @@ class HaMoreInfoDetails extends LitElement {
       return nothing;
     }
 
-    const { stateEntries, attributes, yamlData } = this._getDetailData(
-      this._stateObj
-    );
+    const {
+      stateEntries,
+      attributes,
+      yamlData: stateYamlData,
+    } = this._getDetailData(this._stateObj);
     const { floor, area, device } = getEntityContext(
       this._stateObj,
       this.hass.entities,
@@ -80,39 +82,48 @@ class HaMoreInfoDetails extends LitElement {
       this.hass.areas,
       this.hass.floors
     );
+    const floorName = floor ? computeFloorName(floor) : undefined;
+    const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const deviceName = device
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      : undefined;
+    const integrationName = this.entry?.platform
+      ? this.hass.localize(`component.${this.entry.platform}.title`) ||
+        this.entry.platform
+      : undefined;
+    const labelNames =
+      this.entry?.labels.map(
+        (labelId) =>
+          this._labels?.find((label) => label.label_id === labelId)?.name ??
+          labelId
+      ) ?? [];
     const contextEntries: DetailEntry[] = [];
 
-    if (floor) {
+    if (floor && floorName) {
       contextEntries.push({
         translationKey: "ui.dialogs.more_info_control.floor",
-        value: computeFloorName(floor),
+        value: floorName,
         href: "/config/areas/dashboard",
       });
     }
-    if (area) {
+    if (area && areaName) {
       contextEntries.push({
         translationKey: "ui.components.related-items.area",
-        value: computeAreaName(area) ?? area.area_id,
+        value: areaName,
         href: `/config/areas/area/${area.area_id}`,
       });
     }
-    if (device) {
+    if (device && deviceName) {
       contextEntries.push({
         translationKey: "ui.components.related-items.device",
-        value: computeDeviceNameDisplay(
-          device,
-          this.hass.localize,
-          this.hass.states
-        ),
+        value: deviceName,
         href: `/config/devices/device/${device.id}`,
       });
     }
-    if (this.entry?.platform) {
+    if (this.entry?.platform && integrationName) {
       contextEntries.push({
         translationKey: "ui.components.related-items.integration",
-        value:
-          this.hass.localize(`component.${this.entry.platform}.title`) ||
-          this.entry.platform,
+        value: integrationName,
         href: `/config/integrations/integration/${this.entry.platform}${
           this.entry.config_entry_id
             ? `#config_entry=${this.entry.config_entry_id}`
@@ -136,16 +147,27 @@ class HaMoreInfoDetails extends LitElement {
       },
       {
         translationKey: "ui.dialogs.more_info_control.labels",
-        value:
-          this.entry?.labels
-            .map(
-              (labelId) =>
-                this._labels?.find((label) => label.label_id === labelId)
-                  ?.name ?? labelId
-            )
-            .join(", ") || this.hass.localize("ui.common.none"),
+        value: labelNames.join(", ") || this.hass.localize("ui.common.none"),
       },
     ];
+    const yamlData = {
+      ...(contextEntries.length
+        ? {
+            context: {
+              ...(floorName ? { floor: floorName } : {}),
+              ...(areaName ? { area: areaName } : {}),
+              ...(deviceName ? { device: deviceName } : {}),
+              ...(integrationName ? { integration: integrationName } : {}),
+            },
+          }
+        : {}),
+      entity: {
+        entity_id: this.params.entityId,
+        category: this.entry?.entity_category ?? null,
+        labels: labelNames,
+      },
+      ...stateYamlData,
+    };
 
     return html`
       <div class="content">
