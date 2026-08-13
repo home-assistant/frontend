@@ -13,6 +13,10 @@ import "../../components/ha-icon";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import "../../components/ha-spinner";
+import "../../components/item/ha-list-item-base";
+import "../../components/item/ha-list-item-button";
+import "../../components/item/ha-list-item-value";
+import "../../components/list/ha-grouped-list";
 import { fetchDateWS } from "../../data/history";
 import type { LogbookEntry } from "../../data/logbook";
 import type { HassDialog } from "../../dialogs/make-dialog-manager";
@@ -156,83 +160,79 @@ class DialogLogbookDetail
     const when = this._entryDate(item.when);
 
     return html`
-      <div class="box">
+      <ha-grouped-list>
         ${this._renderSubjectRow(item, entry)}
         ${
           transition
             ? html`
-                <div class="row">
-                  <span class="label">
-                    ${this.hass.localize("ui.dialogs.logbook_detail.state")}
-                  </span>
-                  <span class="value">
-                    ${
-                      transition.oldState
-                        ? html`<span class="old-state"
-                              >${transition.oldState}</span
-                            ><span class="arrow"
-                              >${transitionArrow(this.hass)}</span
-                            >`
-                        : nothing
-                    }<span class="new-state">${transition.newState}</span>
-                  </span>
-                </div>
+                <ha-list-item-value
+                  .label=${this.hass.localize(
+                    "ui.dialogs.logbook_detail.state"
+                  )}
+                >
+                  ${
+                    transition.oldState
+                      ? html`<span class="old-state"
+                            >${transition.oldState}</span
+                          ><span class="arrow"
+                            >${transitionArrow(this.hass)}</span
+                          >`
+                      : nothing
+                  }<span class="new-state">${transition.newState}</span>
+                </ha-list-item-value>
               `
             : item.value
               ? html`
-                  <div class="row">
-                    <span class="label">
-                      ${this.hass.localize("ui.dialogs.logbook_detail.event")}
-                    </span>
-                    <span class="value">${item.value.text}</span>
-                  </div>
+                  <ha-list-item-value
+                    .label=${this.hass.localize(
+                      "ui.dialogs.logbook_detail.event"
+                    )}
+                  >
+                    ${item.value.text}
+                  </ha-list-item-value>
                 `
               : nothing
         }
-        <div class="row">
-          <span class="label">
-            ${this.hass.localize("ui.dialogs.logbook_detail.time")}
+        <ha-list-item-value
+          class="time-value"
+          .label=${this.hass.localize("ui.dialogs.logbook_detail.time")}
+        >
+          ${formatDateTimeWithSeconds(when, this.hass.locale, this.hass.config)}
+          <span class="sub">
+            <ha-relative-time .datetime=${when} capitalize></ha-relative-time>
           </span>
-          <span class="value time-value">
-            ${formatDateTimeWithSeconds(
-              when,
-              this.hass.locale,
-              this.hass.config
-            )}
-            <span class="sub">
-              <ha-relative-time .datetime=${when} capitalize></ha-relative-time>
-            </span>
-          </span>
-        </div>
-      </div>
+        </ha-list-item-value>
+      </ha-grouped-list>
     `;
   }
 
   // Mirrors the target picker: icon, name, area ▸ device.
   private _renderSubjectRow(item: LogbookItem, entry: LogbookEntry) {
-    const content = html`
-      <span class="subject-icon">
-        ${this._renderSubjectIcon(item, entry)}
-      </span>
-      <span class="subject-name">
-        <span class="name">${item.name}</span>
-        ${item.context ? html`<span class="sub">${item.context}</span>` : nothing}
-      </span>
-    `;
+    const icon = html`<span class="subject-icon" slot="start">
+      ${this._renderSubjectIcon(item, entry)}
+    </span>`;
 
     if (!entry.entity_id || !(entry.entity_id in this.hass.states)) {
-      return html`<div class="row subject">${content}</div>`;
+      return html`
+        <ha-list-item-base
+          .headline=${item.name}
+          .supportingText=${item.context}
+        >
+          ${icon}
+        </ha-list-item-base>
+      `;
     }
 
     return html`
-      <button
-        class="row subject clickable"
+      <ha-list-item-button
+        .headline=${item.name}
+        .supportingText=${item.context}
         .entityId=${entry.entity_id}
         @click=${this._entityClicked}
       >
-        ${content}
-        <ha-icon-next class="chevron"></ha-icon-next>
-      </button>
+        ${icon}
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-list-item-button>
     `;
   }
 
@@ -255,17 +255,16 @@ class DialogLogbookDetail
 
   private _renderWhatHappened(entry: LogbookEntry) {
     return html`
-      <div class="section">
-        <h3 class="section-title">
-          ${this.hass.localize("ui.dialogs.logbook_detail.what_happened")}
-        </h3>
-        ${
-          this._error
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize("ui.components.logbook.retrieval_error")}
-              </ha-alert>`
-            : nothing
-        }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="warning">
+              ${this.hass.localize("ui.components.logbook.retrieval_error")}
+            </ha-alert>`
+          : nothing
+      }
+      <ha-grouped-list
+        .header=${this.hass.localize("ui.dialogs.logbook_detail.what_happened")}
+      >
         <div class="chain-area">
           ${
             this._chain === undefined
@@ -278,7 +277,7 @@ class DialogLogbookDetail
                 ></ha-logbook-chain>`
           }
         </div>
-      </div>
+      </ha-grouped-list>
     `;
   }
 
@@ -320,64 +319,22 @@ class DialogLogbookDetail
           gap: var(--ha-space-4);
         }
 
-        .box {
-          border: 1px solid var(--divider-color);
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          overflow: hidden;
+        ha-list-item-button,
+        ha-list-item-base {
+          --ha-row-item-gap: var(--ha-space-3);
+          --ha-row-item-min-height: 56px;
         }
 
-        .box > .row + .row {
-          border-top: 1px solid var(--divider-color);
-        }
-
-        .row {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-4);
-          min-height: 48px;
-          padding: var(--ha-space-2) var(--ha-space-4);
-          box-sizing: border-box;
-        }
-
-        .row .label {
-          color: var(--secondary-text-color);
-          flex-shrink: 0;
-        }
-
-        .row .value {
-          flex: 1;
-          min-width: 0;
-          text-align: end;
-          overflow-wrap: anywhere;
-        }
-
-        .row.subject {
-          gap: var(--ha-space-3);
-          min-height: 56px;
-          width: 100%;
-          text-align: start;
-        }
-
-        button.row.subject {
-          border: none;
-          background: none;
-          color: inherit;
-          font: inherit;
-          cursor: pointer;
-        }
-
-        button.row.subject:hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        /* Match the weight the chain gives its own row names. */
+        ha-list-item-button::part(headline),
+        ha-list-item-base::part(headline) {
+          font-weight: var(--ha-font-weight-medium);
         }
 
         .subject-icon {
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-shrink: 0;
           width: 32px;
           color: var(--secondary-text-color);
           --state-icon-color: var(--secondary-text-color);
@@ -389,21 +346,7 @@ class DialogLogbookDetail
           margin: 0;
         }
 
-        .subject-name {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .subject-name .name {
-          display: block;
-          font-weight: var(--ha-font-weight-medium);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-
-        .chevron {
-          flex-shrink: 0;
+        ha-icon-next {
           color: var(--secondary-text-color);
         }
 
@@ -434,26 +377,21 @@ class DialogLogbookDetail
           display: contents;
         }
 
-        .section-title {
-          margin: 0 0 var(--ha-space-2);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-        }
-
-        /* Reserved at two chain rows, the typical chain height, so the swap
-           from spinner to content barely moves the dialog. minmax(0, 1fr)
-           lets the chain shrink: a grid item defaults to its min-content
-           width, which a long automation name blows past. */
+        /* minmax(0, 1fr) lets the chain shrink: a grid item defaults to its
+           min-content width, which a long automation name blows past. */
         .chain-area {
           display: grid;
           grid-template-columns: minmax(0, 1fr);
-          min-height: 114px;
         }
 
+        /* Held at two chain rows, the typical chain height, so the swap from
+           spinner to content barely moves the dialog. The resolved content
+           sizes itself — a lone "no cause" line must not sit in a tall box. */
         .loading {
           display: flex;
           align-items: center;
           justify-content: center;
+          min-height: 114px;
         }
       `,
     ];
