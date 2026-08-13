@@ -619,11 +619,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
-    /* the picture takes the extra height, so only the compact type reserves a row */
     const fixedInfoHeight =
-      displayType === "compact" &&
-      this.layout === "grid" &&
-      this._config.grid_options?.rows !== "auto";
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
 
     return html`
       <ha-card style=${styleMap(style)}>
