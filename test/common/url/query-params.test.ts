@@ -296,4 +296,16 @@ describe("more-info query params", () => {
       "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info#some-anchor"
     );
   });
+
+  it("clears an existing hash when an empty dialog hash is explicitly supplied", () => {
+    expect(
+      createMoreInfoUrl("/lovelace/home?theme=dark#some-anchor", {
+        entityId: "light.kitchen",
+        view: "info",
+        hash: new URLSearchParams(),
+      })
+    ).toBe(
+      "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info"
+    );
+  });
 });

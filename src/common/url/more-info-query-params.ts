@@ -48,11 +48,8 @@ export const createMoreInfoUrl = (
   const url = new URL(base, window.location.origin);
   url.searchParams.set(ENTITY_ID_PARAM, data.entityId);
   url.searchParams.set(VIEW_PARAM, data.view);
-  if (!__DEMO__) {
-    const hashStr = data.hash?.toString() ?? "";
-    if (hashStr) {
-      url.hash = hashStr;
-    }
+  if (!__DEMO__ && data.hash !== undefined) {
+    url.hash = data.hash.toString();
   }
 
   return `${url.pathname}${url.search}${url.hash}`;
