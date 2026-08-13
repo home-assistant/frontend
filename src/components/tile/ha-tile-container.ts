@@ -43,10 +43,10 @@ export class HaTileContainer extends LitElement {
   }
 
   protected render() {
-    const inline = this.featurePosition === "inline";
+    const isInline = this.featurePosition === "inline";
     const containerClasses = {
-      horizontal: inline,
-      stacked: inline && this._hasFeatures,
+      inline: isInline,
+      "has-features-below": isInline && this._hasFeatures,
       "fixed-height": this.fixedInfoHeight,
     };
     const contentClasses = {
@@ -120,7 +120,7 @@ export class HaTileContainer extends LitElement {
       flex: 1;
       min-width: 0;
     }
-    .container.horizontal .row {
+    .container.inline .row {
       flex-direction: row;
     }
 
@@ -176,7 +176,7 @@ export class HaTileContainer extends LitElement {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
 
-    .container.horizontal ::slotted([slot="features-inline"]) {
+    .container.inline ::slotted([slot="features-inline"]) {
       /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
@@ -184,14 +184,14 @@ export class HaTileContainer extends LitElement {
       padding-inline-start: 0;
     }
     /* compact features when the inline one is on its own, or when the card sizes to its content */
-    .container.horizontal:not(.stacked) ::slotted([slot="features-inline"]),
-    .container.horizontal:not(.fixed-height)
+    .container.inline:not(.has-features-below)
       ::slotted([slot="features-inline"]),
-    .container.horizontal:not(.fixed-height) ::slotted([slot="features"]) {
+    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]),
+    .container.inline:not(.fixed-height) ::slotted([slot="features"]) {
       --feature-height: var(--ha-space-9);
     }
 
-    .container.horizontal.stacked ::slotted([slot="features"]) {
+    .container.inline.has-features-below ::slotted([slot="features"]) {
       /* keep both columns under the inline feature, which sits on the grid track */
       --ha-card-feature-column-gap: calc(
         var(--column-gap, 0px) + var(--ha-space-3) * 2
