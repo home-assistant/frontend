@@ -175,17 +175,13 @@ export class MQTTConfigPanel extends LitElement {
   }
 
   private async _openOptionFlow() {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
-      return;
-    }
-    const configEntryId = searchParams.get("config_entry") as string;
     const configEntries = await getConfigEntries(this.hass, {
       domain: "mqtt",
     });
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === configEntryId
-    );
+    if (configEntries.length < 1) {
+      return;
+    }
+    const configEntry = configEntries[0];
     showOptionsFlowDialog(this, configEntry!);
   }
 

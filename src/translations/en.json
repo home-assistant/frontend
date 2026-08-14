@@ -1608,6 +1608,7 @@
             "labs": "[%key:ui::panel::config::labs::caption%]",
             "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
             "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "mqtt": "[%key:ui::panel::config::dashboard::mqtt::main%]",
             "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
@@ -2726,6 +2727,10 @@
           "matter": {
             "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
+          },
+          "mqtt": {
+            "main": "MQTT",
+            "secondary": "Lightweight network protocol designed for IoT devices"
           },
           "thread": {
             "main": "Thread",
