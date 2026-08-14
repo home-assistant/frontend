@@ -211,7 +211,7 @@ test("keeps the launch screen until initial panel content renders", async ({
       name: "generated dashboard",
       path: "/?scenario=delayed-generated-dashboard#/climate",
       loadingSelector: "#ha-launch-screen",
-      readySelector: "hui-view",
+      readySelector: "hui-card",
       resolvers: ["resolveGeneratedDashboard"],
     },
     {
@@ -325,6 +325,64 @@ test.describe("Light more-info dialog", () => {
       await assertElementContent(dialog, content);
     });
   }
+});
+
+test.describe("Weather more-info deep link", () => {
+  test("opens and synchronizes the selected forecast", async ({ page }) => {
+    await goToPanel(
+      page,
+      "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
+    );
+
+    const dialog = page.locator("ha-more-info-dialog");
+    const weather = dialog.locator("more-info-weather");
+    await expect(weather).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(page).toHaveURL(
+      /more-info-entity-id=weather\.test_weather&more-info-view=info/
+    );
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await page.locator("ha-test").evaluate((el) => {
+      el.dispatchEvent(
+        new CustomEvent("hass-more-info", {
+          detail: {
+            entityId: "weather.test_weather",
+            hash: new URLSearchParams({ forecast: "hourly" }),
+          },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    });
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
+    ).toBeAttached();
+
+    await dialog.getByRole("button", { name: "History" }).click();
+    await expect(page).toHaveURL(/more-info-view=history/);
+
+    await dialog.getByRole("button", { name: "Back" }).click();
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Daily" })
+      .click();
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page).not.toHaveURL(/more-info-entity-id/);
+  });
 });
 
 // ---------------------------------------------------------------------------
