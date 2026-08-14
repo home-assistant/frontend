@@ -104,8 +104,10 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
+  getCreatedAtTableColumn,
   getEditableTableColumn,
   getLabelsTableColumn,
+  getModifiedAtTableColumn,
   renderRelativeTimeColumn,
 } from "../common/data-table-columns";
 import { configSections } from "../config-sections";
@@ -125,6 +127,8 @@ type SceneItem = SceneEntity & {
   labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
+  created_at: number | undefined;
+  modified_at: number | undefined;
   editable: boolean;
 };
 
@@ -264,6 +268,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
+          created_at: entityRegEntry?.created_at,
+          modified_at: entityRegEntry?.modified_at,
           selectable: entityRegEntry !== undefined,
           editable: Boolean(scene.attributes.id),
         };
@@ -323,6 +329,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           localize,
           localize("ui.panel.config.scene.picker.only_editable")
         ),
+        created_at: getCreatedAtTableColumn(localize, this.hass),
+        modified_at: getModifiedAtTableColumn(localize, this.hass),
         actions: {
           lastFixed: true,
           title: "",
