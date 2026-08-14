@@ -1667,6 +1667,11 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "context": "Context",
+        "entity": "Entity",
+        "floor": "Floor",
+        "entity_id": "Entity ID",
+        "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
         "raw": "Raw",
@@ -2073,6 +2078,8 @@
         "error_backup_state": "An error occurred while getting the current backup state. Error: {error}",
         "wait_for_upload": "Wait for backup upload to finish",
         "wait_for_restore": "Wait for backup restore to finish",
+        "interrupt_automations": "The following automations and scripts are currently running and will be interrupted:",
+        "no_interrupt_automations": "No automations or scripts are currently running.",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -2083,14 +2090,14 @@
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "All integrations will be reloaded.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
           "confirm_title": "Stop Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "Home Assistant will be stopped.",
           "confirm_action": "Stop"
         },
         "reboot": {
@@ -2769,7 +2776,6 @@
           "caption": "Updates",
           "description": "Manage updates of Home Assistant, apps, and devices",
           "group_system": "Home Assistant",
-          "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
           "no_updates": "No updates available",
@@ -6794,7 +6800,8 @@
           "disabled_by": {
             "user": "user",
             "integration": "integration",
-            "config_entry": "config entry"
+            "config_entry": "config entry",
+            "device": "parent device"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
@@ -6805,6 +6812,10 @@
           "delete_device_integration": "Remove device from {integration}",
           "connected_devices": {
             "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
+          "child_devices": {
+            "heading": "Sub-devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
@@ -6888,6 +6899,8 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "parent_device": "Parent device",
+            "part_of_device": "Part of {name}",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -7180,6 +7193,7 @@
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
+            "part_of": "Part of",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version {version}",
@@ -10489,7 +10503,7 @@
                 "bottom": "Bottom",
                 "bottom_description": "Displays all features stacked",
                 "inline": "Inline",
-                "inline_description": "Displays only the first feature"
+                "inline_description": "Displays features in two columns, starting next to the name"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",

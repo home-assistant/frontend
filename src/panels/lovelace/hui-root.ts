@@ -1081,10 +1081,18 @@ class HUIRoot extends LitElement {
     await this.hass.loadFragmentTranslation("config");
     const dashboards = await fetchDashboards(this.hass);
     const dashboard = dashboards.find((d) => d.url_path === urlPath);
+    const lovelace = this.lovelace;
+    const lovelaceConfig =
+      lovelace && !isStrategyDashboard(lovelace.rawConfig)
+        ? lovelace.rawConfig
+        : undefined;
 
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      ...(lovelace && lovelaceConfig
+        ? { lovelaceConfig, saveConfig: lovelace.saveConfig }
+        : {}),
       updateDashboard: async (values) => {
         await updateDashboard(this.hass!, dashboard!.id, values);
       },

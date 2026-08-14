@@ -33,6 +33,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -106,6 +107,7 @@ import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
+import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-linked-devices-card";
@@ -442,7 +444,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
-    const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [
@@ -899,6 +901,10 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      <ha-device-child-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+      ></ha-device-child-devices-card>
       <ha-device-linked-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}

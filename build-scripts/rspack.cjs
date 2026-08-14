@@ -489,8 +489,10 @@ const createDemoConfig = ({
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
+const createGalleryConfig = ({ isProdBuild, latestBuild, isTestBuild }) =>
+  createRspackConfig(
+    bundle.config.gallery({ isProdBuild, latestBuild, isTestBuild })
+  );
 
 const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
