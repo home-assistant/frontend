@@ -4,7 +4,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { formatTimeWithMilliseconds } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import { navigate } from "../../common/navigate";
@@ -242,13 +242,11 @@ class HaLogbookChain extends LitElement {
   }
 
   private _formatTimeWithMs(when: number) {
-    const time = formatTimeWithSeconds(
+    return formatTimeWithMilliseconds(
       new Date(when),
       this.hass.locale,
       this.hass.config
     );
-    const ms = String(Math.floor(when % 1000)).padStart(3, "0");
-    return `${time}.${ms}`;
   }
 
   private _renderRunNode(row: LogbookEntry) {
