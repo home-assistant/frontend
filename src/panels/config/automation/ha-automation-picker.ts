@@ -443,9 +443,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}

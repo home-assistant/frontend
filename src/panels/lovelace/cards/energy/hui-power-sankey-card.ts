@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   formatPowerShort,
   getEnergyDataCollection,
   getPowerFromState,
@@ -278,6 +279,13 @@ class HuiPowerSankeyCard
       }
     }
 
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption,
+      this._data.statsMetadata,
+      "stat_rate"
+    );
+
     const {
       deviceNodes,
       parentLinks,
@@ -294,7 +302,7 @@ class HuiPowerSankeyCard
       initialUntracked: homeNode.value,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentPower(id),
-      getLabel: (id, name) => name || this._getEntityLabel(id),
+      getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
     });
     links.push(...deviceLinks);

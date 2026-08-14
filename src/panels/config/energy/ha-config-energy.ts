@@ -78,8 +78,6 @@ class HaConfigEnergy extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @state() private _info?: EnergyInfo;
 
   @state() private _preferences?: EnergyPreferences;
@@ -126,11 +124,7 @@ class HaConfigEnergy extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .backPath=${
-          this._searchParms.has("historyBack")
-            ? undefined
-            : "/config/lovelace/dashboards"
-        }
+        back-path="/config/lovelace/dashboards"
         .route=${this.route}
         .tabs=${TABS}
       >

@@ -14,6 +14,7 @@ const baseDevice = {
   name_by_user: null,
   disabled_by: null,
   configuration_url: null,
+  parent_device_id: null,
   created_at: 0,
   modified_at: 0,
 };
@@ -49,5 +50,40 @@ export const demoDevices: DeviceRegistryEntry[] = [
     config_entries: ["mock-sonos"],
     primary_config_entry: "mock-sonos",
     entry_type: null,
+  },
+  {
+    ...baseDevice,
+    id: "power-strip",
+    name: "Power strip",
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    config_entries: ["mock-hue"],
+    primary_config_entry: "mock-hue",
+    entry_type: null,
+  },
+  // Child devices (logical parts of the power strip). They carry the parent's
+  // inherited hardware fields, mirroring how resolveChildDevices fills them in
+  // from the WebSocket, and reference the parent via parent_device_id.
+  {
+    ...baseDevice,
+    id: "power-strip-outlet-1",
+    name: "Outlet 1",
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    config_entries: ["mock-hue"],
+    primary_config_entry: "mock-hue",
+    entry_type: null,
+    parent_device_id: "power-strip",
+  },
+  {
+    ...baseDevice,
+    id: "power-strip-outlet-2",
+    name: "Outlet 2",
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    config_entries: ["mock-hue"],
+    primary_config_entry: "mock-hue",
+    entry_type: null,
+    parent_device_id: "power-strip",
   },
 ];

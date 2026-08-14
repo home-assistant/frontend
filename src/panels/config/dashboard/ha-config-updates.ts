@@ -88,7 +88,7 @@ class HaConfigUpdates extends LitElement {
 
           const areaName =
             deviceEntry && deviceEntry.entry_type !== "service"
-              ? getDeviceArea(deviceEntry, this._areas)?.name ||
+              ? getDeviceArea(deviceEntry, this._areas, this._devices)?.name ||
                 this._localize("ui.panel.config.updates.no_area")
               : undefined;
 

@@ -15,6 +15,13 @@ export {
   subscribeDeviceRegistry,
 } from "../ws-device_registry";
 
+export type DeviceDisabler =
+  | "user"
+  | "integration"
+  | "config_entry"
+  // The device's parent device is disabled (child devices only).
+  | "device";
+
 export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
@@ -33,10 +40,115 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   area_id: string | null;
   name_by_user: string | null;
   entry_type: "service" | null;
-  disabled_by: "user" | "integration" | "config_entry" | null;
+  disabled_by: DeviceDisabler | null;
   configuration_url: string | null;
   primary_config_entry: string | null;
+  // Set when this device is a child (logical part) of another device.
+  // null for regular top-level devices.
+  parent_device_id: string | null;
 }
+
+/**
+ * A child device as it arrives over the wire from
+ * `config/device_registry/list`. A child is a lightweight logical part of a
+ * parent device (e.g. an outlet of a power strip); it only carries its own
+ * fields and inherits the rest from its parent. It is never stored in
+ * `hass.devices` in this shape — {@link resolveChildDevices} turns every child
+ * into a complete {@link DeviceRegistryEntry} at ingestion, so downstream code
+ * only ever sees full device entries.
+ */
+export interface ChildDeviceRegistryEntry extends RegistryEntry {
+  id: string;
+  config_entry_id: string;
+  config_subentry_id: string | null;
+  identifiers: [string, string][];
+  name: string | null;
+  name_by_user: string | null;
+  labels: string[];
+  area_id: string | null;
+  disabled_by: DeviceDisabler | null;
+  parent_device_id: string;
+}
+
+/**
+ * The raw, mixed list returned by `config/device_registry/list`: full devices
+ * and stripped children, discriminated by the presence of full-device fields.
+ */
+export type DeviceRegistryListEntry =
+  DeviceRegistryEntry | ChildDeviceRegistryEntry;
+
+/** Whether a resolved device entry is a child (logical part) of another device. */
+export const isChildDevice = (device: DeviceRegistryEntry): boolean =>
+  device.parent_device_id !== null;
+
+/**
+ * Devices whose effective area is the given area: devices with that area, and
+ * child devices that inherit it because they have no area of their own. Mirrors
+ * core's dr.async_entries_for_area, so a child device with a different explicit
+ * area is not part of its parent's area.
+ */
+export const devicesInEffectiveArea = (
+  devices: Record<string, DeviceRegistryEntry>,
+  areaId: string
+): DeviceRegistryEntry[] =>
+  Object.values(devices).filter((device) => {
+    if (device.area_id) {
+      return device.area_id === areaId;
+    }
+    if (device.parent_device_id) {
+      return devices[device.parent_device_id]?.area_id === areaId;
+    }
+    return false;
+  });
+
+export interface DeviceRowItem {
+  device: DeviceRegistryEntry;
+  isChild: boolean;
+  // True for the last child of a parent, so the tree connector draws its end.
+  isLastChild: boolean;
+}
+
+/**
+ * Order a flat device list so each child directly follows its parent, flagging
+ * children for indented rendering. The incoming order of the top-level devices
+ * (and of the children within each parent) is preserved. A child whose parent
+ * is not in the list is treated as a top-level device.
+ */
+export const groupDevicesByParent = (
+  devices: DeviceRegistryEntry[]
+): DeviceRowItem[] => {
+  const presentIds = new Set(devices.map((device) => device.id));
+  const childrenByParent = new Map<string, DeviceRegistryEntry[]>();
+  const topLevel: DeviceRegistryEntry[] = [];
+
+  for (const device of devices) {
+    const parentId = device.parent_device_id;
+    if (parentId && presentIds.has(parentId)) {
+      const siblings = childrenByParent.get(parentId);
+      if (siblings) {
+        siblings.push(device);
+      } else {
+        childrenByParent.set(parentId, [device]);
+      }
+    } else {
+      topLevel.push(device);
+    }
+  }
+
+  const result: DeviceRowItem[] = [];
+  for (const device of topLevel) {
+    result.push({ device, isChild: false, isLastChild: false });
+    const children = childrenByParent.get(device.id) ?? [];
+    children.forEach((child, index) => {
+      result.push({
+        device: child,
+        isChild: true,
+        isLastChild: index === children.length - 1,
+      });
+    });
+  }
+  return result;
+};
 
 export type DeviceEntityDisplayLookup = Record<
   string,
@@ -146,15 +258,13 @@ export const updateDeviceRegistryEntry = (
     ...updates,
   });
 
-export const removeConfigEntryFromDevice = (
+export const removeDeviceFromRegistry = (
   hass: HomeAssistant,
-  deviceId: string,
-  configEntryId: string
+  deviceId: string
 ) =>
-  hass.callWS<DeviceRegistryEntry>({
-    type: "config/device_registry/remove_config_entry",
+  hass.callWS<null>({
+    type: "config/device_registry/remove",
     device_id: deviceId,
-    config_entry_id: configEntryId,
   });
 
 export const sortDeviceRegistryByName = (
