@@ -2,7 +2,7 @@ import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import memoizeOne from "memoize-one";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
@@ -60,8 +60,6 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  @state() private _showRelative = false;
-
   // Index of the row at the top of the list, which the floating date header
   // takes its day from.
   @state() private _firstVisibleIndex = 0;
@@ -90,7 +88,6 @@ class HaLogbookRenderer extends LitElement {
       changedProps.has("noDetail") ||
       changedProps.has("userIdToName") ||
       changedProps.has("systemUserIds") ||
-      changedProps.has("_showRelative" as never) ||
       changedProps.has("_firstVisibleIndex" as never) ||
       languageChanged
     );
