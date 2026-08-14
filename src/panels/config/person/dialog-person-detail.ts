@@ -39,7 +39,6 @@ import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change
 import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { showListItemsDialog } from "../../../dialogs/dialog-list-items/show-list-items-dialog";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { showFormDialog } from "../../../dialogs/form/show-form-dialog";
 
 const includeDomains = ["device_tracker"];
 
@@ -482,51 +481,20 @@ class DialogPersonDetail
       }
 
       showListItemsDialog(this, {
-        title: this.hass.localize("ui.panel.config.person.detail.allow_login"),
+        title: this.hass.localize("ui.panel.config.person.detail.select_user"),
         items: [
           {
             iconPath: mdiAccountPlus,
             label: this.hass.localize(
               "ui.panel.config.person.detail.create_new_user"
             ),
-            action: () => addUserDialog,
+            action: addUserDialog,
           },
-          {
+          ...eligibleUsers.map((user) => ({
             iconPath: mdiAccount,
-            label: this.hass.localize(
-              "ui.panel.config.person.detail.link_existing_user"
-            ),
-            action: async () => {
-              const selected = await showFormDialog(this, {
-                title: this.hass.localize(
-                  "ui.panel.config.person.detail.link_existing_user"
-                ),
-                schema: [
-                  {
-                    name: "user",
-                    selector: {
-                      select: {
-                        options: eligibleUsers.map((u) => ({
-                          value: u.id,
-                          label: `${u.name} (${u.username})`,
-                        })),
-                      },
-                    },
-                    required: true,
-                  },
-                ],
-                computeLabel: () =>
-                  this.hass.localize("ui.panel.config.person.detail.username"),
-                data: {},
-              });
-              if (selected) {
-                this._linkUser(
-                  eligibleUsers.find((u) => selected.user === u.id)!,
-                  false
-                );
-              }
-            },
-          },
+            label: `${user.name} (${user.username})`,
+            action: () => this._linkUser(user, false),
+          })),
         ],
       });
     } else if (this._userId) {
