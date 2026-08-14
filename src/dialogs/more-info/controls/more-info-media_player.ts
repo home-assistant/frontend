@@ -142,16 +142,16 @@ class MoreInfoMediaPlayer extends LitElement {
       this.stateObj,
       MediaPlayerEntityFeature.VOLUME_SET
     );
+    const supportsStep = supportsFeature(
+      this.stateObj,
+      MediaPlayerEntityFeature.VOLUME_STEP
+    );
 
     const assumedState = this.stateObj.attributes.assumed_state === true;
 
     return html`${
-      (supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_SET) ||
-        supportsFeature(
-          this.stateObj!,
-          MediaPlayerEntityFeature.VOLUME_STEP
-        )) &&
-      (stateActive(this.stateObj!) || assumedState)
+      (supportsSliding || supportsStep) &&
+      (stateActive(this.stateObj) || assumedState)
         ? html`
             <div class="volume">
               ${
@@ -176,24 +176,13 @@ class MoreInfoMediaPlayer extends LitElement {
                   : ""
               }
               ${
-                supportsFeature(
-                  this.stateObj,
-                  MediaPlayerEntityFeature.VOLUME_STEP
-                ) && !supportsSliding
+                supportsStep
                   ? html`
                       <ha-icon-button
                         action="volume_down"
                         .path=${mdiVolumeMinus}
                         .label=${this._localize(
                           "ui.card.media_player.media_volume_down"
-                        )}
-                        @click=${this._handleClick}
-                      ></ha-icon-button>
-                      <ha-icon-button
-                        action="volume_up"
-                        .path=${mdiVolumePlus}
-                        .label=${this._localize(
-                          "ui.card.media_player.media_volume_up"
                         )}
                         @click=${this._handleClick}
                       ></ha-icon-button>
@@ -204,7 +193,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 supportsSliding
                   ? html`
                       ${
-                        !supportsMute
+                        !supportsMute && !supportsStep
                           ? html`<ha-svg-icon
                               .path=${mdiVolumeHigh}
                             ></ha-svg-icon>`
@@ -232,6 +221,20 @@ class MoreInfoMediaPlayer extends LitElement {
                           @change=${this._handleVolumeChange}
                         ></ha-slider>
                       </div>
+                    `
+                  : nothing
+              }
+              ${
+                supportsStep
+                  ? html`
+                      <ha-icon-button
+                        action="volume_up"
+                        .path=${mdiVolumePlus}
+                        .label=${this._localize(
+                          "ui.card.media_player.media_volume_up"
+                        )}
+                        @click=${this._handleClick}
+                      ></ha-icon-button>
                     `
                   : nothing
               }
@@ -683,6 +686,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .volume-slider-container {
       width: 100%;
+      min-width: 0;
     }
 
     .volume ha-svg-icon {
@@ -692,6 +696,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     .volume ha-icon-button {
+      flex: none;
       --ha-icon-button-size: 32px;
       --mdc-icon-size: 16px;
     }
