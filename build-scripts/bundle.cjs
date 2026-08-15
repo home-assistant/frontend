@@ -277,7 +277,7 @@ module.exports.config = {
     };
   },
 
-  gallery({ isProdBuild, latestBuild }) {
+  gallery({ isProdBuild, latestBuild, isTestBuild }) {
     return {
       name: "gallery" + nameSuffix(latestBuild),
       entry: {
@@ -287,6 +287,7 @@ module.exports.config = {
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
+      isTestBuild,
       defineOverlay: {
         __DEMO__: true,
       },

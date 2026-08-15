@@ -39,6 +39,25 @@ const formatTimeWithSecondsMem = memoizeOne(
     })
 );
 
+// 9:15:24.123 PM || 21:15:24,123
+export const formatTimeWithMilliseconds = (
+  dateObj: Date,
+  locale: FrontendLocaleData,
+  config: HassConfig
+) => formatTimeWithMillisecondsMem(locale, config.time_zone).format(dateObj);
+
+const formatTimeWithMillisecondsMem = memoizeOne(
+  (locale: FrontendLocaleData, serverTimeZone: string) =>
+    new Intl.DateTimeFormat(locale.language, {
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      fractionalSecondDigits: 3,
+      hourCycle: useAmPm(locale) ? "h12" : "h23",
+      timeZone: resolveTimeZone(locale.time_zone, serverTimeZone),
+    })
+);
+
 // Tuesday 7:00 PM || Tuesday 19:00
 export const formatTimeWeekday = (
   dateObj: Date,

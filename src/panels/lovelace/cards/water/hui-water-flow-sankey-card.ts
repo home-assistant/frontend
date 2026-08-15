@@ -6,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   formatFlowRateShort,
   getEnergyDataCollection,
   getFlowRateFromState,
@@ -241,6 +242,13 @@ class HuiWaterFlowSankeyCard
       }
     }
 
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption_water,
+      this._data.statsMetadata,
+      "stat_rate"
+    );
+
     const {
       deviceNodes,
       parentLinks,
@@ -257,7 +265,7 @@ class HuiWaterFlowSankeyCard
       initialUntracked: effectiveTotalInflow,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentFlowRate(id),
-      getLabel: (id, name) => name || this._getEntityLabel(id),
+      getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
     });
     links.push(...deviceLinks);
