@@ -1,11 +1,16 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiTune } from "@mdi/js";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-svg-icon";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
@@ -67,15 +72,22 @@ export class MQTTConfigPanel extends LitElement {
         back-path="/config/integrations/integration/mqtt"
       >
         <div class="content">
-          <ha-card
-            .header=${this.hass.localize("ui.panel.config.mqtt.settings_title")}
-          >
-            <div class="card-actions">
-              <ha-button appearance="plain" @click=${this._openOptionFlow}
-                >${this.hass.localize(
-                  "ui.panel.config.mqtt.option_flow"
-                )}</ha-button
-              >
+          <ha-card class="nav-card">
+            <div class="card-content">
+              <ha-md-list>
+                <ha-md-list-item @click=${this._openOptionFlow}>
+                  <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize("ui.panel.config.mqtt.option_flow")}
+                  </div>
+                  <div slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.mqtt.option_flow_description"
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+              </ha-md-list>
             </div>
           </ha-card>
           <ha-card

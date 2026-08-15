@@ -7394,8 +7394,8 @@
         },
         "mqtt": {
           "title": "MQTT",
-          "settings_title": "MQTT settings",
-          "option_flow": "Configure MQTT options",
+          "option_flow": "MQTT options",
+          "option_flow_description": "Set discovery options",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
