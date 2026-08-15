@@ -14,19 +14,19 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
 import { batteryLevelIconPath } from "../../../../../common/entity/battery_icon";
 import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { ZHADevice } from "../../../../../data/zha";
-import {
-  fetchDevices,
-  INCOMPLETE_PAIRING_STATUSES,
-} from "../../../../../data/zha";
+import { fetchDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -52,7 +52,14 @@ const BAND_ICON: Record<Band, string> = {
   unknown: mdiSignalCellularOutline,
 };
 
-const BANDS: Band[] = ["strong", "fair", "weak"];
+/**
+ * The bar reports the state of every device, worsening from left to right. A
+ * silent device gets its own band: its last link quality says nothing about
+ * how it is doing now.
+ */
+type BarBand = "strong" | "fair" | "weak" | "offline";
+
+const BANDS: BarBand[] = ["strong", "fair", "weak", "offline"];
 
 interface HealthGroup {
   key: string;
@@ -74,6 +81,8 @@ class ZHANetworkHealthPage extends LitElement {
 
   @state() private _devices?: ZHADevice[];
 
+  @state() private _error?: string;
+
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
@@ -82,7 +91,11 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private async _fetchDevices(): Promise<void> {
-    this._devices = await fetchDevices(this.hass);
+    try {
+      this._devices = await fetchDevices(this.hass);
+    } catch (err: any) {
+      this._error = err.message || err;
+    }
   }
 
   private get _managedDevices(): ZHADevice[] {
@@ -103,15 +116,18 @@ class ZHANetworkHealthPage extends LitElement {
     return device.lqi < STRONG_LQI ? "fair" : "strong";
   }
 
-  private _countBands(devices: ZHADevice[]): Record<Band, number> {
-    const counts: Record<Band, number> = {
+  private _countBands(
+    devices: ZHADevice[]
+  ): Record<BarBand | "unknown", number> {
+    const counts: Record<BarBand | "unknown", number> = {
       strong: 0,
       fair: 0,
       weak: 0,
+      offline: 0,
       unknown: 0,
     };
     for (const device of devices) {
-      counts[this._band(device)]++;
+      counts[device.available ? this._band(device) : "offline"]++;
     }
     return counts;
   }
@@ -119,13 +135,11 @@ class ZHANetworkHealthPage extends LitElement {
   /**
    * A device that joined the network but never finished its interview: it is
    * known to the coordinator, yet exposes nothing to control or read.
+   * `pairing_status` would say so directly, but it only travels with the
+   * pairing events, not with the device list this page is built on.
    */
   private _isIncomplete(device: ZHADevice): boolean {
-    return (
-      device.entities.length === 0 ||
-      (device.pairing_status !== undefined &&
-        INCOMPLETE_PAIRING_STATUSES.includes(device.pairing_status))
-    );
+    return device.entities.length === 0;
   }
 
   /** Battery percentage reported by the device, if it has a battery sensor. */
@@ -144,11 +158,12 @@ class ZHANetworkHealthPage extends LitElement {
 
   /**
    * Map each device to the router that lists it as a child, so a weak device
-   * can be traced to the neighbour it depends on.
+   * can be traced to the neighbour it depends on. Built once per device list
+   * rather than per rendered row.
    */
-  private get _parentByIeee(): Record<string, string> {
+  private _parentByIeee = memoizeOne((devices: ZHADevice[]) => {
     const parents: Record<string, string> = {};
-    for (const device of this._devices ?? []) {
+    for (const device of devices) {
       for (const neighbor of device.neighbors) {
         if (neighbor.relationship === "Child") {
           parents[neighbor.ieee] = device.user_given_name || device.name;
@@ -156,7 +171,7 @@ class ZHANetworkHealthPage extends LitElement {
       }
     }
     return parents;
-  }
+  });
 
   private _areaName(device: ZHADevice): string {
     return device.area_id
@@ -220,18 +235,39 @@ class ZHANetworkHealthPage extends LitElement {
         )}
         back-path="/config/zha/dashboard"
       >
-        <div class="container">
-          ${
-            this._devices
-              ? html`${this._renderStatusCard()} ${this._renderGroupsCard()}`
-              : nothing
-          }
-        </div>
+        <div class="container">${this._renderContent()}</div>
       </hass-subpage>
     `;
   }
 
-  private _renderBar(counts: Record<Band, number>): TemplateResult {
+  private _renderContent(): TemplateResult {
+    if (this._error) {
+      return html`
+        <ha-alert
+          alert-type="error"
+          .title=${this.hass.localize(
+            "ui.panel.config.zha.network_health.loading_error"
+          )}
+        >
+          ${this._error}
+        </ha-alert>
+      `;
+    }
+
+    if (!this._devices) {
+      return html`
+        <div class="loading">
+          <ha-spinner size="large"></ha-spinner>
+        </div>
+      `;
+    }
+
+    return html`${this._renderStatusCard()} ${this._renderGroupsCard()}`;
+  }
+
+  private _renderBar(
+    counts: Record<BarBand | "unknown", number>
+  ): TemplateResult {
     return html`
       <div class="bar">
         ${BANDS.map((band) =>
@@ -250,30 +286,35 @@ class ZHANetworkHealthPage extends LitElement {
     const devices = this._managedDevices;
     const offline = devices.filter((device) => !device.available).length;
     const counts = this._countBands(devices);
-    const rated = counts.strong + counts.fair + counts.weak;
+    const rated = counts.strong + counts.fair + counts.weak + counts.offline;
+    // A single sleeping device is everyday life, not an outage: the network is
+    // only down once nothing answers at all. Matches the ZHA dashboard.
+    const online = offline < devices.length || devices.length === 0;
 
     return html`
       <ha-card>
         <div class="status">
-          <div class="icon ${offline ? "error" : "success"}">
+          <div class="icon ${online ? "success" : "error"}">
             <ha-svg-icon
-              .path=${offline ? mdiAlertCircleOutline : mdiCheck}
+              .path=${online ? mdiCheck : mdiAlertCircleOutline}
             ></ha-svg-icon>
           </div>
           <div class="status-text">
             <h2>
-              ${this.hass.localize("ui.panel.config.zha.network_health.online")}
+              ${this.hass.localize(
+                `ui.panel.config.zha.network_health.status_${online ? "online" : "offline"}`
+              )}
             </h2>
             <p>
               ${
                 offline
                   ? this.hass.localize(
                       "ui.panel.config.zha.network_health.some_unreachable",
-                      { count: this._devices!.length, offline }
+                      { count: devices.length, offline }
                     )
                   : this.hass.localize(
                       "ui.panel.config.zha.network_health.all_reachable",
-                      { count: this._devices!.length }
+                      { count: devices.length }
                     )
               }
             </p>
@@ -349,18 +390,27 @@ class ZHANetworkHealthPage extends LitElement {
    * spread over the house or concentrated in one room.
    */
   private _renderByArea(group: HealthGroup): TemplateResult[] {
-    const byArea = new Map<string, ZHADevice[]>();
+    const byArea = new Map<string, { name: string; devices: ZHADevice[] }>();
     for (const device of group.devices) {
-      const name = this._areaName(device);
-      byArea.set(name, [...(byArea.get(name) ?? []), device]);
+      const area = byArea.get(device.area_id ?? "");
+      if (area) {
+        area.devices.push(device);
+      } else {
+        byArea.set(device.area_id ?? "", {
+          name: this._areaName(device),
+          devices: [device],
+        });
+      }
     }
 
-    return [...byArea.entries()]
-      .sort(([nameA, a], [nameB, b]) =>
-        a.length === b.length ? nameA.localeCompare(nameB) : b.length - a.length
+    return [...byArea.values()]
+      .sort((a, b) =>
+        a.devices.length === b.devices.length
+          ? a.name.localeCompare(b.name)
+          : b.devices.length - a.devices.length
       )
       .map(
-        ([name, devices]) => html`
+        ({ name, devices }) => html`
           <div class="area-caption" role="separator">
             ${name} · ${devices.length}
           </div>
@@ -372,7 +422,10 @@ class ZHANetworkHealthPage extends LitElement {
   private _renderDevice(device: ZHADevice, battery = false): TemplateResult {
     const band = this._band(device);
     const level = battery ? this._batteryLevel(device) : null;
-    const parent = this._parentByIeee[device.ieee];
+    const parent = this._parentByIeee(this._devices!)[device.ieee];
+    // Nothing is measured while a device is silent, so what is shown is the
+    // reading from the last contact.
+    const stale = device.available ? "" : " stale";
     const details = [
       device.model,
       parent
@@ -387,12 +440,15 @@ class ZHANetworkHealthPage extends LitElement {
       <ha-md-list-item type="link" href=${`/config/zha/device/${device.ieee}`}>
         <ha-svg-icon
           slot="start"
-          class=${level === null ? `signal ${band}` : "battery"}
+          class=${(level === null ? `signal ${band}` : "battery") + stale}
           .path=${level === null ? BAND_ICON[band] : batteryLevelIconPath(level)}
         ></ha-svg-icon>
         <span slot="headline">${device.user_given_name || device.name}</span>
         <span slot="supporting-text">${details.join(" · ")}</span>
-        <span slot="end" class=${level === null ? `lqi ${band}` : "battery"}>
+        <span
+          slot="end"
+          class=${(level === null ? `lqi ${band}` : "battery") + stale}
+        >
           ${
             level !== null
               ? `${level}${blankBeforePercent(this.hass.locale)}%`
@@ -416,6 +472,12 @@ class ZHANetworkHealthPage extends LitElement {
           gap: var(--ha-space-4);
           max-width: 700px;
           margin: auto;
+        }
+
+        .loading {
+          display: flex;
+          justify-content: center;
+          padding: var(--ha-space-8);
         }
 
         /* Status */
@@ -509,6 +571,11 @@ class ZHANetworkHealthPage extends LitElement {
           background-color: var(--warning-color);
         }
 
+        .segment.offline,
+        .dot.offline {
+          background-color: var(--disabled-color);
+        }
+
         .legend {
           display: flex;
           flex-wrap: wrap;
@@ -534,8 +601,8 @@ class ZHANetworkHealthPage extends LitElement {
         /* Captions line up with the device names, the devices themselves with
            the group icon above them, so the nesting reads top down. */
         .area-caption {
-          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-1)
-            calc(var(--ha-space-4) + 64px);
+          padding: var(--ha-space-3) var(--ha-space-4) var(--ha-space-1);
+          padding-inline-start: calc(var(--ha-space-4) + 64px);
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-medium);
@@ -548,10 +615,10 @@ class ZHANetworkHealthPage extends LitElement {
           --expansion-panel-summary-padding: 0 var(--ha-space-4);
         }
 
-        /* Keep the leading icons aligned when no chevron is rendered. */
-        ha-expansion-panel[no-collapse] {
-          --expansion-panel-summary-padding: 0 var(--ha-space-4) 0
-            calc(var(--ha-space-4) + 32px);
+        /* Keep the leading icons aligned when no chevron is rendered, taking
+           its place: a 24px icon followed by an 8px gap. */
+        ha-expansion-panel[no-collapse] ha-svg-icon[slot="leading-icon"] {
+          margin-inline-start: 32px;
         }
 
         ha-expansion-panel:not(:first-of-type) {
@@ -563,7 +630,7 @@ class ZHANetworkHealthPage extends LitElement {
           color: var(--secondary-text-color);
           font-variant-numeric: tabular-nums;
           min-width: 1.5em;
-          text-align: right;
+          text-align: end;
         }
 
         .count.weak {
@@ -571,10 +638,10 @@ class ZHANetworkHealthPage extends LitElement {
         }
 
         .advice {
-          margin: 0 var(--ha-space-4) var(--ha-space-2)
-            calc(var(--ha-space-4) + 32px);
-          padding-left: var(--ha-space-3);
-          border-left: 2px solid var(--divider-color);
+          margin: 0 var(--ha-space-4) var(--ha-space-2);
+          margin-inline-start: calc(var(--ha-space-4) + 32px);
+          padding-inline-start: var(--ha-space-3);
+          border-inline-start: 2px solid var(--divider-color);
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-s);
           line-height: 1.4;
@@ -617,6 +684,13 @@ class ZHANetworkHealthPage extends LitElement {
         .battery {
           color: var(--warning-color);
           font-variant-numeric: tabular-nums;
+        }
+
+        /* A reading from the last contact, not a current one. */
+        .signal.stale,
+        .lqi.stale,
+        .battery.stale {
+          color: var(--disabled-text-color);
         }
       `,
     ];
