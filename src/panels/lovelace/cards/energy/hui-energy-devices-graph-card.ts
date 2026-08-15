@@ -463,7 +463,11 @@ export class HuiEnergyDevicesGraphCard
         summedData,
         compareSummedData
       );
-      const totalUsed = consumption.total.used_total;
+      // Individual devices are a breakdown of *home* consumption. An EV is
+      // configured as its own consumer, so it is neither in this device list
+      // nor part of used_home — using used_total would fold the EV's energy
+      // into the untracked slice.
+      const totalUsed = consumption.total.used_home;
       const showUntracked =
         "from_grid" in summedData ||
         "solar" in summedData ||
@@ -496,7 +500,7 @@ export class HuiEnergyDevicesGraphCard
         });
         if (compareData) {
           const compareUntracked =
-            compareConsumption!.total.used_total -
+            compareConsumption!.total.used_home -
             chartDataCompare.reduce(
               (acc: number, d: any) => acc + d.value[0],
               0

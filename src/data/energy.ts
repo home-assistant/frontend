@@ -90,6 +90,11 @@ export const emptyBatteryEnergyPreference =
     stat_energy_to: "",
   });
 
+export const emptyEVEnergyPreference = (): EVSourceTypeEnergyPreference => ({
+  type: "ev",
+  stat_energy_from: "",
+});
+
 export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   type: "gas",
   stat_energy_from: "",
@@ -178,6 +183,20 @@ export interface BatterySourceTypeEnergyPreference {
   capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
+/**
+ * An EV is a consumer, not a producer: its energy is deducted from the home
+ * consumption total and drawn as its own consumer. It lives in energy_sources
+ * rather than device_consumption because device_consumption entries are by
+ * definition a breakdown *of* home consumption.
+ */
+export interface EVSourceTypeEnergyPreference {
+  type: "ev";
+
+  stat_energy_from: string;
+  stat_rate?: string;
+  name?: string;
+}
+
 export interface GasSourceTypeEnergyPreference {
   type: "gas";
 
@@ -222,6 +241,7 @@ export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
+  | EVSourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
   | WaterSourceTypeEnergyPreference;
 
@@ -306,6 +326,7 @@ export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
+  ev?: EVSourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
 }
@@ -396,7 +417,7 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "ev") {
       statIDs.push(source.stat_energy_from);
       continue;
     }
@@ -480,6 +501,13 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
+    if (source.type === "ev") {
+      if (source.stat_rate) {
+        statIDs.push(source.stat_rate);
+      }
+      continue;
+    }
+
     // grid source
     if (source.stat_rate) {
       statIDs.push(source.stat_rate);
@@ -532,6 +560,7 @@ const getEnergyData = async (
     "grid",
     "solar",
     "battery",
+    "ev",
     "gas",
     "device",
   ]);
@@ -1124,27 +1153,41 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  ev?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    ev?: number;
   };
   timestamps: number[];
 }
 
 export interface EnergyConsumptionData {
+  // Total consumption behind the meter, EV included.
   used_total: Record<number, number>;
+  // used_total minus the categorized (EV) devices.
+  used_home: Record<number, number>;
+  used_ev: Record<number, number>;
   grid_to_battery: Record<number, number>;
   battery_to_grid: Record<number, number>;
   solar_to_battery: Record<number, number>;
   solar_to_grid: Record<number, number>;
+  // Source split of used_home only. used_solar + used_grid + used_battery
+  // sums to used_home, not used_total.
   used_solar: Record<number, number>;
   used_grid: Record<number, number>;
   used_battery: Record<number, number>;
+  // Source split of used_ev.
+  ev_solar: Record<number, number>;
+  ev_grid: Record<number, number>;
+  ev_battery: Record<number, number>;
   total: {
     used_total: number;
+    used_home: number;
+    used_ev: number;
     grid_to_battery: number;
     battery_to_grid: number;
     solar_to_battery: number;
@@ -1152,6 +1195,9 @@ export interface EnergyConsumptionData {
     used_solar: number;
     used_grid: number;
     used_battery: number;
+    ev_solar: number;
+    ev_grid: number;
+    ev_battery: number;
   };
 }
 
@@ -1177,9 +1223,19 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    ev?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
+    if (source.type === "ev") {
+      if (statIds.ev) {
+        statIds.ev.push(source.stat_energy_from);
+      } else {
+        statIds.ev = [source.stat_energy_from];
+      }
+      continue;
+    }
+
     if (source.type === "solar") {
       if (statIds.solar) {
         statIds.solar.push(source.stat_energy_from);
@@ -1272,6 +1328,8 @@ const computeConsumptionDataPartial = (
 ): EnergyConsumptionData => {
   const outData: EnergyConsumptionData = {
     used_total: {},
+    used_home: {},
+    used_ev: {},
     grid_to_battery: {},
     battery_to_grid: {},
     solar_to_battery: {},
@@ -1279,8 +1337,13 @@ const computeConsumptionDataPartial = (
     used_solar: {},
     used_grid: {},
     used_battery: {},
+    ev_solar: {},
+    ev_grid: {},
+    ev_battery: {},
     total: {
       used_total: 0,
+      used_home: 0,
+      used_ev: 0,
       grid_to_battery: 0,
       battery_to_grid: 0,
       solar_to_battery: 0,
@@ -1288,6 +1351,9 @@ const computeConsumptionDataPartial = (
       used_solar: 0,
       used_grid: 0,
       used_battery: 0,
+      ev_solar: 0,
+      ev_grid: 0,
+      ev_battery: 0,
     },
   };
 
@@ -1296,6 +1362,7 @@ const computeConsumptionDataPartial = (
   const solarData = data.solar;
   const toBattery = data.to_battery;
   const fromBattery = data.from_battery;
+  const evData = data.ev;
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
@@ -1305,7 +1372,12 @@ const computeConsumptionDataPartial = (
       used_solar,
       used_grid,
       used_battery,
+      ev_solar,
+      ev_grid,
+      ev_battery,
       used_total,
+      used_home,
+      used_ev,
       solar_to_battery,
       solar_to_grid,
     } = computeConsumptionSingle({
@@ -1314,10 +1386,21 @@ const computeConsumptionDataPartial = (
       solar: solarData && (solarData[t] ?? 0),
       to_battery: toBattery && (toBattery[t] ?? 0),
       from_battery: fromBattery && (fromBattery[t] ?? 0),
+      ev: evData && (evData[t] ?? 0),
     });
 
     outData.used_total[t] = used_total;
     total.used_total += used_total;
+    outData.used_home[t] = used_home;
+    total.used_home += used_home;
+    outData.used_ev[t] = used_ev;
+    total.used_ev += used_ev;
+    outData.ev_solar[t] = ev_solar;
+    total.ev_solar += ev_solar;
+    outData.ev_grid[t] = ev_grid;
+    total.ev_grid += ev_grid;
+    outData.ev_battery[t] = ev_battery;
+    total.ev_battery += ev_battery;
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
@@ -1343,6 +1426,7 @@ export const computeConsumptionSingle = (data: {
   solar: number | undefined;
   to_battery: number | undefined;
   from_battery: number | undefined;
+  ev?: number | undefined;
 }): {
   grid_to_battery: number;
   battery_to_grid: number;
@@ -1351,7 +1435,12 @@ export const computeConsumptionSingle = (data: {
   used_solar: number;
   used_grid: number;
   used_battery: number;
+  ev_solar: number;
+  ev_grid: number;
+  ev_battery: number;
   used_total: number;
+  used_home: number;
+  used_ev: number;
 } => {
   let to_grid = Math.max(data.to_grid || 0, 0);
   let to_battery = Math.max(data.to_battery || 0, 0);
@@ -1410,21 +1499,45 @@ export const computeConsumptionSingle = (data: {
   from_grid -= grid_to_battery_2;
 
   // Solar -> Consumption
-  const used_solar = Math.min(used_total_remaining, solar);
-  used_total_remaining -= used_solar;
+  const total_used_solar = Math.min(used_total_remaining, solar);
+  used_total_remaining -= total_used_solar;
 
   // Battery_Out -> Consumption
-  const used_battery = Math.min(from_battery, used_total_remaining);
-  used_total_remaining -= used_battery;
+  const total_used_battery = Math.min(from_battery, used_total_remaining);
+  used_total_remaining -= total_used_battery;
 
   // Grid_In -> Consumption
-  const used_grid = Math.min(used_total_remaining, from_grid);
+  const total_used_grid = Math.min(used_total_remaining, from_grid);
+
+  // Split consumption between the categorized EV load and the rest of the
+  // home. The waterfall above allocated sources across the *whole*
+  // consumption; the EV draws from that same mix, so each source is split on
+  // the EV's share. This keeps
+  //   used_home + used_ev === used_total
+  // and
+  //   used_{solar,battery,grid} + ev_{solar,battery,grid} === the original
+  //   source split, so no energy is created or lost by the categorization.
+  const positive_total = Math.max(used_total, 0);
+  const used_ev = Math.min(Math.max(data.ev || 0, 0), positive_total);
+  // used_total can be negative on a net-export interval. used_ev is clamped
+  // to 0 there, so the invariant still holds with a negative used_home.
+  const used_home = used_total - used_ev;
+  const ev_share = positive_total > 0 ? used_ev / positive_total : 0;
+
+  const ev_solar = total_used_solar * ev_share;
+  const ev_battery = total_used_battery * ev_share;
+  const ev_grid = total_used_grid * ev_share;
 
   return {
-    used_solar,
-    used_grid,
-    used_battery,
+    used_solar: total_used_solar - ev_solar,
+    used_grid: total_used_grid - ev_grid,
+    used_battery: total_used_battery - ev_battery,
+    ev_solar,
+    ev_grid,
+    ev_battery,
     used_total,
+    used_home,
+    used_ev,
     grid_to_battery,
     battery_to_grid,
     solar_to_battery,

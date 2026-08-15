@@ -133,16 +133,35 @@ class HuiEnergySankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
+    // The EV is its own consumer next to home, not a device inside it.
+    const hasEv = types.ev !== undefined;
+    const evConsumption = Math.max(0, consumption.total.used_ev);
+
     const homeNode: Node = {
       id: "home",
       label: this.hass.config.location_name,
-      value: Math.max(0, consumption.total.used_total),
+      value: Math.max(0, consumption.total.used_home),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
 
-    const minEnergyThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
+    if (hasEv) {
+      nodes.push({
+        id: "ev",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.ev"
+        ),
+        value: evConsumption,
+        color: computedStyle.getPropertyValue("--energy-ev-color").trim(),
+        index: 1,
+      });
+    }
+
+    // Threshold is based on total consumption so it stays stable regardless of
+    // how much of it the EV took.
+    const minEnergyThreshold =
+      Math.max(0, consumption.total.used_total) * MIN_SANKEY_THRESHOLD_FACTOR;
 
     if (types.battery) {
       const totalBatteryOut = summedData.total.from_battery ?? 0;
@@ -165,6 +184,13 @@ class HuiEnergySankeyCard
         target: "home",
         value: consumption.total.used_battery,
       });
+      if (hasEv && consumption.total.ev_battery > 0) {
+        links.push({
+          source: "battery",
+          target: "ev",
+          value: consumption.total.ev_battery,
+        });
+      }
 
       // Add battery sink
       nodes.push({
@@ -214,6 +240,13 @@ class HuiEnergySankeyCard
         target: "home",
         value: consumption.total.used_grid,
       });
+      if (hasEv && consumption.total.ev_grid > 0) {
+        links.push({
+          source: "grid",
+          target: "ev",
+          value: consumption.total.ev_grid,
+        });
+      }
     }
 
     // Add solar if available
@@ -235,6 +268,13 @@ class HuiEnergySankeyCard
         target: "home",
         value: consumption.total.used_solar,
       });
+      if (hasEv && consumption.total.ev_solar > 0) {
+        links.push({
+          source: "solar",
+          target: "ev",
+          value: consumption.total.ev_solar,
+        });
+      }
     }
 
     // Add grid return if available

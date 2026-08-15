@@ -17,6 +17,7 @@ export interface EnergyPreferencesOptions {
   grid?: boolean;
   solar?: boolean;
   battery?: boolean;
+  ev?: boolean;
   gas?: boolean;
   water?: boolean;
 }
@@ -57,6 +58,12 @@ export const generateEnergyPreferences = (
       type: "battery",
       stat_energy_from: "sensor.battery_discharge",
       stat_energy_to: "sensor.battery_charge",
+    });
+  }
+  if (options.ev) {
+    sources.push({
+      type: "ev",
+      stat_energy_from: "sensor.ev_charging",
     });
   }
   if (options.gas) {

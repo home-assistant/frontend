@@ -4314,6 +4314,21 @@
               "helper_sensor_in_use": "Currently using helper {entity}"
             }
           },
+          "ev": {
+            "title": "Electric vehicle",
+            "sub": "Track EV charging separately from the rest of your home. Its energy is deducted from your home consumption and shown as its own consumer in the energy graphs.",
+            "add_ev": "Add electric vehicle",
+            "edit_ev": "Edit electric vehicle",
+            "delete_ev": "Delete electric vehicle",
+            "dialog": {
+              "header": "Add electric vehicle",
+              "intro": "Select the sensor that measures how much energy your vehicle has charged, such as a wall connector's energy sensor.",
+              "ev_energy": "EV charging energy",
+              "ev_power": "EV charging power",
+              "selected_stat_intro": "Select the sensor that measures the charging in either of {unit}.",
+              "display_name": "Display name"
+            }
+          },
           "gas": {
             "title": "Gas consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
@@ -9147,10 +9162,13 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total {num} kWh",
+              "total_home": "Total home {num} kWh",
+              "total_ev": "Total EV {num} kWh",
               "total_usage": "{num} kWh",
               "combined_from_grid": "Grid",
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",
+              "consumed_ev": "EV charging",
               "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
               "named_grid_consumed": "Consumed {name}",
               "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
@@ -9217,6 +9235,7 @@
               "solar": "Solar",
               "low_carbon": "Low-carbon",
               "battery": "Battery",
+              "ev": "EV",
               "go_to_energy_dashboard": "Go to the energy dashboard"
             },
             "energy_devices_graph": {
@@ -9242,6 +9261,7 @@
               "grid": "Grid",
               "solar": "Solar",
               "battery": "Battery",
+              "ev": "[%key:ui::panel::lovelace::cards::energy::energy_distribution::ev%]",
               "usage": "Consumption"
             },
             "energy_compare": {

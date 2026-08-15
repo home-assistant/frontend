@@ -1,12 +1,15 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
-import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -52,6 +55,7 @@ const colorPropertyMap = {
   used_grid: "--energy-grid-consumption-color",
   used_solar: "--energy-solar-color",
   used_battery: "--energy-battery-out-color",
+  used_ev: "--energy-ev-color",
 };
 
 const stackOrder = {
@@ -61,7 +65,13 @@ const stackOrder = {
   used_battery: 4,
   from_grid: 5,
   used_grid: 5,
+  // EV sits on top of the consumption stack so it reads as a slice carved
+  // out of total consumption rather than an extra load added to it.
+  used_ev: 6,
 };
+
+// Series id of the EV bar, built as `${statId}-${type}` in _processDataSet.
+const EV_SERIES_ID = "used_ev-used_ev";
 
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
@@ -205,6 +215,35 @@ export class HuiEnergyUsageGraphCard
       { num: formatNumber(total, this.hass.locale) }
     );
 
+  /**
+   * Tooltip total. When the bucket includes EV charging, the total is split
+   * into home and EV rather than shown as one combined figure — the EV is a
+   * separate consumer, so a single total would hide that split.
+   */
+  private _formatTooltipTotal = (
+    total: number,
+    params: CallbackDataParams[]
+  ): string | TemplateResult => {
+    const evTotal = params
+      .filter(
+        (param) =>
+          String(param.seriesId ?? "").replace(/^compare-/, "") === EV_SERIES_ID
+      )
+      .reduce((sum, param) => sum + ((param.value?.[1] as number) || 0), 0);
+
+    if (evTotal <= 0) {
+      return this._formatTotal(total);
+    }
+
+    return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_home",
+        { num: formatNumber(total - evTotal, this.hass.locale) }
+      )}<br />${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_ev",
+        { num: formatNumber(evTotal, this.hass.locale) }
+      )}`;
+  };
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -224,7 +263,7 @@ export class HuiEnergyUsageGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        this._formatTotal,
+        this._formatTooltipTotal,
         false,
         yAxisFractionDigits
       );
@@ -286,6 +325,7 @@ export class HuiEnergyUsageGraphCard
       solar?: string[];
       to_battery?: string[];
       from_battery?: string[];
+      ev?: string[];
     } = {};
 
     const statLabels: {
@@ -313,6 +353,15 @@ export class HuiEnergyUsageGraphCard
           statIds.solar.push(source.stat_energy_from);
         } else {
           statIds.solar = [source.stat_energy_from];
+        }
+        continue;
+      }
+
+      if (source.type === "ev") {
+        if (statIds.ev) {
+          statIds.ev.push(source.stat_energy_from);
+        } else {
+          statIds.ev = [source.stat_energy_from];
         }
         continue;
       }
@@ -404,6 +453,9 @@ export class HuiEnergyUsageGraphCard
       ),
       used_battery: this.hass.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
+      ),
+      used_ev: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_ev"
       ),
     };
 
@@ -526,6 +578,7 @@ export class HuiEnergyUsageGraphCard
       solar?: string[] | undefined;
       to_battery?: string[] | undefined;
       from_battery?: string[] | undefined;
+      ev?: string[] | undefined;
     },
     colorIndices: Record<string, Record<string, number>>,
     computedStyles: CSSStyleDeclaration,
@@ -533,6 +586,7 @@ export class HuiEnergyUsageGraphCard
       used_grid: string;
       used_solar: string;
       used_battery: string;
+      used_ev: string;
     },
     statLabels: {
       to_grid: Record<string, string>;
@@ -551,6 +605,7 @@ export class HuiEnergyUsageGraphCard
       used_grid?: Record<string, Record<number, number>>;
       used_solar?: Record<string, Record<number, number>>;
       used_battery?: Record<string, Record<number, number>>;
+      used_ev?: Record<string, Record<number, number>>;
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
@@ -589,6 +644,45 @@ export class HuiEnergyUsageGraphCard
       combinedData.used_battery = {
         used_battery: consumptionData.used_battery,
       };
+    }
+    // Devices categorized as EV are already deducted from used_solar /
+    // used_battery / used_grid, so adding this series keeps each bar's total
+    // height equal to total consumption while showing the EV slice on its own.
+    if (statIdsByCat.ev) {
+      combinedData.used_ev = { used_ev: consumptionData.used_ev };
+    }
+
+    // The per-source from_grid series carries *raw* grid import, which still
+    // includes whatever the EV pulled from the grid. used_solar/used_battery/
+    // used_grid are already net of the EV, so the raw grid series has to be
+    // reduced too — otherwise the EV is counted twice in the stack and every
+    // bar grows by the charge amount.
+    //
+    // This runs before the grid_to_battery pass below, which overwrites the
+    // affected buckets with consumptionData.used_grid (already net of the EV);
+    // doing it in the other order would subtract the EV portion twice.
+    if (combinedData.from_grid && statIdsByCat.ev) {
+      const gridSources = Object.values(combinedData.from_grid);
+      for (const [start, ev_grid] of Object.entries(consumptionData.ev_grid)) {
+        if (!ev_grid) {
+          continue;
+        }
+        const totalFromGrid = gridSources.reduce(
+          (sum, stats) => sum + (stats[start] || 0),
+          0
+        );
+        if (totalFromGrid <= 0) {
+          continue;
+        }
+        // Distribute the EV's grid draw across sources in proportion to what
+        // each contributed, so the subtracted amounts sum to exactly ev_grid.
+        const scale = Math.min(ev_grid, totalFromGrid) / totalFromGrid;
+        gridSources.forEach((stats) => {
+          if (stats[start]) {
+            stats[start] -= stats[start] * scale;
+          }
+        });
+      }
     }
 
     if (combinedData.from_grid && summedData.to_battery) {

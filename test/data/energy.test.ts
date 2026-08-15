@@ -12,6 +12,7 @@ import {
   TimeZone,
 } from "../../src/data/translation";
 import {
+  computeConsumptionData,
   computeConsumptionSingle,
   computeEnergyLabel,
   computeEnergyDeviceLabels,
@@ -20,7 +21,12 @@ import {
   formatPowerShort,
   getNextEnergyPeriodStart,
   getEnergyDefaultPeriodStorageKey,
+  getSummedData,
 } from "../../src/data/energy";
+import {
+  generateEnergyData,
+  generateEnergyPreferences,
+} from "../fixtures/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import type { StatisticsMetaData } from "../../src/data/recorder";
@@ -34,6 +40,7 @@ const checkConsumptionResult = (
     solar: number | undefined;
     to_battery: number | undefined;
     from_battery: number | undefined;
+    ev?: number | undefined;
   },
   exact = true
 ): {
@@ -48,10 +55,18 @@ const checkConsumptionResult = (
 } => {
   const result = computeConsumptionSingle(input);
   if (exact) {
+    // The source split covers home *and* the categorized EV load; with no EV
+    // configured the ev_* terms are all 0 and this is the original invariant.
     assert.equal(
       result.used_total,
-      result.used_solar + result.used_battery + result.used_grid
+      result.used_solar +
+        result.used_battery +
+        result.used_grid +
+        result.ev_solar +
+        result.ev_battery +
+        result.ev_grid
     );
+    assert.equal(result.used_total, result.used_home + result.used_ev);
     assert.equal(
       input.to_grid || 0,
       result.solar_to_grid + result.battery_to_grid
@@ -62,10 +77,23 @@ const checkConsumptionResult = (
     );
     assert.equal(
       input.solar || 0,
-      result.solar_to_battery + result.solar_to_grid + result.used_solar
+      result.solar_to_battery +
+        result.solar_to_grid +
+        result.used_solar +
+        result.ev_solar
     );
   }
-  return result;
+  // Only the pre-existing keys are returned so the expectations below stay
+  // focused on the source waterfall. EV splitting is covered separately.
+  const {
+    used_home: _used_home,
+    used_ev: _used_ev,
+    ev_solar: _ev_solar,
+    ev_grid: _ev_grid,
+    ev_battery: _ev_battery,
+    ...rest
+  } = result;
+  return rest;
 };
 
 describe("Energy Short Format Test", () => {
@@ -600,6 +628,110 @@ describe("Energy Usage Calculation Tests", () => {
         used_total: 12.367099999999994,
       }
     );
+  });
+});
+
+describe("EV categorization", () => {
+  const base = {
+    from_grid: 10,
+    to_grid: 0,
+    solar: 0,
+    to_battery: 0,
+    from_battery: 0,
+  };
+
+  it("leaves everything untouched when no EV is configured", () => {
+    const result = computeConsumptionSingle(base);
+    assert.equal(result.used_ev, 0);
+    assert.equal(result.used_home, result.used_total);
+    assert.equal(result.used_grid, 10);
+    assert.equal(result.ev_grid, 0);
+  });
+
+  it("deducts the EV from home without changing the total", () => {
+    const result = computeConsumptionSingle({ ...base, ev: 4 });
+    assert.equal(result.used_total, 10);
+    assert.equal(result.used_ev, 4);
+    assert.equal(result.used_home, 6);
+    // Grid was the only source, so the whole EV draw is attributed to it.
+    assert.equal(result.used_grid, 6);
+    assert.equal(result.ev_grid, 4);
+  });
+
+  it("splits the EV across sources in proportion to the mix", () => {
+    // 12 consumed: 6 solar, 2 battery, 4 grid. EV takes half of it.
+    const result = computeConsumptionSingle({
+      from_grid: 4,
+      to_grid: 0,
+      solar: 6,
+      to_battery: 0,
+      from_battery: 2,
+      ev: 6,
+    });
+    assert.equal(result.used_total, 12);
+    assert.equal(result.used_ev, 6);
+    assert.equal(result.used_home, 6);
+    assert.equal(result.ev_solar, 3);
+    assert.equal(result.ev_battery, 1);
+    assert.equal(result.ev_grid, 2);
+    assert.equal(result.used_solar, 3);
+    assert.equal(result.used_battery, 1);
+    assert.equal(result.used_grid, 2);
+  });
+
+  it("clamps an EV reading larger than total consumption", () => {
+    const result = computeConsumptionSingle({ ...base, ev: 25 });
+    assert.equal(result.used_ev, 10);
+    assert.equal(result.used_home, 0);
+    assert.equal(result.used_grid, 0);
+    assert.equal(result.ev_grid, 10);
+  });
+
+  it("picks up an ev energy source end to end", () => {
+    const withEv = generateEnergyData(11, {
+      days: 1,
+      prefs: generateEnergyPreferences({ grid: true, solar: true, ev: true }),
+    });
+    const { summedData } = getSummedData(withEv);
+    // The ev source must be summed into its own bucket.
+    assert.isAbove(summedData.total.ev!, 0);
+
+    const { consumption } = computeConsumptionData(summedData, undefined);
+    assert.isAbove(consumption.total.used_ev, 0);
+    assert.approximately(
+      consumption.total.used_home + consumption.total.used_ev,
+      consumption.total.used_total,
+      1e-9
+    );
+
+    // Same data without the ev source: home takes the whole total back.
+    const withoutEv = generateEnergyData(11, {
+      days: 1,
+      prefs: generateEnergyPreferences({ grid: true, solar: true }),
+    });
+    const { consumption: plain } = computeConsumptionData(
+      getSummedData(withoutEv).summedData,
+      undefined
+    );
+    assert.equal(plain.total.used_ev, 0);
+    assert.equal(plain.total.used_home, plain.total.used_total);
+    assert.isBelow(consumption.total.used_home, plain.total.used_home);
+  });
+
+  it("keeps the invariant when the interval is a net export", () => {
+    const result = computeConsumptionSingle({
+      from_grid: 0,
+      to_grid: 5,
+      solar: 8,
+      to_battery: 0,
+      from_battery: 0,
+      ev: 2,
+    });
+    // Net consumption is 3; used_ev never exceeds it.
+    assert.equal(result.used_total, 3);
+    assert.equal(result.used_ev, 2);
+    assert.equal(result.used_home, 1);
+    assert.equal(result.used_home + result.used_ev, result.used_total);
   });
 });
 

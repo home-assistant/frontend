@@ -34,6 +34,7 @@ import "./components/ha-energy-device-settings-water";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
+import "./components/ha-energy-ev-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import { fileDownload } from "../../../util/file_download";
@@ -178,6 +179,14 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>
+          <ha-energy-ev-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            .info=${this._info}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-ev-settings>
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -330,6 +339,7 @@ class HaConfigEnergy extends LitElement {
         ha-energy-grid-settings,
         ha-energy-solar-settings,
         ha-energy-battery-settings,
+        ha-energy-ev-settings,
         ha-energy-gas-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
