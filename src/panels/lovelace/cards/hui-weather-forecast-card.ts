@@ -300,6 +300,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
+          "no-action": !this._hasCardAction,
           [this._sizeController.value?.height]: Boolean(
             this._sizeController.value
           ),
@@ -505,6 +506,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
       </ha-card>
     `;
+  }
+  
+  private get _hasCardAction() {
+    return (
+      !this._config?.tap_action ||
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
@@ -728,6 +738,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           justify-content: center;
           box-sizing: border-box;
           padding: 16px 0;
+        }
+
+        ha-card.no-action {
+          cursor: default;
         }
 
         .content {
