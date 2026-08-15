@@ -36,7 +36,7 @@ import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -300,7 +300,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
-          "no-action": !this._hasCardAction,
+          "no-action": !hasAnyAction(this._config!),
           [this._sizeController.value?.height]: Boolean(
             this._sizeController.value
           ),
@@ -506,15 +506,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
       </ha-card>
     `;
-  }
-  
-  private get _hasCardAction() {
-    return (
-      !this._config?.tap_action ||
-      hasAction(this._config?.tap_action) ||
-      hasAction(this._config?.hold_action) ||
-      hasAction(this._config?.double_tap_action)
-    );
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
