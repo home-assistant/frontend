@@ -32,6 +32,11 @@ import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import "./mqtt-subscribe-card";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
+import { fetchIntegrationManifest } from "../../../../../data/integration";
+
+export const mdiMqtt =
+  "M1.68,0.5325c-0.63,0-1.1475,0.51-1.1475,1.1475v1.125c11.445,0.0675,20.745,9.3,20.82,20.67h0.975c0.63,0,1.1475-0.51,1.1475-1.1475V14.5125C20.8575,8.04,15.5475,2.9175,8.925,0.5325H1.68z M0.5325,6.3075v3.735c7.425,0.0675,13.455,6.0525,13.53,13.4325h3.8775C17.865,13.995,10.0875,6.315,0.5325,6.3075z M0.5325,13.545v8.7825c0,0.63,0.51,1.1475,1.1475,1.1475H10.65C10.575,17.985,6.0675,13.5525,0.5325,13.545z M16.53,0.5325c1.35,0.945,2.715,2.01,3.915,3.2025c1.0875,1.08,2.145,2.3775,3.03,3.585V1.68c0-0.63-0.51-1.1475-1.1475-1.1475H16.53z";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -219,7 +224,7 @@ export class MQTTConfigPanel extends LitElement {
       <ha-card class="nav-card">
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item @click=${this._openOptionFlow}>
+            <ha-md-list-item type="link" @click=${this._openOptionFlow}>
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize("ui.panel.config.mqtt.option_flow")}
@@ -227,6 +232,18 @@ export class MQTTConfigPanel extends LitElement {
               <div slot="supporting-text">
                 ${this.hass.localize(
                   "ui.panel.config.mqtt.option_flow_description"
+                )}
+              </div>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-md-list-item>
+            <ha-md-list-item type="link" @click=${this._openConfigFlow}>
+              <ha-svg-icon slot="start" .path=${mdiMqtt}></ha-svg-icon>
+              <div slot="headline">
+                ${this.hass.localize("ui.panel.config.mqtt.config_flow")}
+              </div>
+              <div slot="supporting-text">
+                ${this.hass.localize(
+                  "ui.panel.config.mqtt.config_flow_description"
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
@@ -341,6 +358,21 @@ export class MQTTConfigPanel extends LitElement {
   private async _openOptionFlow() {
     showOptionsFlowDialog(this, this._configEntry!);
   }
+
+  private _openConfigFlow = async () => {
+    if (!this._configEntry) {
+      return;
+    }
+    showConfigFlowDialog(this, {
+      startFlowHandler: this._configEntry.domain,
+      manifest: await fetchIntegrationManifest(
+        this.hass,
+        this._configEntry.domain
+      ),
+      entryId: this._configEntry.entry_id,
+      navigateToResult: true,
+    });
+  };
 
   static get styles(): CSSResultGroup {
     return [

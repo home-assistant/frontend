@@ -7405,6 +7405,8 @@
           "title": "MQTT",
           "option_flow": "MQTT options",
           "option_flow_description": "Set discovery options",
+          "config_flow": "Connection",
+          "config_flow_description": "Broker connection settings",
           "status_online": "Online",
           "status_offline": "Offline",
           "my_network_title": "My network",
