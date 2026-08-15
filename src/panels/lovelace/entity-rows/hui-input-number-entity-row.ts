@@ -92,7 +92,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                 </div>
               `
             : html`
-                <div class="flex state">
+                <div class="flex box">
                   <ha-input
                     .disabled=${stateObj.state === UNAVAILABLE}
                     pattern="[0-9]+([\\.][0-9]+)?"
@@ -128,6 +128,10 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       min-width: 45px;
       text-align: end;
     }
+    .box {
+      flex-grow: 0;
+      min-width: 45px;
+    }
     ha-input {
       width: 100%;
     }
@@ -137,6 +141,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     ha-slider {
       width: 100%;
       max-width: 200px;
+      /* Horizontal margin leaves room for the thumb at min and max so it
+         isn't clipped by the card's overflow-x: hidden. */
+      margin: 1px var(--ha-space-2);
     }
   `;
 

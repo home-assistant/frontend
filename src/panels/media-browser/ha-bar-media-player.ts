@@ -12,7 +12,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -582,14 +587,15 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     this._volumeSlider.value = this._volumeValue;
   }
 
-  private _handleControlClick(e: MouseEvent): void {
-    const action = (e.currentTarget! as HTMLElement).getAttribute("action")!;
-
+  private _handleControlClick(
+    e: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ): void {
+    const action = e.currentTarget.getAttribute("action")!;
     if (!this._browserPlayer) {
       handleMediaControlClick(
         this.hass!,
         this._stateObj!,
-        (e.currentTarget as HTMLElement).getAttribute("action")!
+        e.currentTarget.getAttribute("action")!
       );
       return;
     }
@@ -600,12 +606,12 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _handleMediaSeekChanged(e: Event): void {
+  private _handleMediaSeekChanged(e: HASSDomTargetEvent<HaSlider>): void {
     if (this.entityId === BROWSER_PLAYER || !this._stateObj) {
       return;
     }
 
-    const newValue = (e.target as HaSlider).value;
+    const newValue = e.target.value;
     this.hass.callService("media_player", "media_seek", {
       entity_id: this._stateObj.entity_id,
       seek_position: newValue,

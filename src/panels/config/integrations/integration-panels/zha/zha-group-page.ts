@@ -19,10 +19,7 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-list";
-import type {
-  DeviceEndpointSelectionChangedEvent,
-  ZHADeviceEndpointList,
-} from "./zha-device-endpoint-list";
+import type { ZHADeviceEndpointList } from "./zha-device-endpoint-list";
 import { showZHAAddGroupMembersDialog } from "./show-dialog-zha-add-group-members";
 
 @customElement("zha-group-page")
@@ -202,7 +199,7 @@ export class ZHAGroupPage extends LitElement {
   }
 
   private _handleRemoveSelectionChanged(
-    ev: HASSDomEvent<DeviceEndpointSelectionChangedEvent>
+    ev: HASSDomEvent<HASSDomEvents["selection-changed"]>
   ): void {
     this._selectedDevicesToRemove = ev.detail.value;
   }
@@ -227,10 +224,6 @@ export class ZHAGroupPage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        hass-subpage {
-          --app-header-text-color: var(--sidebar-icon-color);
-        }
-
         .container {
           box-sizing: border-box;
           max-width: 720px;

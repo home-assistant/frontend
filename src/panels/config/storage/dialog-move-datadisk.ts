@@ -156,6 +156,7 @@ class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>(
                   .label=${this.hass.localize(
                     "ui.panel.config.storage.datadisk.select_device"
                   )}
+                  .value=${this._selectedDevice}
                   @selected=${this._selectDevice}
                   .options=${this._disks.map((disk) => ({
                     value: disk.id,

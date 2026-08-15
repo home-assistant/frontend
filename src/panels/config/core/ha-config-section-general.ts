@@ -179,7 +179,6 @@ class HaConfigSectionGeneral extends LitElement {
       >
         <div class="card-content">
           <ha-timezone-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.time_zone"
             )}

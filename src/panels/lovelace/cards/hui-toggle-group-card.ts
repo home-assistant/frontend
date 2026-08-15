@@ -14,6 +14,7 @@ import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { ToggleGroupCardConfig } from "./types";
+import { getToggleAction } from "../../../common/entity/get_toggle_action";
 
 @customElement("hui-toggle-group-card")
 export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
@@ -95,12 +96,7 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
     const onEntities = this._getOnEntities();
     const domain = computeDomain(this._config.entities[0]);
 
-    let service: string;
-    if (domain === "cover") {
-      service = onEntities.length > 0 ? "close_cover" : "open_cover";
-    } else {
-      service = onEntities.length > 0 ? "turn_off" : "turn_on";
-    }
+    const service = getToggleAction(domain, onEntities.length === 0);
 
     this.hass.callService(domain, service, {
       entity_id: this._config.entities,

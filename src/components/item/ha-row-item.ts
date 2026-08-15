@@ -2,6 +2,7 @@ import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 
 /**
  * @element ha-row-item
@@ -56,7 +57,7 @@ export class HaRowItem extends LitElement {
   @state() private _hasEnd = false;
 
   private _onSlotChange(name: "start" | "end") {
-    return (ev: Event) => {
+    return (ev: HASSDomTargetEvent<HTMLSlotElement>) => {
       const slot = ev.target as HTMLSlotElement;
       const hasContent = slot
         .assignedNodes({ flatten: true })

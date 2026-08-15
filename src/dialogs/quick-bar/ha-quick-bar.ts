@@ -1,4 +1,4 @@
-import { mdiDevices } from "@mdi/js";
+import { mdiCommentProcessingOutline, mdiDevices } from "@mdi/js";
 import { consume } from "@lit/context";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -60,7 +60,9 @@ import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
+import { showVoiceCommandDialog } from "../voice-command-dialog/show-ha-voice-command-dialog";
 import {
   effectiveQuickBarMode,
   type QuickBarParams,
@@ -68,6 +70,18 @@ import {
 } from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
+
+interface AssistComboBoxItem extends PickerComboBoxItem {
+  action: "assist";
+  assistPrompt: string;
+}
+
+type QuickBarComboBoxItem =
+  | NavigationComboBoxItem
+  | ActionCommandComboBoxItem
+  | EntityComboBoxItem
+  | DevicePickerItem
+  | AssistComboBoxItem;
 
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
@@ -290,13 +304,7 @@ export class QuickBar extends LitElement {
     `;
   }
 
-  private _renderRow = (
-    item:
-      | NavigationComboBoxItem
-      | ActionCommandComboBoxItem
-      | EntityComboBoxItem
-      | DevicePickerItem
-  ) => {
+  private _renderRow = (item: QuickBarComboBoxItem) => {
     if (!item) {
       return nothing;
     }
@@ -412,8 +420,8 @@ export class QuickBar extends LitElement {
   }: {
     firstIndex: number;
     lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
+    firstItem: QuickBarComboBoxItem | string;
+    secondItem: QuickBarComboBoxItem | string;
     itemsCount: number;
   }) => {
     if (
@@ -461,7 +469,23 @@ export class QuickBar extends LitElement {
       filter?: string,
       section?: QuickBarSection
     ) => {
-      const items: (string | PickerComboBoxItem)[] = [];
+      const items: (string | QuickBarComboBoxItem)[] = [];
+      const prompt = filter?.trim();
+      const assistItem =
+        prompt &&
+        (!section || section === "command") &&
+        isComponentLoaded(this.hass.config, "conversation") &&
+        !this.hass.auth.external?.config.hasAssist
+          ? ({
+              id: "ask-assist",
+              action: "assist",
+              primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {
+                query: prompt,
+              }),
+              icon_path: mdiCommentProcessingOutline,
+              assistPrompt: prompt,
+            } satisfies AssistComboBoxItem)
+          : undefined;
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -486,10 +510,12 @@ export class QuickBar extends LitElement {
         items.push(...navigateItems);
       }
 
-      if (this.hass.user?.is_admin && (!section || section === "command")) {
-        let commandItems = this._generateActionCommandsMemoized(this.hass).sort(
-          this._sortBySortingLabel
-        );
+      if (!section || section === "command") {
+        let commandItems = this.hass.user?.is_admin
+          ? this._generateActionCommandsMemoized(this.hass).sort(
+              this._sortBySortingLabel
+            )
+          : [];
 
         if (filter) {
           commandItems = this._filterGroup(
@@ -499,12 +525,15 @@ export class QuickBar extends LitElement {
           ) as ActionCommandComboBoxItem[];
         }
 
-        if (!section && commandItems.length) {
+        if (!section && (commandItems.length || assistItem)) {
           // show group title
           items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
         }
 
         items.push(...commandItems);
+        if (assistItem) {
+          items.push(assistItem);
+        }
       }
 
       if (!section || section === "entity") {
@@ -723,9 +752,20 @@ export class QuickBar extends LitElement {
       const { index, newTab } = ev.detail;
       const item = this._comboBox.virtualizerElement.items[
         index
-      ] as PickerComboBoxItem;
+      ] as QuickBarComboBoxItem;
 
       this._itemSelected = true;
+
+      if (item && "assistPrompt" in item) {
+        this.closeDialog();
+        showVoiceCommandDialog(this, this.hass, {
+          pipeline_id: "last_used",
+          start_listening: false,
+          prompt: item.assistPrompt,
+          submit: true,
+        });
+        return;
+      }
 
       // entity selected
       if (item && "stateObj" in item) {
@@ -760,9 +800,9 @@ export class QuickBar extends LitElement {
             title: this.hass.localize(
               `ui.dialogs.restart.${actionItem.action}.confirm_title`
             ),
-            text: this.hass.localize(
-              `ui.dialogs.restart.${actionItem.action}.confirm_description`
-            ),
+            text: html`${this.hass.localize(
+                `ui.dialogs.restart.${actionItem.action}.confirm_description`
+              )}<br /><br /><automation-restart-status></automation-restart-status>`,
             confirmText: this.hass.localize(
               `ui.dialogs.restart.${actionItem.action}.confirm_action`
             ),

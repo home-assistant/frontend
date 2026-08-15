@@ -9,12 +9,16 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import {
   formatCallyDateRange,
-  formatDateMonth,
-  formatDateYear,
+  formatCallyMonthYear,
+  formatDateMonthYear,
   formatISODateOnly,
 } from "../../common/datetime/format_date";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { configContext, internationalizationContext } from "../../data/context";
 import { TimeZone } from "../../data/translation";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
@@ -56,13 +60,16 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
   })
   private _hassConfig!: HassConfig;
 
-  /** used to show month in calendar-range header */
-  @state() private _pickerMonth?: string;
+  /** used to show month and year in calendar-range header */
+  @state() private _pickerMonthYear?: string;
 
-  /** used to show year in calendar-date header */
-  @state() private _pickerYear?: string;
-
-  /** used for today to navigate focus in calendar-range  */
+  /**
+   * used for today to navigate focus in calendar-range
+   *
+   * Always mirrors the day calendar-range has focused, never cleared: once this
+   * has held a date, rendering `undefined` over it makes cally fall back to the
+   * selected range and page the calendar away from where the user is.
+   */
   @state() private _focusDate?: string;
 
   @state() private _dateValue?: string;
@@ -88,12 +95,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
             this._hassConfig
           )
         : undefined;
-    this._pickerMonth = formatDateMonth(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._pickerYear = formatDateYear(
+    this._pickerMonthYear = formatDateMonthYear(
       date,
       this._i18n.locale,
       this._hassConfig
@@ -163,9 +165,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
               slot="previous"
             ></ha-icon-button-prev>
             <div class="heading" slot="heading">
-              <span class="month-year"
-                >${this._pickerMonth} ${this._pickerYear}</span
-              >
+              <span class="month-year">${this._pickerMonthYear}</span>
               <ha-icon-button
                 @click=${this._focusToday}
                 .path=${mdiCalendarToday}
@@ -176,7 +176,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
               tabindex="-1"
               slot="next"
             ></ha-icon-button-next>
-            <calendar-month></calendar-month>
+            <calendar-month dir=${this.dir}></calendar-month>
           </calendar-range>
           ${
             this.timePicker
@@ -229,12 +229,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
       this._i18n.locale,
       this._hassConfig
     );
-    this._pickerMonth = formatDateMonth(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._pickerYear = formatDateYear(
+    this._pickerMonthYear = formatDateMonthYear(
       date,
       this._i18n.locale,
       this._hassConfig
@@ -307,28 +302,27 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     });
   }
 
-  private _focusChanged(ev: CustomEvent<Date>) {
-    const date = ev.detail;
-    this._pickerMonth = formatDateMonth(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._pickerYear = formatDateYear(
-      date,
-      this._i18n.locale,
-      this._hassConfig
-    );
-    this._focusDate = undefined;
+  private _focusChanged(
+    ev: HASSDomEvent<Date> &
+      HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
+  ) {
+    this._pickerMonthYear = formatCallyMonthYear(ev.detail, this._i18n.locale);
+    this._focusDate = ev.target.focusedDate;
   }
 
-  private _handleChange(ev: CustomEvent) {
+  private _handleChange(
+    ev: HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
+  ) {
     const dateElement = ev.target as HTMLElementTagNameMap["calendar-range"];
     this._dateValue = dateElement.value;
-    this._focusDate = undefined;
+    this._focusDate = dateElement.focusedDate;
   }
 
-  private _clickDateRangeChip(ev: Event) {
+  private _clickDateRangeChip(
+    ev: HASSDomTargetEvent<
+      HaFilterChip & { index: number; range: [Date, Date] }
+    >
+  ) {
     const chip = ev.target as HaFilterChip & {
       index: number;
       range: [Date, Date];
@@ -336,7 +330,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._saveDateRangePreset(chip.range, chip.index);
   }
 
-  private _setDateRange(ev: CustomEvent<ActionDetail>) {
+  private _setDateRange(ev: HASSDomEvent<ActionDetail>) {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
@@ -355,7 +349,9 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     });
   }
 
-  private _handleChangeTime(ev: ValueChangedEvent<string>) {
+  private _handleChangeTime(
+    ev: ValueChangedEvent<string> & HASSDomTargetEvent<HaBaseTimeInput>
+  ) {
     ev.stopPropagation();
     const time = ev.detail.value;
     const target = ev.target as HaBaseTimeInput;

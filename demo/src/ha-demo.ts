@@ -5,8 +5,8 @@ import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { selectedDemoConfig } from "./configs/demo-configs";
-import { mockAreaRegistry } from "./stubs/area_registry";
+import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
+import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -14,8 +14,10 @@ import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
-import { mockFloorRegistry } from "./stubs/floor_registry";
+import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockHardware } from "./stubs/hardware";
+import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
@@ -29,11 +31,13 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
+import { mockUsagePrediction } from "./stubs/usage_prediction";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
 const CONFIG_PANEL_COMMANDS = [
   "cloud/",
+  "webhook/list",
   "validate_config",
   "config_entries/",
   "device_automation/",
@@ -54,6 +58,8 @@ const CONFIG_PANEL_COMMANDS = [
   "search/related",
   "tag/list",
   "assist_pipeline/",
+  "config/entity_registry/settings/",
+  "slugify",
 ];
 
 @customElement("ha-demo")
@@ -69,6 +75,22 @@ export class HaDemo extends HomeAssistantAppEl {
     // `false` for contexts: HomeAssistantAppEl already provides them via
     // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
     const hass = provideHass(this, initial, true, false);
+
+    hass.updateHass({
+      config: {
+        ...hass.config,
+        components: [
+          ...(hass.config?.components ?? []),
+          "backup",
+          "webhook",
+          "usage_prediction",
+          "assist_pipeline",
+          "hassio",
+          "hardware",
+        ],
+      },
+    });
+
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
@@ -87,6 +109,8 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockHardware(hass);
+    mockHassioSupervisor(hass);
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
@@ -104,6 +128,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
+    mockUsagePrediction(hass);
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
@@ -151,13 +176,13 @@ export class HaDemo extends HomeAssistantAppEl {
 
     hass.addEntities(energyEntities());
 
-    // Once config is loaded AND localize, set entities and apply theme.
+    // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
+        setDemoFloors(hass, conf.floors);
+        setDemoAreas(hass, conf.areas);
         hass.addEntities(conf.entities(localize));
-        if (conf.theme) {
-          hass.mockTheme(conf.theme());
-        }
+        applyDemoTheme(hass, conf.theme);
       }
     );
 

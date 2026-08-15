@@ -37,6 +37,7 @@ import { hasConfigChanged } from "../../common/has-changed";
 import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCommonOptions,
   getCompareTransform,
   getPeriodMidpointOffset,
@@ -58,6 +59,8 @@ const stackOrder = {
   to_grid: 2,
   used_solar: 3,
   used_battery: 4,
+  from_grid: 5,
+  used_grid: 5,
 };
 
 @customElement("hui-energy-usage-graph-card")
@@ -174,6 +177,7 @@ export class HuiEnergyUsageGraphCard
               this._legendData
             )}
             chart-type="bar"
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
             !this._chartData.some((dataset) => dataset.data!.length)
@@ -294,6 +298,15 @@ export class HuiEnergyUsageGraphCard
       to_battery: {},
     };
 
+    // Grid sources can be import-only or export-only; assign color indices by
+    // position in the user's grid sources config so this card matches the
+    // energy sources table, which uses positional indices.
+    const colorIndices: Record<string, Record<string, number>> = {};
+    Object.keys(colorPropertyMap).forEach((key) => {
+      colorIndices[key] = {};
+    });
+    let gridIdx = 0;
+
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (statIds.solar) {
@@ -332,6 +345,7 @@ export class HuiEnergyUsageGraphCard
         } else {
           statIds.from_grid = [gridSource.stat_energy_from];
         }
+        colorIndices.from_grid[gridSource.stat_energy_from] = gridIdx;
         if (gridSource.name) {
           statLabels.from_grid[gridSource.stat_energy_from] =
             gridSource.stat_energy_to
@@ -348,6 +362,7 @@ export class HuiEnergyUsageGraphCard
         } else {
           statIds.to_grid = [gridSource.stat_energy_to];
         }
+        colorIndices.to_grid[gridSource.stat_energy_to] = gridIdx;
         if (gridSource.name) {
           statLabels.to_grid[gridSource.stat_energy_to] =
             gridSource.stat_energy_from
@@ -358,17 +373,18 @@ export class HuiEnergyUsageGraphCard
               : gridSource.name;
         }
       }
+      gridIdx++;
     }
 
     const computedStyles = getComputedStyle(this);
 
-    const colorIndices: Record<string, Record<string, number>> = {};
     Object.keys(colorPropertyMap).forEach((key) => {
-      colorIndices[key] = {};
       if (
         key === "used_grid" ||
         key === "used_solar" ||
-        key === "used_battery"
+        key === "used_battery" ||
+        key === "from_grid" ||
+        key === "to_grid"
       ) {
         return;
       }
@@ -450,8 +466,17 @@ export class HuiEnergyUsageGraphCard
 
     // @ts-expect-error
     datasets.sort((a, b) => a.order - b.order);
-    fillDataGapsAndRoundCaps(datasets);
-    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+    fillDataGapsAndRoundCaps(
+      datasets,
+      true,
+      generateFillBuckets(
+        datasets,
+        this._start,
+        this._end,
+        getSuggestedPeriod(this._start, this._end)
+      )
+    );
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
@@ -554,10 +579,17 @@ export class HuiEnergyUsageGraphCard
       combinedData[key] = sets;
     });
 
-    combinedData.used_solar = { used_solar: consumptionData.used_solar };
-    combinedData.used_battery = {
-      used_battery: consumptionData.used_battery,
-    };
+    // Only add solar/battery consumption series when such a source is
+    // actually configured, otherwise the legend shows empty solar/battery
+    // entries for grid-only setups.
+    if (statIdsByCat.solar) {
+      combinedData.used_solar = { used_solar: consumptionData.used_solar };
+    }
+    if (statIdsByCat.from_battery) {
+      combinedData.used_battery = {
+        used_battery: consumptionData.used_battery,
+      };
+    }
 
     if (combinedData.from_grid && summedData.to_battery) {
       const used_grid = {};
@@ -596,15 +628,14 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
-    // Only center bars for sub-daily periods (hour/5min). Only start timestamps
-    // available here, so estimate midpoint from the gap between the first two
-    // entries; with a lone first-of-day bucket there is no gap to measure, so
-    // fall back to the nominal period midpoint so the bar stays centered.
+    // Only start timestamps available here, so center sub-daily bars from the
+    // gap between the first two entries, clamped to the nominal period so
+    // sparse or lone buckets stay centered on the same grid as dense data.
     const period = getSuggestedPeriod(this._start, this._end);
-    const periodOffset =
-      (period === "hour" || period === "5minute") && uniqueKeys.length >= 2
-        ? (uniqueKeys[1] - uniqueKeys[0]) / 2
-        : getPeriodMidpointOffset(period);
+    const periodOffset = getPeriodMidpointOffset(
+      period,
+      uniqueKeys.length >= 2 ? uniqueKeys[1] - uniqueKeys[0] : undefined
+    );
 
     const compareTransform = getCompareTransform(
       this._start,

@@ -71,6 +71,17 @@ export class HaControlSlider extends LitElement {
   @property({ type: Number })
   public step = 1;
 
+  /**
+   * Round the value shown in the tooltip and announced to assistive
+   * technologies to the nearest integer. The handle still snaps to `step`, so
+   * the number of steps is unchanged. Useful when `step` is fractional but the
+   * value is conceptually a whole number — e.g. a fan whose `percentage_step`
+   * is 100 / speed_count (like ~1.0989 for 91 speeds), which would otherwise
+   * display fractional percentages such as "28.57%".
+   */
+  @property({ type: Boolean, attribute: "round-value" })
+  public roundValue = false;
+
   @property({ type: Number })
   public min = 0;
 
@@ -104,7 +115,14 @@ export class HaControlSlider extends LitElement {
   }
 
   steppedValue(value: number) {
-    return Math.round(value / this.step) * this.step;
+    // Clamp after snapping: when the step does not divide the range evenly,
+    // snapping alone rounds past the bounds (min 1, max 99, step 10 → 0 / 100).
+    return this.boundedValue(Math.round(value / this.step) * this.step);
+  }
+
+  private _displayedValue(value: number) {
+    const stepped = this.steppedValue(value);
+    return this.roundValue ? Math.round(stepped) : stepped;
   }
 
   boundedValue(value: number) {
@@ -118,8 +136,8 @@ export class HaControlSlider extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    if (changedProps.has("value")) {
-      const valuenow = this.steppedValue(this.value ?? 0);
+    if (changedProps.has("value") || changedProps.has("roundValue")) {
+      const valuenow = this._displayedValue(this.value ?? 0);
       this.setAttribute("aria-valuenow", valuenow.toString());
       this.setAttribute("aria-valuetext", this._formatValue(valuenow));
     }
@@ -238,13 +256,9 @@ export class HaControlSlider extends LitElement {
     } else if (e.code === "End") {
       this.value = this.max;
     } else if (e.code === "PageUp") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) + this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) + this._tenPercentStep);
     } else if (e.code === "PageDown") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) - this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) - this._tenPercentStep);
     } else {
       const isRtl = mainWindow.document.dir === "rtl";
       let multiplier = 1;
@@ -312,7 +326,7 @@ export class HaControlSlider extends LitElement {
       this.tooltipMode === "always" ||
       (this.tooltipVisible && this.tooltipMode === "interaction");
 
-    const value = this.steppedValue(this.value ?? 0);
+    const value = this._displayedValue(this.value ?? 0);
 
     return html`
       <span
@@ -330,7 +344,7 @@ export class HaControlSlider extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valuenow = this.steppedValue(this.value ?? 0);
+    const valuenow = this._displayedValue(this.value ?? 0);
     return html`
       <div
         class="container${classMap({

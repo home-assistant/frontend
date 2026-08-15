@@ -26,7 +26,10 @@ import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { transform } from "../../common/decorators/transform";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
@@ -51,6 +54,7 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+const DEFAULT_CHART_WIDTH = 500;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -1048,7 +1052,9 @@ export class HaChartBase extends LitElement {
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
-              this.clientWidth * window.devicePixelRatio,
+              // 0 while inside a hidden container, e.g. a section with a visibility condition
+              (this.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
               minX,
               maxX
             ),
@@ -1213,7 +1219,9 @@ export class HaChartBase extends LitElement {
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
-  private _legendPointerDown(ev: PointerEvent) {
+  private _legendPointerDown(
+    ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     // Mouse uses Ctrl/Cmd+click instead
     if (ev.pointerType === "mouse") {
       return;
@@ -1243,7 +1251,9 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _toggleDataset(ev: MouseEvent) {
+  private _toggleDataset(
+    ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     ev.stopPropagation();
     if (!this.chart) {
       return;
@@ -1265,7 +1275,7 @@ export class HaChartBase extends LitElement {
     this._handleDatasetToggle(id);
   }
 
-  private _labelClick(ev: MouseEvent) {
+  private _labelClick(ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>) {
     ev.stopPropagation();
     if (!this.chart) {
       return;

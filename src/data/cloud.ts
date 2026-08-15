@@ -28,7 +28,12 @@ export interface CloudPreferences {
   google_report_state: boolean;
   tts_default_voice: [string, string];
   cloud_ice_servers_enabled: boolean;
+  onboarded_items: string[];
+  onboarding_postponed_until: string | null;
 }
+
+export type RemoteCertificateStatus =
+  "error" | "generating" | "loading" | "loaded" | "ready";
 
 export interface CloudStatusLoggedIn {
   logged_in: true;
@@ -44,18 +49,36 @@ export interface CloudStatusLoggedIn {
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
-  remote_certificate_status:
-    null | "error" | "generating" | "loaded" | "loading" | "ready";
+  remote_certificate_status: RemoteCertificateStatus | null;
   http_use_ssl: boolean;
   active_subscription: boolean;
+  onboarding_postponed: boolean;
+  onboarding_completed: boolean;
 }
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
+
+// Onboarding items the backend tracks. Mirrors ONBOARDING_ITEMS in the cloud
+// integration; onboarding is complete once every item has been onboarded.
+export const ONBOARDING_ITEMS = [
+  "remote",
+  "backup",
+  "voice",
+  "streaming",
+] as const;
+
+export type CloudOnboardingItem = (typeof ONBOARDING_ITEMS)[number];
+
+type SubscriptionStatus =
+  "active" | "canceled" | "expired" | "trialing" | "unknown";
 
 export interface SubscriptionInfo {
   human_description: string;
   provider: string;
   plan_renewal_date?: number;
+  subscription?: {
+    status?: SubscriptionStatus;
+  };
 }
 
 export interface CloudWebhook {
@@ -157,6 +180,20 @@ export const updateCloudPref = (
   hass.callWS({
     type: "cloud/update_prefs",
     ...prefs,
+  });
+
+export const postponeCloudOnboarding = (hass: HomeAssistant) =>
+  hass.callWS<CloudStatusLoggedIn>({
+    type: "cloud/onboarding/postpone",
+  });
+
+export const completeCloudOnboarding = (
+  hass: HomeAssistant,
+  items: CloudOnboardingItem[]
+) =>
+  hass.callWS<CloudStatusLoggedIn>({
+    type: "cloud/onboarding/complete",
+    items,
   });
 
 export const removeCloudData = (hass: HomeAssistant) =>

@@ -8,13 +8,13 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   getSuggestedPeriod,
   getSummedData,
 } from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
+import type { Statistics } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
-  getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
@@ -23,6 +23,7 @@ import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCompareTransform,
   getPeriodMidpointOffset,
   splitUntrackedConsumption,
@@ -68,13 +69,13 @@ interface ProcessContext {
   end: Date;
   compareStart?: Date;
   untrackedOrder: number;
+  deviceLabels: Record<string, string>;
 }
 
 function processDataSet(
   ctx: ProcessContext,
   computedStyle: CSSStyleDeclaration,
   statistics: Statistics,
-  statisticsMetaData: Record<string, StatisticsMetaData>,
   devices: DeviceConsumptionEnergyPreference[],
   sorted_devices: string[],
   childMap: Record<string, string[]>,
@@ -166,12 +167,7 @@ function processDataSet(
     }
 
     const name =
-      (source.name ||
-        getStatisticLabel(
-          ctx.hass,
-          source.stat_consumption,
-          statisticsMetaData[source.stat_consumption]
-        )) +
+      ctx.deviceLabels[source.stat_consumption] +
       (source.stat_consumption in childMap
         ? ` (${ctx.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
         : "");
@@ -238,15 +234,15 @@ function processUntracked(
   const sortedTimes = Object.keys(consumptionData.used_total).sort(
     (a, b) => Number(a) - Number(b)
   );
-  // Only start timestamps available here, so center sub-daily bars using the
-  // gap between the first two entries. With a lone first-of-day bucket there is
-  // no gap to measure, so fall back to the nominal period midpoint — which
-  // matches the device bars' computeStatMidpoint instead of collapsing to the
-  // period start and splitting into a second stack.
-  const periodOffset =
-    (period === "hour" || period === "5minute") && sortedTimes.length >= 2
-      ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
-      : getPeriodMidpointOffset(period);
+  // Only start timestamps available here, so center sub-daily bars from the
+  // gap between the first two entries, clamped to the nominal period so
+  // sparse or lone buckets stay centered on the same grid as the device bars.
+  const periodOffset = getPeriodMidpointOffset(
+    period,
+    sortedTimes.length >= 2
+      ? Number(sortedTimes[1]) - Number(sortedTimes[0])
+      : undefined
+  );
   sortedTimes.forEach((time) => {
     const ts = Number(time);
     const x = compare
@@ -350,6 +346,8 @@ export function generateEnergyDevicesDetailGraphData(
   const data = energyData.stats;
   const compareData = energyData.statsCompare;
 
+  const devices = energyData.prefs.device_consumption;
+
   const ctx: ProcessContext = {
     hass,
     config,
@@ -357,9 +355,12 @@ export function generateEnergyDevicesDetailGraphData(
     end,
     compareStart,
     untrackedOrder,
+    deviceLabels: computeEnergyDeviceLabels(
+      hass,
+      devices,
+      energyData.statsMetadata
+    ),
   };
-
-  const devices = energyData.prefs.device_consumption;
 
   const childMap: Record<string, string[]> = {};
   devices.forEach((d) => {
@@ -424,7 +425,6 @@ export function generateEnergyDevicesDetailGraphData(
       ctx,
       computedStyles,
       compareData,
-      energyData.statsMetadata,
       energyData.prefs.device_consumption,
       sorted_devices,
       childMap,
@@ -467,7 +467,6 @@ export function generateEnergyDevicesDetailGraphData(
     ctx,
     computedStyles,
     data,
-    energyData.statsMetadata,
     energyData.prefs.device_consumption,
     sorted_devices,
     childMap,
@@ -515,8 +514,12 @@ export function generateEnergyDevicesDetailGraphData(
     }
   }
 
-  fillDataGapsAndRoundCaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  fillDataGapsAndRoundCaps(
+    datasets,
+    true,
+    generateFillBuckets(datasets, start, end, getSuggestedPeriod(start, end))
+  );
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   return {
     chartData: datasets,

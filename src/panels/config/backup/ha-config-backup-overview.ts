@@ -229,24 +229,27 @@ class HaConfigBackupOverview extends LitElement {
         <div class="content">
           ${
             this.info && Object.keys(this.info.agent_errors).length
-              ? html`${Object.entries(this.info.agent_errors).map(
-                  ([agentId, error]) =>
-                    html`<ha-alert
-                      alert-type="error"
-                      .title=${this.hass.localize(
-                        "ui.panel.config.backup.overview.agent_error",
-                        {
-                          name: computeBackupAgentName(
-                            this.hass.localize,
-                            agentId,
-                            this.agents
-                          ),
-                        }
-                      )}
-                    >
-                      ${error}
-                    </ha-alert>`
-                )}`
+              ? html`
+                  ${Object.entries(this.info.agent_errors).map(
+                    ([agentId, error]) => html`
+                      <ha-alert
+                        alert-type="error"
+                        .title=${this.hass.localize(
+                          "ui.panel.config.backup.overview.agent_error",
+                          {
+                            name: computeBackupAgentName(
+                              this.hass.localize,
+                              agentId,
+                              this.agents
+                            ),
+                          }
+                        )}
+                      >
+                        ${error}
+                      </ha-alert>
+                    `
+                  )}
+                `
               : nothing
           }
           ${

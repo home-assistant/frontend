@@ -16,6 +16,7 @@ import {
   CLIMATE_MODE_CONFIGS,
   generateStateHistoryChartLineData,
 } from "./state-history-chart-line-data";
+import { createYAxisPrecisionBounds } from "./y-axis-fraction-digits";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -27,6 +28,10 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
+
+// Minimum width reserved for the Y-axis labels; also the value _yWidth is
+// re-measured up from whenever the tick precision changes on zoom.
+const MIN_Y_AXIS_WIDTH = 25;
 
 // Used to recover the underlying entity_id from a legend dataset id.
 // Kept in sync with the suffixes appended at dataset construction below
@@ -101,7 +106,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _hiddenStats = new Set<string>();
 
-  @state() private _yWidth = 25;
+  @state() private _yWidth = MIN_Y_AXIS_WIDTH;
 
   @state() private _visualMap?: VisualMapComponentOption[];
 
@@ -211,11 +216,13 @@ export class StateHistoryChartLine extends LitElement {
     })}`;
   };
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
   }
 
@@ -224,7 +231,7 @@ export class StateHistoryChartLine extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
@@ -318,8 +325,18 @@ export class StateHistoryChartLine extends LitElement {
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
-          min: this._clampYAxis(minYAxis),
-          max: this._clampYAxis(maxYAxis),
+          ...createYAxisPrecisionBounds({
+            min: this._clampYAxis(minYAxis),
+            max: this._clampYAxis(maxYAxis),
+            onFractionDigits: (digits) => {
+              if (digits !== this._yAxisFractionDigits) {
+                this._yAxisFractionDigits = digits;
+                // Re-measure the gutter for the new precision so it can shrink
+                // again when zooming back out (_yWidth otherwise only grows).
+                this._yWidth = 0;
+              }
+            },
+          }),
           position: rtl ? "right" : "left",
           scale: true,
           nameGap: 2,
@@ -448,7 +465,7 @@ export class StateHistoryChartLine extends LitElement {
       minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
-    const width = measureTextWidth(label, 12) + 5;
+    const width = Math.max(measureTextWidth(label, 12) + 5, MIN_Y_AXIS_WIDTH);
     if (width > this._yWidth) {
       this._yWidth = width;
       fireEvent(this, "y-width-changed", {

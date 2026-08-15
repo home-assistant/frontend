@@ -7,6 +7,7 @@ import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { sanitizeHttpUrl } from "../../common/url/sanitize-http-url";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
@@ -17,6 +18,7 @@ import {
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -68,13 +70,18 @@ declare global {
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "flow-update": HASSDomEvent<FlowUpdateEvent>;
-    "flow-step-footer-state-changed": HASSDomEvent<FlowStepFooterStateChangedEvent>;
+    "flow-update": HASSDomEvent<HASSDomEvents["flow-update"]>;
+    "flow-step-footer-state-changed": HASSDomEvent<
+      HASSDomEvents["flow-step-footer-state-changed"]
+    >;
   }
 }
 
 @customElement("dialog-data-entry-flow")
-class DataEntryFlowDialog extends LitElement {
+class DataEntryFlowDialog extends DirtyStateProviderMixin<
+  Record<string, unknown>,
+  "form"
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DataEntryFlowDialogParams;
@@ -99,6 +106,8 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _createEntryHasPendingUpdates = false;
 
+  @state() private _flowHasProgressed = false;
+
   private _formStepRef = createRef<FormStepElement>();
 
   private _abortStepRef = createRef<AbortStepElement>();
@@ -108,6 +117,8 @@ class DataEntryFlowDialog extends LitElement {
   private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
+    this._initDirtyTracking({ type: "deep" });
+    this._flowHasProgressed = Boolean(params.continueFlowId);
     this._params = params;
     this._instance = instance++;
     this._open = true;
@@ -175,7 +186,7 @@ class DataEntryFlowDialog extends LitElement {
       return;
     }
 
-    this._processStep(step);
+    this._processStep(step, this._flowHasProgressed);
     this._loading = undefined;
   }
 
@@ -213,6 +224,7 @@ class DataEntryFlowDialog extends LitElement {
 
     this._loading = undefined;
     this._step = undefined;
+    this._flowHasProgressed = false;
     this._params = undefined;
     this._handler = undefined;
     if (this._unsubDataEntryFlowProgress) {
@@ -328,13 +340,20 @@ class DataEntryFlowDialog extends LitElement {
         this._params.manifest?.is_built_in) ||
       !!this._params.manifest?.documentation;
 
+    const documentationLink = this._params.manifest?.is_built_in
+      ? documentationUrl(
+          this.hass,
+          `/integrations/${this._params.manifest.domain}`
+        )
+      : this._params.manifest?.documentation;
+
     const dialogTitle = this._getDialogTitle();
     const dialogSubtitle = this._getDialogSubtitle();
 
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this._preventScrimClose}
         @after-show=${this._focusFormStep}
         @closed=${this._dialogClosed}
       >
@@ -359,19 +378,15 @@ class DataEntryFlowDialog extends LitElement {
             : nothing
         }
         ${
-          showDocumentationLink && !this._loading && this._step
+          showDocumentationLink &&
+          documentationLink &&
+          !this._loading &&
+          this._step
             ? html`
                 <a
                   slot="headerActionItems"
                   class="help"
-                  href=${
-                    this._params.manifest!.is_built_in
-                      ? documentationUrl(
-                          this.hass,
-                          `/integrations/${this._params.manifest!.domain}`
-                        )
-                      : this._params.manifest!.documentation
-                  }
+                  href=${documentationLink}
                   target="_blank"
                   rel="noreferrer noopener"
                 >
@@ -484,6 +499,18 @@ class DataEntryFlowDialog extends LitElement {
     `;
   }
 
+  private get _preventScrimClose(): boolean {
+    return (
+      this.isDirtyState ||
+      this._flowHasProgressed ||
+      this._loading !== undefined ||
+      this._formStepLoading ||
+      this._createEntryHasPendingUpdates ||
+      this._step?.type === "external" ||
+      this._step?.type === "progress"
+    );
+  }
+
   private _renderFooter() {
     if (!this._step || this._loading) {
       return nothing;
@@ -521,21 +548,29 @@ class DataEntryFlowDialog extends LitElement {
                 </ha-button>
               </ha-dialog-footer>
             `;
-      case "external":
+      case "external": {
+        const externalUrl = sanitizeHttpUrl(this._step.url);
         return html`
           <ha-dialog-footer slot="footer">
-            <ha-button
-              slot="primaryAction"
-              href=${this._step.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_flow.external_step.open_site"
-              )}
-            </ha-button>
+            ${
+              externalUrl
+                ? html`
+                    <ha-button
+                      slot="primaryAction"
+                      href=${externalUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_flow.external_step.open_site"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
           </ha-dialog-footer>
         `;
+      }
       case "create_entry": {
         const devices = this._devices(
           this._params!.flowConfig.showDevices,
@@ -588,13 +623,15 @@ class DataEntryFlowDialog extends LitElement {
   }
 
   private async _processStep(
-    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
+    step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>,
+    flowHasProgressed = true
   ): Promise<void> {
     if (step === undefined) {
       this.closeDialog();
       return;
     }
 
+    this._flowHasProgressed ||= flowHasProgressed;
     const delayedLoading = setTimeout(() => {
       // only show loading for slow steps to avoid flickering
       this._loading = "loading_step";
@@ -615,11 +652,11 @@ class DataEntryFlowDialog extends LitElement {
       clearTimeout(delayedLoading);
       this._loading = undefined;
     }
-
     this._step = undefined;
     this._formStepLoading = false;
     this._createEntryHasPendingUpdates = false;
     await this.updateComplete;
+    this._initDirtyTracking({ type: "deep" });
     this._step = _step;
     if (
       (_step.type === "create_entry" || _step.type === "abort") &&
@@ -706,7 +743,7 @@ class DataEntryFlowDialog extends LitElement {
   };
 
   private _handleFooterStateChanged = (
-    ev: HASSDomEvent<FlowStepFooterStateChangedEvent>
+    ev: HASSDomEvent<HASSDomEvents["flow-step-footer-state-changed"]>
   ) => {
     if (ev.detail.loading !== undefined) {
       this._formStepLoading = ev.detail.loading;

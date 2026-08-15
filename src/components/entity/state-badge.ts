@@ -6,8 +6,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../common/color/compute-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { stateActive } from "../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -27,10 +29,15 @@ export class StateBadge extends LitElement {
 
   @property({ attribute: false }) public overrideImage?: string;
 
-  // Cannot be a boolean attribute because undefined is treated different than
-  // false.  When it is undefined, state is still colored for light entities.
+  /**
+   * Cannot be a boolean attribute because undefined is treated different than
+   * false. When it is undefined, state is still colored for light entities.
+   * @deprecated use `color` instead
+   */
   @property({ attribute: false }) public stateColor?: boolean;
 
+  // "state", "none" or a color (theme color name or CSS color). Custom colors
+  // apply when the entity is active. Takes precedence over stateColor.
   @property() public color?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
@@ -67,11 +74,17 @@ export class StateBadge extends LitElement {
     }
   }
 
-  private get _stateColor() {
+  private get _color(): string | undefined {
+    if (this.color) {
+      return this.color;
+    }
+    if (this.stateColor !== undefined) {
+      return this.stateColor ? "state" : "none";
+    }
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
       : undefined;
-    return this.stateColor ?? domain === "light";
+    return domain === "light" ? "state" : undefined;
   }
 
   protected render() {
@@ -131,6 +144,7 @@ export class StateBadge extends LitElement {
 
     if (stateObj) {
       const domain = computeDomain(stateObj.entity_id);
+      const color = this._color;
       if (this.overrideImage === undefined) {
         // hide icon if we have entity picture
         if (
@@ -147,13 +161,10 @@ export class StateBadge extends LitElement {
           }
           backgroundImage = `url(${imageUrl})`;
           this.icon = false;
-        } else if (this.color) {
-          // Externally provided overriding color wins over state color
-          iconStyle.color = this.color;
-        } else if (this._stateColor) {
-          const color = stateColorCss(stateObj);
-          if (color) {
-            iconStyle.color = color;
+        } else if (color === "state") {
+          const stateColor = stateColorCss(stateObj);
+          if (stateColor) {
+            iconStyle.color = stateColor;
           }
           if (stateObj.attributes.rgb_color) {
             iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
@@ -180,6 +191,8 @@ export class StateBadge extends LitElement {
               delete iconStyle.color;
             }
           }
+        } else if (color && color !== "none" && stateActive(stateObj)) {
+          iconStyle.color = computeCssColor(color);
         }
       } else if (this.overrideImage) {
         backgroundImage = `url(${this._resolveImageUrl(this.overrideImage)})`;

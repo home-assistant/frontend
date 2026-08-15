@@ -64,6 +64,7 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDataCollection,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -544,7 +545,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _presetSelected(ev) {
     localStorage.setItem(
-      `energy-default-period-_${this.collectionKey || "energy"}`,
+      getEnergyDefaultPeriodStorageKey(this.hass, this.collectionKey),
       RANGE_KEYS[ev.detail.index]
     );
   }

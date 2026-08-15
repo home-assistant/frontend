@@ -27,10 +27,10 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import { goBack, navigate } from "../../common/navigate";
+import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import {
   addSearchParam,
   extractSearchParamsObject,
@@ -70,11 +70,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import { isMoreInfoView } from "../../dialogs/more-info/const";
-import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
+import { handleBackClick } from "../../layouts/back-navigation";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isMac } from "../../util/is_mac";
@@ -162,6 +162,8 @@ class HUIRoot extends LitElement {
   private _viewScrollPositions: Record<string, number> = {};
 
   private _restoreScroll = false;
+
+  private _childPanelReady?: ChildPanelReady;
 
   private _undoRedoController = new UndoRedoController<UndoStackItem>(this, {
     apply: (config) => this._applyUndoRedo(config),
@@ -673,11 +675,7 @@ class HUIRoot extends LitElement {
     );
 
   private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
+    replaceCurrentUrl(constructUrlCurrentPath(removeSearchParam(param)));
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -723,21 +721,6 @@ class HUIRoot extends LitElement {
     } else if (searchParams.conversation === "1") {
       this._clearParam("conversation");
       this._showVoiceCommandDialog();
-    } else if (searchParams["more-info-entity-id"]) {
-      const entityId = searchParams["more-info-entity-id"];
-      const view = searchParams["more-info-view"];
-      this._clearParam("more-info-entity-id");
-      if (view) {
-        this._clearParam("more-info-view");
-      }
-      // Wait for the next render to ensure the view is fully loaded
-      // because the more info dialog is closed when the url changes
-      afterNextRender(() => {
-        showMoreInfoDialog(this, {
-          entityId,
-          view: isMoreInfoView(view) ? view : undefined,
-        });
-      });
     }
   }
 
@@ -776,7 +759,7 @@ class HUIRoot extends LitElement {
       huiView.narrow = this.narrow;
     }
 
-    let newSelectView;
+    let newSelectView: HUIRoot["_curView"];
 
     let viewPath: string | undefined = this.route!.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
@@ -889,41 +872,39 @@ class HUIRoot extends LitElement {
   };
 
   private _goBack(): void {
-    const views = this.lovelace?.config.views ?? [];
-    const curViewConfig =
-      typeof this._curView === "number" ? views[this._curView] : undefined;
-
-    if (curViewConfig?.back_path != null) {
-      navigate(curViewConfig.back_path, { replace: true });
-    } else if (this.backPath) {
-      navigate(this.backPath, { replace: true });
-    } else if (history.length > 1) {
-      goBack();
-    } else if (!views[0].subview) {
-      navigate(this.route!.prefix, { replace: true });
-    } else {
-      navigate("/");
+    const configuredBackPath = this._configuredBackPath;
+    if (configuredBackPath) {
+      navigate(configuredBackPath, { replace: true });
+      return;
     }
+
+    const views = this.lovelace?.config.views ?? [];
+    // Falling back to the dashboard root only makes sense when its first view
+    // is a real one.
+    goBack(views[0]?.subview ? undefined : this.route?.prefix);
   }
 
   private _handleBackClick(ev: MouseEvent): void {
-    if (this._backPath && !isNavigationClick(ev)) {
-      return;
-    }
-    this._goBack();
+    handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
-  private get _backPath(): string | undefined {
+  private get _configuredBackPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =
       typeof this._curView === "number" ? views[this._curView] : undefined;
 
-    if (curViewConfig?.back_path != null) {
-      return curViewConfig.back_path;
+    return sanitizeNavigationPath(curViewConfig?.back_path ?? this.backPath);
+  }
+
+  private get _backPath(): string | undefined {
+    if (this._configuredBackPath) {
+      return this._configuredBackPath;
     }
-    if (this.backPath) {
-      return this.backPath;
-    }
+
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
     return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
 
@@ -1083,10 +1064,18 @@ class HUIRoot extends LitElement {
     await this.hass.loadFragmentTranslation("config");
     const dashboards = await fetchDashboards(this.hass);
     const dashboard = dashboards.find((d) => d.url_path === urlPath);
+    const lovelace = this.lovelace;
+    const lovelaceConfig =
+      lovelace && !isStrategyDashboard(lovelace.rawConfig)
+        ? lovelace.rawConfig
+        : undefined;
 
     showDashboardDetailDialog(this, {
       dashboard,
       urlPath,
+      ...(lovelace && lovelaceConfig
+        ? { lovelaceConfig, saveConfig: lovelace.saveConfig }
+        : {}),
       updateDashboard: async (values) => {
         await updateDashboard(this.hass!, dashboard!.id, values);
       },
@@ -1254,7 +1243,7 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    let view;
+    let view: HUIView;
     const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
@@ -1265,12 +1254,16 @@ class HUIRoot extends LitElement {
     if (this._viewCache[viewIndex]) {
       view = this._viewCache[viewIndex];
     } else {
+      if (!this._childPanelReady) {
+        this._childPanelReady = new ChildPanelReady(this);
+        this.requestUpdate();
+      }
       view = document.createElement("hui-view");
       view.index = viewIndex;
       this._viewCache[viewIndex] = view;
     }
 
-    view.lovelace = this.lovelace;
+    view.lovelace = this.lovelace!;
     view.hass = this.hass;
     view.narrow = this.narrow;
 

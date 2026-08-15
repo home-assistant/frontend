@@ -1,3 +1,4 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -11,11 +12,17 @@ import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
+  deviceAutomationsSimilar,
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { CallWS, HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-combo-box-item";
 import "../ha-generic-picker";
+import {
+  DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -105,6 +112,7 @@ export abstract class HaDeviceAutomationPicker<
       .disabled=${!this._automations || this._automations.length === 0}
       .getItems=${this._getItems(value, this._automations)}
       @value-changed=${this._automationChanged}
+      .rowRenderer=${this._rowRenderer}
       .valueRenderer=${this._valueRenderer}
       .unknownItemText=${this.hass.localize(
         "ui.panel.config.devices.automation.actions.unknown_action"
@@ -160,6 +168,13 @@ export abstract class HaDeviceAutomationPicker<
     }
   );
 
+  // Device automation labels (entity name + subtype) are often longer than the
+  // field, so let the option wrap onto multiple lines instead of truncating.
+  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
+    html`<ha-combo-box-item type="button" compact multiline>
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+    </ha-combo-box-item>`;
+
   private _valueRenderer: PickerValueRenderer = (value: string) => {
     const automation = this._automations?.find(
       (a, idx) => value === `${a.device_id}_${idx}`
@@ -187,12 +202,22 @@ export abstract class HaDeviceAutomationPicker<
       : // No device, clear the list of automations
         [];
 
-    // If there is no value, or if we have changed the device ID, reset the value.
+    // If there is no value, or if we have changed the device ID, reset the
+    // value. When the device changed (for example after replacing a removed
+    // device), try to keep the same automation type/subtype on the new device
+    // before falling back to the first available automation.
     if (!this.value || this.value.device_id !== this.deviceId) {
+      const equivalent =
+        this.value && this.deviceId
+          ? this._automations.find((automation) =>
+              deviceAutomationsSimilar(automation, this.value!)
+            )
+          : undefined;
       this._setValue(
-        this._automations.length
-          ? this._automations[0]
-          : this._createNoAutomation(this.deviceId)
+        equivalent ||
+          (this._automations.length
+            ? this._automations[0]
+            : this._createNoAutomation(this.deviceId))
       );
     }
     this._renderEmpty = true;

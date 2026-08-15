@@ -4,6 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
 import "../../../components/ha-button";
@@ -52,8 +56,10 @@ class DialogRepairsIssue extends LitElement {
       return nothing;
     }
 
-    const learnMoreUrlIsHomeAssistant =
-      this._issue.learn_more_url?.startsWith("homeassistant://") || false;
+    const learnMoreUrlIsHomeAssistant = isHomeAssistantUrl(
+      this._issue.learn_more_url
+    );
+    const learnMoreUrl = sanitizeLinkUrl(this._issue.learn_more_url);
 
     const dialogTitle =
       this.hass.localize(
@@ -127,27 +133,27 @@ class DialogRepairsIssue extends LitElement {
             }
           </ha-button>
           ${
-            this._issue.learn_more_url
+            learnMoreUrl
               ? html`
                   <ha-button
                     slot="primaryAction"
                     appearance="filled"
                     rel="noopener noreferrer"
-                    href=${
-                      learnMoreUrlIsHomeAssistant
-                        ? this._issue.learn_more_url.replace(
-                            "homeassistant://",
-                            "/"
-                          )
-                        : this._issue.learn_more_url
-                    }
+                    href=${learnMoreUrl}
                     .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
                     @click=${
                       learnMoreUrlIsHomeAssistant ? this.closeDialog : undefined
                     }
                   >
                     ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
-                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                    ${
+                      learnMoreUrlIsHomeAssistant
+                        ? nothing
+                        : html`<ha-svg-icon
+                            slot="end"
+                            .path=${mdiOpenInNew}
+                          ></ha-svg-icon>`
+                    }
                   </ha-button>
                 `
               : ""

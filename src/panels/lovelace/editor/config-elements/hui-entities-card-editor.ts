@@ -22,11 +22,9 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { customType } from "../../../../common/structs/is-custom-type";
 import "../../../../components/ha-card";
-import "../../../../components/ha-formfield";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-theme-picker";
-import "../../../../components/input/ha-input";
 import { isCustomType } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -90,6 +88,7 @@ const conditionalEntitiesRowConfigStruct = object({
   type: literal("conditional"),
   row: any(),
   conditions: array(any()),
+  color: optional(string()),
 });
 
 const dividerEntitiesRowConfigStruct = object({
@@ -181,6 +180,22 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
   return entitiesConfigStruct;
 });
 
+const SCHEMA = [
+  { name: "title", selector: { text: {} } },
+  { name: "theme", selector: { theme: {} } },
+  {
+    name: "color",
+    selector: {
+      ui_color: {
+        default_color: "state",
+        include_state: true,
+        include_none: true,
+      },
+    },
+  },
+  { name: "show_header_toggle", selector: { boolean: {} } },
+] as const;
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -189,7 +204,7 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     icon: optional(string()),
     show_header_toggle: optional(boolean()),
-    state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesRowConfigStruct),
     header: optional(headerFooterConfigStructs),
     footer: optional(headerFooterConfigStructs),
@@ -226,14 +241,6 @@ export class HuiEntitiesCardEditor
     );
   });
 
-  get _title(): string {
-    return this._config!.title || "";
-  }
-
-  get _theme(): string {
-    return this._config!.theme || "";
-  }
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -251,52 +258,20 @@ export class HuiEntitiesCardEditor
       `;
     }
 
+    const data = {
+      ...this._config,
+      show_header_toggle: this._showHeaderToggle(this._config),
+    };
+
     return html`
       <div class="card-config">
-        <ha-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value=${this._title}
-          .configValue=${"title"}
-          @input=${this._valueChanged}
-        ></ha-input>
-        <ha-theme-picker
-          .value=${this._theme}
-          .label=${`${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.theme"
-          )} (${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})`}
-          .configValue=${"theme"}
-          @value-changed=${this._valueChanged}
-        ></ha-theme-picker>
-        <div class="side-by-side">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.entities.show_header_toggle"
-            )}
-          >
-            <ha-switch
-              .checked=${this._showHeaderToggle(this._config)}
-              .configValue=${"show_header_toggle"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.state_color"
-            )}
-          >
-            <ha-switch
-              .checked=${this._config!.state_color}
-              .configValue=${"state_color"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
-        </div>
+        <ha-form
+          .hass=${this.hass}
+          .data=${data}
+          .schema=${SCHEMA}
+          .computeLabel=${this._computeLabelCallback}
+          @value-changed=${this._formChanged}
+        ></ha-form>
         <hui-header-footer-editor
           .hass=${this.hass}
           .configValue=${"header"}
@@ -321,6 +296,43 @@ export class HuiEntitiesCardEditor
     `;
   }
 
+  private _formChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config) {
+      return;
+    }
+
+    const config = { ...ev.detail.value } as EntitiesCardConfig;
+    if (
+      this._config.show_header_toggle === undefined &&
+      config.show_header_toggle === this._showHeaderToggle(this._config)
+    ) {
+      delete config.show_header_toggle;
+    }
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "title":
+      case "theme":
+        return `${this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`;
+      case "show_header_toggle":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.entities.show_header_toggle"
+        );
+      default:
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
+    }
+  };
+
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
@@ -330,17 +342,7 @@ export class HuiEntitiesCardEditor
     const target = ev.target! as EditorTarget;
     const configValue =
       target.configValue || this._subElementEditorConfig?.type;
-    const value =
-      target.checked !== undefined
-        ? target.checked
-        : target.value || ev.detail.config || ev.detail.value;
-
-    if (
-      (configValue === "title" && target.value === this._title) ||
-      (configValue === "theme" && target.value === this._theme)
-    ) {
-      return;
-    }
+    const value = ev.detail.config ?? ev.detail.value;
 
     if (configValue === "row" || (ev.detail && ev.detail.entities)) {
       const newConfigEntities =
@@ -359,7 +361,7 @@ export class HuiEntitiesCardEditor
       this._config = { ...this._config!, entities: newConfigEntities };
       this._configEntities = processEditorEntities(this._config!.entities);
     } else if (configValue) {
-      if (value === "") {
+      if (value === "" || value === undefined) {
         this._config = { ...this._config };
         delete this._config[configValue!];
       } else {
@@ -434,10 +436,6 @@ export class HuiEntitiesCardEditor
 
         hui-header-footer-editor {
           padding-top: var(--ha-space-1);
-        }
-
-        ha-input {
-          --ha-input-padding-bottom: var(--ha-space-4);
         }
       `,
     ];

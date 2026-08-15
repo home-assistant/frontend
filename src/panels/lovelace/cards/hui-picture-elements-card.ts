@@ -1,21 +1,46 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
+import type {
+  ActionHandlerOptions,
+  ActionHandlerResolution,
+} from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
+import type { HitTarget } from "./picture-elements/nearest-hit";
+import { pickNearestTarget } from "./picture-elements/nearest-hit";
 import {
   PREVIEW_CLICK_CALLBACK,
   type PictureElementsCardConfig,
 } from "./types";
 import type { PersonEntity } from "../../../data/person";
+
+// Point/text elements whose pointer gestures are routed to the nearest target
+// so that dead gaps between elements become tappable and overlapping hit areas
+// no longer steal each other's taps. These elements delegate their pointer
+// handling to the card (keeping keyboard activation for themselves) and expose
+// their visible hit target via getHitInfo(); the card binds the shared
+// action-handler on #root with a resolver, so routed gestures run on the same
+// engine (hold ripple, cancellation, timers) as every other card.
+// How far (px) a tap may sit from an icon seed and still be routed to it.
+const NEAREST_HIT_REACH = 24;
+
+// A routed target: `x1..x2 @ cy` is the seed used for the nearest test (icons
+// are a point, labels the horizontal text segment); `bx/by/bw/bh` is the
+// element's visible box, used to decide whether a tap lands directly on it.
+interface NearestSeed extends HitTarget {
+  element: LovelaceElement;
+  options: ActionHandlerOptions;
+}
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
@@ -29,6 +54,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean }) public preview = false;
 
   @state() private _elements?: LovelaceElement[];
+
+  @query("#root") private _root?: HTMLElement;
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -93,6 +120,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
     if (!this._config || !this.hass) {
       return;
     }
@@ -121,6 +149,97 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+  }
+
+  // Resolve a pointer gesture on #root to the routed element it belongs to.
+  // Geometry is read fresh from the rendered DOM at every gesture, so it can
+  // never go stale; the couple of rect reads per press are cheap.
+  private _resolveGesture = (
+    x: number,
+    y: number,
+    ev: Event
+  ): ActionHandlerResolution | null => {
+    const root = this._root;
+    // In the editor preview, clicks set element positions; don't route them.
+    if (!root || this.preview) {
+      return null;
+    }
+    // A non-primary or ctrl mouse press produces no click to complete a
+    // gesture and would leave the engine armed.
+    if (
+      ev.type === "mousedown" &&
+      ((ev as MouseEvent).button !== 0 || (ev as MouseEvent).ctrlKey)
+    ) {
+      return null;
+    }
+    // A press that an interactive non-routed element (a button, custom card,
+    // image element, or conditional child) catches natively is that element's
+    // own gesture; only presses on routed elements and the background route.
+    for (const node of ev.composedPath()) {
+      if (node === root) {
+        break;
+      }
+      if (
+        node instanceof HTMLElement &&
+        node.classList.contains("element") &&
+        !(node as LovelaceElement).delegatedActions
+      ) {
+        return null;
+      }
+    }
+    const rootRect = root.getBoundingClientRect();
+    const seeds = this._collectSeeds(rootRect);
+    if (!seeds.length) {
+      return null;
+    }
+    const seed = pickNearestTarget(
+      seeds,
+      x - rootRect.left,
+      y - rootRect.top,
+      NEAREST_HIT_REACH
+    );
+    return seed ? { target: seed.element, options: seed.options } : null;
+  };
+
+  private _collectSeeds(rootRect: DOMRect): NearestSeed[] {
+    const seeds: NearestSeed[] = [];
+    const root = this._root;
+    if (!root) {
+      return seeds;
+    }
+    // Routed targets can be nested (e.g. inside hui-conditional-element), so
+    // walk the rendered subtree rather than only the top-level elements.
+    for (const element of root.querySelectorAll<LovelaceElement>("*")) {
+      if (!element.delegatedActions || !element.getHitInfo) {
+        continue;
+      }
+      // A hidden element (display: none, visibility: hidden, …) must not
+      // become an invisible tap target.
+      if (element.checkVisibility && !element.checkVisibility()) {
+        continue;
+      }
+      const hit = element.getHitInfo();
+      if (!hit || hit.rect.width <= 0 || hit.rect.height <= 0) {
+        continue;
+      }
+      const bx = hit.rect.left - rootRect.left;
+      const by = hit.rect.top - rootRect.top;
+      const isIcon = !hit.isText;
+      const cx = bx + hit.rect.width / 2;
+      seeds.push({
+        element,
+        options: hit.options,
+        isIcon,
+        x1: isIcon ? cx : bx,
+        x2: isIcon ? cx : bx + hit.rect.width,
+        cy: by + hit.rect.height / 2,
+        bx,
+        by,
+        bw: hit.rect.width,
+        bh: hit.rect.height,
+      });
+    }
+    return seeds;
   }
 
   protected render() {
@@ -156,7 +275,10 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card .header=${this._config.title}>
-        <div id="root">
+        <div
+          id="root"
+          .actionHandler=${actionHandler({ resolve: this._resolveGesture })}
+        >
           <hui-image
             .hass=${this.hass}
             .image=${image}

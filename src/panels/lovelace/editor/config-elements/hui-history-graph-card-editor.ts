@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -53,6 +54,65 @@ const cardConfigStruct = assign(
   })
 );
 
+const SCHEMA = [
+  { name: "title", selector: { text: {} } },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "hours_to_show",
+        default: DEFAULT_HOURS_TO_SHOW,
+        selector: { number: { min: 0, step: "any", mode: "box" } },
+      },
+      {
+        name: "show_names",
+        default: true,
+        required: false,
+        selector: { boolean: {} },
+      },
+      {
+        name: "logarithmic_scale",
+        required: false,
+        selector: { boolean: {} },
+      },
+      {
+        name: "expand_legend",
+        required: false,
+        selector: { boolean: {} },
+      },
+    ],
+  },
+  {
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "min_y_axis",
+        required: false,
+        selector: { number: { mode: "box", step: "any" } },
+      },
+      {
+        name: "max_y_axis",
+        required: false,
+        selector: { number: { mode: "box", step: "any" } },
+      },
+    ],
+  },
+  {
+    name: "fit_y_data",
+    required: false,
+    visible: {
+      condition: "or",
+      conditions: [
+        { field: "min_y_axis", operator: "exists" },
+        { field: "max_y_axis", operator: "exists" },
+      ],
+    },
+    selector: { boolean: {} },
+  },
+] as const satisfies readonly HaFormSchema[];
+
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
@@ -68,65 +128,6 @@ export class HuiHistoryGraphCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
-
-  private _schema = memoizeOne(
-    (showFitOption: boolean) =>
-      [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "hours_to_show",
-              default: DEFAULT_HOURS_TO_SHOW,
-              selector: { number: { min: 0, step: "any", mode: "box" } },
-            },
-            {
-              name: "show_names",
-              default: true,
-              required: false,
-              selector: { boolean: {} },
-            },
-            {
-              name: "logarithmic_scale",
-              required: false,
-              selector: { boolean: {} },
-            },
-            {
-              name: "expand_legend",
-              required: false,
-              selector: { boolean: {} },
-            },
-          ],
-        },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "min_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-            {
-              name: "max_y_axis",
-              required: false,
-              selector: { number: { mode: "box", step: "any" } },
-            },
-          ],
-        },
-        ...(showFitOption
-          ? [
-              {
-                name: "fit_y_data",
-                required: false,
-                selector: { boolean: {} },
-              },
-            ]
-          : []),
-      ] as const
-  );
 
   private _subForm = memoizeOne((localize: LocalizeFunc, entityId: string) => ({
     schema: [
@@ -175,11 +176,6 @@ export class HuiHistoryGraphCardEditor
       `;
     }
 
-    const schema = this._schema(
-      this._config!.min_y_axis !== undefined ||
-        this._config!.max_y_axis !== undefined
-    );
-
     const configEntities = this._config.entities
       ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
       : [];
@@ -187,7 +183,7 @@ export class HuiHistoryGraphCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${schema}
+        .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -260,9 +256,10 @@ export class HuiHistoryGraphCardEditor
     const domain = computeDomain(entityId);
     const isNumberDomain =
       domain === "counter" || domain === "number" || domain === "input_number";
-    const stateObj = this.hass!.states[entityId];
+    const stateObj = this.hass!.states[entityId] as HassEntity | undefined;
     const attributes = stateObj?.attributes;
-    return !isNumericFromAttributes(attributes) && !isNumberDomain;
+    const isNumeric = attributes ? isNumericFromAttributes(attributes) : false;
+    return !isNumeric && !isNumberDomain;
   };
 
   // remove "color" option when needed
@@ -281,9 +278,7 @@ export class HuiHistoryGraphCardEditor
     ) as HistoryGraphCardConfig;
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "show_names":
       case "logarithmic_scale":

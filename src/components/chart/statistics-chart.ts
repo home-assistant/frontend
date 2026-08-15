@@ -34,6 +34,7 @@ import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import { generateStatisticsChartData } from "./statistics-chart-data";
+import { createYAxisPrecisionBounds } from "./y-axis-fraction-digits";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -203,12 +204,14 @@ export class StatisticsChart extends LitElement {
     `;
   }
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
@@ -391,6 +394,11 @@ export class StatisticsChart extends LitElement {
       }
     }
 
+    const yAxisScale =
+      this.chartType.startsWith("line") ||
+      this.logarithmicScale ||
+      minYAxis !== undefined ||
+      maxYAxis !== undefined;
     this._chartOptions = {
       xAxis: [
         {
@@ -434,13 +442,17 @@ export class StatisticsChart extends LitElement {
         )
           ? "right"
           : "left",
-        scale:
-          this.chartType.startsWith("line") ||
-          this.logarithmicScale ||
-          minYAxis !== undefined ||
-          maxYAxis !== undefined,
-        min: this._clampYAxis(minYAxis),
-        max: this._clampYAxis(maxYAxis),
+        scale: yAxisScale,
+        ...createYAxisPrecisionBounds({
+          min: this._clampYAxis(minYAxis),
+          max: this._clampYAxis(maxYAxis),
+          // Bar charts stay anchored at 0, so precision must reflect the
+          // 0-based range that is actually rendered.
+          includeZero: !yAxisScale,
+          onFractionDigits: (digits) => {
+            this._yAxisFractionDigits = digits;
+          },
+        }),
         splitLine: {
           show: true,
         },

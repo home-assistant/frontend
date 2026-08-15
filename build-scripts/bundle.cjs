@@ -232,7 +232,7 @@ module.exports.config = {
     };
   },
 
-  demo({ isProdBuild, latestBuild, isStatsBuild }) {
+  demo({ isProdBuild, latestBuild, isStatsBuild, isTestBuild }) {
     return {
       name: "demo" + nameSuffix(latestBuild),
       entry: {
@@ -247,6 +247,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isTestBuild,
     };
   },
 
@@ -276,7 +277,7 @@ module.exports.config = {
     };
   },
 
-  gallery({ isProdBuild, latestBuild }) {
+  gallery({ isProdBuild, latestBuild, isTestBuild }) {
     return {
       name: "gallery" + nameSuffix(latestBuild),
       entry: {
@@ -286,6 +287,7 @@ module.exports.config = {
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
+      isTestBuild,
       defineOverlay: {
         __DEMO__: true,
       },
@@ -306,11 +308,19 @@ module.exports.config = {
     };
   },
 
-  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild }) {
+  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild, isTestBuild }) {
     return {
       name: "e2e-test-app" + nameSuffix(latestBuild),
       entry: {
+        dashboard: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/dashboard-entrypoint.ts"
+        ),
         main: path.resolve(paths.e2eTestApp_dir, "src/entrypoint.ts"),
+        onboarding: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/onboarding-entrypoint.ts"
+        ),
       },
       outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
@@ -321,6 +331,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isTestBuild,
     };
   },
 };

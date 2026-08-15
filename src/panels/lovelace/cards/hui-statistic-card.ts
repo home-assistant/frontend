@@ -175,7 +175,19 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     this._error = undefined;
 
     if (this._config.footer) {
-      this._footerElement = createHeaderFooterElement(this._config.footer);
+      const footerElement = createHeaderFooterElement(this._config.footer);
+      // A lazy loaded footer has no `hass` accessor before it is upgraded,
+      // so the forwarding in `shouldUpdate` skips it until then
+      footerElement.addEventListener(
+        "ll-upgrade",
+        () => {
+          if ("hass" in footerElement) {
+            footerElement.hass = this.hass;
+          }
+        },
+        { once: true }
+      );
+      this._footerElement = footerElement;
     } else if (this._footerElement) {
       this._footerElement = undefined;
     }

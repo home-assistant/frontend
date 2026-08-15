@@ -94,6 +94,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const viewConfig = {
         ...this._config,
@@ -170,7 +171,6 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
           content = html`
             <hui-view-editor
               .isNew=${this._params.viewIndex === undefined}
-              .hass=${this.hass}
               .config=${this._config}
               @view-config-changed=${this._viewConfigChanged}
             ></hui-view-editor>
@@ -181,7 +181,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
             <hui-view-background-editor
               .hass=${this.hass}
               .config=${this._config}
-              @view-config-changed=${this._viewConfigChanged}
+              @background-config-changed=${this._viewConfigChanged}
             ></hui-view-background-editor>
           `;
           break;

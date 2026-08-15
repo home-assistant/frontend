@@ -30,7 +30,6 @@ const SCHEMA = [
           "code_arm_required",
           "code_format",
           "color_mode",
-          "color_modes",
           "current_activity",
           "device_class",
           "editable",
