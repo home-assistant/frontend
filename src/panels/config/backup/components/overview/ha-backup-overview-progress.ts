@@ -39,17 +39,22 @@ const ADDON_STAGES: CreateBackupStage[] = [
   "addon_repositories",
   "app_repositories",
   "docker_config",
+];
+
+// Add-on restarts are awaited after the backup file is finished, so those
+// stages belong to the last creation group to keep the progress monotonic
+const MEDIA_STAGES: CreateBackupStage[] = [
+  "folders",
+  "finishing_file",
   "await_addon_restarts",
   "await_app_restarts",
 ];
 
-const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
-
 // Ordered groups matching actual backend execution order
 const STAGE_ORDER: CreateBackupStage[][] = [
+  HA_STAGES,
   ADDON_STAGES,
   MEDIA_STAGES,
-  HA_STAGES,
   ["upload_to_agents"],
   ["cleaning_up"],
 ];
@@ -165,21 +170,21 @@ export class HaBackupOverviewProgress extends LitElement {
       return [
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.apps"
+            "ui.panel.config.backup.overview.progress.segments.home_assistant"
           ),
           state: this._getSegmentState(0, currentGroupIndex),
           flex: 2,
         },
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.media"
+            "ui.panel.config.backup.overview.progress.segments.apps"
           ),
           state: this._getSegmentState(1, currentGroupIndex),
           flex: 2,
         },
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.home_assistant"
+            "ui.panel.config.backup.overview.progress.segments.media"
           ),
           state: this._getSegmentState(2, currentGroupIndex),
           flex: 2,
@@ -201,18 +206,18 @@ export class HaBackupOverviewProgress extends LitElement {
       ];
     }
 
-    // Non-HAOS: No app segment, just Media, HA, Upload and Cleaning up
+    // Non-HAOS: No app segment, just HA, Media, Upload and Cleaning up
     return [
       {
         label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.media"
+          "ui.panel.config.backup.overview.progress.segments.home_assistant"
         ),
-        state: this._getSegmentState(1, currentGroupIndex),
+        state: this._getSegmentState(0, currentGroupIndex),
         flex: 2,
       },
       {
         label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.home_assistant"
+          "ui.panel.config.backup.overview.progress.segments.media"
         ),
         state: this._getSegmentState(2, currentGroupIndex),
         flex: 2,
