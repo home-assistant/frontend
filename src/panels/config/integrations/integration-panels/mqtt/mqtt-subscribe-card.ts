@@ -1,15 +1,20 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiContentCopy } from "@mdi/js";
 import { formatTime } from "../../../../../common/datetime/format_time";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-markdown";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-select";
 import "../../../../../components/input/ha-input";
 import type { MQTTMessage } from "../../../../../data/mqtt";
 import { subscribeMQTTTopic } from "../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
@@ -128,7 +133,17 @@ class MqttSubscribeCard extends LitElement {
                     this.hass!.config
                   ),
                 })}
-                <pre>${msg.payload}</pre>
+                <div class="code-block">
+                  <ha-icon-button
+                    class="copy-button"
+                    .path=${mdiContentCopy}
+                    @click=${this._handleCopyClick}
+                    data-payload=${msg.payload}
+                  ></ha-icon-button>
+                  <ha-markdown
+                    .content=${`\`\`\`${this._json_format ? "json" : ""}\n${msg.payload}\n\`\`\``}
+                  ></ha-markdown>
+                </div>
                 <div class="bottom">
                   QoS: ${msg.message.qos} - Retain:
                   ${Boolean(msg.message.retain)}
@@ -154,6 +169,16 @@ class MqttSubscribeCard extends LitElement {
 
   private _handleJSONFormat(ev: CustomEvent) {
     this._json_format = (ev.target! as any).checked;
+  }
+
+  private async _handleCopyClick(ev: Event): Promise<void> {
+    const payload = (ev.target as HTMLElement).getAttribute("data-payload");
+    if (payload) {
+      await copyToClipboard(payload);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
+    }
   }
 
   private async _handleSubmit(): Promise<void> {
@@ -229,6 +254,20 @@ class MqttSubscribeCard extends LitElement {
     }
     ha-input {
       flex: 1;
+    }
+    .code-block {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .code-block ha-markdown {
+      padding-right: 40px;
+    }
+    .copy-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      color: var(--secondary-text-color);
     }
     @media screen and (max-width: 600px) {
       ha-select {
