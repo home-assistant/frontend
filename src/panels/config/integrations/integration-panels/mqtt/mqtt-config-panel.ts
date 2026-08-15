@@ -122,6 +122,7 @@ export class MQTTConfigPanel extends LitElement {
         .hass=${this.hass}
         header="MQTT"
         back-path="/config/integrations/integration/mqtt"
+        has-fab
       >
         <div class="content">
           <div class="container">
@@ -351,12 +352,21 @@ export class MQTTConfigPanel extends LitElement {
           -moz-user-select: initial;
         }
 
-        .content {
-          padding: 24px 0 32px;
-          max-width: 600px;
-          margin: 0 auto;
-          direction: ltr;
+        .nav-card {
+          overflow: hidden;
         }
+
+        .nav-card .card-content {
+          padding: 0;
+        }
+
+        .nav-card .card-header {
+          padding-bottom: var(--ha-space-2);
+        }
+        .content {
+          margin-top: var(--ha-space-6);
+        }
+
         .panel-dev-mqtt-fields {
           display: flex;
           justify-content: space-between;
@@ -466,6 +476,10 @@ export class MQTTConfigPanel extends LitElement {
         .container {
           padding: var(--ha-space-2) var(--ha-space-4)
             calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
+        }
+
+        a[slot="fab"] {
+          text-decoration: none;
         }
       `,
     ];

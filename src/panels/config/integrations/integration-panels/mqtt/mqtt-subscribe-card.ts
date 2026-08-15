@@ -73,53 +73,56 @@ class MqttSubscribeCard extends LitElement {
     return html`
       <ha-card
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
+        class="content_subscribe_panel"
       >
-        <form>
-          <p>
-            <ha-formfield
-              label=${this.hass!.localize(
-                "ui.panel.config.mqtt.json_formatting"
-              )}
-            >
-              <ha-switch
-                @change=${this._handleJSONFormat}
-                .checked=${this._json_format}
-              ></ha-switch>
-            </ha-formfield>
-          </p>
-          <div class="panel-dev-mqtt-subscribe-fields">
-            <ha-input
-              .label=${
-                this._subscribed
-                  ? this.hass.localize("ui.panel.config.mqtt.listening_to")
-                  : this.hass.localize("ui.panel.config.mqtt.subscribe_to")
-              }
-              .disabled=${this._subscribed !== undefined}
-              .value=${this._topic}
-              @change=${this._handleTopic}
-            ></ha-input>
-            <ha-select
-              .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
-              .disabled=${this._subscribed !== undefined}
-              .value=${this._qos}
-              @selected=${this._handleQos}
-              .options=${qosLevel}
-            >
-            </ha-select>
-            <ha-button
-              appearance="plain"
-              size="s"
-              .disabled=${this._topic === ""}
-              @click=${this._handleSubmit}
-            >
-              ${
-                this._subscribed
-                  ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
-                  : this.hass.localize("ui.panel.config.mqtt.start_listening")
-              }
-            </ha-button>
-          </div>
-        </form>
+        <div class="card-content">
+          <form>
+            <p>
+              <ha-formfield
+                label=${this.hass!.localize(
+                  "ui.panel.config.mqtt.json_formatting"
+                )}
+              >
+                <ha-switch
+                  @change=${this._handleJSONFormat}
+                  .checked=${this._json_format}
+                ></ha-switch>
+              </ha-formfield>
+            </p>
+            <div class="panel-dev-mqtt-subscribe-fields">
+              <ha-input
+                .label=${
+                  this._subscribed
+                    ? this.hass.localize("ui.panel.config.mqtt.listening_to")
+                    : this.hass.localize("ui.panel.config.mqtt.subscribe_to")
+                }
+                .disabled=${this._subscribed !== undefined}
+                .value=${this._topic}
+                @change=${this._handleTopic}
+              ></ha-input>
+              <ha-select
+                .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                .disabled=${this._subscribed !== undefined}
+                .value=${this._qos}
+                @selected=${this._handleQos}
+                .options=${qosLevel}
+              >
+              </ha-select>
+              <ha-button
+                appearance="plain"
+                size="s"
+                .disabled=${this._topic === ""}
+                @click=${this._handleSubmit}
+              >
+                ${
+                  this._subscribed
+                    ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
+                    : this.hass.localize("ui.panel.config.mqtt.start_listening")
+                }
+              </ha-button>
+            </div>
+          </form>
+        </div>
         <div class="events">
           ${this._messages.map(
             (msg) => html`
@@ -223,6 +226,12 @@ class MqttSubscribeCard extends LitElement {
     form {
       padding: var(--ha-space-4);
       padding-bottom: var(--ha-space-8);
+    }
+    .content_subscribe_panel {
+      margin-top: var(--ha-space-6);
+      max-width: 600px;
+      margin: 0 auto;
+      direction: ltr;
     }
     .events {
       margin: -16px 0;
