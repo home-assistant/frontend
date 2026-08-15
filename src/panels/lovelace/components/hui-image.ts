@@ -89,6 +89,8 @@ export class HuiImage extends LitElement {
 
   private _cameraImageObjectUrl?: string;
 
+  private _cameraImageRequestId = 0;
+
   private _ratio: {
     w: number;
     h: number;
@@ -447,6 +449,11 @@ export class HuiImage extends LitElement {
     } else {
       height = Math.ceil(this._lastImageHeight * devicePixelRatio);
     }
+    // Identifies this poll so a response that resolves after a newer poll
+    // started, or after _clearCameraImage() ran, can be told apart from the
+    // current one instead of clobbering it or reviving a cleared image.
+    const requestId = ++this._cameraImageRequestId;
+
     const url = await fetchThumbnailUrlWithCache(
       this.hass,
       this.cameraImage,
@@ -464,7 +471,21 @@ export class HuiImage extends LitElement {
     try {
       response = await fetch(url, { headers });
     } catch (_err) {
-      this._onImageError();
+      if (requestId === this._cameraImageRequestId) {
+        this._onImageError();
+      }
+      return;
+    }
+
+    if (requestId !== this._cameraImageRequestId) {
+      // Superseded by a newer poll or a clear while this request was in
+      // flight. Drain the body so the connection can still be reused, but
+      // leave all state alone - a newer request owns it now.
+      if (response.status === 304) {
+        await response.arrayBuffer();
+      } else if (response.ok) {
+        await response.blob();
+      }
       return;
     }
 
@@ -474,6 +495,9 @@ export class HuiImage extends LitElement {
     // aborted and the connection cannot be reused.
     if (response.status === 304) {
       await response.arrayBuffer();
+      // A 304 confirms the image already shown is still current, so a
+      // stale error from an earlier failed poll no longer applies.
+      this._loadState = LoadState.Loaded;
       return;
     }
 
@@ -482,10 +506,27 @@ export class HuiImage extends LitElement {
       return;
     }
 
+    let blob: Blob;
+    try {
+      blob = await response.blob();
+    } catch (_err) {
+      this._onImageError();
+      return;
+    }
+
+    if (requestId !== this._cameraImageRequestId) {
+      return;
+    }
+
+    // Only commit the ETag once the body has actually been read.
+    // Otherwise a failed read here would leave the old image displayed
+    // while future polls send the new ETag and the server keeps
+    // confirming it with 304, so this image version would never actually
+    // be shown.
     this._cameraImageEtag = response.headers.get("etag") ?? undefined;
 
     const previousObjectUrl = this._cameraImageObjectUrl;
-    this._cameraImageObjectUrl = URL.createObjectURL(await response.blob());
+    this._cameraImageObjectUrl = URL.createObjectURL(blob);
     this._cameraImageSrc = this._cameraImageObjectUrl;
     if (previousObjectUrl) {
       URL.revokeObjectURL(previousObjectUrl);
@@ -493,6 +534,9 @@ export class HuiImage extends LitElement {
   }
 
   private _clearCameraImage(): void {
+    // Invalidate any in-flight request so it can't recreate state (or an
+    // object URL that never gets revoked) after we've just cleared it.
+    this._cameraImageRequestId++;
     if (this._cameraImageObjectUrl) {
       URL.revokeObjectURL(this._cameraImageObjectUrl);
       this._cameraImageObjectUrl = undefined;
