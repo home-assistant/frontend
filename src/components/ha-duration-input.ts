@@ -68,6 +68,7 @@ export class HaDurationInput extends LitElement {
                     { label: "-", iconPath: mdiMinusThick, value: "-" },
                   ]}
                   .active=${this._negative ? "-" : "+"}
+                  .disabled=${this.disabled}
                   @value-changed=${this._negativeChanged}
                 ></ha-button-toggle-group>
               `
@@ -235,8 +236,8 @@ export class HaDurationInput extends LitElement {
     ev.stopPropagation();
     const negative = (ev.detail?.value || ev.target.value) === "-";
     this._toggleNegative = negative;
-    const value = this.data;
-    if (value) {
+    if (this.data) {
+      const value = { ...this.data };
       FIELDS.forEach((t) => {
         if (value[t]) {
           value[t] = negative ? -Math.abs(value[t]) : Math.abs(value[t]);

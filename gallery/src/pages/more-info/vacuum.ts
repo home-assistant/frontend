@@ -15,7 +15,6 @@ const ALL_FEATURES =
   VacuumEntityFeature.STOP +
   VacuumEntityFeature.RETURN_HOME +
   VacuumEntityFeature.FAN_SPEED +
-  VacuumEntityFeature.BATTERY +
   VacuumEntityFeature.STATUS +
   VacuumEntityFeature.LOCATE +
   VacuumEntityFeature.CLEAN_SPOT +
@@ -28,8 +27,6 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Full featured vacuum",
       supported_features: ALL_FEATURES,
-      battery_level: 85,
-      battery_icon: "mdi:battery-80",
       fan_speed: "balanced",
       fan_speed_list: ["silent", "standard", "balanced", "turbo", "max"],
       status: "Charged",
@@ -41,8 +38,6 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Cleaning vacuum",
       supported_features: ALL_FEATURES,
-      battery_level: 62,
-      battery_icon: "mdi:battery-60",
       fan_speed: "turbo",
       fan_speed_list: ["silent", "standard", "balanced", "turbo", "max"],
       status: "Cleaning bedroom",
@@ -58,10 +53,7 @@ const ENTITIES = [
         VacuumEntityFeature.START +
         VacuumEntityFeature.PAUSE +
         VacuumEntityFeature.STOP +
-        VacuumEntityFeature.RETURN_HOME +
-        VacuumEntityFeature.BATTERY,
-      battery_level: 23,
-      battery_icon: "mdi:battery-20",
+        VacuumEntityFeature.RETURN_HOME,
       status: "Returning to dock",
     },
   },
@@ -96,8 +88,6 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Paused vacuum",
       supported_features: ALL_FEATURES,
-      battery_level: 45,
-      battery_icon: "mdi:battery-40",
       fan_speed: "standard",
       fan_speed_list: ["silent", "standard", "balanced", "turbo", "max"],
       status: "Paused",
