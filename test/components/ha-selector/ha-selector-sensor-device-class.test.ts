@@ -1,3 +1,4 @@
+import "element-internals-polyfill";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../../../src/components/ha-selector/ha-selector-sensor-device-class";
 import type { HaSensorDeviceClassSelector } from "../../../src/components/ha-selector/ha-selector-sensor-device-class";
@@ -64,9 +65,10 @@ describe("ha-selector-sensor-device-class", () => {
     });
 
     expect(loadBackendTranslation).toHaveBeenCalledWith("selector", "sensor");
-    const label = el.shadowRoot?.querySelector(
-      "ha-radio-option[value=temperature]"
-    );
+    const options = Array.from(
+      el.shadowRoot?.querySelectorAll("ha-radio-option") ?? []
+    ) as unknown as { value: string; textContent: string | null }[];
+    const label = options.find((option) => option.value === "temperature");
     expect(label?.textContent?.trim()).toBe("Temperature");
   });
 });
