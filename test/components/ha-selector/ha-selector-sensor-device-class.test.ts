@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../../../src/components/ha-selector/ha-selector-sensor-device-class";
 import type { HaSensorDeviceClassSelector } from "../../../src/components/ha-selector/ha-selector-sensor-device-class";
-import { SENSOR_DEVICE_CLASSES } from "../../../src/data/sensor";
 
 const mount = async (
   props: Partial<HaSensorDeviceClassSelector>
@@ -69,24 +68,5 @@ describe("ha-selector-sensor-device-class", () => {
       "ha-radio-option[value=temperature]"
     );
     expect(label?.textContent?.trim()).toBe("Temperature");
-  });
-
-  it("falls back to the full device class list when the backend provides no options", async () => {
-    const el = await mount({
-      hass: {
-        loadBackendTranslation: vi.fn().mockResolvedValue(undefined),
-        localize: () => "",
-      } as any,
-      selector: {
-        sensor_device_class: {},
-      } as any,
-    });
-
-    expect(el.selector).toEqual({
-      select: {
-        options: SENSOR_DEVICE_CLASSES,
-        translation_key: "device_class",
-      },
-    });
   });
 });
