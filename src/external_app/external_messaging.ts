@@ -191,6 +191,10 @@ interface EMOutgoingMessageFocusElement extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageReloadAndClearCache extends EMMessage {
+  type: "frontend/reload_and_clear_cache";
+}
+
 // These types are handled internally by the Android app via postMessage.
 // They are not sent by the frontend and should not be used directly.
 // They are intentionally listed here to prevent anyone from using them unintentionally.
@@ -220,6 +224,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
   | EMOutgoingMessageFocusElement
+  | EMOutgoingMessageReloadAndClearCache
   | EMOutgoingMessageAssistSettings;
 
 export interface EMIncomingMessageRestart {
@@ -511,14 +516,26 @@ export class ExternalMessaging {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
     }
-    if (window.externalAppV2) {
-      window.externalAppV2.postMessage(
-        JSON.stringify({ type: "externalBus", payload: msg })
-      );
-    } else if (window.externalApp) {
-      window.externalApp.externalBus(JSON.stringify(msg));
-    } else {
-      window.webkit!.messageHandlers.externalBus.postMessage(msg);
-    }
+    fireExternalBusMessage(msg);
   }
 }
+
+/**
+ * Post a message to the companion app's external bus without needing an
+ * `ExternalMessaging` instance (i.e. without `hass`). Returns `false` when no
+ * external bridge is present, so callers can fall back to browser behavior.
+ */
+export const fireExternalBusMessage = (msg: EMMessage): boolean => {
+  if (window.externalAppV2) {
+    window.externalAppV2.postMessage(
+      JSON.stringify({ type: CALLBACK_EXTERNAL_BUS, payload: msg })
+    );
+  } else if (window.externalApp) {
+    window.externalApp.externalBus(JSON.stringify(msg));
+  } else if (window.webkit?.messageHandlers?.externalBus) {
+    window.webkit.messageHandlers.externalBus.postMessage(msg);
+  } else {
+    return false;
+  }
+  return true;
+};

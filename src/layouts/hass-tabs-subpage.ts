@@ -14,9 +14,10 @@ import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { goBack, navigate } from "../common/navigate";
+import { getHistoryState, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
+import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -173,19 +174,14 @@ export class HassTabsSubpage extends LitElement {
         <slot name="toolbar">
           <div class="toolbar-content">
             ${
-              this.mainPage || (!backPath && history.state?.root)
+              this.mainPage || (!backPath && getHistoryState()?.root)
                 ? html`<ha-menu-button></ha-menu-button>`
-                : backPath
-                  ? html`
-                      <ha-icon-button-arrow-prev
-                        .href=${backPath}
-                      ></ha-icon-button-arrow-prev>
-                    `
-                  : html`
-                      <ha-icon-button-arrow-prev
-                        @click=${this._backTapped}
-                      ></ha-icon-button-arrow-prev>
-                    `
+                : html`
+                    <ha-icon-button-arrow-prev
+                      .href=${backPath}
+                      @click=${this._backTapped}
+                    ></ha-icon-button-arrow-prev>
+                  `
             }
             ${
               this._narrow || !this.showTabs
@@ -246,12 +242,8 @@ export class HassTabsSubpage extends LitElement {
     this._content.focus({ preventScroll: true });
   }
 
-  private _backTapped(): void {
-    if (this.backCallback) {
-      this.backCallback();
-      return;
-    }
-    goBack();
+  private _backTapped(ev: MouseEvent): void {
+    handleBackClick(ev, this.backPath, this.backCallback);
   }
 
   private _isActiveTabPath(tabPath: string, currentPath: string): boolean {
