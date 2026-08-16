@@ -46,6 +46,7 @@ const LOAD_ELEMENTS = {
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
   selector: () => import("./ha-selector-selector"),
+  sensor_device_class: () => import("./ha-selector-sensor-device-class"),
   serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),

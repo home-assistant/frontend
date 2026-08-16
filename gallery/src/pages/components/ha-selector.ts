@@ -424,6 +424,14 @@ const SCHEMAS: {
           },
         },
       },
+      sensor_device_class: {
+        name: "Sensor Device Class",
+        selector: {
+          sensor_device_class: {
+            options: ["temperature", "humidity", "battery"],
+          },
+        },
+      },
       select_custom: {
         name: "Select (Custom)",
         selector: {

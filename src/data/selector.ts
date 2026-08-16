@@ -67,6 +67,7 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
+  | SensorDeviceClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -481,6 +482,16 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
     box_max_columns?: number;
+  } | null;
+}
+
+export interface SensorDeviceClassSelector {
+  sensor_device_class: {
+    options?: readonly string[] | readonly SelectOption[];
+    sort?: boolean;
+    multiple?: boolean;
+    custom_value?: boolean;
+    mode?: "list" | "dropdown" | "box";
   } | null;
 }
 

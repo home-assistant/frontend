@@ -12,6 +12,20 @@ export const SENSOR_TIMESTAMP_DEVICE_CLASSES: (string | undefined)[] = [
   "uptime",
 ];
 
+// Non-numeric device classes are not included in the numeric device classes
+// generated from Home Assistant Core's `SensorDeviceClass`.
+export const SENSOR_NON_NUMERIC_DEVICE_CLASSES: string[] = [
+  "date",
+  "enum",
+  "timestamp",
+  "uptime",
+];
+
+export const SENSOR_DEVICE_CLASSES: string[] = [
+  ...SENSOR_NUMERIC_DEVICE_CLASSES,
+  ...SENSOR_NON_NUMERIC_DEVICE_CLASSES,
+].sort();
+
 export const isNumericSensorDeviceClass = (deviceClass?: string): boolean =>
   deviceClass != null && SENSOR_NUMERIC_DEVICE_CLASSES.includes(deviceClass);
 
