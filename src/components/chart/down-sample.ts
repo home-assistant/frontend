@@ -18,6 +18,37 @@ interface MinMaxFrame {
   maxY: number;
 }
 
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+// Frame sizes that divide the clock evenly. Frames are placed on absolute time
+// rather than relative to the window, so charts that follow "now" keep picking
+// the same points every redraw instead of redrawing with a different shape.
+const FRAME_SIZES = [
+  [1, 2, 3, 5, 10, 20, 30, 50, 100, 200, 300, 500],
+  [1, 2, 3, 5, 10, 15, 20, 30].map((n) => n * SECOND),
+  [1, 2, 3, 5, 10, 15, 20, 30].map((n) => n * MINUTE),
+  [1, 2, 3, 4, 6, 8, 12].map((n) => n * HOUR),
+  [DAY],
+].flat();
+
+// Always rounds down, so no chart ends up with fewer frames than it asked for.
+function snapFrameSize(step: number): number {
+  if (step >= DAY) {
+    return Math.floor(step / DAY) * DAY;
+  }
+  let snapped = FRAME_SIZES[0];
+  for (const size of FRAME_SIZES) {
+    if (size > step) {
+      break;
+    }
+    snapped = size;
+  }
+  return snapped;
+}
+
 export function downSampleLineData<
   T extends [number, number] | NonNullable<LineSeriesOption["data"]>[number],
 >(
@@ -35,11 +66,13 @@ export function downSampleLineData<
   }
   const min = minX ?? getPointData(data[0]!)[0];
   const max = maxX ?? getPointData(data[data.length - 1]!)[0];
-  const step = Math.ceil((max - min) / Math.floor(maxDetails));
-  if (!Number.isFinite(step) || step <= 0) {
+  const rawStep = Math.ceil((max - min) / Math.floor(maxDetails));
+  if (!Number.isFinite(rawStep) || rawStep <= 0) {
     // a degenerate frame size would put every point in a single frame
     return data;
   }
+  // snapped after the guard above, which relies on the unsnapped value
+  const step = snapFrameSize(rawStep);
 
   if (useMean) {
     // Group points into frames, accumulating sums in insertion order.
@@ -52,7 +85,7 @@ export function downSampleLineData<
       const y = Number(pointData[1]);
       if (isNaN(x) || isNaN(y)) continue;
 
-      const frameIndex = Math.floor((x - min) / step);
+      const frameIndex = Math.floor(x / step);
       const frame = frames.get(frameIndex);
       if (!frame) {
         frames.set(frameIndex, {
@@ -90,7 +123,7 @@ export function downSampleLineData<
     const y = Number(pointData[1]);
     if (isNaN(x) || isNaN(y)) continue;
 
-    const frameIndex = Math.floor((x - min) / step);
+    const frameIndex = Math.floor(x / step);
     const frame = frames.get(frameIndex);
     if (!frame) {
       frames.set(frameIndex, {

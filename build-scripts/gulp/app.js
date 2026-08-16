@@ -50,7 +50,9 @@ gulp.task(
     "rspack-prod-app",
     gulp.parallel("gen-pages-app-prod", "gen-service-worker-app-prod"),
     // Don't compress running tests
-    ...(env.isTestBuild() || env.isStatsBuild() ? [] : ["compress-app"])
+    ...(env.isTestBuild() || env.isStatsBuild()
+      ? []
+      : ["compress-app", "prune-compress-cache"])
   )
 );
 

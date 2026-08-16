@@ -68,6 +68,7 @@ const subscriptionResults: Record<string, unknown> = {
 };
 
 const commandResults: Record<string, unknown> = {
+  analytics: { preferences: {} },
   "analytics/preferences": {},
   "auth/current_user": currentUser,
   "brands/access_token": { token: "brands-token" },

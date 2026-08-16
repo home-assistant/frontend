@@ -11,13 +11,23 @@
 export const preserveUnchangedRecord = <T>(
   previous: Record<string, T> | undefined,
   next: Record<string, T>,
-  equal: (a: T, b: T) => boolean
+  equal: (a: T, b: T) => boolean,
+  compareOrder = false
 ): Record<string, T> => {
   if (!previous) {
     return next;
   }
-  let changed = Object.keys(previous).length !== Object.keys(next).length;
-  for (const key of Object.keys(next)) {
+
+  const previousKeys = Object.keys(previous);
+  const nextKeys = Object.keys(next);
+
+  let changed = previousKeys.length !== nextKeys.length;
+
+  if (!changed && compareOrder) {
+    changed = previousKeys.some((key, index) => key !== nextKeys[index]);
+  }
+
+  for (const key of nextKeys) {
     const previousItem = previous[key];
     if (previousItem !== undefined && equal(previousItem, next[key])) {
       next[key] = previousItem;

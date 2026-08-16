@@ -17,6 +17,9 @@ const rspackConfigPath = fileURLToPath(
   new URL("./rspack.config.cjs", import.meta.url)
 );
 
+// Applies everywhere, including the files exempted from the history rule below.
+const restrictedSyntax = ["LabeledStatement", "WithStatement"];
+
 export default tseslint.config(
   js.configs.recommended,
   eslintConfigPrettier,
@@ -111,7 +114,16 @@ export default tseslint.config(
       "no-bitwise": "error",
       "no-console": "error",
       "no-restricted-globals": [2, "event"],
-      "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+      "no-restricted-syntax": [
+        "error",
+        ...restrictedSyntax,
+        {
+          selector:
+            "CallExpression[callee.property.name=/^(push|replace)State$/]",
+          message:
+            "Use navigate(), updateHistoryState() or replaceCurrentUrl() from common/navigate. History entries carry the app's own bookkeeping, which a raw pushState/replaceState drops.",
+        },
+      ],
       "wc/no-self-class": "off",
 
       // import-x rules
@@ -220,6 +232,24 @@ export default tseslint.config(
           allowObjectTypes: "always",
         },
       ],
+    },
+  },
+  {
+    // These own history entries themselves: the navigation helpers, the dialog
+    // stack, the boot paths that run before the app has any state to keep, and
+    // the tests that fabricate entries to simulate a document load.
+    files: [
+      "src/common/navigate.ts",
+      "src/dialogs/make-dialog-manager.ts",
+      "src/state/url-sync-mixin.ts",
+      "src/panels/config/automation/add-automation-element-dialog.ts",
+      "src/entrypoints/core.ts",
+      "src/onboarding/**/*.ts",
+      "cast/**/*.ts",
+      "test/**/*.ts",
+    ],
+    rules: {
+      "no-restricted-syntax": ["error", ...restrictedSyntax],
     },
   },
   {
