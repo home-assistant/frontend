@@ -35,7 +35,8 @@ export enum VacuumEntityFeature {
 
 interface VacuumEntityAttributes extends HassEntityAttributeBase {
   battery_level?: number;
-  fan_speed?: any;
+  fan_speed?: string;
+  fan_speed_list?: string[];
   [key: string]: any;
 }
 

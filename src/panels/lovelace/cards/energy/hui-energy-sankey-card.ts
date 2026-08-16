@@ -8,6 +8,7 @@ import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   energySourcesByType,
   getEnergyDataCollection,
   getSummedData,
@@ -272,8 +273,14 @@ class HuiEnergySankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    const deviceLabel = (statConsumption: string, name?: string) =>
-      name ||
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption,
+      this._data.statsMetadata
+    );
+
+    const deviceLabel = (statConsumption: string) =>
+      deviceLabels[statConsumption] ||
       getStatisticLabel(
         this.hass,
         statConsumption,

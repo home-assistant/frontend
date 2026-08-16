@@ -60,7 +60,6 @@ import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
 import type { TriggerDescriptions } from "../../../../data/trigger";
@@ -74,6 +73,8 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { getDeviceTarget } from "../target/get_device_target";
+import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
@@ -214,11 +215,12 @@ export default class HaAutomationTriggerRow extends LitElement {
       "target" in
         this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger];
 
-    const target = descriptionHasTarget
-      ? (this.trigger as PlatformTrigger).target
-      : type === "device" && (this.trigger as DeviceTrigger).device_id
-        ? { device_id: (this.trigger as DeviceTrigger).device_id }
-        : undefined;
+    const hasEntityTarget = type === "state" || type === "numeric_state";
+
+    const target = this._getTarget(type, descriptionHasTarget, hasEntityTarget);
+
+    const targetRequired =
+      (descriptionHasTarget || hasEntityTarget) && !this._isNew;
 
     const triggerTargetSpec =
       type === "platform"
@@ -248,12 +250,16 @@ export default class HaAutomationTriggerRow extends LitElement {
             ></ha-trigger-icon>`
       }
       <h3 slot="header">
-        ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+        ${capitalizeFirstLetter(
+          describeTrigger(this.trigger, this.hass, this._entityReg, {
+            hideEntities: true,
+          })
+        )}
         ${
-          target !== undefined || (descriptionHasTarget && !this._isNew)
+          target !== undefined || targetRequired
             ? this._renderTargets(
                 target,
-                descriptionHasTarget && !this._isNew,
+                targetRequired,
                 triggerTargetSpec,
                 type !== "device"
               )
@@ -595,6 +601,27 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
+  private _getEntityTarget = memoizeOne(getEntityTarget);
+
+  private _getDeviceTarget = memoizeOne(getDeviceTarget);
+
+  private _getTarget(
+    type: string,
+    descriptionHasTarget: boolean,
+    hasEntityTarget: boolean
+  ): HassServiceTarget | undefined {
+    if (descriptionHasTarget && "target" in this.trigger) {
+      return this.trigger.target;
+    }
+    if (hasEntityTarget && "entity_id" in this.trigger) {
+      return this._getEntityTarget(this.trigger.entity_id);
+    }
+    if (type === "device" && "device_id" in this.trigger) {
+      return this._getDeviceTarget(this.trigger.device_id);
+    }
+    return undefined;
+  }
+
   private _renderTargets = memoizeOne(
     (
       target?: HassServiceTarget,
@@ -857,7 +884,9 @@ export default class HaAutomationTriggerRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeTrigger(this.trigger, this.hass, this._entityReg, true)
+        describeTrigger(this.trigger, this.hass, this._entityReg, {
+          ignoreAlias: true,
+        })
       ),
       defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),

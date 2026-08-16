@@ -622,8 +622,7 @@ class HaBlueprintOverview extends LitElement {
           }
         ),
         confirmText: this.hass!.localize(
-          "ui.panel.config.blueprint.overview.blueprint_in_use_view",
-          { type }
+          `ui.panel.config.blueprint.overview.blueprint_in_use_view_${blueprint.domain}`
         ),
       });
       if (result) {

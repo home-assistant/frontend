@@ -77,8 +77,8 @@ export const moreInfoViewElements: ViewElementSmokeCase<MoreInfoView>[] = [
   {
     view: "details",
     element: "ha-more-info-details",
-    // The details view renders the state and attributes cards.
-    content: [{ selector: "ha-card" }],
+    // The details view renders the state and attributes grouped lists.
+    content: [{ selector: "ha-grouped-list" }],
   },
 ];
 

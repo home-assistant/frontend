@@ -39,6 +39,7 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
+import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -192,7 +193,7 @@ export class HaConfigEntities extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = history.state?.filter || "";
+  private _filter: string = getHistoryState()?.filter || "";
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -810,9 +811,7 @@ export class HaConfigEntities extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
         .columns=${this._columns(this.hass.localize, filteredEntities)}
@@ -1111,7 +1110,7 @@ export class HaConfigEntities extends LitElement {
     }
 
     this._fromUrl = true;
-    this._filter = history.state?.filter || "";
+    this._filter = getHistoryState()?.filter || "";
 
     this._filters = {
       "ha-filter-states": [],
@@ -1246,7 +1245,7 @@ export class HaConfigEntities extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    history.replaceState({ filter: this._filter }, "");
+    updateHistoryState({ filter: this._filter });
   }
 
   private _handleSelectionChanged(
