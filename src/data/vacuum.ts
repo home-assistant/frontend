@@ -22,7 +22,6 @@ export enum VacuumEntityFeature {
   STOP = 8,
   RETURN_HOME = 16,
   FAN_SPEED = 32,
-  BATTERY = 64,
   STATUS = 128,
   SEND_COMMAND = 256,
   LOCATE = 512,
@@ -34,7 +33,6 @@ export enum VacuumEntityFeature {
 }
 
 interface VacuumEntityAttributes extends HassEntityAttributeBase {
-  battery_level?: number;
   fan_speed?: string;
   fan_speed_list?: string[];
   [key: string]: any;
