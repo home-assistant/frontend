@@ -1,3 +1,4 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -8,6 +9,7 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
+import "../../../../src/components/ha-target-picker";
 import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../../../src/data/entity/entity_registry";
@@ -153,6 +155,9 @@ interface Sample {
   description: string;
   selector: Selector;
   value: unknown;
+  // Render ha-target-picker directly in compact (chip) mode instead of the
+  // ha-selector, which does not expose the compact option.
+  compact?: boolean;
 }
 
 const SAMPLES: Sample[] = [
@@ -162,6 +167,14 @@ const SAMPLES: Sample[] = [
       "Migrate adds every replacement device that matches the target filters (here both).",
     selector: { target: {} },
     value: { device_id: ["old_composite"] },
+  },
+  {
+    name: "Target (compact)",
+    description:
+      "In compact mode the replaced reference is shown as a warning chip.",
+    selector: { target: {} },
+    value: { device_id: ["old_composite"] },
+    compact: true,
   },
   {
     name: "Device (unfiltered, multiple matches)",
@@ -261,13 +274,23 @@ class DemoHaSelectorReplacedDevice
                 <ha-settings-row narrow slot=${slot}>
                   <span slot="heading">${sample.name}</span>
                   <span slot="description">${sample.description}</span>
-                  <ha-selector
-                    .hass=${this.hass}
-                    .selector=${sample.selector}
-                    .value=${this._values[idx]}
-                    .sampleIdx=${idx}
-                    @value-changed=${this._handleValueChanged}
-                  ></ha-selector>
+                  ${
+                    sample.compact
+                      ? html`<ha-target-picker
+                          compact
+                          .hass=${this.hass}
+                          .value=${this._values[idx] as HassServiceTarget}
+                          .sampleIdx=${idx}
+                          @value-changed=${this._handleValueChanged}
+                        ></ha-target-picker>`
+                      : html`<ha-selector
+                          .hass=${this.hass}
+                          .selector=${sample.selector}
+                          .value=${this._values[idx]}
+                          .sampleIdx=${idx}
+                          @value-changed=${this._handleValueChanged}
+                        ></ha-selector>`
+                  }
                 </ha-settings-row>
               `
             )}
