@@ -203,9 +203,28 @@ export const showRepairsFlowDialog = (
         return "";
       },
 
-      renderCreateEntryDescription(hass, _step) {
+      renderCreateEntryDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.create_entry.${step.description || "default"}`,
+          step.description_placeholders
+        );
+
         return html`
-          <p>${hass.localize("ui.dialogs.repair_flow.success.description")}</p>
+          ${
+            description
+              ? html`
+                  <ha-markdown
+                    allow-svg
+                    breaks
+                    .content=${description}
+                  ></ha-markdown>
+                `
+              : html`<p>
+                  ${hass.localize("ui.dialogs.repair_flow.success.description")}
+                </p>`
+          }
         `;
       },
 
