@@ -41,20 +41,21 @@ const ADDON_STAGES: CreateBackupStage[] = [
   "docker_config",
 ];
 
-// Add-on restarts are awaited after the backup file is finished, so those
-// stages belong to the last creation group to keep the progress monotonic
-const MEDIA_STAGES: CreateBackupStage[] = [
-  "folders",
-  "finishing_file",
+const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
+
+// Emitted after the backup file is finished, when the backend waits for
+// cold-backup add-ons to come back up
+const AWAIT_RESTART_STAGES: CreateBackupStage[] = [
   "await_addon_restarts",
   "await_app_restarts",
 ];
 
-// Ordered groups matching actual backend execution order
+// Ordered groups matching actual backend execution order. The await restart
+// stages share the last creation group to keep the progress monotonic.
 const STAGE_ORDER: CreateBackupStage[][] = [
   HA_STAGES,
   ADDON_STAGES,
-  MEDIA_STAGES,
+  [...MEDIA_STAGES, ...AWAIT_RESTART_STAGES],
   ["upload_to_agents"],
   ["cleaning_up"],
 ];
