@@ -95,6 +95,15 @@ class HaPanelHistory extends LitElement {
 
   @state() private _filters: SourceFilters = {};
 
+  // Restored on the next visit, like the target selection the filters narrow
+  // down.
+  @storage({
+    key: "historySourceFilters",
+    state: false,
+    subscribe: false,
+  })
+  private _storedFilters?: SourceFilters;
+
   @state() private _showSources = false;
 
   @state() private _entitySources?: EntitySources;
@@ -313,11 +322,15 @@ class HaPanelHistory extends LitElement {
     const queryParams = decodeHistoryLogbookQueryParams(
       extractSearchParamsObject()
     );
-    const initialValue =
-      historyLogbookTargetFromQueryParams(queryParams) ??
-      this._storedTargetPickerValue;
+    const urlTarget = historyLogbookTargetFromQueryParams(queryParams);
+    const initialValue = urlTarget ?? this._storedTargetPickerValue;
     if (initialValue) {
       this._targetPickerValue = initialValue;
+    }
+    // A target in the URL describes the whole selection. Restoring the stored
+    // filters on top of it could narrow it down to nothing.
+    if (!urlTarget && this._storedFilters) {
+      this._filters = this._storedFilters;
     }
     if (queryParams.start_date) {
       this._startDate = queryParams.start_date;
@@ -375,10 +388,12 @@ class HaPanelHistory extends LitElement {
     ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
   ) {
     this._filters = ev.detail.value;
+    this._storedFilters = this._filters;
   }
 
   private _clearSources() {
     this._filters = {};
+    this._storedFilters = this._filters;
     this._targetPickerValue = {};
     this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();

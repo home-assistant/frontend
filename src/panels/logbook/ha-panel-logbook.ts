@@ -91,6 +91,15 @@ export class HaPanelLogbook extends LitElement {
   })
   private _storedTargetPickerValue?: HassServiceTarget;
 
+  // Restored on the next visit, like the target selection the filters narrow
+  // down.
+  @storage({
+    key: "logbookSourceFilters",
+    state: false,
+    subscribe: false,
+  })
+  private _storedFilters?: SourceFilters;
+
   public constructor() {
     super();
     this._time = this._defaultState.time;
@@ -235,10 +244,12 @@ export class HaPanelLogbook extends LitElement {
     ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
   ) {
     this._filters = ev.detail.value;
+    this._storedFilters = this._filters;
   }
 
   private _clearSources() {
     this._filters = {};
+    this._storedFilters = this._filters;
     this._targetPickerValue = {};
     this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
@@ -346,6 +357,12 @@ export class HaPanelLogbook extends LitElement {
       this._targetPickerValue = this._storedTargetPickerValue;
     }
 
+    // A target in the URL describes the whole selection. Restoring the stored
+    // filters on top of it could narrow it down to nothing.
+    if (!this.hasUpdated && !targetPickerValue && this._storedFilters) {
+      this._filters = this._storedFilters;
+    }
+
     if (queryParams.start_date || queryParams.end_date) {
       const startDate = queryParams.start_date ?? this._time.range[0];
       const endDate = queryParams.end_date ?? this._time.range[1];
@@ -406,9 +423,12 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _isDefaultState(): boolean {
-    return deepEqual(
-      { time: this._time, targetPickerValue: this._targetPickerValue },
-      this._defaultState
+    return (
+      !countSourceFilters(this._filters) &&
+      deepEqual(
+        { time: this._time, targetPickerValue: this._targetPickerValue },
+        this._defaultState
+      )
     );
   }
 
@@ -418,6 +438,7 @@ export class HaPanelLogbook extends LitElement {
     this._targetPickerValue = defaultState.targetPickerValue;
     this._storedTargetPickerValue = undefined;
     this._filters = {};
+    this._storedFilters = undefined;
     navigate("/logbook", { replace: true });
   }
 
