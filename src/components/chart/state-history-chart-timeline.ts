@@ -1,6 +1,7 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
@@ -71,6 +72,20 @@ export class StateHistoryChartTimeline extends LitElement {
   @state() private _chartOptions?: HaECOption;
 
   @state() private _yWidth = 0;
+
+  // Inside labels are truncated to the plot, so their width follows the chart.
+  @state() private _width = 0;
+
+  // The host is an inline element, which a resize observer skips, so the chart
+  // itself is the one being observed.
+  @query("ha-chart-base") private _chartBase?: HTMLElement;
+
+  private _resizeController = new ResizeController<void>(this, {
+    target: null,
+    callback: (entries) => {
+      this._width = entries[0]?.contentRect.width ?? 0;
+    },
+  });
 
   private _chartTime: Date = new Date();
 
@@ -175,6 +190,12 @@ export class StateHistoryChartTimeline extends LitElement {
       )}<br />${formattedDuration}`;
   };
 
+  protected firstUpdated() {
+    if (this._chartBase) {
+      this._resizeController.observe(this._chartBase);
+    }
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (
       this.isConnected &&
@@ -196,7 +217,8 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("showNames") ||
       changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
-      changedProps.has("_yWidth")
+      changedProps.has("_yWidth") ||
+      changedProps.has("_width")
     ) {
       this._createOptions();
     }
@@ -219,6 +241,11 @@ export class StateHistoryChartTimeline extends LitElement {
     // Inside labels take no width of their own, but the plot still lines up
     // with the line charts that share the y-axis padding.
     const plotPadding = insideLabels ? this.paddingYAxis : labelWidth;
+    // Before the first resize observation the width is unknown, and a zero
+    // width would hide the labels instead of truncating them.
+    const insideLabelWidth = this._width
+      ? Math.max(0, this._width - plotPadding - labelMargin)
+      : undefined;
     this._chartOptions = {
       xAxis: {
         type: "time",
@@ -251,6 +278,8 @@ export class StateHistoryChartTimeline extends LitElement {
               padding: [0, rtl ? 2 : 0, 14, rtl ? 0 : 2],
               align: rtl ? "right" : "left",
               verticalAlign: "bottom",
+              width: insideLabelWidth,
+              overflow: "truncate",
               formatter: (id: string) =>
                 (this._chartData.find((d) => d.id === id)?.name as string) ??
                 "",
