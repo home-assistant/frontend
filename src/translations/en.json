@@ -8321,7 +8321,8 @@
             "status": "Status",
             "version": "Version",
             "data_rate": "Data rate",
-            "area": "Area"
+            "area": "Area",
+            "neighbor": "In range of each other"
           },
           "node_status": {
             "0": "Unknown",

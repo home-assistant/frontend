@@ -26,6 +26,7 @@ import type {
 } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
+  fetchZwaveNodeNeighbors,
   getNodeIdFromDevice,
   NodeStatus,
   subscribeZwaveNodeStatistics,
@@ -55,10 +56,14 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
+  @state() private _neighbors: Record<number, number[]> = {};
+
   @state() private _searchFilter = "";
 
   // Route statistics reference repeaters by device registry ID
   private _nodeIdsByDeviceId: Record<string, number> = {};
+
+  private _neighborLinks = new Set<string>();
 
   public hassSubscribe() {
     const subscriptions: Promise<UnsubscribeFunc>[] = [];
@@ -85,8 +90,27 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
     this._nodeIdsByDeviceId = nodeIdsByDeviceId;
     this._devices = devices;
+    this._fetchNeighbors(devices);
 
     return subscriptions;
+  }
+
+  private async _fetchNeighbors(devices: Record<number, DeviceRegistryEntry>) {
+    const neighbors: Record<number, number[]> = {};
+    await Promise.all(
+      Object.entries(devices).map(async ([nodeId, device]) => {
+        try {
+          neighbors[nodeId] = await fetchZwaveNodeNeighbors(
+            this.hass!,
+            device.id
+          );
+        } catch (_err: unknown) {
+          // a node can fail to report neighbors, e.g. long range nodes
+          // which have no mesh neighbors at all
+        }
+      })
+    );
+    this._neighbors = neighbors;
   }
 
   public connectedCallback() {
@@ -116,7 +140,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           .searchFilter=${this._searchFilter}
           .data=${this._getNetworkData(
             this._nodeStatuses,
-            this._nodeStatistics
+            this._nodeStatistics,
+            this._neighbors
           )}
           .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
@@ -184,6 +209,13 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
       const targetName =
         targetDevice?.name_by_user ?? targetDevice?.name ?? target;
+      if (this._neighborLinks.has(`${source}>${target}`)) {
+        return html`${sourceName} ↔ ${targetName}<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.zwave_js.visualization.neighbor"
+            )}</b
+          >`;
+      }
       // links point away from the controller, so the route belongs to the target
       const stats =
         this._nodeStatistics[target] ?? this._nodeStatistics[source];
@@ -263,7 +295,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
   private _getNetworkData = memoizeOne(
     (
       nodeStatuses: Record<number, ZWaveJSNodeStatus>,
-      nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>
+      nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>,
+      neighbors: Record<number, number[]>
     ): NetworkData => {
       const style = getComputedStyle(this);
       const nodes: NetworkNode[] = [];
@@ -420,7 +453,49 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         });
       });
 
-      return { nodes, links, categories };
+      // Neighbors are the nodes a node can reach directly. They are symmetric
+      // and carry no signal information, so they fill in the mesh underneath
+      // the measured routes without overriding them.
+      const neighborLinks: NetworkLink[] = [];
+      const neighborKeys = new Set<string>();
+      Object.entries(neighbors).forEach(([nodeId, neighborIds]) => {
+        neighborIds.forEach((neighborId) => {
+          const target = String(neighborId);
+          if (!nodeStatuses[neighborId] || target === nodeId) {
+            return;
+          }
+          const [a, b] = [nodeId, target].sort();
+          const key = `${a}>${b}`;
+          if (
+            neighborKeys.has(key) ||
+            links.some(
+              (link) =>
+                (link.source === nodeId && link.target === target) ||
+                (link.source === target && link.target === nodeId)
+            )
+          ) {
+            return;
+          }
+          neighborKeys.add(key);
+          neighborLinks.push({
+            source: a,
+            target: b,
+            // equal values in both directions render the link without an arrow
+            value: 1,
+            reverseValue: 1,
+            lineStyle: {
+              width: 1,
+              color: style.getPropertyValue("--disabled-color"),
+              type: "dashed",
+            },
+            // neighbors are plentiful, let the routes shape the layout
+            ignoreForceLayout: true,
+          });
+        });
+      });
+      this._neighborLinks = neighborKeys;
+
+      return { nodes, links: [...neighborLinks, ...links], categories };
     }
   );
 
