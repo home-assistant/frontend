@@ -53,6 +53,8 @@ import "./ha-logbook";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { csvDownload, csvSafeString } from "../../util/csv";
 
+const EMPTY_STATES: HomeAssistant["states"] = {};
+
 interface LogbookState {
   time: { range: [Date, Date] };
   targetPickerValue: HassServiceTarget;
@@ -307,7 +309,9 @@ export class HaPanelLogbook extends LitElement {
         ? targetEntities
         : this.__logbookEntityIds(this.hass.states),
       this._filters,
-      this.hass.states,
+      // Only the device class filter reads the states, so they stay out of the
+      // memoization key while it is not used.
+      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
       this._entitySources
     );
   }

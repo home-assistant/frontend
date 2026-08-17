@@ -145,8 +145,12 @@ class HaPanelHistory extends LitElement {
     // History only shows something once a target is picked, so narrowing it
     // down further does not make it any less empty.
     const hasTargets = targetCount > 0;
+    // Keyed on the entities the selection resolves to, not on the targets
+    // themselves: a target whose entities are all filtered out fetches nothing
+    // and would otherwise load forever.
     const loading =
-      this._isLoading || (hasTargets && !this._mungedStateHistory);
+      this._isLoading ||
+      (this._getEntityIds().length > 0 && !this._mungedStateHistory);
     const hasResults =
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
@@ -420,7 +424,11 @@ class HaPanelHistory extends LitElement {
     const entityIds = this._getEntityIds();
 
     if (entityIds.length === 0) {
+      // The running subscription still holds the previous entities, so it would
+      // keep pushing the ones the selection no longer covers.
+      this._unsubscribeHistory();
       this._stateHistory = undefined;
+      this._isLoading = false;
       return;
     }
 

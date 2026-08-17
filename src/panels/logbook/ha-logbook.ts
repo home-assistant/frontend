@@ -249,9 +249,9 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       this._unsubLogbook.then((unsub) => unsub());
       this._unsubLogbook = undefined;
-      this._logbookEntries = loading ? undefined : [];
       this._pendingStreamMessages = [];
     }
+    this._logbookEntries = loading ? undefined : [];
   }
 
   public connectedCallback() {
