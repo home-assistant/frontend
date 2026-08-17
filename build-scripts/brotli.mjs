@@ -12,7 +12,8 @@
 import { availableParallelism } from "node:os";
 import { buffer as readStream } from "node:stream/consumers";
 import { promisify } from "node:util";
-import { brotliCompress } from "node:zlib";
+import { brotliCompress, constants } from "node:zlib";
+import { withCache } from "./compress-cache.mjs";
 import { ParallelTransform } from "./parallel-transform.mjs";
 
 const EXTENSION = ".br";
@@ -24,8 +25,13 @@ const compress = promisify(brotliCompress);
  * @param {boolean} [options.skipLarger] Drop files that compression grows.
  * @param {object} [options.params] Brotli parameters, passed to zlib as-is.
  */
-export default ({ skipLarger = false, params } = {}) =>
-  new ParallelTransform(availableParallelism(), async (file) => {
+export default ({ skipLarger = false, params } = {}) => {
+  // Isolate cache entries by anything that changes the output bytes: the brotli
+  // quality, and the node major that produced them.
+  const quality = params?.[constants.BROTLI_PARAM_QUALITY] ?? "default";
+  const namespace = `brotli-q${quality}-node${process.versions.node.split(".")[0]}`;
+
+  return new ParallelTransform(availableParallelism(), async (file) => {
     if (file.isNull()) {
       return file;
     }
@@ -33,10 +39,13 @@ export default ({ skipLarger = false, params } = {}) =>
       file.contents = await readStream(file.contents);
     }
 
-    const compressed = await compress(file.contents, { params });
-    if (skipLarger && compressed.length >= file.contents.length) {
+    const compressed = await withCache(namespace, file.contents, async () => {
+      const out = await compress(file.contents, { params });
       // Dropped rather than passed through, as gulp-brotli did: the
       // uncompressed file is already in the output directory.
+      return skipLarger && out.length >= file.contents.length ? undefined : out;
+    });
+    if (compressed === undefined) {
       return undefined;
     }
 
@@ -44,3 +53,4 @@ export default ({ skipLarger = false, params } = {}) =>
     file.path += EXTENSION;
     return file;
   });
+};

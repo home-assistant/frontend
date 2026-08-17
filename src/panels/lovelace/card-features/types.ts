@@ -47,6 +47,11 @@ export interface LightColorFavoritesCardFeatureConfig {
   type: "light-color-favorites";
 }
 
+export interface LightEffectCardFeatureConfig {
+  type: "light-effect";
+  effects?: string[];
+}
+
 export interface LockCommandsCardFeatureConfig {
   type: "lock-commands";
 }
@@ -221,6 +226,11 @@ export interface VacuumCommandsCardFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export interface VacuumFanSpeedCardFeatureConfig {
+  type: "vacuum-fan-speed";
+  fan_speeds?: string[];
+}
+
 export interface ValveOpenCloseCardFeatureConfig {
   type: "valve-open-close";
 }
@@ -336,6 +346,7 @@ export type LovelaceCardFeatureConfig =
   | LightBrightnessCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
+  | LightEffectCardFeatureConfig
   | LockCommandsCardFeatureConfig
   | LockOpenDoorCardFeatureConfig
   | MediaPlayerPlaybackCardFeatureConfig
@@ -351,6 +362,7 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | VacuumFanSpeedCardFeatureConfig
   | ValveOpenCloseCardFeatureConfig
   | ValvePositionFavoriteCardFeatureConfig
   | ValvePositionCardFeatureConfig

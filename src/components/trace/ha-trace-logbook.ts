@@ -29,6 +29,7 @@ export class HaTraceLogbook extends LitElement {
             .hass=${this.hass}
             .entries=${this.logbookEntries}
             .narrow=${this.narrow}
+            no-detail
           ></ha-logbook-renderer>
           <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `

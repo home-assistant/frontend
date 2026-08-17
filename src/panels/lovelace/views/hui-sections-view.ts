@@ -9,6 +9,7 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { clamp } from "../../../common/number/clamp";
+import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -137,7 +138,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._sidebarTabActive = Boolean(window.history.state?.sidebar);
+    this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
   }
 
   disconnectedCallback(): void {
@@ -509,10 +510,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this._sidebarTabActive = !this._sidebarTabActive;
 
     // Add sidebar state to history
-    window.history.replaceState(
-      { ...window.history.state, sidebar: this._sidebarTabActive },
-      ""
-    );
+    updateHistoryState({ sidebar: this._sidebarTabActive });
 
     // Restore scroll position after view updates
     this.updateComplete.then(() => {

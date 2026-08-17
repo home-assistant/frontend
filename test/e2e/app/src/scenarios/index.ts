@@ -5,6 +5,10 @@ import type {
 } from "../../../../../src/data/entity/entity_registry";
 import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
 import type { MediaPlayerItem } from "../../../../../src/data/media-player";
+import {
+  WeatherEntityFeature,
+  type ForecastEvent,
+} from "../../../../../src/data/weather";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -93,6 +97,51 @@ const lightMoreInfoScenario: Scenario = async (hass) => {
     aliases: [],
   };
   hass.mockWS("config/entity_registry/get", () => registryEntry);
+};
+
+const weatherMoreInfoScenario: Scenario = (hass) => {
+  hass.addEntities([
+    {
+      entity_id: "weather.test_weather",
+      state: "sunny",
+      attributes: {
+        friendly_name: "Test Weather",
+        supported_features:
+          WeatherEntityFeature.FORECAST_DAILY +
+          WeatherEntityFeature.FORECAST_HOURLY,
+        precipitation_unit: "mm",
+        pressure_unit: "hPa",
+        temperature: 20,
+        temperature_unit: "°C",
+        visibility_unit: "km",
+        wind_speed_unit: "km/h",
+      },
+    },
+  ]);
+
+  hass.mockWS("weather/subscribe_forecast", (message, _hass, onChange) => {
+    onChange?.({
+      type: message.forecast_type,
+      forecast: [
+        {
+          datetime: "2026-08-13T10:00:00Z",
+          temperature: 20,
+          condition: "sunny",
+        },
+        {
+          datetime: "2026-08-13T11:00:00Z",
+          temperature: 21,
+          condition: "sunny",
+        },
+        {
+          datetime: "2026-08-13T12:00:00Z",
+          temperature: 22,
+          condition: "sunny",
+        },
+      ],
+    } satisfies ForecastEvent);
+    return () => undefined;
+  });
 };
 
 const quickSearchAssistScenario: Scenario = async (hass) => {
@@ -253,6 +302,7 @@ export const scenarios: Record<string, Scenario> = {
   "delayed-media-browse": delayedMediaBrowseScenario,
   "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
   "light-more-info": lightMoreInfoScenario,
+  "weather-more-info": weatherMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
   "delayed-lovelace": delayedLovelaceScenario,
 };

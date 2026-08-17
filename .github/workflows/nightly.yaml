@@ -38,11 +38,44 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The wheel only builds the app (build-app), which does not merge
+          # backend translations. Skipping the whole-project backend export (as
+          # the release does) keeps this off the build's critical path; the full
+          # translations artifact is produced in parallel by the job below.
+          SKIP_BACKEND_TRANSLATIONS: "1"
 
       - name: Bump version
         run: script/version_bump.js nightly
 
+      # Warm the shared compression cache so releases reuse it (see release.yaml).
+      - name: Restore compression cache
+        id: compress-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            compress-cache-${{ runner.os }}-
+
+      # The nightly writes the rspack persistent cache; CI reads it read-only
+      # (see ci.yaml). rspack invalidates internally (version + buildDependencies
+      # + node_modules snapshot), so the cache rolls forward daily and a single
+      # dependency bump keeps most of it warm instead of dropping the lineage.
+      - name: Restore rspack cache
+        id: rspack-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rspack-cache
+          key: rspack-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            rspack-cache-${{ runner.os }}-
+
       - name: Build nightly Python wheels
+        env:
+          COMPRESS_CACHE_DIR: ${{ github.workspace }}/.compress-cache
+          RSPACK_CACHE: readwrite
         run: |
           pip install build
           yarn install
@@ -51,8 +84,23 @@ jobs:
           rm -rf dist home_assistant_frontend.egg-info
           python3 -m build
 
-      - name: Archive translations
-        run: tar -czvf translations.tar.gz translations
+      # Not gated on the restore steps: a transient restore failure (they are
+      # continue-on-error) must not stop us persisting a freshly built cache.
+      - name: Save compression cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save rspack cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rspack-cache
+          key: rspack-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -60,6 +108,31 @@ jobs:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
+
+  # The full translations (including the slow backend/core export) are only
+  # needed for the uploaded artifact, not the wheel, so they are downloaded in
+  # parallel here instead of blocking the build above.
+  translations:
+    name: Translations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+        with:
+          immutable: false
+
+      - name: Download translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+
+      - name: Archive translations
+        run: tar -czvf translations.tar.gz translations
 
       - name: Upload translations
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

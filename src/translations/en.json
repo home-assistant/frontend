@@ -702,9 +702,9 @@
           "geo_location": "[%key:ui::panel::config::automation::editor::triggers::type::geo_location::label%]",
           "homeassistant": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::label%]",
           "mqtt": "[%key:ui::panel::config::automation::editor::triggers::type::mqtt::label%]",
-          "numeric_state": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+          "numeric_state": "[%key:ui::panel::config::automation::editor::conditions::type::numeric_state::label%]",
           "persistent_notification": "[%key:ui::panel::config::automation::editor::triggers::type::persistent_notification::label%]",
-          "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+          "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
           "sun": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
           "tag": "[%key:ui::panel::config::automation::editor::triggers::type::tag::label%]",
           "template": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
@@ -1667,6 +1667,11 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "context": "Context",
+        "entity": "Entity",
+        "floor": "Floor",
+        "entity_id": "Entity ID",
+        "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
         "raw": "Raw",
@@ -2049,6 +2054,15 @@
         "description": "Description",
         "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
       },
+      "logbook_detail": {
+        "title": "Activity details",
+        "state": "State",
+        "event": "Event",
+        "time": "Time",
+        "what_happened": "What happened",
+        "no_known_cause": "No cause was recorded for this activity.",
+        "action_used": "Action used: {name}"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
@@ -2073,6 +2087,8 @@
         "error_backup_state": "An error occurred while getting the current backup state. Error: {error}",
         "wait_for_upload": "Wait for backup upload to finish",
         "wait_for_restore": "Wait for backup restore to finish",
+        "interrupt_automations": "The following automations and scripts are currently running and will be interrupted:",
+        "no_interrupt_automations": "No automations or scripts are currently running.",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -2083,14 +2099,14 @@
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "All integrations will be reloaded.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
           "confirm_title": "Stop Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "Home Assistant will be stopped.",
           "confirm_action": "Stop"
         },
         "reboot": {
@@ -2543,6 +2559,7 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
+      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have saved or discarded your changes.",
       "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
@@ -2768,7 +2785,6 @@
           "caption": "Updates",
           "description": "Manage updates of Home Assistant, apps, and devices",
           "group_system": "Home Assistant",
-          "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
           "no_updates": "No updates available",
@@ -5347,7 +5363,7 @@
                   }
                 },
                 "state": {
-                  "label": "State",
+                  "label": "State changed",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
                   "for": "For",
@@ -5355,7 +5371,8 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}",
+                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   },
                   "for_type": {
                     "choices": {
@@ -5385,7 +5402,7 @@
                   }
                 },
                 "numeric_state": {
-                  "label": "Numeric state",
+                  "label": "Numeric state crossed threshold",
                   "above": "Above",
                   "below": "Below",
                   "lower_limit": "Lower limit",
@@ -5397,7 +5414,10 @@
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "crossed_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above}{duration, select, \n undefined {} \n other { for {duration}}\n}",
+                    "crossed_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}",
+                    "crossed_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}"
                   },
                   "threshold_type": {
                     "choices": {
@@ -5641,7 +5661,7 @@
                 "numeric_state": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
                   "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+                  "label": "Numeric state",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "lower_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::lower_limit%]",
@@ -5651,7 +5671,10 @@
                     "picker": "Tests if the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
                     "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
                     "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
-                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
+                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}",
+                    "is_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above}",
+                    "is_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is below {below}",
+                    "is_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above} and below {below}"
                   }
                 },
                 "or": {
@@ -5663,12 +5686,13 @@
                   }
                 },
                 "state": {
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
-                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+                  "label": "State",
+                  "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }",
+                    "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "sun": {
@@ -6130,7 +6154,8 @@
             "error": "{path} could not be loaded",
             "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
-            "blueprint_in_use_view": "view {type}",
+            "blueprint_in_use_view_automation": "View automations",
+            "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
@@ -6784,7 +6809,8 @@
           "disabled_by": {
             "user": "user",
             "integration": "integration",
-            "config_entry": "config entry"
+            "config_entry": "config entry",
+            "device": "parent device"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
@@ -6795,6 +6821,10 @@
           "delete_device_integration": "Remove device from {integration}",
           "connected_devices": {
             "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
+          "child_devices": {
+            "heading": "Sub-devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
@@ -6878,6 +6908,8 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "parent_device": "Parent device",
+            "part_of_device": "Part of {name}",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -7009,6 +7041,8 @@
             "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",
             "allow_login": "Allow login",
             "allow_login_description": "Allow access using username and password.",
+            "select_user": "Select user account",
+            "create_new_user": "Create a new username",
             "username": "[%key:ui::panel::config::users::editor::username%]",
             "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
@@ -7170,6 +7204,7 @@
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
+            "part_of": "Part of",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version {version}",
@@ -7445,6 +7480,7 @@
           "updated": "Updated",
           "device": "Device",
           "device_information": "Device information",
+          "open_device": "Open device",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
@@ -10447,7 +10483,7 @@
                 "bottom": "Bottom",
                 "bottom_description": "Displays all features stacked",
                 "inline": "Inline",
-                "inline_description": "Displays only the first feature"
+                "inline_description": "Displays features in two columns, starting next to the name"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",
@@ -10591,6 +10627,11 @@
               "light-color-temp": {
                 "label": "Light color temperature"
               },
+              "light-effect": {
+                "label": "Light effect",
+                "effects": "Effects",
+                "customize": "Customize effects"
+              },
               "lock-commands": {
                 "label": "Lock commands"
               },
@@ -10634,6 +10675,11 @@
                   "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
+              },
+              "vacuum-fan-speed": {
+                "label": "Vacuum fan speed",
+                "fan_speeds": "Fan speeds",
+                "customize": "Customize fan speeds"
               },
               "valve-open-close": {
                 "label": "Valve open/close"
@@ -11470,6 +11516,7 @@
         "analytics": {
           "header": "Help us help you",
           "finish": "Next",
+          "waiting": "Waiting for Home Assistant to finish starting up…",
           "preferences": {
             "base": {
               "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
