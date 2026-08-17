@@ -48,6 +48,7 @@ export type Selector =
   | DeviceSelector
   | FloorSelector
   | LegacyDeviceSelector
+  | DeviceClassSelector
   | DurationSelector
   | EntitySelector
   | EntityNameSelector
@@ -67,7 +68,6 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
-  | SensorDeviceClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -482,11 +482,13 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
     box_max_columns?: number;
+    domain?: string; // used by DeviceClassSelector
   } | null;
 }
 
-export interface SensorDeviceClassSelector {
-  sensor_device_class: {
+export interface DeviceClassSelector {
+  device_class: {
+    domain: string;
     options?: readonly string[] | readonly SelectOption[];
     sort?: boolean;
     multiple?: boolean;
