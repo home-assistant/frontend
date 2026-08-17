@@ -30,44 +30,38 @@ import { fetchDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import type {
+  BandCounts,
+  BarBand,
+  HealthGroup,
+  HealthGroupKey,
+  SignalBand,
+} from "./network-health";
+import {
+  BAR_BANDS,
+  countBands,
+  groupByArea,
+  healthGroups,
+  managedDevices,
+  parentByIeee,
+  signalBand,
+} from "./network-health";
 
-/** Link quality below which a device sits at the edge of its radio range. */
-const WEAK_LQI = 30;
-
-/** Link quality from which a device is comfortably connected. */
-const STRONG_LQI = 60;
-
-/** Minutes without contact after which a device is listed as quiet. */
-const QUIET_MINUTES = 90;
-
-/** Battery percentage at or below which a device is listed as running low. */
-const LOW_BATTERY = 20;
-
-type Band = "strong" | "fair" | "weak" | "unknown";
-
-const BAND_ICON: Record<Band, string> = {
+const BAND_ICON: Record<SignalBand, string> = {
   strong: mdiSignalCellular3,
   fair: mdiSignalCellular2,
   weak: mdiSignalCellular1,
   unknown: mdiSignalCellularOutline,
 };
 
-/**
- * The bar reports the state of every device, worsening from left to right. A
- * silent device gets its own band: its last link quality says nothing about
- * how it is doing now.
- */
-type BarBand = "strong" | "fair" | "weak" | "offline";
-
-const BANDS: BarBand[] = ["strong", "fair", "weak", "offline"];
-
-interface HealthGroup {
-  key: string;
-  icon: string;
-  devices: ZHADevice[];
-  /** Show the battery level instead of the link quality on each row. */
-  battery?: boolean;
-}
+const GROUP_ICON: Record<HealthGroupKey, string> = {
+  incomplete: mdiProgressAlert,
+  weak_signal: mdiSignalCellular1,
+  unreachable: mdiLanDisconnect,
+  low_battery: mdiBatteryAlertVariantOutline,
+  quiet: mdiClockOutline,
+  routers: mdiRouterWireless,
+};
 
 @customElement("zha-network-health-page")
 class ZHANetworkHealthPage extends LitElement {
@@ -98,52 +92,10 @@ class ZHANetworkHealthPage extends LitElement {
     }
   }
 
-  private get _managedDevices(): ZHADevice[] {
-    return (this._devices ?? []).filter((device) => !device.active_coordinator);
-  }
-
-  private _minutesSince(lastSeen: string): number {
-    return Math.round((Date.now() - new Date(lastSeen).getTime()) / 60000);
-  }
-
-  private _band(device: ZHADevice): Band {
-    if (device.lqi === null || device.lqi === undefined) {
-      return "unknown";
-    }
-    if (device.lqi < WEAK_LQI) {
-      return "weak";
-    }
-    return device.lqi < STRONG_LQI ? "fair" : "strong";
-  }
-
-  private _countBands(
-    devices: ZHADevice[]
-  ): Record<BarBand | "unknown", number> {
-    const counts: Record<BarBand | "unknown", number> = {
-      strong: 0,
-      fair: 0,
-      weak: 0,
-      offline: 0,
-      unknown: 0,
-    };
-    for (const device of devices) {
-      counts[device.available ? this._band(device) : "offline"]++;
-    }
-    return counts;
-  }
-
-  /**
-   * A device that joined the network but never finished its interview: it is
-   * known to the coordinator, yet exposes nothing to control or read.
-   * `pairing_status` would say so directly, but it only travels with the
-   * pairing events, not with the device list this page is built on.
-   */
-  private _isIncomplete(device: ZHADevice): boolean {
-    return device.entities.length === 0;
-  }
+  private _managedDevices = memoizeOne(managedDevices);
 
   /** Battery percentage reported by the device, if it has a battery sensor. */
-  private _batteryLevel(device: ZHADevice): number | null {
+  private _batteryLevel = (device: ZHADevice): number | null => {
     for (const entity of device.entities) {
       const stateObj = this.hass.states[entity.entity_id];
       if (stateObj?.attributes.device_class === "battery") {
@@ -154,76 +106,15 @@ class ZHANetworkHealthPage extends LitElement {
       }
     }
     return null;
-  }
+  };
 
-  /**
-   * Map each device to the router that lists it as a child, so a weak device
-   * can be traced to the neighbour it depends on. Built once per device list
-   * rather than per rendered row.
-   */
-  private _parentByIeee = memoizeOne((devices: ZHADevice[]) => {
-    const parents: Record<string, string> = {};
-    for (const device of devices) {
-      for (const neighbor of device.neighbors) {
-        if (neighbor.relationship === "Child") {
-          parents[neighbor.ieee] = device.user_given_name || device.name;
-        }
-      }
-    }
-    return parents;
-  });
+  /** Built once per device list rather than per rendered row. */
+  private _parentByIeee = memoizeOne(parentByIeee);
 
-  private _areaName(device: ZHADevice): string {
-    return device.area_id
+  private _areaName = (device: ZHADevice): string =>
+    device.area_id
       ? (this.hass.areas[device.area_id]?.name ?? device.area_id)
       : this.hass.localize("ui.panel.config.zha.network_health.no_area");
-  }
-
-  private get _groups(): HealthGroup[] {
-    const devices = this._managedDevices;
-    return [
-      {
-        key: "incomplete",
-        icon: mdiProgressAlert,
-        devices: devices.filter((device) => this._isIncomplete(device)),
-      },
-      {
-        key: "weak_signal",
-        icon: mdiSignalCellular1,
-        devices: devices
-          .filter((device) => this._band(device) === "weak")
-          .sort((a, b) => a.lqi - b.lqi),
-      },
-      {
-        key: "unreachable",
-        icon: mdiLanDisconnect,
-        devices: devices.filter((device) => !device.available),
-      },
-      {
-        key: "low_battery",
-        icon: mdiBatteryAlertVariantOutline,
-        devices: devices
-          .filter((device) => {
-            const level = this._batteryLevel(device);
-            return level !== null && level <= LOW_BATTERY;
-          })
-          .sort((a, b) => this._batteryLevel(a)! - this._batteryLevel(b)!),
-        battery: true,
-      },
-      {
-        key: "quiet",
-        icon: mdiClockOutline,
-        devices: devices.filter(
-          (device) => this._minutesSince(device.last_seen) > QUIET_MINUTES
-        ),
-      },
-      {
-        key: "routers",
-        icon: mdiRouterWireless,
-        devices: devices.filter((device) => device.device_type === "Router"),
-      },
-    ];
-  }
 
   protected render(): TemplateResult {
     return html`
@@ -265,12 +156,10 @@ class ZHANetworkHealthPage extends LitElement {
     return html`${this._renderStatusCard()} ${this._renderGroupsCard()}`;
   }
 
-  private _renderBar(
-    counts: Record<BarBand | "unknown", number>
-  ): TemplateResult {
+  private _renderBar(counts: BandCounts): TemplateResult {
     return html`
       <div class="bar">
-        ${BANDS.map((band) =>
+        ${BAR_BANDS.map((band: BarBand) =>
           counts[band]
             ? html`<div
                 class="segment ${band}"
@@ -283,9 +172,9 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private _renderStatusCard(): TemplateResult {
-    const devices = this._managedDevices;
+    const devices = this._managedDevices(this._devices!);
     const offline = devices.filter((device) => !device.available).length;
-    const counts = this._countBands(devices);
+    const counts = countBands(devices);
     const rated = counts.strong + counts.fair + counts.weak + counts.offline;
     // A single sleeping device is everyday life, not an outage: the network is
     // only down once nothing answers at all. Matches the ZHA dashboard.
@@ -326,8 +215,8 @@ class ZHANetworkHealthPage extends LitElement {
                 <div class="distribution">
                   ${this._renderBar(counts)}
                   <div class="legend">
-                    ${BANDS.map(
-                      (band) => html`
+                    ${BAR_BANDS.map(
+                      (band: BarBand) => html`
                         <span class="legend-item">
                           <span class="dot ${band}"></span>
                           ${this.hass.localize(
@@ -347,9 +236,14 @@ class ZHANetworkHealthPage extends LitElement {
   }
 
   private _renderGroupsCard(): TemplateResult {
+    const groups = healthGroups(
+      this._managedDevices(this._devices!),
+      this._batteryLevel
+    );
+
     return html`
       <ha-card>
-        ${this._groups.map(
+        ${groups.map(
           (group) => html`
             <ha-expansion-panel
               left-chevron
@@ -363,7 +257,7 @@ class ZHANetworkHealthPage extends LitElement {
             >
               <ha-svg-icon
                 slot="leading-icon"
-                .path=${group.icon}
+                .path=${GROUP_ICON[group.key]}
               ></ha-svg-icon>
               <span slot="icons" class="count">${group.devices.length}</span>
               ${
@@ -390,37 +284,18 @@ class ZHANetworkHealthPage extends LitElement {
    * spread over the house or concentrated in one room.
    */
   private _renderByArea(group: HealthGroup): TemplateResult[] {
-    const byArea = new Map<string, { name: string; devices: ZHADevice[] }>();
-    for (const device of group.devices) {
-      const area = byArea.get(device.area_id ?? "");
-      if (area) {
-        area.devices.push(device);
-      } else {
-        byArea.set(device.area_id ?? "", {
-          name: this._areaName(device),
-          devices: [device],
-        });
-      }
-    }
-
-    return [...byArea.values()]
-      .sort((a, b) =>
-        a.devices.length === b.devices.length
-          ? a.name.localeCompare(b.name)
-          : b.devices.length - a.devices.length
-      )
-      .map(
-        ({ name, devices }) => html`
-          <div class="area-caption" role="separator">
-            ${name} · ${devices.length}
-          </div>
-          ${devices.map((device) => this._renderDevice(device, group.battery))}
-        `
-      );
+    return groupByArea(group.devices, this._areaName).map(
+      ({ name, devices }) => html`
+        <div class="area-caption" role="separator">
+          ${name} · ${devices.length}
+        </div>
+        ${devices.map((device) => this._renderDevice(device, group.battery))}
+      `
+    );
   }
 
   private _renderDevice(device: ZHADevice, battery = false): TemplateResult {
-    const band = this._band(device);
+    const band = signalBand(device);
     const level = battery ? this._batteryLevel(device) : null;
     const parent = this._parentByIeee(this._devices!)[device.ieee];
     // Nothing is measured while a device is silent, so what is shown is the
