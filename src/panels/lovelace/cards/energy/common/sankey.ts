@@ -226,11 +226,11 @@ export const buildSankeyDeviceNodes = (
         const ranked = [...children].sort(
           (a, b) => a.value - b.value || a.idx - b.idx
         );
-        // Leave a slot for the "Other" node these demotions produce, so a parent
-        // that hits the cap ends up with exactly `maxDevices` nodes. It also
-        // guarantees at least two devices land in the bucket - a lone one is
-        // rendered by name below, which would make the cap a no-op.
-        const demoteCount = children.length - Math.max(maxDevices - 1, 0);
+        // `maxDevices` budgets named devices, matching the option of the same
+        // name on the devices graph; the "Other" node is overhead on top, like
+        // the untracked residual. Demote at least two, because a lone device in
+        // the bucket is rendered by name below and would void the cap.
+        const demoteCount = Math.max(children.length - maxDevices, 2);
         ranked
           .slice(0, demoteCount)
           .forEach((child) => demoteSubtree(child.id));

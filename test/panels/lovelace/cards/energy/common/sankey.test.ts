@@ -479,7 +479,7 @@ describe("buildSankeyDeviceNodes", () => {
       );
     });
 
-    it("groups the smallest above the cap, leaving a slot for Other", () => {
+    it("groups the smallest above the cap, keeping the cap many by name", () => {
       const result = buildSankeyDeviceNodes(
         cumulativeOpts({
           devices: fiveDevices(),
@@ -488,10 +488,10 @@ describe("buildSankeyDeviceNodes", () => {
           initialUntracked: 150,
         })
       );
-      // cap - 1 named nodes plus Other = exactly the cap
-      expect(namedIds(result)).toEqual(["a", "b"]);
+      // the cap budgets named devices; Other is overhead on top
+      expect(namedIds(result)).toEqual(["a", "b", "c"]);
       const other = result.deviceNodes.find((n) => n.id === "other_home");
-      expect(other?.value).toBeCloseTo(60, 10);
+      expect(other?.value).toBeCloseTo(30, 10);
       expect(result.untrackedConsumption).toBeCloseTo(0, 10);
     });
 
@@ -536,12 +536,13 @@ describe("buildSankeyDeviceNodes", () => {
         "g",
         "b1",
         "b2",
+        "b3",
         "other_g",
         "untracked_g",
       ]);
-      // a's value already contains c, so Other is 10 + 20 + 8 and not 47
+      // a's value already contains c, so Other is 10 + 8 and not 27
       const other = result.deviceNodes.find((n) => n.id === "other_g");
-      expect(other?.value).toBeCloseTo(38, 10);
+      expect(other?.value).toBeCloseTo(18, 10);
       expect(result.deviceNodes.some((n) => n.id === "c")).toBe(false);
       const untracked = result.deviceNodes.find((n) => n.id === "untracked_g");
       expect(untracked?.value).toBeCloseTo(7, 10);
@@ -606,9 +607,9 @@ describe("buildSankeyDeviceNodes", () => {
         })
       );
       // p is over the cap; the three root-level nodes are exactly at it
-      expect(namedIds(result)).toEqual(["p", "c1", "c2", "r1", "r2"]);
+      expect(namedIds(result)).toEqual(["p", "c1", "c2", "c3", "r1", "r2"]);
       const other = result.deviceNodes.find((n) => n.id === "other_p");
-      expect(other?.value).toBeCloseTo(45, 10);
+      expect(other?.value).toBeCloseTo(25, 10);
       expect(result.parentLinks.other_p).toBe("p");
       expect(result.links).toContainEqual({ source: "p", target: "other_p" });
       expect(result.deviceNodes.some((n) => n.id === "other_home")).toBe(false);
@@ -710,7 +711,7 @@ describe("buildSankeyDeviceNodes", () => {
         })
       );
       const other = result.deviceNodes.find((n) => n.id === "other_home");
-      expect(other?.value).toBe(61);
+      expect(other?.value).toBe(31);
       expect(result.untrackedConsumption).toBeCloseTo(0, 10);
     });
 
@@ -722,9 +723,45 @@ describe("buildSankeyDeviceNodes", () => {
           maxDevices: 3,
           initialUntracked: 120,
         });
-      expect(namedIds(buildSankeyDeviceNodes(opts()))).toEqual(["a", "d"]);
-      expect(namedIds(buildSankeyDeviceNodes(opts()))).toEqual(["a", "d"]);
+      expect(namedIds(buildSankeyDeviceNodes(opts()))).toEqual(["a", "c", "d"]);
+      expect(namedIds(buildSankeyDeviceNodes(opts()))).toEqual(["a", "c", "d"]);
     });
+
+    // The documented promise is "more than 20 devices start grouping", so pin
+    // the boundary against the real default rather than a test-local cap.
+    it.each([
+      [DEFAULT_MAX_SANKEY_DEVICES, DEFAULT_MAX_SANKEY_DEVICES, false],
+      // one over the cap still demotes two, because a lone demoted device would
+      // be rendered by name and void the cap
+      [DEFAULT_MAX_SANKEY_DEVICES + 1, DEFAULT_MAX_SANKEY_DEVICES - 1, true],
+      [DEFAULT_MAX_SANKEY_DEVICES + 2, DEFAULT_MAX_SANKEY_DEVICES, true],
+      [DEFAULT_MAX_SANKEY_DEVICES + 12, DEFAULT_MAX_SANKEY_DEVICES, true],
+    ])(
+      "with %i devices at the default cap renders %i named nodes (grouped: %s)",
+      (deviceCount, expectedNamed, expectOther) => {
+        const list = Array.from({ length: deviceCount }, (_, i) => ({
+          stat_consumption: `d${i}`,
+        }));
+        const values = Object.fromEntries(
+          list.map((d, i) => [d.stat_consumption, 10 + i])
+        );
+        const total = Object.values(values).reduce((s, v) => s + v, 0);
+        const result = buildSankeyDeviceNodes(
+          cumulativeOpts({
+            devices: list,
+            values,
+            maxDevices: DEFAULT_MAX_SANKEY_DEVICES,
+            initialUntracked: total,
+          })
+        );
+        expect(namedIds(result)).toHaveLength(expectedNamed);
+        expect(result.deviceNodes.some((n) => n.id === "other_home")).toBe(
+          expectOther
+        );
+        // grouping never changes the total that comes off the root
+        expect(result.untrackedConsumption).toBeCloseTo(0, 10);
+      }
+    );
 
     it("keeps 32 circuit clamps readable at the default cap", () => {
       const clamps = Array.from({ length: 32 }, (_, i) => ({
@@ -741,11 +778,11 @@ describe("buildSankeyDeviceNodes", () => {
           initialUntracked: 1200,
         })
       );
-      expect(namedIds(result)).toHaveLength(DEFAULT_MAX_SANKEY_DEVICES - 1);
-      expect(result.deviceNodes).toHaveLength(DEFAULT_MAX_SANKEY_DEVICES);
-      // the 13 smallest clamps, values 20 through 32
+      expect(namedIds(result)).toHaveLength(DEFAULT_MAX_SANKEY_DEVICES);
+      expect(result.deviceNodes).toHaveLength(DEFAULT_MAX_SANKEY_DEVICES + 1);
+      // the 12 smallest clamps, values 20 through 31
       const other = result.deviceNodes.find((n) => n.id === "other_home");
-      expect(other?.value).toBeCloseTo(338, 10);
+      expect(other?.value).toBeCloseTo(306, 10);
 
       // flow conservation: every device node plus untracked accounts for home
       const { nodes } = buildSankeyLayout({
