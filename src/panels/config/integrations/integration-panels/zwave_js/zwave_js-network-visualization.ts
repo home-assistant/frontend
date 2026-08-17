@@ -1,3 +1,4 @@
+import { mdiSpiderWeb } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -16,6 +17,7 @@ import type {
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
@@ -25,8 +27,8 @@ import type {
   ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import {
+  fetchZwaveNetworkNeighbors,
   fetchZwaveNetworkStatus,
-  fetchZwaveNodeNeighbors,
   getNodeIdFromDevice,
   NodeStatus,
   subscribeZwaveNodeStatistics,
@@ -34,6 +36,7 @@ import {
 import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -56,7 +59,9 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
-  @state() private _neighbors: Record<number, number[]> = {};
+  @state() private _neighbors?: Record<number, number[]>;
+
+  @state() private _showNeighbors = false;
 
   @state() private _searchFilter = "";
 
@@ -64,6 +69,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
   private _nodeIdsByDeviceId: Record<string, number> = {};
 
   private _neighborLinks = new Set<string>();
+
+  private _loadingNeighbors = false;
 
   public hassSubscribe() {
     const subscriptions: Promise<UnsubscribeFunc>[] = [];
@@ -90,27 +97,34 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
     this._nodeIdsByDeviceId = nodeIdsByDeviceId;
     this._devices = devices;
-    this._fetchNeighbors(devices);
 
     return subscriptions;
   }
 
-  private async _fetchNeighbors(devices: Record<number, DeviceRegistryEntry>) {
-    const neighbors: Record<number, number[]> = {};
-    await Promise.all(
-      Object.entries(devices).map(async ([nodeId, device]) => {
-        try {
-          neighbors[nodeId] = await fetchZwaveNodeNeighbors(
-            this.hass!,
-            device.id
-          );
-        } catch (_err: unknown) {
-          // a node can fail to report neighbors, e.g. long range nodes
-          // which have no mesh neighbors at all
-        }
-      })
-    );
-    this._neighbors = neighbors;
+  private async _toggleNeighbors() {
+    this._showNeighbors = !this._showNeighbors;
+    if (!this._showNeighbors || this._neighbors || this._loadingNeighbors) {
+      return;
+    }
+    // fetched on demand: reading neighbors turns the radio off briefly
+    this._loadingNeighbors = true;
+    try {
+      this._neighbors = await fetchZwaveNetworkNeighbors(
+        this.hass,
+        this.configEntryId
+      );
+    } catch (err: unknown) {
+      this._showNeighbors = false;
+      showToast(this, {
+        message:
+          (err as { message?: string }).message ??
+          this.hass.localize(
+            "ui.panel.config.zwave_js.visualization.neighbors_error"
+          ),
+      });
+    } finally {
+      this._loadingNeighbors = false;
+    }
   }
 
   public connectedCallback() {
@@ -141,13 +155,22 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           .data=${this._getNetworkData(
             this._nodeStatuses,
             this._nodeStatistics,
-            this._neighbors
+            this._showNeighbors ? this._neighbors : undefined
           )}
           .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
           ${!this.narrow ? this._renderInputSearch("search") : nothing}
+          <ha-icon-button
+            slot="button"
+            class=${this._showNeighbors ? "active" : "inactive"}
+            .path=${mdiSpiderWeb}
+            .label=${this.hass.localize(
+              "ui.panel.config.zwave_js.visualization.toggle_neighbors"
+            )}
+            @click=${this._toggleNeighbors}
+          ></ha-icon-button>
         </ha-network-graph>
       </hass-subpage>
     `;
@@ -296,7 +319,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     (
       nodeStatuses: Record<number, ZWaveJSNodeStatus>,
       nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>,
-      neighbors: Record<number, number[]>
+      neighbors: Record<number, number[]> | undefined
     ): NetworkData => {
       const style = getComputedStyle(this);
       const nodes: NetworkNode[] = [];
@@ -458,7 +481,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       // the measured routes without overriding them.
       const neighborLinks: NetworkLink[] = [];
       const neighborKeys = new Set<string>();
-      Object.entries(neighbors).forEach(([nodeId, neighborIds]) => {
+      Object.entries(neighbors ?? {}).forEach(([nodeId, neighborIds]) => {
         neighborIds.forEach((neighborId) => {
           const target = String(neighborId);
           if (!nodeStatuses[neighborId] || target === nodeId) {
@@ -534,6 +557,17 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         }
         ha-input-search {
           flex: 1;
+        }
+        /* ha-chart-base can't style re-slotted buttons, so mirror its look */
+        ha-icon-button[slot="button"] {
+          background: var(--card-background-color);
+          border-radius: var(--ha-border-radius-sm);
+          --ha-icon-button-size: 32px;
+          color: var(--primary-color);
+          border: 1px solid var(--divider-color);
+        }
+        ha-icon-button[slot="button"].inactive {
+          color: var(--state-inactive-color);
         }
       `,
     ];

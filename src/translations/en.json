@@ -8322,7 +8322,9 @@
             "version": "Version",
             "data_rate": "Data rate",
             "area": "Area",
-            "neighbor": "In range of each other"
+            "neighbor": "In range of each other",
+            "toggle_neighbors": "Toggle neighbor connections",
+            "neighbors_error": "Failed to load neighbor connections"
           },
           "node_status": {
             "0": "Unknown",
