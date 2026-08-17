@@ -7,6 +7,7 @@ import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
   DEFAULT_MAX_SANKEY_DEVICES,
+  findDevicesOverCap,
   getSankeyDeviceSections,
   groupSankeyDevicesByFloorAndArea,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/sankey";
@@ -79,6 +80,86 @@ describe("getSankeyDeviceSections", () => {
       [grandparent, parent, child]
     );
     expect(sections).toEqual([[grandparent], [parent], [child]]);
+  });
+});
+
+describe("findDevicesOverCap", () => {
+  // Values keyed by node id, hierarchy by included_in_stat.
+  const overCapOpts = (
+    values: Record<string, number>,
+    parents: Record<string, string>,
+    // No default: passing `undefined` must mean "no cap", not "fall back to 3".
+    maxDevices: number | undefined,
+    rendered = Object.keys(values)
+  ) => {
+    const list: DeviceConsumptionEnergyPreference[] = Object.keys(values).map(
+      (id) => ({ stat_consumption: id, included_in_stat: parents[id] })
+    );
+    const renderedIds = new Set(rendered);
+    return {
+      devices: list,
+      maxDevices,
+      rootNodeId: "home",
+      renderedIds,
+      deviceValues: new Map(Object.entries(values)),
+      getId: (device: DeviceConsumptionEnergyPreference) =>
+        device.stat_consumption,
+      getEffectiveParent: (device: DeviceConsumptionEnergyPreference) => {
+        let current = device.included_in_stat;
+        for (let hops = 0; current && hops < list.length; hops++) {
+          if (renderedIds.has(current)) {
+            return current;
+          }
+          current = parents[current];
+        }
+        return undefined;
+      },
+    };
+  };
+
+  it.each([undefined, 0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
+    "groups nothing for a cap of %s",
+    (maxDevices) => {
+      expect(
+        findDevicesOverCap(
+          overCapOpts({ a: 5, b: 4, c: 3, d: 2 }, {}, maxDevices)
+        )
+      ).toEqual(new Set());
+    }
+  );
+
+  it("groups the smallest children of an over-cap parent", () => {
+    expect(
+      findDevicesOverCap(overCapOpts({ a: 5, b: 4, c: 3, d: 2, e: 1 }, {}, 3))
+    ).toEqual(new Set(["d", "e"]));
+  });
+
+  it("groups a whole subtree, not just the parent", () => {
+    expect(
+      findDevicesOverCap(
+        overCapOpts(
+          { a: 50, b: 40, c: 30, small: 10, child: 9 },
+          { child: "small" },
+          3
+        )
+      )
+    ).toEqual(new Set(["small", "child", "c"]));
+  });
+
+  it("counts only rendered devices", () => {
+    // four devices, three rendered, so a cap of three does not fire
+    expect(
+      findDevicesOverCap(
+        overCapOpts({ a: 5, b: 4, c: 3, tiny: 0.001 }, {}, 3, ["a", "b", "c"])
+      )
+    ).toEqual(new Set());
+  });
+
+  it("terminates on a cyclic parent chain", () => {
+    // both devices parent each other, so neither is reachable from the root
+    expect(
+      findDevicesOverCap(overCapOpts({ a: 5, b: 4 }, { a: "b", b: "a" }, 1))
+    ).toEqual(new Set());
   });
 });
 

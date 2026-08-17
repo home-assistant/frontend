@@ -41,6 +41,103 @@ export const fireSankeyNodeMoreInfo = (el: HTMLElement, node: Node): void => {
   }
 };
 
+export interface FindDevicesOverCapOptions {
+  devices: DeviceConsumptionEnergyPreference[];
+  /** Max named children per parent. Falsy or non-positive disables the cap. */
+  maxDevices: number | undefined;
+  rootNodeId: string;
+  renderedIds: ReadonlySet<string>;
+  deviceValues: ReadonlyMap<string, number>;
+  getId: (device: DeviceConsumptionEnergyPreference) => string | undefined;
+  /** First ancestor rendered as its own node, else undefined. */
+  getEffectiveParent: (
+    device: DeviceConsumptionEnergyPreference
+  ) => string | undefined;
+}
+
+/**
+ * Node ids to drop from the rendered set because their parent has more rendered
+ * children than `maxDevices`. Callers group the result into the parent's "Other"
+ * node, so the smallest devices merge instead of disappearing.
+ */
+export const findDevicesOverCap = ({
+  devices,
+  maxDevices,
+  rootNodeId,
+  renderedIds,
+  deviceValues,
+  getId,
+  getEffectiveParent,
+}: FindDevicesOverCapOptions): Set<string> => {
+  const grouped = new Set<string>();
+  if (!maxDevices || !Number.isFinite(maxDevices) || maxDevices <= 0) {
+    return grouped;
+  }
+
+  const childrenByParent = new Map<
+    string,
+    { id: string; value: number; idx: number }[]
+  >();
+  const seenIds = new Set<string>();
+  devices.forEach((device, idx) => {
+    const id = getId(device);
+    if (!id || !renderedIds.has(id) || seenIds.has(id)) {
+      return;
+    }
+    seenIds.add(id);
+    const parentKey = getEffectiveParent(device) ?? rootNodeId;
+    if (!childrenByParent.has(parentKey)) {
+      childrenByParent.set(parentKey, []);
+    }
+    childrenByParent.get(parentKey)!.push({
+      id,
+      value: deviceValues.get(id)!,
+      idx,
+    });
+  });
+
+  // Taking the whole subtree stops a grouped device's children from re-parenting
+  // upward while its value, which already includes them, rolls into "Other".
+  const groupSubtree = (id: string): void => {
+    if (grouped.has(id)) {
+      return;
+    }
+    grouped.add(id);
+    childrenByParent.get(id)?.forEach((child) => groupSubtree(child.id));
+  };
+
+  const queue = [rootNodeId];
+  const visited = new Set(queue);
+  while (queue.length) {
+    const children = childrenByParent.get(queue.shift()!);
+    if (!children) {
+      continue;
+    }
+    let kept = children;
+    if (children.length > maxDevices) {
+      // Raw value includes children, so a parent never sorts below its own
+      // child; declaration order breaks ties so the layout is stable.
+      const ranked = [...children].sort(
+        (a, b) => a.value - b.value || a.idx - b.idx
+      );
+      // At least two, because a lone grouped device is rendered by name instead
+      // and would void the cap.
+      ranked
+        .slice(0, Math.max(children.length - maxDevices, 2))
+        .forEach((child) => groupSubtree(child.id));
+      kept = children.filter((child) => !grouped.has(child.id));
+    }
+    kept.forEach((child) => {
+      if (!visited.has(child.id)) {
+        visited.add(child.id);
+        queue.push(child.id);
+      }
+    });
+  }
+
+  return grouped;
+};
+
 export interface BuildSankeyDeviceNodesOptions {
   devices: DeviceConsumptionEnergyPreference[];
   computedStyle: CSSStyleDeclaration;
@@ -158,94 +255,18 @@ export const buildSankeyDeviceNodes = (
     return undefined;
   };
 
-  // The value threshold alone only catches devices that are a negligible share
-  // of the home total. A breaker panel with dozens of similar-sized circuit
-  // clamps sits entirely above it, so nothing groups and every node collapses to
-  // an unreadable sliver. Cap the child count too: drop the smallest children of
-  // an over-cap parent out of `renderedIds` and the passes below group them into
-  // that parent's "Other" node, leaving the flow arithmetic untouched.
-  if (
-    maxDevices !== undefined &&
-    Number.isFinite(maxDevices) &&
-    maxDevices > 0
-  ) {
-    const renderedChildren = new Map<
-      string,
-      { id: string; value: number; idx: number }[]
-    >();
-    const seenIds = new Set<string>();
-    devices.forEach((device, idx) => {
-      const id = getId(device);
-      // `seenIds` guards a config where two devices resolve to the same node id.
-      if (!id || !renderedIds.has(id) || seenIds.has(id)) {
-        return;
-      }
-      seenIds.add(id);
-      const parentKey =
-        findEffectiveParent(device.included_in_stat) ?? rootNodeId;
-      if (!renderedChildren.has(parentKey)) {
-        renderedChildren.set(parentKey, []);
-      }
-      renderedChildren.get(parentKey)!.push({
-        id,
-        value: deviceValues.get(id)!,
-        idx,
-      });
-    });
-
-    const demoted = new Set<string>();
-
-    // Taking the whole subtree keeps every surviving node's effective parent
-    // unchanged. Demoting a node alone would re-parent its children to the next
-    // rendered ancestor while the node's value - which already includes them -
-    // rolls into "Other", counting them twice.
-    const demoteSubtree = (id: string): void => {
-      if (demoted.has(id)) {
-        return;
-      }
-      demoted.add(id);
-      // `demoted` bounds the walk, so a cyclic included_in_stat cannot loop.
-      renderedChildren.get(id)?.forEach((child) => demoteSubtree(child.id));
-    };
-
-    // Top down, single pass: because demotion only ever removes children, no
-    // parent can be pushed over the cap by another parent's demotion.
-    const queue = [rootNodeId];
-    const visited = new Set(queue);
-    while (queue.length) {
-      const parentKey = queue.shift()!;
-      const children = renderedChildren.get(parentKey);
-      if (!children) {
-        continue;
-      }
-      let kept = children;
-      if (children.length > maxDevices) {
-        // Smallest first. Raw value includes children, so a parent never sorts
-        // below its own child; declaration order breaks ties so the layout is
-        // stable across renders.
-        const ranked = [...children].sort(
-          (a, b) => a.value - b.value || a.idx - b.idx
-        );
-        // `maxDevices` budgets named devices, matching the option of the same
-        // name on the devices graph; the "Other" node is overhead on top, like
-        // the untracked residual. Demote at least two, because a lone device in
-        // the bucket is rendered by name below and would void the cap.
-        const demoteCount = Math.max(children.length - maxDevices, 2);
-        ranked
-          .slice(0, demoteCount)
-          .forEach((child) => demoteSubtree(child.id));
-        kept = children.filter((child) => !demoted.has(child.id));
-      }
-      kept.forEach((child) => {
-        if (!visited.has(child.id)) {
-          visited.add(child.id);
-          queue.push(child.id);
-        }
-      });
-    }
-
-    demoted.forEach((id) => renderedIds.delete(id));
-  }
+  // The value threshold only catches devices that are a negligible share of the
+  // home total, so a panel of dozens of similar-sized circuits never groups.
+  findDevicesOverCap({
+    devices,
+    maxDevices,
+    rootNodeId,
+    renderedIds,
+    deviceValues,
+    getId,
+    getEffectiveParent: (device) =>
+      findEffectiveParent(device.included_in_stat),
+  }).forEach((id) => renderedIds.delete(id));
 
   devices.forEach((device, idx) => {
     const id = getId(device);
