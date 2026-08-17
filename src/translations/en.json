@@ -9994,8 +9994,8 @@
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
               "group_by_floor": "Group by floor",
               "group_by_area": "Group by area",
-              "max_devices": "Maximum devices per group",
-              "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. Defaults to 20.",
+              "max_devices": "Maximum devices per parent",
+              "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. The limit applies per upstream device, not per floor or area. Defaults to 20.",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
