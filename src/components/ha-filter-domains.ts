@@ -216,7 +216,7 @@ export class HaFilterDomains extends LitElement {
           align-items: center;
         }
         .header ha-icon-button {
-          margin-inline-start: initial;
+          margin-inline-start: auto;
           margin-inline-end: 8px;
         }
         ha-check-list-item {
