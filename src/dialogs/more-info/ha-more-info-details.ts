@@ -1,16 +1,24 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
+import { computeFloorName } from "../../common/entity/compute_floor_name";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import checkValidDate from "../../common/datetime/check_valid_date";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import "../../components/ha-attribute-value";
-import "../../components/ha-card";
+import "../../components/item/ha-list-item-value";
+import "../../components/list/ha-grouped-list";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeShownAttributes } from "../../data/entity/entity_attributes";
+import { labelsContext } from "../../data/context";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
+import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-yaml-editor";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -26,6 +34,7 @@ interface DetailsViewParams {
 interface DetailEntry {
   translationKey: LocalizeKeys;
   value: string;
+  href?: string;
 }
 
 @customElement("ha-more-info-details")
@@ -40,8 +49,15 @@ class HaMoreInfoDetails extends LitElement {
 
   @state() private _stateObj?: HassEntity;
 
+  @consume({ context: labelsContext, subscribe: true })
+  @state()
+  private _labels?: LabelRegistryEntry[];
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+    if (changedProps.has("entry") && this.entry) {
+      this.hass.loadBackendTranslation("title", [this.entry.platform]);
+    }
     if (changedProps.has("params") || changedProps.has("hass")) {
       if (this.params?.entityId && this.hass) {
         this._stateObj = this.hass.states[this.params.entityId];
@@ -54,9 +70,93 @@ class HaMoreInfoDetails extends LitElement {
       return nothing;
     }
 
-    const { stateEntries, attributes, yamlData } = this._getDetailData(
-      this._stateObj
+    const {
+      stateEntries,
+      attributes,
+      yamlData: stateYamlData,
+    } = this._getDetailData(this._stateObj);
+    const { floor, area, device } = getEntityContext(
+      this._stateObj,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
     );
+    const floorName = floor ? computeFloorName(floor) : undefined;
+    const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const deviceName = device
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      : undefined;
+    const integrationName = this.entry?.platform
+      ? this.hass.localize(`component.${this.entry.platform}.title`) ||
+        this.entry.platform
+      : undefined;
+    const labelNames =
+      this.entry?.labels.map(
+        (labelId) =>
+          this._labels?.find((label) => label.label_id === labelId)?.name ??
+          labelId
+      ) ?? [];
+    const contextEntries: DetailEntry[] = [];
+
+    if (floor && floorName) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.floor",
+        value: floorName,
+        href: "/config/areas/dashboard",
+      });
+    }
+    if (area && areaName) {
+      contextEntries.push({
+        translationKey: "ui.components.related-items.area",
+        value: areaName,
+        href: `/config/areas/area/${area.area_id}`,
+      });
+    }
+    if (device && deviceName) {
+      contextEntries.push({
+        translationKey: "ui.components.related-items.device",
+        value: deviceName,
+        href: `/config/devices/device/${device.id}`,
+      });
+    }
+    if (this.entry?.platform && integrationName) {
+      contextEntries.push({
+        translationKey: "ui.components.related-items.integration",
+        value: integrationName,
+        href: this.entry.config_entry_id
+          ? `/config/integrations/integration/${this.entry.platform}#config_entry=${this.entry.config_entry_id}`
+          : undefined,
+      });
+    }
+
+    const entityEntries: DetailEntry[] = [
+      {
+        translationKey: "ui.dialogs.more_info_control.entity_id",
+        value: this.params.entityId,
+      },
+      {
+        translationKey: "ui.dialogs.more_info_control.labels",
+        value: labelNames.join(", ") || this.hass.localize("ui.common.none"),
+      },
+    ];
+    const yamlData = {
+      ...(contextEntries.length
+        ? {
+            context: {
+              ...(floorName ? { floor: floorName } : {}),
+              ...(areaName ? { area: areaName } : {}),
+              ...(deviceName ? { device: deviceName } : {}),
+              ...(integrationName ? { integration: integrationName } : {}),
+            },
+          }
+        : {}),
+      entity: {
+        entity_id: this.params.entityId,
+        labels: labelNames,
+      },
+      ...stateYamlData,
+    };
 
     return html`
       <div class="content">
@@ -69,43 +169,41 @@ class HaMoreInfoDetails extends LitElement {
                 in-dialog
               ></ha-yaml-editor>`
             : html`
-                <section class="section">
-                  <h2 class="section-title">
-                    ${this.hass.localize(
-                      "ui.components.entity.entity-state-picker.state"
-                    )}
-                  </h2>
-                  <ha-card>
-                    <div class="card-content">
-                      <div class="data-group">
-                        ${stateEntries.map(
-                          (entry) =>
-                            html`<div class="data-entry">
-                              <div class="key">
-                                ${this.hass.localize(entry.translationKey)}
-                              </div>
-                              <div class="value">${entry.value}</div>
-                            </div>`
+                ${
+                  contextEntries.length
+                    ? html`<ha-grouped-list
+                        .header=${this.hass.localize(
+                          "ui.dialogs.more_info_control.context"
                         )}
-                      </div>
-                    </div>
-                  </ha-card>
-                </section>
+                      >
+                        ${this._renderEntries(contextEntries)}
+                      </ha-grouped-list>`
+                    : nothing
+                }
 
-                <section class="section">
-                  <h2 class="section-title">
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.attributes"
-                    )}
-                  </h2>
-                  <ha-card>
-                    <div class="card-content">
-                      <div class="data-group">
-                        ${this._renderAttributes(attributes)}
-                      </div>
-                    </div>
-                  </ha-card>
-                </section>
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.components.entity.entity-state-picker.state"
+                  )}
+                >
+                  ${this._renderEntries(stateEntries)}
+                </ha-grouped-list>
+
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.dialogs.more_info_control.entity"
+                  )}
+                >
+                  ${this._renderEntries(entityEntries)}
+                </ha-grouped-list>
+
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.dialogs.more_info_control.attributes"
+                  )}
+                >
+                  ${this._renderAttributes(attributes)}
+                </ha-grouped-list>
               `
         }
       </div>
@@ -177,6 +275,20 @@ class HaMoreInfoDetails extends LitElement {
       : value;
   }
 
+  private _renderEntries(entries: DetailEntry[]) {
+    return entries.map(
+      (entry) => html`
+        <ha-list-item-value .label=${this.hass.localize(entry.translationKey)}>
+          ${
+            entry.href
+              ? html`<a href=${entry.href}>${entry.value}</a>`
+              : entry.value
+          }
+        </ha-list-item-value>
+      `
+    );
+  }
+
   private _renderAttributes(attributes: string[]) {
     if (attributes.length === 0) {
       return html`<div class="empty">
@@ -192,28 +304,25 @@ class HaMoreInfoDetails extends LitElement {
 
     return attributes.map(
       (attribute) => html`
-        <div class="data-entry">
-          <div class="key">
-            ${computeAttributeNameDisplay(
-              this.hass.localize,
-              this._stateObj!,
-              this.hass.entities,
-              attribute
-            )}
-          </div>
-          <div class="value">
-            ${
-              attribute === "supported_features" && featureEnum
-                ? this._renderFeatures(featureEnum, this._stateObj!)
-                : html`
-                    <ha-attribute-value
-                      .attribute=${attribute}
-                      .stateObj=${this._stateObj}
-                    ></ha-attribute-value>
-                  `
-            }
-          </div>
-        </div>
+        <ha-list-item-value
+          .label=${computeAttributeNameDisplay(
+            this.hass.localize,
+            this._stateObj!,
+            this.hass.entities,
+            attribute
+          )}
+        >
+          ${
+            attribute === "supported_features" && featureEnum
+              ? this._renderFeatures(featureEnum, this._stateObj!)
+              : html`
+                  <ha-attribute-value
+                    .attribute=${attribute}
+                    .stateObj=${this._stateObj}
+                  ></ha-attribute-value>
+                `
+          }
+        </ha-list-item-value>
       `
     );
   }
@@ -247,47 +356,18 @@ class HaMoreInfoDetails extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
-    .section + .section {
+    ha-grouped-list + ha-grouped-list {
       margin-top: var(--ha-space-4);
     }
 
-    .section-title {
-      margin: 0 0 var(--ha-space-2);
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-    }
-
-    .card-content {
-      padding: var(--ha-space-2) var(--ha-space-4);
-    }
-
-    .data-entry {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      padding: var(--ha-space-2) 0;
-      border-bottom: 1px solid var(--divider-color);
-    }
-
-    .data-group .data-entry:last-of-type {
-      border-bottom: none;
-    }
-
-    .data-entry .value {
-      max-width: 60%;
-      overflow-wrap: break-word;
-      text-align: right;
-    }
-
-    .key {
-      flex-grow: 1;
-      color: var(--secondary-text-color);
+    a {
+      color: var(--primary-color);
     }
 
     .empty {
       color: var(--secondary-text-color);
       text-align: center;
-      padding: var(--ha-space-2) 0;
+      padding: var(--ha-space-3) var(--ha-space-4);
     }
   `;
 }

@@ -336,6 +336,11 @@ export class SystemLogCard extends LitElement {
       justify-content: center;
     }
 
+    .secondary {
+      display: inline-block;
+      direction: var(--direction);
+    }
+
     .error {
       color: var(--error-color);
     }

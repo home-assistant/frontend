@@ -52,7 +52,6 @@ import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
-  PlatformCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -64,7 +63,6 @@ import {
   type ValidConfig,
 } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { DeviceCondition } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
 import {
@@ -76,6 +74,8 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { getDeviceTarget } from "../target/get_device_target";
+import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
@@ -182,12 +182,14 @@ export default class HaAutomationConditionRow extends LitElement {
     const descriptionHasTarget =
       "target" in (this.conditionDescriptions[this.condition.condition] || {});
 
-    const target = descriptionHasTarget
-      ? (this.condition as PlatformCondition).target
-      : "device_id" in this.condition &&
-          (this.condition as DeviceCondition).device_id
-        ? { device_id: [(this.condition as DeviceCondition).device_id] }
-        : undefined;
+    const hasEntityTarget =
+      this.condition.condition === "state" ||
+      this.condition.condition === "numeric_state";
+
+    const target = this._getTarget(descriptionHasTarget, hasEntityTarget);
+
+    const targetRequired =
+      (descriptionHasTarget || hasEntityTarget) && !this._isNew;
 
     const conditionTargetSpec =
       this.conditionDescriptions[this.condition.condition]?.target;
@@ -224,13 +226,15 @@ export default class HaAutomationConditionRow extends LitElement {
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg)
+          describeCondition(this.condition, this.hass, this._entityReg, {
+            hideEntities: true,
+          })
         )}
         ${
-          target !== undefined || (descriptionHasTarget && !this._isNew)
+          target !== undefined || targetRequired
             ? this._renderTargets(
                 target,
-                descriptionHasTarget && !this._isNew,
+                targetRequired,
                 conditionTargetSpec,
                 this.condition.condition !== "device"
               )
@@ -600,6 +604,30 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
+  private _getEntityTarget = memoizeOne(getEntityTarget);
+
+  private _getDeviceTarget = memoizeOne(getDeviceTarget);
+
+  private _getTarget(
+    descriptionHasTarget: boolean,
+    hasEntityTarget: boolean
+  ): HassServiceTarget | undefined {
+    if (descriptionHasTarget && "target" in this.condition) {
+      return this.condition.target;
+    }
+    if (
+      "entity_id" in this.condition &&
+      this.condition.entity_id &&
+      hasEntityTarget
+    ) {
+      return this._getEntityTarget(this.condition.entity_id);
+    }
+    if ("device_id" in this.condition && this.condition.device_id) {
+      return this._getDeviceTarget(this.condition.device_id);
+    }
+    return undefined;
+  }
+
   private _renderTargets = memoizeOne(
     (
       target?: HassServiceTarget,
@@ -777,7 +805,9 @@ export default class HaAutomationConditionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeCondition(this.condition, this.hass, this._entityReg, true)
+        describeCondition(this.condition, this.hass, this._entityReg, {
+          ignoreAlias: true,
+        })
       ),
       defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),

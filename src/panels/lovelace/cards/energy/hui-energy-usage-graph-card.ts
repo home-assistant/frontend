@@ -271,6 +271,10 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;

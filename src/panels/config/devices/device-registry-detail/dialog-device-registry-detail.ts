@@ -125,7 +125,10 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
             <div class="row">
               <ha-switch
                 .checked=${!this._disabledBy}
-                .disabled=${this._params.device.disabled_by === "config_entry"}
+                .disabled=${
+                  this._params.device.disabled_by === "config_entry" ||
+                  this._params.device.disabled_by === "device"
+                }
                 @change=${this._disabledByChanged}
               >
               </ha-switch>
