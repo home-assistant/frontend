@@ -23,7 +23,8 @@ describe("loadLovelaceResourcesAndWait", () => {
     const consoleError = vi
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
-    vi.mocked(loadModule).mockImplementation((url) => Promise.reject(url));
+    const loadError = new Error("load failed");
+    vi.mocked(loadModule).mockImplementation(() => Promise.reject(loadError));
 
     await loadLovelaceResourcesAndWait(
       [{ id: "1", url: "/local/missing.js", type: "module" }],
@@ -35,6 +36,8 @@ describe("loadLovelaceResourcesAndWait", () => {
       "http://localhost:8123/local/missing.js"
     );
     expect(consoleError.mock.calls[0][0]).toContain("module");
+    // the rejection reason is forwarded, so any detail it carries is not lost
+    expect(consoleError.mock.calls[0][1]).toBe(loadError);
   });
 
   it("logs only once for a cached resource that failed to load", async () => {

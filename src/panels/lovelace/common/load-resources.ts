@@ -15,10 +15,11 @@ const _loadLovelaceResource = (
     hass.auth.data.hassUrl
   ).toString();
 
-  const logLoadError = () => {
+  const logLoadError = (err: unknown) => {
     // eslint-disable-next-line no-console
     console.error(
-      `Failed to load Lovelace resource ${normalizedUrl} (type: ${resource.type}). Check that the URL is correct and the file exists.`
+      `Failed to load Lovelace resource ${normalizedUrl} (type: ${resource.type}). Check that the URL is correct and the file exists.`,
+      err
     );
   };
 
