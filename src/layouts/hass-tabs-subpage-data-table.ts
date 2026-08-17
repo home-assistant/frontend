@@ -34,6 +34,7 @@ import "../components/ha-dialog-footer";
 import "../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
+import "../components/ha-filter-pane-chip";
 import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
@@ -237,20 +238,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     const localize = this.localizeFunc || this.hass.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
-      ? html`<div class="relative">
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.filters")}
-            .active=${this.filters}
-            @click=${this._toggleFilters}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
-          </ha-assist-chip>
-          ${
-            this.filters
-              ? html`<div class="badge">${this.filters}</div>`
-              : nothing
-          }
-        </div>`
+      ? html`<ha-filter-pane-chip
+          .label=${localize("ui.components.subpage-data-table.filters")}
+          .path=${mdiFilterVariant}
+          .count=${this.filters}
+          .active=${!!this.filters}
+          @click=${this._toggleFilters}
+        ></ha-filter-pane-chip>`
       : nothing;
 
     const selectModeBtn =
@@ -471,18 +465,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               ? nothing
               : html`<div class="pane" slot="pane">
                   <div class="table-header">
-                    <ha-assist-chip
+                    <ha-filter-pane-chip
                       .label=${localize(
                         "ui.components.subpage-data-table.filters"
                       )}
+                      .path=${mdiFilterVariant}
                       active
                       @click=${this._toggleFilters}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiFilterVariant}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
+                    ></ha-filter-pane-chip>
                     ${
                       this.filters
                         ? html`<ha-icon-button
@@ -885,24 +875,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding: 16px;
     }
 
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      inset-inline-end: -4px;
-      inset-inline-start: initial;
-      min-width: 16px;
-      box-sizing: border-box;
-      border-radius: var(--ha-border-radius-circle);
-      font-size: var(--ha-font-size-xs);
-      font-weight: var(--ha-font-weight-normal);
-      background-color: var(--primary-color);
-      line-height: var(--ha-line-height-normal);
-      text-align: center;
-      padding: 0px 2px;
-      color: var(--text-primary-color);
-    }
-
     .narrow-header-row {
       display: flex;
       align-items: center;
@@ -951,11 +923,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       gap: var(--ha-space-2);
     }
 
-    .relative {
-      position: relative;
-    }
-
-    ha-assist-chip {
+    ha-assist-chip,
+    ha-filter-pane-chip {
       --ha-assist-chip-container-shape: 10px;
       --ha-assist-chip-container-color: var(--card-background-color);
     }
