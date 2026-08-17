@@ -23,6 +23,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "./common/sankey";
@@ -297,6 +298,7 @@ class HuiPowerSankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minPowerThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 1,
       ceilOtherValue: true,
       initialUntracked: homeNode.value,

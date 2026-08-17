@@ -5,6 +5,7 @@ import {
   assign,
   boolean,
   literal,
+  number,
   object,
   optional,
   string,
@@ -36,6 +37,7 @@ const cardConfigStruct = assign(
     ),
     group_by_floor: optional(boolean()),
     group_by_area: optional(boolean()),
+    max_devices: optional(number()),
   })
 );
 
@@ -93,6 +95,11 @@ export class HuiEnergySankeyCardEditor
             ],
           },
           {
+            name: "max_devices",
+            required: false,
+            selector: { number: { min: 1, mode: "box" } },
+          },
+          {
             type: "string",
             name: "collection_key",
             required: false,
@@ -134,6 +141,10 @@ export class HuiEnergySankeyCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.collection_key_description`
         );
+      case "max_devices":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.energy-sankey.max_devices_description`
+        );
       default:
         return undefined;
     }
@@ -144,6 +155,7 @@ export class HuiEnergySankeyCardEditor
       case "layout":
       case "group_by_floor":
       case "group_by_area":
+      case "max_devices":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-sankey.${schema.name}`
         );
