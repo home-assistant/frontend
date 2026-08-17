@@ -291,11 +291,17 @@ export const showRepairsFlowDialog = (
       },
 
       renderMenuOption(hass, step, option) {
-        return hass.localize(
-          `component.${issue.domain}.issues.${
-            issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.menu_options.${option}`,
-          mergePlaceholders(issue, step)
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.step.${step.step_id}.menu_options.${option}`,
+            mergePlaceholders(issue, step)
+          ) ||
+          // Newer backends can offer options this frontend has no
+          // translation for yet — show the raw option key instead of
+          // an empty menu entry
+          option
         );
       },
 
