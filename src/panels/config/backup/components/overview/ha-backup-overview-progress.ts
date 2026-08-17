@@ -33,13 +33,15 @@ interface ProgressSegment {
 
 const HA_STAGES: CreateBackupStage[] = ["home_assistant"];
 
-const ADDON_STAGES: CreateBackupStage[] = [
-  "addons",
-  "apps",
+// Quick metadata writes emitted while the backup is initialized, before the
+// Home Assistant stage (docker_config only by older Supervisors)
+const SETUP_STAGES: CreateBackupStage[] = [
   "addon_repositories",
   "app_repositories",
   "docker_config",
 ];
+
+const ADDON_STAGES: CreateBackupStage[] = ["addons", "apps"];
 
 const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
 
@@ -53,7 +55,7 @@ const AWAIT_RESTART_STAGES: CreateBackupStage[] = [
 // Ordered groups matching actual backend execution order. The await restart
 // stages share the last creation group to keep the progress monotonic.
 const STAGE_ORDER: CreateBackupStage[][] = [
-  HA_STAGES,
+  [...SETUP_STAGES, ...HA_STAGES],
   ADDON_STAGES,
   [...MEDIA_STAGES, ...AWAIT_RESTART_STAGES],
   ["upload_to_agents"],
