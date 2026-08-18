@@ -455,13 +455,12 @@ describe("createMatterNetworkChartData", () => {
 
     // Home Assistant root + the single topology node
     expect(data.nodes).toHaveLength(2);
-    // the bogus connection is skipped; the lone node is anchored to HA
-    expect(data.links).toHaveLength(1);
-    expect(data.links[0].source).toBe("ha");
-    expect(data.links[0].target).toBe("1");
+    // the bogus connection is skipped, and a node with no visible route to
+    // Home Assistant gets no invented edge either
+    expect(data.links).toHaveLength(0);
   });
 
-  it("anchors unconnected routers directly to Home Assistant", () => {
+  it("floats routers whose route to Home Assistant is not visible", () => {
     const data = createMatterNetworkChartData(
       topology([
         node({ id: "1", node_id: 1, role: "router" }),
@@ -471,11 +470,10 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    const haTargets = data.links
-      .filter((l) => l.source === "ha")
-      .map((l) => l.target)
-      .sort();
-    expect(haTargets).toEqual(["1", "2"]);
+    // with no border router or access point in the graph there is no known
+    // path, and a drawn edge would read as a physical link
+    expect(data.links.filter((l) => l.source === "ha")).toHaveLength(0);
+    expect(data.nodes.map((n) => n.id).sort()).toEqual(["1", "2", "ha"]);
   });
 
   it("shows an access point's radio address beside its SSID, and never twice", () => {
@@ -530,12 +528,10 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    // an unknown neighbour is not commissioned on our fabric, so HA has no
-    // operational path to it and must not draw one
-    const haTargets = data.links
-      .filter((l) => l.source === "ha")
-      .map((l) => l.target);
-    expect(haTargets).toEqual(["1"]);
+    // neither the unknown pair nor the hubless router gets an edge to HA
+    expect(data.links.filter((l) => l.source === "ha")).toHaveLength(0);
+    // the unknown pair keeps its own mesh edge
+    expect(data.links.filter((l) => l.source === "unknown_1")).toHaveLength(1);
   });
 
   it("anchors an unknown neighbour through its known peer, not through HA", () => {
@@ -551,12 +547,10 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    // floating the unknowns must not mean dropping them out of a mixed group
-    const haTargets = data.links
-      .filter((l) => l.source === "ha")
-      .map((l) => l.target);
-    expect(haTargets).toEqual(["1"]);
+    // floating must not mean dropping the node out of the graph
+    expect(data.links.filter((l) => l.source === "ha")).toHaveLength(0);
     expect(data.nodes.find((n) => n.id === "unknown_1")).toBeDefined();
+    expect(data.links.filter((l) => l.source === "1")).toHaveLength(1);
   });
 
   it("draws a lone unknown neighbour with no links at all", () => {
@@ -628,7 +622,7 @@ describe("createMatterNetworkChartData", () => {
     expect(link.lineStyle?.color).toBe("#bdbdbd");
   });
 
-  it("draws the hub path solid and the position-unknown anchor dotted", () => {
+  it("links Home Assistant to hubs only, and never to a hubless node", () => {
     const data = createMatterNetworkChartData(
       topology(
         [
@@ -647,16 +641,14 @@ describe("createMatterNetworkChartData", () => {
       (l) => l.source === "ha" && l.target === "br_1"
     )!;
     expect(hubLink.lineStyle?.type).toBe("solid");
-
-    // HA -> a hubless component's representative only means "reachable,
-    // position unknown"
-    const orphanLink = data.links.find(
-      (l) => l.source === "ha" && l.target === "9"
-    )!;
-    expect(orphanLink.lineStyle?.type).toBe("dotted");
     // symbol, not the falsy value, is what keeps the arrowhead off
-    expect(orphanLink.symbol).toBe("none");
-    expect(orphanLink.reverseValue).toBeUndefined();
+    expect(hubLink.symbol).toBe("none");
+    expect(hubLink.reverseValue).toBeUndefined();
+
+    // node 9 has no route we can see, so it is left floating
+    expect(
+      data.links.find((l) => l.source === "ha" && l.target === "9")
+    ).toBeUndefined();
 
     // the wire host_name reaches the rendered label, not just the helper
     expect(data.nodes.find((n) => n.id === "br_1")!.name).toBe("Cuisine");

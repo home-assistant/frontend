@@ -298,16 +298,12 @@ export function createMatterNetworkChartData(
     });
   });
 
-  // HA to a hub is a real path; HA to a hubless component's representative only
-  // means "reachable, exact position unknown", so that variant is drawn dotted.
-  // It keeps the HA node's own color rather than a transport hue: it is a
-  // logical reachability edge, not a radio link.
+  // Only a hub gets an edge to HA, and it is a real path. A node whose route we
+  // cannot see gets nothing: inventing an edge to HA reads as a physical link.
+  // It keeps the HA node's own color rather than a transport hue.
   // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
   // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
-  const haLink = (
-    target: string,
-    type: "solid" | "dotted" = "solid"
-  ): NetworkLink => ({
+  const haLink = (target: string): NetworkLink => ({
     source: HOME_ASSISTANT_NODE_ID,
     target,
     value: 0,
@@ -315,7 +311,7 @@ export function createMatterNetworkChartData(
     lineStyle: {
       width: 3,
       color: categoryColors[CATEGORY_HOME_ASSISTANT],
-      type,
+      type: "solid",
     },
   });
 
@@ -324,50 +320,6 @@ export function createMatterNetworkChartData(
     .filter((node) => node.kind === "border_router" || node.kind === "wifi_ap")
     .map((node) => node.id);
   hubIds.forEach((id) => links.push(haLink(id)));
-
-  // any node group without a border router / AP is linked straight to HA so it
-  // never floats free -- except a group of only "unknown" Thread neighbours,
-  // which are not commissioned on our fabric, so HA has no path to claim
-  const adjacency = new Map<string, Set<string>>();
-  topology.nodes.forEach((node) => adjacency.set(node.id, new Set()));
-  links.forEach((link) => {
-    if (link.source === HOME_ASSISTANT_NODE_ID) {
-      return;
-    }
-    adjacency.get(link.source)?.add(link.target);
-    adjacency.get(link.target)?.add(link.source);
-  });
-  const hubIdSet = new Set(hubIds);
-  const visited = new Set<string>();
-  topology.nodes.forEach((startNode) => {
-    if (visited.has(startNode.id)) {
-      return;
-    }
-    const component: string[] = [];
-    const queue = [startNode.id];
-    visited.add(startNode.id);
-    while (queue.length) {
-      const id = queue.shift()!;
-      component.push(id);
-      adjacency.get(id)?.forEach((next) => {
-        if (!visited.has(next)) {
-          visited.add(next);
-          queue.push(next);
-        }
-      });
-    }
-    if (component.some((id) => hubIdSet.has(id))) {
-      return;
-    }
-    const representative = component
-      .filter((id) => nodeCategories.get(id) !== CATEGORY_UNKNOWN)
-      .sort(
-        (a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0)
-      )[0];
-    if (representative) {
-      links.push(haLink(representative, "dotted"));
-    }
-  });
 
   // keep the strongest link of every node in the force layout so
   // nodes hang near their best connection instead of floating free
