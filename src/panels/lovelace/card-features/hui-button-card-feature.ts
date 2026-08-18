@@ -65,12 +65,10 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: ButtonCardFeatureConfig;
 
-  @query("ha-action-result") private _result?: HaActionResult;
+  @query("ha-action-result") private _result!: HaActionResult;
 
-  private _pressing = false;
-
-  private async _pressButton() {
-    if (!this._stateObj || this._pressing) return;
+  private _pressButton() {
+    if (!this._stateObj || this._result.busy) return;
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
@@ -105,15 +103,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
 
     forwardHaptic(this, "light");
 
-    this._pressing = true;
-    try {
-      await this._api.callService(domain, service, serviceData);
-      this._result?.success();
-    } catch (_err) {
-      this._result?.error();
-    } finally {
-      this._pressing = false;
-    }
+    this._result.run(this._api.callService(domain, service, serviceData));
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
@@ -146,8 +136,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this._config.action_name ?? this._localize("ui.card.button.press")}
-          <ha-action-result></ha-action-result>
+          <ha-action-result>
+            ${this._config.action_name ?? this._localize("ui.card.button.press")}
+          </ha-action-result>
         </ha-control-button>
       </ha-control-button-group>
     `;

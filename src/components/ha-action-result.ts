@@ -1,6 +1,7 @@
 import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import "./ha-spinner";
 import "./ha-svg-icon";
 
 type ActionResult = "success" | "error";
@@ -14,21 +15,39 @@ const RESULT_DURATION = 2000;
  * @element ha-action-result
  *
  * @summary
- * Briefly covers its closest positioned ancestor with a success or error
- * indicator, for example when placed inside an `ha-control-button`.
+ * Wraps the content of an action trigger, for example an `ha-control-button`,
+ * and swaps it for a spinner while the action runs and for a success or error
+ * icon once it settles.
+ *
+ * @slot - Content of the trigger.
  */
 @customElement("ha-action-result")
 export class HaActionResult extends LitElement {
+  @state() private _loading = false;
+
   @state() private _result?: ActionResult;
 
   private _timeout?: number;
 
-  public success(): void {
-    this._setResult("success");
+  public get busy(): boolean {
+    return this._loading;
   }
 
-  public error(): void {
-    this._setResult("error");
+  public async run(action: Promise<unknown>): Promise<void> {
+    clearTimeout(this._timeout);
+    this._result = undefined;
+    this._loading = true;
+    try {
+      await action;
+      this._result = "success";
+    } catch (_err) {
+      this._result = "error";
+    } finally {
+      this._loading = false;
+      this._timeout = window.setTimeout(() => {
+        this._result = undefined;
+      }, RESULT_DURATION);
+    }
   }
 
   public disconnectedCallback(): void {
@@ -37,25 +56,28 @@ export class HaActionResult extends LitElement {
     this._result = undefined;
   }
 
-  private _setResult(result: ActionResult) {
-    clearTimeout(this._timeout);
-    this._result = result;
-    this._timeout = window.setTimeout(() => {
-      this._result = undefined;
-    }, RESULT_DURATION);
-  }
-
   protected render() {
-    if (!this._result) {
-      return nothing;
-    }
+    const busy = this._loading || this._result !== undefined;
 
     return html`
-      <div class="result ${this._result}">
-        <ha-svg-icon
-          .path=${this._result === "success" ? mdiCheckBold : mdiAlertOctagram}
-        ></ha-svg-icon>
-      </div>
+      <span class="content ${busy ? "hidden" : ""}"><slot></slot></span>
+      ${
+        busy
+          ? html`<div class="indicator">${this._renderIndicator()}</div>`
+          : nothing
+      }
+    `;
+  }
+
+  private _renderIndicator() {
+    if (!this._result) {
+      return html`<ha-spinner></ha-spinner>`;
+    }
+    return html`
+      <ha-svg-icon
+        class=${this._result}
+        .path=${this._result === "success" ? mdiCheckBold : mdiAlertOctagram}
+      ></ha-svg-icon>
     `;
   }
 
@@ -64,28 +86,34 @@ export class HaActionResult extends LitElement {
     :host {
       display: contents;
     }
-    .result {
+    .content {
+      transition: opacity var(--ha-animation-duration-instant) ease-in-out;
+    }
+    .content.hidden {
+      opacity: 0;
+    }
+    .indicator {
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      pointer-events: none;
       animation: fade-in var(--ha-animation-duration-instant) ease-in-out;
     }
-    .result.success {
-      background-color: var(--ha-color-fill-success-loud-resting);
-      color: var(--ha-color-on-success-loud);
+    ha-spinner {
+      --ha-spinner-size: var(--mdc-icon-size, 24px);
+      --track-width: 2px;
     }
-    .result.error {
-      background-color: var(--ha-color-fill-danger-loud-resting);
-      color: var(--ha-color-on-danger-loud);
+    /* Overshoot so the icon lands with a small pop */
+    ha-svg-icon {
+      animation: scale var(--ha-animation-duration-fast)
+        cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .result ha-svg-icon {
-      animation: scale var(--ha-animation-duration-fast) ease-in-out;
+    ha-svg-icon.success {
+      color: var(--ha-color-on-success-quiet);
+    }
+    ha-svg-icon.error {
+      color: var(--ha-color-on-danger-quiet);
     }
   `;
 }

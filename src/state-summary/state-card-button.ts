@@ -19,9 +19,7 @@ export class StateCardButton extends LitElement {
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
 
-  @query("ha-action-result") private _result?: HaActionResult;
-
-  private _pressing = false;
+  @query("ha-action-result") private _result!: HaActionResult;
 
   protected render() {
     const stateObj = this.stateObj;
@@ -36,30 +34,23 @@ export class StateCardButton extends LitElement {
           .disabled=${stateObj.state === UNAVAILABLE}
           @click=${this._pressButton}
         >
-          ${this.hass.localize("ui.card.button.press")}
-          <ha-action-result></ha-action-result>
+          <ha-action-result>
+            ${this.hass.localize("ui.card.button.press")}
+          </ha-action-result>
         </ha-control-button>
       </div>
     `;
   }
 
-  private async _pressButton(ev: Event) {
+  private _pressButton(ev: Event) {
     ev.stopPropagation();
-    if (this._pressing) return;
+    if (this._result.busy) return;
 
-    this._pressing = true;
-    try {
-      await this.hass.callService(
-        computeDomain(this.stateObj.entity_id),
-        "press",
-        { entity_id: this.stateObj.entity_id }
-      );
-      this._result?.success();
-    } catch (_err) {
-      this._result?.error();
-    } finally {
-      this._pressing = false;
-    }
+    this._result.run(
+      this.hass.callService(computeDomain(this.stateObj.entity_id), "press", {
+        entity_id: this.stateObj.entity_id,
+      })
+    );
   }
 
   static get styles(): CSSResultGroup {
