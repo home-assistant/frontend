@@ -373,7 +373,9 @@ export class MatterNetworkVisualization extends LitElement {
     const device = node.ha_device_id
       ? this.hass.devices[node.ha_device_id]
       : undefined;
-    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
     const lines: TemplateResult[] = [];
     if (node.node_id != null) {
       lines.push(

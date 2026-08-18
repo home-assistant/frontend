@@ -204,7 +204,9 @@ export function createMatterNetworkChartData(
     const device = node.ha_device_id
       ? hass.devices[node.ha_device_id]
       : undefined;
-    const area = device ? getDeviceArea(device, hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, hass.areas, hass.devices)
+      : undefined;
     const contextParts: string[] = [];
     if (area) {
       contextParts.push(area.name);
