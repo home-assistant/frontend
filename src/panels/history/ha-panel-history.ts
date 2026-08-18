@@ -166,6 +166,11 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
+    const sourcesLabel = sourceCount
+      ? this.hass.localize("ui.panel.history.sources_count", {
+          count: this._getEntityIds().length,
+        })
+      : this.hass.localize("ui.panel.history.sources");
 
     return html`
       <ha-top-app-bar-fixed
@@ -199,7 +204,7 @@ class HaPanelHistory extends LitElement {
               this._sourcesShown()
                 ? html`<ha-filter-pane
                     .narrow=${this.narrow}
-                    .label=${this.hass.localize("ui.panel.history.sources")}
+                    .label=${sourcesLabel}
                     .path=${mdiTuneVariant}
                     .count=${sourceCount}
                     .resultCount=${this._getEntityIds().length}
@@ -228,7 +233,7 @@ class HaPanelHistory extends LitElement {
                   this._sourcesShown() && !this.narrow
                     ? nothing
                     : html`<ha-filter-pane-chip
-                        .label=${this.hass.localize("ui.panel.history.sources")}
+                        .label=${sourcesLabel}
                         .path=${mdiTuneVariant}
                         .count=${sourceCount}
                         .active=${sourceCount > 0}

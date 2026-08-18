@@ -111,6 +111,11 @@ export class HaPanelLogbook extends LitElement {
     const entityIds = this._getEntityIds();
     const sourceCount =
       countTargets(this._targetPickerValue) + countSourceFilters(this._filters);
+    const sourcesLabel = sourceCount
+      ? this.hass.localize("ui.panel.logbook.sources_count", {
+          count: entityIds?.length ?? 0,
+        })
+      : this.hass.localize("ui.panel.logbook.sources");
 
     return html`
       <ha-top-app-bar-fixed
@@ -148,7 +153,7 @@ export class HaPanelLogbook extends LitElement {
               this._sourcesShown()
                 ? html`<ha-filter-pane
                     .narrow=${this.narrow}
-                    .label=${this.hass.localize("ui.panel.logbook.sources")}
+                    .label=${sourcesLabel}
                     .path=${mdiTuneVariant}
                     .count=${sourceCount}
                     .resultCount=${entityIds?.length}
@@ -176,7 +181,7 @@ export class HaPanelLogbook extends LitElement {
                   this._sourcesShown() && !this.narrow
                     ? nothing
                     : html`<ha-filter-pane-chip
-                        .label=${this.hass.localize("ui.panel.logbook.sources")}
+                        .label=${sourcesLabel}
                         .path=${mdiTuneVariant}
                         .count=${sourceCount}
                         .active=${sourceCount > 0}
