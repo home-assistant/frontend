@@ -1,6 +1,8 @@
 import "element-internals-polyfill";
+import { ContextProvider } from "@lit/context";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "../../../src/components/ha-selector/ha-selector-device-class";
+import { internationalizationContext } from "../../../src/data/context";
 import type { HaDeviceClassSelector } from "../../../src/components/ha-selector/ha-selector-device-class";
 
 const mount = async (
@@ -10,7 +12,13 @@ const mount = async (
     "ha-selector-device_class"
   ) as HaDeviceClassSelector;
   Object.assign(el, props);
-  document.body.appendChild(el);
+  const host = document.createElement("div");
+  document.body.appendChild(host);
+  new ContextProvider(host, {
+    context: internationalizationContext,
+    initialValue: { locale: { language: "en" } } as any,
+  });
+  host.appendChild(el);
   await el.updateComplete;
   return el;
 };
@@ -20,7 +28,7 @@ describe("ha-selector-device-class", () => {
     document.body.innerHTML = "";
   });
 
-  it("normalizes the selector before using the base select renderer", async () => {
+  it("renders a select for the configured device class domain", async () => {
     const el = await mount({
       hass: {
         loadBackendTranslation: vi.fn().mockResolvedValue(undefined),
@@ -32,24 +40,20 @@ describe("ha-selector-device-class", () => {
       selector: {
         device_class: {
           domain: "sensor",
-          translation_key: "device_class",
-          options: ["temperature", "humidity"],
         },
       } as any,
       value: "temperature",
     });
 
     expect(el.selector).toEqual({
-      select: {
+      device_class: {
         domain: "sensor",
-        translation_key: "device_class",
-        options: ["temperature", "humidity"],
       },
     });
-    expect(el.shadowRoot?.querySelector("ha-radio-group")).toBeTruthy();
+    expect(el.shadowRoot?.querySelector("ha-select")).toBeTruthy();
   });
 
-  it("loads the device class selector translations and localizes option labels", async () => {
+  it("loads the device selector translations and localizes option labels", async () => {
     const loadBackendTranslation = vi.fn().mockResolvedValue(undefined);
     const el = await mount({
       hass: {
@@ -61,17 +65,18 @@ describe("ha-selector-device-class", () => {
       } as any,
       selector: {
         device_class: {
-          options: ["temperature", "humidity"],
           domain: "sensor",
         },
       } as any,
       value: "temperature",
     });
 
-    const options = Array.from(
-      el.shadowRoot?.querySelectorAll("ha-radio-option") ?? []
-    ) as unknown as { value: string; textContent: string | null }[];
-    const label = options.find((option) => option.value === "temperature");
-    expect(label?.textContent?.trim()).toBe("Temperature");
+    const select = el.shadowRoot?.querySelector("ha-select") as {
+      options?: { value: string; label: string }[];
+    };
+    expect(select.options).toContainEqual({
+      value: "temperature",
+      label: "Temperature",
+    });
   });
 });

@@ -482,18 +482,13 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
     box_max_columns?: number;
-    domain?: string; // used by DeviceClassSelector
   } | null;
 }
 
 export interface DeviceClassSelector {
   device_class: {
     domain: string;
-    options?: readonly string[] | readonly SelectOption[];
-    sort?: boolean;
     multiple?: boolean;
-    custom_value?: boolean;
-    mode?: "list" | "dropdown" | "box";
   } | null;
 }
 
