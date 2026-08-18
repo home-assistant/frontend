@@ -14,6 +14,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, statesContext } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-check-list-item";
+import "./ha-domain-icon";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
 import "./ha-list";
@@ -22,6 +23,7 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 interface DeviceClassItem {
   deviceClass: string;
+  domain: string;
   name: string;
 }
 
@@ -96,7 +98,14 @@ export class HaFilterDeviceClasses extends LitElement {
                       html`<ha-check-list-item
                         .value=${item.deviceClass}
                         .selected=${(this.value || []).includes(item.deviceClass)}
+                        graphic="icon"
                       >
+                        <ha-domain-icon
+                          slot="graphic"
+                          .domain=${item.domain}
+                          .deviceClass=${item.deviceClass}
+                          .state=${item.domain === "binary_sensor" ? "on" : undefined}
+                        ></ha-domain-icon>
                         ${item.name}
                       </ha-check-list-item>`
                   )}
@@ -114,27 +123,32 @@ export class HaFilterDeviceClasses extends LitElement {
       language: string | undefined,
       filter: string | undefined
     ): DeviceClassItem[] => {
-      // The same device class can be used by multiple domains; label it with
-      // the first domain that has a translation for it.
-      const names = new Map<string, string | undefined>();
+      // The same device class can be used by multiple domains; label and
+      // illustrate it with the first domain that has a translation for it.
+      const items = new Map<string, DeviceClassItem>();
       Object.values(states).forEach((stateObj) => {
         const deviceClass = stateObj.attributes.device_class;
-        if (!deviceClass || names.get(deviceClass)) {
+        if (!deviceClass) {
           return;
         }
-        names.set(
-          deviceClass,
-          localize(
-            `component.${computeStateDomain(stateObj)}.entity_component.${deviceClass}.name`
-          )
+        const known = items.get(deviceClass);
+        if (known && known.name !== known.deviceClass) {
+          return;
+        }
+        const domain = computeStateDomain(stateObj);
+        const name = localize(
+          `component.${domain}.entity_component.${deviceClass}.name`
         );
+        if (!known || name) {
+          items.set(deviceClass, {
+            deviceClass,
+            domain,
+            name: name || deviceClass,
+          });
+        }
       });
 
-      return Array.from(names.entries())
-        .map(([deviceClass, name]) => ({
-          deviceClass,
-          name: name || deviceClass,
-        }))
+      return Array.from(items.values())
         .filter(
           (item) =>
             !filter ||
