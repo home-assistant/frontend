@@ -309,6 +309,16 @@ export class MatterNetworkVisualization extends LitElement {
         return nothing;
       }
       const lines: TemplateResult[] = [];
+      // the link color now encodes the transport, and the graph legend can
+      // only describe nodes, so name it here
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.network"
+            )}:</b
+          >
+          ${this._localizeDynamic("network_type", conn.network)}`
+      );
       if (conn.source_to_target) {
         lines.push(
           html`<br />${this._getNodeName(conn.source)} →
@@ -323,12 +333,20 @@ export class MatterNetworkVisualization extends LitElement {
             ${this._formatDirection(conn.target_to_source)}`
         );
       }
-      if (!lines.length && conn.via_route_table) {
-        lines.push(
-          html`<br />${this.hass.localize(
+      if (!conn.source_to_target && !conn.target_to_source) {
+        // no per-direction reading: state the overall strength the width is
+        // drawn from, so this edge class is not left unexplained
+        const details = [
+          this._localizeDynamic("visualization.strength", conn.strength),
+        ];
+        if (conn.via_route_table) {
+          details.push(
+            this.hass.localize(
               "ui.panel.config.matter.visualization.via_route_table"
-            )}`
-        );
+            )
+          );
+        }
+        lines.push(html`<br />${details.join(" • ")}`);
       }
       return html`<b
           >${this._getNodeName(conn.source)} ↔

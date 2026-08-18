@@ -46,21 +46,19 @@ export const strengthToScale = (
   }
 };
 
-export const strengthToColorVar = (
-  strength?: MatterTopologyStrength | null
-): string => {
-  switch (strength) {
-    case "strong":
-      return "--success-color";
-    case "medium":
-      return "--warning-color";
-    case "weak":
-      return "--error-color";
-    // neutral, distinct from the "dead link" disabled color
-    case "unknown":
-      return "--secondary-text-color";
+// links are colored by transport; signal level stays on the line width.
+// Both hues clear 3:1 on the light and the dark card background -- named
+// palette colors have no dark variant, so a darker pick would vanish.
+export const networkToColorVar = (network?: string | null): string => {
+  switch (network) {
+    case "thread":
+      return "--purple-color";
+    case "wifi":
+      return "--pink-color";
+    // `network` is a plain string on the wire: "ethernet" and anything a newer
+    // server invents still draw, just neutrally
     default:
-      return "--disabled-color";
+      return "--secondary-text-color";
   }
 };
 
@@ -280,7 +278,13 @@ export function createMatterNetworkChartData(
       symbolSize: oneWay ? width * 2 + 3 : undefined,
       lineStyle: {
         width,
-        color: style.getPropertyValue(strengthToColorVar(conn.strength)),
+        // a dead link keeps its own color: "none", "weak" and "unknown" all
+        // collapse to width 1, so nothing else would tell them apart
+        color: style.getPropertyValue(
+          conn.strength === "none"
+            ? "--disabled-color"
+            : networkToColorVar(conn.network)
+        ),
         type:
           oneWay || asymmetric
             ? "dashed"
@@ -296,6 +300,8 @@ export function createMatterNetworkChartData(
 
   // HA to a hub is a real path; HA to a hubless component's representative only
   // means "reachable, exact position unknown", so that variant is drawn dotted.
+  // It keeps the HA node's own color rather than a transport hue: it is a
+  // logical reachability edge, not a radio link.
   // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
   // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
   const haLink = (
@@ -319,8 +325,9 @@ export function createMatterNetworkChartData(
     .map((node) => node.id);
   hubIds.forEach((id) => links.push(haLink(id)));
 
-  // any node group without a border router / AP is linked straight to HA so
-  // it never floats free (HA has a direct operational path to every node)
+  // any node group without a border router / AP is linked straight to HA so it
+  // never floats free -- except a group of only "unknown" Thread neighbours,
+  // which are not commissioned on our fabric, so HA has no path to claim
   const adjacency = new Map<string, Set<string>>();
   topology.nodes.forEach((node) => adjacency.set(node.id, new Set()));
   links.forEach((link) => {
@@ -352,12 +359,11 @@ export function createMatterNetworkChartData(
     if (component.some((id) => hubIdSet.has(id))) {
       return;
     }
-    const candidates = component.filter(
-      (id) => nodeCategories.get(id) !== CATEGORY_UNKNOWN
-    );
-    const representative = (candidates.length ? candidates : component).sort(
-      (a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0)
-    )[0];
+    const representative = component
+      .filter((id) => nodeCategories.get(id) !== CATEGORY_UNKNOWN)
+      .sort(
+        (a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0)
+      )[0];
     if (representative) {
       links.push(haLink(representative, "dotted"));
     }

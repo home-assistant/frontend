@@ -9,7 +9,7 @@ import {
   createMatterNetworkChartData,
   getTopologyNodeCategory,
   getTopologyNodeName,
-  strengthToColorVar,
+  networkToColorVar,
   strengthToScale,
 } from "../../../../../src/panels/config/integrations/integration-panels/matter/matter-network-data";
 import type { HomeAssistant } from "../../../../../src/types";
@@ -55,6 +55,19 @@ const topology = (
 const element = document.createElement("div");
 document.body.appendChild(element);
 
+// jsdom resolves custom properties set inline, so color lookups can be
+// asserted on real values; use a fresh element so nothing leaks into the
+// tests that expect the bare element's empty strings
+const themedElement = (): HTMLElement => {
+  const el = document.createElement("div");
+  el.style.setProperty("--primary-color", "#009ac7");
+  el.style.setProperty("--purple-color", "#926bc7");
+  el.style.setProperty("--pink-color", "#e91e63");
+  el.style.setProperty("--disabled-color", "#bdbdbd");
+  document.body.appendChild(el);
+  return el;
+};
+
 describe("strengthToScale", () => {
   it("never returns a falsy value so the graph arrow stays suppressed", () => {
     expect(strengthToScale("strong")).toBe(4);
@@ -72,10 +85,14 @@ describe("strengthToScale", () => {
   });
 });
 
-describe("strengthToColorVar", () => {
-  it("colors an unmeasured link neutrally, not as a dead link", () => {
-    expect(strengthToColorVar("unknown")).toBe("--secondary-text-color");
-    expect(strengthToColorVar("unknown")).not.toBe(strengthToColorVar("none"));
+describe("networkToColorVar", () => {
+  it("separates the two transports and degrades gracefully", () => {
+    expect(networkToColorVar("thread")).toBe("--purple-color");
+    expect(networkToColorVar("wifi")).toBe("--pink-color");
+    expect(networkToColorVar("thread")).not.toBe(networkToColorVar("wifi"));
+    // the wire type is a plain string, not a union
+    expect(networkToColorVar("ethernet")).toBe("--secondary-text-color");
+    expect(networkToColorVar(undefined)).toBe("--secondary-text-color");
   });
 });
 
@@ -497,6 +514,118 @@ describe("createMatterNetworkChartData", () => {
     // without an SSID the name is already the address, so no context repeat
     expect(bare.name).toBe("50:91:00:D9:62:00");
     expect(bare.context).toBeUndefined();
+  });
+
+  it("leaves a component of only unknown neighbours unanchored", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "unknown_1", kind: "thread_unknown" }),
+          node({ id: "unknown_2", kind: "thread_unknown" }),
+        ],
+        [connection({ source: "unknown_1", target: "unknown_2" })]
+      ),
+      mockHass(),
+      element
+    );
+
+    // an unknown neighbour is not commissioned on our fabric, so HA has no
+    // operational path to it and must not draw one
+    const haTargets = data.links
+      .filter((l) => l.source === "ha")
+      .map((l) => l.target);
+    expect(haTargets).toEqual(["1"]);
+  });
+
+  it("anchors an unknown neighbour through its known peer, not through HA", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "unknown_1", kind: "thread_unknown" }),
+        ],
+        [connection({ source: "1", target: "unknown_1" })]
+      ),
+      mockHass(),
+      element
+    );
+
+    // floating the unknowns must not mean dropping them out of a mixed group
+    const haTargets = data.links
+      .filter((l) => l.source === "ha")
+      .map((l) => l.target);
+    expect(haTargets).toEqual(["1"]);
+    expect(data.nodes.find((n) => n.id === "unknown_1")).toBeDefined();
+  });
+
+  it("draws a lone unknown neighbour with no links at all", () => {
+    const data = createMatterNetworkChartData(
+      topology([node({ id: "unknown_1", kind: "thread_unknown" })]),
+      mockHass(),
+      element
+    );
+
+    expect(data.links).toHaveLength(0);
+    // polarDistance is what places an unlinked node in ha-network-graph;
+    // at 0 it would stack on the origin instead
+    const unknown = data.nodes.find((n) => n.id === "unknown_1")!;
+    expect(unknown.polarDistance).toBe(0.8);
+  });
+
+  it("colors links by transport, not by signal level", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "br_1", kind: "border_router" }),
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "ap_1", kind: "wifi_ap", network_type: "wifi" }),
+          node({ id: "7", node_id: 7, network_type: "wifi", role: "station" }),
+        ],
+        [
+          connection({ source: "1", target: "br_1", strength: "weak" }),
+          connection({
+            source: "7",
+            target: "ap_1",
+            network: "wifi",
+            strength: "strong",
+          }),
+        ]
+      ),
+      mockHass(),
+      themedElement()
+    );
+
+    // a weak thread link and a strong wi-fi link differ by transport in the
+    // color channel and by level in the width channel
+    const threadLink = data.links.find((l) => l.source === "1")!;
+    const wifiLink = data.links.find((l) => l.source === "7")!;
+    expect(threadLink.lineStyle?.color).toBe("#926bc7");
+    expect(threadLink.lineStyle?.width).toBe(1);
+    expect(wifiLink.lineStyle?.color).toBe("#e91e63");
+    expect(wifiLink.lineStyle?.width).toBe(3);
+
+    // the HA spine is reachability, not a radio link, and keeps the HA color
+    const spine = data.links.find((l) => l.source === "ha")!;
+    expect(spine.lineStyle?.color).toBe("#009ac7");
+  });
+
+  it("keeps a dead link grey so it cannot pass for a healthy one", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "br_1", kind: "border_router" }),
+          node({ id: "1", node_id: 1, role: "router" }),
+        ],
+        [connection({ source: "1", target: "br_1", strength: "none" })]
+      ),
+      mockHass(),
+      themedElement()
+    );
+
+    // width cannot carry this: "none", "weak" and "unknown" are all width 1
+    const link = data.links.find((l) => l.source === "1")!;
+    expect(link.lineStyle?.color).toBe("#bdbdbd");
   });
 
   it("draws the hub path solid and the position-unknown anchor dotted", () => {
