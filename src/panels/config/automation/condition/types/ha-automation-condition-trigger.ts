@@ -13,6 +13,7 @@ import {
   type Trigger,
   type TriggerCondition,
 } from "../../../../../data/automation";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 
 const getTriggersIds = (triggers: Trigger[]): string[] => {
@@ -21,6 +22,20 @@ const getTriggersIds = (triggers: Trigger[]): string[] => {
     .filter(Boolean) as string[];
   return Array.from(new Set(triggerIds));
 };
+
+// Static YAML schema — trigger IDs are dynamic at runtime, so we use a
+// plain text selector here to at least provide key completion.
+export const YAML_SCHEMA = [
+  { name: "id", required: true, selector: { text: { multiple: true } } },
+] as const;
+
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.conditions.type.trigger.${fieldName}` as any
+  );
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {
@@ -94,10 +109,7 @@ export class HaTriggerCondition extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.conditions.type.trigger.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 
   private _automationUpdated(config?: AutomationConfig) {
     this._triggerIds = config?.triggers

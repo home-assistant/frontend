@@ -11,6 +11,10 @@ import { expandConditionWithShorthand } from "../../../../data/automation";
 import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
+import {
+  builtInConditionSchema,
+  conditionDescriptionToSchema,
+} from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
@@ -43,6 +47,22 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @query(COLLAPSIBLE_CONDITION_ELEMENTS.join(", "))
   private _collapsibleElement?: ConditionElement;
+
+  // Memoized on the condition type rather than the condition itself: the
+  // condition object gets a new identity on every keystroke, and the schema
+  // only depends on its type.
+  private _conditionYamlSchema = memoizeOne(
+    (
+      conditionType: string,
+      description: ConditionDescription | undefined,
+      localize: HomeAssistant["localize"]
+    ) => {
+      if (!description) {
+        return builtInConditionSchema(conditionType, localize);
+      }
+      return conditionDescriptionToSchema(conditionType, description, localize);
+    }
+  );
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -82,6 +102,11 @@ export default class HaAutomationConditionEditor extends LitElement {
                   .defaultValue=${this.condition}
                   @value-changed=${this._onYamlChange}
                   .readOnly=${this.disabled}
+                  .yamlFieldSchema=${this._conditionYamlSchema(
+                    condition.condition,
+                    this.description,
+                    this.hass.localize
+                  )}
                 ></ha-yaml-editor>
               `
             : html`

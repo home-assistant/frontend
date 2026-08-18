@@ -12,8 +12,30 @@ import type { PersistentNotificationTrigger } from "../../../../../data/automati
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
+export const computeLabel = (
+  fieldName: string,
+  localize: LocalizeFunc
+): string =>
+  localize(
+    `ui.panel.config.automation.editor.triggers.type.persistent_notification.${fieldName}` as any
+  );
+
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";
+
+export const YAML_SCHEMA = [
+  { name: "notification_id", selector: { text: {} } },
+  {
+    name: "update_type",
+    type: "multi_select" as const,
+    options: [
+      ["added", "added"] as const,
+      ["removed", "removed"] as const,
+      ["current", "current"] as const,
+      ["updated", "updated"] as const,
+    ],
+  },
+] as const;
 
 @customElement("ha-automation-trigger-persistent_notification")
 export class HaPersistentNotificationTrigger
@@ -99,10 +121,7 @@ export class HaPersistentNotificationTrigger
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.triggers.type.persistent_notification.${schema.name}`
-    );
+  ): string => computeLabel(schema.name, this.hass.localize);
 }
 
 declare global {

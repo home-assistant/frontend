@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
@@ -13,6 +14,10 @@ import type { TriggerDescription } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import {
+  builtInTriggerSchema,
+  triggerDescriptionToSchema,
+} from "../yaml_schema_helpers";
 import "../ha-automation-editor-warning";
 import "./types/ha-automation-trigger-platform";
 
@@ -36,6 +41,23 @@ export default class HaAutomationTriggerEditor extends LitElement {
   @property({ attribute: false }) public description?: TriggerDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  // Memoized on the trigger type rather than the trigger itself: the trigger
+  // object gets a new identity on every keystroke, and the schema only depends
+  // on its type.
+  private _triggerYamlSchema = memoizeOne(
+    (
+      triggerType: string | undefined,
+      description: TriggerDescription | undefined,
+      localize: HomeAssistant["localize"]
+    ) => {
+      if (triggerType === undefined) return undefined;
+      if (!description) {
+        return builtInTriggerSchema(triggerType, localize);
+      }
+      return triggerDescriptionToSchema(triggerType, description, localize);
+    }
+  );
 
   protected render() {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
@@ -72,6 +94,13 @@ export default class HaAutomationTriggerEditor extends LitElement {
                 <ha-yaml-editor
                   .defaultValue=${this.trigger}
                   .readOnly=${this.disabled}
+                  .yamlFieldSchema=${this._triggerYamlSchema(
+                    isTriggerList(this.trigger)
+                      ? undefined
+                      : this.trigger.trigger,
+                    this.description,
+                    this.hass.localize
+                  )}
                   @value-changed=${this._onYamlChange}
                 ></ha-yaml-editor>
               `

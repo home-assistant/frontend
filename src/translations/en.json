@@ -1435,7 +1435,16 @@
         "exit_fullscreen": "Exit fullscreen",
         "find_and_replace": "Find and replace",
         "test_on": "Turn on testing",
-        "test_off": "Turn off testing"
+        "test_off": "Turn off testing",
+        "schema": {
+          "required": "Required",
+          "example": "Example:",
+          "default": "Default:",
+          "unknown_field": "Unknown field: \"{field}\"",
+          "missing_field": "Required field missing: \"{field}\"",
+          "jinja_template": "Jinja2 template",
+          "jinja_block": "Jinja2 block"
+        }
       },
       "state-content-picker": {
         "state": "State",
@@ -6050,7 +6059,150 @@
             },
             "paste_toast_message": "Pasted automation from clipboard",
             "paste_invalid_yaml": "Pasted value is not valid YAML",
-            "paste_invalid_config": "Pasted automation is not editable in the visual editor"
+            "paste_invalid_config": "Pasted automation is not editable in the visual editor",
+            "yaml_schema": {
+              "trigger_base": {
+                "trigger": "The trigger type (platform).",
+                "id": "An optional ID for the trigger, used to identify it in conditions or templates.",
+                "alias": "A friendly name for this trigger.",
+                "enabled": "Whether this trigger is enabled. Defaults to true.",
+                "variables": "Variables to set when this trigger fires."
+              },
+              "condition_base": {
+                "condition": "The condition type.",
+                "alias": "A friendly name for this condition.",
+                "enabled": "Whether this condition is enabled. Defaults to true."
+              },
+              "action_base": {
+                "alias": "A friendly name for this action.",
+                "enabled": "Whether this action is enabled. Defaults to true.",
+                "continue_on_error": "If true, the automation continues even if this action fails."
+              },
+              "actions": {
+                "delay": {
+                  "delay": "Duration to wait. Can be a number (seconds), a time string (HH:MM:SS), or a mapping with hours/minutes/seconds/milliseconds."
+                },
+                "wait_template": {
+                  "wait_template": "A Jinja2 template that must evaluate to true before continuing.",
+                  "timeout": "Maximum time to wait. After this the action continues (or stops if continue_on_timeout is false).",
+                  "continue_on_timeout": "Whether to continue when the timeout is reached. Defaults to true."
+                },
+                "wait_for_trigger": {
+                  "wait_for_trigger": "One or more triggers to wait for before continuing.",
+                  "timeout": "Maximum time to wait.",
+                  "continue_on_timeout": "[%key:ui::panel::config::automation::editor::yaml_schema::actions::wait_template::continue_on_timeout%]"
+                },
+                "event": {
+                  "event": "The event type to fire.",
+                  "event_data": "Data to include with the event.",
+                  "event_data_template": "Templated data to include with the event."
+                },
+                "condition": {
+                  "condition": "The condition type to check. The automation stops if the condition is false."
+                },
+                "stop": {
+                  "stop": "Message to log when stopping the automation.",
+                  "error": "If true, this is logged as an error. Defaults to false.",
+                  "response_variable": "Variable name to store when stopping and returning a response."
+                },
+                "repeat": {
+                  "repeat": "Repeat configuration — use count, while, until, or for_each.",
+                  "count": "Number of times to repeat.",
+                  "while": "Repeat while these conditions are true.",
+                  "until": "Repeat until these conditions are true.",
+                  "for_each": "List of items to iterate over.",
+                  "sequence": "Actions to perform on each iteration."
+                },
+                "choose": {
+                  "choose": "List of options; the first matching one is executed.",
+                  "conditions": "Conditions that must be met for this option to run.",
+                  "sequence": "Actions to run if the conditions match.",
+                  "alias": "A friendly name for this option.",
+                  "default": "Actions to run when no option matched."
+                },
+                "if": {
+                  "if": "Conditions to check.",
+                  "then": "Actions to run when the condition is true.",
+                  "else": "Actions to run when the condition is false."
+                },
+                "sequence": {
+                  "sequence": "A list of actions to run in order."
+                },
+                "parallel": {
+                  "parallel": "A list of actions (or scripts) to run in parallel."
+                },
+                "variables": {
+                  "variables": "Key/value pairs to set as variables in the automation context."
+                },
+                "set_conversation_response": {
+                  "set_conversation_response": "The text response to return to the conversation agent."
+                },
+                "service": {
+                  "data": "Service call data (field values).",
+                  "response_variable": "Variable name to store the action response in.",
+                  "action": "The action to call."
+                }
+              },
+              "conditions": {
+                "zone": {
+                  "zone": "The zone the entity must be in.",
+                  "entity_id": "The person or device_tracker entity to check."
+                },
+                "and": {
+                  "conditions": "All of these conditions must be true."
+                },
+                "or": {
+                  "conditions": "At least one of these conditions must be true."
+                },
+                "not": {
+                  "conditions": "None of these conditions must be true."
+                },
+                "options": "Condition options."
+              },
+              "triggers": {
+                "event": {
+                  "event_type": "The event type to listen for.",
+                  "event_data": "Optional event data to match.",
+                  "context": "Optional context to match (e.g. user_id)."
+                },
+                "zone": {
+                  "entity_id": "The person or device_tracker entity to watch.",
+                  "zone": "The zone to watch.",
+                  "event": "Whether to trigger on zone entry or exit."
+                },
+                "tag": {
+                  "tag_id": "The NFC/QR tag ID(s) to watch."
+                },
+                "webhook": {
+                  "webhook_id": "The webhook ID. Will be part of the webhook URL.",
+                  "allowed_methods": "HTTP methods that are accepted (default: POST, PUT).",
+                  "local_only": "Only allow requests from the local network. Defaults to true."
+                },
+                "conversation": {
+                  "command": "The voice command phrase(s) to match."
+                },
+                "options": "Trigger options."
+              },
+              "target": {
+                "target": "The target entities, devices, areas, floors, or labels.",
+                "entity_id": "One or more entity IDs to target.",
+                "device_id": "One or more device IDs to target.",
+                "area_id": "One or more area IDs to target.",
+                "floor_id": "One or more floor IDs to target.",
+                "label_id": "One or more label IDs to target."
+              },
+              "numeric_threshold": {
+                "active_choice": "Whether to use a fixed number or an entity state.",
+                "number": "Fixed numeric value.",
+                "entity": "Entity whose state provides the value.",
+                "unit_of_measurement": "Unit of measurement.",
+                "value_entry": "Threshold value entry.",
+                "type": "Comparison type.",
+                "value": "Threshold value (for above / below types).",
+                "value_min": "Lower bound (for between / outside types).",
+                "value_max": "Upper bound (for between / outside types)."
+              }
+            }
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
