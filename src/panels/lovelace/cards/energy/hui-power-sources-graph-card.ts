@@ -175,6 +175,10 @@ export class HuiPowerSourcesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const result = generatePowerSourcesGraphData({
       localize: this.hass.localize,
       states: this.hass.states,

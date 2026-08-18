@@ -48,6 +48,9 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The app fetches core (backend) translations live from HA, so the
+          # release build does not need Lokalise's backend project.
+          SKIP_BACKEND_TRANSLATIONS: "1"
 
       # Restore the content-addressed compression cache. Unchanged chunks and
       # static assets are then reused instead of re-run through brotli/zopfli.
@@ -151,6 +154,8 @@ jobs:
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The landing-page build does not merge backend translations.
+          SKIP_BACKEND_TRANSLATIONS: "1"
       - name: Build landing-page
         run: landing-page/script/build_landing_page
       - name: Tar folder

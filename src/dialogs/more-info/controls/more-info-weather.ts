@@ -11,6 +11,7 @@ import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { transform } from "../../../common/decorators/transform";
 import { formatNumber } from "../../../common/number/format_number";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-spinner";
@@ -48,10 +49,15 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
+import { moreInfoContext, type MoreInfoContext } from "../context";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public stateObj?: WeatherEntity;
+
+  @state()
+  @consume({ context: moreInfoContext, subscribe: true })
+  private _moreInfoContext?: MoreInfoContext;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -127,15 +133,33 @@ class MoreInfoWeather extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if ((changedProps.has("stateObj") || !this._subscribed) && this.stateObj) {
+    if (
+      (changedProps.has("stateObj") ||
+        changedProps.has("_moreInfoContext") ||
+        !this._subscribed) &&
+      this.stateObj
+    ) {
       const oldState = changedProps.get("stateObj") as
         WeatherEntity | undefined;
       if (
         oldState?.entity_id !== this.stateObj?.entity_id ||
+        changedProps.has("_moreInfoContext") ||
         !this._subscribed
       ) {
-        this._forecastType = getDefaultForecastType(this.stateObj);
-        this._subscribeForecastEvents();
+        const supportedForecastTypes = getSupportedForecastTypes(this.stateObj);
+        const requestedForecastType =
+          this._moreInfoContext?.hash.get("forecast");
+        const selectedForecastType =
+          supportedForecastTypes.find(
+            (forecastType) => forecastType === requestedForecastType
+          ) ?? getDefaultForecastType(this.stateObj);
+        if (selectedForecastType !== requestedForecastType) {
+          this._moreInfoContext?.setHashParam("forecast", selectedForecastType);
+        }
+        if (this._forecastType !== selectedForecastType || !this._subscribed) {
+          this._forecastType = selectedForecastType;
+          this._subscribeForecastEvents();
+        }
       }
     } else if (changedProps.has("_forecastType")) {
       this._subscribeForecastEvents();
@@ -509,8 +533,17 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  private _handleForecastTypeChanged(ev: CustomEvent): void {
+  private _handleForecastTypeChanged(
+    ev: HASSDomEvent<{ name: ModernForecastType }>
+  ): void {
+    if (
+      !this.stateObj ||
+      !getSupportedForecastTypes(this.stateObj).includes(ev.detail.name)
+    ) {
+      return;
+    }
     this._forecastType = ev.detail.name;
+    this._moreInfoContext?.setHashParam("forecast", this._forecastType);
   }
 
   static get styles(): CSSResultGroup {

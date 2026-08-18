@@ -65,6 +65,21 @@ export class HaButton extends Button {
           box-shadow: var(--ha-button-box-shadow);
         }
 
+        :host([size="xs"]) .button {
+          --wa-form-control-height: var(
+            --ha-button-height,
+            var(--button-height, 24px)
+          );
+          font-size: var(--ha-font-size-m);
+          --wa-form-control-padding-inline: var(--ha-space-2);
+        }
+
+        /* A default 24px icon would fill the whole xs button. */
+        :host([size="xs"]) slot[name="start"]::slotted(*),
+        :host([size="xs"]) slot[name="end"]::slotted(*) {
+          --mdc-icon-size: 16px;
+        }
+
         :host([size="s"]) .button {
           --wa-form-control-height: var(
             --ha-button-height,
