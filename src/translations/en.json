@@ -1816,6 +1816,7 @@
           "toggle": "Toggle",
           "color": "Color",
           "color_temp": "Temperature",
+          "color_temp_brightness": "Temperature and brightness",
           "set_white": "Set white",
           "select_effect": "Select effect",
           "color_picker": {

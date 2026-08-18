@@ -41,11 +41,13 @@ import "../components/ha-more-info-state-header";
 import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
+import "../components/lights/light-color-temp-brightness-picker";
 import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
-type MainControl = "brightness" | "color_temp" | "color";
+type MainControl =
+  "brightness" | "color_temp" | "color" | "color_temp_brightness";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -78,10 +80,30 @@ class MoreInfoLight extends LitElement {
       .attributeValue=${value}
     ></ha-attribute-icon>`;
 
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("stateObj") &&
+      this.stateObj &&
+      this._mainControl === "color_temp_brightness" &&
+      !this._supportsDualAxis(this.stateObj)
+    ) {
+      this._mainControl = "brightness";
+    }
+  }
+
   protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("stateObj")) {
       this._effect = this.stateObj?.attributes.effect;
     }
+  }
+
+  private _supportsDualAxis(stateObj: LightEntity): boolean {
+    return (
+      lightSupportsBrightness(stateObj) &&
+      lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP) &&
+      !lightSupportsColor(stateObj)
+    );
   }
 
   private _setMainControl(ev: any) {
@@ -127,6 +149,8 @@ class MoreInfoLight extends LitElement {
       this.stateObj,
       LightEntityFeature.EFFECT
     );
+
+    const supportsDualAxis = this._supportsDualAxis(this.stateObj);
 
     const showFavoriteColors = Boolean(
       this.entry &&
@@ -180,6 +204,17 @@ class MoreInfoLight extends LitElement {
                     ? html`
                         <light-color-temp-picker .stateObj=${this.stateObj}>
                         </light-color-temp-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  supportsDualAxis &&
+                  this._mainControl === "color_temp_brightness"
+                    ? html`
+                        <light-color-temp-brightness-picker
+                          .stateObj=${this.stateObj}
+                        >
+                        </light-color-temp-brightness-picker>
                       `
                     : nothing
                 }
@@ -250,6 +285,26 @@ class MoreInfoLight extends LitElement {
                             @click=${this._setMainControl}
                           >
                             <span class="wheel color-temp"></span>
+                          </ha-icon-button-toggle>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsDualAxis
+                      ? html`
+                          <ha-icon-button-toggle
+                            border-only
+                            .selected=${
+                              this._mainControl === "color_temp_brightness"
+                            }
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._localize(
+                              "ui.dialogs.more_info_control.light.color_temp_brightness"
+                            )}
+                            .control=${"color_temp_brightness"}
+                            @click=${this._setMainControl}
+                          >
+                            <span class="wheel color-temp-brightness"></span>
                           </ha-icon-button-toggle>
                         `
                       : nothing
@@ -383,6 +438,15 @@ class MoreInfoLight extends LitElement {
             white 50%,
             rgb(255, 160, 0) 100%
           );
+        }
+        .wheel.color-temp-brightness {
+          background-image:
+            linear-gradient(to top, rgb(102, 102, 102), white),
+            linear-gradient(90deg, rgb(255, 160, 0), white, rgb(166, 209, 255));
+          background-blend-mode: multiply;
+          /* Mask the blended result as one layer; radius clipping bleeds
+             per background layer at the edge in Gecko */
+          clip-path: inset(0 round var(--ha-border-radius-circle));
         }
         *[disabled] .wheel {
           filter: grayscale(1) opacity(0.5);
