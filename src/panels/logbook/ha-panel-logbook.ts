@@ -75,7 +75,9 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _filters: SourceFilters = {};
 
-  @state() private _showSources = false;
+  // Undefined until the user toggles it: the pane starts open next to the
+  // content on wide screens and closed as a bottom sheet on narrow ones.
+  @state() private _showSources?: boolean;
 
   @state() private _entitySources?: EntitySources;
 
@@ -143,7 +145,7 @@ export class HaPanelLogbook extends LitElement {
         <div class="content">
           <div class="main">
             ${
-              this._showSources
+              this._sourcesShown()
                 ? html`<ha-filter-pane
                     .narrow=${this.narrow}
                     .label=${this.hass.localize("ui.panel.logbook.sources")}
@@ -171,7 +173,7 @@ export class HaPanelLogbook extends LitElement {
             <div class="content-column">
               <div class="toolbar">
                 ${
-                  this._showSources && !this.narrow
+                  this._sourcesShown() && !this.narrow
                     ? nothing
                     : html`<ha-filter-pane-chip
                         .label=${this.hass.localize("ui.panel.logbook.sources")}
@@ -228,8 +230,12 @@ export class HaPanelLogbook extends LitElement {
     `;
   }
 
+  private _sourcesShown(): boolean {
+    return this._showSources ?? !this.narrow;
+  }
+
   private _toggleSources() {
-    this._showSources = !this._showSources;
+    this._showSources = !this._sourcesShown();
   }
 
   private _openSources() {
