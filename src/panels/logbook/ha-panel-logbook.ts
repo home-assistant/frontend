@@ -345,7 +345,22 @@ export class HaPanelLogbook extends LitElement {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"]
     ): string[] =>
-      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+      // Same rules as the target picker uses to count the entities of a
+      // target, so that the chip and the picker agree.
+      resolveEntityIDs(
+        this.hass,
+        targetPickerValue,
+        entities,
+        devices,
+        areas
+      ).filter((entityId) => {
+        const stateObj = this.hass.states[entityId];
+        return (
+          !entities[entityId]?.hidden &&
+          stateObj &&
+          filterLogbookCompatibleEntities(stateObj)
+        );
+      })
   );
 
   private __logbookEntityIds = memoizeOne(

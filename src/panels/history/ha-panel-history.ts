@@ -549,7 +549,7 @@ class HaPanelHistory extends LitElement {
           entities,
           devices,
           areas
-        ),
+        ).filter((entityId) => !entities[entityId]?.hidden),
         filters,
         states,
         entitySources

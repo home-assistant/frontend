@@ -91,6 +91,9 @@ export const applySourceFilters = (
  * Picker for what a page shows: the targets to include, narrowed down by
  * domain, device class and integration. Meant to be placed in an
  * `ha-filter-pane`.
+ *
+ * The pages resolve every entity of a target, secondary ones included, so the
+ * target picker counts them too.
  */
 @customElement("ha-sources-picker")
 export class HaSourcesPicker extends LitElement {
@@ -128,6 +131,7 @@ export class HaSourcesPicker extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .entityFilter=${this.entityFilter}
+        .primaryEntitiesOnly=${false}
         .disabled=${this.disabled}
         @value-changed=${this._targetsChanged}
       ></ha-target-picker>
