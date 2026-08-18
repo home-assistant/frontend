@@ -99,6 +99,8 @@ export const getTopologyNodeName = (
   }
   if (node.kind === "border_router") {
     return (
+      // many vendors report an identical vendor/model pair on every unit
+      node.host_name ||
       [node.vendor_name, node.model_name].filter(Boolean).join(" ") ||
       hass.localize("ui.panel.config.matter.visualization.border_router")
     );
@@ -282,7 +284,14 @@ export function createMatterNetworkChartData(
     });
   });
 
-  const haLink = (target: string): NetworkLink => ({
+  // HA to a hub is a real path; HA to a hubless component's representative only
+  // means "reachable, exact position unknown", so that variant is drawn dotted.
+  // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
+  // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
+  const haLink = (
+    target: string,
+    type: "solid" | "dotted" = "solid"
+  ): NetworkLink => ({
     source: HOME_ASSISTANT_NODE_ID,
     target,
     value: 0,
@@ -290,6 +299,7 @@ export function createMatterNetworkChartData(
     lineStyle: {
       width: 3,
       color: categoryColors[CATEGORY_HOME_ASSISTANT],
+      type,
     },
   });
 
@@ -339,7 +349,7 @@ export function createMatterNetworkChartData(
       (a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0)
     )[0];
     if (representative) {
-      links.push(haLink(representative));
+      links.push(haLink(representative, "dotted"));
     }
   });
 

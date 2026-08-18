@@ -33,6 +33,7 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import {
   createMatterNetworkChartData,
+  getTopologyNodeName,
   HOME_ASSISTANT_NODE_ID,
 } from "./matter-network-data";
 
@@ -235,38 +236,7 @@ export class MatterNetworkVisualization extends LitElement {
 
   private _getNodeName(id: string): string {
     const node = this._getTopologyNode(id);
-    if (!node) {
-      return id;
-    }
-    const device = node.ha_device_id
-      ? this.hass.devices[node.ha_device_id]
-      : undefined;
-    if (device) {
-      return device.name_by_user || device.name || id;
-    }
-    if (node.kind === "border_router") {
-      return (
-        [node.vendor_name, node.model_name].filter(Boolean).join(" ") ||
-        this.hass.localize("ui.panel.config.matter.visualization.border_router")
-      );
-    }
-    if (node.kind === "wifi_ap") {
-      return (
-        node.network_name ||
-        this.hass.localize("ui.panel.config.matter.visualization.wifi_ap")
-      );
-    }
-    if (node.kind === "thread_unknown") {
-      return this.hass.localize(
-        "ui.panel.config.matter.visualization.unknown_device"
-      );
-    }
-    if (node.node_id != null) {
-      return this.hass.localize("ui.panel.config.matter.visualization.node", {
-        node_id: node.node_id,
-      });
-    }
-    return id;
+    return node ? getTopologyNodeName(node, this.hass) : id;
   }
 
   private _getSearchableAttributes = (nodeId: string): string[] => {
@@ -289,6 +259,9 @@ export class MatterNetworkVisualization extends LitElement {
     }
     if (node.model_name) {
       attributes.push(node.model_name);
+    }
+    if (node.host_name) {
+      attributes.push(node.host_name);
     }
     const device = node.ha_device_id
       ? this.hass.devices[node.ha_device_id]

@@ -154,6 +154,53 @@ describe("getTopologyNodeName", () => {
       )
     ).toBe("unknown_device");
   });
+
+  it("prefers the border router hostname over its generic vendor and model", () => {
+    // some vendors report the same vendor/model on every unit they ship, so
+    // vendor+model alone labels every border router identically
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "br_1",
+          kind: "border_router",
+          host_name: "Cuisine",
+          vendor_name: "Apple",
+          model_name: "BorderRouter",
+        }),
+        mockHass()
+      )
+    ).toBe("Cuisine");
+  });
+
+  it("keeps the HA device name ahead of the border router hostname", () => {
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "br_1",
+          kind: "border_router",
+          ha_device_id: "dev1",
+          host_name: "Cuisine",
+        }),
+        mockHass({ dev1: { name: "Kitchen hub" } })
+      )
+    ).toBe("Kitchen hub");
+  });
+
+  it("falls through to vendor and model when host_name is null", () => {
+    // core's serializer always emits the key, so null must behave as absent
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "br_1",
+          kind: "border_router",
+          host_name: null,
+          vendor_name: "Apple",
+          model_name: "BorderRouter",
+        }),
+        mockHass()
+      )
+    ).toBe("Apple BorderRouter");
+  });
 });
 
 describe("createMatterNetworkChartData", () => {
@@ -382,6 +429,40 @@ describe("createMatterNetworkChartData", () => {
       .map((l) => l.target)
       .sort();
     expect(haTargets).toEqual(["1", "2"]);
+  });
+
+  it("draws the hub path solid and the position-unknown anchor dotted", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "br_1", kind: "border_router", host_name: "Cuisine" }),
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "9", node_id: 9, role: "router" }),
+        ],
+        [connection({ source: "1", target: "br_1" })]
+      ),
+      mockHass(),
+      element
+    );
+
+    // HA -> border router is a real path
+    const hubLink = data.links.find(
+      (l) => l.source === "ha" && l.target === "br_1"
+    )!;
+    expect(hubLink.lineStyle?.type).toBe("solid");
+
+    // HA -> a hubless component's representative only means "reachable,
+    // position unknown"
+    const orphanLink = data.links.find(
+      (l) => l.source === "ha" && l.target === "9"
+    )!;
+    expect(orphanLink.lineStyle?.type).toBe("dotted");
+    // symbol, not the falsy value, is what keeps the arrowhead off
+    expect(orphanLink.symbol).toBe("none");
+    expect(orphanLink.reverseValue).toBeUndefined();
+
+    // the wire host_name reaches the rendered label, not just the helper
+    expect(data.nodes.find((n) => n.id === "br_1")!.name).toBe("Cuisine");
   });
 
   it("routes HA through the Wi-Fi access point, not the stations", () => {
