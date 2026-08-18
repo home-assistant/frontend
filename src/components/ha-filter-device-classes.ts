@@ -7,7 +7,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -42,8 +42,6 @@ export class HaFilterDeviceClasses extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public value?: string[];
-
-  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
@@ -122,41 +120,60 @@ export class HaFilterDeviceClasses extends LitElement {
       localize: LocalizeFunc,
       language: string | undefined,
       filter: string | undefined
-    ): DeviceClassItem[] => {
-      // The same device class can be used by multiple domains; label and
-      // illustrate it with the first domain that has a translation for it.
-      const items = new Map<string, DeviceClassItem>();
-      Object.values(states).forEach((stateObj) => {
-        const deviceClass = stateObj.attributes.device_class;
-        if (!deviceClass) {
-          return;
-        }
-        const known = items.get(deviceClass);
-        if (known && known.name !== known.deviceClass) {
-          return;
-        }
-        const domain = computeStateDomain(stateObj);
-        const name = localize(
-          `component.${domain}.entity_component.${deviceClass}.name`
-        );
-        if (!known || name) {
-          items.set(deviceClass, {
-            deviceClass,
-            domain,
-            name: name || deviceClass,
-          });
-        }
-      });
-
-      return Array.from(items.values())
+    ): DeviceClassItem[] =>
+      this._deviceClassItems(this._deviceClassDomains(states), localize)
         .filter(
           (item) =>
             !filter ||
             item.deviceClass.toLowerCase().includes(filter) ||
             item.name.toLowerCase().includes(filter)
         )
-        .sort((a, b) => stringCompare(a.name, b.name, language));
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+  );
+
+  private _deviceClassDomains = memoizeOne(
+    (states: ContextType<typeof statesContext>): Map<string, string[]> => {
+      const domains = new Map<string, string[]>();
+      Object.values(states).forEach((stateObj) => {
+        const deviceClass = stateObj.attributes.device_class;
+        if (!deviceClass) {
+          return;
+        }
+        const domain = computeStateDomain(stateObj);
+        const known = domains.get(deviceClass);
+        if (!known) {
+          domains.set(deviceClass, [domain]);
+        } else if (!known.includes(domain)) {
+          known.push(domain);
+        }
+      });
+      return domains;
     }
+  );
+
+  private _deviceClassItems = memoizeOne(
+    (
+      deviceClassDomains: Map<string, string[]>,
+      localize: LocalizeFunc
+    ): DeviceClassItem[] =>
+      [...deviceClassDomains].map(([deviceClass, domains]) => {
+        for (const domain of domains) {
+          const name = localize(
+            `component.${domain}.entity_component.${deviceClass}.name`
+          );
+          if (name) {
+            return { deviceClass, domain, name };
+          }
+        }
+        return { deviceClass, domain: domains[0], name: deviceClass };
+      }),
+    ([domainsA, localizeA], [domainsB, localizeB]) =>
+      localizeA === localizeB &&
+      domainsA.size === domainsB.size &&
+      [...domainsA].every(
+        ([deviceClass, domains]) =>
+          domainsB.get(deviceClass)?.join() === domains.join()
+      )
   );
 
   protected updated(changed: PropertyValues<this>) {
@@ -171,11 +188,11 @@ export class HaFilterDeviceClasses extends LitElement {
     }
   }
 
-  private _expandedWillChange(ev) {
+  private _expandedWillChange(ev: HASSDomEvent<{ expanded: boolean }>) {
     this._shouldRender = ev.detail.expanded;
   }
 
-  private _expandedChanged(ev) {
+  private _expandedChanged(ev: HASSDomEvent<{ expanded: boolean }>) {
     this.expanded = ev.detail.expanded;
   }
 
@@ -201,7 +218,7 @@ export class HaFilterDeviceClasses extends LitElement {
     });
   }
 
-  private _clearFilter(ev) {
+  private _clearFilter(ev: Event) {
     ev.preventDefault();
     this.value = undefined;
     fireEvent(this, "data-table-filter-changed", {

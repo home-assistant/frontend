@@ -1,7 +1,7 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
@@ -24,8 +24,8 @@ import { measureTextWidth } from "../../util/text";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 
 const ROW_HEIGHT = 30;
-// Rows with their name drawn above the bar need room for both.
 const ROW_HEIGHT_INSIDE_LABELS = 64;
+const GRID_BOTTOM = 30;
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -43,11 +43,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  /**
-   * Draw each row's name inside the plot, above its bar, instead of in a label
-   * column next to it. Gives long names the full width, at the cost of taller
-   * rows.
-   */
+  /** Draw each row's name above its bar instead of in a label column. */
   @property({ attribute: "inside-labels", type: Boolean })
   public insideLabels = false;
 
@@ -73,18 +69,11 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @state() private _yWidth = 0;
 
-  // Inside labels are truncated to the plot, so their width follows the chart.
-  @state() private _width = 0;
+  private _width = 0;
 
-  // The host is an inline element, which a resize observer skips, so the chart
-  // itself is the one being observed.
-  @query("ha-chart-base") private _chartBase?: HTMLElement;
-
-  private _resizeController = new ResizeController<void>(this, {
-    target: null,
-    callback: (entries) => {
-      this._width = entries[0]?.contentRect.width ?? 0;
-    },
+  private _resize = new ResizeController(this, {
+    skipInitial: true,
+    callback: (entries) => entries[0]?.contentRect.width,
   });
 
   private _chartTime: Date = new Date();
@@ -94,7 +83,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${`${this.data.length * (this.insideLabels ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) + 30}px`}
+        .height=${`${this.data.length * (this.insideLabels ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) + GRID_BOTTOM}px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
@@ -190,12 +179,6 @@ export class StateHistoryChartTimeline extends LitElement {
       )}<br />${formattedDuration}`;
   };
 
-  protected firstUpdated() {
-    if (this._chartBase) {
-      this._resizeController.observe(this._chartBase);
-    }
-  }
-
   public willUpdate(changedProps: PropertyValues) {
     if (
       this.isConnected &&
@@ -210,6 +193,10 @@ export class StateHistoryChartTimeline extends LitElement {
       this._generateData();
     }
 
+    const width = this.insideLabels ? Math.round(this._resize.value ?? 0) : 0;
+    const widthChanged = width !== this._width;
+    this._width = width;
+
     if (
       !this.hasUpdated ||
       changedProps.has("startTime") ||
@@ -218,7 +205,7 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_yWidth") ||
-      changedProps.has("_width")
+      widthChanged
     ) {
       this._createOptions();
     }
@@ -238,11 +225,9 @@ export class StateHistoryChartTimeline extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    // Inside labels take no width of their own, but the plot still lines up
-    // with the line charts that share the y-axis padding.
+    // Keeps the plot aligned with the line charts sharing the y-axis padding.
     const plotPadding = insideLabels ? this.paddingYAxis : labelWidth;
-    // Before the first resize observation the width is unknown, and a zero
-    // width would hide the labels instead of truncating them.
+    // A zero width hides the labels instead of truncating them.
     const insideLabelWidth = this._width
       ? Math.max(0, this._width - plotPadding - labelMargin)
       : undefined;
@@ -274,7 +259,6 @@ export class StateHistoryChartTimeline extends LitElement {
               show: showNames,
               inside: true,
               margin: 0,
-              // Sits on the row's baseline, lifted above the bar.
               padding: [0, rtl ? 2 : 0, 14, rtl ? 0 : 2],
               align: rtl ? "right" : "left",
               verticalAlign: "bottom",
@@ -312,9 +296,8 @@ export class StateHistoryChartTimeline extends LitElement {
             },
       },
       grid: {
-        // Room for the first row's name above its bar.
         top: insideLabels ? 20 : 10,
-        bottom: 30,
+        bottom: GRID_BOTTOM,
         left: rtl ? 1 : plotPadding,
         right: rtl ? plotPadding : 1,
       },
@@ -460,6 +443,10 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
+
     ha-chart-base {
       --chart-max-height: none;
     }

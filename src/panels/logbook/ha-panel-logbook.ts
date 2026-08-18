@@ -12,6 +12,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fromUnixTime } from "date-fns";
+import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
@@ -20,12 +21,14 @@ import {
   createHistoryLogbookUrl,
   decodeHistoryLogbookQueryParams,
   historyLogbookTargetFromQueryParams,
+  historyLogbookTargetsEqual,
 } from "../../common/url/history-logbook-query-params";
 import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
 import { deepEqual } from "../../common/util/deep-equal";
+import { shallowEqual } from "../../common/util/shallow-equal";
 import "../../components/date-picker/ha-date-range-nav";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
@@ -75,8 +78,6 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _filters: SourceFilters = {};
 
-  // Undefined until the user toggles it: the pane starts open next to the
-  // content on wide screens and closed as a bottom sheet on narrow ones.
   @state() private _showSources?: boolean;
 
   @state() private _entitySources?: EntitySources;
@@ -93,8 +94,6 @@ export class HaPanelLogbook extends LitElement {
   })
   private _storedTargetPickerValue?: HassServiceTarget;
 
-  // Restored on the next visit, like the target selection the filters narrow
-  // down.
   @storage({
     key: "logbookSourceFilters",
     state: false,
@@ -109,8 +108,8 @@ export class HaPanelLogbook extends LitElement {
 
   protected render() {
     const entityIds = this._getEntityIds();
-    const sourceCount =
-      countTargets(this._targetPickerValue) + countSourceFilters(this._filters);
+    const filterCount = countSourceFilters(this._filters);
+    const sourceCount = countTargets(this._targetPickerValue) + filterCount;
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.logbook.sources_count", {
           count: entityIds?.length ?? 0,
@@ -165,7 +164,6 @@ export class HaPanelLogbook extends LitElement {
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
                       .entityFilter=${this._filterFunc}
-                      .narrow=${this.narrow}
                       .description=${this.hass.localize(
                         "ui.panel.logbook.no_targets"
                       )}
@@ -183,7 +181,7 @@ export class HaPanelLogbook extends LitElement {
                     : html`<ha-filter-pane-chip
                         .label=${sourcesLabel}
                         .path=${mdiTuneVariant}
-                        .count=${sourceCount}
+                        .count=${filterCount}
                         .active=${sourceCount > 0}
                         @click=${this._toggleSources}
                       ></ha-filter-pane-chip>`
@@ -282,7 +280,6 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
-    // Needed to map entities to their integration for the integration filter.
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -310,67 +307,93 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   };
 
-  /**
-   * The entities to show activity for, or undefined for all of them. Filters
-   * without a target narrow down every entity the logbook can show.
-   */
+  /** The entities to show activity for, or undefined for all of them. */
   private _getEntityIds(): string[] | undefined {
-    const targetEntities = this.__getEntityIds(
-      this._targetPickerValue,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas
-    );
+    const hasTargets = countTargets(this._targetPickerValue) > 0;
+    const targetEntities = hasTargets
+      ? this.__filterTargetEntityIds(
+          this.__resolveTargetEntityIds(
+            this._targetPickerValue,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas
+          ),
+          this._targetPickerValue.entity_id,
+          this.hass.entities,
+          this.hass.states
+        )
+      : undefined;
 
     if (!countSourceFilters(this._filters)) {
-      return targetEntities.length ? targetEntities : undefined;
+      return targetEntities;
     }
 
     return this.__filterEntityIds(
-      targetEntities.length
-        ? targetEntities
-        : this.__logbookEntityIds(this.hass.states),
+      targetEntities ?? this.__logbookEntityIds(this.hass.states),
       this._filters,
-      // Only the device class filter reads the states, so they stay out of the
-      // memoization key while it is not used.
+      // Only the device class filter reads the states.
       this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      this.hass.entities,
       this._entitySources
     );
   }
 
-  private __getEntityIds = memoizeOne(
+  private __resolveTargetEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"]
     ): string[] =>
-      // Same rules as the target picker uses to count the entities of a
-      // target, so that the chip and the picker agree.
-      resolveEntityIDs(
-        this.hass,
-        targetPickerValue,
-        entities,
-        devices,
-        areas
-      ).filter((entityId) => {
-        const stateObj = this.hass.states[entityId];
-        return (
-          !entities[entityId]?.hidden &&
-          stateObj &&
-          filterLogbookCompatibleEntities(stateObj)
-        );
-      })
+      resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+  );
+
+  // Same rules as the target picker, so that the chip and the picker agree.
+  private __filterTargetEntityIds = memoizeOne(
+    (
+      entityIds: string[],
+      pickedEntityIds: string | string[] | undefined,
+      entities: HomeAssistant["entities"],
+      states: HomeAssistant["states"]
+    ): string[] => {
+      const picked = new Set(ensureArray(pickedEntityIds));
+      return this._stableEntityIds(
+        entityIds.filter((entityId) => {
+          if (picked.has(entityId)) {
+            return true;
+          }
+          const stateObj = states[entityId];
+          return (
+            !entities[entityId]?.hidden &&
+            stateObj &&
+            filterLogbookCompatibleEntities(stateObj)
+          );
+        })
+      );
+    }
   );
 
   private __logbookEntityIds = memoizeOne(
     (states: HomeAssistant["states"]): string[] =>
-      Object.values(states)
-        .filter((stateObj) => filterLogbookCompatibleEntities(stateObj))
-        .map((stateObj) => stateObj.entity_id)
+      this._stableEntityIds(
+        Object.values(states)
+          .filter((stateObj) => filterLogbookCompatibleEntities(stateObj))
+          .map((stateObj) => stateObj.entity_id)
+      )
   );
 
   private __filterEntityIds = memoizeOne(applySourceFilters);
+
+  private _lastEntityIds?: string[];
+
+  // A list keyed on the states must keep its identity or ha-logbook resubscribes.
+  private _stableEntityIds(entityIds: string[]): string[] {
+    if (this._lastEntityIds && shallowEqual(this._lastEntityIds, entityIds)) {
+      return this._lastEntityIds;
+    }
+    this._lastEntityIds = entityIds;
+    return entityIds;
+  }
 
   private _applyURLParams() {
     const queryParams = decodeHistoryLogbookQueryParams(
@@ -383,9 +406,16 @@ export class HaPanelLogbook extends LitElement {
       this._targetPickerValue = this._storedTargetPickerValue;
     }
 
-    // A target in the URL describes the whole selection. Restoring the stored
-    // filters on top of it could narrow it down to nothing.
-    if (!this.hasUpdated && !targetPickerValue && this._storedFilters) {
+    // A target linked from another page must not be narrowed by the filters.
+    if (
+      targetPickerValue &&
+      !historyLogbookTargetsEqual(
+        targetPickerValue,
+        this._storedTargetPickerValue ?? {}
+      )
+    ) {
+      this._filters = {};
+    } else if (!this.hasUpdated && this._storedFilters) {
       this._filters = this._storedFilters;
     }
 
@@ -547,7 +577,6 @@ export class HaPanelLogbook extends LitElement {
       haStyle,
       css`
         :host {
-          /* The picker of the target picker is wider than the pane. */
           --ha-generic-picker-width: min(400px, calc(100vw - 32px));
           --ha-generic-picker-max-width: 400px;
         }
@@ -578,7 +607,6 @@ export class HaPanelLogbook extends LitElement {
           min-width: 0;
         }
 
-        /* Sits in the content column, so it shifts along with the pane. */
         .toolbar {
           display: flex;
           align-items: center;
@@ -590,7 +618,6 @@ export class HaPanelLogbook extends LitElement {
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
-          /* Keep the controls at their size and scroll them if they do not fit. */
           overflow-x: auto;
           scrollbar-width: none;
         }

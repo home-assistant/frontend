@@ -11726,6 +11726,7 @@
         "sources": "Sources",
         "sources_count": "Sources: {count}",
         "add_targets": "Add targets",
+        "change_sources": "Change sources",
         "no_targets": "No targets selected",
         "start_search_title": "Nothing to show yet",
         "start_search": "Select areas, devices, entities or labels to see their history",
@@ -11741,7 +11742,7 @@
       "logbook": {
         "sources": "[%key:ui::panel::history::sources%]",
         "sources_count": "[%key:ui::panel::history::sources_count%]",
-        "change_sources": "Change sources",
+        "change_sources": "[%key:ui::panel::history::change_sources%]",
         "no_targets": "Showing all activity. Add targets to narrow it down.",
         "no_results_title": "[%key:ui::panel::history::no_results_title%]",
         "no_results": "No activity for the current selection. Try changing the targets, filters, or time range.",

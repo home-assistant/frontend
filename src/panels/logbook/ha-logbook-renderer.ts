@@ -60,8 +60,6 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  // Index of the row at the top of the list, which the floating date header
-  // takes its day from.
   @state() private _firstVisibleIndex = 0;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -102,9 +100,7 @@ class HaLogbookRenderer extends LitElement {
       `;
     }
 
-    // The virtualizer positions its rows, so an inline date header cannot
-    // stick. Instead one header floats above the list and follows the day of
-    // the row that is at the top.
+    // Rows positioned by the virtualizer cannot carry a sticky date header.
     const floatingEntry = this.virtualize
       ? this.entries[this._firstVisibleIndex]
       : undefined;
@@ -196,6 +192,11 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
+  private _dayOf(index: number): number | undefined {
+    const entry = this.entries[index];
+    return entry ? new Date(entry.when * 1000).setHours(0, 0, 0, 0) : undefined;
+  }
+
   private _formatDateHeader(date: Date): string {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -220,7 +221,10 @@ class HaLogbookRenderer extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(e: VisibilityChangedEvent) {
-    this._firstVisibleIndex = Math.max(0, e.first);
+    const first = Math.max(0, e.first);
+    if (this._dayOf(first) !== this._dayOf(this._firstVisibleIndex)) {
+      this._firstVisibleIndex = first;
+    }
     fireEvent(this, "hass-logbook-live", {
       enable: e.first === 0,
     });
@@ -247,8 +251,6 @@ class HaLogbookRenderer extends LitElement {
           font-weight: var(--ha-font-weight-medium);
         }
 
-        /* Floats above the virtualized list and lines up with the inline date
-           headers, so they scroll underneath it. */
         .floating-date {
           position: absolute;
           top: 0;

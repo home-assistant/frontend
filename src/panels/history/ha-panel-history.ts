@@ -14,15 +14,18 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { shallowEqual } from "../../common/util/shallow-equal";
 import {
   createHistoryLogbookUrl,
   decodeHistoryLogbookQueryParams,
   historyLogbookTargetFromQueryParams,
+  historyLogbookTargetsEqual,
 } from "../../common/url/history-logbook-query-params";
 import {
   extractSearchParamsObject,
@@ -95,8 +98,6 @@ class HaPanelHistory extends LitElement {
 
   @state() private _filters: SourceFilters = {};
 
-  // Restored on the next visit, like the target selection the filters narrow
-  // down.
   @storage({
     key: "historySourceFilters",
     state: false,
@@ -104,8 +105,6 @@ class HaPanelHistory extends LitElement {
   })
   private _storedFilters?: SourceFilters;
 
-  // Undefined until the user toggles it: the pane starts open next to the
-  // content on wide screens and closed as a bottom sheet on narrow ones.
   @state() private _showSources?: boolean;
 
   @state() private _entitySources?: EntitySources;
@@ -123,6 +122,8 @@ class HaPanelHistory extends LitElement {
   private _stateHistoryCharts?: StateHistoryCharts;
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
+
+  private _fetchedEntityIds?: string[];
 
   private _interval?: number;
 
@@ -151,24 +152,21 @@ class HaPanelHistory extends LitElement {
   }
 
   protected render() {
+    const entityIds = this._getEntityIds();
     const targetCount = countTargets(this._targetPickerValue);
-    const sourceCount = targetCount + countSourceFilters(this._filters);
-    // History only shows something once a target is picked, so narrowing it
-    // down further does not make it any less empty.
+    const filterCount = countSourceFilters(this._filters);
+    const sourceCount = targetCount + filterCount;
     const hasTargets = targetCount > 0;
-    // Keyed on the entities the selection resolves to, not on the targets
-    // themselves: a target whose entities are all filtered out fetches nothing
-    // and would otherwise load forever.
+    // A target whose entities are all filtered out fetches nothing.
     const loading =
-      this._isLoading ||
-      (this._getEntityIds().length > 0 && !this._mungedStateHistory);
+      this._isLoading || (entityIds.length > 0 && !this._mungedStateHistory);
     const hasResults =
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
-          count: this._getEntityIds().length,
+          count: entityIds.length,
         })
       : this.hass.localize("ui.panel.history.sources");
 
@@ -207,7 +205,7 @@ class HaPanelHistory extends LitElement {
                     .label=${sourcesLabel}
                     .path=${mdiTuneVariant}
                     .count=${sourceCount}
-                    .resultCount=${this._getEntityIds().length}
+                    .resultCount=${entityIds.length}
                     .disabled=${this._isLoading}
                     @close-filter-pane=${this._closeSources}
                     @clear-filter=${this._clearSources}
@@ -216,7 +214,6 @@ class HaPanelHistory extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
-                      .narrow=${this.narrow}
                       .disabled=${this._isLoading}
                       .description=${this.hass.localize(
                         "ui.panel.history.no_targets"
@@ -235,7 +232,7 @@ class HaPanelHistory extends LitElement {
                     : html`<ha-filter-pane-chip
                         .label=${sourcesLabel}
                         .path=${mdiTuneVariant}
-                        .count=${sourceCount}
+                        .count=${filterCount}
                         .active=${sourceCount > 0}
                         .disabled=${this._isLoading}
                         @click=${this._toggleSources}
@@ -295,7 +292,11 @@ class HaPanelHistory extends LitElement {
         )}
       >
         <ha-button appearance="plain" @click=${this._openSources}>
-          ${this.hass.localize("ui.panel.history.add_targets")}
+          ${this.hass.localize(
+            hasTargets
+              ? "ui.panel.history.change_sources"
+              : "ui.panel.history.add_targets"
+          )}
         </ha-button>
       </ha-empty-state>
     `;
@@ -334,9 +335,15 @@ class HaPanelHistory extends LitElement {
     if (initialValue) {
       this._targetPickerValue = initialValue;
     }
-    // A target in the URL describes the whole selection. Restoring the stored
-    // filters on top of it could narrow it down to nothing.
-    if (!urlTarget && this._storedFilters) {
+    // A target linked from another page must not be narrowed by stored filters.
+    if (
+      this._storedFilters &&
+      (!urlTarget ||
+        historyLogbookTargetsEqual(
+          urlTarget,
+          this._storedTargetPickerValue ?? {}
+        ))
+    ) {
       this._filters = this._storedFilters;
     }
     if (queryParams.start_date) {
@@ -349,7 +356,6 @@ class HaPanelHistory extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    // Needed to map entities to their integration for the integration filter.
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -366,13 +372,7 @@ class HaPanelHistory extends LitElement {
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
-      changedProps.has("_targetPickerValue") ||
-      changedProps.has("_filters") ||
-      changedProps.has("_entitySources") ||
-      (!this._stateHistory &&
-        (changedProps.has("_deviceEntityLookup") ||
-          changedProps.has("_areaEntityLookup") ||
-          changedProps.has("_areaDeviceLookup")))
+      !shallowEqual(this._getEntityIds(), this._fetchedEntityIds)
     ) {
       this._getHistory();
       this._getStats();
@@ -412,6 +412,7 @@ class HaPanelHistory extends LitElement {
 
   private async _getStats() {
     const statisticIds = this._getEntityIds();
+    this._fetchedEntityIds = statisticIds;
 
     if (statisticIds.length === 0) {
       this._statisticsHistory = undefined;
@@ -448,10 +449,10 @@ class HaPanelHistory extends LitElement {
 
   private async _getHistory() {
     const entityIds = this._getEntityIds();
+    this._fetchedEntityIds = entityIds;
 
     if (entityIds.length === 0) {
-      // The running subscription still holds the previous entities, so it would
-      // keep pushing the ones the selection no longer covers.
+      // The running subscription would keep pushing the previous entities.
       this._unsubscribeHistory();
       this._stateHistory = undefined;
       this._isLoading = false;
@@ -484,6 +485,7 @@ class HaPanelHistory extends LitElement {
     );
     this._subscribed.catch(() => {
       this._isLoading = false;
+      this._stateHistory = { line: [], timeline: [] };
       this._unsubscribeHistory();
     });
     if (this._endDate > now) {
@@ -519,42 +521,43 @@ class HaPanelHistory extends LitElement {
   }
 
   private _getEntityIds(): string[] {
-    return this.__getEntityIds(
-      this._targetPickerValue,
+    return this.__filterEntityIds(
+      this.__resolveTargetEntityIds(
+        this._targetPickerValue,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas
+      ),
       this._filters,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      // Only the device class filter reads the states, so they stay out of the
-      // memoization key while it is not used.
+      // Only the device class filter reads the states.
       this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      this.hass.entities,
       this._entitySources
     );
   }
 
-  private __getEntityIds = memoizeOne(
+  // Same rules as the target picker, so that the chip and the picker agree.
+  private __resolveTargetEntityIds = memoizeOne(
     (
       targetPickerValue: HassServiceTarget,
-      filters: SourceFilters,
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"],
-      states: HomeAssistant["states"],
-      entitySources: EntitySources | undefined
-    ): string[] =>
-      applySourceFilters(
-        resolveEntityIDs(
-          this.hass,
-          targetPickerValue,
-          entities,
-          devices,
-          areas
-        ).filter((entityId) => !entities[entityId]?.hidden),
-        filters,
-        states,
-        entitySources
-      )
+      areas: HomeAssistant["areas"]
+    ): string[] => {
+      const picked = new Set(ensureArray(targetPickerValue.entity_id));
+      return resolveEntityIDs(
+        this.hass,
+        targetPickerValue,
+        entities,
+        devices,
+        areas
+      ).filter(
+        (entityId) => picked.has(entityId) || !entities[entityId]?.hidden
+      );
+    }
   );
+
+  private __filterEntityIds = memoizeOne(applySourceFilters);
 
   private _dateRangeChanged(ev) {
     this._startDate = ev.detail.value.startDate;
@@ -735,7 +738,6 @@ class HaPanelHistory extends LitElement {
         }
 
         :host {
-          /* The picker of the target picker is wider than the pane. */
           --ha-generic-picker-width: min(400px, calc(100vw - 32px));
           --ha-generic-picker-max-width: 400px;
         }
@@ -766,7 +768,6 @@ class HaPanelHistory extends LitElement {
           min-width: 0;
         }
 
-        /* Sits in the content column, so it shifts along with the pane. */
         .toolbar {
           display: flex;
           align-items: center;
@@ -778,7 +779,6 @@ class HaPanelHistory extends LitElement {
           background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
-          /* Keep the controls at their size and scroll them if they do not fit. */
           overflow-x: auto;
           scrollbar-width: none;
         }

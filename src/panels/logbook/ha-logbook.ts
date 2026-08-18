@@ -29,13 +29,11 @@ const idsChanged = (oldIds?: string[], newIds?: string[]) => {
   if (oldIds === undefined && newIds === undefined) {
     return false;
   }
-  return (
-    !oldIds ||
-    !newIds ||
-    oldIds.length !== newIds.length ||
-    oldIds.some((val) => !newIds.includes(val)) ||
-    newIds.some((val) => !oldIds.includes(val))
-  );
+  if (!oldIds || !newIds || oldIds.length !== newIds.length) {
+    return true;
+  }
+  const newIdSet = new Set(newIds);
+  return oldIds.some((val) => !newIdSet.has(val));
 };
 
 /**
@@ -258,8 +256,12 @@ export class HaLogbook extends LitElement {
     super.connectedCallback();
     this._attachReadyListener();
     if (this.hasUpdated) {
-      // Ensure clean state before subscribing
-      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      if (this._filterAlwaysEmptyResults) {
+        this._unsubscribe(false);
+      } else {
+        // Ensure clean state before subscribing
+        this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      }
     }
   }
 

@@ -34,7 +34,7 @@ export class HaFilterPane extends LitElement {
   /** SVG path of the header chip icon. */
   @property() public path = mdiFilterVariant;
 
-  /** Number of active filters, shown as a badge. */
+  /** Number of active filters, shows the clear button when above zero. */
   @property({ type: Number }) public count = 0;
 
   /**
@@ -66,7 +66,7 @@ export class HaFilterPane extends LitElement {
             <slot></slot>
           </div>
           <ha-dialog-footer slot="footer">
-            <ha-button slot="primaryAction" @click=${this._close}>
+            <ha-button slot="primaryAction" data-dialog="close">
               ${
                 this.resultCount === undefined
                   ? this._localize("ui.common.close")
@@ -87,7 +87,6 @@ export class HaFilterPane extends LitElement {
           active
           .label=${label}
           .path=${this.path}
-          .count=${this.count}
           .disabled=${this.disabled}
           @click=${this._close}
         ></ha-filter-pane-chip>

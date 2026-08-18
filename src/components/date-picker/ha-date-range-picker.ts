@@ -2,7 +2,6 @@ import "@home-assistant/webawesome/dist/components/popover/popover";
 import { consume, type ContextType } from "@lit/context";
 import { mdiCalendar } from "@mdi/js";
 import "cally";
-import { isThisYear } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -11,10 +10,7 @@ import { tinykeys } from "tinykeys";
 import { shiftDateRange } from "../../common/datetime/calc_date";
 import type { DateRange } from "../../common/datetime/calc_date_range";
 import { calcDateRange } from "../../common/datetime/calc_date_range";
-import {
-  formatShortDateTime,
-  formatShortDateTimeWithYear,
-} from "../../common/datetime/format_date_time";
+import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configContext, internationalizationContext } from "../../data/context";
@@ -275,16 +271,13 @@ export class HaDateRangePicker extends LitElement {
       </ha-icon-button-next>`;
   }
 
-  /** The selected range as text, with the year only when it is not this year. */
   protected _formatRange(separator: string): string {
     const format = (date: Date) =>
-      isThisYear(date)
-        ? formatShortDateTime(date, this._i18n.locale, this._hassConfig)
-        : formatShortDateTimeWithYear(
-            date,
-            this._i18n.locale,
-            this._hassConfig
-          );
+      formatShortDateTimeWithConditionalYear(
+        date,
+        this._i18n.locale,
+        this._hassConfig
+      );
     return format(this.startDate) + separator + format(this.endDate);
   }
 

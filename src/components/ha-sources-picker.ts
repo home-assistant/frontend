@@ -45,23 +45,22 @@ export const countSourceFilters = (filters: SourceFilters): number =>
 
 /**
  * Narrows entity IDs down by the selected filters: an entity is kept when it
- * matches every filter that has a selection. The integration filter is skipped
- * while the entity sources are still loading.
+ * matches every filter that has a selection.
  */
 export const applySourceFilters = (
   entityIds: string[],
   filters: SourceFilters,
   states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
   entitySources?: EntitySources
 ): string[] => {
   const domains = filters.domains?.length ? filters.domains : undefined;
   const deviceClasses = filters.deviceClasses?.length
     ? filters.deviceClasses
     : undefined;
-  const integrations =
-    filters.integrations?.length && entitySources
-      ? filters.integrations
-      : undefined;
+  const integrations = filters.integrations?.length
+    ? filters.integrations
+    : undefined;
 
   if (!domains && !deviceClasses && !integrations) {
     return entityIds;
@@ -78,7 +77,8 @@ export const applySourceFilters = (
       }
     }
     if (integrations) {
-      const integration = entitySources![entityId]?.domain;
+      const integration =
+        entities[entityId]?.platform ?? entitySources?.[entityId]?.domain;
       if (!integration || !integrations.includes(integration)) {
         return false;
       }
@@ -109,8 +109,6 @@ export class HaSourcesPicker extends LitElement {
   /** Explains what the page shows while no target is picked. */
   @property() public description?: string;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ type: Boolean }) public disabled = false;
 
   // Only one filter panel is expanded at a time, so that the expanded one can
@@ -140,21 +138,18 @@ export class HaSourcesPicker extends LitElement {
       >
         <ha-filter-domains
           .value=${this.filters.domains}
-          .narrow=${this.narrow}
           .expanded=${this._expandedFilter === "domains"}
           @data-table-filter-changed=${this._domainsChanged}
           @expanded-changed=${this._domainsExpanded}
         ></ha-filter-domains>
         <ha-filter-device-classes
           .value=${this.filters.deviceClasses}
-          .narrow=${this.narrow}
           .expanded=${this._expandedFilter === "deviceClasses"}
           @data-table-filter-changed=${this._deviceClassesChanged}
           @expanded-changed=${this._deviceClassesExpanded}
         ></ha-filter-device-classes>
         <ha-filter-integrations
           .value=${this.filters.integrations}
-          .narrow=${this.narrow}
           .expanded=${this._expandedFilter === "integrations"}
           @data-table-filter-changed=${this._integrationsChanged}
           @expanded-changed=${this._integrationsExpanded}
