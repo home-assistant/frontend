@@ -107,6 +107,8 @@ export const getTopologyNodeName = (
   }
   if (node.kind === "wifi_ap") {
     return (
+      // the SSID names the network; network_name still holds the BSSID here
+      node.ssid ||
       node.network_name ||
       hass.localize("ui.panel.config.matter.visualization.wifi_ap")
     );
@@ -209,16 +211,24 @@ export function createMatterNetworkChartData(
     const area = device
       ? getDeviceArea(device, hass.areas, hass.devices)
       : undefined;
+    const name = getTopologyNodeName(node, hass);
+    // an AP is named by its SSID, so its own radio address is what tells two
+    // radios of one mesh apart; everything else is named by its network
+    const networkLabel =
+      node.kind === "wifi_ap"
+        ? node.bssid || node.network_name
+        : node.ssid || node.network_name;
     const contextParts: string[] = [];
     if (area) {
       contextParts.push(area.name);
     }
-    if ((multiNetwork || !area) && node.network_name) {
-      contextParts.push(node.network_name);
+    // skip a label that just repeats the name, e.g. an AP with no SSID
+    if ((multiNetwork || !area) && networkLabel && networkLabel !== name) {
+      contextParts.push(networkLabel);
     }
     nodes.push({
       id: node.id,
-      name: getTopologyNodeName(node, hass),
+      name,
       context: contextParts.join(" • ") || undefined,
       category,
       value: isHub(category) ? 3 : category === CATEGORY_ROUTER ? 2 : 1,

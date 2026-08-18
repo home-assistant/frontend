@@ -70,6 +70,8 @@ export interface MatterNetworkTopologyNode {
   rloc16?: number | null;
   ext_pan_id?: string | null;
   network_name?: string | null;
+  ssid?: string | null;
+  bssid?: string | null;
   host_name?: string | null;
   vendor_name?: string | null;
   model_name?: string | null;

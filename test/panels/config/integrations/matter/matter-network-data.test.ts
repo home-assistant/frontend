@@ -201,6 +201,36 @@ describe("getTopologyNodeName", () => {
       )
     ).toBe("Apple BorderRouter");
   });
+
+  it("names a Wi-Fi access point by its SSID, not its radio address", () => {
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "ap_1",
+          kind: "wifi_ap",
+          network_type: "wifi",
+          ssid: "we@home",
+          network_name: "50:91:00:D9:62:00",
+        }),
+        mockHass()
+      )
+    ).toBe("we@home");
+  });
+
+  it("falls back to the BSSID when the server sends no SSID", () => {
+    expect(
+      getTopologyNodeName(
+        node({
+          id: "ap_1",
+          kind: "wifi_ap",
+          network_type: "wifi",
+          ssid: null,
+          network_name: "50:91:00:D9:62:00",
+        }),
+        mockHass()
+      )
+    ).toBe("50:91:00:D9:62:00");
+  });
 });
 
 describe("createMatterNetworkChartData", () => {
@@ -429,6 +459,44 @@ describe("createMatterNetworkChartData", () => {
       .map((l) => l.target)
       .sort();
     expect(haTargets).toEqual(["1", "2"]);
+  });
+
+  it("shows an access point's radio address beside its SSID, and never twice", () => {
+    const named = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "ap_1",
+          kind: "wifi_ap",
+          network_type: "wifi",
+          ssid: "we@home",
+          bssid: "50:91:00:D9:62:00",
+          network_name: "50:91:00:D9:62:00",
+        }),
+      ]),
+      mockHass(),
+      element
+    );
+    const ap = named.nodes.find((n) => n.id === "ap_1")!;
+    // the radio address is what distinguishes two radios of one mesh
+    expect(ap.name).toBe("we@home");
+    expect(ap.context).toBe("50:91:00:D9:62:00");
+
+    const unnamed = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "ap_1",
+          kind: "wifi_ap",
+          network_type: "wifi",
+          network_name: "50:91:00:D9:62:00",
+        }),
+      ]),
+      mockHass(),
+      element
+    );
+    const bare = unnamed.nodes.find((n) => n.id === "ap_1")!;
+    // without an SSID the name is already the address, so no context repeat
+    expect(bare.name).toBe("50:91:00:D9:62:00");
+    expect(bare.context).toBeUndefined();
   });
 
   it("draws the hub path solid and the position-unknown anchor dotted", () => {
