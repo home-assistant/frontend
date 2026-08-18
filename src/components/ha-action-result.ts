@@ -82,7 +82,8 @@ export class HaActionResult extends LitElement {
   }
 
   static styles = css`
-    /* No box, so the host escapes the styling of the slot it sits in */
+    /* Prefer no box so the host inherits the layout of the slot it sits in.
+       A ::slotted() rule in the host component can still override this. */
     :host {
       display: contents;
     }

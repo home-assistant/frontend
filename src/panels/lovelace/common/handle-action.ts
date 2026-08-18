@@ -25,27 +25,29 @@ export interface ActionConfigParams {
   double_tap_action?: ActionConfig;
 }
 
+export const getActionConfig = (
+  config: ActionConfigParams,
+  action: string
+): ActionConfig => {
+  if (action === "double_tap" && config.double_tap_action) {
+    return config.double_tap_action;
+  }
+  if (action === "hold" && config.hold_action) {
+    return config.hold_action;
+  }
+  if (action === "tap" && config.tap_action) {
+    return config.tap_action;
+  }
+  return { action: "more-info" };
+};
+
 export const handleAction = async (
   node: HTMLElement,
   hass: HomeAssistant,
   config: ActionConfigParams,
   action: string
 ): Promise<void> => {
-  let actionConfig: ActionConfig | undefined;
-
-  if (action === "double_tap" && config.double_tap_action) {
-    actionConfig = config.double_tap_action;
-  } else if (action === "hold" && config.hold_action) {
-    actionConfig = config.hold_action;
-  } else if (action === "tap" && config.tap_action) {
-    actionConfig = config.tap_action;
-  }
-
-  if (!actionConfig) {
-    actionConfig = {
-      action: "more-info",
-    };
-  }
+  const actionConfig = getActionConfig(config, action);
 
   if (
     actionConfig.confirmation &&

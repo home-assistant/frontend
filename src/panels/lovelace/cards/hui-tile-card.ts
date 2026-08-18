@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -11,6 +11,8 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
+import "../../../components/ha-action-result";
+import type { HaActionResult } from "../../../components/ha-action-result";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/tile/ha-tile-badge";
@@ -18,6 +20,7 @@ import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";
+import { forwardHaptic } from "../../../data/haptics";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
@@ -28,7 +31,8 @@ import {
 } from "../card-features/common/feature-layout";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
+import { toggleEntity } from "../common/entity/toggle-entity";
+import { handleAction, getActionConfig } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -48,6 +52,8 @@ export const getEntityDefaultTileIconAction = (entityId: string) => {
 
   return supportsIconAction ? "toggle" : "none";
 };
+
+const BUTTON_DOMAINS = new Set(["button", "input_button"]);
 
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
@@ -90,6 +96,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   @state() private _config?: TileCardConfig;
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
+
+  @query("ha-action-result") private _iconResult?: HaActionResult;
 
   public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
@@ -152,7 +160,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       hold_action: this._config!.icon_hold_action,
       double_tap_action: this._config!.icon_double_tap_action,
     };
-    handleAction(this, this.hass!, config, ev.detail.action!);
+    const action = ev.detail.action!;
+    const actionConfig = getActionConfig(config, action);
+
+    // Toggling a button is a plain press, so its result can be shown on the icon
+    if (
+      this._iconResult &&
+      actionConfig.action === "toggle" &&
+      !actionConfig.confirmation
+    ) {
+      if (this._iconResult.busy) return;
+      forwardHaptic(this, "light");
+      this._iconResult.run(toggleEntity(this.hass!, config.entity));
+      return;
+    }
+
+    handleAction(this, this.hass!, config, action);
   }
 
   private _getImageUrl(entity: HassEntity): string | undefined {
@@ -221,6 +244,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   private get _hasIconAction() {
     return (
       !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
+    );
+  }
+
+  private get _hasIconResult() {
+    return (
+      !!this._config?.entity &&
+      BUTTON_DOMAINS.has(computeDomain(this._config.entity))
     );
   }
 
@@ -317,13 +347,22 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ${
               hasImage
                 ? nothing
-                : html`
-                    <ha-state-icon
-                      slot="icon"
-                      .icon=${this._config.icon}
-                      .stateObj=${stateObj}
-                    ></ha-state-icon>
-                  `
+                : this._hasIconResult
+                  ? html`
+                      <ha-action-result slot="icon">
+                        <ha-state-icon
+                          .icon=${this._config.icon}
+                          .stateObj=${stateObj}
+                        ></ha-state-icon>
+                      </ha-action-result>
+                    `
+                  : html`
+                      <ha-state-icon
+                        slot="icon"
+                        .icon=${this._config.icon}
+                        .stateObj=${stateObj}
+                      ></ha-state-icon>
+                    `
             }
             ${renderTileBadge(stateObj, this.hass)}
           </ha-tile-icon>
