@@ -159,6 +159,7 @@ class MoreInfoColor extends LitElement {
         <div class="brightness">
           <ha-labeled-slider
             labeled
+            .required=${false}
             .caption=${this._localize(
               "ui.dialogs.more_info_control.color.brightness"
             )}
