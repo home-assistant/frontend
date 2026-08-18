@@ -62,7 +62,7 @@ const themedElement = (): HTMLElement => {
   const el = document.createElement("div");
   el.style.setProperty("--primary-color", "#009ac7");
   el.style.setProperty("--purple-color", "#926bc7");
-  el.style.setProperty("--pink-color", "#e91e63");
+  el.style.setProperty("--orange-color", "#ff9800");
   el.style.setProperty("--disabled-color", "#bdbdbd");
   document.body.appendChild(el);
   return el;
@@ -88,7 +88,7 @@ describe("strengthToScale", () => {
 describe("networkToColorVar", () => {
   it("separates the two transports and degrades gracefully", () => {
     expect(networkToColorVar("thread")).toBe("--purple-color");
-    expect(networkToColorVar("wifi")).toBe("--pink-color");
+    expect(networkToColorVar("wifi")).toBe("--orange-color");
     expect(networkToColorVar("thread")).not.toBe(networkToColorVar("wifi"));
     // the wire type is a plain string, not a union
     expect(networkToColorVar("ethernet")).toBe("--secondary-text-color");
@@ -597,12 +597,19 @@ describe("createMatterNetworkChartData", () => {
     const wifiLink = data.links.find((l) => l.source === "7")!;
     expect(threadLink.lineStyle?.color).toBe("#926bc7");
     expect(threadLink.lineStyle?.width).toBe(1);
-    expect(wifiLink.lineStyle?.color).toBe("#e91e63");
+    expect(wifiLink.lineStyle?.color).toBe("#ff9800");
     expect(wifiLink.lineStyle?.width).toBe(3);
 
-    // the HA spine is reachability, not a radio link, and keeps the HA color
-    const spine = data.links.find((l) => l.source === "ha")!;
-    expect(spine.lineStyle?.color).toBe("#009ac7");
+    // an HA edge carries the hue of the transport behind that hub, so one
+    // network reads as one color the whole way back
+    const threadSpine = data.links.find(
+      (l) => l.source === "ha" && l.target === "br_1"
+    )!;
+    const wifiSpine = data.links.find(
+      (l) => l.source === "ha" && l.target === "ap_1"
+    )!;
+    expect(threadSpine.lineStyle?.color).toBe("#926bc7");
+    expect(wifiSpine.lineStyle?.color).toBe("#ff9800");
   });
 
   it("does not draw a link whose every direction is dead", () => {

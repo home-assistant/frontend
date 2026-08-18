@@ -54,7 +54,7 @@ export const networkToColorVar = (network?: string | null): string => {
     case "thread":
       return "--purple-color";
     case "wifi":
-      return "--pink-color";
+      return "--orange-color";
     // `network` is a plain string on the wire: "ethernet" and anything a newer
     // server invents still draw, just neutrally
     default:
@@ -309,23 +309,26 @@ export function createMatterNetworkChartData(
   // It keeps the HA node's own color rather than a transport hue.
   // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
   // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
-  const haLink = (target: string): NetworkLink => ({
+  const haLink = (target: string, network: string): NetworkLink => ({
     source: HOME_ASSISTANT_NODE_ID,
     target,
     value: 0,
     symbol: "none",
     lineStyle: {
       width: 3,
-      color: categoryColors[CATEGORY_HOME_ASSISTANT],
+      // the same hue as the radio links behind this hub, so one transport
+      // reads as one colour all the way back to Home Assistant
+      color: style.getPropertyValue(networkToColorVar(network)),
       type: "solid",
     },
   });
 
   // HA reaches the mesh through the border routers and Wi-Fi access points
-  const hubIds = topology.nodes
+  topology.nodes
     .filter((node) => node.kind === "border_router" || node.kind === "wifi_ap")
-    .map((node) => node.id);
-  hubIds.forEach((id) => links.push(haLink(id)));
+    .forEach((node) =>
+      links.push(haLink(node.id, node.kind === "wifi_ap" ? "wifi" : "thread"))
+    );
 
   // keep the strongest link of every node in the force layout so
   // nodes hang near their best connection instead of floating free
