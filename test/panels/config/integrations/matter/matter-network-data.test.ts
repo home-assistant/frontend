@@ -377,7 +377,8 @@ describe("createMatterNetworkChartData", () => {
           connection({
             source: "1",
             target: "2",
-            strength: "none",
+            // no measurement is "unknown"; "none" means observed dead
+            strength: "unknown",
             via_route_table: true,
             path_cost: 1,
           }),
@@ -388,8 +389,8 @@ describe("createMatterNetworkChartData", () => {
     );
 
     const link = data.links[0];
-    expect(link.value).toBe(1);
-    expect(link.reverseValue).toBe(1);
+    expect(link.value).toBe(2);
+    expect(link.reverseValue).toBe(2);
     expect(link.lineStyle?.type).toBe("dotted");
   });
 
@@ -604,7 +605,7 @@ describe("createMatterNetworkChartData", () => {
     expect(spine.lineStyle?.color).toBe("#009ac7");
   });
 
-  it("keeps a dead link grey so it cannot pass for a healthy one", () => {
+  it("does not draw a link whose every direction is dead", () => {
     const data = createMatterNetworkChartData(
       topology(
         [
@@ -617,9 +618,45 @@ describe("createMatterNetworkChartData", () => {
       themedElement()
     );
 
-    // width cannot carry this: "none", "weak" and "unknown" are all width 1
-    const link = data.links.find((l) => l.source === "1")!;
-    expect(link.lineStyle?.color).toBe("#bdbdbd");
+    // the summary strength is the strongest direction, so "none" means every
+    // direction is dead -- a stale entry, not a weak link
+    expect(data.links.find((l) => l.source === "1")).toBeUndefined();
+    // the border router keeps its own edge to Home Assistant
+    expect(data.links.filter((l) => l.source === "ha")).toHaveLength(1);
+  });
+
+  it("dashes an edge to an inferred or offline endpoint", () => {
+    const data = createMatterNetworkChartData(
+      topology(
+        [
+          node({ id: "1", node_id: 1, role: "router" }),
+          node({ id: "unknown_1", kind: "thread_unknown" }),
+          node({ id: "6", node_id: 6, role: "end_device", available: false }),
+        ],
+        [
+          connection({
+            source: "1",
+            target: "unknown_1",
+            source_to_target: { strength: "medium", lqi: 2 },
+            target_to_source: { strength: "medium", lqi: 2 },
+          }),
+          connection({
+            source: "1",
+            target: "6",
+            source_to_target: { strength: "medium", lqi: 2 },
+            target_to_source: { strength: "medium", lqi: 2 },
+          }),
+        ]
+      ),
+      mockHass(),
+      element
+    );
+
+    // symmetric and two-way, so only the endpoint lowers the confidence
+    const inferred = data.links.find((l) => l.target === "unknown_1")!;
+    const offline = data.links.find((l) => l.target === "6")!;
+    expect(inferred.lineStyle?.type).toBe("dashed");
+    expect(offline.lineStyle?.type).toBe("dashed");
   });
 
   it("links Home Assistant to hubs only, and never to a hubless node", () => {

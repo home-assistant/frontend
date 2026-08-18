@@ -254,6 +254,12 @@ export function createMatterNetworkChartData(
     if (!nodeCategories.has(conn.source) || !nodeCategories.has(conn.target)) {
       return;
     }
+    // the summary strength is the strongest observed direction, so "none" means
+    // every direction is dead -- a stale neighbour entry the dashboard also
+    // refuses to draw
+    if (conn.strength === "none") {
+      return;
+    }
     let { source, target } = conn;
     let forward = conn.source_to_target;
     let reverse = conn.target_to_source;
@@ -266,6 +272,12 @@ export function createMatterNetworkChartData(
     const oneWay = Boolean(forward) && !reverse;
     const asymmetric =
       forward && reverse && forward.strength !== reverse.strength;
+    // an edge is lower confidence when an endpoint is inferred rather than
+    // commissioned, or is offline -- the dashboard dashes on the same two
+    const lowConfidence = [source, target].some((id) => {
+      const category = nodeCategories.get(id);
+      return category === CATEGORY_UNKNOWN || category === CATEGORY_OFFLINE;
+    });
     const width = strengthToWidth(conn.strength);
     links.push({
       source,
@@ -278,15 +290,9 @@ export function createMatterNetworkChartData(
       symbolSize: oneWay ? width * 2 + 3 : undefined,
       lineStyle: {
         width,
-        // a dead link keeps its own color: "none", "weak" and "unknown" all
-        // collapse to width 1, so nothing else would tell them apart
-        color: style.getPropertyValue(
-          conn.strength === "none"
-            ? "--disabled-color"
-            : networkToColorVar(conn.network)
-        ),
+        color: style.getPropertyValue(networkToColorVar(conn.network)),
         type:
-          oneWay || asymmetric
+          oneWay || asymmetric || lowConfidence
             ? "dashed"
             : !forward && conn.via_route_table
               ? "dotted"
