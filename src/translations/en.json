@@ -1608,6 +1608,7 @@
             "labs": "[%key:ui::panel::config::labs::caption%]",
             "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
             "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "mqtt": "[%key:ui::panel::config::dashboard::mqtt::main%]",
             "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
@@ -2735,6 +2736,10 @@
           "matter": {
             "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
+          },
+          "mqtt": {
+            "main": "MQTT",
+            "secondary": "Lightweight network protocol designed for IoT devices"
           },
           "thread": {
             "main": "Thread",
@@ -7400,8 +7405,16 @@
         },
         "mqtt": {
           "title": "MQTT",
-          "settings_title": "MQTT settings",
-          "option_flow": "Configure MQTT options",
+          "option_flow": "MQTT options",
+          "option_flow_description": "Set discovery options",
+          "config_flow": "Connection",
+          "config_flow_description": "Broker connection settings",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "my_network_title": "My network",
+          "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
