@@ -132,12 +132,13 @@ export function createMatterNetworkChartData(
 ): NetworkData {
   const style = getComputedStyle(element);
 
+  // a hub wears its transport's colour, the same hue as the links behind it
   const categoryColors = [
     style.getPropertyValue("--primary-color"),
     style.getPropertyValue("--deep-purple-color"),
     style.getPropertyValue("--cyan-color"),
     style.getPropertyValue("--teal-color"),
-    style.getPropertyValue("--indigo-color"),
+    style.getPropertyValue(networkToColorVar("wifi")),
     style.getPropertyValue("--error-color"),
     style.getPropertyValue("--disabled-color"),
   ];

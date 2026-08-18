@@ -600,6 +600,11 @@ describe("createMatterNetworkChartData", () => {
     expect(wifiLink.lineStyle?.color).toBe("#ff9800");
     expect(wifiLink.lineStyle?.width).toBe(3);
 
+    // the access point node wears the same hue as its links
+    expect(data.nodes.find((n) => n.id === "ap_1")!.itemStyle?.color).toBe(
+      "#ff9800"
+    );
+
     // an HA edge carries the hue of the transport behind that hub, so one
     // network reads as one color the whole way back
     const threadSpine = data.links.find(
