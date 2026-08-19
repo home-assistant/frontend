@@ -27,6 +27,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -241,6 +242,7 @@ class HuiWaterSankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minWaterThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,

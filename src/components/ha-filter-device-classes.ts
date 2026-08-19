@@ -7,22 +7,28 @@ import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { fireEvent } from "../common/dom/fire_event";
-import { computeDomain } from "../common/entity/compute_domain";
+import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, statesContext } from "../data/context";
-import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
+import "./ha-icon-button";
 import "./ha-list";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
 
-@customElement("ha-filter-domains")
-export class HaFilterDomains extends LitElement {
+interface DeviceClassItem {
+  deviceClass: string;
+  domain: string;
+  name: string;
+}
+
+@customElement("ha-filter-device-classes")
+export class HaFilterDeviceClasses extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -36,8 +42,6 @@ export class HaFilterDomains extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public value?: string[];
-
-  @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
@@ -56,7 +60,7 @@ export class HaFilterDomains extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this._localize("ui.panel.config.domains.caption")}
+          ${this._localize("ui.components.filter-device-classes.caption")}
           ${
             this.value?.length
               ? html`<div class="badge">${this.value?.length}</div>
@@ -81,26 +85,26 @@ export class HaFilterDomains extends LitElement {
                   multi
                 >
                   ${repeat(
-                    this._domains(
+                    this._deviceClasses(
                       this._states,
                       this._localize,
                       this._i18n.locale.language,
-                      this._filter,
-                      this.value
+                      this._filter
                     ),
-                    (i) => i,
-                    (domain) =>
+                    (item) => item.deviceClass,
+                    (item) =>
                       html`<ha-check-list-item
-                        .value=${domain}
-                        .selected=${(this.value || []).includes(domain)}
+                        .value=${item.deviceClass}
+                        .selected=${(this.value || []).includes(item.deviceClass)}
                         graphic="icon"
                       >
                         <ha-domain-icon
                           slot="graphic"
-                          .domain=${domain}
-                          brand-fallback
+                          .domain=${item.domain}
+                          .deviceClass=${item.deviceClass}
+                          .state=${item.domain === "binary_sensor" ? "on" : undefined}
                         ></ha-domain-icon>
-                        ${domainToName(this._localize, domain)}
+                        ${item.name}
                       </ha-check-list-item>`
                   )}
                 </ha-list> `
@@ -110,33 +114,66 @@ export class HaFilterDomains extends LitElement {
     `;
   }
 
-  private _domains = memoizeOne(
+  private _deviceClasses = memoizeOne(
     (
       states: ContextType<typeof statesContext>,
       localize: LocalizeFunc,
       language: string | undefined,
-      filter: string | undefined,
-      _value
-    ) => {
-      const domains = new Set<string>();
-      Object.keys(states).forEach((entityId) => {
-        domains.add(computeDomain(entityId));
-      });
-
-      return Array.from(domains.values())
-        .map((domain) => ({
-          domain,
-          name: domainToName(localize, domain),
-        }))
+      filter: string | undefined
+    ): DeviceClassItem[] =>
+      this._deviceClassItems(this._deviceClassDomains(states), localize)
         .filter(
-          (entry) =>
+          (item) =>
             !filter ||
-            entry.domain.toLowerCase().includes(filter) ||
-            entry.name.toLowerCase().includes(filter)
+            item.deviceClass.toLowerCase().includes(filter) ||
+            item.name.toLowerCase().includes(filter)
         )
         .sort((a, b) => stringCompare(a.name, b.name, language))
-        .map((entry) => entry.domain);
+  );
+
+  private _deviceClassDomains = memoizeOne(
+    (states: ContextType<typeof statesContext>): Map<string, string[]> => {
+      const domains = new Map<string, string[]>();
+      Object.values(states).forEach((stateObj) => {
+        const deviceClass = stateObj.attributes.device_class;
+        if (!deviceClass) {
+          return;
+        }
+        const domain = computeStateDomain(stateObj);
+        const known = domains.get(deviceClass);
+        if (!known) {
+          domains.set(deviceClass, [domain]);
+        } else if (!known.includes(domain)) {
+          known.push(domain);
+        }
+      });
+      return domains;
     }
+  );
+
+  private _deviceClassItems = memoizeOne(
+    (
+      deviceClassDomains: Map<string, string[]>,
+      localize: LocalizeFunc
+    ): DeviceClassItem[] =>
+      [...deviceClassDomains].map(([deviceClass, domains]) => {
+        for (const domain of domains) {
+          const name = localize(
+            `component.${domain}.entity_component.${deviceClass}.name`
+          );
+          if (name) {
+            return { deviceClass, domain, name };
+          }
+        }
+        return { deviceClass, domain: domains[0], name: deviceClass };
+      }),
+    ([domainsA, localizeA], [domainsB, localizeB]) =>
+      localizeA === localizeB &&
+      domainsA.size === domainsB.size &&
+      [...domainsA].every(
+        ([deviceClass, domains]) =>
+          domainsB.get(deviceClass)?.join() === domains.join()
+      )
   );
 
   protected updated(changed: PropertyValues<this>) {
@@ -151,27 +188,26 @@ export class HaFilterDomains extends LitElement {
     }
   }
 
-  private _expandedWillChange(ev) {
+  private _expandedWillChange(ev: HASSDomEvent<{ expanded: boolean }>) {
     this._shouldRender = ev.detail.expanded;
   }
 
-  private _expandedChanged(ev) {
+  private _expandedChanged(ev: HASSDomEvent<{ expanded: boolean }>) {
     this.expanded = ev.detail.expanded;
   }
 
   private _handleItemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    const domains = this._domains(
+    const deviceClasses = this._deviceClasses(
       this._states,
       this._localize,
       this._i18n.locale.language,
-      this._filter,
-      this.value
+      this._filter
     );
 
-    const visibleDomains = new Set(domains);
-    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
+    const visible = new Set(deviceClasses.map((item) => item.deviceClass));
+    const preserved = (this.value || []).filter((d) => !visible.has(d));
     const selected = [...ev.detail.index]
-      .map((i) => domains[i])
+      .map((i) => deviceClasses[i]?.deviceClass)
       .filter((d): d is string => !!d);
 
     this.value = [...preserved, ...selected];
@@ -182,7 +218,7 @@ export class HaFilterDomains extends LitElement {
     });
   }
 
-  private _clearFilter(ev) {
+  private _clearFilter(ev: Event) {
     ev.preventDefault();
     this.value = undefined;
     fireEvent(this, "data-table-filter-changed", {
@@ -219,9 +255,6 @@ export class HaFilterDomains extends LitElement {
           margin-inline-start: auto;
           margin-inline-end: 8px;
         }
-        ha-check-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
-        }
         .badge {
           display: inline-block;
           margin-left: 8px;
@@ -249,6 +282,6 @@ export class HaFilterDomains extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-filter-domains": HaFilterDomains;
+    "ha-filter-device-classes": HaFilterDeviceClasses;
   }
 }
