@@ -108,6 +108,17 @@ export class HuiEnergySourcesTableCard
     compare: boolean,
     name?: string
   ) {
+    const displayPrecision =
+      type === "gas" ? this.hass.entities[statId]?.dp : undefined;
+
+    const formatOptions =
+      displayPrecision !== undefined
+        ? {
+            minimumFractionDigits: displayPrecision,
+            maximumFractionDigits: displayPrecision,
+          }
+        : undefined;
+    
     return html`<tr
       class="mdc-data-table__row ${classMap({
         clickable: !isExternalStatistic(statId),
@@ -151,7 +162,7 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formatNumber(compareEnergy, this.hass.locale)} ${energyUnit}
+                ${formatNumber(compareEnergy, this.hass.locale, formatOptions)} ${energyUnit}
               </td>
               ${
                 showCosts
@@ -172,7 +183,7 @@ export class HuiEnergySourcesTableCard
           : ""
       }
       <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${formatNumber(energy, this.hass.locale)} ${energyUnit}
+        ${formatNumber(energy, this.hass.locale, formatOptions)} ${energyUnit}
       </td>
       ${
         showCosts
@@ -203,7 +214,8 @@ export class HuiEnergySourcesTableCard
     showCosts: boolean,
     compare: boolean,
     bulletColor?: { border: string; background: string },
-    isFinalTotal?: boolean
+    isFinalTotal?: boolean,
+    formatOptions?: Intl.NumberFormatOptions
   ) {
     return html` <tr
       class="mdc-data-table__row ${bulletColor && !isFinalTotal ? "" : "total"}"
@@ -228,7 +240,7 @@ export class HuiEnergySourcesTableCard
                 ${
                   compareEnergy === null
                     ? ""
-                    : `${formatNumber(compareEnergy, this.hass.locale)} ${energyUnit}`
+                    : `${formatNumber(compareEnergy, this.hass.locale, formatOptions)} ${energyUnit}`
                 }
               </td>
               ${
@@ -253,7 +265,7 @@ export class HuiEnergySourcesTableCard
         ${
           energy === null
             ? ""
-            : `${formatNumber(energy, this.hass.locale)} ${energyUnit}`
+            : `${formatNumber(energy, this.hass.locale, formatOptions)} ${energyUnit}`
         }
       </td>
       ${
@@ -327,6 +339,19 @@ export class HuiEnergySourcesTableCard
         )
       : allTypes;
 
+    const gasEntityId = types.gas?.[0]?.stat_energy_from;
+    const gasDisplayPrecision = gasEntityId
+      ? this.hass.entities[gasEntityId]?.dp
+      : undefined;
+
+    const gasFormatOptions =
+      gasDisplayPrecision !== undefined
+        ? {
+            minimumFractionDigits: gasDisplayPrecision,
+            maximumFractionDigits: gasDisplayPrecision,
+          }
+        : undefined;
+    
     const computedStyles = getComputedStyle(this);
 
     // Check if any source has cost configuration
@@ -481,7 +506,9 @@ export class HuiEnergySourcesTableCard
                       0
                     ),
                   }
-                : undefined
+                : undefined,
+            false,
+            type === "gas" ? gasFormatOptions : undefined
             )
           : ""
       }`;
