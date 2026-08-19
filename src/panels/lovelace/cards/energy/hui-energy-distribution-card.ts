@@ -161,6 +161,19 @@ class HuiEnergyDistrubutionCard
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
+
+    const gasEntityId = types.gas?.[0]?.stat_energy_from;
+    const gasDisplayPrecision = gasEntityId
+      ? this.hass.entities[gasEntityId]?.dp
+      : undefined;
+
+    const gasFormatOptions =
+      gasDisplayPrecision !== undefined
+        ? {
+            minimumFractionDigits: gasDisplayPrecision,
+            maximumFractionDigits: gasDisplayPrecision,
+          }
+        : undefined;
     const hasWater = types.water !== undefined;
     const hasReturnToGrid =
       types.grid?.some((source) => source.stat_energy_to) ?? false;
@@ -434,11 +447,14 @@ class HuiEnergyDistrubutionCard
                           >
                           <div class="circle">
                             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-                            ${formatConsumptionShort(
-                              this.hass,
-                              gasUsage,
-                              this._data.gasUnit
-                            )}
+
+                            ${gasUsage === null
+                              ? ""
+                              : `${formatNumber(
+                                  gasUsage,
+                                  this.hass.locale,
+                                  gasFormatOptions
+                                )} ${this._data.gasUnit}`}
                           </div>
                           <svg width="80" height="30">
                             <path d="M40 0 v30" id="gas" />
