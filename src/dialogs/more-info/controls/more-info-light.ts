@@ -101,8 +101,7 @@ class MoreInfoLight extends LitElement {
   private _supportsDualAxis(stateObj: LightEntity): boolean {
     return (
       lightSupportsBrightness(stateObj) &&
-      lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP) &&
-      !lightSupportsColor(stateObj)
+      lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP)
     );
   }
 
