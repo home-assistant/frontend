@@ -2756,7 +2756,7 @@
           },
           "serial": {
             "main": "Serial",
-            "secondary": "See what's using your serial ports"
+            "secondary": "Serial ports and the integrations and apps using them"
           },
           "knx": {
             "main": "KNX",

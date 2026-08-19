@@ -1,4 +1,10 @@
-import { mdiConnection, mdiMemory, mdiRefresh, mdiUsb } from "@mdi/js";
+import {
+  mdiConnection,
+  mdiMemory,
+  mdiPuzzle,
+  mdiRefresh,
+  mdiUsb,
+} from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +14,7 @@ import { caseInsensitiveStringCompare } from "../../../../../common/string/compa
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
@@ -22,6 +29,7 @@ import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 const ESPHOME_HASS_SCHEME = "esphome-hass://";
 
@@ -202,7 +210,30 @@ export class SerialConfigDashboard extends LitElement {
         ? `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`
         : `/config/app/${consumer.slug}/info`;
 
-    return html`<li><a href=${href}>${this._consumerName(consumer)}</a></li>`;
+    return html`
+      <ha-md-list-item type="link" href=${href} class="consumer">
+        ${
+          consumer.kind === "config_entry"
+            ? html`<img
+                slot="start"
+                .src=${brandsUrl(
+                {
+                  domain: consumer.domain!,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                alt=${consumer.domain!}
+              />`
+            : html`<ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>`
+        }
+        <div slot="headline">${this._consumerName(consumer)}</div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-md-list-item>
+    `;
   }
 
   private _renderPortItem(item: PortListItem): TemplateResult {
@@ -214,7 +245,7 @@ export class SerialConfigDashboard extends LitElement {
         : undefined;
 
     return html`
-      <ha-md-list-item>
+      <ha-md-list-item class="port">
         <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         ${
@@ -226,24 +257,16 @@ export class SerialConfigDashboard extends LitElement {
           matchingIntegrations
             ? html`<div slot="supporting-text">
                 ${this.hass.localize(
-                "ui.panel.config.serial.can_be_used_with",
-                {
-                  integrations: matchingIntegrations,
-                }
-              )}
+                  "ui.panel.config.serial.can_be_used_with",
+                  {
+                    integrations: matchingIntegrations,
+                  }
+                )}
               </div>`
             : nothing
         }
-        ${
-          item.port.consumers.length
-            ? html`<ul slot="supporting-text" class="consumers">
-                ${item.port.consumers.map((consumer) =>
-                this._renderConsumer(consumer)
-              )}
-              </ul>`
-            : nothing
-        }
       </ha-md-list-item>
+      ${item.port.consumers.map((consumer) => this._renderConsumer(consumer))}
     `;
   }
 
@@ -395,18 +418,25 @@ export class SerialConfigDashboard extends LitElement {
           padding: 0;
         }
 
-        ul.consumers {
-          margin: 0;
-          padding-inline-start: var(--ha-space-5);
+        ha-md-list-item {
+          --md-list-item-top-space: var(--ha-space-2);
+          --md-list-item-bottom-space: var(--ha-space-2);
+          --md-list-item-one-line-container-height: 0;
+          --md-list-item-two-line-container-height: 0;
+          --md-list-item-three-line-container-height: 0;
         }
 
-        ul.consumers a {
-          color: var(--primary-color);
-          text-decoration: none;
+        ha-md-list-item.port:not(:first-child) {
+          margin-top: var(--ha-space-3);
         }
 
-        ul.consumers a:hover {
-          text-decoration: underline;
+        ha-md-list-item.consumer {
+          --md-list-item-leading-space: var(--ha-space-14);
+        }
+
+        ha-md-list-item.consumer img[slot="start"] {
+          width: 24px;
+          height: 24px;
         }
 
         .empty {
