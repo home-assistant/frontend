@@ -217,13 +217,13 @@ export class SerialConfigDashboard extends LitElement {
             ? html`<img
                 slot="start"
                 .src=${brandsUrl(
-                {
-                  domain: consumer.domain!,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
+                  {
+                    domain: consumer.domain!,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
                 crossorigin="anonymous"
                 referrerpolicy="no-referrer"
                 alt=${consumer.domain!}
@@ -272,12 +272,14 @@ export class SerialConfigDashboard extends LitElement {
 
   private _renderPortsCard(
     header: string,
+    description: string,
     items: PortListItem[]
   ): TemplateResult {
     return html`
       <ha-card>
         <div class="card-header">${header}</div>
         <div class="card-content">
+          <div class="description">${description}</div>
           <ha-md-list>
             ${items.map((item) => this._renderPortItem(item))}
           </ha-md-list>
@@ -349,6 +351,9 @@ export class SerialConfigDashboard extends LitElement {
         available.length
           ? this._renderPortsCard(
               this.hass.localize("ui.panel.config.serial.available"),
+              this.hass.localize(
+                "ui.panel.config.serial.available_description"
+              ),
               available
             )
           : nothing
@@ -357,6 +362,7 @@ export class SerialConfigDashboard extends LitElement {
         inUse.length
           ? this._renderPortsCard(
               this.hass.localize("ui.panel.config.serial.in_use"),
+              this.hass.localize("ui.panel.config.serial.in_use_description"),
               inUse
             )
           : nothing
@@ -365,6 +371,9 @@ export class SerialConfigDashboard extends LitElement {
         disconnected.length
           ? this._renderPortsCard(
               this.hass.localize("ui.panel.config.serial.disconnected"),
+              this.hass.localize(
+                "ui.panel.config.serial.disconnected_description"
+              ),
               disconnected
             )
           : nothing
@@ -437,6 +446,11 @@ export class SerialConfigDashboard extends LitElement {
         ha-md-list-item.consumer img[slot="start"] {
           width: 24px;
           height: 24px;
+        }
+
+        .description {
+          padding: 0 var(--ha-space-4) var(--ha-space-2);
+          color: var(--secondary-text-color);
         }
 
         .empty {
