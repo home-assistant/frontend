@@ -25,10 +25,9 @@ import type {
   SerialPort,
   SerialPortConsumer,
   SerialPortDiscoveryFlow,
-  SerialPortsAndConsumers,
-  SerialPortWithConsumers,
+  SerialPortUsage,
 } from "../../../../../data/usb";
-import { listSerialPortsWithConsumers } from "../../../../../data/usb";
+import { listSerialPortsWithUsage } from "../../../../../data/usb";
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
 import { showSerialPortInfoDialog } from "./show-dialog-serial-port-info";
@@ -74,8 +73,7 @@ interface PortListItem {
   matchingIntegrations: string[];
   consumers: SerialPortConsumer[];
   discoveryFlows: SerialPortDiscoveryFlow[];
-  // Only scanned ports carry the full information shown in the info dialog
-  port?: SerialPortWithConsumers;
+  port: SerialPortUsage;
 }
 
 @customElement("serial-config-dashboard")
@@ -88,7 +86,7 @@ export class SerialConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _ports?: SerialPortsAndConsumers;
+  @state() private _ports?: SerialPortUsage[];
 
   @state() private _error?: string;
 
@@ -98,7 +96,7 @@ export class SerialConfigDashboard extends LitElement {
 
   private async _fetchPorts(): Promise<void> {
     try {
-      this._ports = await listSerialPortsWithConsumers(this.hass);
+      this._ports = await listSerialPortsWithUsage(this.hass);
       this._error = undefined;
     } catch (err: any) {
       this._error = err.message;
@@ -106,7 +104,7 @@ export class SerialConfigDashboard extends LitElement {
   }
 
   private _portListItem(
-    port: SerialPortWithConsumers,
+    port: SerialPortUsage,
     localize: HomeAssistant["localize"]
   ): PortListItem {
     const type = getPortType(port);
@@ -139,7 +137,7 @@ export class SerialConfigDashboard extends LitElement {
     }
 
     return {
-      icon: TYPE_ICONS[type],
+      icon: port.present ? TYPE_ICONS[type] : mdiPowerPlugOff,
       primary,
       // The device of a serial proxy is an internal URL, not a real path
       device:
@@ -156,7 +154,7 @@ export class SerialConfigDashboard extends LitElement {
 
   private _sortedPorts = memoizeOne(
     (
-      result: SerialPortsAndConsumers,
+      ports: SerialPortUsage[],
       localize: HomeAssistant["localize"],
       language: string
     ): {
@@ -166,20 +164,19 @@ export class SerialConfigDashboard extends LitElement {
     } => {
       const available: PortListItem[] = [];
       const connected: PortListItem[] = [];
+      const disconnected: PortListItem[] = [];
 
-      for (const port of result.ports) {
-        (port.consumers.length ? connected : available).push(
-          this._portListItem(port, localize)
-        );
+      for (const port of ports) {
+        let bucket: PortListItem[];
+        if (!port.present) {
+          bucket = disconnected;
+        } else if (port.consumers.length) {
+          bucket = connected;
+        } else {
+          bucket = available;
+        }
+        bucket.push(this._portListItem(port, localize));
       }
-
-      const disconnected = result.missing.map((port): PortListItem => ({
-        icon: mdiPowerPlugOff,
-        primary: port.device,
-        matchingIntegrations: [],
-        consumers: port.consumers,
-        discoveryFlows: [],
-      }));
 
       const byPrimary = (a: PortListItem, b: PortListItem) =>
         caseInsensitiveStringCompare(a.primary, b.primary, language);
@@ -297,7 +294,7 @@ export class SerialConfigDashboard extends LitElement {
       <ha-md-list-item class="port">
         <ha-svg-icon
           slot="start"
-          class=${item.port ? "" : "disconnected"}
+          class=${item.port.present ? "" : "disconnected"}
           .path=${item.icon}
         ></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
@@ -324,7 +321,7 @@ export class SerialConfigDashboard extends LitElement {
             : nothing
         }
         ${
-          item.port
+          item.port.present
             ? html`<ha-icon-button
                 slot="end"
                 .label=${this.hass.localize(

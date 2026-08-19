@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { SerialPortWithConsumers } from "../../../../../data/usb";
+import type { SerialPortUsage } from "../../../../../data/usb";
 
 export interface SerialPortInfoDialogParams {
-  port: SerialPortWithConsumers;
+  port: SerialPortUsage;
 }
 
 export const loadSerialPortInfoDialog = () =>

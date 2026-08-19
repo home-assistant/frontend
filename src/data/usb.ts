@@ -11,6 +11,8 @@ export interface SerialPort {
   pid?: string;
   bcd_device?: number | null;
   matching_integrations: string[];
+  // Configured ports that are not currently connected are absent from a scan
+  present: boolean;
 }
 
 export interface SerialPortConsumer {
@@ -27,19 +29,9 @@ export interface SerialPortDiscoveryFlow {
   domain: string;
 }
 
-export interface SerialPortWithConsumers extends SerialPort {
+export interface SerialPortUsage extends SerialPort {
   consumers: SerialPortConsumer[];
   discovery_flows: SerialPortDiscoveryFlow[];
-}
-
-export interface MissingSerialPort {
-  device: string;
-  consumers: SerialPortConsumer[];
-}
-
-export interface SerialPortsAndConsumers {
-  ports: SerialPortWithConsumers[];
-  missing: MissingSerialPort[];
 }
 
 export const scanUSBDevices = (hass: HomeAssistant) =>
@@ -48,5 +40,8 @@ export const scanUSBDevices = (hass: HomeAssistant) =>
 export const listSerialPorts = (hass: HomeAssistant) =>
   hass.callWS<SerialPort[]>({ type: "usb/list_serial_ports" });
 
-export const listSerialPortsWithConsumers = (hass: HomeAssistant) =>
-  hass.callWS<SerialPortsAndConsumers>({ type: "usb/serial_ports" });
+export const listSerialPortsWithUsage = (hass: HomeAssistant) =>
+  hass.callWS<SerialPortUsage[]>({
+    type: "usb/list_serial_ports",
+    include_usage: true,
+  });
