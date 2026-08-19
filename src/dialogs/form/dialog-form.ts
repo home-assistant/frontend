@@ -1,29 +1,37 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import deepClone from "deep-clone-simple";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-form/ha-form";
-import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import "../../components/ha-dialog-footer";
+import "../../components/ha-form/ha-form";
+import type { HaDialog } from "../../components/ha-dialog";
+import type { HaForm } from "../../components/ha-form/ha-form";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
-import type { HaForm } from "../../components/ha-form/ha-form";
 
 interface StackEntry {
   params: FormDialogParams;
+  initialData: FormDialogData;
   data: FormDialogData;
-  nestedField?: string;
+  scrollTop: number;
   error?: Record<string, string>;
 }
 
 @customElement("dialog-form")
 export class DialogForm
-  extends DirtyStateProviderMixin<FormDialogData>()(LitElement)
+  extends DirtyStateProviderMixin<FormDialogData[]>()(LitElement)
   implements HassDialog<FormDialogData>
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -31,6 +39,8 @@ export class DialogForm
   @state() private _params?: FormDialogParams;
 
   @state() private _data: FormDialogData = {};
+
+  private _initialData: FormDialogData = {};
 
   @state() private _open = false;
 
@@ -40,14 +50,19 @@ export class DialogForm
 
   @state() private _error?: Record<string, string>;
 
-  @query("ha-form") private _form?: HaForm;
+  @query("ha-dialog") private _dialog?: HaDialog;
+
+  @query("ha-form:not([hidden])") private _form?: HaForm;
+
+  @queryAll("ha-form") private _forms!: NodeListOf<HaForm>;
 
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
     this._data = params.data || {};
+    this._initialData = deepClone(this._data);
     this._open = true;
     this._error = undefined;
-    this._initDirtyTracking({ type: "deep" }, this._data);
+    this._resetDirtyTracking();
   }
 
   public closeDialog(): boolean {
@@ -55,54 +70,108 @@ export class DialogForm
     return true;
   }
 
+  private _initialDirtyState(): FormDialogData[] {
+    return [
+      ...this._stack.map((entry) => entry.initialData),
+      this._initialData,
+    ];
+  }
+
+  private _currentDirtyState(): FormDialogData[] {
+    return [...this._stack.map((entry) => entry.data), this._data];
+  }
+
+  private _resetDirtyTracking(): void {
+    this._initDirtyTracking({ type: "deep" }, this._initialDirtyState());
+    this._updateDirtyState(this._currentDirtyState());
+  }
+
   private _handleNestedShowDialog = (
     ev: HASSDomEvent<ShowDialogParams<unknown>>
   ) => {
-    if (ev.detail.dialogTag !== "dialog-form") {
+    if (
+      ev.detail.dialogTag !== "dialog-form" ||
+      ev.currentTarget !== this._form
+    ) {
       return;
     }
+
+    const nested = ev.detail.dialogParams as FormDialogParams;
+    if (!nested.submit || !nested.cancel) {
+      return;
+    }
+
     ev.stopPropagation();
 
-    const origin = ev.composedPath()[0] as HTMLElement & { name?: string };
     this._stack = [
       ...this._stack,
       {
         params: this._params!,
+        initialData: this._initialData,
         data: this._data,
-        nestedField: origin?.name,
+        scrollTop: this._dialog?.bodyContainer.scrollTop ?? 0,
         error: this._error,
       },
     ];
-    const nested = ev.detail.dialogParams as FormDialogParams;
+
     this._params = nested;
-    this._data = nested?.data || {};
+    this._data = nested.data || {};
+    this._initialData = deepClone(this._data);
     this._error = undefined;
-    this._initDirtyTracking({ type: "deep" }, this._data);
+    this._resetDirtyTracking();
   };
 
-  private _popStack(): string | undefined {
+  private _popStack(): StackEntry | undefined {
     if (!this._stack.length) {
       return undefined;
     }
+
     const prev = this._stack[this._stack.length - 1];
+
     this._stack = this._stack.slice(0, -1);
     this._params = prev.params;
+    this._initialData = prev.initialData;
     this._data = prev.data;
     this._error = prev.error;
-    this._initDirtyTracking({ type: "deep" }, this._data);
-    return prev.nestedField;
+    this._resetDirtyTracking();
+
+    return prev;
+  }
+
+  private async _restoreScroll(
+    scrollTop: number,
+    expectedParams: FormDialogParams
+  ): Promise<void> {
+    await this.updateComplete;
+    await this._form?.updateComplete;
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+
+    if (!this._open || this._params !== expectedParams || !this._dialog) {
+      return;
+    }
+
+    this._dialog.bodyContainer.scrollTop = scrollTop;
   }
 
   private _dialogClosed(): void {
     if (!this._closeState) {
       this._params?.cancel?.();
     }
+
+    if (this._closeState !== "submitted") {
+      this._discardDirtyStateChanges();
+    }
+
     this._closeState = undefined;
     this._stack = [];
     this._params = undefined;
+    this._initialData = {};
     this._data = {};
     this._open = false;
     this._error = undefined;
+
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -114,53 +183,61 @@ export class DialogForm
       return;
     }
 
-    this._closeState = "submitted";
     const submit = this._params?.submit;
     const data = this._data;
-    const nestedField = this._popStack();
+    const stackEntry = this._popStack();
 
-    submit?.(data);
-
-    if (!nestedField) {
+    if (!stackEntry) {
+      this._closeState = "submitted";
+      submit?.(data);
+      this._markDirtyStateClean();
       this.closeDialog();
       return;
     }
 
-    const schemaField = this._params?.schema.find(
-      (f) => "selector" in f && f.name === nestedField
-    );
-    const isMultiple =
-      schemaField &&
-      "selector" in schemaField &&
-      "object" in schemaField.selector &&
-      schemaField.selector.object?.multiple === true;
-
-    const current = this._data[nestedField];
-    const newValue = isMultiple
-      ? [...(Array.isArray(current) ? current : []), data]
-      : data;
-
-    this._data = deepClone({ ...this._data, [nestedField]: newValue });
-    this._error = undefined;
-    this._updateDirtyState(this._data);
+    submit!(data);
+    void this._restoreScroll(stackEntry.scrollTop, stackEntry.params);
   }
 
   private _cancel(): void {
-    this._closeState = "canceled";
     const cancel = this._params?.cancel;
-    const nestedField = this._popStack();
+    const stackEntry = this._popStack();
 
-    cancel?.();
-
-    if (!nestedField) {
+    if (!stackEntry) {
+      this._closeState = "canceled";
+      cancel?.();
       this.closeDialog();
+      return;
     }
+
+    cancel!();
+    void this._restoreScroll(stackEntry.scrollTop, stackEntry.params);
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    this._data = ev.detail.value;
-    this._error = undefined;
-    this._updateDirtyState(this._data);
+    const levelIndex = Array.from(this._forms).indexOf(
+      ev.currentTarget as HaForm
+    );
+
+    if (levelIndex === -1) {
+      return;
+    }
+
+    const data = ev.detail.value as FormDialogData;
+
+    if (levelIndex === this._stack.length) {
+      this._data = data;
+      this._error = undefined;
+      this._updateDirtyState(this._currentDirtyState());
+      return;
+    }
+
+    if (levelIndex < this._stack.length) {
+      this._stack = this._stack.map((entry, index) =>
+        index === levelIndex ? { ...entry, data, error: undefined } : entry
+      );
+      this._updateDirtyState(this._currentDirtyState());
+    }
   }
 
   protected render() {
@@ -168,35 +245,53 @@ export class DialogForm
       return nothing;
     }
 
+    const params = this._params;
+    const levels = [
+      ...this._stack,
+      {
+        params,
+        initialData: this._initialData,
+        data: this._data,
+        error: this._error,
+      },
+    ];
+
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._params.title}
+        header-title=${params.title}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        <ha-form
-          autofocus
-          .hass=${this.hass}
-          .computeLabel=${this._params.computeLabel}
-          .computeHelper=${this._params.computeHelper}
-          .data=${this._data}
-          .schema=${this._params.schema}
-          .error=${this._error}
-          @value-changed=${this._valueChanged}
-          @show-dialog=${this._handleNestedShowDialog}
-        >
-        </ha-form>
+        ${levels.map((level, index) => {
+          const isActive = index === levels.length - 1;
+
+          return html`
+            <ha-form
+              ?hidden=${!isActive}
+              ?autofocus=${isActive}
+              .hass=${this.hass}
+              .computeLabel=${level.params.computeLabel}
+              .computeHelper=${level.params.computeHelper}
+              .data=${level.data}
+              .schema=${level.params.schema}
+              .error=${level.error}
+              @value-changed=${this._valueChanged}
+              @show-dialog=${this._handleNestedShowDialog}
+            >
+            </ha-form>
+          `;
+        })}
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
             appearance="plain"
             @click=${this._cancel}
           >
-            ${this._params.cancelText || this.hass.localize("ui.common.cancel")}
+            ${params.cancelText || this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button slot="primaryAction" @click=${this._submit}>
-            ${this._params.submitText || this.hass.localize("ui.common.save")}
+            ${params.submitText || this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
