@@ -23,6 +23,9 @@ const SPINNER_DELAY = 150;
  * error icon once it settles.
  *
  * @slot - Content of the trigger.
+ *
+ * @cssprop --ha-action-result-fill-success - Background behind the success icon. Defaults to `transparent`.
+ * @cssprop --ha-action-result-fill-error - Background behind the error icon. Defaults to `transparent`.
  */
 @customElement("ha-action-result")
 export class HaActionResult extends LitElement {
@@ -78,7 +81,9 @@ export class HaActionResult extends LitElement {
       <span class="content ${busy ? "hidden" : ""}"><slot></slot></span>
       ${
         busy
-          ? html`<div class="indicator">${this._renderIndicator()}</div>`
+          ? html`<div class="indicator ${this._result ?? ""}">
+              ${this._renderIndicator()}
+            </div>`
           : nothing
       }
     `;
@@ -115,6 +120,13 @@ export class HaActionResult extends LitElement {
       align-items: center;
       justify-content: center;
       animation: fade-in var(--ha-animation-duration-instant) ease-in-out;
+    }
+    /* Only the result covers the trigger, the spinner lets it show through */
+    .indicator.success {
+      background-color: var(--ha-action-result-fill-success, transparent);
+    }
+    .indicator.error {
+      background-color: var(--ha-action-result-fill-error, transparent);
     }
     ha-spinner {
       --ha-spinner-size: var(--mdc-icon-size, 24px);

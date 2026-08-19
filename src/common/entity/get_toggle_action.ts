@@ -70,3 +70,10 @@ export const getToggleAction = (domain: string, onOff: boolean): string => {
     (onOff ? "turn_on" : "turn_off")
   );
 };
+
+// Domains that only fire, like pressing a button, instead of switching between
+// two states.
+export const isOneShotToggle = (domain: string): boolean => {
+  const toggleAction = SPECIAL_TOGGLE_ACTIONS[domain];
+  return Boolean(toggleAction) && !toggleAction.off;
+};
