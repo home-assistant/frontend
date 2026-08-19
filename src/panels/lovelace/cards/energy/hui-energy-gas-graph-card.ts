@@ -210,11 +210,14 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const gasEntityId =
-      energySourcesByType(energyData.prefs).gas?.[0]?.stat_energy_from;
+    const gasSources = energySourcesByType(energyData.prefs).gas;
 
-    this._displayPrecision = gasEntityId
-      ? this.hass.entities[gasEntityId]?.dp
+    const gasDisplayPrecisions = gasSources
+      ?.map((source) => this.hass.entities[source.stat_energy_from]?.dp)
+      .filter((precision): precision is number => precision !== undefined);
+
+    this._displayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
       : undefined;
     
     const result = generateEnergyGasGraphData({
