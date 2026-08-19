@@ -43,6 +43,8 @@ const CUSTOM_ICONS: Record<string, () => Promise<string>> = {
     import("../resources/esphome-logo-svg").then((mod) => mod.mdiEsphomeLogo),
   matter: () =>
     import("../resources/matter-logo-svg").then((mod) => mod.mdiMatterLogo),
+  mqtt: () =>
+    import("../resources/mqtt-logo-svg").then((mod) => mod.mdiMqttLogo),
 };
 
 @customElement("ha-icon")
