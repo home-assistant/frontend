@@ -21,8 +21,17 @@ export interface SerialPortConsumer {
 }
 
 export interface SerialPortWithConsumers extends SerialPort {
-  present: boolean;
   consumers: SerialPortConsumer[];
+}
+
+export interface MissingSerialPort {
+  device: string;
+  consumers: SerialPortConsumer[];
+}
+
+export interface SerialPortsAndConsumers {
+  ports: SerialPortWithConsumers[];
+  missing: MissingSerialPort[];
 }
 
 export const scanUSBDevices = (hass: HomeAssistant) =>
@@ -32,4 +41,4 @@ export const listSerialPorts = (hass: HomeAssistant) =>
   hass.callWS<SerialPort[]>({ type: "usb/list_serial_ports" });
 
 export const listSerialPortsWithConsumers = (hass: HomeAssistant) =>
-  hass.callWS<SerialPortWithConsumers[]>({ type: "usb/serial_ports" });
+  hass.callWS<SerialPortsAndConsumers>({ type: "usb/serial_ports" });

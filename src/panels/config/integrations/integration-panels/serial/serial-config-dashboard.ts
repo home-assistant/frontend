@@ -9,7 +9,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
@@ -21,7 +20,9 @@ import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../../data/integration";
 import type {
+  SerialPort,
   SerialPortConsumer,
+  SerialPortsAndConsumers,
   SerialPortWithConsumers,
 } from "../../../../../data/usb";
 import { listSerialPortsWithConsumers } from "../../../../../data/usb";
@@ -44,7 +45,7 @@ const TYPE_ICONS: Record<SerialPortType, string> = {
   unnamed: mdiMemory,
 };
 
-const getPortType = (port: SerialPortWithConsumers): SerialPortType => {
+const getPortType = (port: SerialPort): SerialPortType => {
   if (port.device.startsWith(ESPHOME_HASS_SCHEME)) {
     return "serial_proxy";
   }
@@ -61,10 +62,11 @@ const getPortType = (port: SerialPortWithConsumers): SerialPortType => {
 };
 
 interface PortListItem {
-  port: SerialPortWithConsumers;
   icon: string;
   primary: string;
   secondary?: string;
+  matchingIntegrations: string[];
+  consumers: SerialPortConsumer[];
 }
 
 @customElement("serial-config-dashboard")
@@ -77,7 +79,7 @@ export class SerialConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _ports?: SerialPortWithConsumers[];
+  @state() private _ports?: SerialPortsAndConsumers;
 
   @state() private _error?: string;
 
@@ -96,27 +98,9 @@ export class SerialConfigDashboard extends LitElement {
 
   private _portListItem(
     port: SerialPortWithConsumers,
-    devices: HomeAssistant["devices"],
     localize: HomeAssistant["localize"]
   ): PortListItem {
     const type = getPortType(port);
-
-    if (type === "serial_proxy") {
-      let primary = port.device;
-      let secondary: string | undefined;
-      try {
-        const url = new URL(port.device);
-        primary = url.searchParams.get("port_name") || port.device;
-        const configEntryId = url.pathname.replace(/^\/+/, "");
-        const device = Object.values(devices).find(
-          (d) => d.primary_config_entry === configEntryId
-        );
-        secondary = device ? computeDeviceName(device) : undefined;
-      } catch (_err) {
-        // Fall back to showing the raw device URL
-      }
-      return { port, icon: TYPE_ICONS[type], primary, secondary };
-    }
 
     const productManufacturer =
       port.description && port.manufacturer
@@ -134,7 +118,8 @@ export class SerialConfigDashboard extends LitElement {
     }
 
     const parts: string[] = [];
-    if (primary !== port.device) {
+    // The device of a serial proxy is an internal URL, not a real path
+    if (type !== "serial_proxy" && primary !== port.device) {
       parts.push(port.device);
     }
     if (port.vid && port.pid) {
@@ -149,17 +134,17 @@ export class SerialConfigDashboard extends LitElement {
     }
 
     return {
-      port,
       icon: TYPE_ICONS[type],
       primary,
       secondary: parts.join(" · ") || undefined,
+      matchingIntegrations: port.matching_integrations,
+      consumers: port.consumers,
     };
   }
 
   private _sortedPorts = memoizeOne(
     (
-      ports: SerialPortWithConsumers[],
-      devices: HomeAssistant["devices"],
+      result: SerialPortsAndConsumers,
       localize: HomeAssistant["localize"],
       language: string
     ): {
@@ -169,16 +154,19 @@ export class SerialConfigDashboard extends LitElement {
     } => {
       const available: PortListItem[] = [];
       const inUse: PortListItem[] = [];
-      const disconnected: PortListItem[] = [];
 
-      for (const port of ports) {
-        const section = !port.present
-          ? disconnected
-          : port.consumers.length
-            ? inUse
-            : available;
-        section.push(this._portListItem(port, devices, localize));
+      for (const port of result.ports) {
+        (port.consumers.length ? inUse : available).push(
+          this._portListItem(port, localize)
+        );
       }
+
+      const disconnected = result.missing.map((port): PortListItem => ({
+        icon: TYPE_ICONS.unnamed,
+        primary: port.device,
+        matchingIntegrations: [],
+        consumers: port.consumers,
+      }));
 
       const byPrimary = (a: PortListItem, b: PortListItem) =>
         caseInsensitiveStringCompare(a.primary, b.primary, language);
@@ -238,8 +226,8 @@ export class SerialConfigDashboard extends LitElement {
 
   private _renderPortItem(item: PortListItem): TemplateResult {
     const matchingIntegrations =
-      !item.port.consumers.length && item.port.matching_integrations.length
-        ? item.port.matching_integrations
+      !item.consumers.length && item.matchingIntegrations.length
+        ? item.matchingIntegrations
             .map((domain) => domainToName(this.hass.localize, domain))
             .join(", ")
         : undefined;
@@ -266,7 +254,7 @@ export class SerialConfigDashboard extends LitElement {
             : nothing
         }
       </ha-md-list-item>
-      ${item.port.consumers.map((consumer) => this._renderConsumer(consumer))}
+      ${item.consumers.map((consumer) => this._renderConsumer(consumer))}
     `;
   }
 
@@ -329,7 +317,6 @@ export class SerialConfigDashboard extends LitElement {
 
     const { available, inUse, disconnected } = this._sortedPorts(
       this._ports,
-      this.hass.devices,
       this.hass.localize,
       this.hass.locale.language
     );
