@@ -196,11 +196,11 @@ export class FilterPanelController implements ReactiveController {
         fill: "forwards",
       }
     );
-    animation.onfinish = () => this._finish();
+    animation.onfinish = () => this._finish(animation);
     this._animation = animation;
   }
 
-  private async _finish() {
+  private async _finish(animation?: Animation) {
     if (!this.host.expanded) {
       this.showContent = false;
       this.host.requestUpdate();
