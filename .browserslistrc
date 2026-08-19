@@ -3,7 +3,7 @@
 # It is served to browsers meeting the following requirements:
 # - released in the last 2 years + current alpha/beta versions
 # - exclude dead browsers (no security maintenance for 2+ years)
-# - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
+# - exclude QQ, and UC browsers due to lack of sufficient feature support data
 unreleased versions
 last 2 years
 not dead
