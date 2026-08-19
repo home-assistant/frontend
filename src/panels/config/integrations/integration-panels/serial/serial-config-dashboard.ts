@@ -13,7 +13,10 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../../data/integration";
-import type { SerialPortWithConsumers } from "../../../../../data/usb";
+import type {
+  SerialPortConsumer,
+  SerialPortWithConsumers,
+} from "../../../../../data/usb";
 import { listSerialPortsWithConsumers } from "../../../../../data/usb";
 import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
 import "../../../../../layouts/hass-subpage";
@@ -151,55 +154,65 @@ export class SerialConfigDashboard extends LitElement {
       devices: HomeAssistant["devices"],
       localize: HomeAssistant["localize"],
       language: string
-    ): { present: PortListItem[]; absent: PortListItem[] } => {
-      const present: PortListItem[] = [];
-      const absent: PortListItem[] = [];
+    ): {
+      available: PortListItem[];
+      inUse: PortListItem[];
+      disconnected: PortListItem[];
+    } => {
+      const available: PortListItem[] = [];
+      const inUse: PortListItem[] = [];
+      const disconnected: PortListItem[] = [];
 
       for (const port of ports) {
-        (port.present ? present : absent).push(
-          this._portListItem(port, devices, localize)
-        );
+        const section = !port.present
+          ? disconnected
+          : port.consumers.length
+            ? inUse
+            : available;
+        section.push(this._portListItem(port, devices, localize));
       }
 
       const byPrimary = (a: PortListItem, b: PortListItem) =>
         caseInsensitiveStringCompare(a.primary, b.primary, language);
-      present.sort(byPrimary);
-      absent.sort(byPrimary);
+      available.sort(byPrimary);
+      inUse.sort(byPrimary);
+      disconnected.sort(byPrimary);
 
-      return { present, absent };
+      return { available, inUse, disconnected };
     }
   );
 
-  private _usageLine(port: SerialPortWithConsumers): string {
-    if (port.consumers.length) {
-      const consumers = port.consumers
-        .map((consumer) =>
-          consumer.active
-            ? consumer.title
-            : this.hass.localize(
-                "ui.panel.config.serial.consumer_not_running",
-                { name: consumer.title }
-              )
-        )
-        .join(", ");
-      return this.hass.localize("ui.panel.config.serial.used_by", {
-        consumers,
-      });
-    }
+  private _consumerName(consumer: SerialPortConsumer): string {
+    const name =
+      consumer.title ||
+      (consumer.domain
+        ? domainToName(this.hass.localize, consumer.domain)
+        : consumer.slug!);
 
-    if (port.matching_integrations.length) {
-      const integrations = port.matching_integrations
-        .map((domain) => domainToName(this.hass.localize, domain))
-        .join(", ");
-      return this.hass.localize("ui.panel.config.serial.can_be_used_with", {
-        integrations,
-      });
-    }
+    return consumer.active
+      ? name
+      : this.hass.localize("ui.panel.config.serial.consumer_not_running", {
+          name,
+        });
+  }
 
-    return this.hass.localize("ui.panel.config.serial.not_used");
+  private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
+    const href =
+      consumer.kind === "config_entry"
+        ? `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`
+        : `/config/app/${consumer.slug}/info`;
+
+    return html`<li><a href=${href}>${this._consumerName(consumer)}</a></li>`;
   }
 
   private _renderPortItem(item: PortListItem): TemplateResult {
+    const matchingIntegrations =
+      !item.port.consumers.length && item.port.matching_integrations.length
+        ? item.port.matching_integrations
+            .map((domain) => domainToName(this.hass.localize, domain))
+            .join(", ")
+        : undefined;
+
     return html`
       <ha-md-list-item>
         <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
@@ -209,8 +222,44 @@ export class SerialConfigDashboard extends LitElement {
             ? html`<div slot="supporting-text">${item.secondary}</div>`
             : nothing
         }
-        <div slot="supporting-text">${this._usageLine(item.port)}</div>
+        ${
+          matchingIntegrations
+            ? html`<div slot="supporting-text">
+                ${this.hass.localize(
+                "ui.panel.config.serial.can_be_used_with",
+                {
+                  integrations: matchingIntegrations,
+                }
+              )}
+              </div>`
+            : nothing
+        }
+        ${
+          item.port.consumers.length
+            ? html`<ul slot="supporting-text" class="consumers">
+                ${item.port.consumers.map((consumer) =>
+                this._renderConsumer(consumer)
+              )}
+              </ul>`
+            : nothing
+        }
       </ha-md-list-item>
+    `;
+  }
+
+  private _renderPortsCard(
+    header: string,
+    items: PortListItem[]
+  ): TemplateResult {
+    return html`
+      <ha-card>
+        <div class="card-header">${header}</div>
+        <div class="card-content">
+          <ha-md-list>
+            ${items.map((item) => this._renderPortItem(item))}
+          </ha-md-list>
+        </div>
+      </ha-card>
     `;
   }
 
@@ -253,48 +302,48 @@ export class SerialConfigDashboard extends LitElement {
       `;
     }
 
-    const { present, absent } = this._sortedPorts(
+    const { available, inUse, disconnected } = this._sortedPorts(
       this._ports,
       this.hass.devices,
       this.hass.localize,
       this.hass.locale.language
     );
 
+    if (!available.length && !inUse.length && !disconnected.length) {
+      return html`
+        <ha-card>
+          <div class="card-content">
+            <div class="empty">
+              ${this.hass.localize("ui.panel.config.serial.no_ports")}
+            </div>
+          </div>
+        </ha-card>
+      `;
+    }
+
     return html`
-      <ha-card class="content">
-        <div class="card-header">
-          ${this.hass.localize("ui.panel.config.serial.ports")}
-        </div>
-        <div class="card-content">
-          ${
-            present.length
-              ? html`
-                  <ha-md-list>
-                    ${present.map((item) => this._renderPortItem(item))}
-                  </ha-md-list>
-                `
-              : html`
-                  <div class="empty">
-                    ${this.hass.localize("ui.panel.config.serial.no_ports")}
-                  </div>
-                `
-          }
-        </div>
-      </ha-card>
       ${
-        absent.length
-          ? html`
-              <ha-card>
-                <div class="card-header">
-                  ${this.hass.localize("ui.panel.config.serial.not_connected")}
-                </div>
-                <div class="card-content">
-                  <ha-md-list>
-                    ${absent.map((item) => this._renderPortItem(item))}
-                  </ha-md-list>
-                </div>
-              </ha-card>
-            `
+        available.length
+          ? this._renderPortsCard(
+              this.hass.localize("ui.panel.config.serial.available"),
+              available
+            )
+          : nothing
+      }
+      ${
+        inUse.length
+          ? this._renderPortsCard(
+              this.hass.localize("ui.panel.config.serial.in_use"),
+              inUse
+            )
+          : nothing
+      }
+      ${
+        disconnected.length
+          ? this._renderPortsCard(
+              this.hass.localize("ui.panel.config.serial.disconnected"),
+              disconnected
+            )
           : nothing
       }
     `;
@@ -319,7 +368,7 @@ export class SerialConfigDashboard extends LitElement {
           max-width: 600px;
         }
 
-        .content {
+        ha-card:first-child {
           margin-top: var(--ha-space-6);
         }
 
@@ -344,6 +393,20 @@ export class SerialConfigDashboard extends LitElement {
         ha-md-list {
           background: none;
           padding: 0;
+        }
+
+        ul.consumers {
+          margin: 0;
+          padding-inline-start: var(--ha-space-5);
+        }
+
+        ul.consumers a {
+          color: var(--primary-color);
+          text-decoration: none;
+        }
+
+        ul.consumers a:hover {
+          text-decoration: underline;
         }
 
         .empty {
