@@ -11,6 +11,7 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  energySourcesByType,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -66,6 +67,8 @@ export class HuiEnergyGasGraphCard
 
   @state() private _total?: number;
 
+  @state() private _displayPrecision?: number;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -95,6 +98,15 @@ export class HuiEnergyGasGraphCard
     );
   }
 
+  private get _gasFormatOptions(): Intl.NumberFormatOptions | undefined {
+    return this._displayPrecision !== undefined
+      ? {
+          minimumFractionDigits: this._displayPrecision,
+          maximumFractionDigits: this._displayPrecision,
+        }
+      : undefined;
+  }
+  
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -111,7 +123,11 @@ export class HuiEnergyGasGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this.hass.locale)}
+                        ${formatNumber(
+                          this._total,
+                          this.hass.locale,
+                          this._gasFormatOptions
+                        )}
                         ${this._unit}
                       </hui-energy-graph-chip>`
                     : nothing
@@ -162,9 +178,12 @@ export class HuiEnergyGasGraphCard
   private _formatTotal = (total: number) =>
     this.hass.localize(
       "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
-      { num: formatNumber(total, this.hass.locale), unit: this._unit }
+      {
+        num: formatNumber(total, this.hass.locale, this._gasFormatOptions),
+        unit: this._unit,
+      }
     );
-
+  
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -191,6 +210,13 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    const gasEntityId =
+      energySourcesByType(energyData.prefs).gas?.[0]?.stat_energy_from;
+
+    this._displayPrecision = gasEntityId
+      ? this.hass.entities[gasEntityId]?.dp
+      : undefined;
+    
     const result = generateEnergyGasGraphData({
       hass: this.hass,
       energyData,
