@@ -45,6 +45,10 @@ class DialogSerialPortInfo extends LitElement {
 
     const fields: [string, string | null | undefined][] = [
       [localize("ui.panel.config.serial.fields.device"), port.device],
+      [
+        localize("ui.panel.config.serial.fields.resolved_device"),
+        port.resolved_device === port.device ? undefined : port.resolved_device,
+      ],
       [localize("ui.panel.config.serial.fields.description"), port.description],
       [
         localize("ui.panel.config.serial.fields.manufacturer"),

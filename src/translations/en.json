@@ -7545,6 +7545,7 @@
           "port_information": "Port information",
           "fields": {
             "device": "Device",
+            "resolved_device": "Resolved device",
             "description": "Description",
             "manufacturer": "Manufacturer",
             "interface_description": "Interface description",

@@ -2,6 +2,7 @@ import type { HomeAssistant } from "../types";
 
 export interface SerialPort {
   device: string;
+  resolved_device: string | null;
   serial_number: string | null;
   manufacturer: string | null;
   description: string | null;
