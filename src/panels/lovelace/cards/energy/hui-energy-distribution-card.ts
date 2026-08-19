@@ -162,9 +162,12 @@ class HuiEnergyDistrubutionCard
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
 
-    const gasEntityId = types.gas?.[0]?.stat_energy_from;
-    const gasDisplayPrecision = gasEntityId
-      ? this.hass.entities[gasEntityId]?.dp
+    const gasDisplayPrecisions = types.gas
+      ?.map((source) => this.hass.entities[source.stat_energy_from]?.dp)
+      .filter((precision): precision is number => precision !== undefined);
+
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
       : undefined;
 
     const gasFormatOptions =
