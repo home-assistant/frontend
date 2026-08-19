@@ -125,6 +125,9 @@ class HaPanelHistory extends LitElement {
 
   private _fetchedEntityIds?: string[];
 
+  // Bumped on every stats request so an older fetch cannot overwrite a newer one.
+  private _statsFetchId = 0;
+
   private _interval?: number;
 
   public constructor() {
@@ -413,6 +416,7 @@ class HaPanelHistory extends LitElement {
   private async _getStats() {
     const statisticIds = this._getEntityIds();
     this._fetchedEntityIds = statisticIds;
+    const fetchId = ++this._statsFetchId;
 
     if (statisticIds.length === 0) {
       this._statisticsHistory = undefined;
@@ -436,6 +440,10 @@ class HaPanelHistory extends LitElement {
         ["mean", "state"]
       );
     } catch (_err) {
+      return;
+    }
+
+    if (fetchId !== this._statsFetchId) {
       return;
     }
 
