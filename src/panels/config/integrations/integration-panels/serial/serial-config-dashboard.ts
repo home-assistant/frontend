@@ -1,4 +1,7 @@
 import {
+  mdiAlertCircleOutline,
+  mdiCableData,
+  mdiCheck,
   mdiConnection,
   mdiInformationOutline,
   mdiMemory,
@@ -68,8 +71,7 @@ const getPortType = (port: SerialPort): SerialPortType => {
 interface PortListItem {
   icon: string;
   primary: string;
-  device?: string;
-  details?: string;
+  serialNumber?: string;
   matchingIntegrations: string[];
   consumers: SerialPortConsumer[];
   discoveryFlows: SerialPortDiscoveryFlow[];
@@ -124,27 +126,15 @@ export class SerialConfigDashboard extends LitElement {
       primary = productManufacturer || port.device;
     }
 
-    const details: string[] = [];
-    if (port.vid && port.pid) {
-      details.push(`${port.vid}:${port.pid}`);
-    }
-    if (port.serial_number) {
-      details.push(
-        localize("ui.panel.config.serial.serial_number", {
-          serial_number: port.serial_number,
-        })
-      );
-    }
-
     return {
       icon: port.present ? TYPE_ICONS[type] : mdiPowerPlugOff,
       primary,
-      // The device of a serial proxy is an internal URL, not a real path
-      device:
-        type !== "serial_proxy" && primary !== port.device
-          ? port.device
-          : undefined,
-      details: details.join(" · ") || undefined,
+      // The full port details are shown in the info dialog
+      serialNumber: port.serial_number
+        ? localize("ui.panel.config.serial.serial_number", {
+            serial_number: port.serial_number,
+          })
+        : undefined,
       matchingIntegrations: port.matching_integrations,
       consumers: port.consumers,
       discoveryFlows: port.discovery_flows,
@@ -299,13 +289,8 @@ export class SerialConfigDashboard extends LitElement {
         ></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         ${
-          item.device
-            ? html`<div slot="supporting-text">${item.device}</div>`
-            : nothing
-        }
-        ${
-          item.details
-            ? html`<div slot="supporting-text">${item.details}</div>`
+          item.serialNumber
+            ? html`<div slot="supporting-text">${item.serialNumber}</div>`
             : nothing
         }
         ${
@@ -351,13 +336,53 @@ export class SerialConfigDashboard extends LitElement {
     items: PortListItem[]
   ): TemplateResult {
     return html`
-      <ha-card>
+      <ha-card class="ports">
         <div class="card-header">${header}</div>
         <div class="card-content">
           <div class="description">${description}</div>
           <ha-md-list>
             ${items.map((item) => this._renderPortItem(item))}
           </ha-md-list>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _renderStatusCard(
+    inUse: number,
+    available: number,
+    disconnected: number
+  ): TemplateResult {
+    const status = disconnected ? "disconnected" : "ok";
+
+    let summary = this.hass.localize("ui.panel.config.serial.status_summary", {
+      in_use: inUse,
+      total: inUse + available,
+    });
+
+    if (disconnected) {
+      summary += ` · ${this.hass.localize(
+        "ui.panel.config.serial.status_summary_disconnected",
+        { count: disconnected }
+      )}`;
+    }
+
+    return html`
+      <ha-card class="status">
+        <div class="card-content">
+          <div class="heading">
+            <div class="icon ${status}">
+              <ha-svg-icon
+                .path=${disconnected ? mdiAlertCircleOutline : mdiCheck}
+              ></ha-svg-icon>
+            </div>
+            <div class="details">
+              ${this.hass.localize(`ui.panel.config.serial.status_${status}`)}
+              <br />
+              <small>${summary}</small>
+            </div>
+            <ha-svg-icon class="logo" .path=${mdiCableData}></ha-svg-icon>
+          </div>
         </div>
       </ha-card>
     `;
@@ -421,6 +446,11 @@ export class SerialConfigDashboard extends LitElement {
     }
 
     return html`
+      ${this._renderStatusCard(
+        connected.length,
+        available.length,
+        disconnected.length
+      )}
       ${
         connected.length
           ? this._renderPortsCard(
@@ -486,16 +516,78 @@ export class SerialConfigDashboard extends LitElement {
           padding: var(--ha-space-12) 0;
         }
 
-        ha-card {
+        ha-card.ports {
           overflow: hidden;
         }
 
-        ha-card .card-content {
+        ha-card.ports .card-content {
           padding: 0;
         }
 
-        ha-card .card-header {
+        ha-card.ports .card-header {
           padding-bottom: var(--ha-space-2);
+        }
+
+        .status div.heading {
+          display: flex;
+          align-items: center;
+          column-gap: var(--ha-space-4);
+        }
+
+        .status div.heading .logo {
+          margin-inline-start: auto;
+          --mdc-icon-size: 40px;
+        }
+
+        .status div.heading .icon {
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: var(--ha-space-10);
+          height: var(--ha-space-10);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
+        }
+
+        .status div.heading .icon.ok {
+          --icon-color: var(--success-color);
+        }
+
+        .status div.heading .icon.disconnected {
+          --icon-color: var(--warning-color);
+        }
+
+        .status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color);
+          opacity: 0.2;
+        }
+
+        .status div.heading .icon ha-svg-icon {
+          color: var(--icon-color);
+          width: var(--ha-space-6);
+          height: var(--ha-space-6);
+        }
+
+        .status div.heading .details {
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
+        }
+
+        .status small {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
+          color: var(--secondary-text-color);
         }
 
         ha-md-list {
