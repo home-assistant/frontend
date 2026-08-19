@@ -503,6 +503,8 @@ class HaConfigSectionStorage extends LitElement {
 
     .mount-usage ha-bar {
       flex: 0 0 72px;
+      display: flex;
+      align-self: center;
       --ha-bar-primary-color: var(--metric-bar-ok-color, var(--success-color));
     }
 
