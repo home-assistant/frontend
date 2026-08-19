@@ -205,7 +205,7 @@ class HaPanelHistory extends LitElement {
                     .label=${sourcesLabel}
                     .path=${mdiTuneVariant}
                     .count=${sourceCount}
-                    .resultCount=${entityIds.length}
+                    .resultCount=${hasTargets ? entityIds.length : undefined}
                     .disabled=${this._isLoading}
                     @close-filter-pane=${this._closeSources}
                     @clear-filter=${this._clearSources}
