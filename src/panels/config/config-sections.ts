@@ -26,6 +26,7 @@ import {
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
+  mdiSerialPort,
   mdiShape,
   mdiSofa,
   mdiStarFourPoints,
@@ -166,6 +167,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
+      adminOnly: true,
+    },
+    {
+      path: "/config/serial",
+      iconPath: mdiSerialPort,
+      iconColor: "#607D8B",
+      component: "usb",
+      translationKey: "serial",
       adminOnly: true,
     },
     {

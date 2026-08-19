@@ -1614,6 +1614,7 @@
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
+            "serial": "[%key:ui::panel::config::dashboard::serial::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -2752,6 +2753,10 @@
           "radio_frequency": {
             "main": "Radio frequency",
             "secondary": "Control radio-based devices."
+          },
+          "serial": {
+            "main": "Serial",
+            "secondary": "See what's using your serial ports"
           },
           "knx": {
             "main": "KNX",
@@ -7518,6 +7523,18 @@
           "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
+        },
+        "serial": {
+          "title": "Serial",
+          "ports": "Serial ports",
+          "no_ports": "No serial ports found",
+          "not_connected": "Configured but not connected",
+          "loading_error": "Failed to load serial ports",
+          "serial_number": "S/N: {serial_number}",
+          "used_by": "Used by {consumers}",
+          "consumer_not_running": "{name} (not running)",
+          "can_be_used_with": "Can be used with {integrations}",
+          "not_used": "Not in use"
         },
         "dhcp": {
           "title": "DHCP discovery",
