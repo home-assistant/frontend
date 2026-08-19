@@ -9,6 +9,9 @@ type ActionResult = "success" | "error";
 // Keep in sync with ha-progress-button
 const RESULT_DURATION = 2000;
 
+// Long enough that fast actions go straight to their result without a flash
+const SPINNER_DELAY = 150;
+
 /**
  * Home Assistant action result component
  *
@@ -16,8 +19,8 @@ const RESULT_DURATION = 2000;
  *
  * @summary
  * Wraps the content of an action trigger, for example an `ha-control-button`,
- * and swaps it for a spinner while the action runs and for a success or error
- * icon once it settles.
+ * and swaps it for a spinner while a slow action runs and for a success or
+ * error icon once it settles.
  *
  * @slot - Content of the trigger.
  */
@@ -25,9 +28,13 @@ const RESULT_DURATION = 2000;
 export class HaActionResult extends LitElement {
   @state() private _loading = false;
 
+  @state() private _showSpinner = false;
+
   @state() private _result?: ActionResult;
 
   private _timeout?: number;
+
+  private _spinnerTimeout?: number;
 
   public get busy(): boolean {
     return this._loading;
@@ -35,15 +42,21 @@ export class HaActionResult extends LitElement {
 
   public async run(action: Promise<unknown>): Promise<void> {
     clearTimeout(this._timeout);
+    clearTimeout(this._spinnerTimeout);
     this._result = undefined;
     this._loading = true;
+    this._spinnerTimeout = window.setTimeout(() => {
+      this._showSpinner = true;
+    }, SPINNER_DELAY);
     try {
       await action;
       this._result = "success";
     } catch (_err) {
       this._result = "error";
     } finally {
+      clearTimeout(this._spinnerTimeout);
       this._loading = false;
+      this._showSpinner = false;
       this._timeout = window.setTimeout(() => {
         this._result = undefined;
       }, RESULT_DURATION);
@@ -53,11 +66,13 @@ export class HaActionResult extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     clearTimeout(this._timeout);
+    clearTimeout(this._spinnerTimeout);
+    this._showSpinner = false;
     this._result = undefined;
   }
 
   protected render() {
-    const busy = this._loading || this._result !== undefined;
+    const busy = this._showSpinner || this._result !== undefined;
 
     return html`
       <span class="content ${busy ? "hidden" : ""}"><slot></slot></span>
