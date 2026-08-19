@@ -453,13 +453,21 @@ export class HuiImage extends LitElement {
     // started, or after _clearCameraImage() ran, can be told apart from the
     // current one instead of clobbering it or reviving a cleared image.
     const requestId = ++this._cameraImageRequestId;
-
-    const url = await fetchThumbnailUrlWithCache(
-      this.hass,
-      this.cameraImage,
-      width,
-      height
-    );
+    
+    let url: string;
+    try {
+      url = await fetchThumbnailUrlWithCache(
+        this.hass,
+        this.cameraImage,
+        width,
+        height
+      );
+    } catch (_err) {
+      if (requestId === this._cameraImageRequestId) {
+        this._onImageError();
+      }
+      return;
+    }
     // The signed URL is regenerated on every poll, so the browser cache can
     // never revalidate it. Send If-None-Match ourselves instead.
     const headers: Record<string, string> = {};
