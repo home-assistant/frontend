@@ -89,6 +89,10 @@ export class HuiImage extends LitElement {
 
   private _cameraImageObjectUrl?: string;
 
+  // Previous object URL still used by <img> or the aspect-ratio CSS
+  // background. Revoked after the replacement image has loaded and rendered.
+  private _pendingRevokeObjectUrl?: string;
+
   private _cameraImageRequestId = 0;
 
   private _ratio: {
@@ -129,7 +133,6 @@ export class HuiImage extends LitElement {
         this._stopIntersectionObserver();
         this._loadState = LoadState.Loading;
         this._clearCameraImage();
-        this._loadedImageSrc = undefined;
       }
     }
     if (changedProps.has("_imageVisible")) {
@@ -399,6 +402,9 @@ export class HuiImage extends LitElement {
     }
     await this.updateComplete;
     this._lastImageHeight = imgEl.offsetHeight;
+    // The aspect-ratio background (and the previous <img> decode) still
+    // referenced the old object URL until this render. Safe to drop now.
+    this._revokePendingCameraObjectUrl();
   }
 
   private async _onVideoLoad(
@@ -453,7 +459,7 @@ export class HuiImage extends LitElement {
     // started, or after _clearCameraImage() ran, can be told apart from the
     // current one instead of clobbering it or reviving a cleared image.
     const requestId = ++this._cameraImageRequestId;
-    
+
     let url: string;
     try {
       url = await fetchThumbnailUrlWithCache(
@@ -489,11 +495,7 @@ export class HuiImage extends LitElement {
       // Superseded by a newer poll or a clear while this request was in
       // flight. Drain the body so the connection can still be reused, but
       // leave all state alone - a newer request owns it now.
-      if (response.status === 304) {
-        await response.arrayBuffer();
-      } else if (response.ok) {
-        await response.blob();
-      }
+      await this._drainCameraImageResponse(response);
       return;
     }
 
@@ -502,7 +504,7 @@ export class HuiImage extends LitElement {
     // empty body still has to be consumed, or the request is torn down as
     // aborted and the connection cannot be reused.
     if (response.status === 304) {
-      await response.arrayBuffer();
+      await this._drainCameraImageResponse(response);
       // A 304 confirms the image already shown is still current, so a
       // stale error from an earlier failed poll no longer applies.
       this._loadState = LoadState.Loaded;
@@ -510,6 +512,7 @@ export class HuiImage extends LitElement {
     }
 
     if (!response.ok) {
+      await this._drainCameraImageResponse(response);
       this._onImageError();
       return;
     }
@@ -537,7 +540,30 @@ export class HuiImage extends LitElement {
     this._cameraImageObjectUrl = URL.createObjectURL(blob);
     this._cameraImageSrc = this._cameraImageObjectUrl;
     if (previousObjectUrl) {
-      URL.revokeObjectURL(previousObjectUrl);
+      if (this._pendingRevokeObjectUrl) {
+        // Still holding the last displayed image for the aspect-ratio
+        // background. The blob we are replacing never became visible.
+        URL.revokeObjectURL(previousObjectUrl);
+      } else {
+        this._pendingRevokeObjectUrl = previousObjectUrl;
+      }
+    }
+  }
+
+  private async _drainCameraImageResponse(response: Response): Promise<void> {
+    // An unconsumed body is torn down as aborted and the connection
+    // cannot be reused, including empty 304 and error responses.
+    try {
+      await response.arrayBuffer();
+    } catch (_err) {
+      // Already consumed or the connection was dropped.
+    }
+  }
+
+  private _revokePendingCameraObjectUrl(): void {
+    if (this._pendingRevokeObjectUrl) {
+      URL.revokeObjectURL(this._pendingRevokeObjectUrl);
+      this._pendingRevokeObjectUrl = undefined;
     }
   }
 
@@ -545,12 +571,16 @@ export class HuiImage extends LitElement {
     // Invalidate any in-flight request so it can't recreate state (or an
     // object URL that never gets revoked) after we've just cleared it.
     this._cameraImageRequestId++;
+    this._revokePendingCameraObjectUrl();
     if (this._cameraImageObjectUrl) {
       URL.revokeObjectURL(this._cameraImageObjectUrl);
       this._cameraImageObjectUrl = undefined;
     }
     this._cameraImageEtag = undefined;
     this._cameraImageSrc = undefined;
+    // May still point at a blob URL we just revoked (aspect-ratio cards
+    // render the last loaded src as the container background).
+    this._loadedImageSrc = undefined;
   }
 
   static styles = css`
