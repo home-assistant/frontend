@@ -95,6 +95,13 @@ export class HuiImage extends LitElement {
 
   private _cameraImageRequestId = 0;
 
+  // Last _cameraImageSrc that the <img> actually rendered. A 304 may only
+  // restore Loaded when it still matches; otherwise a decode failure would
+  // be hidden the next time the server confirms those bytes.
+  private _loadedCameraImageSrc?: string;
+
+  private _clearCameraImageTimeout?: number;
+
   private _ratio: {
     w: number;
     h: number;
@@ -102,6 +109,10 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (this._clearCameraImageTimeout) {
+      clearTimeout(this._clearCameraImageTimeout);
+      this._clearCameraImageTimeout = undefined;
+    }
     if (this._loadState === undefined) {
       this._loadState = LoadState.Loading;
     }
@@ -115,7 +126,11 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
     this._imageVisible = undefined;
-    this._clearCameraImage();
+    // Re-parent (edit-mode drag) reconnects immediately; keep the last frame.
+    this._clearCameraImageTimeout = window.setTimeout(
+      () => this._clearCameraImage(),
+      1
+    );
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
@@ -396,6 +411,7 @@ export class HuiImage extends LitElement {
     ev: HASSDomTargetEvent<HTMLImageElement>
   ): Promise<void> {
     this._loadState = LoadState.Loaded;
+    this._loadedCameraImageSrc = this._cameraImageSrc;
     const imgEl = ev.target;
     if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
       this._loadedImageSrc = imgEl.src;
@@ -486,7 +502,9 @@ export class HuiImage extends LitElement {
       response = await fetch(url, { headers });
     } catch (_err) {
       if (requestId === this._cameraImageRequestId) {
-        this._onImageError();
+        // fetch is CORS-mode; <img src> is not. If fetch is blocked
+        // (e.g. Cast without CORS), load the signed URL directly.
+        this._cameraImageSrc = url;
       }
       return;
     }
@@ -505,9 +523,12 @@ export class HuiImage extends LitElement {
     // aborted and the connection cannot be reused.
     if (response.status === 304) {
       await this._drainCameraImageResponse(response);
-      // A 304 confirms the image already shown is still current, so a
-      // stale error from an earlier failed poll no longer applies.
-      this._loadState = LoadState.Loaded;
+      // A 304 confirms the bytes we already have are current. Only restore
+      // Loaded if those bytes actually rendered; a decode/@error failure
+      // must not be hidden by the next unchanged poll.
+      if (this._cameraImageSrc === this._loadedCameraImageSrc) {
+        this._loadState = LoadState.Loaded;
+      }
       return;
     }
 
@@ -568,6 +589,10 @@ export class HuiImage extends LitElement {
   }
 
   private _clearCameraImage(): void {
+    if (this._clearCameraImageTimeout) {
+      clearTimeout(this._clearCameraImageTimeout);
+      this._clearCameraImageTimeout = undefined;
+    }
     // Invalidate any in-flight request so it can't recreate state (or an
     // object URL that never gets revoked) after we've just cleared it.
     this._cameraImageRequestId++;
@@ -578,6 +603,7 @@ export class HuiImage extends LitElement {
     }
     this._cameraImageEtag = undefined;
     this._cameraImageSrc = undefined;
+    this._loadedCameraImageSrc = undefined;
     // May still point at a blob URL we just revoked (aspect-ratio cards
     // render the last loaded src as the container background).
     this._loadedImageSrc = undefined;
