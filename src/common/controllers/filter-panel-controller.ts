@@ -200,10 +200,11 @@ export class FilterPanelController implements ReactiveController {
     this._animation = animation;
   }
 
-  private _finish() {
+  private async _finish() {
     if (!this.host.expanded) {
       this.showContent = false;
       this.host.requestUpdate();
+      await this.host.updateComplete;
     }
     clearInlineStyles(this.host);
     clearInlineStyles(this._content.value);
