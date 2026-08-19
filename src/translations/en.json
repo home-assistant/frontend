@@ -7526,6 +7526,10 @@
         },
         "serial": {
           "title": "Serial",
+          "status_ok": "All ports connected",
+          "status_disconnected": "Ports disconnected",
+          "status_summary": "{in_use}/{total} connected ports in use",
+          "status_summary_disconnected": "{count} disconnected",
           "connected": "Connected",
           "connected_description": "These ports are used by at least one integration or app.",
           "available": "Available",
@@ -7548,9 +7552,7 @@
             "serial_number": "Serial number",
             "vid": "Vendor ID",
             "pid": "Product ID",
-            "bcd_device": "Device revision",
-            "matching_integrations": "Matching integrations",
-            "used_by": "Used by"
+            "bcd_device": "Device revision"
           }
         },
         "dhcp": {

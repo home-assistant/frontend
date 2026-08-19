@@ -6,7 +6,6 @@ import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
-import { domainToName } from "../../../../../data/integration";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import type { SerialPortInfoDialogParams } from "./show-dialog-serial-port-info";
@@ -70,16 +69,6 @@ class DialogSerialPortInfo extends LitElement {
         port.bcd_device == null
           ? undefined
           : port.bcd_device.toString(16).padStart(4, "0").toUpperCase(),
-      ],
-      [
-        localize("ui.panel.config.serial.fields.matching_integrations"),
-        port.matching_integrations
-          .map((domain) => domainToName(localize, domain))
-          .join(", "),
-      ],
-      [
-        localize("ui.panel.config.serial.fields.used_by"),
-        port.consumers.map((consumer) => consumer.title).join(", "),
       ],
     ];
 
