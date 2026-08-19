@@ -125,7 +125,6 @@ class HaPanelHistory extends LitElement {
 
   private _fetchedEntityIds?: string[];
 
-  // Bumped on every stats request so an older fetch cannot overwrite a newer one.
   private _statsFetchId = 0;
 
   private _interval?: number;
