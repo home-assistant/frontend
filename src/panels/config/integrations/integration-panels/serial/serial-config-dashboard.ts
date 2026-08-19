@@ -1,6 +1,8 @@
 import {
   mdiConnection,
+  mdiInformationOutline,
   mdiMemory,
+  mdiPowerPlugOff,
   mdiPuzzle,
   mdiRefresh,
   mdiUsb,
@@ -22,11 +24,14 @@ import { domainToName } from "../../../../../data/integration";
 import type {
   SerialPort,
   SerialPortConsumer,
+  SerialPortDiscoveryFlow,
   SerialPortsAndConsumers,
   SerialPortWithConsumers,
 } from "../../../../../data/usb";
 import { listSerialPortsWithConsumers } from "../../../../../data/usb";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
+import { showSerialPortInfoDialog } from "./show-dialog-serial-port-info";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -64,9 +69,13 @@ const getPortType = (port: SerialPort): SerialPortType => {
 interface PortListItem {
   icon: string;
   primary: string;
-  secondary?: string;
+  device?: string;
+  details?: string;
   matchingIntegrations: string[];
   consumers: SerialPortConsumer[];
+  discoveryFlows: SerialPortDiscoveryFlow[];
+  // Only scanned ports carry the full information shown in the info dialog
+  port?: SerialPortWithConsumers;
 }
 
 @customElement("serial-config-dashboard")
@@ -117,16 +126,12 @@ export class SerialConfigDashboard extends LitElement {
       primary = productManufacturer || port.device;
     }
 
-    const parts: string[] = [];
-    // The device of a serial proxy is an internal URL, not a real path
-    if (type !== "serial_proxy" && primary !== port.device) {
-      parts.push(port.device);
-    }
+    const details: string[] = [];
     if (port.vid && port.pid) {
-      parts.push(`${port.vid}:${port.pid}`);
+      details.push(`${port.vid}:${port.pid}`);
     }
     if (port.serial_number) {
-      parts.push(
+      details.push(
         localize("ui.panel.config.serial.serial_number", {
           serial_number: port.serial_number,
         })
@@ -136,9 +141,16 @@ export class SerialConfigDashboard extends LitElement {
     return {
       icon: TYPE_ICONS[type],
       primary,
-      secondary: parts.join(" · ") || undefined,
+      // The device of a serial proxy is an internal URL, not a real path
+      device:
+        type !== "serial_proxy" && primary !== port.device
+          ? port.device
+          : undefined,
+      details: details.join(" · ") || undefined,
       matchingIntegrations: port.matching_integrations,
       consumers: port.consumers,
+      discoveryFlows: port.discovery_flows,
+      port,
     };
   }
 
@@ -149,32 +161,33 @@ export class SerialConfigDashboard extends LitElement {
       language: string
     ): {
       available: PortListItem[];
-      inUse: PortListItem[];
+      connected: PortListItem[];
       disconnected: PortListItem[];
     } => {
       const available: PortListItem[] = [];
-      const inUse: PortListItem[] = [];
+      const connected: PortListItem[] = [];
 
       for (const port of result.ports) {
-        (port.consumers.length ? inUse : available).push(
+        (port.consumers.length ? connected : available).push(
           this._portListItem(port, localize)
         );
       }
 
       const disconnected = result.missing.map((port): PortListItem => ({
-        icon: TYPE_ICONS.unnamed,
+        icon: mdiPowerPlugOff,
         primary: port.device,
         matchingIntegrations: [],
         consumers: port.consumers,
+        discoveryFlows: [],
       }));
 
       const byPrimary = (a: PortListItem, b: PortListItem) =>
         caseInsensitiveStringCompare(a.primary, b.primary, language);
       available.sort(byPrimary);
-      inUse.sort(byPrimary);
+      connected.sort(byPrimary);
       disconnected.sort(byPrimary);
 
-      return { available, inUse, disconnected };
+      return { available, connected, disconnected };
     }
   );
 
@@ -224,21 +237,78 @@ export class SerialConfigDashboard extends LitElement {
     `;
   }
 
+  private _renderDiscoveryFlow(flow: SerialPortDiscoveryFlow): TemplateResult {
+    return html`
+      <ha-md-list-item
+        type="button"
+        class="consumer"
+        .flowId=${flow.flow_id}
+        @click=${this._continueFlow}
+      >
+        <img
+          slot="start"
+          .src=${brandsUrl(
+            {
+              domain: flow.domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )}
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          alt=${flow.domain}
+        />
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.serial.discovered_by", {
+            integration: domainToName(this.hass.localize, flow.domain),
+          })}
+        </div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-md-list-item>
+    `;
+  }
+
+  private _continueFlow(ev: Event): void {
+    showConfigFlowDialog(this, {
+      continueFlowId: (ev.currentTarget as any).flowId,
+      dialogClosedCallback: () => {
+        this._fetchPorts();
+      },
+    });
+  }
+
   private _renderPortItem(item: PortListItem): TemplateResult {
+    const discoveredDomains = new Set(
+      item.discoveryFlows.map((flow) => flow.domain)
+    );
+    const remainingIntegrations = item.matchingIntegrations.filter(
+      (domain) => !discoveredDomains.has(domain)
+    );
+
     const matchingIntegrations =
-      !item.consumers.length && item.matchingIntegrations.length
-        ? item.matchingIntegrations
+      !item.consumers.length && remainingIntegrations.length
+        ? remainingIntegrations
             .map((domain) => domainToName(this.hass.localize, domain))
             .join(", ")
         : undefined;
 
     return html`
       <ha-md-list-item class="port">
-        <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
+        <ha-svg-icon
+          slot="start"
+          class=${item.port ? "" : "disconnected"}
+          .path=${item.icon}
+        ></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         ${
-          item.secondary
-            ? html`<div slot="supporting-text">${item.secondary}</div>`
+          item.device
+            ? html`<div slot="supporting-text">${item.device}</div>`
+            : nothing
+        }
+        ${
+          item.details
+            ? html`<div slot="supporting-text">${item.details}</div>`
             : nothing
         }
         ${
@@ -253,9 +323,29 @@ export class SerialConfigDashboard extends LitElement {
               </div>`
             : nothing
         }
+        ${
+          item.port
+            ? html`<ha-icon-button
+                slot="end"
+                .label=${this.hass.localize(
+                  "ui.panel.config.serial.port_information"
+                )}
+                .path=${mdiInformationOutline}
+                .port=${item.port}
+                @click=${this._showPortInfo}
+              ></ha-icon-button>`
+            : nothing
+        }
       </ha-md-list-item>
       ${item.consumers.map((consumer) => this._renderConsumer(consumer))}
+      ${item.discoveryFlows.map((flow) => this._renderDiscoveryFlow(flow))}
     `;
+  }
+
+  private _showPortInfo(ev: Event): void {
+    showSerialPortInfoDialog(this, {
+      port: (ev.currentTarget as any).port,
+    });
   }
 
   private _renderPortsCard(
@@ -315,13 +405,13 @@ export class SerialConfigDashboard extends LitElement {
       `;
     }
 
-    const { available, inUse, disconnected } = this._sortedPorts(
+    const { available, connected, disconnected } = this._sortedPorts(
       this._ports,
       this.hass.localize,
       this.hass.locale.language
     );
 
-    if (!available.length && !inUse.length && !disconnected.length) {
+    if (!available.length && !connected.length && !disconnected.length) {
       return html`
         <ha-card>
           <div class="card-content">
@@ -335,6 +425,17 @@ export class SerialConfigDashboard extends LitElement {
 
     return html`
       ${
+        connected.length
+          ? this._renderPortsCard(
+              this.hass.localize("ui.panel.config.serial.connected"),
+              this.hass.localize(
+                "ui.panel.config.serial.connected_description"
+              ),
+              connected
+            )
+          : nothing
+      }
+      ${
         available.length
           ? this._renderPortsCard(
               this.hass.localize("ui.panel.config.serial.available"),
@@ -342,15 +443,6 @@ export class SerialConfigDashboard extends LitElement {
                 "ui.panel.config.serial.available_description"
               ),
               available
-            )
-          : nothing
-      }
-      ${
-        inUse.length
-          ? this._renderPortsCard(
-              this.hass.localize("ui.panel.config.serial.in_use"),
-              this.hass.localize("ui.panel.config.serial.in_use_description"),
-              inUse
             )
           : nothing
       }
@@ -423,7 +515,13 @@ export class SerialConfigDashboard extends LitElement {
         }
 
         ha-md-list-item.port:not(:first-child) {
-          margin-top: var(--ha-space-3);
+          border-top: 1px solid var(--divider-color);
+          margin-top: var(--ha-space-2);
+          --md-list-item-top-space: var(--ha-space-4);
+        }
+
+        ha-md-list-item .disconnected {
+          color: var(--disabled-text-color);
         }
 
         ha-md-list-item.consumer {

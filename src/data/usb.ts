@@ -6,8 +6,10 @@ export interface SerialPort {
   manufacturer: string | null;
   description: string | null;
   interface_description?: string | null;
+  interface_num?: number | null;
   vid?: string;
   pid?: string;
+  bcd_device?: number | null;
   matching_integrations: string[];
 }
 
@@ -20,8 +22,14 @@ export interface SerialPortConsumer {
   slug: string | null;
 }
 
+export interface SerialPortDiscoveryFlow {
+  flow_id: string;
+  domain: string;
+}
+
 export interface SerialPortWithConsumers extends SerialPort {
   consumers: SerialPortConsumer[];
+  discovery_flows: SerialPortDiscoveryFlow[];
 }
 
 export interface MissingSerialPort {

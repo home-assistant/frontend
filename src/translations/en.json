@@ -7526,17 +7526,32 @@
         },
         "serial": {
           "title": "Serial",
+          "connected": "Connected",
+          "connected_description": "These ports are used by at least one integration or app.",
           "available": "Available",
           "available_description": "These ports are connected but not used by any integration or app.",
-          "in_use": "In use",
-          "in_use_description": "These ports are used by at least one integration or app.",
           "disconnected": "Disconnected",
           "disconnected_description": "These ports are used by an integration or app but are currently not connected.",
           "no_ports": "No serial ports found",
           "loading_error": "Failed to load serial ports",
           "serial_number": "S/N: {serial_number}",
           "consumer_not_running": "{name} (not running)",
-          "can_be_used_with": "Can be used with {integrations}"
+          "can_be_used_with": "Can be used with {integrations}",
+          "discovered_by": "Discovered by {integration}, set it up",
+          "port_information": "Port information",
+          "fields": {
+            "device": "Device",
+            "description": "Description",
+            "manufacturer": "Manufacturer",
+            "interface_description": "Interface description",
+            "interface_number": "Interface number",
+            "serial_number": "Serial number",
+            "vid": "Vendor ID",
+            "pid": "Product ID",
+            "bcd_device": "Device revision",
+            "matching_integrations": "Matching integrations",
+            "used_by": "Used by"
+          }
         },
         "dhcp": {
           "title": "DHCP discovery",

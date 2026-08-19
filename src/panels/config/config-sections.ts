@@ -3,6 +3,7 @@ import {
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiBluetooth,
+  mdiCableData,
   mdiCellphoneCog,
   mdiCog,
   mdiDatabase,
@@ -40,7 +41,6 @@ import memoizeOne from "memoize-one";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../types";
 import { mdiMqttLogo } from "../../resources/mqtt-logo-svg";
-import { fluentSerialPort } from "../../resources/serial-port-svg";
 
 const getHasDomainCheck = (domain: string) => {
   const prefix = `${domain}.`;
@@ -171,8 +171,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/config/serial",
-      iconPath: fluentSerialPort,
-      iconViewBox: "0 0 20 20",
+      iconPath: mdiCableData,
       iconColor: "#607D8B",
       component: "usb",
       translationKey: "serial",
