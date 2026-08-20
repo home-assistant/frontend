@@ -7,6 +7,7 @@ import {
   state,
 } from "lit/decorators";
 import deepClone from "deep-clone-simple";
+import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -26,6 +27,7 @@ interface StackEntry {
   initialData: FormDialogData;
   data: FormDialogData;
   scrollTop: number;
+  focusTarget?: Element;
   error?: Record<string, string>;
 }
 
@@ -102,6 +104,7 @@ export class DialogForm
     }
 
     ev.stopPropagation();
+    const focusTarget = deepActiveElement();
 
     this._stack = [
       ...this._stack,
@@ -110,6 +113,7 @@ export class DialogForm
         initialData: this._initialData,
         data: this._data,
         scrollTop: this._dialog?.bodyContainer.scrollTop ?? 0,
+        focusTarget: focusTarget ?? undefined,
         error: this._error,
       },
     ];
@@ -138,9 +142,10 @@ export class DialogForm
     return prev;
   }
 
-  private async _restoreScroll(
+  private async _restoreFocusAndScroll(
     scrollTop: number,
-    expectedParams: FormDialogParams
+    expectedParams: FormDialogParams,
+    focusTarget?: Element
   ): Promise<void> {
     await this.updateComplete;
     await this._form?.updateComplete;
@@ -152,12 +157,20 @@ export class DialogForm
       return;
     }
 
+    if (focusTarget instanceof HTMLElement && focusTarget.isConnected) {
+      focusTarget.focus();
+    }
+
     this._dialog.bodyContainer.scrollTop = scrollTop;
   }
 
   private _dialogClosed(): void {
     if (!this._closeState) {
       this._params?.cancel?.();
+
+      for (let index = this._stack.length - 1; index >= 0; index--) {
+        this._stack[index].params.cancel?.();
+      }
     }
 
     if (this._closeState !== "submitted") {
@@ -196,7 +209,11 @@ export class DialogForm
     }
 
     submit!(data);
-    void this._restoreScroll(stackEntry.scrollTop, stackEntry.params);
+    void this._restoreFocusAndScroll(
+      stackEntry.scrollTop,
+      stackEntry.params,
+      stackEntry.focusTarget
+    );
   }
 
   private _cancel(): void {
@@ -211,7 +228,11 @@ export class DialogForm
     }
 
     cancel!();
-    void this._restoreScroll(stackEntry.scrollTop, stackEntry.params);
+    void this._restoreFocusAndScroll(
+      stackEntry.scrollTop,
+      stackEntry.params,
+      stackEntry.focusTarget
+    );
   }
 
   private _valueChanged(ev: CustomEvent): void {
