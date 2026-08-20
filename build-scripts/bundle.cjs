@@ -63,8 +63,10 @@ module.exports.htmlMinifierOptions = {
 };
 
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
-  safari10: !latestBuild,
-  ecma: latestBuild ? 2015 : 5,
+  // Highest syntax the minifier may emit; it never downlevels. Every browser
+  // in [modern] is well past ES2020 (universal since spring 2020); the
+  // [legacy] floors (Chrome 59 / Safari 12) top out at ES2017.
+  ecma: latestBuild ? 2020 : 2017,
   module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,

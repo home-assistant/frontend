@@ -28,8 +28,8 @@ import type {
   SortingDirection,
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-adaptive-dialog";
 import "../components/ha-button";
-import "../components/ha-dialog";
 import "../components/ha-dialog-footer";
 import "../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
@@ -566,16 +566,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       </hass-tabs-subpage>
       ${
         this.showFilters && !showPane
-          ? html`<ha-dialog
-              .open=${true}
+          ? html`<ha-adaptive-dialog
+              open
+              flexcontent
               width="full"
               header-title=${localize("ui.components.subpage-data-table.filters")}
               @closed=${this._closeFilters}
             >
               <ha-icon-button
                 slot="headerNavigationIcon"
+                data-dialog="close"
                 .path=${mdiClose}
-                @click=${this._closeFilters}
                 .label=${localize(
                   "ui.components.subpage-data-table.close_filter"
                 )}
@@ -596,13 +597,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 <slot name="filter-pane"></slot>
               </div>
               <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this._closeFilters}>
+                <ha-button slot="primaryAction" data-dialog="close">
                   ${localize("ui.components.subpage-data-table.show_results", {
                     number: this.data.length,
                   })}
                 </ha-button>
               </ha-dialog-footer>
-            </ha-dialog>`
+            </ha-adaptive-dialog>`
           : nothing
       }
     `;
@@ -934,20 +935,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       --md-assist-chip-trailing-space: 8px;
     }
 
-    ha-dialog {
+    ha-adaptive-dialog {
       --dialog-content-padding: 0;
+      /* Fixed height so the sheet does not resize while filtering. */
+      --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+      --ha-dialog-min-height: calc(var(--safe-height) - var(--ha-space-20));
     }
 
     .filter-dialog-content {
-      height: calc(
-        100vh -
-          70px - var(--header-height, 0px) - var(
-            --safe-area-inset-top,
-            0px
-          ) - var(--safe-area-inset-bottom, 0px)
-      );
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     ha-dropdown ha-assist-chip {
