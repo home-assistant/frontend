@@ -1,6 +1,6 @@
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
-import { assert, describe, it } from "vitest";
+import { afterEach, assert, describe, it, vi } from "vitest";
 
 import { calcDate } from "../../src/common/datetime/calc_date";
 import {
@@ -23,6 +23,8 @@ import {
   getEnergyFirstStatisticAt,
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
+  getEnergyDataCollection,
+  EMPTY_PREFERENCES,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
@@ -869,27 +871,56 @@ describe("Self-consumed solar gauge tests", () => {
   });
 });
 
-describe("getNextEnergyPeriodStart", () => {
-  const locale: FrontendLocaleData = {
-    language: "en",
-    number_format: NumberFormat.language,
-    time_format: TimeFormat.language,
-    date_format: DateFormat.language,
-    time_zone: TimeZone.server,
-    first_weekday: FirstWeekday.language,
-  };
-  // Pin the time zone (via TimeZone.server) so the test does not depend on the
-  // machine's local zone.
-  const config = { time_zone: "America/New_York" } as HassConfig;
+// Pin the time zone (via TimeZone.server) so energy period tests do not
+// depend on the machine's local zone.
+const energyPeriodLocale: FrontendLocaleData = {
+  language: "en",
+  number_format: NumberFormat.language,
+  time_format: TimeFormat.language,
+  date_format: DateFormat.language,
+  time_zone: TimeZone.server,
+  first_weekday: FirstWeekday.language,
+};
+const energyPeriodConfig = { time_zone: "America/New_York" } as HassConfig;
+const energyPeriodDay = (now: Date, offset = 0) => ({
+  start: calcDate(
+    addDays(now, offset),
+    startOfDay,
+    energyPeriodLocale,
+    energyPeriodConfig
+  ),
+  end: calcDate(
+    addDays(now, offset),
+    endOfDay,
+    energyPeriodLocale,
+    energyPeriodConfig
+  ),
+});
 
+describe("getNextEnergyPeriodStart", () => {
   const isMidnight = (date: Date) =>
-    calcDate(date, startOfDay, locale, config).getTime() === date.getTime();
+    calcDate(
+      date,
+      startOfDay,
+      energyPeriodLocale,
+      energyPeriodConfig
+    ).getTime() === date.getTime();
 
   it("rolls the real-time view over at midnight, statistics an hour later", () => {
     const now = new Date("2026-06-19T15:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
-    const statistics = getNextEnergyPeriodStart(false, now, locale, config);
+    const realTime = getNextEnergyPeriodStart(
+      true,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
+    const statistics = getNextEnergyPeriodStart(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
 
     // Real-time rolls over exactly at the next midnight.
     assert.isTrue(isMidnight(realTime));
@@ -899,9 +930,14 @@ describe("getNextEnergyPeriodStart", () => {
     );
 
     // Statistics roll over an hour after midnight, on the same day boundary.
-    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000 - 1);
+    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000);
     assert.equal(
-      calcDate(statistics, startOfDay, locale, config).getTime(),
+      calcDate(
+        statistics,
+        startOfDay,
+        energyPeriodLocale,
+        energyPeriodConfig
+      ).getTime(),
       realTime.getTime()
     );
   });
@@ -909,7 +945,12 @@ describe("getNextEnergyPeriodStart", () => {
   it("advances the real-time view to the next midnight when called after midnight", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
+    const realTime = getNextEnergyPeriodStart(
+      true,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
 
     assert.isTrue(isMidnight(realTime));
     // Next midnight is June 21, not the already-passed June 20 midnight.
@@ -919,68 +960,57 @@ describe("getNextEnergyPeriodStart", () => {
     );
   });
 
-  it("wakes hour-0 yesterday at today 01:00, not tomorrow 01:00", () => {
+  it("wakes a non-today live day at today 01:00 during hour 0", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
-    const yesterdayStart = calcDate(
-      addDays(now, -1),
-      startOfDay,
-      locale,
-      config
-    );
+    const todayOne = new Date("2026-06-20T01:00:00-04:00").getTime();
 
-    const next = getNextEnergyPeriodStart(
-      false,
-      now,
-      locale,
-      config,
-      yesterdayStart
-    );
-
-    assert.equal(
-      next.getTime(),
-      new Date("2026-06-20T01:00:00-04:00").getTime()
-    );
+    for (const offset of [-1, -2]) {
+      assert.equal(
+        getNextEnergyPeriodStart(
+          false,
+          now,
+          energyPeriodLocale,
+          energyPeriodConfig,
+          energyPeriodDay(now, offset).start
+        ).getTime(),
+        todayOne
+      );
+    }
   });
 
   it("keeps tomorrow 01:00 when statistics is already on today during hour 0", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
-    const todayStart = calcDate(now, startOfDay, locale, config);
-
-    const withoutPeriod = getNextEnergyPeriodStart(false, now, locale, config);
-    const onToday = getNextEnergyPeriodStart(
-      false,
-      now,
-      locale,
-      config,
-      todayStart
-    );
 
     assert.equal(
-      withoutPeriod.getTime(),
-      new Date("2026-06-21T00:59:59.999-04:00").getTime()
+      getNextEnergyPeriodStart(
+        false,
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig,
+        energyPeriodDay(now).start
+      ).getTime(),
+      new Date("2026-06-21T01:00:00-04:00").getTime()
     );
-    assert.equal(onToday.getTime(), withoutPeriod.getTime());
   });
 });
 
 describe("shouldFallbackEnergyPeriodToYesterday", () => {
-  const locale: FrontendLocaleData = {
-    language: "en",
-    number_format: NumberFormat.language,
-    time_format: TimeFormat.language,
-    date_format: DateFormat.language,
-    time_zone: TimeZone.server,
-    first_weekday: FirstWeekday.language,
-  };
-  const config = { time_zone: "America/New_York" } as HassConfig;
-
   it("is true for the statistics view before 01:00", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
     assert.isTrue(
-      shouldFallbackEnergyPeriodToYesterday(false, now, locale, config)
+      shouldFallbackEnergyPeriodToYesterday(
+        false,
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
     );
     assert.equal(
-      getEnergyFirstStatisticAt(now, locale, config).getTime(),
+      getEnergyFirstStatisticAt(
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig
+      ).getTime(),
       new Date("2026-06-20T01:00:00-04:00").getTime()
     );
   });
@@ -989,81 +1019,188 @@ describe("shouldFallbackEnergyPeriodToYesterday", () => {
     const atOne = new Date("2026-06-20T01:00:00-04:00");
     const beforeOne = new Date("2026-06-20T00:30:00-04:00");
     assert.isFalse(
-      shouldFallbackEnergyPeriodToYesterday(false, atOne, locale, config)
+      shouldFallbackEnergyPeriodToYesterday(
+        false,
+        atOne,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
     );
     assert.isFalse(
-      shouldFallbackEnergyPeriodToYesterday(true, beforeOne, locale, config)
+      shouldFallbackEnergyPeriodToYesterday(
+        true,
+        beforeOne,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
     );
   });
 });
 
 describe("getEnergyLiveDayPeriod", () => {
-  const locale: FrontendLocaleData = {
-    language: "en",
-    number_format: NumberFormat.language,
-    time_format: TimeFormat.language,
-    date_format: DateFormat.language,
-    time_zone: TimeZone.server,
-    first_weekday: FirstWeekday.language,
-  };
-  const config = { time_zone: "America/New_York" } as HassConfig;
-
-  const yesterday = (now: Date) => ({
-    start: calcDate(addDays(now, -1), startOfDay, locale, config),
-    end: calcDate(addDays(now, -1), endOfDay, locale, config),
-  });
-  const today = (now: Date) => ({
-    start: calcDate(now, startOfDay, locale, config),
-    end: calcDate(now, endOfDay, locale, config),
-  });
-
   it("keeps yesterday during hour 0 when that is the current period", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = yesterday(now);
-    const live = getEnergyLiveDayPeriod(false, now, locale, config, start, end);
+    const { start, end } = energyPeriodDay(now, -1);
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      start
+    );
     assert.equal(live.start.getTime(), start.getTime());
     assert.equal(live.end.getTime(), end.getTime());
   });
 
   it("keeps today during hour 0 when the user already picked today", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = today(now);
-    const live = getEnergyLiveDayPeriod(false, now, locale, config, start, end);
+    const { start, end } = energyPeriodDay(now);
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      start
+    );
     assert.equal(live.start.getTime(), start.getTime());
     assert.equal(live.end.getTime(), end.getTime());
   });
 
   it("advances a stale yesterday to today after 01:00", () => {
     const now = new Date("2026-06-20T10:00:00-04:00");
-    const stale = yesterday(now);
-    const expected = today(now);
     const live = getEnergyLiveDayPeriod(
       false,
       now,
-      locale,
-      config,
-      stale.start,
-      stale.end
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -1).start
     );
+    const expected = energyPeriodDay(now);
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
 
   it("advances a two-day-old live day to today", () => {
     const now = new Date("2026-06-20T10:00:00-04:00");
-    const staleStart = calcDate(addDays(now, -2), startOfDay, locale, config);
-    const staleEnd = calcDate(addDays(now, -2), endOfDay, locale, config);
-    const expected = today(now);
     const live = getEnergyLiveDayPeriod(
       false,
       now,
-      locale,
-      config,
-      staleStart,
-      staleEnd
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -2).start
     );
+    const expected = energyPeriodDay(now);
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+
+  it("falls back to yesterday for a stale live day during hour 0", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -2).start
+    );
+    const expected = energyPeriodDay(now, -1);
+    assert.equal(live.start.getTime(), expected.start.getTime());
+    assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+});
+
+describe("getEnergyDataCollection live day", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  const createCollection = (key: string, preset?: string) => {
+    const hass = createMockHass();
+    hass.locale = energyPeriodLocale;
+    hass.config = { ...hass.config, time_zone: "America/New_York" };
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS: vi.fn(async (msg: { type: string }) => {
+        if (msg.type === "energy/info") {
+          return { cost_sensors: {}, solar_forecast_domains: [] };
+        }
+        throw new Error(`unexpected ${msg.type}`);
+      }),
+    });
+    if (preset) {
+      localStorage.setItem(getEnergyDefaultPeriodStorageKey(hass, key), preset);
+    }
+    return getEnergyDataCollection(hass, {
+      key,
+      prefs: EMPTY_PREFERENCES,
+    });
+  };
+
+  it("advances hour-0 yesterday to today at 01:00", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+
+    const collection = createCollection("energy_timer");
+    const unsub = collection.subscribe(() => undefined);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date(), -1).start.getTime()
+    );
+
+    vi.advanceTimersByTime(30 * 60 * 1000);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+
+    unsub();
+  });
+
+  it("catches up a stale live day on resubscribe", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const collection = createCollection("energy_catchup");
+    let unsub = collection.subscribe(() => undefined);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+
+    unsub();
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+
+    unsub();
+  });
+
+  it("does not roll a remembered week preset over to today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const collection = createCollection("energy_week_stored", "this_week");
+    const weekStart = collection.start.getTime();
+    const unsub = collection.subscribe(() => undefined);
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), weekStart);
+
+    unsub();
   });
 });
 
