@@ -74,7 +74,10 @@ class HaMoreInfoDetails extends LitElement {
       stateEntries,
       attributes,
       yamlData: stateYamlData,
-    } = this._getDetailData(this._stateObj);
+    } = this._getDetailData(
+      this._stateObj,
+      this.hass.formatEntityAttributeName
+    );
     const { floor, area, device } = getEntityContext(
       this._stateObj,
       this.hass.entities,
@@ -212,7 +215,10 @@ class HaMoreInfoDetails extends LitElement {
 
   private _getDetailData = memoizeOne(
     (
-      stateObj: HassEntity
+      stateObj: HassEntity,
+      // cache key only: a new function is assigned when translation-based
+      // format functions reload, invalidating results formatted via this.hass
+      _formatEntityAttributeName: HomeAssistant["formatEntityAttributeName"]
     ): {
       stateEntries: DetailEntry[];
       attributes: string[];
