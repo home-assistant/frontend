@@ -898,9 +898,10 @@ export const getEnergyLiveDayPeriod = (
     ) &&
     currentStart.getTime() !== todayStart.getTime()
   ) {
+    const yesterday = calcDate(now, addDays, locale, config, -1);
     return {
-      start: calcDate(addDays(now, -1), startOfDay, locale, config),
-      end: calcDate(addDays(now, -1), endOfDay, locale, config),
+      start: calcDate(yesterday, startOfDay, locale, config),
+      end: calcDate(yesterday, endOfDay, locale, config),
     };
   }
   return {
@@ -936,10 +937,13 @@ export const getNextEnergyPeriodStart = (
   ) {
     return getEnergyFirstStatisticAt(now, locale, config);
   }
-  if (midnightRollover) {
-    return addMilliseconds(calcDate(now, endOfDay, locale, config), 1);
-  }
-  return getEnergyFirstStatisticAt(addDays(now, 1), locale, config);
+  // Next midnight in the configured zone, not browser-local addDays, so a
+  // DST transition cannot skip a server-tz day.
+  const nextMidnight = addMilliseconds(
+    calcDate(now, endOfDay, locale, config),
+    1
+  );
+  return midnightRollover ? nextMidnight : addHours(nextMidnight, 1);
 };
 
 export const getEnergyDataCollection = (
@@ -1121,11 +1125,12 @@ export const getEnergyDataCollection = (
     clearUpdatePeriodTimeout();
     collection.start = newStart;
     collection.end = newEnd;
+    const periodNow = new Date();
     followLiveDay =
       collection.start.getTime() ===
-        calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
+        calcDate(periodNow, startOfDay, hass.locale, hass.config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime();
+        calcDate(periodNow, endOfDay, hass.locale, hass.config).getTime();
     if (followLiveDay) {
       scheduleUpdatePeriod();
     }

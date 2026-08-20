@@ -1,4 +1,10 @@
-import { addDays, endOfDay, startOfDay } from "date-fns";
+import {
+  addDays,
+  addHours,
+  addMilliseconds,
+  endOfDay,
+  startOfDay,
+} from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { afterEach, assert, describe, it, vi } from "vitest";
 
@@ -882,20 +888,18 @@ const energyPeriodLocale: FrontendLocaleData = {
   first_weekday: FirstWeekday.language,
 };
 const energyPeriodConfig = { time_zone: "America/New_York" } as HassConfig;
-const energyPeriodDay = (now: Date, offset = 0) => ({
-  start: calcDate(
-    addDays(now, offset),
-    startOfDay,
-    energyPeriodLocale,
-    energyPeriodConfig
-  ),
-  end: calcDate(
-    addDays(now, offset),
-    endOfDay,
-    energyPeriodLocale,
-    energyPeriodConfig
-  ),
-});
+const energyTokyoConfig = { time_zone: "Asia/Tokyo" } as HassConfig;
+const energyPeriodDay = (
+  now: Date,
+  offset = 0,
+  config: HassConfig = energyPeriodConfig
+) => {
+  const day = calcDate(now, addDays, energyPeriodLocale, config, offset);
+  return {
+    start: calcDate(day, startOfDay, energyPeriodLocale, config),
+    end: calcDate(day, endOfDay, energyPeriodLocale, config),
+  };
+};
 
 describe("getNextEnergyPeriodStart", () => {
   const isMidnight = (date: Date) =>
@@ -990,6 +994,35 @@ describe("getNextEnergyPeriodStart", () => {
         energyPeriodDay(now).start
       ).getTime(),
       new Date("2026-06-21T01:00:00-04:00").getTime()
+    );
+  });
+
+  it("schedules tomorrow 01:00 in the server zone across a browser-length DST gap", () => {
+    // 23:30 JST on 24 Oct 2026. addDays() in a DST-fallback browser zone
+    // can skip a calendar day; the rollover must stay on the next JST day.
+    const now = new Date("2026-10-24T14:30:00.000Z");
+
+    // Compare to the tz-internal formula rather than a hardcoded instant:
+    // CI pins TZ=Etc/UTC (no DST), where browser-local addDays(now, 1) can
+    // land on the same JST day. The formula is the production invariant.
+    // test/data/energy-dst.test.ts pins Europe/Berlin so a raw addDays
+    // regression actually fails.
+    const expected = addHours(
+      addMilliseconds(
+        calcDate(now, endOfDay, energyPeriodLocale, energyTokyoConfig),
+        1
+      ),
+      1
+    );
+
+    assert.equal(
+      getNextEnergyPeriodStart(
+        false,
+        now,
+        energyPeriodLocale,
+        energyTokyoConfig
+      ).getTime(),
+      expected.getTime()
     );
   });
 });
@@ -1107,6 +1140,25 @@ describe("getEnergyLiveDayPeriod", () => {
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
+
+  it("resolves yesterday in the server zone during hour 0", () => {
+    // 00:30 JST on 26 Oct 2026. Browser-local addDays can land two days back.
+    const now = new Date("2026-10-25T15:30:00.000Z");
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyTokyoConfig,
+      new Date(0)
+    );
+    // energyPeriodDay uses calcDate(..., addDays, ..., -1) then start/end of
+    // day — the tz-internal formula. A hardcoded instant would not show why
+    // UTC CI cannot catch a raw addDays(now, -1) regression; see
+    // test/data/energy-dst.test.ts for the Europe/Berlin case that can.
+    const expected = energyPeriodDay(now, -1, energyTokyoConfig);
+    assert.equal(live.start.getTime(), expected.start.getTime());
+    assert.equal(live.end.getTime(), expected.end.getTime());
+  });
 });
 
 describe("getEnergyDataCollection live day", () => {
@@ -1119,79 +1171,157 @@ describe("getEnergyDataCollection live day", () => {
     const hass = createMockHass();
     hass.locale = energyPeriodLocale;
     hass.config = { ...hass.config, time_zone: "America/New_York" };
+    const callWS = vi.fn(async (msg: { type: string }) => {
+      if (msg.type === "energy/info") {
+        return { cost_sensors: {}, solar_forecast_domains: [] };
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
     Object.assign(hass, {
       connection: {
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
         connected: true,
       },
-      callWS: vi.fn(async (msg: { type: string }) => {
-        if (msg.type === "energy/info") {
-          return { cost_sensors: {}, solar_forecast_domains: [] };
-        }
-        throw new Error(`unexpected ${msg.type}`);
-      }),
+      callWS,
     });
     if (preset) {
       localStorage.setItem(getEnergyDefaultPeriodStorageKey(hass, key), preset);
     }
-    return getEnergyDataCollection(hass, {
-      key,
-      prefs: EMPTY_PREFERENCES,
-    });
+    return {
+      collection: getEnergyDataCollection(hass, {
+        key,
+        prefs: EMPTY_PREFERENCES,
+      }),
+      callWS,
+    };
   };
 
-  it("advances hour-0 yesterday to today at 01:00", () => {
+  const energyInfoFetches = (callWS: ReturnType<typeof vi.fn>) =>
+    callWS.mock.calls.filter((call) => call[0].type === "energy/info");
+
+  it("advances hour-0 yesterday to today at 01:00 and fetches the new day", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
 
-    const collection = createCollection("energy_timer");
+    const { collection, callWS } = createCollection("energy_timer");
+    const refresh = vi.spyOn(collection, "refresh");
     const unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    refresh.mockClear();
+    callWS.mockClear();
 
     assert.equal(
       collection.start.getTime(),
       energyPeriodDay(new Date(), -1).start.getTime()
     );
 
-    vi.advanceTimersByTime(30 * 60 * 1000);
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
 
     assert.equal(
       collection.start.getTime(),
       energyPeriodDay(new Date()).start.getTime()
     );
+    // Cards render EnergyData from the websocket store, not collection.start.
+    // The 01:00 callback must refresh() so getEnergyData runs for today.
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
 
     unsub();
   });
 
-  it("catches up a stale live day on resubscribe", () => {
+  it("catches up a stale live day on resubscribe", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
 
-    const collection = createCollection("energy_catchup");
+    const { collection, callWS } = createCollection("energy_catchup");
+    const refresh = vi.spyOn(collection, "refresh");
     let unsub = collection.subscribe(() => undefined);
-
-    assert.equal(
-      collection.start.getTime(),
-      energyPeriodDay(new Date()).start.getTime()
-    );
+    await vi.advanceTimersByTimeAsync(0);
+    refresh.mockClear();
+    callWS.mockClear();
 
     unsub();
     vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
     unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
 
     assert.equal(
       collection.start.getTime(),
       energyPeriodDay(new Date()).start.getTime()
     );
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
 
     unsub();
+  });
+
+  it("does not double-refresh on a cold subscribe after the unsub grace", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection, callWS } = createCollection("energy_cold_refresh");
+    const refresh = vi.spyOn(collection, "refresh");
+    let unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    refresh.mockClear();
+    callWS.mockClear();
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+    // The library's first fetch is not collection.refresh(); this spy only
+    // sees the extra refresh used during the unsub-grace re-subscribe.
+    assert.equal(refresh.mock.calls.length, 0);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    unsub();
+  });
+
+  it("keeps a custom setPeriod range overnight", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection } = createCollection("energy_custom_period");
+    let unsub = collection.subscribe(() => undefined);
+    const custom = energyPeriodDay(new Date(), -5);
+    collection.setPeriod(custom.start, custom.end);
+    unsub();
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+
+    assert.equal(collection.start.getTime(), custom.start.getTime());
+
+    unsub();
+  });
+
+  it("does not advance the period after the last subscriber leaves", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+
+    const { collection } = createCollection("energy_unsub_timer");
+    const unsub = collection.subscribe(() => undefined);
+    const start = collection.start.getTime();
+    unsub();
+
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), start);
   });
 
   it("does not roll a remembered week preset over to today", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
 
-    const collection = createCollection("energy_week_stored", "this_week");
+    const { collection } = createCollection("energy_week_stored", "this_week");
     const weekStart = collection.start.getTime();
     const unsub = collection.subscribe(() => undefined);
 
