@@ -108,6 +108,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  /**
+   * Entities that pass the filters the page currently has on. Narrows the
+   * counts, unlike `entityFilter`, which says what can be picked at all.
+   */
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @state() private _selectedSection?: TargetTypeFloorless;
@@ -286,6 +293,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -306,6 +314,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -329,6 +338,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -348,6 +358,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}

@@ -164,6 +164,7 @@ export class HaPanelLogbook extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
+                      .entitySources=${this._entitySources}
                       .entityFilter=${this._filterFunc}
                       .description=${this.hass.localize(
                         "ui.panel.logbook.no_targets"
@@ -582,6 +583,8 @@ export class HaPanelLogbook extends LitElement {
         :host {
           --ha-generic-picker-width: min(400px, calc(100vw - 32px));
           --ha-generic-picker-max-width: 400px;
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
         }
 
         .content {
