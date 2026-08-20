@@ -131,6 +131,7 @@ export class HaNumberSelector extends LitElement {
           .hint=${isBox ? this.helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
+          .validationMessage=${this.selector.number?.validation_message}
           type="number"
           autoValidate
           .withoutSpinButtons=${!isBox}
@@ -176,7 +177,7 @@ export class HaNumberSelector extends LitElement {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      direction: ltr;
+      direction: var(--direction);
     }
     ha-slider {
       flex: 1;

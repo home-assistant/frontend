@@ -6,17 +6,9 @@ import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistantFormatters } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
+import { CoverEntityFeature } from "./feature/cover_entity_feature";
 
-export enum CoverEntityFeature {
-  OPEN = 1,
-  CLOSE = 2,
-  SET_POSITION = 4,
-  STOP = 8,
-  OPEN_TILT = 16,
-  CLOSE_TILT = 32,
-  STOP_TILT = 64,
-  SET_TILT_POSITION = 128,
-}
+export { CoverEntityFeature };
 
 export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
 

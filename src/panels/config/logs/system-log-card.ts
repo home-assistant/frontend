@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
@@ -283,7 +284,9 @@ export class SystemLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
-  private _openLog(ev: Event): void {
+  private _openLog(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { logItem: LoggedError }>
+  ): void {
     const item = (ev.currentTarget as any).logItem;
     showSystemLogDetailDialog(this, { item });
   }
@@ -331,6 +334,11 @@ export class SystemLogCard extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .secondary {
+      display: inline-block;
+      direction: var(--direction);
     }
 
     .error {

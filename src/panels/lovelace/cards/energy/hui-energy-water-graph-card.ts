@@ -274,7 +274,7 @@ export class HuiEnergyWaterGraphCard
         getSuggestedPeriod(this._start, this._end)
       )
     );
-    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, waterSources);
   }

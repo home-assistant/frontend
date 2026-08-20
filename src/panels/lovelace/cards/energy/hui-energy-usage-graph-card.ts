@@ -59,6 +59,8 @@ const stackOrder = {
   to_grid: 2,
   used_solar: 3,
   used_battery: 4,
+  from_grid: 5,
+  used_grid: 5,
 };
 
 @customElement("hui-energy-usage-graph-card")
@@ -175,6 +177,7 @@ export class HuiEnergyUsageGraphCard
               this._legendData
             )}
             chart-type="bar"
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
             !this._chartData.some((dataset) => dataset.data!.length)
@@ -268,6 +271,10 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;
@@ -294,6 +301,15 @@ export class HuiEnergyUsageGraphCard
       from_grid: {},
       to_battery: {},
     };
+
+    // Grid sources can be import-only or export-only; assign color indices by
+    // position in the user's grid sources config so this card matches the
+    // energy sources table, which uses positional indices.
+    const colorIndices: Record<string, Record<string, number>> = {};
+    Object.keys(colorPropertyMap).forEach((key) => {
+      colorIndices[key] = {};
+    });
+    let gridIdx = 0;
 
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
@@ -333,6 +349,7 @@ export class HuiEnergyUsageGraphCard
         } else {
           statIds.from_grid = [gridSource.stat_energy_from];
         }
+        colorIndices.from_grid[gridSource.stat_energy_from] = gridIdx;
         if (gridSource.name) {
           statLabels.from_grid[gridSource.stat_energy_from] =
             gridSource.stat_energy_to
@@ -349,6 +366,7 @@ export class HuiEnergyUsageGraphCard
         } else {
           statIds.to_grid = [gridSource.stat_energy_to];
         }
+        colorIndices.to_grid[gridSource.stat_energy_to] = gridIdx;
         if (gridSource.name) {
           statLabels.to_grid[gridSource.stat_energy_to] =
             gridSource.stat_energy_from
@@ -359,17 +377,18 @@ export class HuiEnergyUsageGraphCard
               : gridSource.name;
         }
       }
+      gridIdx++;
     }
 
     const computedStyles = getComputedStyle(this);
 
-    const colorIndices: Record<string, Record<string, number>> = {};
     Object.keys(colorPropertyMap).forEach((key) => {
-      colorIndices[key] = {};
       if (
         key === "used_grid" ||
         key === "used_solar" ||
-        key === "used_battery"
+        key === "used_battery" ||
+        key === "from_grid" ||
+        key === "to_grid"
       ) {
         return;
       }
@@ -461,7 +480,7 @@ export class HuiEnergyUsageGraphCard
         getSuggestedPeriod(this._start, this._end)
       )
     );
-    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);

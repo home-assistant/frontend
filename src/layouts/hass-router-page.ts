@@ -5,6 +5,8 @@ import memoizeOne from "memoize-one";
 import { navigate } from "../common/navigate";
 import { computeRouteTail } from "../common/url/route";
 import type { Route } from "../types";
+import { recoverFromStaleBuild } from "../util/recover-stale-build";
+import { PanelReady } from "./panel-ready";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -22,6 +24,7 @@ export interface RouteOptions {
   // Function to load the page.
   load?: () => Promise<unknown>;
   cache?: boolean;
+  waitForReady?: boolean;
 }
 
 export interface RouterOptions {
@@ -53,6 +56,15 @@ export class HassRouterPage extends ReactiveElement {
 
   private _currentLoadProm?: Promise<void>;
 
+  // True while a route change is loading and the outgoing panel (or a loading
+  // screen) is still shown, waiting to be replaced. While true we don't forward
+  // property updates, because they are meant for the incoming panel. It stays
+  // false when the new panel is shown immediately (no loading screen), so that
+  // panel keeps receiving updates while its module finishes loading.
+  private _replacingPanel = false;
+
+  private _panelReady = new PanelReady();
+
   private _cache = {};
 
   private _initialLoadDone = false;
@@ -75,9 +87,9 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     if (!changedProps.has("route")) {
-      // Do not update if we have a currentLoadProm, because that means
-      // that there is still an old panel shown and we're moving to a new one.
-      if (this.lastChild && !this._currentLoadProm) {
+      // Skip while the outgoing panel is still shown for a pending route
+      // change; the update is meant for the incoming panel, not this one.
+      if (this.lastChild && !this._replacingPanel) {
         this.updatePageEl(this.lastChild, changedProps);
       }
       return;
@@ -171,15 +183,36 @@ export class HassRouterPage extends ReactiveElement {
         this._showLoadingScreenTimeout = undefined;
       }
 
-      // Show error screen
-      this.appendChild(
-        this.createErrorScreen(`Error while loading page ${newPage}.`)
+      // A stale build (the panel's hashed chunk 404s after an upgrade while
+      // the app stayed open) is recoverable: reload onto the current build
+      // (or prompt when there are unsaved edits) instead of dead-ending.
+      const message = err instanceof Error ? err.message : String(err ?? "");
+      const stale = recoverFromStaleBuild(message, this);
+
+      // Show error screen, offering a reload action for a stale build. Set
+      // `showReload` on the returned element rather than through
+      // createErrorScreen's signature, so router subclasses that override
+      // createErrorScreen (e.g. ToolsRouter) can't drop it.
+      const errorScreen = this.createErrorScreen(
+        `Error while loading page ${newPage}.`
       );
+      errorScreen.showReload = stale;
+      this.appendChild(errorScreen);
     });
 
     // If we don't show loading screen, just show the panel.
     // It will be automatically upgraded when loading done.
     if (!routerOptions.showLoading) {
+      const loadComplete = () => {
+        // Ignore a stale load that resolves after a newer navigation took over.
+        if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
+        }
+      };
+      this._currentLoadProm = loadProm.then(loadComplete, loadComplete);
+      // The new panel is shown right away, so keep forwarding updates to it
+      // while its module loads.
+      this._replacingPanel = false;
       this._createPanel(routerOptions, newPage, routeOptions);
       return;
     }
@@ -187,6 +220,9 @@ export class HassRouterPage extends ReactiveElement {
     // We are only going to show the loading screen after some time.
     // That way we won't have a double fast flash on fast connections.
     let created = false;
+    // The outgoing panel stays shown until the new one has loaded; don't
+    // forward updates to it in the meantime.
+    this._replacingPanel = true;
 
     this._showLoadingScreenTimeout = window.setTimeout(() => {
       if (created || this._currentPage !== newPage) {
@@ -202,11 +238,11 @@ export class HassRouterPage extends ReactiveElement {
 
     this._currentLoadProm = loadProm.then(
       () => {
-        this._currentLoadProm = undefined;
-        // Check if we're still trying to show the same page.
+        // Ignore a stale load that resolves after a newer navigation took over.
         if (this._currentPage !== newPage) {
           return;
         }
+        this._currentLoadProm = undefined;
 
         created = true;
         this._createPanel(
@@ -215,9 +251,14 @@ export class HassRouterPage extends ReactiveElement {
           // @ts-ignore TS forgot this is not a string.
           routeOptions
         );
+        // The new panel is now shown; resume forwarding updates to it.
+        this._replacingPanel = false;
       },
       () => {
-        this._currentLoadProm = undefined;
+        if (this._currentPage === newPage) {
+          this._currentLoadProm = undefined;
+          this._replacingPanel = false;
+        }
       }
     );
   }
@@ -287,7 +328,15 @@ export class HassRouterPage extends ReactiveElement {
    * Promise that resolves when the page has rendered.
    */
   protected get pageRendered(): Promise<void> {
-    return this.updateComplete.then(() => this._currentLoadProm);
+    return this.updateComplete
+      .then(() => this._currentLoadProm)
+      .then(() => {
+        const page = this.lastElementChild;
+        return Promise.all([
+          this._panelReady.ready,
+          page instanceof HassRouterPage ? page.pageRendered : undefined,
+        ]).then(() => undefined);
+      });
   }
 
   protected createElement(tag: string) {
@@ -312,6 +361,7 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     const panelEl = this._cache[page] || this.createElement(routeOptions.tag);
+    this._panelReady.track(panelEl, routeOptions.waitForReady);
     this.updatePageEl(panelEl);
     this.appendChild(panelEl);
 

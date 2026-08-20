@@ -1,15 +1,20 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiContentCopy } from "@mdi/js";
 import { formatTime } from "../../../../../common/datetime/format_time";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-markdown";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-select";
 import "../../../../../components/input/ha-input";
 import type { MQTTMessage } from "../../../../../data/mqtt";
 import { subscribeMQTTTopic } from "../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../types";
+import { showToast } from "../../../../../util/toast";
 
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
@@ -68,53 +73,56 @@ class MqttSubscribeCard extends LitElement {
     return html`
       <ha-card
         header=${this.hass.localize("ui.panel.config.mqtt.description_listen")}
+        class="content_subscribe_panel"
       >
-        <form>
-          <p>
-            <ha-formfield
-              label=${this.hass!.localize(
-                "ui.panel.config.mqtt.json_formatting"
-              )}
-            >
-              <ha-switch
-                @change=${this._handleJSONFormat}
-                .checked=${this._json_format}
-              ></ha-switch>
-            </ha-formfield>
-          </p>
-          <div class="panel-dev-mqtt-subscribe-fields">
-            <ha-input
-              .label=${
-                this._subscribed
-                  ? this.hass.localize("ui.panel.config.mqtt.listening_to")
-                  : this.hass.localize("ui.panel.config.mqtt.subscribe_to")
-              }
-              .disabled=${this._subscribed !== undefined}
-              .value=${this._topic}
-              @change=${this._handleTopic}
-            ></ha-input>
-            <ha-select
-              .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
-              .disabled=${this._subscribed !== undefined}
-              .value=${this._qos}
-              @selected=${this._handleQos}
-              .options=${qosLevel}
-            >
-            </ha-select>
-            <ha-button
-              appearance="plain"
-              size="s"
-              .disabled=${this._topic === ""}
-              @click=${this._handleSubmit}
-            >
-              ${
-                this._subscribed
-                  ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
-                  : this.hass.localize("ui.panel.config.mqtt.start_listening")
-              }
-            </ha-button>
-          </div>
-        </form>
+        <div class="card-content">
+          <form>
+            <p>
+              <ha-formfield
+                label=${this.hass!.localize(
+                  "ui.panel.config.mqtt.json_formatting"
+                )}
+              >
+                <ha-switch
+                  @change=${this._handleJSONFormat}
+                  .checked=${this._json_format}
+                ></ha-switch>
+              </ha-formfield>
+            </p>
+            <div class="panel-dev-mqtt-subscribe-fields">
+              <ha-input
+                .label=${
+                  this._subscribed
+                    ? this.hass.localize("ui.panel.config.mqtt.listening_to")
+                    : this.hass.localize("ui.panel.config.mqtt.subscribe_to")
+                }
+                .disabled=${this._subscribed !== undefined}
+                .value=${this._topic}
+                @change=${this._handleTopic}
+              ></ha-input>
+              <ha-select
+                .label=${this.hass.localize("ui.panel.config.mqtt.qos")}
+                .disabled=${this._subscribed !== undefined}
+                .value=${this._qos}
+                @selected=${this._handleQos}
+                .options=${qosLevel}
+              >
+              </ha-select>
+              <ha-button
+                appearance="plain"
+                size="s"
+                .disabled=${this._topic === ""}
+                @click=${this._handleSubmit}
+              >
+                ${
+                  this._subscribed
+                    ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
+                    : this.hass.localize("ui.panel.config.mqtt.start_listening")
+                }
+              </ha-button>
+            </div>
+          </form>
+        </div>
         <div class="events">
           ${this._messages.map(
             (msg) => html`
@@ -128,7 +136,17 @@ class MqttSubscribeCard extends LitElement {
                     this.hass!.config
                   ),
                 })}
-                <pre>${msg.payload}</pre>
+                <div class="code-block">
+                  <ha-icon-button
+                    class="copy-button"
+                    .path=${mdiContentCopy}
+                    @click=${this._handleCopyClick}
+                    data-payload=${msg.payload}
+                  ></ha-icon-button>
+                  <ha-markdown
+                    .content=${`\`\`\`${this._json_format ? "json" : ""}\n${msg.payload}\n\`\`\``}
+                  ></ha-markdown>
+                </div>
                 <div class="bottom">
                   QoS: ${msg.message.qos} - Retain:
                   ${Boolean(msg.message.retain)}
@@ -154,6 +172,16 @@ class MqttSubscribeCard extends LitElement {
 
   private _handleJSONFormat(ev: CustomEvent) {
     this._json_format = (ev.target! as any).checked;
+  }
+
+  private async _handleCopyClick(ev: Event): Promise<void> {
+    const payload = (ev.target as HTMLElement).getAttribute("data-payload");
+    if (payload) {
+      await copyToClipboard(payload);
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
+    }
   }
 
   private async _handleSubmit(): Promise<void> {
@@ -199,6 +227,12 @@ class MqttSubscribeCard extends LitElement {
       padding: var(--ha-space-4);
       padding-bottom: var(--ha-space-8);
     }
+    .content_subscribe_panel {
+      margin-top: var(--ha-space-6);
+      max-width: 600px;
+      margin: 0 auto;
+      direction: ltr;
+    }
     .events {
       margin: -16px 0;
       padding: 0 16px;
@@ -229,6 +263,20 @@ class MqttSubscribeCard extends LitElement {
     }
     ha-input {
       flex: 1;
+    }
+    .code-block {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .code-block ha-markdown {
+      padding-right: 40px;
+    }
+    .copy-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      color: var(--secondary-text-color);
     }
     @media screen and (max-width: 600px) {
       ha-select {

@@ -1,21 +1,25 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import {
+  mockAreaRegistry,
+  type DemoArea,
+} from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
+import {
+  mockFloorRegistry,
+  type DemoFloor,
+} from "../../../../demo/src/stubs/floor_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
-import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
-import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
 import {
   showDialog,
@@ -96,6 +100,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: "backyard",
@@ -120,6 +125,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: null,
@@ -144,78 +150,125 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
+  },
+  {
+    area_id: "livingroom",
+    configuration_url: null,
+    config_entries: ["config_entry_1"],
+    config_entries_subentries: {},
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_power_strip",
+    identifiers: [["demo", "strip1"] as [string, string]],
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    model_id: null,
+    name_by_user: null,
+    name: "Power strip",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+    serial_number: null,
+    labels: [],
+    created_at: 0,
+    modified_at: 0,
+    primary_config_entry: null,
+    parent_device_id: null,
+  },
+  // Child devices of the power strip. They have no area of their own and
+  // inherit the parent's area ("Livingroom"); the picker renders them indented
+  // under the parent with a tree connector.
+  {
+    area_id: null,
+    configuration_url: null,
+    config_entries: ["config_entry_1"],
+    config_entries_subentries: {},
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_outlet_1",
+    identifiers: [["demo", "outlet1"] as [string, string]],
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    model_id: null,
+    name_by_user: null,
+    name: "Outlet 1",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+    serial_number: null,
+    labels: [],
+    created_at: 0,
+    modified_at: 0,
+    primary_config_entry: null,
+    parent_device_id: "device_power_strip",
+  },
+  {
+    area_id: null,
+    configuration_url: null,
+    config_entries: ["config_entry_1"],
+    config_entries_subentries: {},
+    connections: [],
+    disabled_by: null,
+    entry_type: null,
+    id: "device_outlet_2",
+    identifiers: [["demo", "outlet2"] as [string, string]],
+    manufacturer: "Acme",
+    model: "Smart Power Strip",
+    model_id: null,
+    name_by_user: null,
+    name: "Outlet 2",
+    sw_version: null,
+    hw_version: null,
+    via_device_id: null,
+    serial_number: null,
+    labels: [],
+    created_at: 0,
+    modified_at: 0,
+    primary_config_entry: null,
+    parent_device_id: "device_power_strip",
   },
 ];
 
-const AREAS: AreaRegistryEntry[] = [
+const AREAS: DemoArea[] = [
   {
     area_id: "backyard",
     floor_id: "ground",
     name: "Backyard",
-    icon: null,
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "bedroom",
     floor_id: "first",
     name: "Bedroom",
     icon: "mdi:bed",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "livingroom",
     floor_id: "ground",
     name: "Livingroom",
     icon: "mdi:sofa",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 
-const FLOORS: FloorRegistryEntry[] = [
+const FLOORS: DemoFloor[] = [
   {
     floor_id: "ground",
     name: "Ground floor",
     level: 0,
-    icon: null,
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
   {
     floor_id: "first",
     name: "First floor",
     level: 1,
     icon: "mdi:numeric-1",
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
   {
     floor_id: "second",
     name: "Second floor",
     level: 2,
     icon: "mdi:numeric-2",
-    aliases: [],
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 

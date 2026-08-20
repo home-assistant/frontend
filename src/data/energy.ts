@@ -22,6 +22,7 @@ import {
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import { formatTime24h } from "../common/datetime/format_time";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
@@ -36,6 +37,7 @@ import type {
 import {
   fetchStatistics,
   getDisplayUnit,
+  getStatisticLabel,
   getStatisticMetadata,
   VOLUME_UNITS,
 } from "./recorder";
@@ -173,6 +175,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
+  capacity?: number; // usable capacity in kWh, used to weight the combined SOC
   name?: string;
 }
 export interface GasSourceTypeEnergyPreference {
@@ -309,6 +312,59 @@ export interface EnergySourceByType {
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
+
+/**
+ * Display name of a configured statistic. A name set by the user always wins;
+ * otherwise the entity is named the same way the rest of the UI names
+ * entities, so devices sharing an entity name stay distinguishable.
+ * Statistics without an entity (external or removed) keep the statistic label.
+ */
+export const computeEnergyLabel = (
+  hass: HomeAssistant,
+  statisticId: string,
+  statisticsMetaData?: StatisticsMetaData,
+  customName?: string
+): string => {
+  if (customName) {
+    return customName;
+  }
+
+  const stateObj = hass.states[statisticId];
+
+  if (stateObj) {
+    return hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
+  }
+
+  return getStatisticLabel(hass, statisticId, statisticsMetaData);
+};
+
+/**
+ * Device labels keyed by statistic id. Cards that show live power or flow
+ * key their nodes by `stat_rate` instead of `stat_consumption`; devices
+ * without the requested statistic are left out.
+ */
+export const computeEnergyDeviceLabels = (
+  hass: HomeAssistant,
+  devices: DeviceConsumptionEnergyPreference[],
+  statsMetadata?: Record<string, StatisticsMetaData>,
+  statisticKey: "stat_consumption" | "stat_rate" = "stat_consumption"
+): Record<string, string> => {
+  const labels: Record<string, string> = {};
+
+  for (const device of devices) {
+    const statisticId = device[statisticKey];
+    if (statisticId) {
+      labels[statisticId] = computeEnergyLabel(
+        hass,
+        statisticId,
+        statsMetadata?.[statisticId],
+        device.name
+      );
+    }
+  }
+
+  return labels;
+};
 
 export interface EnergyData {
   start: Date;
@@ -792,6 +848,17 @@ const findEnergyDataCollection = (
   return (hass.connection as any)[key];
 };
 
+// The last-picked preset is remembered per energy collection, so each dashboard
+// reopens on its own default period. Derived from the connection key so the read
+// and write sides cannot drift apart.
+export const getEnergyDefaultPeriodStorageKey = (
+  hass: HomeAssistant,
+  collectionKey?: string
+): string => {
+  const [key] = convertCollectionKeyToConnection(hass, collectionKey);
+  return `energy-default-period-${key}`;
+};
+
 // When does the collection's day period need to roll over to the next day?
 // With `midnightRollover` (the real-time "Now" view) it rolls over right at
 // midnight. Otherwise it waits an hour, until the new day's first hourly
@@ -891,8 +958,9 @@ export const getEnergyDataCollection = (
   // The real-time "Now" view always tracks today; it shows live data even
   // before today's first statistic exists, so it never falls back to yesterday.
   const preferredPeriod =
-    (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
-    "today";
+    (localStorage.getItem(
+      getEnergyDefaultPeriodStorageKey(hass, options.key)
+    ) as DateRange) || "today";
   const period =
     preferredPeriod === "today" && hour === "0" && !midnightRollover
       ? "yesterday"

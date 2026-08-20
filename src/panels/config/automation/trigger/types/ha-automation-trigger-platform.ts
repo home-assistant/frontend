@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
@@ -180,20 +181,17 @@ export class HaPlatformTrigger extends LitElement {
       )
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/triggers/${this.trigger.trigger}`)
+      : this._manifest?.documentation;
+
     return html`
       <div class="description">
         ${description ? html`<p>${description}</p>` : nothing}
         ${
-          this._manifest
+          documentationLink
             ? html`<a
-                href=${
-                  this._manifest.is_built_in
-                    ? documentationUrl(
-                        this.hass,
-                        `/triggers/${this.trigger.trigger}`
-                      )
-                    : this._manifest.documentation
-                }
+                href=${documentationLink}
                 title=${this.hass.localize(
                   "ui.components.service-control.integration_doc"
                 )}
@@ -213,19 +211,14 @@ export class HaPlatformTrigger extends LitElement {
       </div>
       ${
         triggerDesc && "target" in triggerDesc
-          ? html`<ha-settings-row narrow>
-              <span slot="heading"
-                >${this.hass.localize(
-                  "ui.components.service-control.target"
-                )}</span
-              ><ha-selector
-                .hass=${this.hass}
-                .selector=${this._targetSelector(triggerDesc.target)}
-                .disabled=${this.disabled}
-                @value-changed=${this._targetChanged}
-                .value=${this.trigger?.target}
-              ></ha-selector
-            ></ha-settings-row>`
+          ? html`<ha-selector
+              class="target-selector"
+              .hass=${this.hass}
+              .selector=${this._targetSelector(triggerDesc.target)}
+              .disabled=${this.disabled}
+              @value-changed=${this._targetChanged}
+              .value=${this.trigger?.target}
+            ></ha-selector>`
           : nothing
       }
       ${
@@ -430,20 +423,8 @@ export class HaPlatformTrigger extends LitElement {
         Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -547,6 +528,14 @@ export class HaPlatformTrigger extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

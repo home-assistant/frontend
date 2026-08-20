@@ -4,7 +4,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../common/navigate";
+import { navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -509,9 +509,7 @@ export class LovelacePanel extends LitElement {
     };
 
     if ("editMode" in props) {
-      window.history.replaceState(
-        null,
-        "",
+      replaceCurrentUrl(
         constructUrlCurrentPath(
           props.editMode
             ? addSearchParam({ edit: "1" })

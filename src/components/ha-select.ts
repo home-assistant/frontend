@@ -4,6 +4,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-input-helper-text";
 import "./ha-picker-field";
@@ -169,7 +170,7 @@ export class HaSelect extends LitElement {
       : nothing;
   }
 
-  private _handleSelect(ev: CustomEvent<{ item: { value: string | number } }>) {
+  private _handleSelect(ev: HaDropdownSelectEvent<string | number>) {
     ev.stopPropagation();
     const value = ev.detail.item.value;
     if (value === this.value) {

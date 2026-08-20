@@ -1,36 +1,52 @@
 [modern]
 # Modern builds target recent browsers supporting the latest features to minimize transpilation, polyfills, etc.
 # It is served to browsers meeting the following requirements:
-# - released in the last year + current alpha/beta versions
-# - Firefox extended support release (ESR)
-# - with global utilization at or above 0.5%
+# - released in the last 2 years + current alpha/beta versions
 # - exclude dead browsers (no security maintenance for 2+ years)
-# - exclude KaiOS, QQ, and UC browsers due to lack of sufficient feature support data
+# - exclude QQ, and UC browsers due to lack of sufficient feature support data
 unreleased versions
-last 1 year
-Firefox ESR
->= 0.5%
+last 2 years
 not dead
-not KaiOS > 0
 not QQAndroid > 0
 not UCAndroid > 0
 
 [legacy]
-# Legacy builds are served when modern requirements are not met and support browsers:
-# - released in the last 7 years + current alpha/beta versionss
-# - with global utilization at or above 0.05%
-# - exclude dead browsers (no security maintenance for 2+ years)
-# - exclude Opera Mini which does not support web sockets
-unreleased versions
-last 7 years
->= 0.05%
-not dead
-not op_mini all
+# Legacy builds are served when modern requirements are not met.
+# Floors are pinned explicitly (not usage-based) so the support policy is
+# deliberate and does not drift with global usage statistics, which do not
+# represent old tablets and wall displays used as Home Assistant dashboards:
+# - iOS/Safari >= 12: iPad Air 1 / mini 2 / mini 3 (last supported iOS).
+#   Older iPads (iPad 2/3/mini 1 on iOS 9.3, iPad 4 on iOS 10.3) cannot run
+#   the app: their engines lack custom elements, shadow DOM, and/or CSS grid.
+# - Chrome >= 59: Fire OS 5 tablets (Fire 7/HD 8/HD 10 through ~2017) have
+#   their system WebView pinned at Chromium 59 and commonly run Fully Kiosk;
+#   also covers old kiosk browsers and no-longer-updating webviews above it.
+# - Edge >= 79: all Chromium-based Edge. Costs nothing (above the Chrome
+#   floor); mainly catches Edge 109 on Windows 7/8.1 and update-frozen
+#   enterprise installs, whose engines can run the legacy build fine.
+# - Firefox >= 94: the zero-cost floor, not a chased population — pinning it
+#   adds no babel transforms, core-js modules, or Lightning CSS prefixes to
+#   the output. Mozilla-supported Firefox (incl. current ESR) always matches
+#   [modern]; Firefox on old OSes is not supported (use Chrome 109 instead).
+#   If Firefox ever becomes the pin forcing extra output, raise it first.
+# - Samsung >= 9: Samsung Internet on old Galaxy tablets
+Chrome >= 59
+ChromeAndroid >= 59
+Edge >= 79
+Firefox >= 94
+FirefoxAndroid >= 94
+iOS >= 12
+Safari >= 12
+Samsung >= 9
 
 [legacy-sw]
-# Same as legacy plus supports service workers
-unreleased versions
-last 7 years
->= 0.05% and supports serviceworkers
-not dead
-not op_mini all
+# Same as legacy, restricted to browsers that support service workers
+# (currently resolves to the same set; guards the service worker build if the legacy floor ever drops below them)
+Chrome >= 59 and supports serviceworkers
+ChromeAndroid >= 59 and supports serviceworkers
+Edge >= 79 and supports serviceworkers
+Firefox >= 94 and supports serviceworkers
+FirefoxAndroid >= 94 and supports serviceworkers
+iOS >= 12 and supports serviceworkers
+Safari >= 12 and supports serviceworkers
+Samsung >= 9 and supports serviceworkers

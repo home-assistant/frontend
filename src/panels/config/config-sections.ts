@@ -22,6 +22,7 @@ import {
   mdiPuzzle,
   mdiRadioTower,
   mdiRemote,
+  mdiRenameOutline,
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
@@ -38,6 +39,7 @@ import {
 import memoizeOne from "memoize-one";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../types";
+import { mdiMqttLogo } from "../../resources/mqtt-logo-svg";
 
 const getHasDomainCheck = (domain: string) => {
   const prefix = `${domain}.`;
@@ -139,6 +141,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#4EAA66",
       component: "knx",
       translationKey: "knx",
+      adminOnly: true,
+    },
+    {
+      path: "/config/mqtt",
+      iconPath: mdiMqttLogo,
+      iconColor: "#660066",
+      component: "mqtt",
+      translationKey: "mqtt",
       adminOnly: true,
     },
     {
@@ -492,6 +502,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBackupRestore,
       iconColor: "#0D47A1",
       component: "backup",
+      adminOnly: true,
+    },
+    {
+      path: "/config/entity-id-format",
+      translationKey: "entity_id_format",
+      iconPath: mdiRenameOutline,
+      iconColor: "#24a5cb",
+      core: true,
       adminOnly: true,
     },
     {

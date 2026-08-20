@@ -149,6 +149,7 @@ export const weatherAttrIcons = {
   humidity: mdiWaterPercent,
   wind_bearing: mdiWeatherWindy,
   wind_speed: mdiWeatherWindy,
+  wind_gust_speed: mdiWeatherWindy,
   pressure: mdiGauge,
   temperature: mdiThermometer,
   uv_index: mdiSunWireless,
@@ -268,6 +269,7 @@ export const getWeatherUnit = (
       return (
         stateObj.attributes.temperature_unit || config.unit_system.temperature
       );
+    case "wind_gust_speed":
     case "wind_speed":
       return stateObj.attributes.wind_speed_unit || `${lengthUnit}/h`;
     case "cloud_coverage":
@@ -564,9 +566,10 @@ export const getWeatherStateIcon = (
   if (userDefinedIcon) {
     return html`
       <div
-        style="background-size: cover;${styleMap({
+        style=${styleMap({
+          "background-size": "cover",
           "background-image": userDefinedIcon,
-        })}"
+        })}
       ></div>
     `;
   }

@@ -1,4 +1,4 @@
-import { union, object, string, optional, boolean } from "superstruct";
+import { array, union, object, string, optional, boolean } from "superstruct";
 import { timeFormatConfigStruct } from "../../components/types";
 import {
   actionConfigStruct,
@@ -12,9 +12,9 @@ export const entitiesConfigStruct = union([
     name: optional(entityNameStruct),
     icon: optional(string()),
     image: optional(string()),
-    secondary_info: optional(string()),
+    secondary_info: optional(union([string(), array(string())])),
     time_format: optional(timeFormatConfigStruct),
-    state_color: optional(boolean()),
+    color: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),

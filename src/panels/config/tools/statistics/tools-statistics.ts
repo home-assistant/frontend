@@ -16,7 +16,11 @@ import { consume, type ContextType } from "@lit/context";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import {
@@ -596,7 +600,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
-  private _handleSearchChange(ev: InputEvent) {
+  private _handleSearchChange(
+    ev: InputEvent & HASSDomTargetEvent<HaInputSearch>
+  ) {
     if (this.filter === (ev.target as HaInputSearch).value) {
       return;
     }
@@ -706,7 +712,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     );
   }
 
-  private _showStatisticsAdjustSumDialog(ev: Event) {
+  private _showStatisticsAdjustSumDialog(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { statistic: StatisticData }>
+  ) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
       statistic: (
@@ -782,7 +790,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     });
   };
 
-  private _fixIssue = async (ev: Event) => {
+  private _fixIssue = async (
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { data: StatisticsValidationResult[] }
+    >
+  ) => {
     const issues = (
       ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] }
     ).data.sort(

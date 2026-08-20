@@ -56,6 +56,7 @@ export class HaSelectBox extends LitElement {
         class="list"
         style=${styleMap({ "--columns": columns })}
         .value=${this.value}
+        ?disabled=${this.disabled}
         @change=${this._radioChanged}
       >
         ${this.options.map((option) => this._renderOption(option))}
@@ -100,7 +101,7 @@ export class HaSelectBox extends LitElement {
             )}
             aria-labelledby=${`label-${option.value}`}
             .value=${option.value}
-            .disabled=${disabled}
+            .disabled=${option.disabled || false}
           ></ha-radio-option>
           <div class="text">
             <span id=${`label-${option.value}`} class="label"

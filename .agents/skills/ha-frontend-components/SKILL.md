@@ -7,6 +7,8 @@ description: Home Assistant frontend component patterns. Use when implementing o
 
 Use this skill when creating or reviewing Home Assistant UI components and common interaction patterns.
 
+Cross-load `ha-frontend-events` when component work includes event listener typing, custom event dispatch, or event-map declarations.
+
 ## Dialogs
 
 Open dialogs through the fire-event pattern:
@@ -23,11 +25,10 @@ Dialog implementation requirements:
 
 - Use `ha-dialog`.
 - Use `DialogMixin`, which implements `HassDialogNext<T>`, for new dialogs. See `src/dialogs/dialog-mixin.ts`.
+- Read dialog parameters from the mixin's `params` property and render the dialog open. Return `nothing` while required parameters are absent.
+- Call the mixin's `closeDialog()` to close a new dialog. The mixin handles the `closed` event, fires `dialog-closed`, and removes the host element.
 - Existing dialogs may implement the legacy `HassDialog<T>` interface from `src/dialogs/make-dialog-manager.ts`.
-- Use `@state() private _open = false` to control visibility.
-- Set `_open = true` in `showDialog()` and `_open = false` in `closeDialog()`.
-- Return `nothing` while required params are absent.
-- Fire `dialog-closed` in the close handler.
+- Preserve the existing `showDialog()`, open-state, and close-event lifecycle when maintaining a legacy dialog; do not copy that lifecycle into a `DialogMixin` dialog.
 - Use `header-title` and `header-subtitle` for simple header text.
 - Use slots when standard header attributes are not enough.
 - Use `ha-dialog-footer` with `primaryAction` and `secondaryAction` slots.
@@ -64,7 +65,7 @@ Use `computeLabel`, `computeError`, and `computeHelper` for translated labels, v
   .data=${this._data}
   .schema=${this._schema}
   .error=${this._errors}
-  .computeLabel=${(schema) => this.hass.localize(`ui.panel.${schema.name}`)}
+  .computeLabel=${(schema) => this._localize(`ui.panel.${schema.name}`)}
   @value-changed=${this._valueChanged}
 ></ha-form>
 ```
@@ -78,10 +79,16 @@ Use `ha-alert` for user-visible status messaging.
 - Slots: `icon` for custom leading icon, `action` for custom action content.
 - Content is announced by screen readers when dynamically displayed.
 
-```html
-<ha-alert alert-type="error">Error message</ha-alert>
-<ha-alert alert-type="warning" title="Warning">Description</ha-alert>
-<ha-alert alert-type="success" dismissable>Success message</ha-alert>
+```ts
+html`
+  <ha-alert alert-type="error">${this._localize("ui.example.error")}</ha-alert>
+  <ha-alert alert-type="warning" .title=${this._localize("ui.example.warning")}>
+    ${this._localize("ui.example.description")}
+  </ha-alert>
+  <ha-alert alert-type="success" dismissable>
+    ${this._localize("ui.example.success")}
+  </ha-alert>
+`;
 ```
 
 ## Shortcuts And Tooltips

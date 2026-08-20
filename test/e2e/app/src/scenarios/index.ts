@@ -1,4 +1,14 @@
-import type { ExtEntityRegistryEntry } from "../../../../../src/data/entity/entity_registry";
+import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
+import type {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+} from "../../../../../src/data/entity/entity_registry";
+import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
+import type { MediaPlayerItem } from "../../../../../src/data/media-player";
+import {
+  WeatherEntityFeature,
+  type ForecastEvent,
+} from "../../../../../src/data/weather";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -89,6 +99,196 @@ const lightMoreInfoScenario: Scenario = async (hass) => {
   hass.mockWS("config/entity_registry/get", () => registryEntry);
 };
 
+const weatherMoreInfoScenario: Scenario = (hass) => {
+  hass.addEntities([
+    {
+      entity_id: "weather.test_weather",
+      state: "sunny",
+      attributes: {
+        friendly_name: "Test Weather",
+        supported_features:
+          WeatherEntityFeature.FORECAST_DAILY +
+          WeatherEntityFeature.FORECAST_HOURLY,
+        precipitation_unit: "mm",
+        pressure_unit: "hPa",
+        temperature: 20,
+        temperature_unit: "°C",
+        visibility_unit: "km",
+        wind_speed_unit: "km/h",
+      },
+    },
+  ]);
+
+  hass.mockWS("weather/subscribe_forecast", (message, _hass, onChange) => {
+    onChange?.({
+      type: message.forecast_type,
+      forecast: [
+        {
+          datetime: "2026-08-13T10:00:00Z",
+          temperature: 20,
+          condition: "sunny",
+        },
+        {
+          datetime: "2026-08-13T11:00:00Z",
+          temperature: 21,
+          condition: "sunny",
+        },
+        {
+          datetime: "2026-08-13T12:00:00Z",
+          temperature: 22,
+          condition: "sunny",
+        },
+      ],
+    } satisfies ForecastEvent);
+    return () => undefined;
+  });
+};
+
+const quickSearchAssistScenario: Scenario = async (hass) => {
+  const pipeline: AssistPipeline = {
+    id: "test-pipeline",
+    name: "Test Assist",
+    language: "en",
+    conversation_engine: "conversation.home_assistant",
+    conversation_language: "en",
+    stt_engine: null,
+    stt_language: null,
+    tts_engine: null,
+    tts_language: null,
+    tts_voice: null,
+    wake_word_entity: null,
+    wake_word_id: null,
+  };
+
+  hass.updateHass({
+    config: {
+      ...hass.config,
+      components: [...hass.config.components, "conversation"],
+    },
+    enableShortcuts: true,
+  });
+  hass.mockWS("assist_pipeline/pipeline/list", () => ({
+    pipelines: [pipeline],
+    preferred_pipeline: pipeline.id,
+  }));
+  hass.mockWS("assist_pipeline/pipeline/get", () => pipeline);
+  hass.mockWS("assist_pipeline/run", (message) => {
+    window.__assistRun = message;
+    return () => undefined;
+  });
+};
+
+const addLaunchScreen = () => {
+  const launchScreen = document.createElement("div");
+  launchScreen.id = "ha-launch-screen";
+  document.body.prepend(launchScreen);
+};
+
+const delayedLovelaceScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const config: LovelaceRawConfig = {
+    views: [
+      {
+        title: "Home",
+        cards: [{ type: "markdown", content: "Dashboard ready" }],
+      },
+    ],
+  };
+  let resolveConfig: ((config: LovelaceRawConfig) => void) | undefined;
+  const configPromise = new Promise<LovelaceRawConfig>((resolve) => {
+    resolveConfig = resolve;
+  });
+
+  window.resolveLovelaceConfig = () => resolveConfig?.(config);
+  hass.mockWS("lovelace/config", () => configPromise);
+};
+
+const delayedGeneratedDashboardScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const loadFragmentTranslation = hass.loadFragmentTranslation;
+  let resolveTranslation: (() => void) | undefined;
+  const translationReady = new Promise<void>((resolve) => {
+    resolveTranslation = resolve;
+  });
+
+  hass.loadFragmentTranslation = async (fragment) => {
+    if (fragment === "lovelace") {
+      await translationReady;
+    }
+    return loadFragmentTranslation(fragment);
+  };
+  window.resolveGeneratedDashboard = resolveTranslation;
+};
+
+const delayedCalendarScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  let resolveRegistry: ((entries: EntityRegistryEntry[]) => void) | undefined;
+  const registryPromise = new Promise<EntityRegistryEntry[]>((resolve) => {
+    resolveRegistry = resolve;
+  });
+
+  window.resolveCalendarRegistry = () => resolveRegistry?.([]);
+  hass.mockWS("config/entity_registry/list", () => registryPromise);
+};
+
+const delayedIntegrationsScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  hass.mockWS(
+    "config_entries/subscribe",
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
+      window.resolveConfigEntries = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+  hass.mockWS(
+    "config_entries/flow/subscribe",
+    (_msg, _currentHass, onChange?: (updates: unknown[]) => void) => {
+      window.resolveConfigEntriesInProgress = () => onChange?.([]);
+      return () => undefined;
+    }
+  );
+};
+
+const delayedMediaBrowseScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const root: MediaPlayerItem = {
+    title: "Media",
+    media_content_id: "media-source://media_source",
+    media_content_type: "app",
+    media_class: "directory",
+    can_play: false,
+    can_expand: true,
+    can_search: false,
+    children: [],
+  };
+  let resolveBrowse: ((item: MediaPlayerItem) => void) | undefined;
+  const browsePromise = new Promise<MediaPlayerItem>((resolve) => {
+    resolveBrowse = resolve;
+  });
+
+  window.resolveMediaBrowse = () => resolveBrowse?.(root);
+  hass.mockWS("media_source/browse_media", () => browsePromise);
+};
+
+const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  let rejectBrowse:
+    ((reason: { code: string; message: string }) => void) | undefined;
+  const browsePromise = new Promise<MediaPlayerItem>((_resolve, reject) => {
+    rejectBrowse = reject;
+  });
+
+  window.rejectMediaBrowse = () =>
+    rejectBrowse?.({ code: "unknown_error", message: "Browse failed" });
+  hass.mockWS("media_source/browse_media", () => browsePromise);
+};
+
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
@@ -96,5 +296,13 @@ export const scenarios: Record<string, Scenario> = {
   "non-admin": nonAdminScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
+  "delayed-calendar": delayedCalendarScenario,
+  "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
+  "delayed-integrations": delayedIntegrationsScenario,
+  "delayed-media-browse": delayedMediaBrowseScenario,
+  "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
   "light-more-info": lightMoreInfoScenario,
+  "weather-more-info": weatherMoreInfoScenario,
+  "quick-search-assist": quickSearchAssistScenario,
+  "delayed-lovelace": delayedLovelaceScenario,
 };

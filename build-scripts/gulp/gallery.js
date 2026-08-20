@@ -4,6 +4,7 @@ import gulp from "gulp";
 import { load as loadYaml } from "js-yaml";
 import { marked } from "marked";
 import path from "path";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import paths from "../paths.cjs";
 import "./clean.js";
 import "./entry-html.js";
@@ -164,6 +165,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-gallery"),
     "clean-gallery",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -195,6 +197,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-gallery"),
     "clean-gallery",
     "translations-enable-merge-backend",
     gulp.parallel(

@@ -177,7 +177,11 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
             ) ||
             this._i18n.localize("ui.components.device-picker.unnamed_device");
 
-          const area = getDeviceArea(device, this._registries.areas);
+          const area = getDeviceArea(
+            device,
+            this._registries.areas,
+            this._registries.devices
+          );
 
           const areaName = area ? computeAreaName(area) : undefined;
 

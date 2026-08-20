@@ -28,6 +28,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     TILE_TOGGLE_VARIANT,
     ["light-color-temp"],
     ["light-color-favorites"],
+    ["light-effect"],
   ],
   cover: [
     TILE_VARIANT,
@@ -46,6 +47,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     ["climate-swing-modes"],
     ["climate-swing-horizontal-modes"],
     ["target-temperature"],
+    ["target-humidity"],
   ],
   media_player: [
     TILE_VARIANT,
@@ -71,7 +73,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     ["humidifier-modes"],
     ["target-humidity"],
   ],
-  vacuum: [TILE_VARIANT, ["vacuum-commands"]],
+  vacuum: [TILE_VARIANT, ["vacuum-commands"], ["vacuum-fan-speed"]],
   lawn_mower: [TILE_VARIANT, ["lawn-mower-commands"]],
   valve: [
     TILE_VARIANT,

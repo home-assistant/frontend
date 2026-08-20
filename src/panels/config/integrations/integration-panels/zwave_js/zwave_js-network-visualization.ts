@@ -2,6 +2,7 @@ import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -19,11 +20,13 @@ import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
+  RssiError,
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
+  getNodeIdFromDevice,
   NodeStatus,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
@@ -54,19 +57,36 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _searchFilter = "";
 
-  public hassSubscribe() {
-    const devices = Object.values(this.hass.devices).filter((device) =>
-      device.config_entries.some((entry) => entry === this.configEntryId)
-    );
+  // Route statistics reference repeaters by device registry ID
+  private _nodeIdsByDeviceId: Record<string, number> = {};
 
-    return devices.map((device) =>
-      subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
-        const nodeId = message.nodeId ?? message.node_id;
-        this._devices[nodeId!] = device;
-        this._nodeStatistics[nodeId!] = message;
-        this._handleUpdatedNodeStatistics();
-      })
-    );
+  public hassSubscribe() {
+    const subscriptions: Promise<UnsubscribeFunc>[] = [];
+    const devices: Record<number, DeviceRegistryEntry> = {};
+    const nodeIdsByDeviceId: Record<string, number> = {};
+
+    Object.values(this.hass.devices).forEach((device) => {
+      if (!device.config_entries.includes(this.configEntryId)) {
+        return;
+      }
+      const nodeId = getNodeIdFromDevice(device);
+      if (nodeId === undefined) {
+        return;
+      }
+      devices[nodeId] = device;
+      nodeIdsByDeviceId[device.id] = nodeId;
+      subscriptions.push(
+        subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
+          this._nodeStatistics[nodeId] = message;
+          this._handleUpdatedNodeStatistics();
+        })
+      );
+    });
+
+    this._nodeIdsByDeviceId = nodeIdsByDeviceId;
+    this._devices = devices;
+
+    return subscriptions;
   }
 
   public connectedCallback() {
@@ -164,8 +184,10 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
       const targetName =
         targetDevice?.name_by_user ?? targetDevice?.name ?? target;
-      const route =
-        this._nodeStatistics[source]?.lwr || this._nodeStatistics[source]?.nlwr;
+      // links point away from the controller, so the route belongs to the target
+      const stats =
+        this._nodeStatistics[target] ?? this._nodeStatistics[source];
+      const route = stats?.lwr || stats?.nlwr;
       return html`${sourceName} →
       ${targetName}${
         route?.protocol_data_rate
@@ -183,7 +205,9 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     const { id, name } = data as any;
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
-    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
     return html`<ha-chart-tooltip-marker
         .color=${String((params as CallbackDataParams).color ?? "")}
       ></ha-chart-tooltip-marker>
@@ -295,7 +319,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         const device = this._devices[node.node_id] as
           DeviceRegistryEntry | undefined;
         const area = device
-          ? getDeviceArea(device, this.hass.areas)
+          ? getDeviceArea(device, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: String(node.node_id),
@@ -331,55 +355,69 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         });
       });
 
+      if (controllerNode === undefined) {
+        return { nodes, links, categories };
+      }
+      const controllerId = String(controllerNode);
+
       Object.entries(nodeStatistics).forEach(([nodeId, stats]) => {
         const route = stats.lwr || stats.nlwr;
-        if (route) {
-          const hops = [
-            ...route.repeaters.map((id, i) => [
-              Object.keys(this._devices).find(
-                (_nodeId) => this._devices[_nodeId]?.id === id
-              )?.[0],
-              route.repeater_rssi[i],
-            ]),
-            [controllerNode!, route.rssi],
-          ];
-          let sourceNode: string = nodeId;
-          hops.forEach(([repeater, rssi]) => {
-            const RSSI = typeof rssi === "number" && rssi <= 0 ? rssi : -100;
-            const existingLink = links.find(
-              (link) =>
-                link.source === sourceNode && link.target === String(repeater)
-            );
-            const width = this._getLineWidth(RSSI);
-            if (existingLink) {
-              existingLink.value = Math.max(existingLink.value!, RSSI);
-              existingLink.lineStyle = {
-                ...existingLink.lineStyle,
-                width: Math.max(existingLink.lineStyle!.width!, width),
-                type:
-                  route.protocol_data_rate > 1
-                    ? "solid"
-                    : existingLink.lineStyle!.type,
-              };
-            } else {
-              links.push({
-                source: sourceNode,
-                target: String(repeater),
-                value: RSSI,
-                lineStyle: {
-                  width,
-                  color:
-                    repeater === controllerNode
-                      ? style.getPropertyValue("--primary-color")
-                      : style.getPropertyValue("--disabled-color"),
-                  type: route.protocol_data_rate > 1 ? "solid" : "dotted",
-                },
-                symbolSize: width * 3,
-              });
-            }
-            sourceNode = String(repeater);
-          });
+        if (!route) {
+          return;
         }
+        // Routes go from the controller to the node via the repeaters, in order.
+        // Each station measures the hop leaving it: the controller reports
+        // `rssi`, repeater i reports `repeater_rssi[i]`.
+        const hops: [string, RssiError | number | null][] = [];
+        let hopRssi = route.rssi;
+        route.repeaters.forEach((deviceId, i) => {
+          const repeaterNodeId = this._nodeIdsByDeviceId[deviceId];
+          // skip repeaters we can't resolve, so the chain stays connected
+          if (repeaterNodeId !== undefined) {
+            hops.push([String(repeaterNodeId), hopRssi]);
+          }
+          hopRssi = route.repeater_rssi[i];
+        });
+        hops.push([nodeId, hopRssi]);
+
+        let sourceNode = controllerId;
+        hops.forEach(([target, rssi]) => {
+          if (target === sourceNode) {
+            return;
+          }
+          const RSSI = typeof rssi === "number" && rssi <= 0 ? rssi : -100;
+          const existingLink = links.find(
+            (link) => link.source === sourceNode && link.target === target
+          );
+          const width = this._getLineWidth(RSSI);
+          if (existingLink) {
+            existingLink.value = Math.max(existingLink.value!, RSSI);
+            existingLink.lineStyle = {
+              ...existingLink.lineStyle,
+              width: Math.max(existingLink.lineStyle!.width!, width),
+              type:
+                route.protocol_data_rate > 1
+                  ? "solid"
+                  : existingLink.lineStyle!.type,
+            };
+          } else {
+            links.push({
+              source: sourceNode,
+              target,
+              value: RSSI,
+              lineStyle: {
+                width,
+                color:
+                  sourceNode === controllerId
+                    ? style.getPropertyValue("--primary-color")
+                    : style.getPropertyValue("--disabled-color"),
+                type: route.protocol_data_rate > 1 ? "solid" : "dotted",
+              },
+              symbolSize: width * 3,
+            });
+          }
+          sourceNode = target;
+        });
       });
 
       return { nodes, links, categories };
