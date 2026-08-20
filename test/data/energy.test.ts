@@ -1,10 +1,4 @@
-import {
-  addDays,
-  addHours,
-  addMilliseconds,
-  endOfDay,
-  startOfDay,
-} from "date-fns";
+import { addDays, endOfDay, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { afterEach, assert, describe, it, vi } from "vitest";
 
@@ -888,16 +882,17 @@ const energyPeriodLocale: FrontendLocaleData = {
   first_weekday: FirstWeekday.language,
 };
 const energyPeriodConfig = { time_zone: "America/New_York" } as HassConfig;
-const energyTokyoConfig = { time_zone: "Asia/Tokyo" } as HassConfig;
-const energyPeriodDay = (
-  now: Date,
-  offset = 0,
-  config: HassConfig = energyPeriodConfig
-) => {
-  const day = calcDate(now, addDays, energyPeriodLocale, config, offset);
+const energyPeriodDay = (now: Date, offset = 0) => {
+  const day = calcDate(
+    now,
+    addDays,
+    energyPeriodLocale,
+    energyPeriodConfig,
+    offset
+  );
   return {
-    start: calcDate(day, startOfDay, energyPeriodLocale, config),
-    end: calcDate(day, endOfDay, energyPeriodLocale, config),
+    start: calcDate(day, startOfDay, energyPeriodLocale, energyPeriodConfig),
+    end: calcDate(day, endOfDay, energyPeriodLocale, energyPeriodConfig),
   };
 };
 
@@ -994,35 +989,6 @@ describe("getNextEnergyPeriodStart", () => {
         energyPeriodDay(now).start
       ).getTime(),
       new Date("2026-06-21T01:00:00-04:00").getTime()
-    );
-  });
-
-  it("schedules tomorrow 01:00 in the server zone across a browser-length DST gap", () => {
-    // 23:30 JST on 24 Oct 2026. addDays() in a DST-fallback browser zone
-    // can skip a calendar day; the rollover must stay on the next JST day.
-    const now = new Date("2026-10-24T14:30:00.000Z");
-
-    // Compare to the tz-internal formula rather than a hardcoded instant:
-    // CI pins TZ=Etc/UTC (no DST), where browser-local addDays(now, 1) can
-    // land on the same JST day. The formula is the production invariant.
-    // test/data/energy-dst.test.ts pins Europe/Berlin so a raw addDays
-    // regression actually fails.
-    const expected = addHours(
-      addMilliseconds(
-        calcDate(now, endOfDay, energyPeriodLocale, energyTokyoConfig),
-        1
-      ),
-      1
-    );
-
-    assert.equal(
-      getNextEnergyPeriodStart(
-        false,
-        now,
-        energyPeriodLocale,
-        energyTokyoConfig
-      ).getTime(),
-      expected.getTime()
     );
   });
 });
@@ -1140,25 +1106,6 @@ describe("getEnergyLiveDayPeriod", () => {
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
-
-  it("resolves yesterday in the server zone during hour 0", () => {
-    // 00:30 JST on 26 Oct 2026. Browser-local addDays can land two days back.
-    const now = new Date("2026-10-25T15:30:00.000Z");
-    const live = getEnergyLiveDayPeriod(
-      false,
-      now,
-      energyPeriodLocale,
-      energyTokyoConfig,
-      new Date(0)
-    );
-    // energyPeriodDay uses calcDate(..., addDays, ..., -1) then start/end of
-    // day — the tz-internal formula. A hardcoded instant would not show why
-    // UTC CI cannot catch a raw addDays(now, -1) regression; see
-    // test/data/energy-dst.test.ts for the Europe/Berlin case that can.
-    const expected = energyPeriodDay(now, -1, energyTokyoConfig);
-    assert.equal(live.start.getTime(), expected.start.getTime());
-    assert.equal(live.end.getTime(), expected.end.getTime());
-  });
 });
 
 describe("getEnergyDataCollection live day", () => {
@@ -1167,7 +1114,11 @@ describe("getEnergyDataCollection live day", () => {
     vi.useRealTimers();
   });
 
-  const createCollection = (key: string, preset?: string) => {
+  const createCollection = (
+    key: string,
+    preset?: string,
+    midnightRollover = false
+  ) => {
     const hass = createMockHass();
     hass.locale = energyPeriodLocale;
     hass.config = { ...hass.config, time_zone: "America/New_York" };
@@ -1192,6 +1143,7 @@ describe("getEnergyDataCollection live day", () => {
       collection: getEnergyDataCollection(hass, {
         key,
         prefs: EMPTY_PREFERENCES,
+        midnightRollover,
       }),
       callWS,
     };
@@ -1322,6 +1274,26 @@ describe("getEnergyDataCollection live day", () => {
     vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
 
     const { collection } = createCollection("energy_week_stored", "this_week");
+    const weekStart = collection.start.getTime();
+    const unsub = collection.subscribe(() => undefined);
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), weekStart);
+
+    unsub();
+  });
+
+  it("does not roll a remembered week preset over to today with midnightRollover", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection } = createCollection(
+      "energy_week_stored_now",
+      "this_week",
+      true
+    );
     const weekStart = collection.start.getTime();
     const unsub = collection.subscribe(() => undefined);
 

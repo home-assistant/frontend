@@ -1115,7 +1115,7 @@ export const getEnergyDataCollection = (
   const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
   collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
-  followLiveDay = midnightRollover || preferredPeriod === "today";
+  followLiveDay = preferredPeriod === "today";
 
   collection.isActive = () => !!collection._active;
   collection.clearPrefs = () => {
