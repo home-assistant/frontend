@@ -21,7 +21,6 @@ import {
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
-import { formatTime24h } from "../common/datetime/format_time";
 import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
@@ -859,16 +858,87 @@ export const getEnergyDefaultPeriodStorageKey = (
   return `energy-default-period-${key}`;
 };
 
-// When does the collection's day period need to roll over to the next day?
-// With `midnightRollover` (the real-time "Now" view) it rolls over right at
-// midnight. Otherwise it waits an hour, until the new day's first hourly
-// statistic exists — rolling over at midnight would show an empty graph.
-export const getNextEnergyPeriodStart = (
+// When today's first hourly statistic becomes available (01:00 in the
+// configured timezone). Rolling the statistics view over at midnight would
+// show an empty graph.
+export const getEnergyFirstStatisticAt = (
+  now: Date,
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"]
+): Date => addHours(calcDate(now, startOfDay, locale, config), 1);
+
+// The statistics Energy view shows yesterday until 01:00 so the graph is not
+// empty. The real-time "Now" view never does this — it has live data.
+export const shouldFallbackEnergyPeriodToYesterday = (
   midnightRollover: boolean,
   now: Date,
   locale: HomeAssistant["locale"],
   config: HomeAssistant["config"]
+): boolean =>
+  !midnightRollover &&
+  now.getTime() < getEnergyFirstStatisticAt(now, locale, config).getTime();
+
+// Live day used while a rollover timer is scheduled (today, or the hour-0
+// yesterday fallback). Custom dates do not use this. If the user already
+// picked today during hour 0, keep today rather than snapping back.
+export const getEnergyLiveDayPeriod = (
+  midnightRollover: boolean,
+  now: Date,
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"],
+  currentStart: Date,
+  currentEnd?: Date
+): { start: Date; end: Date } => {
+  if (
+    shouldFallbackEnergyPeriodToYesterday(midnightRollover, now, locale, config)
+  ) {
+    const yesterdayStart = calcDate(
+      addDays(now, -1),
+      startOfDay,
+      locale,
+      config
+    );
+    const yesterdayEnd = calcDate(addDays(now, -1), endOfDay, locale, config);
+    if (
+      currentStart.getTime() === yesterdayStart.getTime() &&
+      currentEnd?.getTime() === yesterdayEnd.getTime()
+    ) {
+      return { start: yesterdayStart, end: yesterdayEnd };
+    }
+  }
+  return {
+    start: calcDate(now, startOfDay, locale, config),
+    end: calcDate(now, endOfDay, locale, config),
+  };
+};
+
+// When does the collection's day period need to roll over to the next day?
+// With `midnightRollover` (the real-time "Now" view) it rolls over right at
+// midnight. Otherwise it waits an hour, until the new day's first hourly
+// statistic exists — rolling over at midnight would show an empty graph.
+// Pass `periodStart` when the collection is on a specific day: hour-0
+// yesterday must wake at today 01:00, not tomorrow 01:00.
+export const getNextEnergyPeriodStart = (
+  midnightRollover: boolean,
+  now: Date,
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"],
+  periodStart?: Date
 ): Date => {
+  if (
+    periodStart &&
+    shouldFallbackEnergyPeriodToYesterday(midnightRollover, now, locale, config)
+  ) {
+    const yesterdayStart = calcDate(
+      addDays(now, -1),
+      startOfDay,
+      locale,
+      config
+    );
+    if (periodStart.getTime() === yesterdayStart.getTime()) {
+      return getEnergyFirstStatisticAt(now, locale, config);
+    }
+  }
   const dayEnd = calcDate(now, endOfDay, locale, config);
   return midnightRollover ? addMilliseconds(dayEnd, 1) : addHours(dayEnd, 1);
 };
@@ -929,11 +999,69 @@ export const getEnergyDataCollection = (
     }
   ) as EnergyCollection;
 
+  collection._active = 0;
+  collection.prefs = options.prefs;
+
+  // True while the collection is tracking the rolling "today" (or hour-0
+  // yesterday) day. Cleared when the user picks a custom range.
+  let followLiveDay = false;
+
+  const applyLiveDayPeriod = (now: Date): boolean => {
+    const live = getEnergyLiveDayPeriod(
+      midnightRollover,
+      now,
+      hass.locale,
+      hass.config,
+      collection.start,
+      collection.end
+    );
+    const changed =
+      collection.start.getTime() !== live.start.getTime() ||
+      collection.end?.getTime() !== live.end.getTime();
+    collection.start = live.start;
+    collection.end = live.end;
+    return changed;
+  };
+
+  const scheduleUpdatePeriod = () => {
+    if (collection._updatePeriodTimeout !== undefined) {
+      window.clearTimeout(collection._updatePeriodTimeout);
+    }
+    const scheduledAt = new Date();
+    collection._updatePeriodTimeout = window.setTimeout(
+      () => {
+        applyLiveDayPeriod(new Date());
+        collection.refresh();
+        scheduleUpdatePeriod();
+      },
+      Math.max(
+        0,
+        getNextEnergyPeriodStart(
+          midnightRollover,
+          scheduledAt,
+          hass.locale,
+          hass.config,
+          collection.start
+        ).getTime() - scheduledAt.getTime()
+      )
+    );
+  };
+
   const origSubscribe = collection.subscribe;
 
   collection.subscribe = (subscriber: (data: EnergyData) => void) => {
     const unsub = origSubscribe(subscriber);
     collection._active++;
+
+    // Frozen background timers never fire; catch up the live day when Energy
+    // is shown again. Custom dates and other presets leave followLiveDay false.
+    if (followLiveDay) {
+      const changed = applyLiveDayPeriod(new Date());
+      scheduleUpdatePeriod();
+      if (changed) {
+        collection.refresh();
+      }
+    }
 
     if (collection._refreshTimeout === undefined) {
       scheduleHourlyRefresh(collection);
@@ -949,53 +1077,30 @@ export const getEnergyDataCollection = (
     };
   };
 
-  collection._active = 0;
-  collection.prefs = options.prefs;
-
-  const now = new Date();
-  const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
   // Set start to start of today if we have data for today, otherwise yesterday.
   // The real-time "Now" view always tracks today; it shows live data even
   // before today's first statistic exists, so it never falls back to yesterday.
+  const now = new Date();
   const preferredPeriod =
     (localStorage.getItem(
       getEnergyDefaultPeriodStorageKey(hass, options.key)
     ) as DateRange) || "today";
   const period =
-    preferredPeriod === "today" && hour === "0" && !midnightRollover
+    preferredPeriod === "today" &&
+    shouldFallbackEnergyPeriodToYesterday(
+      midnightRollover,
+      now,
+      hass.locale,
+      hass.config
+    )
       ? "yesterday"
       : preferredPeriod;
 
   const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
   collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
+  followLiveDay = midnightRollover || preferredPeriod === "today";
 
-  const scheduleUpdatePeriod = () => {
-    collection._updatePeriodTimeout = window.setTimeout(
-      () => {
-        collection.start = calcDate(
-          new Date(),
-          startOfDay,
-          hass.locale,
-          hass.config
-        );
-        collection.end = calcDate(
-          new Date(),
-          endOfDay,
-          hass.locale,
-          hass.config
-        );
-        collection.refresh();
-        scheduleUpdatePeriod();
-      },
-      getNextEnergyPeriodStart(
-        midnightRollover,
-        new Date(),
-        hass.locale,
-        hass.config
-      ).getTime() - Date.now()
-    );
-  };
   scheduleUpdatePeriod();
 
   collection.isActive = () => !!collection._active;
@@ -1009,12 +1114,12 @@ export const getEnergyDataCollection = (
     }
     collection.start = newStart;
     collection.end = newEnd;
-    if (
+    followLiveDay =
       collection.start.getTime() ===
         calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime()
-    ) {
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime();
+    if (followLiveDay) {
       scheduleUpdatePeriod();
     }
   };
