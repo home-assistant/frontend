@@ -12,12 +12,14 @@ import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-icon-button";
+import type { ConfigEntry } from "../../data/config_entries";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
   subscribeDataEntryFlowProgress,
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
+import type { RepairsIssue } from "../../data/repairs";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -30,6 +32,7 @@ import type {
 } from "./show-dialog-data-entry-flow";
 import { showOptionsFlowDialog } from "./show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
+import { showRepairsFlowDialog } from "../repairs-flow/show-dialog-repair-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";
@@ -218,7 +221,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
       this._params.dialogClosedCallback({
         flowFinished,
         entryId:
-          "result" in this._step ? this._step.result?.entry_id : undefined,
+          "result" in this._step
+            ? (this._step.result as ConfigEntry)?.entry_id
+            : undefined,
       });
     }
 
@@ -279,7 +284,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         const devicesLength = this._devices(
           this._params.flowConfig.showDevices,
           Object.values(this.hass.devices),
-          this._step.result?.entry_id,
+          (this._step.result as ConfigEntry)?.entry_id,
           this._params.carryOverDevices
         ).length;
         return this.hass.localize(
@@ -485,7 +490,8 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
                                       .devices=${this._devices(
                                         this._params.flowConfig.showDevices,
                                         Object.values(this.hass.devices),
-                                        this._step.result?.entry_id,
+                                        (this._step.result as ConfigEntry)
+                                          ?.entry_id,
                                         this._params.carryOverDevices
                                       )}
                                     ></step-flow-create-entry>
@@ -575,7 +581,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         const devices = this._devices(
           this._params!.flowConfig.showDevices,
           Object.values(this.hass.devices),
-          this._step.result?.entry_id,
+          (this._step.result as ConfigEntry)?.entry_id,
           this._params!.carryOverDevices
         );
 
@@ -681,21 +687,23 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "options_flow") {
-        if (_step.type === "create_entry") {
-          showOptionsFlowDialog(this, _step.result!, {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          });
-        }
+        showOptionsFlowDialog(this, _step.result!, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else if (_step.next_flow[0] === "config_subentries_flow") {
-        if (_step.type === "create_entry") {
-          showSubConfigFlowDialog(this, _step.result!, "", {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          });
-        }
+        showSubConfigFlowDialog(this, _step.result!, "", {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
+      } else if (_step.next_flow[0] === "repair_flow") {
+        showRepairsFlowDialog(this, _step.result as unknown as RepairsIssue, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else {
         this.closeDialog();
         showAlertDialog(this, {

@@ -790,11 +790,6 @@
         }
       },
       "target-picker": {
-        "expand": "Expand",
-        "expand_floor_id": "Split this floor into separate areas",
-        "expand_area_id": "Split this area into separate devices and entities",
-        "expand_device_id": "Split this device into separate entities",
-        "expand_label_id": "Split this label into separate areas, devices and entities",
         "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
@@ -807,7 +802,6 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
-        "replaced_device": "Replaced device",
         "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
         "replace_device": "Replace",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
@@ -840,6 +834,9 @@
           "long": "Long"
         },
         "style": "Time format style"
+      },
+      "filter-device-classes": {
+        "caption": "Device class"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -1129,7 +1126,11 @@
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
         "collapse_legend": "Less",
-        "toggle_visibility": "Toggle visibility"
+        "toggle_visibility": "Toggle visibility",
+        "chart": "Chart",
+        "time": "Time",
+        "value": "Value",
+        "category": "Category"
       },
       "map": {
         "error": "Unable to load map"
@@ -1608,6 +1609,7 @@
             "labs": "[%key:ui::panel::config::labs::caption%]",
             "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
             "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "mqtt": "[%key:ui::panel::config::dashboard::mqtt::main%]",
             "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
@@ -2735,6 +2737,10 @@
           "matter": {
             "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
+          },
+          "mqtt": {
+            "main": "MQTT",
+            "secondary": "Lightweight network protocol designed for IoT devices"
           },
           "thread": {
             "main": "Thread",
@@ -7400,8 +7406,16 @@
         },
         "mqtt": {
           "title": "MQTT",
-          "settings_title": "MQTT settings",
-          "option_flow": "Configure MQTT options",
+          "option_flow": "MQTT options",
+          "option_flow_description": "Set discovery options",
+          "config_flow": "Connection",
+          "config_flow_description": "Broker connection settings",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "my_network_title": "My network",
+          "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -8422,6 +8436,7 @@
             "status_online": "Online",
             "status_offline": "Offline",
             "my_network_title": "My network",
+            "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
             "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
             "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
@@ -8468,6 +8483,48 @@
                 "input_label": "Dataset",
                 "confirm": "Set Thread"
               }
+            }
+          },
+          "visualization": {
+            "header": "Network visualization",
+            "refresh_topology": "Refresh topology",
+            "border_router": "Border router",
+            "router": "Router",
+            "end_device": "End device",
+            "wifi_ap": "Wi-Fi access point",
+            "offline": "Offline",
+            "online": "Online",
+            "unknown_device": "Unknown device",
+            "unknown_devices": "Unknown devices",
+            "node": "Node {node_id}",
+            "node_id": "Node ID",
+            "network": "Network",
+            "role": "Role",
+            "status": "Status",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "area": "Area",
+            "last_seen": "Last seen",
+            "via_route_table": "Learned from routing table",
+            "empty": "No network topology data is available yet.",
+            "not_supported": "The connected Matter server does not support network topology. Update your Matter server to use this feature.",
+            "error_loading": "Failed to load the network topology: {error}",
+            "strength": {
+              "strong": "Strong",
+              "medium": "Medium",
+              "weak": "Weak",
+              "none": "None",
+              "unknown": "Unknown"
+            },
+            "roles": {
+              "leader": "Leader",
+              "router": "Router",
+              "reed": "Router-eligible end device",
+              "end_device": "End device",
+              "sleepy_end_device": "Sleepy end device",
+              "unassigned": "Unassigned",
+              "station": "Station",
+              "ap": "Access point"
             }
           },
           "network_type": {
@@ -11720,9 +11777,16 @@
         }
       },
       "history": {
-        "start_search": "Select areas, devices, entities or labels above",
+        "sources": "Sources",
+        "sources_count": "Sources: {count}",
+        "add_targets": "Add targets",
+        "change_sources": "Change sources",
+        "no_targets": "No targets selected",
+        "start_search_title": "Nothing to show yet",
+        "start_search": "Select areas, devices, entities or labels to see their history",
+        "no_results_title": "No results found",
+        "no_results": "No history for the current selection. Try changing the targets, filters, or time range.",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections",
         "download_data": "Download data",
         "download_data_error": "Unable to download data",
         "add_card": "Add current view as card",
@@ -11730,6 +11794,12 @@
         "error_no_data": "You need to select some data sources first."
       },
       "logbook": {
+        "sources": "[%key:ui::panel::history::sources%]",
+        "sources_count": "[%key:ui::panel::history::sources_count%]",
+        "change_sources": "[%key:ui::panel::history::change_sources%]",
+        "no_targets": "Showing all activity. Add targets to narrow it down.",
+        "no_results_title": "[%key:ui::panel::history::no_results_title%]",
+        "no_results": "No activity for the current selection. Try changing the targets, filters, or time range.",
         "download_data": "[%key:ui::panel::history::download_data%]",
         "download_data_error": "[%key:ui::panel::history::download_data_error%]",
         "error_no_data": "No activity for the selected target in the selected time range."

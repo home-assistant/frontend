@@ -1,11 +1,16 @@
 import type { SelectedDetail } from "@material/mwc-list";
 import { consume, type ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
@@ -44,11 +49,11 @@ export class HaFilterIntegrations extends LitElement {
       Object.values(manifests)
   );
 
-  @state() private _shouldRender = false;
-
   @state() private _filter?: string;
 
-  @query("ha-list") private _list?: HTMLElement;
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
     const manifests = this._manifests
@@ -59,7 +64,6 @@ export class HaFilterIntegrations extends LitElement {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
@@ -74,65 +78,55 @@ export class HaFilterIntegrations extends LitElement {
               : nothing
           }
         </div>
-        ${
-          manifests && this._shouldRender
-            ? html`<ha-input-search
-                  appearance="outlined"
-                  .value=${this._filter}
-                  @input=${this._handleSearchChange}
-                >
-                </ha-input-search>
-                <ha-list
-                  class="ha-scrollbar"
-                  @selected=${this._itemSelected}
-                  multi
-                >
-                  ${repeat(
-                    this._integrations(
-                      this._localize,
-                      manifests,
-                      this._filter,
-                      this.value,
-                      this._i18n.locale.language
-                    ),
-                    (i) => i.domain,
-                    (integration) =>
-                      html`<ha-check-list-item
-                        .value=${integration.domain}
-                        .selected=${(this.value || []).includes(
-                          integration.domain
-                        )}
-                        graphic="icon"
-                      >
-                        <ha-domain-icon
-                          slot="graphic"
-                          .domain=${integration.domain}
-                          brand-fallback
-                        ></ha-domain-icon>
-                        ${integration.name}
-                      </ha-check-list-item>`
-                  )}
-                </ha-list> `
-            : nothing
-        }
       </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              ${
+                manifests
+                  ? html`<ha-input-search
+                        appearance="outlined"
+                        .value=${this._filter}
+                        @input=${this._handleSearchChange}
+                      >
+                      </ha-input-search>
+                      <ha-list
+                        class="ha-scrollbar"
+                        @selected=${this._itemSelected}
+                        multi
+                      >
+                        ${repeat(
+                          this._integrations(
+                            this._localize,
+                            manifests,
+                            this._filter,
+                            this.value,
+                            this._i18n.locale.language
+                          ),
+                          (i) => i.domain,
+                          (integration) =>
+                            html`<ha-check-list-item
+                              .value=${integration.domain}
+                              .selected=${(this.value || []).includes(
+                                integration.domain
+                              )}
+                              graphic="icon"
+                            >
+                              <ha-domain-icon
+                                slot="graphic"
+                                .domain=${integration.domain}
+                                brand-fallback
+                              ></ha-domain-icon>
+                              ${integration.name}
+                            </ha-check-list-item>`
+                        )}
+                      </ha-list>`
+                  : nothing
+              }
+            </div>`
+          : nothing
+      }
     `;
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
-        // 49px - height of a header + 1px
-        // 4px - padding-top of the search-input
-        // 32px - height of the search input
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -213,17 +207,11 @@ export class HaFilterIntegrations extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;

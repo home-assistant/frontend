@@ -1135,6 +1135,10 @@ export const resolveEntityIDs = (
     expanded.areas.forEach((id) => targetAreas.add(id));
   });
 
+  // Devices only reached through an area do not pull in entities that are
+  // explicitly assigned to another area, matching core.
+  const devicesNotViaArea = new Set(targetDevices);
+
   targetAreas.forEach((areaId) => {
     const expanded = expandAreaTarget(
       hass,
@@ -1153,6 +1157,7 @@ export const resolveEntityIDs = (
   Object.values(devices).forEach((device) => {
     if (device.parent_device_id && directDevices.has(device.parent_device_id)) {
       targetDevices.add(device.id);
+      devicesNotViaArea.add(device.id);
     }
   });
 
@@ -1163,7 +1168,11 @@ export const resolveEntityIDs = (
       entities,
       targetSelector
     );
-    expanded.entities.forEach((id) => targetEntities.add(id));
+    expanded.entities.forEach((id) => {
+      if (devicesNotViaArea.has(deviceId) || !entities[id]?.area_id) {
+        targetEntities.add(id);
+      }
+    });
   });
 
   return Array.from(targetEntities);
