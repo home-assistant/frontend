@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { deepActiveElement } from "../../../src/common/dom/deep-active-element";
 import type {
   FormDialogData,
   FormDialogParams,
@@ -129,6 +130,34 @@ describe("dialog-form mounted nested forms", () => {
     expect(getForms(dialog)[0].hidden).toBe(false);
   });
 
+  it.each(["submit", "cancel"] as const)(
+    "restores focus to the opener after nested %s",
+    async (action) => {
+      const dialog = await openDialog();
+      const parent = getForms(dialog)[0];
+      const opener = document.createElement("button");
+      parent.append(opener);
+      opener.focus();
+
+      await showNestedDialog(dialog, parent, nestedParams());
+
+      const child = getForms(dialog)[1];
+      const childFocusTarget = document.createElement("button");
+      child.append(childFocusTarget);
+      childFocusTarget.focus();
+
+      expect(deepActiveElement()).toBe(childFocusTarget);
+
+      if (action === "submit") {
+        submit(dialog);
+      } else {
+        cancel(dialog);
+      }
+
+      await vi.waitUntil(() => deepActiveElement() === opener);
+    }
+  );
+
   it("keeps the parent open after a custom object selector nested save", async () => {
     const dialog = await openDialog();
     const nested = {
@@ -235,6 +264,41 @@ describe("dialog-form mounted nested forms", () => {
 
     await showNestedDialog(dialog, child, nestedParams(), "not-dialog-form");
     expect(getInternals(dialog)["_stack"]).toHaveLength(1);
+  });
+
+  it("cancels all pending levels when physically closed", async () => {
+    const cancelOrder: string[] = [];
+    const root = outerParams();
+    const nested = nestedParams();
+    const grandchild = nestedParams();
+
+    root.cancel = vi.fn(() => cancelOrder.push("root"));
+    nested.cancel = vi.fn(() => cancelOrder.push("nested"));
+    grandchild.cancel = vi.fn(() => cancelOrder.push("grandchild"));
+
+    const dialog = await openDialog(root);
+    getForms(dialog)[0].dispatchEvent(
+      new CustomEvent("value-changed", {
+        detail: { value: { value: "dirty" } },
+      })
+    );
+    expect(dialog.isDirtyState).toBe(true);
+
+    await showNestedDialog(dialog, getForms(dialog)[0], nested);
+    await showNestedDialog(dialog, getForms(dialog)[1], grandchild);
+
+    (getInternals(dialog)["_dialogClosed"] as () => void)();
+
+    expect(cancelOrder).toEqual(["grandchild", "nested", "root"]);
+    expect(grandchild.cancel).toHaveBeenCalledOnce();
+    expect(nested.cancel).toHaveBeenCalledOnce();
+    expect(root.cancel).toHaveBeenCalledOnce();
+    expect(getInternals(dialog)["_stack"]).toHaveLength(0);
+    expect(getInternals(dialog)["_params"]).toBeUndefined();
+    expect(getInternals(dialog)["_data"]).toEqual({});
+    expect(getInternals(dialog)["_initialData"]).toEqual({});
+    expect(getInternals(dialog)["_open"]).toBe(false);
+    expect(dialog.isDirtyState).toBe(false);
   });
 
   it("tracks dirty state across nested levels", async () => {
