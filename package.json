@@ -82,7 +82,7 @@
     "@mdi/svg": "7.4.47",
     "@replit/codemirror-indentation-markers": "6.5.3",
     "@swc/helpers": "0.5.23",
-    "@thomasloven/round-slider": "0.6.0",
+    "@thomasloven/round-slider": "patch:@thomasloven/round-slider@npm%3A0.6.0#~/.yarn/patches/@thomasloven-round-slider-npm-0.6.0-d7176d9db7.patch",
     "@tsparticles/engine": "4.3.2",
     "@tsparticles/preset-links": "4.3.2",
     "@vibrant/color": "4.0.4",

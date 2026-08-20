@@ -5294,6 +5294,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@thomasloven/round-slider@patch:@thomasloven/round-slider@npm%3A0.6.0#~/.yarn/patches/@thomasloven-round-slider-npm-0.6.0-d7176d9db7.patch":
+  version: 0.6.0
+  resolution: "@thomasloven/round-slider@patch:@thomasloven/round-slider@npm%3A0.6.0#~/.yarn/patches/@thomasloven-round-slider-npm-0.6.0-d7176d9db7.patch::version=0.6.0&hash=f6a9fe"
+  dependencies:
+    lit: "npm:^2.0.0-rc.2"
+    tslib: "npm:^2.2.0"
+  checksum: 10/3762f6cdfc935b4bd9073b6379586147017fd0a9e5cdcc39d7a526fb436f81be54461a3da26f9fe6be716954be3c3b5039aa2acaf7ae8258cfb968d64965a5f2
+  languageName: node
+  linkType: hard
+
 "@tokenizer/token@npm:^0.3.0":
   version: 0.3.0
   resolution: "@tokenizer/token@npm:0.3.0"
@@ -10028,7 +10038,7 @@ __metadata:
     "@rspack/core": "npm:2.1.10"
     "@rspack/dev-server": "npm:2.2.0"
     "@swc/helpers": "npm:0.5.23"
-    "@thomasloven/round-slider": "npm:0.6.0"
+    "@thomasloven/round-slider": "patch:@thomasloven/round-slider@npm%3A0.6.0#~/.yarn/patches/@thomasloven-round-slider-npm-0.6.0-d7176d9db7.patch"
     "@tsparticles/engine": "npm:4.3.2"
     "@tsparticles/preset-links": "npm:4.3.2"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
