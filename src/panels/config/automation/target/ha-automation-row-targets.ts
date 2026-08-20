@@ -68,6 +68,9 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ type: Boolean })
   public interactive = false;
 
+  @property({ reflect: true })
+  public size: "s" | "m" = "m";
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -650,6 +653,23 @@ export class HaAutomationRowTargets extends LitElement {
       display: flex;
       height: 32px;
       align-items: center;
+    }
+
+    :host([size="s"]) {
+      min-height: 24px;
+    }
+    :host([size="s"]) .target {
+      height: 24px;
+    }
+    /* A default 24px icon would fill the whole small chip. */
+    :host([size="s"]) .target ha-icon,
+    :host([size="s"]) .target ha-svg-icon,
+    :host([size="s"]) .target ha-domain-icon,
+    :host([size="s"]) .target ha-floor-icon {
+      --mdc-icon-size: 16px;
+    }
+    :host([size="s"]) .target ha-floor-icon {
+      height: 24px;
     }
 
     button.target {
