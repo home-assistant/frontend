@@ -107,7 +107,7 @@
     "hls.js": "1.7.0",
     "home-assistant-js-websocket": "9.6.0",
     "idb-keyval": "6.3.0",
-    "intl-messageformat": "11.2.13",
+    "intl-messageformat": "11.2.14",
     "js-yaml": "5.3.0",
     "leaflet": "1.9.4",
     "leaflet-draw": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch",
