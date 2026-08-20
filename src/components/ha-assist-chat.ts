@@ -179,9 +179,10 @@ export class HaAssistChat extends LitElement {
       } catch (_err) {
         // Translation failed to load; fall back to the interface language.
       }
-      if (token !== this._greetingLoadToken) {
-        return;
-      }
+    }
+    if (token !== this._greetingLoadToken) {
+      // The pipeline changed while loading; a newer load owns the greeting.
+      return;
     }
     this._conversation = [
       {
