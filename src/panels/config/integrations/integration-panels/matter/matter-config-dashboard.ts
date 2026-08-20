@@ -5,6 +5,7 @@ import {
   mdiPlus,
   mdiShape,
   mdiTune,
+  mdiVectorPolyline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -144,6 +145,10 @@ export class MatterConfigDashboard extends LitElement {
       <ha-card class="nav-card">
         <div class="card-header">
           ${this.hass.localize("ui.panel.config.matter.panel.my_network_title")}
+          <ha-button appearance="filled" href="/config/matter/visualization">
+            <ha-svg-icon slot="start" .path=${mdiVectorPolyline}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.matter.panel.show_map")}
+          </ha-button>
         </div>
         <div class="card-content">
           <ha-md-list>
@@ -252,6 +257,9 @@ export class MatterConfigDashboard extends LitElement {
         }
 
         .nav-card .card-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
           padding-bottom: var(--ha-space-2);
         }
 

@@ -117,7 +117,7 @@ export class HaDataTable extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
@@ -1158,6 +1158,11 @@ export class HaDataTable extends LitElement {
         /* default mdc styles, colors changed, without checkbox styles */
         :host {
           height: 100%;
+          --_cell-padding-inline: 16px;
+        }
+
+        :host([narrow]) {
+          --_cell-padding-inline: 8px;
         }
         .mdc-data-table__content {
           font-family: var(--ha-font-family-body);
@@ -1238,8 +1243,7 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__cell,
         .mdc-data-table__header-cell {
-          padding-right: 16px;
-          padding-left: 16px;
+          padding-inline: var(--_cell-padding-inline);
           min-width: 150px;
           align-self: center;
           overflow: hidden;
@@ -1259,14 +1263,8 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-cell--checkbox,
         .mdc-data-table__cell--checkbox {
-          /* @noflip */
-          padding-left: 16px;
-          /* @noflip */
-          padding-right: 0;
-          /* @noflip */
-          padding-inline-start: 16px;
-          /* @noflip */
-          padding-inline-end: initial;
+          padding-inline-start: var(--_cell-padding-inline);
+          padding-inline-end: 0;
           width: 60px;
           min-width: 60px;
         }
@@ -1379,8 +1377,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--overflow-menu:first-child,
         .mdc-data-table__header-cell--icon-button:first-child,
         .mdc-data-table__cell--icon-button:first-child {
-          padding-left: 16px;
-          padding-inline-start: 16px;
+          padding-inline-start: var(--_cell-padding-inline);
           padding-inline-end: initial;
         }
 
@@ -1388,8 +1385,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--overflow-menu:last-child,
         .mdc-data-table__header-cell--icon-button:last-child,
         .mdc-data-table__cell--icon-button:last-child {
-          padding-right: 16px;
-          padding-inline-end: 16px;
+          padding-inline-end: var(--_cell-padding-inline);
           padding-inline-start: initial;
         }
         .mdc-data-table__cell--overflow-menu,
@@ -1516,11 +1512,17 @@ export class HaDataTable extends LitElement {
         .center {
           text-align: center;
         }
+        .primary {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
         .secondary {
           color: var(--secondary-text-color);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          margin-top: 2px;
         }
         .scroller {
           height: calc(100% - 57px);

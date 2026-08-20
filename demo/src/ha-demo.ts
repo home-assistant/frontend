@@ -32,7 +32,6 @@ import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
 import { mockUsagePrediction } from "./stubs/usage_prediction";
-import "./cloud/cloud-demo-controls";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
@@ -59,6 +58,8 @@ const CONFIG_PANEL_COMMANDS = [
   "search/related",
   "tag/list",
   "assist_pipeline/",
+  "config/entity_registry/settings/",
+  "slugify",
 ];
 
 @customElement("ha-demo")
@@ -90,11 +91,6 @@ export class HaDemo extends HomeAssistantAppEl {
       },
     });
 
-    // Demo-only floating panel to flip the mocked cloud state. Mounted once at
-    // the document level; it shows itself only on the cloud panel.
-    if (!document.querySelector("cloud-demo-controls")) {
-      document.body.appendChild(document.createElement("cloud-demo-controls"));
-    }
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(

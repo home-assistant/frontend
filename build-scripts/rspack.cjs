@@ -1,4 +1,6 @@
-const { existsSync } = require("fs");
+const fs = require("fs");
+
+const { existsSync } = fs;
 const path = require("path");
 const rspack = require("@rspack/core");
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +17,61 @@ const log = require("fancy-log");
 const SafeWebpackBar = require("./safe-webpackbar.cjs");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
+
+// Build-toolchain packages whose version changes the emitted bytes but which
+// are loader/compiler machinery, not modules in the build graph — so rspack's
+// node_modules snapshot cannot see them. Their versions are folded into the
+// persistent cache `version` so a toolchain upgrade invalidates the cache,
+// while ordinary runtime-dependency bumps (handled by the snapshot) do not.
+const TOOLCHAIN_PACKAGES = [
+  "@rspack/core",
+  "@babel/core",
+  "@babel/preset-env",
+  "babel-plugin-polyfill-corejs3",
+  "@babel/plugin-transform-runtime",
+  "@babel/plugin-transform-class-properties",
+  "@babel/plugin-transform-private-methods",
+  "@babel/runtime",
+  "babel-loader",
+  "core-js",
+  "terser",
+  "terser-webpack-plugin",
+  "browserslist",
+  "caniuse-lite",
+];
+
+// Our own build logic — the config, loaders and babel plugins. Their contents
+// (not their paths) go into the cache version, so a change invalidates the
+// cache the same way `buildDependencies` would, but without tying validity to
+// absolute paths — rspack compares buildDependencies by path, which breaks a
+// cache reused on another machine/checkout (a different workspace path).
+const CONFIG_FILES = [
+  __filename,
+  path.join(__dirname, "bundle.cjs"),
+  path.join(__dirname, "minify-template-literals-loader.cjs"),
+  path.join(__dirname, "lit-disable-dev-mode-loader.cjs"),
+  path.join(__dirname, "babel-plugins", "custom-polyfill-plugin.js"),
+  path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
+];
+
+// Content hash of the toolchain versions and our own build files, used as the
+// persistent cache `version`. Everything here is path-independent so the cache
+// stays valid when reused on a different machine or checkout path.
+const cacheVersion = () => {
+  const parts = [
+    ...TOOLCHAIN_PACKAGES.map(
+      (pkg) => `${pkg}@${require(`${pkg}/package.json`).version}`
+    ),
+    ...CONFIG_FILES.map(
+      (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
+    ),
+  ];
+  return require("crypto")
+    .createHash("sha256")
+    .update(parts.join("\n"))
+    .digest("hex")
+    .slice(0, 16);
+};
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -376,6 +433,33 @@ const createRspackConfig = ({
         ])
       ),
     },
+    // Persistent filesystem cache for production builds, opt-in per environment
+    // via RSPACK_CACHE ("readwrite" writes it, "readonly" only reads a warm
+    // cache — e.g. CI reusing the nightly-written one). Unset (releases, local,
+    // tests) = no cache.
+    ...(isProdBuild && process.env.RSPACK_CACHE
+      ? {
+          cache: {
+            type: "persistent",
+            // `name` is already unique per variant (frontend-modern/-legacy).
+            name,
+            // Content-based version (node major + toolchain versions + our own
+            // build files). Everything is path-independent, so the cache stays
+            // valid when reused on another machine/checkout. Runtime deps are
+            // deliberately absent — rspack's node_modules snapshot invalidates
+            // their modules per-package, so a single unrelated bump keeps the
+            // rest warm. buildDependencies is intentionally not used: rspack
+            // compares it by absolute path, which breaks cross-machine reuse.
+            version: `node${process.versions.node.split(".")[0]}-${cacheVersion()}`,
+            storage: {
+              type: "filesystem",
+              directory: path.resolve(paths.root_dir, ".rspack-cache"),
+            },
+            // CI reads the nightly-written cache but must not modify it.
+            readonly: process.env.RSPACK_CACHE === "readonly",
+          },
+        }
+      : {}),
     experiments: {
       outputModule: true,
     },
@@ -405,8 +489,10 @@ const createDemoConfig = ({
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
+const createGalleryConfig = ({ isProdBuild, latestBuild, isTestBuild }) =>
+  createRspackConfig(
+    bundle.config.gallery({ isProdBuild, latestBuild, isTestBuild })
+  );
 
 const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));

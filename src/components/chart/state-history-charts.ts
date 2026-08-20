@@ -12,6 +12,10 @@ import {
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
+import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
@@ -74,6 +78,10 @@ export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hoursToShow?: number;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  /** Draw timeline row names above their bar instead of in a label column. */
+  @property({ attribute: "inside-labels", type: Boolean, reflect: true })
+  public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -223,6 +231,7 @@ export class StateHistoryCharts extends LitElement {
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
         .showNames=${this.showNames}
+        .insideLabels=${this.insideLabels}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
@@ -316,13 +325,13 @@ export class StateHistoryCharts extends LitElement {
     }
   }
 
-  private _yWidthChanged(e: CustomEvent<HASSDomEvents["y-width-changed"]>) {
+  private _yWidthChanged(e: HASSDomEvent<HASSDomEvents["y-width-changed"]>) {
     this._childYWidths[e.detail.chartIndex] = e.detail.value;
     this._maxYWidth = Math.max(...Object.values(this._childYWidths), 0);
   }
 
   private _handleTimelineSync(
-    e: CustomEvent<HASSDomEvents["chart-zoom-with-index"]>
+    e: HASSDomEvent<HASSDomEvents["chart-zoom-with-index"]>
   ) {
     if (!this.syncCharts || this._isSyncing) {
       return;
@@ -384,7 +393,7 @@ export class StateHistoryCharts extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
@@ -418,6 +427,12 @@ export class StateHistoryCharts extends LitElement {
     .entry-container.line {
       flex: 1;
       padding-top: 8px;
+    }
+
+    /* Names inside the plot sit close to the chart above them, so the groups
+       need more room between them to stay apart. */
+    :host([inside-labels]) .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
     }
 
     .entry-container:hover {

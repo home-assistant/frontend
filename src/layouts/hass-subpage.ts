@@ -3,8 +3,10 @@ import { css, html, LitElement } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import { goBack } from "../common/navigate";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
+import { getHistoryState } from "../common/navigate";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
+import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyleScrollbar } from "../resources/styles";
@@ -36,19 +38,14 @@ class HassSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${
-            this.mainPage || history.state?.root
+            this.mainPage || (!backPath && getHistoryState()?.root)
               ? html`<ha-menu-button></ha-menu-button>`
-              : backPath
-                ? html`
-                    <ha-icon-button-arrow-prev
-                      href=${backPath}
-                    ></ha-icon-button-arrow-prev>
-                  `
-                : html`
-                    <ha-icon-button-arrow-prev
-                      @click=${this._backTapped}
-                    ></ha-icon-button-arrow-prev>
-                  `
+              : html`
+                  <ha-icon-button-arrow-prev
+                    .href=${backPath}
+                    @click=${this._backTapped}
+                  ></ha-icon-button-arrow-prev>
+                `
           }
 
           <div class="main-title">
@@ -74,16 +71,12 @@ class HassSubpage extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _backTapped(): void {
-    if (this.backCallback) {
-      this.backCallback();
-      return;
-    }
-    goBack();
+  private _backTapped(ev: MouseEvent): void {
+    handleBackClick(ev, this.backPath, this.backCallback);
   }
 
   static get styles(): CSSResultGroup {

@@ -38,6 +38,7 @@ export class CloudRegister extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config"
         .header=${this.hass.localize("ui.panel.config.cloud.register.title")}
       >
         <div class="content">

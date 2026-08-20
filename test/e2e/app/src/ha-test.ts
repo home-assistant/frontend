@@ -94,6 +94,8 @@ declare global {
     __mockHass: MockHomeAssistant;
     rejectMediaBrowse?: () => void;
     resolveCalendarRegistry?: () => void;
+    resolveConfigEntries?: () => void;
+    resolveConfigEntriesInProgress?: () => void;
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
@@ -245,16 +247,12 @@ export class HaTest extends HomeAssistantAppEl {
     window.__mockHass = hass;
 
     // SPA navigation
-    document.body.addEventListener(
-      "click",
-      (e) => {
-        const href = isNavigationClick(e);
-        if (!href) return;
-        e.preventDefault();
+    window.addEventListener("click", (e) => {
+      const href = isNavigationClick(e);
+      if (href) {
         navigate(href);
-      },
-      { capture: true }
-    );
+      }
+    });
 
     this.hassConnected();
   }

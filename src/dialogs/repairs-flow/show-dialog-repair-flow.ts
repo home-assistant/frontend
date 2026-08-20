@@ -1,18 +1,19 @@
 import { html, nothing } from "lit";
-import type { DataEntryFlowStep } from "../../../data/data_entry_flow";
-import { domainToName } from "../../../data/integration";
-import type { RepairsIssue } from "../../../data/repairs";
+import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import { domainToName } from "../../data/integration";
+import type { RepairsIssue } from "../../data/repairs";
 import {
   createRepairsFlow,
   deleteRepairsFlow,
   fetchRepairsFlow,
   handleRepairsFlowStep,
-} from "../../../data/repairs";
+} from "../../data/repairs";
+import type { DataEntryFlowDialogParams } from "../config-flow/show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,
-} from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
-import type { HomeAssistant } from "../../../types";
+} from "../config-flow/show-dialog-data-entry-flow";
+import type { HomeAssistant } from "../../types";
 import "./dialog-repairs-issue-subtitle";
 
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
@@ -36,14 +37,14 @@ export const loadRepairFlowDialog = loadDataEntryFlowDialog;
 export const showRepairsFlowDialog = (
   element: HTMLElement,
   issue: RepairsIssue,
-  dialogClosedCallback?: (params: { flowFinished: boolean }) => void
+  dialogParams?: Omit<DataEntryFlowDialogParams, "flowConfig">
 ): void =>
   showFlowDialog(
     element,
     {
       startFlowHandler: issue.domain,
       domain: issue.domain,
-      dialogClosedCallback,
+      ...dialogParams,
     },
     {
       flowType: "repair_flow",
@@ -203,9 +204,28 @@ export const showRepairsFlowDialog = (
         return "";
       },
 
-      renderCreateEntryDescription(hass, _step) {
+      renderCreateEntryDescription(hass, step) {
+        const description = hass.localize(
+          `component.${issue.domain}.issues.${
+            issue.translation_key || issue.issue_id
+          }.fix_flow.create_entry.${step.description || "default"}`,
+          step.description_placeholders
+        );
+
         return html`
-          <p>${hass.localize("ui.dialogs.repair_flow.success.description")}</p>
+          ${
+            description
+              ? html`
+                  <ha-markdown
+                    allow-svg
+                    breaks
+                    .content=${description}
+                  ></ha-markdown>
+                `
+              : html`<p>
+                  ${hass.localize("ui.dialogs.repair_flow.success.description")}
+                </p>`
+          }
         `;
       },
 
@@ -291,11 +311,17 @@ export const showRepairsFlowDialog = (
       },
 
       renderMenuOption(hass, step, option) {
-        return hass.localize(
-          `component.${issue.domain}.issues.${
-            issue.translation_key || issue.issue_id
-          }.fix_flow.step.${step.step_id}.menu_options.${option}`,
-          mergePlaceholders(issue, step)
+        return (
+          hass.localize(
+            `component.${issue.domain}.issues.${
+              issue.translation_key || issue.issue_id
+            }.fix_flow.step.${step.step_id}.menu_options.${option}`,
+            mergePlaceholders(issue, step)
+          ) ||
+          // Newer backends can offer options this frontend has no
+          // translation for yet — show the raw option key instead of
+          // an empty menu entry
+          option
         );
       },
 

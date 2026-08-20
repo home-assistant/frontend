@@ -118,6 +118,19 @@ describe("ha-toast", () => {
     ).toBe(true);
   });
 
+  it("shows as part of a stack without becoming a popover", async () => {
+    const element = await mountToast({ stacked: true });
+
+    await showToast(element);
+
+    expect(
+      element.shadowRoot!.querySelector(".toast")!.hasAttribute("popover")
+    ).toBe(false);
+    expect(
+      element.shadowRoot!.querySelector(".toast")!.classList.contains("visible")
+    ).toBe(true);
+  });
+
   it.each(["action", "dismiss", "programmatic"] as const)(
     "reports a %s close reason",
     async (reason) => {

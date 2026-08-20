@@ -104,6 +104,7 @@ export class HaSelectSelector extends LitElement {
         <ha-select-box
           .options=${options}
           .value=${this.value as string | undefined}
+          .disabled=${this.disabled}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
         ></ha-select-box>
@@ -187,6 +188,7 @@ export class HaSelectSelector extends LitElement {
                             .idx=${idx}
                             @remove=${this._removeItem}
                             .label=${label}
+                            .title=${label}
                             selected
                           >
                             ${

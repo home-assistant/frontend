@@ -97,10 +97,12 @@ jobs:
         run: yarn run test
   build:
     name: Build frontend
-    needs:
-      - prepare-dependencies
-      - lint
-      - test
+    # Runs alongside lint and test rather than after them: the build only needs
+    # the dependency tree, and with the rspack cache it is no longer expensive
+    # enough to be worth serialising behind the other checks. The
+    # cancel-on-failure job below stops the run as soon as a check fails, so a
+    # broken pull request does not finish building.
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
@@ -111,12 +113,26 @@ jobs:
         uses: ./.github/actions/setup
         with:
           node-modules-cache: true
+      # Read-only reuse of the rspack cache written by the nightly (see
+      # nightly.yaml). rspack itself decides what is still valid (version +
+      # buildDependencies + node_modules snapshot), so the GHA key just restores
+      # the latest nightly cache; no fingerprint, and no save step (CI never
+      # writes the shared cache).
+      - name: Restore rspack cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rspack-cache
+          key: rspack-cache-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            rspack-cache-${{ runner.os }}-
       - name: Build Application
         uses: ./.github/actions/build
         with:
           target: build-app
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
+          rspack-cache: readonly
       - name: Upload bundle stats
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -132,3 +148,54 @@ jobs:
           path: hass_frontend/
           if-no-files-found: error
           retention-days: 7
+
+  # Now that the checks run in parallel, a failing lint or test no longer stops
+  # the build from finishing on its own, so this watches them and cancels the
+  # whole run on the first failure.
+  #
+  # It is a separate job on purpose. Cancelling needs `actions: write`, and the
+  # other jobs check out the pull request and run its build scripts — handing
+  # them that scope would give PR-controlled code (or a compromised dependency)
+  # write access to Actions. This job never checks out the repository, so the
+  # elevated token stays away from PR code. It also cannot be a job that
+  # `needs` the checks: that would only start once they have all finished, which
+  # is exactly too late to cancel anything.
+  cancel-on-failure:
+    name: Cancel run on failure
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    timeout-minutes: 30
+    steps:
+      - name: Cancel the run when a check fails
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          watched='^(Lint and check format|Run tests|Build frontend)$'
+          while :; do
+            jobs=$(gh api "repos/$REPO/actions/runs/$RUN_ID/jobs?per_page=100" \
+              --paginate --jq '.jobs[] | [.name, .status, (.conclusion // "")] | @tsv' \
+              2>/dev/null || true)
+
+            failed=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" \
+              '$1 ~ w && ($3 == "failure" || $3 == "timed_out") { print $1 }')
+            if [ -n "$failed" ]; then
+              echo "Cancelling the run, these checks failed:"
+              printf '%s\n' "$failed"
+              gh run cancel "$RUN_ID" --repo "$REPO" || true
+              exit 0
+            fi
+
+            found=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" '$1 ~ w' | wc -l)
+            running=$(printf '%s\n' "$jobs" | awk -F'\t' -v w="$watched" \
+              '$1 ~ w && $2 != "completed" { print $1 }')
+            if [ "$found" -ge 3 ] && [ -z "$running" ]; then
+              echo "All checks finished without failure"
+              exit 0
+            fi
+
+            sleep 15
+          done

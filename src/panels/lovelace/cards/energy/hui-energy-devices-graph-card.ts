@@ -16,6 +16,7 @@ import "../../../../components/chart/ha-chart-tooltip-marker";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
@@ -90,6 +91,8 @@ export class HuiEnergyDevicesGraphCard
   @state() private _isMobile = false;
 
   private _compoundStats: string[] = [];
+
+  private _deviceLabels: Record<string, string> = {};
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -192,6 +195,7 @@ export class HuiEnergyDevicesGraphCard
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
             .extraComponents=${[PieChart]}
+            .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @chart-click=${this._handleChartClick}
             @dataset-hidden=${this._datasetHidden}
@@ -294,9 +298,8 @@ export class HuiEnergyDevicesGraphCard
       ? ` (${this.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
       : "";
     return (
-      (this._data?.prefs.device_consumption.find(
-        (d) => d.stat_consumption === statisticId
-      )?.name ||
+      // The untracked slice is not a statistic, so it has no label.
+      (this._deviceLabels[statisticId] ||
         getStatisticLabel(
           this.hass,
           statisticId,
@@ -375,6 +378,12 @@ export class HuiEnergyDevicesGraphCard
     this._compoundStats = energyData.prefs.device_consumption
       .map((d) => d.included_in_stat)
       .filter(Boolean) as string[];
+
+    this._deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      energyData.prefs.device_consumption,
+      energyData.statsMetadata
+    );
 
     const devices = energyData.prefs.device_consumption;
     const devicesTotals: Record<string, number> = {};

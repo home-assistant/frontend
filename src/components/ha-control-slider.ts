@@ -115,7 +115,9 @@ export class HaControlSlider extends LitElement {
   }
 
   steppedValue(value: number) {
-    return Math.round(value / this.step) * this.step;
+    // Clamp after snapping: when the step does not divide the range evenly,
+    // snapping alone rounds past the bounds (min 1, max 99, step 10 → 0 / 100).
+    return this.boundedValue(Math.round(value / this.step) * this.step);
   }
 
   private _displayedValue(value: number) {
@@ -254,13 +256,9 @@ export class HaControlSlider extends LitElement {
     } else if (e.code === "End") {
       this.value = this.max;
     } else if (e.code === "PageUp") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) + this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) + this._tenPercentStep);
     } else if (e.code === "PageDown") {
-      this.value = this.steppedValue(
-        this.boundedValue((this.value ?? 0) - this._tenPercentStep)
-      );
+      this.value = this.steppedValue((this.value ?? 0) - this._tenPercentStep);
     } else {
       const isRtl = mainWindow.document.dir === "rtl";
       let multiplier = 1;

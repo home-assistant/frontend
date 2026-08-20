@@ -545,7 +545,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
               : nothing
           }
-          ${this._currentAddon.description}.<br />
+          <div class="description-text">${this._currentAddon.description}</div>
           ${this.i18n.localize(
             "ui.panel.config.apps.dashboard.visit_app_page",
             {
@@ -1656,6 +1656,15 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         }
         .description a {
           color: var(--primary-color);
+        }
+
+        .description:dir(rtl) > .description-text {
+          text-align: right;
+          direction: ltr;
+        }
+
+        .long-description {
+          direction: ltr;
         }
 
         img.logo {

@@ -6,12 +6,16 @@ import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
+import { extractSearchParamsObject } from "../common/url/search-params";
+import { afterNextRender } from "../common/util/render-status";
 import { fetchHttpConfig } from "../data/http";
 import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
 import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
+import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
@@ -19,6 +23,7 @@ import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { renderLaunchScreenContent } from "../util/launch-screen";
 import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
+import { reloadForUpdate } from "../util/recover-stale-build";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -102,13 +107,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.checkDataBaseMigration();
     }
-    // Wait for `hass.user` to populate so the admin guard can run; it arrives
-    // asynchronously after `hass.config`.
-    if (
-      changedProps.has("hass") &&
-      this.hass?.user &&
-      oldHass?.user !== this.hass.user
-    ) {
+    // Wait for `hass.user` to first populate so the admin guard can run; it
+    // arrives asynchronously after `hass.config`. `hass.user` also gets a fresh
+    // reference at runtime (reconnect, profile refresh via subscribeUser), so
+    // only trigger on the initial population (null -> user). Reconnect re-checks
+    // come from connection-mixin, the launch-screen swap re-check from update().
+    if (changedProps.has("hass") && this.hass?.user && !oldHass?.user) {
       this.checkHttpPendingConfig();
     }
     if (
@@ -125,12 +129,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected update(changedProps: PropertyValues<this>) {
-    if (
-      this.hass?.states &&
-      this.hass.config &&
-      this.hass.services &&
-      this._databaseMigration === false
-    ) {
+    const removingLaunchScreen =
+      !!this.hass?.states &&
+      !!this.hass.config &&
+      !!this.hass.services &&
+      this._databaseMigration === false;
+    if (removingLaunchScreen) {
       this.render = this.renderHass;
       this.update = super.update;
       // partial-panel-resolver removes the launch screen after the first panel
@@ -138,6 +142,14 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       // screen covers the frontend until frontend/loaded is sent.
     }
     super.update(changedProps);
+    if (removingLaunchScreen) {
+      // Surface the HTTP pending config dialog only after super.update() has
+      // committed the render swap above, which clears the launch screen from
+      // the shadow root. Appending the dialog before that render would let it
+      // tear the freshly-added dialog straight back out of the DOM.
+      this.checkHttpPendingConfig();
+      this._restoreMoreInfoFromUrl();
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -170,6 +182,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     // Handle history changes
     window.addEventListener("popstate", () => updateRoute());
+
+    // Restore a more-info dialog deep-linked in the current URL, if any.
+    window.addEventListener("location-changed", () =>
+      this._restoreMoreInfoFromUrl()
+    );
+    window.addEventListener("popstate", () => this._restoreMoreInfoFromUrl());
 
     // Handle clicking on links
     window.addEventListener("click", (ev) => {
@@ -241,19 +259,24 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
           if (registration) {
             registration.update();
           } else if (oldVersion) {
-            // @ts-ignore Firefox supports forceGet
-            location.reload(true);
+            reloadForUpdate();
           }
         });
       } else if (oldVersion) {
-        // @ts-ignore Firefox supports forceGet
-        location.reload(true);
+        reloadForUpdate();
       }
     }
   }
 
   protected async checkHttpPendingConfig() {
     if (__DEMO__ || this._httpPendingDialogOpen) {
+      return;
+    }
+    // Only show once the main UI is rendered. During startup the root swaps
+    // the launch screen for the app, which clears its shadow root and would
+    // tear the freshly-appended dialog straight back out of the DOM (closing
+    // it). When called too early we skip; the swap in update() re-runs this.
+    if (this.render !== this.renderHass) {
       return;
     }
     if (!this.hass?.user?.is_admin) {
@@ -282,6 +305,35 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       onResolved: () => {
         this._httpPendingDialogOpen = false;
       },
+    });
+  }
+
+  private _restoreMoreInfoFromUrl() {
+    // Only restore once the main UI is rendered so the dialog has access to
+    // the loaded entities.
+    if (this.render !== this.renderHass) {
+      return;
+    }
+    const searchParams = extractSearchParamsObject();
+    if (!searchParams["more-info-entity-id"]) {
+      return;
+    }
+    const { entityId, view, hash } = decodeMoreInfoUrl(
+      window.location.search,
+      window.location.hash
+    );
+    if (!entityId) {
+      return;
+    }
+    // Wait for the next render to ensure the view is fully loaded
+    // because the more info dialog is closed when the url changes
+    afterNextRender(() => {
+      showMoreInfoDialog(this, {
+        entityId,
+        view,
+        hash,
+        fromUrl: true,
+      });
     });
   }
 

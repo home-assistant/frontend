@@ -52,7 +52,6 @@ import {
   type TargetType,
 } from "../../data/target";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
-import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
@@ -221,30 +220,28 @@ export class HaTargetPickerItemRow extends LitElement {
           ? html`
               <div slot="end" class="summary">
                 ${
-                  showEntities &&
-                  !this.expand &&
-                  entries?.referenced_entities.length
-                    ? html`<button
-                        class="main link"
+                  this.expand || !entries.referenced_entities.length
+                    ? html`<span class="main">
+                        ${this.hass.localize(
+                          "ui.components.target-picker.entities_count",
+                          {
+                            count: entries.referenced_entities.length,
+                          }
+                        )}
+                      </span>`
+                    : html`<ha-button
+                        appearance="filled"
+                        variant="brand"
+                        size="xs"
                         @click=${this._openDetails}
                       >
                         ${this.hass.localize(
                           "ui.components.target-picker.entities_count",
                           {
-                            count: entries?.referenced_entities.length,
+                            count: entries.referenced_entities.length,
                           }
                         )}
-                      </button>`
-                    : showEntities
-                      ? html`<span class="main">
-                          ${this.hass.localize(
-                            "ui.components.target-picker.entities_count",
-                            {
-                              count: entries?.referenced_entities.length,
-                            }
-                          )}
-                        </span>`
-                      : nothing
+                      </ha-button>`
                 }
               </div>
             `
@@ -396,6 +393,9 @@ export class HaTargetPickerItemRow extends LitElement {
               nextEntries.referenced_entities =
                 entries?.referenced_entities.filter((entity_id) => {
                   const entity = this.hass.entities[entity_id];
+                  if (!entity) {
+                    return false;
+                  }
                   return (
                     entity.area_id === rowItem ||
                     !entity.device_id ||
@@ -419,6 +419,9 @@ export class HaTargetPickerItemRow extends LitElement {
       this.type === "label" && entries
         ? entries.referenced_entities.filter((entity_id) => {
             const entity = this.hass.entities[entity_id];
+            if (!entity) {
+              return false;
+            }
             return (
               entity.labels.includes(this.itemId) &&
               !entries.referenced_devices.includes(entity.device_id || "")
@@ -427,7 +430,7 @@ export class HaTargetPickerItemRow extends LitElement {
         : nextType === "device" && entries
           ? entries.referenced_entities.filter(
               (entity_id) =>
-                this.hass.entities[entity_id].area_id === this.itemId
+                this.hass.entities[entity_id]?.area_id === this.itemId
             )
           : [];
 
@@ -436,7 +439,7 @@ export class HaTargetPickerItemRow extends LitElement {
         ? entries.referenced_devices.filter(
             (device_id) =>
               !devicesInAreas.includes(device_id) &&
-              this.hass.devices[device_id].labels.includes(this.itemId)
+              this.hass.devices[device_id]?.labels.includes(this.itemId)
           )
         : [];
 
@@ -531,6 +534,12 @@ export class HaTargetPickerItemRow extends LitElement {
         entries.referenced_areas = entries.referenced_areas.filter(
           (area_id) => {
             const area = this.hass.areas[area_id];
+            // Absent from the registry is not a filter decision: drop the id
+            // without marking it hidden, so entities targeted through their
+            // own area or label are not dropped along with it.
+            if (!area) {
+              return false;
+            }
             if (
               (this.type === "floor" || area.labels.includes(this.itemId)) &&
               areaMeetsFilter(
@@ -563,6 +572,9 @@ export class HaTargetPickerItemRow extends LitElement {
         entries.referenced_devices = entries.referenced_devices.filter(
           (device_id) => {
             const device = this.hass.devices[device_id];
+            if (!device) {
+              return false;
+            }
             if (
               !hiddenAreaIds.includes(device.area_id || "") &&
               deviceMeetsFilter(
@@ -588,6 +600,11 @@ export class HaTargetPickerItemRow extends LitElement {
       entries.referenced_entities = entries.referenced_entities.filter(
         (entity_id) => {
           const entity = this.hass.entities[entity_id];
+          // Core can reference entities that are absent from the display
+          // registry (e.g. disabled ones expanded from an area).
+          if (!entity) {
+            return false;
+          }
           if (hiddenDeviceIds.includes(entity.device_id || "")) {
             return false;
           }
@@ -812,7 +829,6 @@ export class HaTargetPickerItemRow extends LitElement {
   };
 
   static styles = [
-    buttonLinkStyle,
     css`
       :host {
         --md-list-item-top-space: 0;
@@ -881,16 +897,6 @@ export class HaTargetPickerItemRow extends LitElement {
       .summary .secondary {
         font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
-      }
-
-      button.link {
-        text-decoration: none;
-        color: var(--primary-color);
-      }
-
-      button.link:hover,
-      button.link:focus {
-        text-decoration: underline;
       }
 
       .state {
