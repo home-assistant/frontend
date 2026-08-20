@@ -109,6 +109,7 @@ export interface SupervisorMountCandidateDrive {
 }
 
 export interface SupervisorMountCandidate {
+  type: SupervisorMountType.DISK;
   device: string;
   uuid: string;
   label: string;
