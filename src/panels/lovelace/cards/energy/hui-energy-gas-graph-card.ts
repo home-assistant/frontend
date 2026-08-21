@@ -213,7 +213,8 @@ export class HuiEnergyGasGraphCard
     const gasSources = energySourcesByType(energyData.prefs).gas;
 
     const gasDisplayPrecisions = gasSources
-      ?.map((source) => this.hass.entities[source.stat_energy_from]?.dp)
+      ?.map((source) => this.hass.entities[source.stat_energy_from]?.display_precision
+      )
       .filter((precision): precision is number => precision !== undefined);
 
     this._displayPrecision = gasDisplayPrecisions?.length
