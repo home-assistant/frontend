@@ -109,7 +109,9 @@ export class HuiEnergySourcesTableCard
     name?: string
   ) {
     const displayPrecision =
-      type === "gas" ? this.hass.entities[statId]?.dp : undefined;
+      type === "gas"
+        ? this.hass.entities[statId]?.display_precision
+        : undefined;
 
     const formatOptions =
       displayPrecision !== undefined
@@ -118,7 +120,7 @@ export class HuiEnergySourcesTableCard
             maximumFractionDigits: displayPrecision,
           }
         : undefined;
-    
+
     return html`<tr
       class="mdc-data-table__row ${classMap({
         clickable: !isExternalStatistic(statId),
@@ -340,7 +342,10 @@ export class HuiEnergySourcesTableCard
       : allTypes;
 
     const gasDisplayPrecisions = types.gas
-      ?.map((source) => this.hass.entities[source.stat_energy_from]?.dp)
+      ?.map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
       .filter((precision): precision is number => precision !== undefined);
 
     const gasDisplayPrecision = gasDisplayPrecisions?.length
@@ -354,7 +359,7 @@ export class HuiEnergySourcesTableCard
             maximumFractionDigits: gasDisplayPrecision,
           }
         : undefined;
-    
+
     const computedStyles = getComputedStyle(this);
 
     // Check if any source has cost configuration
