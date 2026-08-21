@@ -1522,6 +1522,7 @@
       },
       "quick-bar": {
         "ask_assist": "Ask Assist: {query}",
+        "ask_assist_chip": "Ask",
         "commands_title": "Commands",
         "navigate_title": "Navigate",
         "commands": {

@@ -99,6 +99,8 @@ export class QuickBar extends LitElement {
 
   @state() private _selectedSection?: QuickBarSection;
 
+  @state() private _assistPrompt?: string;
+
   @state() private _opened = false;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -268,21 +270,43 @@ export class QuickBar extends LitElement {
       >
         ${
           !this._loading && this._opened
-            ? html`<ha-picker-combo-box
-                id="combo-box"
-                @index-selected=${this._handleItemSelected}
-                .notFoundLabel=${this.hass.localize(
-                  "ui.dialogs.quick-bar.nothing_found"
-                )}
-                .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
-                .getItems=${this._getItems}
-                .rowRenderer=${this._renderRow}
-                mode="dialog"
-                .sections=${sections}
-                .selectedSection=${this._selectedSection}
-                .sectionTitleFunction=${this._sectionTitleFunction}
-                clearable
-              ></ha-picker-combo-box>`
+            ? html`<div class="search-wrapper">
+                <ha-picker-combo-box
+                  id="combo-box"
+                  @index-selected=${this._handleItemSelected}
+                  .notFoundLabel=${this.hass.localize(
+                    "ui.dialogs.quick-bar.nothing_found"
+                  )}
+                  .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+                  .getItems=${this._getItems}
+                  .rowRenderer=${this._renderRow}
+                  mode="dialog"
+                  .sections=${sections}
+                  .selectedSection=${this._selectedSection}
+                  .sectionTitleFunction=${this._sectionTitleFunction}
+                  clearable
+                ></ha-picker-combo-box>
+                ${
+                  this._assistPrompt
+                    ? html`<button
+                        class="assist-chip"
+                        type="button"
+                        title=${this.hass.localize(
+                          "ui.dialogs.quick-bar.ask_assist",
+                          { query: this._assistPrompt }
+                        )}
+                        @click=${this._openAssist}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiCommentProcessingOutline}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.quick-bar.ask_assist_chip"
+                        )}
+                      </button>`
+                    : nothing
+                }
+              </div>`
             : nothing
         }
         ${
@@ -454,12 +478,29 @@ export class QuickBar extends LitElement {
 
   private _getItems = (searchString: string, section: string) => {
     this._selectedSection = section as QuickBarSection | undefined;
+    this._assistPrompt = this._getAssistPrompt(
+      searchString,
+      this._selectedSection
+    );
     return this._getItemsMemoized(
       this._configEntryLookup,
       this._relatedIdSets,
       searchString,
       this._selectedSection
     );
+  };
+
+  private _getAssistPrompt = (
+    filter?: string,
+    section?: QuickBarSection
+  ): string | undefined => {
+    const prompt = filter?.trim();
+    return prompt &&
+      (!section || section === "command") &&
+      isComponentLoaded(this.hass.config, "conversation") &&
+      !this.hass.auth.external?.config.hasAssist
+      ? prompt
+      : undefined;
   };
 
   private _getItemsMemoized = memoizeOne(
@@ -470,22 +511,6 @@ export class QuickBar extends LitElement {
       section?: QuickBarSection
     ) => {
       const items: (string | QuickBarComboBoxItem)[] = [];
-      const prompt = filter?.trim();
-      const assistItem =
-        prompt &&
-        (!section || section === "command") &&
-        isComponentLoaded(this.hass.config, "conversation") &&
-        !this.hass.auth.external?.config.hasAssist
-          ? ({
-              id: "ask-assist",
-              action: "assist",
-              primary: this.hass.localize("ui.dialogs.quick-bar.ask_assist", {
-                query: prompt,
-              }),
-              icon_path: mdiCommentProcessingOutline,
-              assistPrompt: prompt,
-            } satisfies AssistComboBoxItem)
-          : undefined;
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -525,15 +550,12 @@ export class QuickBar extends LitElement {
           ) as ActionCommandComboBoxItem[];
         }
 
-        if (!section && (commandItems.length || assistItem)) {
+        if (!section && commandItems.length) {
           // show group title
           items.push(this.hass.localize("ui.dialogs.quick-bar.commands_title"));
         }
 
         items.push(...commandItems);
-        if (assistItem) {
-          items.push(assistItem);
-        }
       }
 
       if (!section || section === "entity") {
@@ -741,6 +763,20 @@ export class QuickBar extends LitElement {
     }
   }
 
+  private _openAssist = () => {
+    if (!this._assistPrompt) {
+      return;
+    }
+    const prompt = this._assistPrompt;
+    this.closeDialog();
+    showVoiceCommandDialog(this, this.hass, {
+      pipeline_id: "last_used",
+      start_listening: false,
+      prompt,
+      submit: true,
+    });
+  };
+
   private async _handleItemSelected(
     ev: CustomEvent<PickerComboBoxIndexSelectedDetail>
   ) {
@@ -880,6 +916,35 @@ export class QuickBar extends LitElement {
           --dialog-content-padding: 0;
           --safe-area-inset-bottom: 0px;
           --ha-dialog-show-duration: var(--ha-animation-duration-instant);
+        }
+
+        .search-wrapper {
+          position: relative;
+        }
+
+        .assist-chip {
+          position: absolute;
+          top: var(--ha-space-2);
+          right: calc(var(--ha-space-8) + var(--ha-space-2));
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          padding: var(--ha-space-1) var(--ha-space-2);
+          border-radius: 16px;
+          border: none;
+          background: var(--secondary-background-color);
+          color: var(--primary-text-color);
+          font-size: var(--ha-font-size-s);
+          cursor: pointer;
+          z-index: 1;
+        }
+
+        .assist-chip:hover {
+          background: var(--divider-color);
+        }
+
+        .assist-chip ha-svg-icon {
+          --mdc-icon-size: 16px;
         }
 
         ha-tip {
