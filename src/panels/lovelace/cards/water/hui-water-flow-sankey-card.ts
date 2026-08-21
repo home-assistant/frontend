@@ -6,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   formatFlowRateShort,
   getEnergyDataCollection,
   getFlowRateFromState,
@@ -21,6 +22,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -241,47 +243,12 @@ class HuiWaterFlowSankeyCard
       }
     }
 
-    // Build a map of device relationships for hierarchy resolution
-    const deviceMap = new Map<
-      string,
-      { stat_rate?: string; included_in_stat?: string }
-    >();
-    prefs.device_consumption_water.forEach((device) => {
-      deviceMap.set(device.stat_consumption, {
-        stat_rate: device.stat_rate,
-        included_in_stat: device.included_in_stat,
-      });
-    });
-
-    // Set of stat_rate entities that will be rendered as nodes
-    const renderedStatRates = new Set<string>();
-    prefs.device_consumption_water.forEach((device) => {
-      if (device.stat_rate) {
-        const value = this._getCurrentFlowRate(device.stat_rate);
-        if (value >= minFlowThreshold) {
-          renderedStatRates.add(device.stat_rate);
-        }
-      }
-    });
-
-    // Find the effective parent for hierarchy
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        const parentDevice = deviceMap.get(currentParent);
-        if (!parentDevice) return undefined;
-        if (
-          parentDevice.stat_rate &&
-          renderedStatRates.has(parentDevice.stat_rate)
-        ) {
-          return parentDevice.stat_rate;
-        }
-        currentParent = parentDevice.included_in_stat;
-      }
-      return undefined;
-    };
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption_water,
+      this._data.statsMetadata,
+      "stat_rate"
+    );
 
     const {
       deviceNodes,
@@ -294,14 +261,14 @@ class HuiWaterFlowSankeyCard
       localize: this.hass.localize,
       rootNodeId,
       minThreshold: minFlowThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 1,
       ceilOtherValue: true,
       initialUntracked: effectiveTotalInflow,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentFlowRate(id),
-      getLabel: (id, name) => name || this._getEntityLabel(id),
+      getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 

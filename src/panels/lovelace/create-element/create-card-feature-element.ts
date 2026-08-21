@@ -23,6 +23,7 @@ import "../card-features/hui-lawn-mower-commands-card-feature";
 import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
 import "../card-features/hui-light-color-favorites-card-feature";
+import "../card-features/hui-light-effect-card-feature";
 import "../card-features/hui-lock-commands-card-feature";
 import "../card-features/hui-lock-open-door-card-feature";
 import "../card-features/hui-media-player-playback-card-feature";
@@ -37,6 +38,7 @@ import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-toggle-card-feature";
 import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
+import "../card-features/hui-vacuum-fan-speed-card-feature";
 import "../card-features/hui-valve-open-close-card-feature";
 import "../card-features/hui-valve-position-favorite-card-feature";
 import "../card-features/hui-valve-position-card-feature";
@@ -81,6 +83,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "light-brightness",
   "light-color-temp",
   "light-color-favorites",
+  "light-effect",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -98,6 +101,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
   "valve-open-close",
   "valve-position-favorite",
   "valve-position",

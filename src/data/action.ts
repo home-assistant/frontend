@@ -49,23 +49,25 @@ export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_ICONS>([
 export const ACTION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device_id: {},
       dynamicGroups: {},
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.actions.groups.helpers.label",
-    groups: {
+      event: {},
+      service: {},
+      set_conversation_response: {},
       helpers: {},
     },
   },
   {
-    titleKey: "ui.panel.config.automation.editor.actions.groups.other.label",
+    titleKey: "ui.panel.config.automation.editor.actions.groups.generic.label",
+    generic: true,
     groups: {
-      event: {},
-      service: {},
-      set_conversation_response: {},
-      other: {},
+      device_id: {},
+    },
+  },
+  {
+    titleKey:
+      "ui.panel.config.automation.editor.actions.groups.integrations.label",
+    groups: {
+      integrationGroups: {},
     },
   },
 ] as const;

@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -26,6 +27,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -215,37 +217,14 @@ class HuiWaterSankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    // Set of device stats that will be rendered as their own node
-    const renderedStats = new Set<string>();
-    prefs.device_consumption_water.forEach((device) => {
-      if (deviceValue(device.stat_consumption) >= minWaterThreshold) {
-        renderedStats.add(device.stat_consumption);
-      }
-    });
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption_water,
+      this._data!.statsMetadata
+    );
 
-    // Walk up the included_in_stat chain to the first ancestor that is rendered
-    const deviceMap = new Map<string, string | undefined>();
-    prefs.device_consumption_water.forEach((device) => {
-      deviceMap.set(device.stat_consumption, device.included_in_stat);
-    });
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        if (renderedStats.has(currentParent)) {
-          return currentParent;
-        }
-        if (!deviceMap.has(currentParent)) {
-          return undefined;
-        }
-        currentParent = deviceMap.get(currentParent);
-      }
-      return undefined;
-    };
-
-    const deviceLabel = (statConsumption: string, name?: string) =>
-      name ||
+    const deviceLabel = (statConsumption: string) =>
+      deviceLabels[statConsumption] ||
       getStatisticLabel(
         this.hass,
         statConsumption,
@@ -263,6 +242,7 @@ class HuiWaterSankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minWaterThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,
@@ -270,7 +250,6 @@ class HuiWaterSankeyCard
       getValue: deviceValue,
       getLabel: deviceLabel,
       getEntityId: (id) => (isExternalStatistic(id) ? undefined : id),
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 

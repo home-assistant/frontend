@@ -155,15 +155,15 @@ class HuiEnergyDistrubutionCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    const hasGrid =
-      !!types.grid?.[0] &&
-      (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
+    const hasGrid = types.grid?.some(
+      (g) => g.stat_energy_from || g.stat_energy_to
+    );
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
     const hasReturnToGrid =
-      types.grid?.some((source) => !!source.stat_energy_to) ?? false;
+      types.grid?.some((source) => source.stat_energy_to) ?? false;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(

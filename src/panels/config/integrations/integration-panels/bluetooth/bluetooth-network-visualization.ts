@@ -240,7 +240,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         const scannerDevice = this._sourceDevices[scanner.source] as
           DeviceRegistryEntry | undefined;
         const area = scannerDevice
-          ? getDeviceArea(scannerDevice, this.hass.areas)
+          ? getDeviceArea(scannerDevice, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: scanner.source,
@@ -282,7 +282,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         const device = this._sourceDevices[node.address] as
           DeviceRegistryEntry | undefined;
         const area = device
-          ? getDeviceArea(device, this.hass.areas)
+          ? getDeviceArea(device, this.hass.areas, this.hass.devices)
           : undefined;
         nodes.push({
           id: node.address,
@@ -350,7 +350,9 @@ export class BluetoothNetworkVisualization extends LitElement {
     const name = this._getBluetoothDeviceName(address);
     const btDevice = this._data.find((d) => d.address === address);
     const device = this._sourceDevices[address];
-    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    const area = device
+      ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+      : undefined;
     const areaLine = area
       ? html`<br /><b
             >${this.hass.localize("ui.panel.config.bluetooth.area")}: </b

@@ -9,6 +9,7 @@ import {
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
+import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
@@ -49,6 +50,26 @@ export interface HomeOverviewViewStrategyConfig {
   hide_suggested_entities?: boolean;
   shortcuts?: ShortcutItem[];
 }
+
+const energyPreferencesPromises = new WeakMap<
+  HomeAssistant["connection"],
+  Promise<EnergyPreferences | undefined>
+>();
+
+export const preloadHomeEnergyPreferences = (hass: HomeAssistant) => {
+  if (!isComponentLoaded(hass.config, "energy")) {
+    return Promise.resolve(undefined);
+  }
+
+  const existing = energyPreferencesPromises.get(hass.connection);
+  if (existing) {
+    return existing;
+  }
+
+  const request = getEnergyPreferences(hass).catch(() => undefined);
+  energyPreferencesPromises.set(hass.connection, request);
+  return request;
+};
 
 const computeAreaCard = (
   areaId: string,
@@ -305,10 +326,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .filter(weatherFilter)
       .sort()[0];
 
-    const energyPrefs = isComponentLoaded(hass.config, "energy")
-      ? // It raises if not configured, just swallow that.
-        await getEnergyPreferences(hass).catch(() => undefined)
-      : undefined;
+    const energyPrefs = await preloadHomeEnergyPreferences(hass);
+    energyPreferencesPromises.delete(hass.connection);
 
     const hasEnergy =
       hass.panels.energy &&
@@ -568,10 +587,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       ...(sidebarSection && {
         sidebar: {
           sections: [sidebarSection],
-          content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
-          sidebar_label: hass.localize(
-            "ui.panel.lovelace.strategy.home.summaries"
-          ),
           visibility: [LARGE_SCREEN_CONDITION],
         },
       }),

@@ -5,6 +5,7 @@ import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
@@ -30,6 +31,8 @@ class PanelSecurity extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  private _childPanelReady?: ChildPanelReady;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -127,6 +130,7 @@ class PanelSecurity extends LitElement {
       return;
     }
 
+    this._childPanelReady ??= new ChildPanelReady(this);
     this._lovelace = {
       config: config,
       rawConfig: rawConfig,

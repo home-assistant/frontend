@@ -161,6 +161,102 @@ test.describe("Quick search", () => {
 
 defineRouteSmokeTests(appRouteSmokeGroups);
 
+test("keeps the launch screen until initial panel content renders", async ({
+  page,
+}) => {
+  const cases: {
+    name: string;
+    path: string;
+    loadingSelector: string;
+    readySelector: string;
+    resolvers: (
+      | "rejectMediaBrowse"
+      | "resolveCalendarRegistry"
+      | "resolveConfigEntries"
+      | "resolveConfigEntriesInProgress"
+      | "resolveGeneratedDashboard"
+      | "resolveLovelaceConfig"
+      | "resolveMediaBrowse"
+    )[];
+  }[] = [
+    {
+      name: "calendar",
+      path: "/?scenario=delayed-calendar#/calendar",
+      loadingSelector: "ha-panel-calendar ha-spinner",
+      readySelector: "ha-full-calendar",
+      resolvers: ["resolveCalendarRegistry"],
+    },
+    {
+      name: "media browser",
+      path: "/?scenario=delayed-media-browse#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      readySelector: "ha-media-player-browse .no-items",
+      resolvers: ["resolveMediaBrowse"],
+    },
+    {
+      name: "integrations",
+      path: "/?scenario=delayed-integrations#/config/integrations",
+      loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
+      readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
+      resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "media browser error",
+      path: "/?scenario=delayed-media-browse-error#/media-browser/browser",
+      loadingSelector: "ha-media-player-browse > ha-spinner",
+      readySelector: "ha-media-player-browse ha-alert",
+      resolvers: ["rejectMediaBrowse"],
+    },
+    {
+      name: "generated dashboard",
+      path: "/?scenario=delayed-generated-dashboard#/climate",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveGeneratedDashboard"],
+    },
+    {
+      name: "Lovelace dashboard",
+      path: "/?scenario=delayed-lovelace#/lovelace",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveLovelaceConfig"],
+    },
+  ];
+
+  for (const readinessCase of cases) {
+    // eslint-disable-next-line no-await-in-loop
+    await test.step(readinessCase.name, async () => {
+      await goToPanel(page, readinessCase.path);
+
+      const launchScreen = page.locator("#ha-launch-screen");
+      const loadingScreen = page.locator(readinessCase.loadingSelector);
+      const readyContent = page.locator(readinessCase.readySelector).first();
+      await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(loadingScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(readyContent).not.toBeAttached();
+
+      await readinessCase.resolvers.reduce(
+        async (previousResolver, resolver, index) => {
+          await previousResolver;
+          await page.evaluate((resolverName) => {
+            window[resolverName]?.();
+          }, resolver);
+
+          if (index < readinessCase.resolvers.length - 1) {
+            await expect(launchScreen).toBeAttached();
+            await expect(loadingScreen).toBeAttached();
+            await expect(readyContent).not.toBeAttached();
+          }
+        },
+        Promise.resolve()
+      );
+
+      await expect(readyContent).toBeAttached({ timeout: PANEL_TIMEOUT });
+      await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+    });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Lovelace
 // ---------------------------------------------------------------------------
@@ -180,6 +276,85 @@ test.describe("Lovelace dashboard", () => {
     await expect(
       page.locator("[data-testid='edit-mode-button'], ha-menu-button")
     ).toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+});
+
+test.describe("Energy dashboard", () => {
+  test("returns to Energy after repeatedly opening the device dialog", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(
+      page,
+      "/?historyBack=1&backPath=%2Flovelace#/energy/overview"
+    );
+    const energyRoot = page.locator("ha-panel-energy hui-root");
+    await expect(energyRoot).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    const editDashboard = energyRoot.getByRole("button", {
+      name: /^Edit dashboard\b/,
+    });
+    const dashboardMenu = energyRoot.getByRole("button", {
+      name: "Open dashboard menu",
+    });
+    await expect(editDashboard.or(dashboardMenu)).toBeVisible({
+      timeout: QUICK_TIMEOUT,
+    });
+    if (await editDashboard.isVisible()) {
+      await editDashboard.click();
+    } else {
+      await dashboardMenu.click();
+      await page.getByRole("menuitem", { name: /^Edit dashboard\b/ }).click();
+    }
+
+    await expect(page.locator("ha-config-energy")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+
+    const backLink = page
+      .locator("ha-config-energy hass-tabs-subpage")
+      .getByRole("link", { name: "Back" });
+    await expect(backLink).toHaveAttribute(
+      "href",
+      "/config/lovelace/dashboards"
+    );
+
+    const addDevice = page
+      .locator("ha-energy-device-settings")
+      .locator("ha-button")
+      .first();
+    const openAndCancelDeviceDialog = async () => {
+      await addDevice.click();
+      const dialog = page.locator("dialog-energy-device-settings");
+      const cancel = dialog.locator("ha-dialog-footer ha-button").first();
+      await expect(cancel).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await cancel.click();
+      await expect(cancel).toBeHidden({ timeout: QUICK_TIMEOUT });
+    };
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+
+    await backLink.click();
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => ({
+            hash: window.location.hash,
+            search: window.location.search,
+          })),
+        { timeout: PANEL_TIMEOUT }
+      )
+      .toEqual({
+        hash: "#/energy/overview",
+        search: "?historyBack=1&backPath=%2Flovelace",
+      });
+    await expect(page.locator("ha-panel-energy")).toBeAttached();
+    await expect(
+      energyRoot.getByRole("link", { name: "Back" })
+    ).toHaveAttribute("href", "/lovelace");
+    expectNoPageErrors(errors);
   });
 });
 
@@ -229,6 +404,64 @@ test.describe("Light more-info dialog", () => {
       await assertElementContent(dialog, content);
     });
   }
+});
+
+test.describe("Weather more-info deep link", () => {
+  test("opens and synchronizes the selected forecast", async ({ page }) => {
+    await goToPanel(
+      page,
+      "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
+    );
+
+    const dialog = page.locator("ha-more-info-dialog");
+    const weather = dialog.locator("more-info-weather");
+    await expect(weather).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(page).toHaveURL(
+      /more-info-entity-id=weather\.test_weather&more-info-view=info/
+    );
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await page.locator("ha-test").evaluate((el) => {
+      el.dispatchEvent(
+        new CustomEvent("hass-more-info", {
+          detail: {
+            entityId: "weather.test_weather",
+            hash: new URLSearchParams({ forecast: "hourly" }),
+          },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    });
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
+    ).toBeAttached();
+
+    await dialog.getByRole("button", { name: "History" }).click();
+    await expect(page).toHaveURL(/more-info-view=history/);
+
+    await dialog.getByRole("button", { name: "Back" }).click();
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Daily" })
+      .click();
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page).not.toHaveURL(/more-info-entity-id/);
+  });
 });
 
 // ---------------------------------------------------------------------------

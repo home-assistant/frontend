@@ -13,12 +13,19 @@ import {
 } from "../../src/data/translation";
 import {
   computeConsumptionSingle,
+  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   formatConsumptionShort,
   calculateSolarConsumedGauge,
   formatPowerShort,
   getNextEnergyPeriodStart,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../src/data/energy";
+import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
+import type { StatisticsMetaData } from "../../src/data/recorder";
 import type { HomeAssistant } from "../../src/types";
+import { createMockEntityState, createMockHass } from "../fixtures/hass";
 
 const checkConsumptionResult = (
   input: {
@@ -906,6 +913,188 @@ describe("getNextEnergyPeriodStart", () => {
     assert.equal(
       realTime.getTime(),
       new Date("2026-06-21T00:00:00-04:00").getTime()
+    );
+  });
+});
+
+describe("getEnergyDefaultPeriodStorageKey", () => {
+  it("uses an explicit collection key", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey(
+        { panelUrl: "energy" } as HomeAssistant,
+        "energy_dashboard"
+      ),
+      "energy-default-period-_energy_dashboard"
+    );
+  });
+
+  it("scopes to the panel when no collection key is given", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({
+        panelUrl: "my-dashboard",
+      } as HomeAssistant),
+      "energy-default-period-_energy_my-dashboard"
+    );
+  });
+
+  it("falls back to the global key without a panel url", () => {
+    assert.equal(
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant),
+      "energy-default-period-_energy"
+    );
+  });
+
+  it("rejects a collection key with the wrong prefix", () => {
+    assert.throws(() =>
+      getEnergyDefaultPeriodStorageKey({} as HomeAssistant, "dashboard")
+    );
+  });
+});
+
+describe("computeEnergyLabel", () => {
+  const ENTITY_ID = "sensor.washer_energy";
+
+  const createEntry = (
+    entry: Partial<EntityRegistryDisplayEntry>
+  ): EntityRegistryDisplayEntry =>
+    ({
+      entity_id: ENTITY_ID,
+      labels: [],
+      ...entry,
+    }) as EntityRegistryDisplayEntry;
+
+  const createDevice = (
+    device: Partial<DeviceRegistryEntry>
+  ): DeviceRegistryEntry =>
+    ({ id: "device1", name_by_user: null, ...device }) as DeviceRegistryEntry;
+
+  const createHass = (
+    friendlyName: string,
+    entry?: Partial<EntityRegistryDisplayEntry>,
+    device?: Partial<DeviceRegistryEntry>
+  ) =>
+    createMockHass(
+      {
+        [ENTITY_ID]: createMockEntityState(ENTITY_ID, "1", {
+          friendly_name: friendlyName,
+        }),
+      },
+      {
+        entities: entry ? { [ENTITY_ID]: createEntry(entry) } : {},
+        devices: device ? { device1: createDevice(device) } : {},
+      }
+    );
+
+  it("composes the device and entity name", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+  });
+
+  it("uses the device name alone when the entity has no name of its own", () => {
+    const hass = createHass(
+      "Washer",
+      { name: "Washer", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer");
+  });
+
+  it("distinguishes entities sharing a name by their device", () => {
+    const hass = createHass(
+      "Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Dishwasher" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Dishwasher Energy");
+  });
+
+  it("keeps a name set by the user", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass, ENTITY_ID, undefined, "Laundry"),
+      "Laundry"
+    );
+  });
+
+  it("ignores an empty name", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass, ENTITY_ID, undefined, ""),
+      "Washer Energy"
+    );
+  });
+
+  it("falls back to the friendly name for an entity outside the registry", () => {
+    const hass = createHass("Washer Energy");
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+  });
+
+  it("uses the statistic metadata name when there is no entity", () => {
+    const hass = createMockHass();
+
+    assert.equal(
+      computeEnergyLabel(hass, "external:solar", {
+        statistic_id: "external:solar",
+        name: "Solar production",
+      } as StatisticsMetaData),
+      "Solar production"
+    );
+  });
+
+  it("falls back to the statistic id when there is nothing to name it with", () => {
+    const hass = createMockHass();
+
+    assert.equal(computeEnergyLabel(hass, "external:solar"), "external:solar");
+  });
+});
+
+describe("computeEnergyDeviceLabels", () => {
+  const DEVICES = [
+    {
+      stat_consumption: "sensor.washer_energy",
+      stat_rate: "sensor.washer_power",
+    },
+    { stat_consumption: "sensor.heater_energy", name: "Heater" },
+  ];
+
+  const hass = createMockHass({
+    "sensor.washer_energy": createMockEntityState("sensor.washer_energy", "1", {
+      friendly_name: "Washer Energy",
+    }),
+    "sensor.washer_power": createMockEntityState("sensor.washer_power", "5", {
+      friendly_name: "Washer Power",
+    }),
+  });
+
+  it("keys labels by the consumption statistic", () => {
+    assert.deepEqual(computeEnergyDeviceLabels(hass, DEVICES), {
+      "sensor.washer_energy": "Washer Energy",
+      "sensor.heater_energy": "Heater",
+    });
+  });
+
+  it("keys labels by the rate statistic, skipping devices without one", () => {
+    assert.deepEqual(
+      computeEnergyDeviceLabels(hass, DEVICES, undefined, "stat_rate"),
+      { "sensor.washer_power": "Washer Power" }
     );
   });
 });

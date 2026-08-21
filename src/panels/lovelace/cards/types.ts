@@ -91,16 +91,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?:
-    | "entity-id"
-    | "last-changed"
-    | "last-triggered"
-    | "last-updated"
-    | "area"
-    | "position"
-    | "state"
-    | "tilt-position"
-    | "brightness";
+  secondary_info?: string | string[];
   action_name?: string;
   action?: string;
   /** @deprecated use "action" instead */
@@ -183,6 +174,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
+  max_devices?: number;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
@@ -198,6 +190,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
@@ -217,11 +210,13 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
+  expand_legend?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
   max_devices?: number;
+  expand_legend?: boolean;
 }
 
 export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
@@ -253,6 +248,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -427,6 +423,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   theme_mode?: ThemeMode;
   cluster?: boolean;
   conditions?: Condition[];
+  scale_ruler?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

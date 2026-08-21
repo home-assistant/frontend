@@ -15,6 +15,7 @@ export class HaInputChip extends InputChip {
     styles,
     css`
       :host {
+        max-width: 100%;
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--primary-text-color);
@@ -27,6 +28,7 @@ export class HaInputChip extends InputChip {
         );
         --ha-input-chip-selected-container-opacity: 1;
         --md-input-chip-label-text-font: Roboto, sans-serif;
+        --md-input-chip-label-text-weight: 400;
       }
       /** Set the size of mdc icons **/
       ::slotted([slot="icon"]) {

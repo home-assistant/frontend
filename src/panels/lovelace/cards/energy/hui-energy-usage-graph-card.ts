@@ -177,6 +177,7 @@ export class HuiEnergyUsageGraphCard
               this._legendData
             )}
             chart-type="bar"
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
             !this._chartData.some((dataset) => dataset.data!.length)
@@ -270,6 +271,10 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;

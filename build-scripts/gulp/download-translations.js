@@ -155,8 +155,22 @@ gulp.task("fetch-lokalise", async function () {
     fs.mkdir(inDirBackend, { recursive: true }),
   ]);
 
+  // The backend project only provides entity_component translations, which are
+  // merged into the demo, gallery, cast and e2e builds. The shipped app fetches
+  // them live from core, so builds that only produce the app (release, release
+  // landing-page) can skip this second, whole-project export to save time.
+  const projects = Object.entries(lokaliseProjects).filter(
+    ([project]) =>
+      !(project === "backend" && process.env.SKIP_BACKEND_TRANSLATIONS)
+  );
+  if (projects.length !== Object.keys(lokaliseProjects).length) {
+    console.log(
+      "Skipping backend translations download (SKIP_BACKEND_TRANSLATIONS)"
+    );
+  }
+
   await Promise.all(
-    Object.entries(lokaliseProjects).map(async ([project, projectId]) => {
+    projects.map(async ([project, projectId]) => {
       try {
         const exportProcess = await lokaliseApi
           .files()

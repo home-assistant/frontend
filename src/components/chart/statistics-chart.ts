@@ -204,12 +204,14 @@ export class StatisticsChart extends LitElement {
     `;
   }
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }

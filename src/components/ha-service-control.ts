@@ -35,6 +35,7 @@ import {
 } from "../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
+import { getSelectorFallbackValue } from "./ha-form/get-selector-fallback-value";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
@@ -488,6 +489,11 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
+    const documentationLink =
+      this._manifest?.is_built_in && this._value?.action
+        ? documentationUrl(this.hass, `/actions/${this._value.action}`)
+        : this._manifest?.documentation;
+
     const targetSelector =
       serviceData && "target" in serviceData
         ? this._targetSelector(
@@ -514,16 +520,9 @@ export class HaServiceControl extends LitElement {
             <div class="description">
               ${description ? html`<p>${description}</p>` : ""}
               ${
-                this._manifest
+                documentationLink
                   ? html` <a
-                      href=${
-                        this._manifest.is_built_in && this._value?.action
-                          ? documentationUrl(
-                              this.hass,
-                              `/actions/${this._value.action}`
-                            )
-                          : this._manifest.documentation
-                      }
+                      href=${documentationLink}
                       title=${this.hass.localize(
                         "ui.components.service-control.integration_doc"
                       )}
@@ -542,20 +541,14 @@ export class HaServiceControl extends LitElement {
     }
     ${
       serviceData && "target" in serviceData
-        ? html`<ha-settings-row
-            .narrow=${this.narrow || isFullWidthSelector(targetSelector)}
-          >
-            <span slot="heading"
-              >${this.hass.localize("ui.components.service-control.target")}</span
-            >
-            <ha-selector
-              .hass=${this.hass}
-              .selector=${targetSelector}
-              .disabled=${this.disabled}
-              @value-changed=${this._targetChanged}
-              .value=${this._value?.target}
-            ></ha-selector
-          ></ha-settings-row>`
+        ? html`<ha-selector
+            class="target-selector"
+            .hass=${this.hass}
+            .selector=${targetSelector}
+            .disabled=${this.disabled}
+            @value-changed=${this._targetChanged}
+            .value=${this._value?.target}
+          ></ha-selector>`
         : entityId
           ? html`<ha-entity-picker
               .disabled=${this.disabled}
@@ -807,20 +800,8 @@ export class HaServiceControl extends LitElement {
 
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -1058,6 +1039,14 @@ export class HaServiceControl extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: var(--service-control-padding, 0 var(--ha-space-4));
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;

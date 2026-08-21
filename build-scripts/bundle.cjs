@@ -63,8 +63,10 @@ module.exports.htmlMinifierOptions = {
 };
 
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
-  safari10: !latestBuild,
-  ecma: latestBuild ? 2015 : 5,
+  // Highest syntax the minifier may emit; it never downlevels. Every browser
+  // in [modern] is well past ES2020 (universal since spring 2020); the
+  // [legacy] floors (Chrome 59 / Safari 12) top out at ES2017.
+  ecma: latestBuild ? 2020 : 2017,
   module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,
@@ -277,7 +279,7 @@ module.exports.config = {
     };
   },
 
-  gallery({ isProdBuild, latestBuild }) {
+  gallery({ isProdBuild, latestBuild, isTestBuild }) {
     return {
       name: "gallery" + nameSuffix(latestBuild),
       entry: {
@@ -287,6 +289,7 @@ module.exports.config = {
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
+      isTestBuild,
       defineOverlay: {
         __DEMO__: true,
       },
@@ -311,7 +314,15 @@ module.exports.config = {
     return {
       name: "e2e-test-app" + nameSuffix(latestBuild),
       entry: {
+        dashboard: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/dashboard-entrypoint.ts"
+        ),
         main: path.resolve(paths.e2eTestApp_dir, "src/entrypoint.ts"),
+        onboarding: path.resolve(
+          paths.e2eTestApp_dir,
+          "src/onboarding-entrypoint.ts"
+        ),
       },
       outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
       publicPath: publicPath(latestBuild),

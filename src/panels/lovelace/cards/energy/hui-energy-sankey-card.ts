@@ -8,6 +8,7 @@ import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  computeEnergyDeviceLabels,
   energySourcesByType,
   getEnergyDataCollection,
   getSummedData,
@@ -29,6 +30,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "./common/sankey";
@@ -237,7 +239,7 @@ class HuiEnergySankeyCard
     }
 
     // Add grid return if available
-    if (types.grid && types.grid[0].stat_energy_to) {
+    if (types.grid && types.grid.some((g) => g.stat_energy_to)) {
       const totalToGrid = summedData.total.to_grid ?? 0;
 
       nodes.push({
@@ -272,37 +274,14 @@ class HuiEnergySankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    // Set of device stats that will be rendered as their own node
-    const renderedStats = new Set<string>();
-    prefs.device_consumption.forEach((device) => {
-      if (deviceValue(device.stat_consumption) >= minEnergyThreshold) {
-        renderedStats.add(device.stat_consumption);
-      }
-    });
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption,
+      this._data.statsMetadata
+    );
 
-    // Walk up the included_in_stat chain to the first ancestor that is rendered
-    const deviceMap = new Map<string, string | undefined>();
-    prefs.device_consumption.forEach((device) => {
-      deviceMap.set(device.stat_consumption, device.included_in_stat);
-    });
-    const findEffectiveParent = (
-      includedInStat: string | undefined
-    ): string | undefined => {
-      let currentParent = includedInStat;
-      while (currentParent) {
-        if (renderedStats.has(currentParent)) {
-          return currentParent;
-        }
-        if (!deviceMap.has(currentParent)) {
-          return undefined;
-        }
-        currentParent = deviceMap.get(currentParent);
-      }
-      return undefined;
-    };
-
-    const deviceLabel = (statConsumption: string, name?: string) =>
-      name ||
+    const deviceLabel = (statConsumption: string) =>
+      deviceLabels[statConsumption] ||
       getStatisticLabel(
         this.hass,
         statConsumption,
@@ -320,6 +299,7 @@ class HuiEnergySankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minEnergyThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,
@@ -327,7 +307,6 @@ class HuiEnergySankeyCard
       getValue: deviceValue,
       getLabel: deviceLabel,
       getEntityId: (id) => (isExternalStatistic(id) ? undefined : id),
-      findEffectiveParent,
     });
     links.push(...deviceLinks);
 

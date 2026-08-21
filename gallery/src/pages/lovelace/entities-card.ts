@@ -1,7 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type {
+  EntitiesCardConfig,
+  EntitiesCardEntityConfig,
+} from "../../../../src/panels/lovelace/cards/types";
+import type { CallServiceConfig } from "../../../../src/panels/lovelace/entity-rows/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -254,169 +260,194 @@ const ENTITIES = [
   },
 ];
 
+type GalleryEntitiesCardConfig = Omit<EntitiesCardConfig, "entities"> & {
+  type: EntitiesCardConfig["type"];
+  entities: (
+    | EntitiesCardConfig["entities"][number]
+    | Pick<EntitiesCardEntityConfig, "entity" | "secondary_info">
+    | Omit<CallServiceConfig, "entity">
+  )[];
+};
+
 const CONFIGS = [
   {
     heading: "Basic",
-    config: `
-- type: entities
-  entities:
-    - scene.romantic_lights
-    - device_tracker.demo_paulus
-    - cover.kitchen_window
-    - group.kitchen
-    - lock.kitchen_door
-    - light.bed_light
-    - light.non_existing
-    - climate.ecobee
-    - input_number.number
-    - sensor.humidity
-    - text.message
-    - event.doorbell
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        "scene.romantic_lights",
+        "device_tracker.demo_paulus",
+        "cover.kitchen_window",
+        "group.kitchen",
+        "lock.kitchen_door",
+        "light.bed_light",
+        "light.non_existing",
+        "climate.ecobee",
+        "input_number.number",
+        "sensor.humidity",
+        "text.message",
+        "event.doorbell",
+      ],
+    },
   },
   {
     heading: "With enabled state color",
-    config: `
-- type: entities
-  state_color: true
-  entities:
-    - scene.romantic_lights
-    - device_tracker.demo_paulus
-    - cover.kitchen_window
-    - group.kitchen
-    - lock.kitchen_door
-    - light.bed_light
-    - light.non_existing
-    - climate.ecobee
-    - input_number.number
-    - sensor.humidity
-    - text.message
-    `,
+    config: {
+      type: "entities",
+      state_color: true,
+      entities: [
+        "scene.romantic_lights",
+        "device_tracker.demo_paulus",
+        "cover.kitchen_window",
+        "group.kitchen",
+        "lock.kitchen_door",
+        "light.bed_light",
+        "light.non_existing",
+        "climate.ecobee",
+        "input_number.number",
+        "sensor.humidity",
+        "text.message",
+      ],
+    },
   },
   {
     heading: "Helpers",
-    config: `
-- type: entities
-  title: Helpers
-  entities:
-    - entity: input_boolean.toggle
-    - entity: input_datetime.date_and_time
-    - entity: input_number.number
-    - entity: input_select.dropdown
-    - entity: input_text.text
-    - entity: timer.timer
-    - entity: counter.counter
-    `,
+    config: {
+      type: "entities",
+      title: "Helpers",
+      entities: [
+        { entity: "input_boolean.toggle" },
+        { entity: "input_datetime.date_and_time" },
+        { entity: "input_number.number" },
+        { entity: "input_select.dropdown" },
+        { entity: "input_text.text" },
+        { entity: "timer.timer" },
+        { entity: "counter.counter" },
+      ],
+    },
   },
   {
     heading: "With title, toggle-able",
-    config: `
-- type: entities
-  entities:
-    - scene.romantic_lights
-    - device_tracker.demo_paulus
-    - cover.kitchen_window
-    - group.kitchen
-    - lock.kitchen_door
-    - light.bed_light
-    - climate.ecobee
-    - input_number.number
-  title: Random group
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        "scene.romantic_lights",
+        "device_tracker.demo_paulus",
+        "cover.kitchen_window",
+        "group.kitchen",
+        "lock.kitchen_door",
+        "light.bed_light",
+        "climate.ecobee",
+        "input_number.number",
+      ],
+      title: "Random group",
+    },
   },
   {
     heading: "With title, toggle = false",
-    config: `
-- type: entities
-  entities:
-    - scene.romantic_lights
-    - device_tracker.demo_paulus
-    - cover.kitchen_window
-    - group.kitchen
-    - lock.kitchen_door
-    - light.bed_light
-    - climate.ecobee
-    - input_number.number
-  title: Random group
-  show_header_toggle: false
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        "scene.romantic_lights",
+        "device_tracker.demo_paulus",
+        "cover.kitchen_window",
+        "group.kitchen",
+        "lock.kitchen_door",
+        "light.bed_light",
+        "climate.ecobee",
+        "input_number.number",
+      ],
+      title: "Random group",
+      show_header_toggle: false,
+    },
   },
   {
     heading: "With title, can't toggle",
-    config: `
-- type: entities
-  entities:
-    - device_tracker.demo_paulus
-  title: Random group
-    `,
+    config: {
+      type: "entities",
+      entities: ["device_tracker.demo_paulus"],
+      title: "Random group",
+    },
   },
   {
     heading: "Unavailable",
-    config: `
-- type: entities
-  entities:
-    - scene.unavailable
-    - device_tracker.unavailable
-    - cover.unavailable
-    - lock.unavailable
-    - light.unavailable
-    - climate.unavailable
-    - input_number.unavailable
-    - input_select.unavailable
-    - text.unavailable
-    - event.unavailable
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        "scene.unavailable",
+        "device_tracker.unavailable",
+        "cover.unavailable",
+        "lock.unavailable",
+        "light.unavailable",
+        "climate.unavailable",
+        "input_number.unavailable",
+        "input_select.unavailable",
+        "text.unavailable",
+        "event.unavailable",
+      ],
+    },
   },
   {
     heading: "Custom name, secondary info, custom icon",
-    config: `
-- type: entities
-  entities:
-    - entity: scene.romantic_lights
-      name: ¯\\_(ツ)_/¯
-    - entity: device_tracker.demo_paulus
-      secondary_info: entity-id
-    - entity: cover.kitchen_window
-      secondary_info: last-changed
-    - entity: group.kitchen
-      icon: mdi:home-assistant
-    - lock.kitchen_door
-    - entity: light.bed_light
-      icon: mdi:alarm-light
-      name: Bed Light Custom Icon
-    - climate.ecobee
-    - input_number.number
-  title: Random group
-  show_header_toggle: false
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        { entity: "scene.romantic_lights", name: "¯\\_(ツ)_/¯" },
+        {
+          entity: "device_tracker.demo_paulus",
+          secondary_info: "entity-id",
+        },
+        {
+          entity: "cover.kitchen_window",
+          secondary_info: "last-changed",
+        },
+        { entity: "group.kitchen", icon: "mdi:home-assistant" },
+        "lock.kitchen_door",
+        {
+          entity: "light.bed_light",
+          icon: "mdi:alarm-light",
+          name: "Bed Light Custom Icon",
+        },
+        "climate.ecobee",
+        "input_number.number",
+      ],
+      title: "Random group",
+      show_header_toggle: false,
+    },
   },
   {
     heading: "Special rows",
-    config: `
-- type: entities
-  entities:
-    - type: perform-action
-      icon: mdi:power
-      name: Bed light
-      action_name: Toggle light
-      action: light.toggle
-      data:
-        entity_id: light.bed_light
-    - type: section
-      label: Links
-    - type: weblink
-      url: http://google.com/
-      icon: mdi:google
-      name: Google
-    - type: divider
-    - type: divider
-      style:
-        height: 30px
-        margin: 4px 0
-        background: center / contain url("/images/divider.png") no-repeat
-    `,
+    config: {
+      type: "entities",
+      entities: [
+        {
+          type: "perform-action",
+          icon: "mdi:power",
+          name: "Bed light",
+          action_name: "Toggle light",
+          action: "light.toggle",
+          data: { entity_id: "light.bed_light" },
+        },
+        { type: "section", label: "Links" },
+        {
+          type: "weblink",
+          url: "http://google.com/",
+          icon: "mdi:google",
+          name: "Google",
+        },
+        { type: "divider" },
+        {
+          type: "divider",
+          style: {
+            height: "30px",
+            margin: "4px 0",
+            background: 'center / contain url("/images/divider.png") no-repeat',
+          },
+        },
+      ],
+    },
   },
-];
+] satisfies DemoCardConfig<GalleryEntitiesCardConfig>[];
 
 @customElement("demo-lovelace-entities-card")
 class DemoEntities extends LitElement {

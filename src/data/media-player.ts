@@ -208,6 +208,29 @@ export const browseMediaPlayer = (
     media_content_type: mediaContentType,
   });
 
+export interface SearchMediaResult {
+  result: MediaPlayerItem[];
+}
+
+export const searchMediaPlayer = (
+  hass: HomeAssistant,
+  entityId: string,
+  searchQuery: string,
+  mediaContentId?: string,
+  mediaContentType?: string,
+  mediaFilterClasses?: string[]
+): Promise<SearchMediaResult> =>
+  hass.callWS<SearchMediaResult>({
+    type: "media_player/search_media",
+    entity_id: entityId,
+    search_query: searchQuery,
+    // the backend requires these two to be passed together, and JSON
+    // serialization drops them both when the current item is the root
+    media_content_id: mediaContentId,
+    media_content_type: mediaContentType,
+    media_filter_classes: mediaFilterClasses,
+  });
+
 export const getCurrentProgress = (stateObj: MediaPlayerEntity): number => {
   let progress = stateObj.attributes.media_position!;
 
