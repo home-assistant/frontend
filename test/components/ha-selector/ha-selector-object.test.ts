@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { ObjectSelector } from "../../../src/data/selector";
 import type { HomeAssistant } from "../../../src/types";
 import type { HaObjectSelector } from "../../../src/components/ha-selector/ha-selector-object";
-import type { FormDialogParams } from "../../../src/dialogs/form/show-form-dialog";
+import type {
+  FormDialogData,
+  FormDialogParams,
+} from "../../../src/dialogs/form/show-form-dialog";
 import "../../../src/components/ha-selector/ha-selector-object";
 
 vi.mock("../../../src/components/ha-input-helper-text", () => {
@@ -51,12 +55,15 @@ const selectorConfig = {
 const getInternals = (selector: HaObjectSelector) =>
   selector as unknown as Record<string, unknown>;
 
-const mountSelector = async (value: Record<string, string>[]) => {
+const mountSelector = async (
+  value: FormDialogData[],
+  config: ObjectSelector = selectorConfig
+) => {
   const selector = document.createElement(
     "ha-selector-object"
   ) as HaObjectSelector;
   selector.hass = hass;
-  selector.selector = selectorConfig;
+  selector.selector = config;
   selector.value = value;
   document.body.append(selector);
   await selector.updateComplete;
@@ -66,8 +73,8 @@ const mountSelector = async (value: Record<string, string>[]) => {
 const resolveFormDialog = async (
   selector: HaObjectSelector,
   action: "_addItem" | "_editItem",
-  result: Record<string, string> | null,
-  item?: Record<string, string>,
+  result: FormDialogData | null,
+  item?: FormDialogData,
   index?: number
 ) => {
   let params: FormDialogParams | undefined;
@@ -87,12 +94,20 @@ const resolveFormDialog = async (
     );
   });
 
-  const event = {
+  interface ItemActionEvent {
+    stopPropagation: () => void;
+    currentTarget: {
+      item?: FormDialogData;
+      index?: number;
+    };
+  }
+
+  const event: ItemActionEvent = {
     stopPropagation: vi.fn(),
     currentTarget: { item, index },
   };
   const operation = (
-    getInternals(selector)[action] as (ev: typeof event) => Promise<void>
+    getInternals(selector)[action] as (event: ItemActionEvent) => Promise<void>
   )(event);
   await dialogShown;
   await operation;
@@ -105,6 +120,38 @@ afterEach(() => {
 });
 
 describe("ha-selector-object form dialog flow", () => {
+  it("initializes Add dialog data from the object field schema", async () => {
+    const selector = await mountSelector([], {
+      object: {
+        multiple: true,
+        fields: {
+          name: {
+            required: true,
+            selector: { text: {} },
+          },
+          states: {
+            required: true,
+            selector: {
+              text: {
+                multiple: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const params = await resolveFormDialog(selector, "_addItem", {
+      name: "A",
+      states: ["on"],
+    });
+
+    expect(params.data).toEqual({
+      name: "",
+      states: [],
+    });
+  });
+
   it("appends an item through the real Add flow", async () => {
     const first = { name: "A" };
     const selector = await mountSelector([first]);

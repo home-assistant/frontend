@@ -1,4 +1,4 @@
-import type { Selector } from "../../data/selector";
+import { getSelectorInitialValue } from "./get-selector-initial-value";
 import type { HaFormData, HaFormSchema } from "./types";
 
 const setDefaultValue = (
@@ -62,104 +62,9 @@ export const computeInitialHaFormData = (
         seconds: 0,
       };
     } else if ("selector" in field) {
-      const selector: Selector = field.selector;
-
-      if ("device" in selector) {
-        data[field.name] = selector.device?.multiple ? [] : "";
-      } else if ("entity" in selector) {
-        data[field.name] = selector.entity?.multiple ? [] : "";
-      } else if ("area" in selector) {
-        data[field.name] = selector.area?.multiple ? [] : "";
-      } else if ("label" in selector) {
-        data[field.name] = selector.label?.multiple ? [] : "";
-      } else if ("boolean" in selector) {
-        data[field.name] = false;
-      } else if (
-        "addon" in selector ||
-        "attribute" in selector ||
-        "file" in selector ||
-        "icon" in selector ||
-        "serial_port" in selector ||
-        "template" in selector ||
-        "text" in selector ||
-        "theme" in selector ||
-        "object" in selector
-      ) {
-        data[field.name] = "";
-      } else if ("number" in selector) {
-        data[field.name] = selector.number?.min ?? 0;
-      } else if ("select" in selector) {
-        if (selector.select?.options.length) {
-          const firstOption = selector.select.options[0];
-          const val =
-            typeof firstOption === "string" ? firstOption : firstOption.value;
-          data[field.name] = selector.select.multiple ? [val] : val;
-        }
-      } else if ("country" in selector) {
-        if (selector.country?.countries?.length) {
-          data[field.name] = selector.country.countries[0];
-        }
-      } else if ("language" in selector) {
-        if (selector.language?.languages?.length) {
-          data[field.name] = selector.language.languages[0];
-        }
-      } else if ("duration" in selector) {
-        data[field.name] = {
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        };
-      } else if ("time" in selector) {
-        data[field.name] = "00:00:00";
-      } else if ("date" in selector || "datetime" in selector) {
-        const now = new Date().toISOString().slice(0, 10);
-        data[field.name] = `${now}T00:00:00`;
-      } else if ("color_rgb" in selector) {
-        data[field.name] = [0, 0, 0];
-      } else if ("color_temp" in selector) {
-        data[field.name] = selector.color_temp?.min_mireds ?? 153;
-      } else if (
-        "action" in selector ||
-        "trigger" in selector ||
-        "condition" in selector
-      ) {
-        data[field.name] = [];
-      } else if ("media" in selector || "target" in selector) {
-        data[field.name] = {};
-      } else if ("state" in selector) {
-        data[field.name] = selector.state?.multiple ? [] : "";
-      } else if ("choose" in selector) {
-        const firstChoice = Object.keys(selector.choose.choices)[0];
-        if (!firstChoice) {
-          data[field.name] = {};
-        } else {
-          data[field.name] = {
-            active_choice: firstChoice,
-            [firstChoice]: computeInitialHaFormData([
-              {
-                name: firstChoice,
-                selector: selector.choose.choices[firstChoice].selector,
-              },
-            ])[firstChoice],
-          };
-        }
-      } else if ("numeric_threshold" in selector) {
-        const mode = selector.numeric_threshold?.mode ?? "crossed";
-        const type = mode === "changed" ? "any" : "above";
-        data[field.name] =
-          type === "any"
-            ? { type }
-            : {
-                type,
-                value: {
-                  number: selector.numeric_threshold?.number?.min ?? 0,
-                  active_choice: "number",
-                },
-              };
-      } else {
-        throw new Error(
-          `Selector ${Object.keys(selector)[0]} not supported in initial form data`
-        );
+      const initialValue = getSelectorInitialValue(field.selector);
+      if (initialValue !== undefined) {
+        data[field.name] = initialValue;
       }
     }
   });
