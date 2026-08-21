@@ -191,6 +191,17 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         Object.values(this._otbrInfo).find(
           (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
         ));
+    // Any border router on the network can share its credentials, so fall back
+    // to one that supports it when the preferred router does not
+    const otbrForSharing = otbrForNetwork?.ephemeral_key_supported
+      ? otbrForNetwork
+      : this._otbrInfo &&
+        network.dataset &&
+        Object.values(this._otbrInfo).find(
+          (otbr) =>
+            otbr.extended_pan_id === network.dataset!.extended_pan_id &&
+            otbr.ephemeral_key_supported
+        );
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
@@ -200,12 +211,12 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           network.dataset
             ? html`<div>
                 ${
-                  otbrForNetwork?.ephemeral_key_supported
+                  otbrForSharing
                     ? html`<ha-icon-button
                         .label=${this.hass.localize(
                           "ui.panel.config.thread.share_credentials"
                         )}
-                        .otbr=${otbrForNetwork}
+                        .otbr=${otbrForSharing}
                         .path=${mdiQrcode}
                         @click=${this._shareCredentials}
                       ></ha-icon-button>`
