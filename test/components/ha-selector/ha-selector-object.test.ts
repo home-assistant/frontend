@@ -75,8 +75,7 @@ const resolveFormDialog = async (
     selector.addEventListener(
       "show-dialog",
       (event) => {
-        params = (event as CustomEvent<{ dialogParams: FormDialogParams }>)
-          .detail.dialogParams;
+        params = event.detail.dialogParams as FormDialogParams;
         if (result === null) {
           params.cancel!();
         } else {
@@ -93,7 +92,7 @@ const resolveFormDialog = async (
     currentTarget: { item, index },
   };
   const operation = (
-    getInternals(selector)[action] as (event: typeof event) => Promise<void>
+    getInternals(selector)[action] as (ev: typeof event) => Promise<void>
   )(event);
   await dialogShown;
   await operation;
