@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 
 export interface OTBRInfo {
   active_dataset_tlvs: string;
@@ -6,6 +6,7 @@ export interface OTBRInfo {
   channel: number;
   extended_address: string;
   extended_pan_id: string;
+  ephemeral_key_supported: boolean;
   url: string;
 }
 
@@ -19,7 +20,7 @@ export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfoDict> =>
 export interface OTBREphemeralKey {
   ephemeral_key: string;
   lifetime: number;
-  port: number | null;
+  port: number;
 }
 
 export const OTBRCreateEphemeralKey = (
@@ -28,6 +29,15 @@ export const OTBRCreateEphemeralKey = (
 ): Promise<OTBREphemeralKey> =>
   hass.callWS({
     type: "otbr/create_ephemeral_key",
+    extended_address,
+  });
+
+export const OTBRDeleteEphemeralKey = (
+  api: HomeAssistantApi,
+  extended_address: string
+): Promise<void> =>
+  api.callWS({
+    type: "otbr/delete_ephemeral_key",
     extended_address,
   });
 

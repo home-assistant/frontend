@@ -200,9 +200,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           network.dataset
             ? html`<div>
                 ${
-                  otbrForNetwork
+                  otbrForNetwork?.ephemeral_key_supported
                     ? html`<ha-icon-button
-                        label="Share network credentials"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.thread.share_credentials"
+                        )}
                         .otbr=${otbrForNetwork}
                         .path=${mdiQrcode}
                         @click=${this._shareCredentials}
@@ -456,10 +458,24 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       showThreadEphemeralKeyDialog(this, {
         ephemeralKey: result.ephemeral_key,
         lifetime: result.lifetime,
+        extendedAddress: otbr.extended_address,
       });
     } catch (err: any) {
+      if (err.code === "ephemeral_key_not_supported") {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.thread.share_credentials_failed"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.thread.share_credentials_not_supported"
+          ),
+        });
+        return;
+      }
       showAlertDialog(this, {
-        title: "Failed to create code",
+        title: this.hass.localize(
+          "ui.panel.config.thread.share_credentials_failed"
+        ),
         text: err.message,
       });
     }

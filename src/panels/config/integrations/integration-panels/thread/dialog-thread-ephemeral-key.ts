@@ -1,50 +1,46 @@
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../../types";
-import type { DialogThreadEphemeralKeyParams } from "./show-dialog-thread-ephemeral-key";
+import { consume, type ContextType } from "@lit/context";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
+import {
+  apiContext,
+  internationalizationContext,
+} from "../../../../../data/context";
+import { OTBRDeleteEphemeralKey } from "../../../../../data/otbr";
+import { DialogMixin } from "../../../../../dialogs/dialog-mixin";
+import type { DialogThreadEphemeralKeyParams } from "./show-dialog-thread-ephemeral-key";
 
 @customElement("ha-dialog-thread-ephemeral-key")
-class DialogThreadEphemeralKey extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+class DialogThreadEphemeralKey extends DialogMixin<DialogThreadEphemeralKeyParams>(
+  LitElement
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _params?: DialogThreadEphemeralKeyParams;
-
-  @state() private _open = false;
-
-  public async showDialog(
-    params: DialogThreadEphemeralKeyParams
-  ): Promise<void> {
-    this._params = params;
-    this._open = true;
-  }
-
-  public closeDialog() {
-    this._open = false;
-  }
-
-  private _dialogClosed() {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
-    const key = this._params.ephemeralKey;
+    const key = this.params.ephemeralKey;
 
     return html`<ha-dialog
-      .open=${this._open}
-      header-title="Share network credentials"
-      @closed=${this._dialogClosed}
+      open
+      width="small"
+      header-title=${this._i18n.localize(
+        "ui.panel.config.thread.share_credentials"
+      )}
     >
       <div class="content">
         <p>
-          To add a border router to your Thread network, scan this QR code or
-          enter the code below in its app.
+          ${this._i18n.localize(
+            "ui.panel.config.thread.share_credentials_text"
+          )}
         </p>
         <p class="code">${key.replace(/(\d{3})(?=\d)/g, "$1 ")}</p>
         <ha-qr-code
@@ -53,11 +49,24 @@ class DialogThreadEphemeralKey extends LitElement {
           .scale=${6}
         ></ha-qr-code>
         <p class="expiry">
-          This code expires in ${Math.floor(this._params.lifetime / 60)} minutes
-          and can only be used once.
+          ${this._i18n.localize(
+            "ui.panel.config.thread.share_credentials_expiry",
+            { minutes: Math.max(1, Math.round(this.params.lifetime / 60)) }
+          )}
         </p>
       </div>
     </ha-dialog>`;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.params) {
+      OTBRDeleteEphemeralKey(this._api, this.params.extendedAddress).catch(
+        () => {
+          // The key may already be expired or the router unreachable
+        }
+      );
+    }
   }
 
   static styles = css`

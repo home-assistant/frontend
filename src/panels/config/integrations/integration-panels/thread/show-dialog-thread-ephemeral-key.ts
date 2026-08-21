@@ -3,6 +3,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 export interface DialogThreadEphemeralKeyParams {
   ephemeralKey: string;
   lifetime: number;
+  extendedAddress: string;
 }
 
 export const showThreadEphemeralKeyDialog = (
