@@ -34,7 +34,7 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { filterModes } from "./common/filter-modes";
+import { filterModes, normalizeAlarmModeItem } from "./common/filter-modes";
 import type {
   AlarmModesCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -158,13 +158,18 @@ class HuiAlarmModeCardFeature
 
     const supportedModes = supportedAlarmModes(this._stateObj).reverse();
 
-    const modeIcons = this._config.mode_icons;
+    const normalizedModes = this._config.modes?.map(normalizeAlarmModeItem);
+    const modeIcons = new Map(
+      normalizedModes
+        ?.filter((item) => item.icon != null)
+        .map((item) => [item.mode, item.icon!])
+    );
 
     const options = filterModes(
       supportedModes,
-      this._config.modes
+      normalizedModes?.map((item) => item.mode)
     ).map<ControlSelectOption>((mode) => {
-      const customIcon = modeIcons?.[mode];
+      const customIcon = modeIcons.get(mode);
       return {
         value: mode,
         label: this._localize(`ui.card.alarm_control_panel.modes.${mode}`),

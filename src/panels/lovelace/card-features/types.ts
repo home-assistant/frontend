@@ -125,10 +125,11 @@ export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
 }
 
+export type AlarmModeItem = AlarmMode | { mode: AlarmMode; icon?: string };
+
 export interface AlarmModesCardFeatureConfig {
   type: "alarm-modes";
-  modes?: AlarmMode[];
-  mode_icons?: Partial<Record<AlarmMode, string>>;
+  modes?: AlarmModeItem[];
 }
 
 export interface ClimateFanModesCardFeatureConfig {

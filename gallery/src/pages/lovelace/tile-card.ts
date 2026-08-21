@@ -368,11 +368,11 @@ const CONFIGS = [
       features: [
         {
           type: "alarm-modes",
-          modes: ["armed_home", "armed_away", "disarmed"],
-          mode_icons: {
-            armed_home: "mdi:sofa",
-            armed_away: "mdi:briefcase",
-          },
+          modes: [
+            { mode: "armed_home", icon: "mdi:sofa" },
+            { mode: "armed_away", icon: "mdi:briefcase" },
+            "disarmed",
+          ],
         },
       ],
     },

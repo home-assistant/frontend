@@ -9,8 +9,10 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import type { AlarmMode } from "../../../../data/alarm_control_panel";
 import { supportedAlarmModes } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
+import { normalizeAlarmModeItem } from "../../card-features/common/filter-modes";
 import type {
   AlarmModesCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -72,7 +74,7 @@ export class HuiAlarmModesCardFeatureEditor
     }
 
     const data: AlarmModesCardFeatureData = {
-      ...this._config,
+      ...this._formData(this._config),
       customize_modes: this._config.modes !== undefined,
     };
 
@@ -93,6 +95,25 @@ export class HuiAlarmModesCardFeatureEditor
     `;
   }
 
+  /*
+   * The `modes` select-multiple can only represent plain mode strings, so
+   * the advanced `{ mode, icon }` form (YAML-only) is flattened to strings
+   * for display. There is deliberately no per-mode icon picker in the
+   * visual editor yet — the goal here is only to make the existing picker
+   * non-destructive for configs that use icon overrides.
+   */
+  private _formData = memoizeOne(
+    (config: AlarmModesCardFeatureConfig): AlarmModesCardFeatureConfig =>
+      config.modes?.some((item) => typeof item !== "string")
+        ? {
+            ...config,
+            modes: config.modes.map(
+              (item) => normalizeAlarmModeItem(item).mode
+            ),
+          }
+        : config
+  );
+
   private _valueChanged(ev: CustomEvent): void {
     const { customize_modes, ...config } = ev.detail
       .value as AlarmModesCardFeatureData;
@@ -108,7 +129,28 @@ export class HuiAlarmModesCardFeatureEditor
       delete config.modes;
     }
 
-    fireEvent(this, "config-changed", { config: config });
+    // Re-attach the icon overrides that `_formData` stripped, so editing
+    // any field (or toggling modes) doesn't silently drop them.
+    const icons = new Map<AlarmMode, string>();
+    for (const item of this._config?.modes ?? []) {
+      const { mode, icon } = normalizeAlarmModeItem(item);
+      if (icon != null) {
+        icons.set(mode, icon);
+      }
+    }
+
+    if (icons.size === 0 || !config.modes) {
+      fireEvent(this, "config-changed", { config });
+      return;
+    }
+
+    const modes = config.modes.map((item) => {
+      const { mode } = normalizeAlarmModeItem(item);
+      const icon = icons.get(mode);
+      return icon != null ? { mode, icon } : item;
+    });
+
+    fireEvent(this, "config-changed", { config: { ...config, modes } });
   }
 
   private _computeLabelCallback = (
