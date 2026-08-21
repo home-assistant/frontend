@@ -39,6 +39,7 @@ import {
 import memoizeOne from "memoize-one";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../types";
+import { mdiMqttLogo } from "../../resources/mqtt-logo-svg";
 
 const getHasDomainCheck = (domain: string) => {
   const prefix = `${domain}.`;
@@ -140,6 +141,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#4EAA66",
       component: "knx",
       translationKey: "knx",
+      adminOnly: true,
+    },
+    {
+      path: "/config/mqtt",
+      iconPath: mdiMqttLogo,
+      iconColor: "#660066",
+      component: "mqtt",
+      translationKey: "mqtt",
       adminOnly: true,
     },
     {

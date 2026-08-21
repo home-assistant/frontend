@@ -20,9 +20,10 @@ type ReloadableDomain = Exclude<
   "heading" | "introduction" | "reload"
 >;
 
-interface TranslatedReloadableDomain {
-  domain: ReloadableDomain;
+interface TranslatedReloadableItem {
+  domain: ReloadableDomain | "frontend";
   name: string;
+  service?: string;
 }
 
 @customElement("tools-yaml-config")
@@ -37,7 +38,7 @@ export class ToolsYamlConfig extends LitElement {
 
   @state() private _validating = false;
 
-  @state() private _reloadableDomains: TranslatedReloadableDomain[] = [];
+  @state() private _reloadableItems: TranslatedReloadableItem[] = [];
 
   @state() private _validateResult?: CheckConfigResult;
 
@@ -54,10 +55,10 @@ export class ToolsYamlConfig extends LitElement {
         oldHass.config.components !== this.hass.config.components ||
         oldHass.localize !== this.hass.localize)
     ) {
-      this._reloadableDomains = (
+      this._reloadableItems = (
         componentsWithService(this.hass, "reload") as ReloadableDomain[]
       )
-        .map((domain) => ({
+        .map<TranslatedReloadableItem>((domain) => ({
           domain,
           name:
             this.hass.localize(
@@ -68,6 +69,15 @@ export class ToolsYamlConfig extends LitElement {
               { domain: domainToName(this.hass.localize, domain) }
             ),
         }))
+        .concat([
+          {
+            domain: "frontend",
+            service: "reload_themes",
+            name: this.hass.localize(
+              `ui.panel.config.tools.tabs.yaml.section.reloading.themes`
+            ),
+          },
+        ])
         .sort((a, b) =>
           stringCompare(a.name, b.name, this.hass.locale.language)
         );
@@ -190,12 +200,12 @@ export class ToolsYamlConfig extends LitElement {
               )}
             </ha-call-service-button>
           </div>
-          ${this._reloadableDomains.map(
+          ${this._reloadableItems.map(
             (reloadable) => html`
               <div class="card-actions">
                 <ha-call-service-button
                   .domain=${reloadable.domain}
-                  service="reload"
+                  .service=${reloadable.service || "reload"}
                   >${reloadable.name}
                 </ha-call-service-button>
               </div>

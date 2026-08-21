@@ -174,6 +174,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
+  max_devices?: number;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
