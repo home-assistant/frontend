@@ -361,13 +361,14 @@ const CONFIGS = [
     },
   },
   {
-    heading: "Alarm modes feature with custom mode icons",
+    heading: "Alarm modes feature with custom mode icons and labels",
     config: {
       type: "tile",
       entity: "alarm_control_panel.home",
       features: [
         {
           type: "alarm-modes",
+          show_labels: true,
           modes: [
             { mode: "armed_home", icon: "mdi:sofa" },
             { mode: "armed_away", icon: "mdi:briefcase" },

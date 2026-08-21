@@ -130,6 +130,7 @@ export type AlarmModeItem = AlarmMode | { mode: AlarmMode; icon?: string };
 export interface AlarmModesCardFeatureConfig {
   type: "alarm-modes";
   modes?: AlarmModeItem[];
+  show_labels?: boolean;
 }
 
 export interface ClimateFanModesCardFeatureConfig {
