@@ -19,6 +19,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
+import "../../../components/ha-icon";
 import type {
   AlarmControlPanelEntity,
   AlarmMode,
@@ -157,14 +158,21 @@ class HuiAlarmModeCardFeature
 
     const supportedModes = supportedAlarmModes(this._stateObj).reverse();
 
+    const modeIcons = this._config.mode_icons;
+
     const options = filterModes(
       supportedModes,
       this._config.modes
-    ).map<ControlSelectOption>((mode) => ({
-      value: mode,
-      label: this._localize(`ui.card.alarm_control_panel.modes.${mode}`),
-      path: ALARM_MODES[mode].path,
-    }));
+    ).map<ControlSelectOption>((mode) => {
+      const customIcon = modeIcons?.[mode];
+      return {
+        value: mode,
+        label: this._localize(`ui.card.alarm_control_panel.modes.${mode}`),
+        ...(customIcon
+          ? { icon: html`<ha-icon .icon=${customIcon}></ha-icon>` }
+          : { path: ALARM_MODES[mode].path }),
+      };
+    });
 
     if (["triggered", "arming", "pending"].includes(this._stateObj.state)) {
       return html`

@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
 import type { DemoCardConfig } from "../../components/demo-card";
+import { AlarmControlPanelEntityFeature } from "../../../../src/data/alarm_control_panel";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
@@ -161,6 +162,17 @@ const ENTITIES = [
         FanEntityFeature.DIRECTION +
         FanEntityFeature.SET_SPEED +
         FanEntityFeature.OSCILLATE,
+    },
+  },
+  {
+    entity_id: "alarm_control_panel.home",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Home alarm",
+      supported_features:
+        AlarmControlPanelEntityFeature.ARM_HOME +
+        AlarmControlPanelEntityFeature.ARM_AWAY +
+        AlarmControlPanelEntityFeature.ARM_NIGHT,
     },
   },
 ];
@@ -338,6 +350,31 @@ const CONFIGS = [
       type: "tile",
       entity: "fan.fan_demo",
       features: [{ type: "fan-oscillate" }],
+    },
+  },
+  {
+    heading: "Alarm modes feature",
+    config: {
+      type: "tile",
+      entity: "alarm_control_panel.home",
+      features: [{ type: "alarm-modes" }],
+    },
+  },
+  {
+    heading: "Alarm modes feature with custom mode icons",
+    config: {
+      type: "tile",
+      entity: "alarm_control_panel.home",
+      features: [
+        {
+          type: "alarm-modes",
+          modes: ["armed_home", "armed_away", "disarmed"],
+          mode_icons: {
+            armed_home: "mdi:sofa",
+            armed_away: "mdi:briefcase",
+          },
+        },
+      ],
     },
   },
   {
