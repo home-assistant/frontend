@@ -7576,7 +7576,7 @@
           "share_credentials_expired": "This code has expired. Close this dialog and share the credentials again to get a new one.",
           "share_credentials_failed": "Failed to share credentials",
           "share_credentials_not_supported": "The border router does not support sharing credentials.",
-          "share_credentials_in_use": "Another device is currently joining with a code from this border router. Try again in a moment.",
+          "share_credentials_in_use": "A code from this border router is already in use on another device or in another dialog. Close it or wait for it to expire, then try again.",
           "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
