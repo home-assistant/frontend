@@ -7572,7 +7572,7 @@
           "thread_network_send_credentials_phone_description": "Share your Thread network credentials with your phone, allowing it to directly commission new Thread devices onto your network.",
           "share_credentials": "Share network credentials",
           "share_credentials_text": "To add a border router to your Thread network, scan this QR code or enter the code below in its app.",
-          "share_credentials_expiry": "This code can only be used once. It expires in {minutes} {minutes, plural, one {minute} other {minutes}}, or as soon as you close this dialog.",
+          "share_credentials_expiry": "This code can only be used once. It expires in {minutes, plural, one {# minute} other {# minutes}}, or as soon as you close this dialog.",
           "share_credentials_failed": "Failed to create code",
           "share_credentials_not_supported": "The border router does not support sharing credentials.",
           "thread_network_make_preferred": "Make preferred network"

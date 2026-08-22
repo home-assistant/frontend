@@ -490,7 +490,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         title: this.hass.localize(
           "ui.panel.config.thread.share_credentials_failed"
         ),
-        text: err.message,
+        text: err.message || err,
       });
     }
   }
