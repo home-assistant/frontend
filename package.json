@@ -104,7 +104,7 @@
     "echarts-extension-chart2music": "0.1.0",
     "element-internals-polyfill": "3.0.2",
     "fuse.js": "7.5.0",
-    "hls.js": "1.7.0",
+    "hls.js": "1.7.1",
     "home-assistant-js-websocket": "9.6.0",
     "idb-keyval": "6.3.0",
     "intl-messageformat": "11.2.14",
