@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
+import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -24,6 +25,7 @@ import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateEphemeralKey,
   OTBRCreateNetwork,
+  OTBRDeleteEphemeralKey,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
@@ -73,6 +75,8 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @state() private _datasets: ThreadDataSet[] = [];
 
   @state() private _otbrInfo?: OTBRInfoDict;
+
+  @state() private _sharing = false;
 
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
@@ -183,14 +187,19 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _renderNetwork(network: ThreadNetwork) {
+    // A router is matched by its current network, as the dataset keeps pointing
+    // at its preferred router after that router has joined another network
+    const otbrsOnNetwork =
+      this._otbrInfo && network.dataset
+        ? Object.values(this._otbrInfo).filter(
+            (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
+          )
+        : [];
     const otbrForNetwork =
-      this._otbrInfo &&
-      network.dataset &&
-      ((network.dataset.preferred_extended_address &&
-        this._otbrInfo[network.dataset.preferred_extended_address]) ||
-        Object.values(this._otbrInfo).find(
-          (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
-        ));
+      otbrsOnNetwork.find(
+        (otbr) =>
+          otbr.extended_address === network.dataset?.preferred_extended_address
+      ) || otbrsOnNetwork[0];
     // Any border router on the network can share its credentials, so fall back
     // to one that supports it when the preferred router does not. A dataset
     // without discovered routers has nothing to join, so offer nothing.
@@ -198,13 +207,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ? undefined
       : otbrForNetwork?.ephemeral_key_supported
         ? otbrForNetwork
-        : this._otbrInfo &&
-          network.dataset &&
-          Object.values(this._otbrInfo).find(
-            (otbr) =>
-              otbr.extended_pan_id === network.dataset!.extended_pan_id &&
-              otbr.ephemeral_key_supported
-          );
+        : otbrsOnNetwork.find((otbr) => otbr.ephemeral_key_supported);
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
@@ -221,6 +224,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                         )}
                         .otbr=${otbrForSharing}
                         .path=${mdiQrcode}
+                        .disabled=${this._sharing}
                         @click=${this._shareCredentials}
                       ></ha-icon-button>`
                     : ""
@@ -463,35 +467,48 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private async _shareCredentials(ev: Event) {
+    if (this._sharing) {
+      return;
+    }
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
+    this._sharing = true;
     try {
       const result = await OTBRCreateEphemeralKey(
         this.hass,
         otbr.extended_address
       );
+      if (!this.isConnected) {
+        // Navigated away before the code could be shown; don't leave it active
+        OTBRDeleteEphemeralKey(
+          this.hass,
+          otbr.extended_address,
+          result.ephemeral_key
+        ).catch(() => {
+          // The key expires on its own
+        });
+        return;
+      }
       showThreadEphemeralKeyDialog(this, {
         ephemeralKey: result.ephemeral_key,
         lifetime: result.lifetime,
         extendedAddress: otbr.extended_address,
       });
     } catch (err: any) {
-      if (err.code === "ephemeral_key_not_supported") {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.thread.share_credentials_failed"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.thread.share_credentials_not_supported"
-          ),
-        });
-        return;
-      }
+      const errorTexts: Record<string, LocalizeKeys> = {
+        ephemeral_key_not_supported:
+          "ui.panel.config.thread.share_credentials_not_supported",
+        ephemeral_key_in_use: "ui.panel.config.thread.share_credentials_in_use",
+      };
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.thread.share_credentials_failed"
         ),
-        text: err.message || err,
+        text: errorTexts[err.code]
+          ? this.hass.localize(errorTexts[err.code])
+          : err.message || err,
       });
+    } finally {
+      this._sharing = false;
     }
   }
 

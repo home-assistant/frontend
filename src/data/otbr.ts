@@ -6,7 +6,8 @@ export interface OTBRInfo {
   channel: number;
   extended_address: string;
   extended_pan_id: string;
-  ephemeral_key_supported: boolean;
+  /** Missing on cores without credential sharing support */
+  ephemeral_key_supported?: boolean;
   url: string;
 }
 
@@ -19,6 +20,7 @@ export const getOTBRInfo = (hass: HomeAssistant): Promise<OTBRInfoDict> =>
 
 export interface OTBREphemeralKey {
   ephemeral_key: string;
+  /** Seconds */
   lifetime: number;
   port: number;
 }
@@ -34,11 +36,13 @@ export const OTBRCreateEphemeralKey = (
 
 export const OTBRDeleteEphemeralKey = (
   api: HomeAssistantApi,
-  extended_address: string
+  extended_address: string,
+  ephemeral_key?: string
 ): Promise<void> =>
   api.callWS({
     type: "otbr/delete_ephemeral_key",
     extended_address,
+    ephemeral_key,
   });
 
 export const OTBRCreateNetwork = (
