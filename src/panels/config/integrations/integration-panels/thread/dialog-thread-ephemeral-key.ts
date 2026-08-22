@@ -68,13 +68,13 @@ class DialogThreadEphemeralKey extends DialogMixin<DialogThreadEphemeralKeyParam
           expired
             ? html`<p class="expiry">
                 ${this._i18n.localize(
-                "ui.panel.config.thread.share_credentials_expired"
-              )}
+                  "ui.panel.config.thread.share_credentials_expired"
+                )}
               </p>`
             : html`<p>
                   ${this._i18n.localize(
-                  "ui.panel.config.thread.share_credentials_text"
-                )}
+                    "ui.panel.config.thread.share_credentials_text"
+                  )}
                 </p>
                 <p class="code">${key.replace(/(\d{3})(?=\d)/g, "$1 ")}</p>
                 <ha-qr-code
@@ -84,9 +84,9 @@ class DialogThreadEphemeralKey extends DialogMixin<DialogThreadEphemeralKeyParam
                 ></ha-qr-code>
                 <p class="expiry">
                   ${this._i18n.localize(
-                  "ui.panel.config.thread.share_credentials_expiry",
-                  { time: this._formatRemaining(this._secondsRemaining ?? 0) }
-                )}
+                    "ui.panel.config.thread.share_credentials_expiry",
+                    { time: this._formatRemaining(this._secondsRemaining ?? 0) }
+                  )}
                 </p>`
         }
       </div>
