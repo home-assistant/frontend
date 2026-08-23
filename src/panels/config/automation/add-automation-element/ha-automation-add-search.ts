@@ -94,7 +94,7 @@ export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   },
   {
     name: "secondary",
-    weight: 7,
+    weight: 3,   // ← description, weighted too close to the name
   },
 ];
 
