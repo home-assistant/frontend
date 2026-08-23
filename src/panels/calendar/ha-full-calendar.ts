@@ -637,7 +637,7 @@ export class HAFullCalendar extends LitElement {
 
         ha-button.below[slot="fab"] {
           position: relative;
-          margin-left: auto;
+          margin-inline-start: auto;
           padding-top: var(--ha-space-2);
           left: 0;
           right: 0;
