@@ -1,6 +1,16 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { HaChooseSelector } from "../../../src/components/ha-selector/ha-selector-choose";
 
+class HaSelectorStub extends HTMLElement {
+  public hass?: unknown;
+  public selector?: unknown;
+  public value?: unknown;
+  public disabled?: boolean;
+  public required?: boolean;
+  public helper?: string;
+  public localizeValue?: (key: string) => string;
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-selector": HaSelectorStub;
@@ -9,21 +19,11 @@ declare global {
 
 // Mock the child selector so its real selector tree cannot start async imports.
 vi.mock("../../../src/components/ha-selector/ha-selector", () => {
-  const haSelectorStub = class extends HTMLElement {
-    public hass?: unknown;
-    public selector?: unknown;
-    public value?: unknown;
-    public disabled?: boolean;
-    public required?: boolean;
-    public helper?: string;
-    public localizeValue?: (key: string) => string;
-  };
-
   if (!customElements.get("ha-selector")) {
-    customElements.define("ha-selector", haSelectorStub);
+    customElements.define("ha-selector", HaSelectorStub);
   }
 
-  return { HaSelector: haSelectorStub };
+  return { HaSelector: HaSelectorStub };
 });
 
 beforeAll(async () => {
