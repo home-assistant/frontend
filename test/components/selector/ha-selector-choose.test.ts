@@ -11,16 +11,13 @@ class HaSelectorStub extends HTMLElement {
   public localizeValue?: (key: string) => string;
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    "ha-selector": HaSelectorStub;
-  }
-}
-
 // Mock the child selector so its real selector tree cannot start async imports.
 vi.mock("../../../src/components/ha-selector/ha-selector", () => {
   if (!customElements.get("ha-selector")) {
-    customElements.define("ha-selector", HaSelectorStub);
+    customElements.define(
+      "ha-selector",
+      HaSelectorStub as unknown as CustomElementConstructor
+    );
   }
 
   return { HaSelector: HaSelectorStub };
