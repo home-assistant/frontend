@@ -9654,14 +9654,14 @@
                 "dayGridDay": "Day",
                 "listWeek": "List (7 days)"
               },
-              "show_add_event": "Show Add Event Button",
-              "add_event_style": "Add Event Button Style",
-              "add_event_size": "Add Event Button Size",
+              "show_add_event": "Show add event button",
+              "add_event_style": "Add event button style",
+              "add_event_size": "Add event button size",
               "add_event": {
                 "style": {
                   "header": "Header",
                   "below": "Below",
-                  "on_top": "On Top"
+                  "on_top": "On top"
                 },
                 "size": {
                   "s": "Small",
