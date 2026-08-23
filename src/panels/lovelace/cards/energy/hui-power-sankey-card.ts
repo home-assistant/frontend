@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
+  computeConsumptionSingle,
   computeEnergyDeviceLabels,
   formatPowerShort,
   getEnergyDataCollection,
@@ -43,10 +44,18 @@ interface PowerData {
   battery_to_grid: number;
   solar_to_battery: number;
   solar_to_grid: number;
+  // Home's net share of each source, i.e. with the EV's share deducted.
   used_solar: number;
   used_grid: number;
   used_battery: number;
+  // The EV's share of each source. used_{solar,grid,battery} + ev_{solar,grid,battery}
+  // reconstructs the original (pre-EV-split) source usage.
+  ev_solar: number;
+  ev_grid: number;
+  ev_battery: number;
   used_total: number;
+  used_home: number;
+  used_ev: number;
 }
 
 @customElement("hui-power-sankey-card")
@@ -157,20 +166,35 @@ class HuiPowerSankeyCard
 
     // Calculate dynamic threshold based on total consumption
     const minPowerThreshold =
-      powerData.used_total * MIN_SANKEY_THRESHOLD_FACTOR;
+      Math.max(0, powerData.used_total) * MIN_SANKEY_THRESHOLD_FACTOR;
 
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    // Create home node
+    // Create home node. Home and EV are peers drawing from the same sources -
+    // the EV's share of consumption is deducted here and given its own node
+    // below, rather than nested under Home like a device.
     const homeNode: Node = {
       id: "home",
       label: this.hass.config.location_name,
-      value: Math.max(0, powerData.used_total),
+      value: Math.max(0, powerData.used_home),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
     nodes.push(homeNode);
+
+    const hasEv = powerData.used_ev > 0;
+    if (hasEv) {
+      nodes.push({
+        id: "ev",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.ev"
+        ),
+        value: powerData.used_ev,
+        color: computedStyle.getPropertyValue("--energy-ev-color").trim(),
+        index: 1,
+      });
+    }
 
     // Add battery source and sink if available
     if (powerData.from_battery > 0) {
@@ -188,7 +212,15 @@ class HuiPowerSankeyCard
       links.push({
         source: "battery",
         target: "home",
+        value: powerData.used_battery,
       });
+      if (hasEv && powerData.ev_battery > 0) {
+        links.push({
+          source: "battery",
+          target: "ev",
+          value: powerData.ev_battery,
+        });
+      }
     }
 
     if (powerData.to_battery > 0) {
@@ -207,12 +239,14 @@ class HuiPowerSankeyCard
         links.push({
           source: "grid",
           target: "battery_in",
+          value: powerData.grid_to_battery,
         });
       }
       if (powerData.solar_to_battery > 0) {
         links.push({
           source: "solar",
           target: "battery_in",
+          value: powerData.solar_to_battery,
         });
       }
     }
@@ -233,7 +267,15 @@ class HuiPowerSankeyCard
       links.push({
         source: "grid",
         target: "home",
+        value: powerData.used_grid,
       });
+      if (hasEv && powerData.ev_grid > 0) {
+        links.push({
+          source: "grid",
+          target: "ev",
+          value: powerData.ev_grid,
+        });
+      }
     }
 
     // Add solar if available
@@ -250,7 +292,15 @@ class HuiPowerSankeyCard
       links.push({
         source: "solar",
         target: "home",
+        value: powerData.used_solar,
       });
+      if (hasEv && powerData.ev_solar > 0) {
+        links.push({
+          source: "solar",
+          target: "ev",
+          value: powerData.ev_solar,
+        });
+      }
     }
 
     // Add grid return if available
@@ -270,12 +320,14 @@ class HuiPowerSankeyCard
         links.push({
           source: "battery",
           target: "grid_return",
+          value: powerData.battery_to_grid,
         });
       }
       if (powerData.solar_to_grid > 0) {
         links.push({
           source: "solar",
           target: "grid_return",
+          value: powerData.solar_to_grid,
         });
       }
     }
@@ -379,6 +431,7 @@ class HuiPowerSankeyCard
     let to_grid = 0;
     let from_battery = 0;
     let to_battery = 0;
+    let ev = 0;
 
     // Collect solar power
     prefs.energy_sources
@@ -423,60 +476,29 @@ class HuiPowerSankeyCard
       to_battery = Math.abs(net_battery);
     }
 
-    // Calculate total consumption
-    const used_total = from_grid + solar + from_battery - to_grid - to_battery;
+    // Collect EV power draw
+    prefs.energy_sources
+      .filter((source) => source.type === "ev")
+      .forEach((source) => {
+        if (source.type === "ev" && source.stat_rate) {
+          const value = this._getCurrentPower(source.stat_rate);
+          if (value > 0) {
+            ev += value;
+          }
+        }
+      });
 
-    // Determine power routing using priority logic
-    // Priority: Solar -> Battery_In, Solar -> Grid_Out, Battery_Out -> Grid_Out,
-    // Grid_In -> Battery_In, Solar -> Consumption, Battery_Out -> Consumption, Grid_In -> Consumption
-
-    let solar_remaining = solar;
-    let grid_remaining = from_grid;
-    let battery_remaining = from_battery;
-    let to_battery_remaining = to_battery;
-    let to_grid_remaining = to_grid;
-    let used_total_remaining = Math.max(used_total, 0);
-
-    let grid_to_battery = 0;
-
-    // Handle excess grid input to battery first
-    const excess_grid_in_after_consumption = Math.max(
-      0,
-      Math.min(to_battery_remaining, grid_remaining - used_total_remaining)
-    );
-    grid_to_battery += excess_grid_in_after_consumption;
-    to_battery_remaining -= excess_grid_in_after_consumption;
-    grid_remaining -= excess_grid_in_after_consumption;
-
-    // Solar -> Battery_In
-    const solar_to_battery = Math.min(solar_remaining, to_battery_remaining);
-    to_battery_remaining -= solar_to_battery;
-    solar_remaining -= solar_to_battery;
-
-    // Solar -> Grid_Out
-    const solar_to_grid = Math.min(solar_remaining, to_grid_remaining);
-    to_grid_remaining -= solar_to_grid;
-    solar_remaining -= solar_to_grid;
-
-    // Battery_Out -> Grid_Out
-    const battery_to_grid = Math.min(battery_remaining, to_grid_remaining);
-    battery_remaining -= battery_to_grid;
-
-    // Grid_In -> Battery_In (second pass)
-    const grid_to_battery_2 = Math.min(grid_remaining, to_battery_remaining);
-    grid_to_battery += grid_to_battery_2;
-    grid_remaining -= grid_to_battery_2;
-
-    // Solar -> Consumption
-    const used_solar = Math.min(used_total_remaining, solar_remaining);
-    used_total_remaining -= used_solar;
-
-    // Battery_Out -> Consumption
-    const used_battery = Math.min(battery_remaining, used_total_remaining);
-    used_total_remaining -= used_battery;
-
-    // Grid_In -> Consumption
-    const used_grid = Math.min(used_total_remaining, grid_remaining);
+    // Reuse the same source-priority waterfall and home/EV split used for
+    // historical consumption data (see computeConsumptionSingle) - the maths
+    // are unit-agnostic, so it applies to instantaneous power just as well.
+    const consumption = computeConsumptionSingle({
+      from_grid,
+      to_grid,
+      solar,
+      to_battery,
+      from_battery,
+      ev,
+    });
 
     return {
       solar,
@@ -484,14 +506,7 @@ class HuiPowerSankeyCard
       to_grid,
       from_battery,
       to_battery,
-      grid_to_battery,
-      battery_to_grid,
-      solar_to_battery,
-      solar_to_grid,
-      used_solar,
-      used_grid,
-      used_battery,
-      used_total: Math.max(0, used_total),
+      ...consumption,
     };
   }
 

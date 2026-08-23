@@ -4,6 +4,7 @@ import {
   mdiArrowRight,
   mdiArrowUp,
   mdiBatteryHigh,
+  mdiCarElectric,
   mdiFire,
   mdiHome,
   mdiLeaf,
@@ -38,6 +39,13 @@ import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
+
+// Consumer group box geometry, mirrored by .consumer-group in the styles.
+// The stroked path is inset by half the 2px stroke, so it is a
+// 94x220 rounded rect with a 15px radius.
+const CONSUMER_GROUP_WIDTH = 96;
+const CONSUMER_GROUP_HEIGHT = 222;
+const CONSUMER_GROUP_RADIUS = 15;
 
 const periodIncludesNow = (data: EnergyData): boolean =>
   !data.end || data.end.getTime() >= Date.now();
@@ -87,6 +95,153 @@ class HuiEnergyDistrubutionCard
         this._data = data;
       }),
     ];
+  }
+
+  /**
+   * The EV circle, rendered directly below home so the consumer group box can
+   * enclose the two of them.
+   *
+   * It deliberately has no connector of its own: the EV is a consumer
+   * alongside home rather than a sub-item of it, and the group box is what
+   * carries that relationship. The supply lines stop at the box edge.
+   */
+  private _renderEvCircle(
+    evConsumption: number,
+    targetEnergyUnit: string | undefined,
+    evSolarCircumference: number | undefined,
+    evBatteryCircumference: number | undefined,
+    evGridCircumference: number | undefined
+  ) {
+    const hasRing =
+      evSolarCircumference !== undefined ||
+      evBatteryCircumference !== undefined ||
+      evGridCircumference !== undefined;
+    return html`<div class="circle-container ev bottom">
+      <div class="circle ${classMap({ border: !hasRing })}">
+        <ha-svg-icon .path=${mdiCarElectric}></ha-svg-icon>
+        ${formatConsumptionShort(
+          this.hass,
+          evConsumption,
+          "kWh",
+          targetEnergyUnit
+        )}
+        ${
+          hasRing
+            ? html`<svg>
+                ${
+                  evSolarCircumference !== undefined
+                    ? svg`<circle
+                    class="solar"
+                    cx="40"
+                    cy="40"
+                    r="38"
+                    stroke-dasharray="${evSolarCircumference} ${
+                      CIRCLE_CIRCUMFERENCE - evSolarCircumference
+                    }"
+                    shape-rendering="geometricPrecision"
+                    stroke-dashoffset="-${
+                      CIRCLE_CIRCUMFERENCE - evSolarCircumference
+                    }"
+                  />`
+                    : ""
+                }
+                ${
+                  evBatteryCircumference
+                    ? svg`<circle
+                    class="battery"
+                    cx="40"
+                    cy="40"
+                    r="38"
+                    stroke-dasharray="${evBatteryCircumference} ${
+                      CIRCLE_CIRCUMFERENCE - evBatteryCircumference
+                    }"
+                    stroke-dashoffset="-${
+                      CIRCLE_CIRCUMFERENCE -
+                      evBatteryCircumference -
+                      (evSolarCircumference || 0)
+                    }"
+                    shape-rendering="geometricPrecision"
+                  />`
+                    : ""
+                }
+                ${
+                  evGridCircumference
+                    ? svg`<circle
+                    class="grid"
+                    cx="40"
+                    cy="40"
+                    r="38"
+                    stroke-dasharray="${evGridCircumference} ${
+                      CIRCLE_CIRCUMFERENCE - evGridCircumference
+                    }"
+                    stroke-dashoffset="-${
+                      CIRCLE_CIRCUMFERENCE -
+                      evGridCircumference -
+                      (evBatteryCircumference || 0) -
+                      (evSolarCircumference || 0)
+                    }"
+                    shape-rendering="geometricPrecision"
+                  />`
+                    : ""
+                }
+              </svg>`
+            : ""
+        }
+      </div>
+      <span class="label"
+        >${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.ev"
+        )}</span
+      >
+    </div>`;
+  }
+
+  /**
+   * The water circle in its "below home" position, with its feed line.
+   *
+   * `crossesGroup` is true when the EV is also present: the water row then
+   * sits below the consumer group box instead of directly below home, so its
+   * feed line has to stop at the box's border rather than reach all the way
+   * up to the home circle - otherwise it visually runs into the EV circle,
+   * which water does not feed.
+   */
+  private _renderBottomWaterCircle(
+    waterUsage: number | null,
+    crossesGroup: boolean
+  ) {
+    return html`<div
+      class="circle-container water bottom ${classMap({ "crosses-group": crossesGroup })}"
+    >
+      <svg width="80" height="30">
+        <path d="M40 30 v-${crossesGroup ? 22 : 30}" id="water" />
+        ${
+          waterUsage && this._animate
+            ? svg`<circle
+              r="1"
+              class="water"
+              vector-effect="non-scaling-stroke"
+            >
+              <animateMotion
+                dur="2s"
+                repeatCount="indefinite"
+                calcMode="linear"
+              >
+                <mpath xlink:href="#water" />
+              </animateMotion>
+            </circle>`
+            : ""
+        }
+      </svg>
+      <div class="circle">
+        <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
+        ${formatConsumptionShort(this.hass, waterUsage, this._data!.waterUnit)}
+      </div>
+      <span class="label"
+        >${this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+        )}</span
+      >
+    </div>`;
   }
 
   private get _energyDashboardHref(): string {
@@ -160,6 +315,8 @@ class HuiEnergyDistrubutionCard
     );
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
+    // EV is a consumer, deducted from home and drawn as its own node.
+    const hasEv = types.ev !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
     const hasReturnToGrid =
@@ -281,18 +438,52 @@ class HuiEnergyDistrubutionCard
       ? Math.max(consumption.total.used_grid, 0)
       : 0;
 
-    const totalHomeConsumption = Math.max(0, consumption.total.used_total);
+    const evConsumption = Math.max(0, consumption.total.used_ev);
+
+    const totalHomeConsumption = Math.max(0, consumption.total.used_home);
+
+    // Home and EV each draw their own source-mix ring on their own circle,
+    // from their own split of solar/battery/grid - the consumer group box
+    // (when an EV is split out) is just a plain grouping border, not a third
+    // mix of its own.
+    const ringLength = CIRCLE_CIRCUMFERENCE;
+    const ringTotal = totalHomeConsumption;
+    const ringSolar = solarConsumption;
+    const ringBattery = batteryConsumption;
+    const ringGrid = gridConsumption;
 
     let homeSolarCircumference: number | undefined;
     if (hasSolarProduction) {
-      homeSolarCircumference =
-        CIRCLE_CIRCUMFERENCE * (solarConsumption! / totalHomeConsumption);
+      homeSolarCircumference = ringLength * (ringSolar! / ringTotal);
     }
 
     let homeBatteryCircumference: number | undefined;
-    if (batteryConsumption) {
-      homeBatteryCircumference =
-        CIRCLE_CIRCUMFERENCE * (batteryConsumption / totalHomeConsumption);
+    if (ringBattery) {
+      homeBatteryCircumference = ringLength * (ringBattery / ringTotal);
+    }
+
+    // EV's own ring, mirroring Home's above but off the EV's split of the
+    // same sources. Kept to solar/battery/grid (no low-carbon/high-carbon
+    // split - that nuance is only meaningful for Home's ring below).
+    let evSolarCircumference: number | undefined;
+    let evBatteryCircumference: number | undefined;
+    let evGridCircumference: number | undefined;
+    if (hasEv && evConsumption > 0) {
+      const evSolar = Math.max(0, consumption.total.ev_solar);
+      const evBattery = Math.max(0, consumption.total.ev_battery);
+      if (hasSolarProduction) {
+        evSolarCircumference = CIRCLE_CIRCUMFERENCE * (evSolar / evConsumption);
+      }
+      if (evBattery) {
+        evBatteryCircumference =
+          CIRCLE_CIRCUMFERENCE * (evBattery / evConsumption);
+      }
+      if (hasGrid) {
+        evGridCircumference =
+          CIRCLE_CIRCUMFERENCE -
+          (evSolarCircumference || 0) -
+          (evBatteryCircumference || 0);
+      }
     }
 
     let lowCarbonEnergy: number | undefined;
@@ -323,19 +514,19 @@ class HuiEnergyDistrubutionCard
         lowCarbonEnergy = totalFromGrid - highCarbonEnergy;
 
         let highCarbonConsumption: number;
-        if (gridConsumption !== totalFromGrid) {
+        if (ringGrid !== totalFromGrid) {
           // Only get the part that was used for consumption and not the battery
           highCarbonConsumption =
-            highCarbonEnergy * (gridConsumption! / totalFromGrid);
+            highCarbonEnergy * (ringGrid! / totalFromGrid);
         } else {
           highCarbonConsumption = highCarbonEnergy;
         }
 
         homeHighCarbonCircumference =
-          CIRCLE_CIRCUMFERENCE * (highCarbonConsumption / totalHomeConsumption);
+          ringLength * (highCarbonConsumption / ringTotal);
 
         homeLowCarbonCircumference =
-          CIRCLE_CIRCUMFERENCE -
+          ringLength -
           (homeSolarCircumference || 0) -
           (homeBatteryCircumference || 0) -
           homeHighCarbonCircumference;
@@ -358,6 +549,7 @@ class HuiEnergyDistrubutionCard
       returnedToGrid || 0,
       totalFromGrid || 0,
       totalHomeConsumption,
+      evConsumption,
       totalBatteryIn || 0,
       totalBatteryOut || 0
     );
@@ -441,7 +633,7 @@ class HuiEnergyDistrubutionCard
                             )}
                           </div>
                           <svg width="80" height="30">
-                            <path d="M40 0 v30" id="gas" />
+                            <path d="M40 0 v${hasEv ? 22 : 30}" id="gas" />
                             ${
                               gasUsage && this._animate
                                 ? svg`<circle
@@ -477,7 +669,7 @@ class HuiEnergyDistrubutionCard
                               )}
                             </div>
                             <svg width="80" height="30">
-                              <path d="M40 0 v30" id="water" />
+                              <path d="M40 0 v${hasEv ? 22 : 30}" id="water" />
                               ${
                                 waterUsage && this._animate
                                   ? svg`<circle
@@ -651,7 +843,7 @@ class HuiEnergyDistrubutionCard
                 }
               </div>
               ${
-                hasGas && hasWater
+                hasGas && hasWater && !hasEv
                   ? ""
                   : html`<span class="label"
                       >${this.hass.config.location_name}</span
@@ -660,7 +852,7 @@ class HuiEnergyDistrubutionCard
             </div>
           </div>
           ${
-            hasBattery || (hasGas && hasWater)
+            hasBattery || hasEv || (hasGas && hasWater)
               ? html`<div class="row">
                   <div class="spacer"></div>
                   ${
@@ -720,50 +912,72 @@ class HuiEnergyDistrubutionCard
                       : html`<div class="spacer"></div>`
                   }
                   ${
-                    hasGas && hasWater
-                      ? html`<div class="circle-container water bottom">
-                          <svg width="80" height="30">
-                            <path d="M40 30 v-30" id="water" />
-                            ${
-                              waterUsage && this._animate
-                                ? svg`<circle
-                    r="1"
-                    class="water"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="2s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#water" />
-                    </animateMotion>
-                  </circle>`
-                                : ""
-                            }
-                          </svg>
-                          <div class="circle">
-                            <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-                            ${formatConsumptionShort(
-                              this.hass,
-                              waterUsage,
-                              this._data.waterUnit
-                            )}
-                          </div>
-                          <span class="label"
-                            >${this.hass.localize(
-                              "ui.panel.lovelace.cards.energy.energy_distribution.water"
-                            )}</span
-                          >
-                        </div>`
-                      : html`<div class="spacer"></div>`
+                    // The EV must sit directly under home so the group box can
+                    // enclose the two of them and nothing else. Water, being a
+                    // source, is pushed to its own row below the box.
+                    hasEv
+                      ? this._renderEvCircle(
+                          evConsumption,
+                          targetEnergyUnit,
+                          evSolarCircumference,
+                          evBatteryCircumference,
+                          evGridCircumference
+                        )
+                      : hasGas && hasWater
+                        ? this._renderBottomWaterCircle(waterUsage, false)
+                        : html`<div class="spacer"></div>`
                   }
                 </div>`
               : ""
           }
+          ${
+            hasEv && hasGas && hasWater
+              ? html`<div class="row">
+                  <div class="spacer"></div>
+                  <div class="spacer"></div>
+                  ${this._renderBottomWaterCircle(waterUsage, true)}
+                </div>`
+              : ""
+          }
+          ${
+            // Encloses home and the EV so they read as two consumers of the
+            // same supply. The electricity lines stop at its edge; gas and
+            // water cross it, because they feed the home only.
+            hasEv
+              ? html`<div
+                  class="consumer-group-wrap ${classMap({
+                    // A water row below the box pushes the card's bottom edge
+                    // down; both this and .lines are bottom-anchored, so they
+                    // have to be lifted by that row's height.
+                    "above-water-row": hasGas && hasWater,
+                  })}"
+                >
+                  <div class="consumer-group-row">
+                    <div class="consumer-group">
+                      <svg
+                        width=${CONSUMER_GROUP_WIDTH}
+                        height=${CONSUMER_GROUP_HEIGHT}
+                        viewBox="0 0 ${CONSUMER_GROUP_WIDTH} ${CONSUMER_GROUP_HEIGHT}"
+                      >
+                        ${svg`<rect
+                          class="track"
+                          x="1"
+                          y="1"
+                          width="${CONSUMER_GROUP_WIDTH - 2}"
+                          height="${CONSUMER_GROUP_HEIGHT - 2}"
+                          rx="${CONSUMER_GROUP_RADIUS}"
+                        />`}
+                      </svg>
+                    </div>
+                  </div>
+                </div>`
+              : nothing
+          }
           <div
             class="lines ${classMap({
-              high: hasBattery || (hasGas && hasWater),
+              high: hasBattery || hasEv || (hasGas && hasWater),
+              "above-water-row": hasEv && hasGas && hasWater,
+              "with-consumer-group": hasEv,
             })}"
           >
             <svg
@@ -790,7 +1004,7 @@ class HuiEnergyDistrubutionCard
                     class="solar"
                     d="M${hasBattery ? 55 : 53},0 v15 c0,${
                       hasBattery ? "35 10,30 30,30" : "40 10,35 30,35"
-                    } h20"
+                    } h${hasEv ? 15 : 20}"
                     vector-effect="non-scaling-stroke"
                   ></path>`
                   : ""
@@ -800,7 +1014,7 @@ class HuiEnergyDistrubutionCard
                   ? svg`<path
                     id="battery-house"
                     class="battery-house"
-                    d="M55,100 v-15 c0,-35 10,-30 30,-30 h20"
+                    d="M55,100 v-15 c0,-35 10,-30 30,-30 h${hasEv ? 15 : 20}"
                     vector-effect="non-scaling-stroke"
                   ></path>
                   ${
@@ -1009,10 +1223,68 @@ class HuiEnergyDistrubutionCard
       bottom: 100px;
       height: 156px;
     }
+    .lines.high.above-water-row {
+      bottom: 210px;
+    }
+    /* Mirrors .row's centering so the box lands on the right-hand column
+       without hardcoding any horizontal offset. */
+    /* The box sits CONSUMER_GROUP_PADDING px outside the home and EV circles.
+       Everything that has to meet its border is offset by that same amount in
+       CSS pixels - never in viewBox units, since a unit is 1.8-3.4px depending
+       on card width. */
+    .consumer-group-wrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 12px;
+      height: 222px;
+      /* Same horizontal padding as .lines so this lines up with .row, which
+         is laid out inside the card's content padding. */
+      padding: 0 16px;
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+    .consumer-group-wrap.above-water-row {
+      bottom: 122px;
+    }
+    .consumer-group-row {
+      display: flex;
+      justify-content: flex-end;
+      max-width: 500px;
+      height: 100%;
+      margin: 0 auto;
+    }
+    .consumer-group {
+      box-sizing: border-box;
+      /* 80px circle + 8px padding each side. Mirrors CONSUMER_GROUP_WIDTH /
+         CONSUMER_GROUP_HEIGHT. */
+      width: 96px;
+      height: 100%;
+      margin-right: -8px;
+    }
+    /* A plain grouping border around Home and EV - each of them draws its
+       own source-mix ring on its own circle instead. */
+    .consumer-group rect {
+      fill: none;
+      stroke-width: 2;
+    }
+    .consumer-group rect.track {
+      stroke: var(--divider-color);
+    }
     .lines svg {
       width: calc(100% - 160px);
       height: 100%;
       max-width: 340px;
+    }
+    /* The svg keeps its exact original geometry - x=0 on the grid circle, x=50
+       on the card's centre line (so the vertical solar/battery lines stay
+       centred on those circles), x=100 on the home circle. Resizing it to reach
+       the box border would move x=50 off centre, so instead the last 8px are
+       simply not painted, which lands the horizontal lines on the box border
+       without disturbing any coordinate. Clipping is in px, so it holds at any
+       card width. */
+    .lines.with-consumer-group svg {
+      clip-path: inset(0 8px 0 0);
     }
     .row {
       display: flex;
@@ -1044,6 +1316,27 @@ class HuiEnergyDistrubutionCard
       position: relative;
       top: -20px;
       margin-bottom: -20px;
+    }
+    /* With the EV present, this row sits below the consumer group box
+       instead of directly below home. Mirrors how the gas circle above the
+       box is positioned: the svg's unpainted portion (the 8px the path
+       stops short of, see the v-22/v-30 above) overlaps into the box and
+       stays hidden there, while the painted 22px runs from the box's border
+       down to the water circle - so the line reads as stopping at the box,
+       the same way it stops at home when there's no EV.
+       Only "top" is changed here: it is a paint-time offset that doesn't
+       reserve extra flow space, so it can't push .consumer-group-wrap's
+       bottom-anchored position around. margin-bottom must stay exactly what
+       the base rule sets - changing it resizes this row's box in the flow,
+       which shifts the anchor for the box below it and, in turn, the group
+       box itself. */
+    .circle-container.water.bottom.crosses-group {
+      top: -5px;
+    }
+    .circle-container.ev {
+      margin-left: 4px;
+      height: 110px;
+      justify-content: flex-end;
     }
     .circle-container.battery {
       height: 110px;
@@ -1132,6 +1425,21 @@ class HuiEnergyDistrubutionCard
     }
     .water .circle {
       border-color: var(--energy-water-color);
+    }
+    .ev path,
+    .ev circle {
+      stroke: var(--energy-ev-color);
+    }
+    circle.ev {
+      stroke-width: 4;
+      fill: var(--energy-ev-color);
+    }
+    .ev .circle {
+      border-width: 0;
+      border-color: var(--energy-ev-color);
+    }
+    .ev .circle.border {
+      border-width: 2px;
     }
     .low-carbon line {
       stroke: var(--energy-non-fossil-color);

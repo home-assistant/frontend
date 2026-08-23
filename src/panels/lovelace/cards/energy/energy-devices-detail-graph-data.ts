@@ -224,14 +224,16 @@ function processUntracked(
   // Split untracked into its positive part (genuine untracked consumption) and
   // its negative part (tracked devices over-reporting relative to the meter).
   // The negative part becomes a separate, toggleable series.
+  // Devices break down *home* consumption, so untracked is measured against
+  // used_home. An EV is its own consumer, excluded from both sides.
   const { positive, negative } = splitUntrackedConsumption(
-    consumptionData.used_total,
+    consumptionData.used_home,
     totalDeviceConsumption
   );
 
   const untrackedConsumption: BarSeriesOption["data"] = [];
   const negativeUntracked: BarSeriesOption["data"] = [];
-  const sortedTimes = Object.keys(consumptionData.used_total).sort(
+  const sortedTimes = Object.keys(consumptionData.used_home).sort(
     (a, b) => Number(a) - Number(b)
   );
   // Only start timestamps available here, so center sub-daily bars from the

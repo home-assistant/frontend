@@ -103,6 +103,11 @@ export function generatePowerSourcesGraphData(
       color: "--energy-battery-out-color",
       name: localize("ui.panel.lovelace.cards.energy.power_graph.battery"),
     },
+    ev: {
+      stats: [] as string[],
+      color: "--energy-ev-color",
+      name: localize("ui.panel.lovelace.cards.energy.power_graph.ev"),
+    },
   };
 
   let yMin = Infinity;
@@ -123,6 +128,13 @@ export function generatePowerSourcesGraphData(
     if (source.type === "battery") {
       if (source.stat_rate) {
         statIds.battery.stats.push(source.stat_rate);
+      }
+      continue;
+    }
+
+    if (source.type === "ev") {
+      if (source.stat_rate) {
+        statIds.ev.stats.push(source.stat_rate);
       }
       continue;
     }
@@ -240,7 +252,7 @@ export function generatePowerSourcesGraphData(
     }
   });
 
-  Object.keys(statIds).forEach((key) => {
+  ["solar", "grid", "battery"].forEach((key) => {
     const series = seriesData[key];
     if (series) {
       const { colorHex, rgb } = series;
@@ -257,6 +269,31 @@ export function generatePowerSourcesGraphData(
     }
   });
 
+  // The EV is a consumer, not a source: it's drawn as its own line on top of
+  // the source stack (like the usage line below) rather than stacked with
+  // solar/battery/grid, so it doesn't inflate the supply total.
+  const evSeries = seriesData.ev;
+  if (evSeries) {
+    datasets.push({
+      ...commonSeriesOptions,
+      id: "ev",
+      name: statIds.ev.name,
+      color: evSeries.colorHex,
+      lineStyle: {
+        width: 1.5,
+      },
+      data: evSeries.positive,
+      z: 4,
+    });
+    legendData!.push({
+      id: "ev",
+      name: statIds.ev.name,
+      itemStyle: {
+        color: evSeries.colorHex,
+      },
+    });
+  }
+
   const start = energyData.start;
   const end = energyData.end || endOfToday();
 
@@ -272,12 +309,15 @@ export function generatePowerSourcesGraphData(
   // and the savings grow with the series count. Evaluation order, the
   // typeof/`in` branch outcome, and the float-addition order are all
   // unchanged, so `usageData` is bit-identical.
-  const firstData = chartData[0]?.data;
+  // The EV line is a consumer overlay, not a source - exclude it from the
+  // source-stack sum below so it isn't double-counted into "usage".
+  const summableData = chartData.filter((dataset) => dataset.id !== "ev");
+  const firstData = (summableData[0] ?? chartData[0])?.data;
   if (firstData) {
-    const numDatasets = chartData.length;
+    const numDatasets = summableData.length;
     const datasetData: NonNullable<LineSeriesOption["data"]>[] = [];
     for (let d = 0; d < numDatasets; d++) {
-      datasetData.push(chartData[d].data!);
+      datasetData.push(summableData[d].data!);
     }
     const numPoints = firstData.length;
     for (let i = 0; i < numPoints; i++) {

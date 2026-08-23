@@ -4,6 +4,7 @@ import type {
   DeviceConsumptionEnergyPreference,
   EnergyGasUnitClass,
   EnergyInfo,
+  EVSourceTypeEnergyPreference,
   GasSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -31,6 +32,14 @@ export interface EnergySettingsBatteryDialogParams {
   battery_sources: BatterySourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsEVDialogParams {
+  info: EnergyInfo;
+  source?: EVSourceTypeEnergyPreference;
+  ev_sources: EVSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (source: EVSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsGasDialogParams {
@@ -91,6 +100,17 @@ export const showEnergySettingsSolarDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-solar-settings",
     dialogImport: () => import("./dialog-energy-solar-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsEVDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsEVDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-ev-settings",
+    dialogImport: () => import("./dialog-energy-ev-settings"),
     dialogParams: dialogParams,
   });
 };

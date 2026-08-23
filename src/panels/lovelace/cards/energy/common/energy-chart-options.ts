@@ -117,7 +117,12 @@ export function getCommonOptions(
   unit?: string,
   compareStart?: Date,
   compareEnd?: Date,
-  formatTotal?: (total: number) => string,
+  // Receives the summed positive bars so a caller can break the total down
+  // further (the electricity graph splits it into home vs EV).
+  formatTotal?: (
+    total: number,
+    params: CallbackDataParams[]
+  ) => string | TemplateResult,
   detailedDailyData = false,
   yAxisFractionDigits = 1
 ): HaECOption {
@@ -259,7 +264,10 @@ function formatTooltip(
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
-  formatTotal?: (total: number) => string
+  formatTotal?: (
+    total: number,
+    params: CallbackDataParams[]
+  ) => string | TemplateResult
 ): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
     return nothing;
@@ -289,6 +297,7 @@ function formatTooltip(
 
   let sumPositive = 0;
   let countPositive = 0;
+  const positiveParams: CallbackDataParams[] = [];
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
@@ -306,6 +315,7 @@ function formatTooltip(
     if (param.componentSubType === "bar" && y > 0) {
       sumPositive += y;
       countPositive++;
+      positiveParams.push(param);
     }
     rows.push(
       html`<ha-chart-tooltip-marker
@@ -321,7 +331,7 @@ function formatTooltip(
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
     ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
       sumPositive !== 0 && countPositive > 1 && formatTotal
-        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        ? html`<br /><b>${formatTotal(sumPositive, positiveParams)}</b>`
         : nothing
     }`;
 }
