@@ -1,8 +1,8 @@
-name: Sync numeric device classes
+name: Sync device class constants
 
-# Mirrors Home Assistant Core's numeric `SensorDeviceClass` list into the
-# build-time default in src/data/sensor_numeric_device_classes.ts and opens a PR
-# when it drifts. Reads homeassistant/generated/sensor.json from core.
+# Mirrors the device class constants for Home Assistant Core's into the
+# build-time default in src/data/devce_classes.ts and opens a PR
+# when it drifts. Reads homeassistant/generated/device_classes.json from core.
 
 on:
   workflow_dispatch:
@@ -28,8 +28,8 @@ jobs:
       - name: Setup Node and install
         uses: ./.github/actions/setup
 
-      - name: Regenerate numeric device classes
-        run: ./script/gen_numeric_device_classes
+      - name: Regenerate device class constants
+        run: ./script/gen_device_classes
 
       - name: Format
         run: yarn prettier --write src/data/sensor_numeric_device_classes.ts
