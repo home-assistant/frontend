@@ -220,7 +220,7 @@ export class HuiCalendarCard
             this._config.show_add_event
               ? [
                   this._config.add_event_style ?? "below",
-                  this._config.add_event_size ?? "s",
+                  this._config.add_event_size ?? "small",
                 ]
                   .join(" ")
                   .trim()

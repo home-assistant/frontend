@@ -10,6 +10,7 @@ import {
   optional,
   string,
   union,
+  literal,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -28,8 +29,12 @@ const cardConfigStruct = assign(
     initial_view: optional(string()),
     theme: optional(string()),
     show_add_event: optional(boolean()),
-    add_event_style: optional(string()),
-    add_event_size: optional(string()),
+    add_event_style: optional(
+      union([literal("below"), literal("on_top"), literal("header")])
+    ),
+    add_event_size: optional(
+      union([literal("small"), literal("medium"), literal("large")])
+    ),
     entities: array(string()),
   })
 );
@@ -116,19 +121,19 @@ export class HuiCalendarCardEditor
                 select: {
                   options: [
                     {
-                      value: "s",
+                      value: "small",
                       label: localize(
                         "ui.panel.lovelace.editor.card.calendar.add_event.size.s"
                       ),
                     },
                     {
-                      value: "m",
+                      value: "medium",
                       label: localize(
                         "ui.panel.lovelace.editor.card.calendar.add_event.size.m"
                       ),
                     },
                     {
-                      value: "l",
+                      value: "large",
                       label: localize(
                         "ui.panel.lovelace.editor.card.calendar.add_event.size.l"
                       ),

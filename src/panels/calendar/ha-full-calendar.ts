@@ -89,8 +89,9 @@ export class HAFullCalendar extends LitElement {
   public addFab: string[] | false = false;
 
   private _addfabSize = () =>
-    ["s", "m", "l"].filter((v) => this.addFab && this.addFab.includes(v))[0] ||
-    "l";
+    ["small", "medium", "large"].filter(
+      (v) => this.addFab && this.addFab.includes(v)
+    )[0] || "large";
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
@@ -283,7 +284,7 @@ export class HAFullCalendar extends LitElement {
         this._hasMutableCalendars &&
         !this.addFab.includes("header")
           ? html`<ha-button
-              size=${this._addfabSize()}
+              size=${this._addfabSize().charAt(0)}
               class=${classMap({ below: this.addFab.includes("below") })}
               slot="fab"
               @click=${this._createEvent}
