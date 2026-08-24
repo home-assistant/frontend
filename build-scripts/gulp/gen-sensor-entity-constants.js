@@ -38,7 +38,8 @@ gulp.task("gen-sensor-entity-constants", async () => {
   }
 
   const content = `// This file is auto-generated from Home Assistant Core's \`DEVICE_CLASS_UNITS\`
-// and \`STATE_CLASS_UNITS\`). Do not edit by hand.
+// and \`STATE_CLASS_UNITS\`) and \`SensorDeviceClass\`
+// (all values minus \`NON_NUMERIC_DEVICE_CLASSES\`). Do not edit by hand.
 // Regenerate with \`script/gen_sensor_entity_constants\`.
 
 export const SENSOR_NUMERIC_DEVICE_CLASSES: string[] = [
