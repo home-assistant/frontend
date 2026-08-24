@@ -121,6 +121,22 @@ describe("hui-security-alerts-card", () => {
       } as unknown as SecurityAlertsCardConfig)
     ).toThrow("Invalid configuration");
   });
+
+  it.each([
+    { entity: "" },
+    { entity: "window" },
+    { entity: "binary_sensor.window", color: 123 },
+    { entity: "binary_sensor.window", pulse: "true" },
+  ])("rejects invalid alert entity configuration %#", (alertEntity) => {
+    const card = createCard();
+
+    expect(() =>
+      card.setConfig({
+        type: "security-alerts",
+        alert_entities: [alertEntity],
+      } as unknown as SecurityAlertsCardConfig)
+    ).toThrow("Invalid configuration");
+  });
 });
 
 describe("computeSecurityAlertEntityDefaultColor", () => {

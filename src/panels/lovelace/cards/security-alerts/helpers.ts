@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiCctvOff, mdiLockOpen, mdiShieldAlert, mdiWater } from "@mdi/js";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import { isValidEntityId } from "../../../../common/entity/valid_entity_id";
 import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { HomeAssistant } from "../../../../types";
 import type { StateCondition } from "../../common/validate-condition";
@@ -108,6 +109,13 @@ export const isValidSecurityAlertEntityConfig = (
     typeof alertEntity === "object" &&
     "entity" in alertEntity &&
     typeof alertEntity.entity === "string" &&
+    isValidEntityId(alertEntity.entity) &&
+    (!("color" in alertEntity) ||
+      alertEntity.color === undefined ||
+      typeof alertEntity.color === "string") &&
+    (!("pulse" in alertEntity) ||
+      alertEntity.pulse === undefined ||
+      typeof alertEntity.pulse === "boolean") &&
     (!("visibility" in alertEntity) ||
       alertEntity.visibility === undefined ||
       (Array.isArray(alertEntity.visibility) &&
