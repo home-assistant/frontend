@@ -112,4 +112,28 @@ describe("ha-panel-home configuration loading", () => {
     expect(element._config).toEqual(homeConfig);
     expect(element._securityConfig).toEqual({});
   });
+
+  it("preserves loaded Home config when translations fail", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const homeConfig: HomeFrontendSystemData = {
+      favorite_entities: ["light.kitchen"],
+    };
+    const hass = createMockHass();
+    hass.loadFragmentTranslation = async () => {
+      throw new Error("Translations unavailable");
+    };
+    hass.connection = {
+      sendMessagePromise: vi.fn(async (message: { key: string }) => ({
+        value: message.key === "home" ? homeConfig : {},
+      })),
+    } as unknown as Connection;
+
+    const element = document.createElement(
+      "ha-panel-home"
+    ) as unknown as TestPanelHome;
+    element.hass = hass;
+    await element._loadConfig();
+
+    expect(element._config).toEqual(homeConfig);
+  });
 });

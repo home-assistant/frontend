@@ -189,11 +189,12 @@ class PanelHome extends SubscribeMixin(LitElement) {
     if (translationsResult.status === "rejected") {
       // eslint-disable-next-line no-console
       console.error(
-        "Failed to load home configuration:",
+        "Failed to load Lovelace translations:",
         translationsResult.reason
       );
-      this._config = {};
-    } else if (homeResult.status === "rejected") {
+    }
+
+    if (homeResult.status === "rejected") {
       // eslint-disable-next-line no-console
       console.error("Failed to load home configuration:", homeResult.reason);
       this._config = {};
