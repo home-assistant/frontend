@@ -1500,6 +1500,18 @@
         "area_label": "Area",
         "description": "Configure which areas correspond to each vacuum segment"
       },
+      "entity_state_icons": {
+        "title": "State icons",
+        "description_range": "Customize the icon for value ranges. Each threshold applies from its value up to the next one.",
+        "description_state": "Customize the icon for specific states.",
+        "from": "From",
+        "state": "State",
+        "icon": "Icon",
+        "add_range": "Add range",
+        "add_state": "Add state",
+        "default_icon": "Default icon",
+        "default_icon_helper": "Used when no rule matches, like the unknown and unavailable states."
+      },
       "codemirror": {
         "open_documentation": "Open documentation"
       },
@@ -1897,6 +1909,8 @@
           "name": "Name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
+          "dynamic_icon": "Dynamic icon · {count} {count, plural,\n one {rule}\n other {rules}\n}",
+          "dynamic_icon_hint": "The icon changes with the state",
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",

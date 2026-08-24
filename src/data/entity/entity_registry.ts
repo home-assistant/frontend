@@ -17,6 +17,8 @@ export interface EntityRegistryDisplayEntry {
   entity_id: string;
   name?: string;
   icon?: string;
+  state_icons?: Record<string, string>;
+  range_icons?: Record<string, string>;
   device_id?: string;
   area_id?: string;
   labels: string[];
@@ -37,6 +39,8 @@ export interface EntityRegistryDisplayEntryResponse {
     ec?: number;
     en?: string;
     ic?: string;
+    si?: Record<string, string>;
+    ri?: Record<string, string>;
     pl?: string;
     tk?: string;
     hb?: boolean;
@@ -74,6 +78,8 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   device_class?: string;
   original_device_class?: string;
   aliases: (string | null)[];
+  state_icons: Record<string, string> | null;
+  range_icons: Record<string, string> | null;
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -184,6 +190,8 @@ export interface EntityRegistryOptions {
 export interface EntityRegistryEntryUpdateParams {
   name?: string | null;
   icon?: string | null;
+  state_icons?: Record<string, string> | null;
+  range_icons?: Record<string, string> | null;
   device_class?: string | null;
   area_id?: string | null;
   disabled_by?: string | null;

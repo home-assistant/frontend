@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { mdiContentCopy, mdiRestore } from "@mdi/js";
+import { mdiCog, mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -25,6 +25,7 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
@@ -95,6 +96,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showEntityStateIconsView } from "../../../dialogs/more-info/components/entity/show-view-entity-state-icons";
 import { showVacuumSegmentMappingView } from "../../../dialogs/more-info/components/vacuum/show-view-vacuum-segment-mapping";
 import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/voice/show-view-voice-assistants";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -168,6 +170,8 @@ export interface EntitySettingsState {
   windSpeedUnit: string | null | undefined;
   switchAsDomain: string;
   switchAsInvert: boolean;
+  stateIcons: Record<string, string> | null;
+  rangeIcons: Record<string, string> | null;
 }
 
 @customElement("entity-registry-settings-editor")
@@ -194,6 +198,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _name!: string;
 
   @state() private _icon!: string;
+
+  @state() private _stateIcons?: Record<string, string> | null;
+
+  @state() private _rangeIcons?: Record<string, string> | null;
 
   @state() private _entityId!: EntitySettingsState["entityId"];
 
@@ -263,6 +271,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     this._name = this.entry.name || "";
     this._icon = this.entry.icon || "";
+    this._stateIcons = this.entry.state_icons;
+    this._rangeIcons = this.entry.range_icons;
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
@@ -405,6 +415,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
         windSpeedUnit: this._wind_speed_unit,
         switchAsDomain: this._switchAsDomain,
         switchAsInvert: this._switchAsInvert,
+        stateIcons: this._stateIcons ?? null,
+        rangeIcons: this._rangeIcons ?? null,
       },
       "entity-registry"
     );
@@ -504,39 +516,72 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this.hideIcon
           ? nothing
           : html`
-              <ha-icon-picker
-                .value=${this._icon}
-                @value-changed=${this._iconChanged}
-                .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.icon"
-                )}
-                .placeholder=${
-                  this.entry.original_icon ||
-                  stateObj?.attributes.icon ||
-                  (stateObj &&
-                    until(
-                      entityIcon(
-                        this.hass.entities,
-                        this.hass.config,
-                        this.hass.connection,
-                        stateObj
-                      )
-                    )) ||
-                  until(entryIcon(this.hass, this.entry))
-                }
-                .disabled=${this.disabled}
-              >
+              <div class="icon-row">
                 ${
-                  !this._icon && !stateObj?.attributes.icon && stateObj
+                  this._iconRulesCount > 0
                     ? html`
-                        <ha-state-icon
-                          slot="start"
-                          .stateObj=${stateObj}
-                        ></ha-state-icon>
+                        <ha-input
+                          inset-label
+                          disabled
+                          .value=${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.dynamic_icon",
+                            { count: this._iconRulesCount }
+                          )}
+                          .label=${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.icon"
+                          )}
+                          .hint=${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.dynamic_icon_hint"
+                          )}
+                        ></ha-input>
                       `
-                    : nothing
+                    : html`
+                        <ha-icon-picker
+                          .value=${this._icon}
+                          @value-changed=${this._iconChanged}
+                          .label=${this.hass.localize(
+                            "ui.dialogs.entity_registry.editor.icon"
+                          )}
+                          .placeholder=${
+                            this.entry.original_icon ||
+                            stateObj?.attributes.icon ||
+                            (stateObj &&
+                              until(
+                                entityIcon(
+                                  this.hass.entities,
+                                  this.hass.config,
+                                  this.hass.connection,
+                                  stateObj
+                                )
+                              )) ||
+                            until(entryIcon(this.hass, this.entry))
+                          }
+                          .disabled=${this.disabled}
+                        >
+                          ${
+                            !this._icon &&
+                            !stateObj?.attributes.icon &&
+                            stateObj
+                              ? html`
+                                  <ha-state-icon
+                                    slot="start"
+                                    .stateObj=${stateObj}
+                                  ></ha-state-icon>
+                                `
+                              : nothing
+                          }
+                        </ha-icon-picker>
+                      `
                 }
-              </ha-icon-picker>
+                <ha-icon-button
+                  .path=${mdiCog}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.entity_state_icons.title"
+                  )}
+                  .disabled=${this.disabled}
+                  @click=${this._handleStateIconsClicked}
+                ></ha-icon-button>
+              </div>
             `
       }
       ${
@@ -1247,6 +1292,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const params: Partial<EntityRegistryEntryUpdateParams> = {
       name: this._name.trim() || null,
       icon: this._icon.trim() || null,
+      state_icons: this._stateIcons ?? null,
+      range_icons: this._rangeIcons ?? null,
       area_id: this._areaId || null,
       labels: this._labels || [],
       new_entity_id: this._entityId.trim(),
@@ -1721,6 +1768,28 @@ export class EntityRegistrySettingsEditor extends LitElement {
     );
   }
 
+  private get _iconRulesCount(): number {
+    return (
+      Object.keys(this._stateIcons || {}).length +
+      Object.keys(this._rangeIcons || {}).length
+    );
+  }
+
+  private _handleStateIconsClicked() {
+    showEntityStateIconsView(this, this.hass.localize, {
+      entityId: this.entry.entity_id,
+      stateIcons: this._stateIcons ?? null,
+      rangeIcons: this._rangeIcons ?? null,
+      defaultIcon: this._icon,
+      placeholderIcon: this.entry.original_icon,
+      onChange: (value) => {
+        this._stateIcons = value.stateIcons;
+        this._rangeIcons = value.rangeIcons;
+        this._icon = value.defaultIcon;
+      },
+    });
+  }
+
   private async _showOptionsFlow() {
     showOptionsFlowDialog(this, this.helperConfigEntry!, {
       manifest: await fetchIntegrationManifest(
@@ -1820,6 +1889,19 @@ export class EntityRegistrySettingsEditor extends LitElement {
           display: block;
           margin: var(--ha-space-2) 0;
           width: 100%;
+        }
+        .icon-row {
+          display: flex;
+          align-items: flex-start;
+          gap: var(--ha-space-2);
+        }
+        .icon-row > ha-icon-picker,
+        .icon-row > ha-input {
+          flex: 1;
+          min-width: 0;
+        }
+        .icon-row > ha-icon-button {
+          margin-top: var(--ha-space-2);
         }
         .menu-item {
           border-radius: var(--ha-border-radius-sm);

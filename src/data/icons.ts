@@ -450,6 +450,19 @@ const getIconFromTranslations = (
   return translations.default;
 };
 
+export const entityStateIconOverride = (
+  entry: EntityRegistryDisplayEntry,
+  state: string
+): string | undefined => {
+  if (entry.state_icons?.[state]) {
+    return entry.state_icons[state];
+  }
+  if (entry.range_icons && !isNaN(Number(state))) {
+    return getIconFromRange(Number(state), entry.range_icons);
+  }
+  return undefined;
+};
+
 export const entityIcon = async (
   entities: HomeAssistant["entities"],
   hassConfig: HomeAssistant["config"],
@@ -459,6 +472,12 @@ export const entityIcon = async (
 ) => {
   const entry = entities?.[stateObj.entity_id] as
     EntityRegistryDisplayEntry | undefined;
+  if (entry) {
+    const override = entityStateIconOverride(entry, state ?? stateObj.state);
+    if (override) {
+      return override;
+    }
+  }
   if (entry?.icon) {
     return entry.icon;
   }

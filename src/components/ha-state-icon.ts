@@ -15,6 +15,7 @@ import {
 import {
   DEFAULT_DOMAIN_ICON,
   entityIcon,
+  entityStateIconOverride,
   FALLBACK_DOMAIN_ICONS,
 } from "../data/icons";
 import "./ha-icon";
@@ -48,9 +49,12 @@ export class HaStateIcon extends LitElement {
   protected _entities?: ContextType<typeof entitiesContext>;
 
   private get _overrideIcon(): string | undefined {
+    const entry = this.stateObj && this._entities?.[this.stateObj.entity_id];
+    const stateValue = this.stateValue ?? this.stateObj?.state;
     return (
       this.icon ||
-      (this.stateObj && this._entities?.[this.stateObj.entity_id]?.icon) ||
+      (entry && stateValue && entityStateIconOverride(entry, stateValue)) ||
+      entry?.icon ||
       this.stateObj?.attributes.icon
     );
   }
