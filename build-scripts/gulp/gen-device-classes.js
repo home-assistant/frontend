@@ -6,14 +6,9 @@ import paths from "../paths.cjs";
 
 const SOURCE_URL =
   process.env.SENSOR_METADATA_URL ||
-  "https://raw.githubusercontent.com/home-assistant/core/dev/homeassistant/generated/device_classes.json";
+  "https://raw.githubusercontent.com/home-assistant/core/refs/heads/dev/homeassistant/generated/device_classes.json";
 
-const TARGET = join(
-  paths.root_dir,
-  "src",
-  "data",
-  "sensor_entity_constants.ts"
-);
+const TARGET = join(paths.root_dir, "src", "data", "device_classes.ts");
 
 gulp.task("gen-device-classes", async () => {
   const response = await fetch(SOURCE_URL);
