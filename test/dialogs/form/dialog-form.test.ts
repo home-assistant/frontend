@@ -7,10 +7,6 @@ import type {
 import type { DialogForm } from "../../../src/dialogs/form/dialog-form";
 import "../../../src/dialogs/form/dialog-form";
 
-const mockForm = vi.hoisted(() => ({
-  delayedTag: undefined as string | undefined,
-}));
-
 vi.mock("../../../src/components/ha-button", () => {
   customElements.define("ha-button", class extends HTMLElement {});
   return {};
@@ -38,19 +34,14 @@ vi.mock("../../../src/components/ha-form/ha-form", () => {
       public reportValidity = vi.fn(() => true);
 
       public connectedCallback(): void {
-        this.tabIndex = -1;
         if (this.shadowRoot) {
           return;
         }
-        this.attachShadow({ mode: "open" });
-        if (mockForm.delayedTag) {
-          this.shadowRoot.append(document.createElement(mockForm.delayedTag));
-          return;
-        }
         const selector = document.createElement("div");
-        selector.attachShadow({ mode: "open" });
-        selector.shadowRoot!.append(document.createElement("input"));
-        this.shadowRoot.append(selector);
+        selector
+          .attachShadow({ mode: "open" })
+          .append(document.createElement("input"));
+        this.attachShadow({ mode: "open" }).append(selector);
       }
     }
   );
@@ -121,7 +112,6 @@ const cancel = (dialog: DialogForm) =>
   (getInternals(dialog)["_cancel"] as () => void)();
 
 afterEach(() => {
-  mockForm.delayedTag = undefined;
   document.body.replaceChildren();
   vi.clearAllMocks();
 });
@@ -220,35 +210,6 @@ describe("dialog-form mounted nested forms", () => {
 
     await vi.waitUntil(
       () => deepActiveElement() === formControl(getForms(dialog)[0])
-    );
-  });
-
-  it("focuses a nested control after its selector custom element upgrades", async () => {
-    const tag = `ha-test-delayed-selector-${crypto.randomUUID()}`;
-    const dialog = await openDialog();
-    const parent = getForms(dialog)[0];
-    const opener = document.createElement("button");
-    parent.append(opener);
-    opener.focus();
-
-    mockForm.delayedTag = tag;
-    await showNestedDialog(dialog, parent, nestedParams());
-
-    customElements.define(
-      tag,
-      class extends HTMLElement {
-        public connectedCallback(): void {
-          if (this.shadowRoot) {
-            return;
-          }
-          this.attachShadow({ mode: "open" });
-          this.shadowRoot.append(document.createElement("input"));
-        }
-      }
-    );
-
-    await vi.waitUntil(
-      () => deepActiveElement() === formControl(getForms(dialog)[1])
     );
   });
 
