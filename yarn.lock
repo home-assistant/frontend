@@ -8442,14 +8442,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"echarts-extension-chart2music@npm:0.1.0":
-  version: 0.1.0
-  resolution: "echarts-extension-chart2music@npm:0.1.0"
+"echarts-extension-chart2music@npm:0.1.1":
+  version: 0.1.1
+  resolution: "echarts-extension-chart2music@npm:0.1.1"
   dependencies:
     chart2music: "npm:^1.20.0"
   peerDependencies:
     echarts: ">=5.0.0 <7"
-  checksum: 10/55a82c770355228b2a899007e488e5b60171cbaf5d83363a298c4214d9e4a5df1afd1c7805495f42f2ad6edd7c062c8b366f1f8ba7b1a902f2db7eb47fbfcccf
+  checksum: 10/73b728977be42188b48fd2590021a85a948a17a05b3de86438f5344835d2c22eefbab64892fa4cf8fbb8b08890d1aff8c631a9b316043d0250f619d3873912d4
   languageName: node
   linkType: hard
 
@@ -10068,7 +10068,7 @@ __metadata:
     del: "npm:8.0.1"
     dialog-polyfill: "npm:0.5.6"
     echarts: "npm:6.1.0"
-    echarts-extension-chart2music: "npm:0.1.0"
+    echarts-extension-chart2music: "npm:0.1.1"
     element-internals-polyfill: "npm:3.0.2"
     eslint: "npm:10.8.1"
     eslint-config-prettier: "npm:10.1.8"
