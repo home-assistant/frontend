@@ -212,6 +212,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/infrared/infrared-config-dashboard-router"),
       },
+      serial: {
+        tag: "serial-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/serial/serial-config-dashboard"),
+      },
       dhcp: {
         tag: "dhcp-config-panel",
         load: () =>

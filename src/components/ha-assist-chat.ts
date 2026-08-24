@@ -12,6 +12,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { transform } from "../common/decorators/transform";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { LocalizeFunc } from "../common/translations/localize";
 import {
@@ -24,6 +25,7 @@ import {
 import {
   configContext,
   connectionContext,
+  internationalizationContext,
   statesContext,
 } from "../data/context";
 import { ConversationEntityFeature } from "../data/conversation";
@@ -33,8 +35,13 @@ import type {
   HomeAssistant,
   HomeAssistantConfig,
   HomeAssistantConnection,
+  HomeAssistantInternationalization,
 } from "../types";
 import { AudioRecorder } from "../util/audio-recorder";
+import {
+  findAvailableLanguage,
+  getTranslation,
+} from "../util/common-translation";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-alert";
 import "./ha-markdown";
@@ -66,6 +73,17 @@ export const assistPipelineChanged = (
   previous: AssistPipeline | undefined,
   current: AssistPipeline | undefined
 ): boolean => previous?.id !== current?.id;
+
+export const greetingTranslationLanguage = (
+  pipelineLanguage: string | undefined,
+  interfaceLanguage: string | undefined
+): string | undefined => {
+  if (!pipelineLanguage || pipelineLanguage === interfaceLanguage) {
+    return undefined;
+  }
+  const language = findAvailableLanguage(pipelineLanguage);
+  return language && language !== interfaceLanguage ? language : undefined;
+};
 
 @customElement("ha-assist-chat")
 export class HaAssistChat extends LitElement {
@@ -102,6 +120,13 @@ export class HaAssistChat extends LitElement {
   private _localize!: LocalizeFunc;
 
   @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, string>({
+    transformer: ({ language }) => language,
+  })
+  private _language!: string;
+
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: HomeAssistant["states"];
 
@@ -114,6 +139,8 @@ export class HaAssistChat extends LitElement {
   private _connection!: HomeAssistantConnection;
 
   private _conversationId: string | null = null;
+
+  private _greetingLoadToken = 0;
 
   private _initialPromptSubmitted = false;
 
@@ -131,15 +158,42 @@ export class HaAssistChat extends LitElement {
       (changedProperties.has("pipeline") &&
         assistPipelineChanged(changedProperties.get("pipeline"), this.pipeline))
     ) {
-      this._conversation = [
-        {
-          who: "hass",
-          text: this._localize("ui.dialogs.voice_command.how_can_i_help"),
-          thinking: "",
-          tool_calls: {},
-        },
-      ];
+      this._conversation = [];
+      this._loadGreeting();
     }
+  }
+
+  private async _loadGreeting(): Promise<void> {
+    const token = ++this._greetingLoadToken;
+    const language = greetingTranslationLanguage(
+      this.pipeline?.language,
+      this._language
+    );
+    let greeting: string | undefined;
+    if (language) {
+      try {
+        const result = await getTranslation(null, language, false);
+        if (result.language === language) {
+          greeting = result.data["ui.dialogs.voice_command.how_can_i_help"];
+        }
+      } catch (_err) {
+        // Translation failed to load; fall back to the interface language.
+      }
+    }
+    if (token !== this._greetingLoadToken) {
+      // The pipeline changed while loading; a newer load owns the greeting.
+      return;
+    }
+    this._conversation = [
+      {
+        who: "hass",
+        text:
+          greeting || this._localize("ui.dialogs.voice_command.how_can_i_help"),
+        thinking: "",
+        tool_calls: {},
+      },
+      ...this._conversation,
+    ];
   }
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -157,7 +211,7 @@ export class HaAssistChat extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_conversation")) {
+    if (changedProps.has("_conversation") && this._conversation.length) {
       this._scrollMessagesBottom();
     }
     if (
