@@ -60,12 +60,15 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private _loadConfigPromise?: Promise<void>;
 
+  private _securityConfigRevision = 0;
+
   public hassSubscribe() {
     return [
       subscribeFrontendSystemData(
         this.hass.connection,
         "security",
         ({ value }) => {
+          this._securityConfigRevision++;
           const config = value || {};
           if (deepEqual(config, this._securityConfig)) {
             return;
@@ -175,19 +178,40 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private async _loadConfig() {
-    try {
-      const [_, homeData, securityData] = await Promise.all([
+    const securityConfigRevision = this._securityConfigRevision;
+    const [translationsResult, homeResult, securityResult] =
+      await Promise.allSettled([
         this.hass.loadFragmentTranslation("lovelace"),
         fetchFrontendSystemData(this.hass.connection, "home"),
         fetchFrontendSystemData(this.hass.connection, "security"),
       ]);
-      this._config = homeData || {};
-      this._securityConfig = securityData || {};
-    } catch (err) {
+
+    if (translationsResult.status === "rejected") {
       // eslint-disable-next-line no-console
-      console.error("Failed to load configuration:", err);
+      console.error(
+        "Failed to load home configuration:",
+        translationsResult.reason
+      );
       this._config = {};
-      this._securityConfig = {};
+    } else if (homeResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load home configuration:", homeResult.reason);
+      this._config = {};
+    } else {
+      this._config = homeResult.value || {};
+    }
+
+    if (securityResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error(
+        "Failed to load security configuration:",
+        securityResult.reason
+      );
+      if (securityConfigRevision === this._securityConfigRevision) {
+        this._securityConfig = {};
+      }
+    } else if (securityConfigRevision === this._securityConfigRevision) {
+      this._securityConfig = securityResult.value || {};
     }
   }
 
