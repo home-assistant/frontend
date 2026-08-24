@@ -24,6 +24,7 @@ gulp.task("gen-sensor-entity-constants", async () => {
   const data = await response.json();
   const numericDeviceClasses = [...(data.numeric_device_classes ?? [])].sort();
   const deviceClassUnits = data.device_class_units ?? {};
+  const convertibleClassUnits = data.convertible_units ?? {};
   const stateClasses = [...(data.state_classes ?? [])].sort();
   const stateClassUnits = data.state_class_units ?? {};
   if (
@@ -50,7 +51,16 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, string[]> = {
 ${Object.entries(deviceClassUnits)
   .map(
     ([deviceClass, units]) =>
-      `  "${deviceClass}": [${units.map((u) => `"${u}"`).join(", ")}],`
+      `  ${deviceClass}: [${units.map((u) => (u === null ? "null" : `"${u}"`)).join(", ")}],`
+  )
+  .join("\n")}
+};
+
+export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<string, string[]> = {
+${Object.entries(convertibleClassUnits)
+  .map(
+    ([deviceClass, units]) =>
+      `  ${deviceClass}: [${units.map((u) => (u === null ? "null" : `"${u}"`)).join(", ")}],`
   )
   .join("\n")}
 };
@@ -63,7 +73,7 @@ export const SENSOR_STATE_CLASS_UNITS: Record<string, string[]> = {
 ${Object.entries(stateClassUnits)
   .map(
     ([stateClass, units]) =>
-      `  "${stateClass}": [${units.map((u) => `"${u}"`).join(", ")}],`
+      `  ${stateClass}: [${units.map((u) => (u === null ? "null" : `"${u}"`)).join(", ")}],`
   )
   .join("\n")}
 };
