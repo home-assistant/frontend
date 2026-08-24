@@ -87,7 +87,6 @@ class PanelSecurity extends LitElement {
       ) {
         if (this.hass.config.state === "RUNNING") {
           this._debounceRegistriesChanged();
-          return;
         }
       }
     }
