@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
@@ -15,12 +16,15 @@ import type {
   LovelaceSectionRawConfig,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
 import type { LogbookCardConfig } from "../../lovelace/cards/types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { computeSecurityAlertCardEntityConfig } from "./security-alerts";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
+  alert_entities?: SecurityAlertEntityConfig[];
 }
 
 export const securityEntityFilters: EntityFilter[] = [
@@ -68,6 +72,28 @@ export const securityEntityFilters: EntityFilter[] = [
     entity_category: "diagnostic",
   },
 ];
+
+const _cachedSecurityEntityFilters = new WeakMap<
+  HomeAssistant,
+  ReturnType<typeof generateEntityFilter>[]
+>();
+
+const _getSecurityEntityFilters = (hass: HomeAssistant) => {
+  let filters = _cachedSecurityEntityFilters.get(hass);
+  if (!filters) {
+    filters = securityEntityFilters.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
+    _cachedSecurityEntityFilters.set(hass, filters);
+  }
+  return filters;
+};
+
+export const isSecurityPanelEntity = (
+  hass: HomeAssistant,
+  stateObj: HassEntity
+): boolean =>
+  _getSecurityEntityFilters(hass).some((filter) => filter(stateObj.entity_id));
 
 const processAreasForSecurity = (
   areaIds: string[],
@@ -132,7 +158,7 @@ const processUnassignedEntities = (
 @customElement("security-view-strategy")
 export class SecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: SecurityViewStrategyConfig,
+    config: SecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = Object.values(hass.areas);
@@ -242,37 +268,56 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const logbookEntityIds = [...entities, ...personEntities];
 
-    const sidebarSection: LovelaceSectionConfig | undefined =
-      hasLogbook && logbookEntityIds.length > 0
-        ? {
-            type: "grid",
-            cards: [
-              {
-                type: "heading",
-                heading: hass.localize(
-                  "ui.panel.lovelace.strategy.security.activity"
-                ),
-                heading_style: "title",
-              } as LovelaceCardConfig,
-              {
-                type: "logbook",
-                target: {
-                  entity_id: logbookEntityIds,
-                },
-                hours_to_show: 24,
-                grid_options: { columns: 12 },
-              } satisfies LogbookCardConfig,
-            ],
-          }
-        : undefined;
+    const sidebarSections: LovelaceSectionConfig[] = [];
+
+    if (config.alert_entities?.length) {
+      sidebarSections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "security-alerts",
+            alert_entities: config.alert_entities.map((alertEntity) =>
+              computeSecurityAlertCardEntityConfig(
+                hass.states[alertEntity.entity],
+                alertEntity
+              )
+            ),
+            grid_options: { columns: 12 },
+          },
+        ] satisfies LovelaceCardConfig[],
+      });
+    }
+
+    if (hasLogbook && logbookEntityIds.length > 0) {
+      sidebarSections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.activity"
+            ),
+            heading_style: "title",
+          } as LovelaceCardConfig,
+          {
+            type: "logbook",
+            target: {
+              entity_id: logbookEntityIds,
+            },
+            hours_to_show: 24,
+            grid_options: { columns: 12 },
+          } satisfies LogbookCardConfig,
+        ],
+      });
+    }
 
     return {
       type: "sections",
       max_columns: 3,
       sections: sections,
-      ...(sidebarSection && {
+      ...(sidebarSections.length > 0 && {
         sidebar: {
-          sections: [sidebarSection],
+          sections: sidebarSections,
           content_label: hass.localize(
             "ui.panel.lovelace.strategy.security.devices"
           ),

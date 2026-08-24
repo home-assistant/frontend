@@ -109,6 +109,13 @@ export const e2eTestPanels: Record<string, E2ETestPanelInfo> = {
     url_path: "iframe",
     testSelector: "ha-panel-iframe",
   },
+  security: {
+    component_name: "security",
+    icon: "mdi:shield-home",
+    title: "security",
+    config: null,
+    url_path: "security",
+  },
   config: {
     component_name: "config",
     icon: "mdi:cog",
