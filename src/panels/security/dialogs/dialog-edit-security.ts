@@ -86,7 +86,7 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
           "ui.panel.security.editor.active_alert_entities_description"
         )}
       >
-        <ha-icon slot="leading-icon" icon="mdi:shield-alert"></ha-icon>
+        <ha-icon slot="leading-icon" icon="mdi:shield-alert-outline"></ha-icon>
         <div class="expansion-content">
           <security-alerts-editor
             .hass=${hass}

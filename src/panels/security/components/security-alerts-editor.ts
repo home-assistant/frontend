@@ -1,4 +1,4 @@
-import { mdiClose, mdiDragHorizontalVariant } from "@mdi/js";
+import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -97,7 +97,7 @@ export class SecurityAlertsEditor extends LitElement {
             @wa-select=${this._severityChanged}
           ></ha-control-select-menu>
           <ha-icon-button
-            .path=${mdiClose}
+            .path=${mdiDelete}
             .label=${this.hass.localize("ui.common.delete")}
             data-index=${index}
             @click=${this._removeClicked}
