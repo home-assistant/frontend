@@ -126,6 +126,10 @@ interface SonifyChartOptions {
   localize: LocalizeFunc;
   locale: FrontendLocaleData;
   config: HassConfig;
+  // Maps a category key or item name to what should be announced for it, so
+  // cards that key their data on ids (like the energy device charts) can have
+  // the display names read out instead. Returning undefined keeps the original.
+  formatLabel?: (label: string) => string | undefined;
   onError: (error: string) => void;
 }
 
@@ -194,6 +198,47 @@ const appendSonificationStyles = () => {
   document.head.append(style);
 };
 
+// Rebuilds the labels the extension would announce — the category axis's data,
+// or the item names on pies, which ignore whatever vestigial axes the chart
+// options carry — with each one run through the card's formatter. Returns
+// undefined when there is nothing to reword, so the extension's own labels
+// stay untouched.
+const buildValueLabels = (
+  categoryAxis: { type?: string; data?: unknown } | undefined,
+  firstSeries: { type?: string; data?: unknown } | undefined,
+  formatLabel?: (label: string) => string | undefined
+): string[] | undefined => {
+  if (!formatLabel) {
+    return undefined;
+  }
+  const axisData =
+    categoryAxis?.type === "category" &&
+    Array.isArray(categoryAxis.data) &&
+    categoryAxis.data.length
+      ? categoryAxis.data
+      : undefined;
+  const labels = axisData
+    ? axisData.map((entry) =>
+        entry && typeof entry === "object"
+          ? String((entry as { value?: unknown }).value ?? "")
+          : String(entry ?? "")
+      )
+    : firstSeries?.type === "pie" && Array.isArray(firstSeries.data)
+      ? firstSeries.data.map((raw) => {
+          const name = (raw as { name?: unknown } | null)?.name;
+          if (typeof name === "string") {
+            return name;
+          }
+          const values = itemValues(raw);
+          return values && isCategoryKey(values[1]) ? String(values[1]) : "";
+        })
+      : undefined;
+  if (!labels?.length || labels.every((label) => !label)) {
+    return undefined;
+  }
+  return labels.map((label) => formatLabel(label) ?? label);
+};
+
 export const sonifyChart = async (
   chart: EChartsType,
   options: SonifyChartOptions
@@ -210,8 +255,8 @@ export const sonifyChart = async (
   if (!chartOptions) {
     return null;
   }
-  const xAxis = ensureArray(chartOptions.xAxis)[0] as XAXisOption | undefined;
-  const yAxis = ensureArray(chartOptions.yAxis)[0] as YAXisOption | undefined;
+  const xAxis = ensureArray(chartOptions.xAxis)?.[0] as XAXisOption | undefined;
+  const yAxis = ensureArray(chartOptions.yAxis)?.[0] as YAXisOption | undefined;
 
   // Chart2Music throws while validating a group with no points, which is what
   // placeholder, legend-hidden and all-null series turn into, so only offer it
@@ -232,6 +277,11 @@ export const sonifyChart = async (
   // announced y is the value from the x axis, so the sources swap.
   const isTimeAxis = xAxis?.type === "time";
   const isHorizontal = xAxis?.type === "value" && yAxis?.type === "category";
+  const valueLabels = buildValueLabels(
+    isHorizontal ? yAxis : xAxis,
+    readable[0],
+    options.formatLabel
+  );
   const x = {
     label:
       (isHorizontal ? yAxis?.name : xAxis?.name) ||
@@ -240,6 +290,7 @@ export const sonifyChart = async (
           ? "ui.components.history_charts.time"
           : "ui.components.history_charts.category"
       ),
+    ...(valueLabels ? { valueLabels } : {}),
     // Time series carry raw timestamps, which would otherwise be announced as
     // epoch milliseconds.
     format: isTimeAxis
