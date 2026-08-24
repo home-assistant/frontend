@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-button";
@@ -6,6 +7,7 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon";
 import type { SecurityFrontendSystemData } from "../../../data/frontend";
+import { internationalizationContext } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
@@ -21,6 +23,10 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
 
   @state() private _submitting = false;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (!this.params) {
@@ -32,40 +38,41 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
         ? [...this.params.config.alert_entities]
         : [],
     };
-    this._initDirtyTracking({ type: "shallow" }, this._state);
+    this._initDirtyTracking({ type: "deep" }, this._state);
   }
 
   protected render() {
     if (!this.params || !this._state) {
       return nothing;
     }
-    const { hass } = this.params;
-
     return html`
       <ha-dialog
         open
         width="medium"
-        .headerTitle=${hass.localize("ui.panel.security.editor.title")}
-        .headerSubtitle=${hass.localize("ui.panel.security.editor.description")}
+        .headerTitle=${this._i18n.localize("ui.panel.security.editor.title")}
+        .headerSubtitle=${this._i18n.localize(
+          "ui.panel.security.editor.description"
+        )}
         .preventScrimClose=${this.isDirtyState}
       >
         ${this._renderMainEditor()}
 
         <ha-dialog-footer slot="footer">
           <ha-button
+            autofocus
             appearance="plain"
             slot="secondaryAction"
             @click=${this.closeDialog}
             .disabled=${this._submitting}
           >
-            ${hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._save}
             .disabled=${this._submitting || !this.isDirtyState}
           >
-            ${hass.localize("ui.common.save")}
+            ${this._i18n.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -73,23 +80,21 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
   }
 
   private _renderMainEditor() {
-    const hass = this.params!.hass;
     return html`
       <ha-expansion-panel
         outlined
         expanded
         no-collapse
-        .header=${hass.localize(
+        .header=${this._i18n.localize(
           "ui.panel.security.editor.active_alert_entities"
         )}
-        .secondary=${hass.localize(
+        .secondary=${this._i18n.localize(
           "ui.panel.security.editor.active_alert_entities_description"
         )}
       >
         <ha-icon slot="leading-icon" icon="mdi:shield-alert-outline"></ha-icon>
         <div class="expansion-content">
           <security-alerts-editor
-            .hass=${hass}
             .alertEntities=${this._state?.alert_entities ?? []}
             @value-changed=${this._alertEntitiesChanged}
           ></security-alerts-editor>

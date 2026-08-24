@@ -1,7 +1,8 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import {
@@ -15,6 +16,11 @@ import type {
   SecurityAlertEntityConfig,
   SecurityAlertSeverity,
 } from "../../../data/frontend";
+import {
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../data/context";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-control-select-menu";
@@ -26,12 +32,50 @@ import { computeDefaultSecurityAlertSeverity } from "../strategies/security-aler
 import { isSecurityPanelEntity } from "../strategies/security-view-strategy";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
+type SecurityEditorHass = Pick<
+  HomeAssistant,
+  | "states"
+  | "entities"
+  | "devices"
+  | "areas"
+  | "floors"
+  | "language"
+  | "translationMetadata"
+>;
+
 @customElement("security-alerts-editor")
 export class SecurityAlertsEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public alertEntities: SecurityAlertEntityConfig[] = [];
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  private _hassData?: SecurityEditorHass;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("_states") ||
+      changedProps.has("_registries") ||
+      changedProps.has("_i18n")
+    ) {
+      this._hassData = {
+        states: this._states,
+        ...this._registries,
+        ...this._i18n,
+      };
+    }
+  }
 
   protected render() {
     return html`
@@ -46,7 +90,7 @@ export class SecurityAlertsEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         add-button
-        .addButtonLabel=${this.hass.localize(
+        .addButtonLabel=${this._i18n.localize(
           "ui.panel.security.editor.add_alert_entity"
         )}
         .excludeEntities=${this.alertEntities.map(({ entity }) => entity)}
@@ -60,10 +104,11 @@ export class SecurityAlertsEditor extends LitElement {
     alertEntity: SecurityAlertEntityConfig,
     index: number
   ) {
-    const stateObj = this.hass.states[alertEntity.entity];
-    const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj)
-      : { primary: alertEntity.entity, secondary: undefined };
+    const stateObj = this._states[alertEntity.entity];
+    const { primary, secondary } =
+      stateObj && this._hassData
+        ? computeEntityPickerDisplay(this._hassData, stateObj)
+        : { primary: alertEntity.entity, secondary: undefined };
     const severity =
       alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
 
@@ -83,13 +128,13 @@ export class SecurityAlertsEditor extends LitElement {
           <ha-control-select-menu
             show-arrow
             hide-label
-            .label=${this.hass.localize(
+            .label=${this._i18n.localize(
               "ui.panel.security.editor.severity.label"
             )}
             .value=${severity}
             .options=${(["alert", "warning"] as const).map((option) => ({
               value: option,
-              label: this.hass.localize(
+              label: this._i18n.localize(
                 `ui.panel.security.editor.severity.${option}`
               ),
             }))}
@@ -98,7 +143,7 @@ export class SecurityAlertsEditor extends LitElement {
           ></ha-control-select-menu>
           <ha-icon-button
             .path=${mdiDelete}
-            .label=${this.hass.localize("ui.common.delete")}
+            .label=${this._i18n.localize("ui.common.delete")}
             data-index=${index}
             @click=${this._removeClicked}
           ></ha-icon-button>
@@ -112,7 +157,7 @@ export class SecurityAlertsEditor extends LitElement {
   }
 
   private _alertEntityFilter = (entity: HassEntity) =>
-    isSecurityPanelEntity(this.hass, entity);
+    this._hassData ? isSecurityPanelEntity(this._hassData, entity) : false;
 
   private _getIndex(
     ev: HASSDomCurrentTargetEvent<HTMLElement>

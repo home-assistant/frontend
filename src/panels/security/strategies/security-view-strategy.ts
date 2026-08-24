@@ -19,6 +19,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
 import type { LogbookCardConfig } from "../../lovelace/cards/types";
+import { computeDefaultSecurityAlertVisibility } from "../../lovelace/cards/security-alerts/helpers";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { computeSecurityAlertCardEntityConfig } from "./security-alerts";
 
@@ -74,11 +75,16 @@ export const securityEntityFilters: EntityFilter[] = [
 ];
 
 const _cachedSecurityEntityFilters = new WeakMap<
-  HomeAssistant,
+  Pick<HomeAssistant, "states" | "entities" | "devices" | "areas" | "floors">,
   ReturnType<typeof generateEntityFilter>[]
 >();
 
-const _getSecurityEntityFilters = (hass: HomeAssistant) => {
+const _getSecurityEntityFilters = (
+  hass: Pick<
+    HomeAssistant,
+    "states" | "entities" | "devices" | "areas" | "floors"
+  >
+) => {
   let filters = _cachedSecurityEntityFilters.get(hass);
   if (!filters) {
     filters = securityEntityFilters.map((filter) =>
@@ -90,7 +96,10 @@ const _getSecurityEntityFilters = (hass: HomeAssistant) => {
 };
 
 export const isSecurityPanelEntity = (
-  hass: HomeAssistant,
+  hass: Pick<
+    HomeAssistant,
+    "states" | "entities" | "devices" | "areas" | "floors"
+  >,
   stateObj: HassEntity
 ): boolean =>
   _getSecurityEntityFilters(hass).some((filter) => filter(stateObj.entity_id));
@@ -270,25 +279,28 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sidebarSections: LovelaceSectionConfig[] = [];
 
-    if (config.alert_entities?.length) {
+    const alertEntities = config.alert_entities?.map((alertEntity) =>
+      computeSecurityAlertCardEntityConfig(
+        hass.states[alertEntity.entity],
+        alertEntity
+      )
+    );
+
+    if (alertEntities?.length) {
       sidebarSections.push({
         type: "grid",
         cards: [
           {
             type: "security-alerts",
-            alert_entities: config.alert_entities.map((alertEntity) =>
-              computeSecurityAlertCardEntityConfig(
-                hass.states[alertEntity.entity],
-                alertEntity
-              )
-            ),
+            alert_entities: alertEntities,
             grid_options: { columns: 12 },
           },
         ] satisfies LovelaceCardConfig[],
       });
     }
 
-    if (hasLogbook && logbookEntityIds.length > 0) {
+    const hasLogbookSection = hasLogbook && logbookEntityIds.length > 0;
+    if (hasLogbookSection) {
       sidebarSections.push({
         type: "grid",
         cards: [
@@ -318,6 +330,18 @@ export class SecurityViewStrategy extends ReactiveElement {
       ...(sidebarSections.length > 0 && {
         sidebar: {
           sections: sidebarSections,
+          ...(!hasLogbookSection && alertEntities?.length
+            ? {
+                visibility: [
+                  {
+                    condition: "or" as const,
+                    conditions: alertEntities.flatMap((alertEntity) =>
+                      computeDefaultSecurityAlertVisibility(alertEntity.entity)
+                    ),
+                  },
+                ],
+              }
+            : {}),
           content_label: hass.localize(
             "ui.panel.lovelace.strategy.security.devices"
           ),

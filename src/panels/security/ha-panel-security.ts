@@ -47,6 +47,8 @@ class PanelSecurity extends LitElement {
 
   private _loadConfigPromise?: Promise<void>;
 
+  private _loadConfigRevision = 0;
+
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
@@ -60,6 +62,15 @@ class PanelSecurity extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as this["hass"];
+    if (
+      oldHass &&
+      this.hass.config.state === "RUNNING" &&
+      oldHass.config.state !== "RUNNING"
+    ) {
+      this._setup();
+      return;
+    }
+
     if (oldHass && oldHass.localize !== this.hass.localize) {
       this._setLovelace();
       return;
@@ -79,13 +90,6 @@ class PanelSecurity extends LitElement {
           return;
         }
       }
-      // If ha started, refresh the config
-      if (
-        this.hass.config.state === "RUNNING" &&
-        oldHass.config.state !== "RUNNING"
-      ) {
-        this._setLovelace();
-      }
     }
   }
 
@@ -99,14 +103,21 @@ class PanelSecurity extends LitElement {
   }
 
   private async _loadConfig() {
+    const revision = ++this._loadConfigRevision;
     this._config = undefined;
     try {
       const data = await fetchFrontendSystemData(
         this.hass.connection,
         "security"
       );
+      if (revision !== this._loadConfigRevision) {
+        return;
+      }
       this._config = data || {};
     } catch (err) {
+      if (revision !== this._loadConfigRevision) {
+        return;
+      }
       // eslint-disable-next-line no-console
       console.error("Failed to load security configuration:", err);
       showToast(this, {
@@ -206,7 +217,6 @@ class PanelSecurity extends LitElement {
       return;
     }
     showEditSecurityDialog(this, {
-      hass: this.hass,
       config: this._config,
       saveConfig: async (config) => {
         await this._saveConfig(config);
