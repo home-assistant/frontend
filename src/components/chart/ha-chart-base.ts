@@ -117,6 +117,11 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  // Lets cards that key their data on ids have display names announced
+  // instead when the chart is navigated with Chart2Music.
+  @property({ attribute: false })
+  public sonificationLabelFormatter?: (label: string) => string | undefined;
+
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
@@ -583,6 +588,7 @@ export class HaChartBase extends LitElement {
         localize: this.hass.localize,
         locale: this.hass.locale,
         config: this.hass.config,
+        formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
           // dropping an error on someone who only pressed Tab.
