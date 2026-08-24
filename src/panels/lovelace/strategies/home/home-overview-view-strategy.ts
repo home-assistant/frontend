@@ -46,6 +46,7 @@ import {
 } from "../helpers/view-columns-conditions";
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { generateLovelaceSectionStrategy } from "../get-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
@@ -262,16 +263,25 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     let favoritesSection: LovelaceSectionRawConfig | undefined;
     if (!config.hide_suggested_entities) {
-      favoritesSection = {
-        strategy: {
-          type: "common-controls",
-          limit: maxCommonControls,
-          include_entities: favoriteEntities,
-          hide_empty: true,
-          heading: favoritesHeadingCard,
-        } satisfies CommonControlsSectionStrategyConfig,
-        column_span: maxColumns,
-      } satisfies LovelaceStrategySectionConfig;
+      const generatedFavoritesSection = await generateLovelaceSectionStrategy(
+        {
+          strategy: {
+            type: "common-controls",
+            limit: maxCommonControls,
+            include_entities: favoriteEntities,
+            hide_empty: true,
+            heading: favoritesHeadingCard,
+          } satisfies CommonControlsSectionStrategyConfig,
+          column_span: maxColumns,
+        } satisfies LovelaceStrategySectionConfig,
+        hass
+      );
+      if (!generatedFavoritesSection.disabled) {
+        favoritesSection = {
+          ...generatedFavoritesSection,
+          column_span: maxColumns,
+        };
+      }
     } else if (favoriteEntities.length > 0) {
       favoritesSection = {
         type: "grid",

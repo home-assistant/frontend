@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { LovelaceSectionConfig } from "../../../../../src/data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../../src/data/lovelace/config/view";
 import { checkConditionsMet } from "../../../../../src/panels/lovelace/common/validate-condition";
@@ -71,6 +71,64 @@ describe("HomeOverviewViewStrategy security alerts", () => {
       checkConditionsMet(emptyStateCard.conditions, createHass("on"), {})
     ).toBe(false);
     expect(emptyStateCard.card.type).toBe("empty-state");
+  });
+
+  it("shows the area-less empty state when prediction returns no controls", async () => {
+    const hass = createHass("off");
+    hass.config = { ...hass.config, components: ["usage_prediction"] };
+    hass.callWS = vi.fn().mockResolvedValue({ entities: [] });
+    const view = await HomeOverviewViewStrategy.generate(
+      {
+        type: "home-overview",
+        alert_entities: [{ entity: "binary_sensor.front_door" }],
+      },
+      hass
+    );
+
+    expect(
+      sections(view).some((section) =>
+        section.cards?.some((card) => card.type === "conditional")
+      )
+    ).toBe(true);
+  });
+
+  it("does not show the area-less empty state with a predicted control", async () => {
+    const hass = createHass("off");
+    hass.states["light.kitchen"] = createMockEntityState("light.kitchen", "on");
+    hass.config = { ...hass.config, components: ["usage_prediction"] };
+    hass.callWS = vi.fn().mockResolvedValue({ entities: ["light.kitchen"] });
+    const view = await HomeOverviewViewStrategy.generate(
+      {
+        type: "home-overview",
+        alert_entities: [{ entity: "binary_sensor.front_door" }],
+      },
+      hass
+    );
+
+    expect(
+      sections(view).some((section) =>
+        section.cards?.some((card) => card.type === "conditional")
+      )
+    ).toBe(false);
+  });
+
+  it("keeps the Home view when prediction loading fails", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const hass = createHass("off");
+    hass.config = { ...hass.config, components: ["usage_prediction"] };
+    hass.callWS = vi
+      .fn()
+      .mockRejectedValue(new Error("Prediction unavailable"));
+    const view = await HomeOverviewViewStrategy.generate(
+      {
+        type: "home-overview",
+        alert_entities: [{ entity: "binary_sensor.front_door" }],
+      },
+      hass
+    );
+
+    const alertCard = sections(view)[0]?.cards?.[0];
+    expect(alertCard?.type).toBe("security-alerts");
   });
 
   it("does not show the area-less empty state with configured favorites", async () => {
