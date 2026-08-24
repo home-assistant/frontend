@@ -13,6 +13,7 @@ import {
   computeSecurityAlertItem,
   computeSecurityAlertItems,
   extractSecurityAlertEntityIds,
+  isValidSecurityAlertEntityConfig,
   type SecurityAlertItem,
 } from "./helpers";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
@@ -51,8 +52,13 @@ export class HuiSecurityAlertsCard extends LitElement implements LovelaceCard {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   public setConfig(config: SecurityAlertsCardConfig): void {
-    if (!config.alert_entities) {
-      throw new Error("Specify alert entities");
+    if (
+      !Array.isArray(config.alert_entities) ||
+      config.alert_entities.some(
+        (alertEntity) => !isValidSecurityAlertEntityConfig(alertEntity)
+      )
+    ) {
+      throw new Error("Invalid configuration");
     }
     this._config = config;
     this._alertEntityIds = extractSecurityAlertEntityIds(config.alert_entities);

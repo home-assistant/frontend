@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { afterEach, describe, expect, it } from "vitest";
 import type { SecurityAlertItem } from "../../../../../src/panels/lovelace/cards/security-alerts/helpers";
 import "../../../../../src/panels/lovelace/cards/security-alerts/hui-security-alerts-list";
@@ -6,12 +5,17 @@ import "../../../../../src/panels/lovelace/cards/security-alerts/hui-security-al
 interface TestSecurityAlertsList extends HTMLElement {
   updateComplete: Promise<boolean>;
   _alerts: SecurityAlertItem[];
+}
+
+interface TestSecurityAlertCard extends HTMLElement {
+  updateComplete: Promise<boolean>;
+  alert: SecurityAlertItem;
   _formatters: {
-    formatEntityState: (stateObj: HassEntity) => string;
+    formatEntityState: () => string;
   };
 }
 
-const state = (): HassEntity => ({
+const state = () => ({
   entity_id: "binary_sensor.window",
   state: "on",
   attributes: {
@@ -38,7 +42,6 @@ const createList = async (alerts: SecurityAlertItem[]) => {
     "hui-security-alerts-list"
   ) as unknown as TestSecurityAlertsList;
   element._alerts = alerts;
-  element._formatters = { formatEntityState: () => "On" };
   document.body.appendChild(element);
   await element.updateComplete;
   return element;
@@ -49,43 +52,19 @@ describe("hui-security-alerts-list", () => {
     document.body.replaceChildren();
   });
 
-  it("does not pulse when pulse is disabled", async () => {
-    const element = await createList([alert(false)]);
+  it("renders standalone cards from alert context", async () => {
+    const alerts = [alert(true, "amber"), alert(false, "none")];
+    const element = await createList(alerts);
+    const cards = element.shadowRoot!.querySelectorAll(
+      "hui-security-alert-card"
+    ) as unknown as NodeListOf<TestSecurityAlertCard>;
+    cards.forEach((card) => {
+      card._formatters = { formatEntityState: () => "On" };
+    });
+    await Promise.all(Array.from(cards, (card) => card.updateComplete));
 
-    const card = element.shadowRoot!.querySelector("ha-card")!;
-
-    expect(card.classList.contains("pulse")).toBe(false);
-    expect(
-      card.style.getPropertyValue("--ha-security-alert-static-opacity")
-    ).toBe("var(--ha-security-alert-pulse-opacity)");
-  });
-
-  it("pulses when pulse is enabled", async () => {
-    const element = await createList([alert(true)]);
-
-    const card = element.shadowRoot!.querySelector("ha-card")!;
-    expect(card.classList.contains("pulse")).toBe(true);
-  });
-
-  it("applies configured colors", async () => {
-    const element = await createList([alert(true, "amber")]);
-
-    const card = element.shadowRoot!.querySelector("ha-card")!;
-
-    expect(card.classList.contains("warning")).toBe(false);
-    expect(card.classList.contains("no-color")).toBe(false);
-    expect(card.style.getPropertyValue("--ha-security-alert-color")).toBe(
-      "var(--amber-color)"
-    );
-  });
-
-  it("does not apply a color when color is none", async () => {
-    const element = await createList([alert(true, "none")]);
-
-    const card = element.shadowRoot!.querySelector("ha-card")!;
-
-    expect(card.classList.contains("warning")).toBe(false);
-    expect(card.classList.contains("no-color")).toBe(true);
-    expect(card.style.getPropertyValue("--ha-security-alert-color")).toBe("");
+    expect(cards).toHaveLength(2);
+    expect(cards[0].alert).toBe(alerts[0]);
+    expect(cards[1].alert).toBe(alerts[1]);
   });
 });

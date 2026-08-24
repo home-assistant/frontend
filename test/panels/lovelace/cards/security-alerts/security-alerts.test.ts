@@ -6,6 +6,8 @@ import {
   computeSecurityAlertItems,
   type SecurityAlertHass,
 } from "../../../../../src/panels/lovelace/cards/security-alerts/helpers";
+import type { SecurityAlertsCardConfig } from "../../../../../src/panels/lovelace/cards/types";
+import "../../../../../src/panels/lovelace/cards/security-alerts/hui-security-alerts-card";
 
 const state = (
   entityId: string,
@@ -48,7 +50,7 @@ describe("computeDefaultSecurityAlertVisibility", () => {
     ]);
   });
 
-  it("defaults other entities to on", () => {
+  it("defaults binary sensors to on", () => {
     expect(computeDefaultSecurityAlertVisibility("binary_sensor.leak")).toEqual(
       [
         {
@@ -58,6 +60,66 @@ describe("computeDefaultSecurityAlertVisibility", () => {
         },
       ]
     );
+  });
+
+  it("defaults locks and covers to any unsecured state", () => {
+    expect(computeDefaultSecurityAlertVisibility("lock.front_door")).toEqual([
+      {
+        condition: "state",
+        entity: "lock.front_door",
+        state_not: "locked",
+      },
+    ]);
+    expect(computeDefaultSecurityAlertVisibility("cover.garage_door")).toEqual([
+      {
+        condition: "state",
+        entity: "cover.garage_door",
+        state_not: "closed",
+      },
+    ]);
+  });
+
+  it("defaults cameras to unavailable or unknown", () => {
+    expect(computeDefaultSecurityAlertVisibility("camera.patio")).toEqual([
+      {
+        condition: "state",
+        entity: "camera.patio",
+        state: ["unavailable", "unknown"],
+      },
+    ]);
+  });
+});
+
+describe("hui-security-alerts-card", () => {
+  const createCard = () => document.createElement("hui-security-alerts-card");
+
+  it("rejects a non-array alert entity configuration", () => {
+    const card = createCard();
+
+    expect(() =>
+      card.setConfig({
+        type: "security-alerts",
+        alert_entities: "binary_sensor.window",
+      } as unknown as SecurityAlertsCardConfig)
+    ).toThrow("Invalid configuration");
+  });
+
+  it("rejects unsupported visibility conditions", () => {
+    const card = createCard();
+
+    expect(() =>
+      card.setConfig({
+        type: "security-alerts",
+        alert_entities: [
+          {
+            entity: "binary_sensor.window",
+            visibility: [
+              { condition: "screen", media_query: "(min-width: 1px)" },
+            ],
+          },
+        ],
+      } as unknown as SecurityAlertsCardConfig)
+    ).toThrow("Invalid configuration");
   });
 });
 

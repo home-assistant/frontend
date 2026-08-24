@@ -1,13 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiCctvOff, mdiLockOpen, mdiShieldAlert, mdiWater } from "@mdi/js";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { UNAVAILABLE } from "../../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import type { StateCondition } from "../../common/validate-condition";
 import type { SecurityAlertsCardEntityConfig } from "../types";
 import {
   checkConditionsMet,
   extractConditionEntityIds,
+  validateConditionalConfig,
 } from "../../common/validate-condition";
 
 export interface SecurityAlertItem {
@@ -73,14 +74,48 @@ export const computeSecurityAlertEntityDefaultColor = (
 
 export const computeDefaultSecurityAlertVisibility = (
   entityId: string
-): Condition[] => [
-  {
+): StateCondition[] => {
+  const condition: StateCondition = {
     condition: "state",
     entity: entityId,
-    state:
-      computeDomain(entityId) === "alarm_control_panel" ? "triggered" : "on",
-  },
-];
+  };
+
+  switch (computeDomain(entityId)) {
+    case "alarm_control_panel":
+      condition.state = "triggered";
+      break;
+    case "camera":
+      condition.state = [UNAVAILABLE, UNKNOWN];
+      break;
+    case "cover":
+      condition.state_not = "closed";
+      break;
+    case "lock":
+      condition.state_not = "locked";
+      break;
+    default:
+      condition.state = "on";
+  }
+
+  return [condition];
+};
+
+export const isValidSecurityAlertEntityConfig = (
+  alertEntity: unknown
+): alertEntity is SecurityAlertsCardEntityConfig =>
+  Boolean(
+    alertEntity &&
+    typeof alertEntity === "object" &&
+    "entity" in alertEntity &&
+    typeof alertEntity.entity === "string" &&
+    (!("visibility" in alertEntity) ||
+      alertEntity.visibility === undefined ||
+      (Array.isArray(alertEntity.visibility) &&
+        alertEntity.visibility.every(
+          (condition) => condition?.condition === "state"
+        ) &&
+        validateConditionalConfig(alertEntity.visibility)))
+  );
 
 export const extractSecurityAlertEntityIds = (
   alertEntities: SecurityAlertsCardEntityConfig[]
