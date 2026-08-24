@@ -8970,9 +8970,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:10.8.1":
-  version: 10.8.1
-  resolution: "eslint@npm:10.8.1"
+"eslint@npm:10.9.0":
+  version: 10.9.0
+  resolution: "eslint@npm:10.9.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.2"
@@ -9011,7 +9011,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10/7174710e740f95bfa97d7501419d717c03cf7760c3eea4a91cd10fb804538bbd8cdc0849b26afa789a56a89ee838b727e4b9329e347376f96b8e524727b90ba3
+  checksum: 10/1cd63bbf4f2c003ed759ab6ae9e2030be0abafdcd7b9ffb5be9e9c3aa3ea6142e6af0a337aac21044957750807fde06c9d052e2c9734cca6792dc2d095f9c180
   languageName: node
   linkType: hard
 
@@ -10070,7 +10070,7 @@ __metadata:
     echarts: "npm:6.1.0"
     echarts-extension-chart2music: "npm:0.1.1"
     element-internals-polyfill: "npm:3.0.2"
-    eslint: "npm:10.8.1"
+    eslint: "npm:10.9.0"
     eslint-config-prettier: "npm:10.1.8"
     eslint-import-resolver-webpack: "npm:0.13.11"
     eslint-plugin-import-x: "npm:4.17.1"
