@@ -27,26 +27,57 @@ const SONIFICATION_LANGUAGES = new Set(["de", "en", "es", "fr", "hmn", "it"]);
 // lead nowhere.
 const MIN_NAVIGABLE_POINTS = 2;
 
-// Mirrors the extension's own reading of a point: it takes `value` as [x, y] and
-// drops anything whose y is not a real number. That rejects gap-only series, and
-// also value-first pairs like the energy device charts' [amount, "sensor.foo"].
-// Counts no further than `limit` so this stays cheap on charts with many points.
+const itemValues = (raw: unknown): unknown[] | null => {
+  if (Array.isArray(raw)) {
+    return raw;
+  }
+  if (raw && typeof raw === "object") {
+    const { value } = raw as { value?: unknown };
+    if (Array.isArray(value)) {
+      return value;
+    }
+  }
+  return null;
+};
+
+// ECharts spells empty values and numbers as strings too, and neither names a
+// category.
+const NON_CATEGORY_STRINGS = new Set(["-", "NaN", "null", "undefined"]);
+
+const isCategoryKey = (value: unknown): boolean =>
+  typeof value === "string" &&
+  !NON_CATEGORY_STRINGS.has(value) &&
+  Number.isNaN(Number(value));
+
+// A chart with the value axis on x, like the energy device charts, encodes its
+// items value-first: [amount, "sensor.foo"]. The extension only reads a series
+// that way when every item has that shape, so mirror the same gate.
+const isValueFirstSeries = (data: readonly unknown[]): boolean =>
+  data.length > 0 &&
+  data.every((raw) => {
+    const values = itemValues(raw);
+    return (
+      !!values && typeof values[0] === "number" && isCategoryKey(values[1])
+    );
+  });
+
+// Mirrors the extension's own reading of a point: it takes `value` as [x, y]
+// (or [y, category] in a value-first series) and drops anything whose y is not
+// a real number, which rejects gap-only series. Counts no further than `limit`
+// so this stays cheap on charts with many points.
 const countNumericPoints = (data: unknown, limit: number): number => {
   if (!Array.isArray(data)) {
     return 0;
   }
+  const valueFirst = isValueFirstSeries(data);
   let found = 0;
   for (const raw of data) {
     let y: unknown = raw;
-    if (Array.isArray(raw)) {
-      y = raw.length > 1 ? raw[1] : raw[0];
+    const values = itemValues(raw);
+    if (values) {
+      y = valueFirst ? values[0] : values.length > 1 ? values[1] : values[0];
     } else if (raw && typeof raw === "object") {
-      const { value } = raw as { value?: unknown };
-      y = Array.isArray(value)
-        ? value.length > 1
-          ? value[1]
-          : value[0]
-        : value;
+      y = (raw as { value?: unknown }).value;
     }
     if (typeof y === "number" && !Number.isNaN(y)) {
       found += 1;
@@ -196,11 +227,14 @@ export const sonifyChart = async (
   const seriesIndex = readable.map((s) => allSeries.indexOf(s));
 
   // Chart2Music always reads out an axis label, and the extension picks the wrong
-  // axis to name when there is no category axis, so label both explicitly.
+  // axis to name when there is no category axis, so label both explicitly. On a
+  // horizontal chart the announced x is the category from the y axis and the
+  // announced y is the value from the x axis, so the sources swap.
   const isTimeAxis = xAxis?.type === "time";
+  const isHorizontal = xAxis?.type === "value" && yAxis?.type === "category";
   const x = {
     label:
-      xAxis?.name ||
+      (isHorizontal ? yAxis?.name : xAxis?.name) ||
       localize(
         isTimeAxis
           ? "ui.components.history_charts.time"
@@ -213,7 +247,9 @@ export const sonifyChart = async (
       : undefined,
   };
   const y = {
-    label: yAxis?.name || localize("ui.components.history_charts.value"),
+    label:
+      (isHorizontal ? xAxis?.name : yAxis?.name) ||
+      localize("ui.components.history_charts.value"),
   };
 
   let connection: ReturnType<typeof connect>;

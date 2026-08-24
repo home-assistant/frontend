@@ -95,9 +95,9 @@ describe("canSonifyChart", () => {
     expect(canSonifyChart(series([{ type: "line" }]))).toBe(false);
   });
 
-  it("rejects value-first pairs, which the extension reads as a non-numeric y", () => {
-    // The energy device charts encode [amount, categoryName]. Chart2Music takes
-    // value as [x, y], so every one of those points is dropped.
+  it("accepts value-first pairs, like the energy device charts", () => {
+    // The energy device charts encode [amount, categoryName]. Since v0.1.1 the
+    // extension reads a series that way when every item has that shape.
     expect(
       canSonifyChart(
         series([
@@ -110,18 +110,77 @@ describe("canSonifyChart", () => {
           },
         ])
       )
+    ).toBe(true);
+    expect(
+      canSonifyChart(
+        series([
+          {
+            type: "bar",
+            data: [
+              [12.5, "sensor.a"],
+              [8.25, "sensor.b"],
+            ],
+          },
+        ])
+      )
+    ).toBe(true);
+  });
+
+  it("does not read empty markers or numeric strings as value-first pairs", () => {
+    // [2, "-"] is an ECharts gap inside an ordinary series and [1, "8"] is a
+    // numeric string y; treating either as [y, category] would fabricate
+    // points the chart never plotted.
+    expect(
+      canSonifyChart(
+        series([
+          {
+            type: "line",
+            data: [
+              [1, "-"],
+              [2, "-"],
+            ],
+          },
+        ])
+      )
+    ).toBe(false);
+    expect(
+      canSonifyChart(
+        series([
+          {
+            type: "line",
+            data: [
+              [1, "8"],
+              [2, "12"],
+            ],
+          },
+        ])
+      )
+    ).toBe(false);
+  });
+
+  it("reads a series value-first only when every item has that shape", () => {
+    // A lone [number, string] among ordinary pairs is an unreadable value, not
+    // a transposed one.
+    expect(
+      canSonifyChart(
+        series([
+          {
+            type: "bar",
+            data: [
+              [12.5, "sensor.a"],
+              ["-", "sensor.b"],
+            ],
+          },
+        ])
+      )
     ).toBe(false);
   });
 
   it("rejects a chart left with a single readable point", () => {
-    // The device pie's slices are all unreadable, leaving only its one-number
-    // total series — nothing the arrow keys could move between.
+    // One device slice alone offers nothing the arrow keys could move between.
     expect(
       canSonifyChart(
-        series([
-          { type: "pie", data: [{ value: [12.5, "sensor.a"] }] },
-          { type: "pie", data: [24.5] },
-        ])
+        series([{ type: "pie", data: [{ value: [12.5, "sensor.a"] }] }])
       )
     ).toBe(false);
   });
