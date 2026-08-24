@@ -87,19 +87,12 @@ export class HaFilterEntityTypes extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
+  private _badgeTypes?: Map<string, string[]>;
+
   protected render() {
-    const rows = this._rows(
-      this._states,
-      this._localize,
-      this._i18n.locale.language,
-      this._filter,
-      this._expandedDomains
-    );
-    const rtl = computeRTL(
-      this._i18n.language,
-      this._i18n.translationMetadata.translations
-    );
-    const count = this._count(this.value, this._types(this._states));
+    const count = this.value?.length
+      ? this._count(this.value, this._badgeTypes!)
+      : 0;
 
     return html`
       <ha-expansion-panel
@@ -120,34 +113,44 @@ export class HaFilterEntityTypes extends LitElement {
           }
         </div>
       </ha-expansion-panel>
-      ${
-        this._panel.showContent
-          ? html`<div class="content" ${ref(this._content)}>
-              <ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-              >
-              </ha-input-search>
-              <ha-list-selectable
-                multi
-                controlled
-                aria-label=${this._localize(
-                  "ui.components.filter-entity-types.caption"
-                )}
-                @ha-list-item-selected=${this._handleItemToggled}
-                @ha-list-item-deselected=${this._handleItemToggled}
-              >
-                ${repeat(
-                  rows,
-                  (row) => row.key,
-                  (row) => this._renderRow(row, rtl)
-                )}
-              </ha-list-selectable>
-            </div>`
-          : nothing
-      }
+      ${this._panel.showContent ? this._renderContent() : nothing}
     `;
+  }
+
+  private _renderContent() {
+    const rows = this._rows(
+      this._states,
+      this._localize,
+      this._i18n.locale.language,
+      this._filter,
+      this._expandedDomains
+    );
+    const rtl = computeRTL(
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
+    );
+
+    return html`<div class="content" ${ref(this._content)}>
+      <ha-input-search
+        appearance="outlined"
+        .value=${this._filter}
+        @input=${this._handleSearchChange}
+      >
+      </ha-input-search>
+      <ha-list-selectable
+        multi
+        controlled
+        aria-label=${this._localize("ui.components.filter-entity-types.caption")}
+        @ha-list-item-selected=${this._handleItemToggled}
+        @ha-list-item-deselected=${this._handleItemToggled}
+      >
+        ${repeat(
+          rows,
+          (row) => row.key,
+          (row) => this._renderRow(row, rtl)
+        )}
+      </ha-list-selectable>
+    </div>`;
   }
 
   private _renderRow(row: TypeRow, rtl: boolean) {
@@ -209,8 +212,8 @@ export class HaFilterEntityTypes extends LitElement {
   // A selected domain counts for the classes it stands for, so that collapsing
   // the last one does not drop the count to one.
   private _count = memoizeOne(
-    (value: string[] | undefined, types: Map<string, string[]>): number =>
-      (value ?? []).reduce((count, key) => {
+    (value: string[], types: Map<string, string[]>): number =>
+      value.reduce((count, key) => {
         const { domain, deviceClass } = parseEntityType(key);
         return (
           count +
@@ -335,6 +338,12 @@ export class HaFilterEntityTypes extends LitElement {
 
   public willUpdate(changed: PropertyValues<this>) {
     super.willUpdate(changed);
+
+    // While closed, the badge reuses the classes it last saw rather than
+    // rescanning every entity on each state change.
+    if (this._panel.showContent || !this._badgeTypes) {
+      this._badgeTypes = this._types(this._states);
+    }
 
     if (changed.has("expanded") && this.expanded) {
       this._expandedDomains = new Set(
