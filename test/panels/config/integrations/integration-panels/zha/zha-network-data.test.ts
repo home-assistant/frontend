@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createZHANetworkChartData } from "../../../../../../../src/panels/config/integrations/integration-panels/zha/zha-network-data";
-import type { ZHADevice } from "../../../../../../../src/data/zha";
-import type { HomeAssistant } from "../../../../../../../src/types";
+import { createZHANetworkChartData } from "../../../../../../src/panels/config/integrations/integration-panels/zha/zha-network-data";
+import type { ZHADevice } from "../../../../../../src/data/zha";
+import type { HomeAssistant } from "../../../../../../src/types";
 
 const hass = {
   devices: {},
@@ -48,7 +48,13 @@ describe("createZHANetworkChartData", () => {
       device_type: "Router",
       nwk: 1,
       neighbors: [
-        { ieee: "coordinator", nwk: "0x0000", lqi: "200", depth: "0", relationship: "Parent" },
+        {
+          ieee: "coordinator",
+          nwk: "0x0000",
+          lqi: "200",
+          depth: "0",
+          relationship: "Parent",
+        },
       ],
     });
     const downstreamRouter = device({
@@ -57,9 +63,21 @@ describe("createZHANetworkChartData", () => {
       nwk: 2,
       neighbors: [
         // Real backbone link: weaker signal, correctly flagged as a sibling router
-        { ieee: "upstream-router", nwk: "0x0001", lqi: "80", depth: "1", relationship: "Sibling" },
+        {
+          ieee: "upstream-router",
+          nwk: "0x0001",
+          lqi: "80",
+          depth: "1",
+          relationship: "Sibling",
+        },
         // Nearby child end device with a much stronger signal than the real uplink
-        { ieee: "child-end-device", nwk: "0x0003", lqi: "250", depth: "2", relationship: "Child" },
+        {
+          ieee: "child-end-device",
+          nwk: "0x0003",
+          lqi: "250",
+          depth: "2",
+          relationship: "Child",
+        },
       ],
     });
     const childEndDevice = device({
@@ -67,7 +85,13 @@ describe("createZHANetworkChartData", () => {
       device_type: "EndDevice",
       nwk: 3,
       neighbors: [
-        { ieee: "downstream-router", nwk: "0x0002", lqi: "250", depth: "2", relationship: "Parent" },
+        {
+          ieee: "downstream-router",
+          nwk: "0x0002",
+          lqi: "250",
+          depth: "2",
+          relationship: "Parent",
+        },
       ],
     });
 
@@ -77,14 +101,36 @@ describe("createZHANetworkChartData", () => {
       document.createElement("div")
     );
 
-    const hasLink = (a: string, b: string) =>
-      links.some(
-        (link) =>
-          (link.source === a && link.target === b) ||
-          (link.source === b && link.target === a)
-      );
+    const adjacency = new Map<string, string[]>();
+    for (const link of links) {
+      adjacency.set(link.source, [
+        ...(adjacency.get(link.source) ?? []),
+        link.target,
+      ]);
+      adjacency.set(link.target, [
+        ...(adjacency.get(link.target) ?? []),
+        link.source,
+      ]);
+    }
 
-    expect(hasLink("downstream-router", "upstream-router")).toBe(true);
-    expect(hasLink("downstream-router", "child-end-device")).toBe(false);
+    // Every device should be reachable from the coordinator. Before the
+    // fix, downstream-router picked its child as its only link, leaving
+    // it (and its children) as a disconnected island in the chart even
+    // though the real network is fully connected.
+    const reachable = new Set(["coordinator"]);
+    const queue = ["coordinator"];
+    while (queue.length) {
+      const current = queue.shift()!;
+      for (const neighbor of adjacency.get(current) ?? []) {
+        if (!reachable.has(neighbor)) {
+          reachable.add(neighbor);
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    expect(reachable.has("upstream-router")).toBe(true);
+    expect(reachable.has("downstream-router")).toBe(true);
+    expect(reachable.has("child-end-device")).toBe(true);
   });
 });
