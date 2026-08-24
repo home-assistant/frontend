@@ -166,11 +166,14 @@ export function createZHANetworkChartData(
       // end device (e.g. a plug sitting right next to its router) over the
       // router's actual uplink, which severs it from the rest of the mesh
       // in the visualization even though the real network is connected.
-      const relationshipPriority: Record<string, number> = {
-        Parent: 0,
-        Sibling: 1,
-        Child: 2,
+      const RELATIONSHIP_PRIORITY: Record<string, number> = {
+          Parent: 0,
+          Sibling: 1,
+          NoneOfTheAbove: 2,
+          Child: 3,
+          PreviousChild: 5, // stale: this device has left the network
       };
+      const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
       const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
         device.neighbors ?? [];
       if (neighbors.length === 0) {
@@ -186,8 +189,8 @@ export function createZHANetworkChartData(
       }
       const closestNeighbor = neighbors.sort((a, b) => {
         const priorityDiff =
-          (relationshipPriority[a.relationship ?? ""] ?? 1) -
-          (relationshipPriority[b.relationship ?? ""] ?? 1);
+          (relationshipPriority[a.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY) -
+          (relationshipPriority[b.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY);
         return priorityDiff !== 0
           ? priorityDiff
           : parseInt(b.lqi) - parseInt(a.lqi);
