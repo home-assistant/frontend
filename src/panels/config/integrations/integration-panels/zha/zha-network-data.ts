@@ -160,8 +160,19 @@ export function createZHANetworkChartData(
         }
       });
     } else if (existingLinks.length === 0) {
-      // If there are no links, create a link to the closest neighbor
-      const neighbors: { ieee: string; lqi: string }[] = device.neighbors ?? [];
+      // If there are no links, create a link to the closest neighbor.
+      // Prefer a neighbor the device's own Zigbee stack reports as its
+      // parent: picking by raw LQI alone regularly favors a nearby child
+      // end device (e.g. a plug sitting right next to its router) over the
+      // router's actual uplink, which severs it from the rest of the mesh
+      // in the visualization even though the real network is connected.
+      const relationshipPriority: Record<string, number> = {
+        Parent: 0,
+        Sibling: 1,
+        Child: 2,
+      };
+      const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
+        device.neighbors ?? [];
       if (neighbors.length === 0) {
         // If there are no neighbors, look for links from other devices
         devices.forEach((d) => {
@@ -173,9 +184,14 @@ export function createZHANetworkChartData(
           }
         });
       }
-      const closestNeighbor = neighbors.sort(
-        (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
-      )[0];
+      const closestNeighbor = neighbors.sort((a, b) => {
+        const priorityDiff =
+          (relationshipPriority[a.relationship ?? ""] ?? 1) -
+          (relationshipPriority[b.relationship ?? ""] ?? 1);
+        return priorityDiff !== 0
+          ? priorityDiff
+          : parseInt(b.lqi) - parseInt(a.lqi);
+      })[0];
       if (closestNeighbor) {
         links.push({
           source: device.ieee,
