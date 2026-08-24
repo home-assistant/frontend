@@ -1,73 +1,53 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { customElement, state } from "lit/decorators";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon";
 import type { SecurityFrontendSystemData } from "../../../data/frontend";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { ValueChangedEvent } from "../../../types";
 import "../components/security-alerts-editor";
 import type { EditSecurityDialogParams } from "./show-dialog-edit-security";
 
 @customElement("dialog-edit-security")
-export class DialogEditSecurity
-  extends DirtyStateProviderMixin<SecurityFrontendSystemData>()(LitElement)
-  implements HassDialog<EditSecurityDialogParams>
-{
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _params?: EditSecurityDialogParams;
-
+export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontendSystemData>()(
+  DialogMixin<EditSecurityDialogParams>(LitElement)
+) {
   @state() private _state?: SecurityFrontendSystemData;
-
-  @state() private _open = false;
 
   @state() private _submitting = false;
 
-  public showDialog(params: EditSecurityDialogParams): void {
-    this._params = params;
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.params) {
+      return;
+    }
     this._state = {
-      ...params.config,
-      alert_entities: params.config.alert_entities
-        ? [...params.config.alert_entities]
+      ...this.params.config,
+      alert_entities: this.params.config.alert_entities
+        ? [...this.params.config.alert_entities]
         : [],
     };
     this._initDirtyTracking({ type: "shallow" }, this._state);
-    this._open = true;
-  }
-
-  public closeDialog(): boolean {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed(): void {
-    this._params = undefined;
-    this._state = undefined;
-    this._submitting = false;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._params || !this._state) {
+    if (!this.params || !this._state) {
       return nothing;
     }
+    const { hass } = this.params;
 
     return html`
       <ha-dialog
-        .open=${this._open}
+        open
         width="medium"
-        .headerTitle=${this.hass.localize("ui.panel.security.editor.title")}
-        .headerSubtitle=${this.hass.localize(
-          "ui.panel.security.editor.description"
-        )}
+        .headerTitle=${hass.localize("ui.panel.security.editor.title")}
+        .headerSubtitle=${hass.localize("ui.panel.security.editor.description")}
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
       >
         ${this._renderMainEditor()}
 
@@ -78,14 +58,14 @@ export class DialogEditSecurity
             @click=${this.closeDialog}
             .disabled=${this._submitting}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._save}
             .disabled=${this._submitting || !this.isDirtyState}
           >
-            ${this.hass.localize("ui.common.save")}
+            ${hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -93,22 +73,23 @@ export class DialogEditSecurity
   }
 
   private _renderMainEditor() {
+    const hass = this.params!.hass;
     return html`
       <ha-expansion-panel
         outlined
         expanded
         no-collapse
-        .header=${this.hass.localize(
+        .header=${hass.localize(
           "ui.panel.security.editor.active_alert_entities"
         )}
-        .secondary=${this.hass.localize(
+        .secondary=${hass.localize(
           "ui.panel.security.editor.active_alert_entities_description"
         )}
       >
         <ha-icon slot="leading-icon" icon="mdi:shield-alert"></ha-icon>
         <div class="expansion-content">
           <security-alerts-editor
-            .hass=${this.hass}
+            .hass=${hass}
             .alertEntities=${this._state?.alert_entities ?? []}
             @value-changed=${this._alertEntitiesChanged}
           ></security-alerts-editor>
@@ -128,13 +109,13 @@ export class DialogEditSecurity
   }
 
   private async _save(): Promise<void> {
-    if (!this._params || !this._state) return;
+    if (!this.params || !this._state) return;
 
     this._submitting = true;
 
     try {
-      await this._params.saveConfig({
-        ...this._params.config,
+      await this.params.saveConfig({
+        ...this.params.config,
         alert_entities: this._state.alert_entities?.length
           ? this._state.alert_entities
           : undefined,

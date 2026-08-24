@@ -39,7 +39,7 @@ class PanelSecurity extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config: SecurityFrontendSystemData = {};
+  @state() private _config?: SecurityFrontendSystemData;
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -91,16 +91,20 @@ class PanelSecurity extends LitElement {
 
   private async _setup() {
     this._loadConfigPromise = this._loadConfig();
-    await this._loadConfigPromise;
-    this._setLovelace();
+    await Promise.all([
+      this.hass.loadFragmentTranslation("lovelace"),
+      this._loadConfigPromise,
+    ]);
+    await this._setLovelace();
   }
 
   private async _loadConfig() {
+    this._config = undefined;
     try {
-      const [, data] = await Promise.all([
-        this.hass.loadFragmentTranslation("lovelace"),
-        fetchFrontendSystemData(this.hass.connection, "security"),
-      ]);
+      const data = await fetchFrontendSystemData(
+        this.hass.connection,
+        "security"
+      );
       this._config = data || {};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -110,7 +114,6 @@ class PanelSecurity extends LitElement {
         duration: 0,
         dismissable: true,
       });
-      this._config = {};
     }
   }
 
@@ -130,12 +133,16 @@ class PanelSecurity extends LitElement {
         .backButton=${this._searchParms.has("historyBack")}
       >
         <div slot="title">${this.hass.localize("panel.security")}</div>
-        <ha-icon-button
-          slot="actionItems"
-          .path=${mdiPencil}
-          .label=${this.hass.localize("ui.panel.security.editor.title")}
-          @click=${this._editSecurity}
-        ></ha-icon-button>
+        ${
+          this.hass.user?.is_admin && this._config
+            ? html`<ha-icon-button
+                slot="actionItems"
+                .path=${mdiPencil}
+                .label=${this.hass.localize("ui.panel.security.editor.title")}
+                @click=${this._editSecurity}
+              ></ha-icon-button>`
+            : nothing
+        }
         ${
           this._lovelace
             ? html`
@@ -165,7 +172,7 @@ class PanelSecurity extends LitElement {
       {
         strategy: {
           ...SECURITY_LOVELACE_VIEW_CONFIG.strategy,
-          alert_entities: this._config.alert_entities,
+          alert_entities: this._config?.alert_entities,
         },
       },
       this.hass
@@ -195,7 +202,11 @@ class PanelSecurity extends LitElement {
   }
 
   private _editSecurity = () => {
+    if (!this.hass.user?.is_admin || !this._config) {
+      return;
+    }
     showEditSecurityDialog(this, {
+      hass: this.hass,
       config: this._config,
       saveConfig: async (config) => {
         await this._saveConfig(config);
@@ -206,7 +217,7 @@ class PanelSecurity extends LitElement {
   private async _saveConfig(config: SecurityFrontendSystemData): Promise<void> {
     try {
       await saveFrontendSystemData(this.hass.connection, "security", config);
-      this._config = config || {};
+      this._config = config;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to save security configuration:", err);

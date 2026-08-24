@@ -31,6 +31,11 @@ const nonAdminScenario: Scenario = async (hass) => {
   });
 };
 
+const nonAdminSecurityScenario: Scenario = async (hass) => {
+  await nonAdminScenario(hass);
+  hass.mockWS("frontend/get_system_data", () => ({ value: {} }));
+};
+
 const darkThemeScenario: Scenario = async (hass) => {
   // Force dark mode by setting selectedTheme.dark = true.
   // _applyTheme() reads selectedTheme.dark to determine darkMode; setting
@@ -316,6 +321,7 @@ const securityAlertsScenario: Scenario = async (hass) => {
 export const scenarios: Record<string, Scenario> = {
   default: defaultScenario,
   "non-admin": nonAdminScenario,
+  "non-admin-security": nonAdminSecurityScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
   "delayed-calendar": delayedCalendarScenario,
