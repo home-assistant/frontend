@@ -74,7 +74,7 @@ class HaMoreInfoDetails extends LitElement {
       attributes,
       yamlData: stateYamlData,
     } = this._getDetailData(this._stateObj);
-    const { floor, area, device } = getEntityContext(
+    const { floor, area, device, parentDevice } = getEntityContext(
       this._stateObj,
       this.hass.entities,
       this.hass.devices,
@@ -83,6 +83,13 @@ class HaMoreInfoDetails extends LitElement {
     );
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const parentDeviceName = parentDevice
+      ? computeDeviceNameDisplay(
+          parentDevice,
+          this.hass.localize,
+          this.hass.states
+        )
+      : undefined;
     const deviceName = device
       ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : undefined;
@@ -110,6 +117,13 @@ class HaMoreInfoDetails extends LitElement {
         translationKey: "ui.components.related-items.area",
         value: areaName,
         href: `/config/areas/area/${area.area_id}`,
+      });
+    }
+    if (parentDevice && parentDeviceName) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.parent_device",
+        value: parentDeviceName,
+        href: `/config/devices/device/${parentDevice.id}`,
       });
     }
     if (device && deviceName) {
@@ -145,6 +159,7 @@ class HaMoreInfoDetails extends LitElement {
             context: {
               ...(floorName ? { floor: floorName } : {}),
               ...(areaName ? { area: areaName } : {}),
+              ...(parentDeviceName ? { parent_device: parentDeviceName } : {}),
               ...(deviceName ? { device: deviceName } : {}),
               ...(integrationName ? { integration: integrationName } : {}),
             },

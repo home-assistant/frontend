@@ -1,4 +1,5 @@
-import { array, literal, object, string, union } from "superstruct";
+import { array, enums, literal, object, string, union } from "superstruct";
+import { ENTITY_NAME_TYPES } from "../../../../common/entity/compute_entity_name_display";
 
 const entityNameItemStruct = union([
   object({
@@ -6,12 +7,7 @@ const entityNameItemStruct = union([
     text: string(),
   }),
   object({
-    type: union([
-      literal("entity"),
-      literal("device"),
-      literal("area"),
-      literal("floor"),
-    ]),
+    type: enums(ENTITY_NAME_TYPES),
   }),
   string(),
 ]);

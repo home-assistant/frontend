@@ -12,13 +12,24 @@ import { getEntityContext } from "./context/get_entity_context";
 const DEFAULT_SEPARATOR = " ";
 
 export const DEFAULT_ENTITY_NAME = [
+  { type: "parent_device" },
   { type: "device" },
   { type: "entity" },
 ] satisfies EntityNameItem[];
 
+export const ENTITY_NAME_TYPES = [
+  "entity",
+  "device",
+  "parent_device",
+  "area",
+  "floor",
+] as const;
+
+export type EntityNameType = (typeof ENTITY_NAME_TYPES)[number];
+
 export type EntityNameItem =
   | {
-      type: "entity" | "device" | "area" | "floor";
+      type: EntityNameType;
     }
   | {
       type: "text";
@@ -91,7 +102,7 @@ export const computeEntityNameList = (
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"]
 ): (string | undefined)[] => {
-  const { device, area, floor } = getEntityContext(
+  const { device, parentDevice, area, floor } = getEntityContext(
     stateObj,
     entities,
     devices,
@@ -105,6 +116,8 @@ export const computeEntityNameList = (
         return computeEntityName(stateObj, entities, devices);
       case "device":
         return device ? computeDeviceName(device) : undefined;
+      case "parent_device":
+        return parentDevice ? computeDeviceName(parentDevice) : undefined;
       case "area":
         return area ? computeAreaName(area) : undefined;
       case "floor":
@@ -136,14 +149,20 @@ export const computeEntityPickerDisplay = (
   >,
   stateObj: HassEntity
 ): EntityPickerDisplay => {
-  const [entityName, deviceName, areaName] = computeEntityNameList(
-    stateObj,
-    [{ type: "entity" }, { type: "device" }, { type: "area" }],
-    hass.entities,
-    hass.devices,
-    hass.areas,
-    hass.floors
-  );
+  const [entityName, deviceName, parentDeviceName, areaName] =
+    computeEntityNameList(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "device" },
+        { type: "parent_device" },
+        { type: "area" },
+      ],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
   const isRTL = computeRTL(
     hass.language,
@@ -152,7 +171,7 @@ export const computeEntityPickerDisplay = (
 
   const primary = entityName || deviceName || stateObj.entity_id;
   const secondary =
-    [areaName, entityName ? deviceName : undefined]
+    [areaName, parentDeviceName, entityName ? deviceName : undefined]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ") || undefined;
 

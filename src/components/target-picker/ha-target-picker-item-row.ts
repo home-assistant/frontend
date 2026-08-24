@@ -683,7 +683,7 @@ export class HaTargetPickerItemRow extends LitElement {
       const entityName = stateObject
         ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
         : item;
-      const { area, device } = stateObject
+      const { area, device, parentDevice } = stateObject
         ? getEntityContext(
             stateObject,
             this.hass.entities,
@@ -691,10 +691,17 @@ export class HaTargetPickerItemRow extends LitElement {
             this.hass.areas,
             this.hass.floors
           )
-        : { area: undefined, device: undefined };
+        : { area: undefined, device: undefined, parentDevice: undefined };
       const deviceName = device ? computeDeviceName(device) : undefined;
+      const parentDeviceName = parentDevice
+        ? computeDeviceName(parentDevice)
+        : undefined;
       const areaName = area ? computeAreaName(area) : undefined;
-      const context = [areaName, entityName ? deviceName : undefined]
+      const context = [
+        areaName,
+        parentDeviceName,
+        entityName ? deviceName : undefined,
+      ]
         .filter(Boolean)
         .join(
           computeRTL(

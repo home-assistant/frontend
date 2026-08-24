@@ -761,6 +761,9 @@ export class HaCodeEditor extends ReactiveElement {
     const deviceName = context.device
       ? computeDeviceName(context.device)
       : undefined;
+    const parentDeviceName = context.parentDevice
+      ? computeDeviceName(context.parentDevice)
+      : undefined;
     const areaName = context.area ? computeAreaName(context.area) : undefined;
     const floorName = context.floor
       ? computeFloorName(context.floor)
@@ -785,6 +788,15 @@ export class HaCodeEditor extends ReactiveElement {
           "ui.components.entity.entity-picker.entity"
         ),
         value: entityName,
+      });
+    }
+
+    if (parentDeviceName) {
+      completionItems.push({
+        label: this._i18n!.localize(
+          "ui.components.device-picker.parent_device"
+        ),
+        value: parentDeviceName,
       });
     }
 

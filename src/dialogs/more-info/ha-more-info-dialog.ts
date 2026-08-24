@@ -615,11 +615,17 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const deviceName = context?.device
       ? computeDeviceName(context.device)
       : undefined;
+    const parentDeviceName = context?.parentDevice
+      ? computeDeviceName(context.parentDevice)
+      : undefined;
     const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
+    const breadcrumb = [
+      areaName,
+      parentDeviceName,
+      deviceName,
+      entityName,
+    ].filter((v): v is string => Boolean(v));
     const defaultTitle = breadcrumb.pop() || entityId;
     const addToTitle = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.title",

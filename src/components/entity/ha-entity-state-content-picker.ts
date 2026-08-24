@@ -178,6 +178,17 @@ export class HaStateContentPicker extends LitElement {
                   ),
                 });
               }
+              if (context.parentDevice) {
+                contextItems.push({
+                  id: "parent_device_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
+                  ),
+                });
+              }
               if (context.area) {
                 contextItems.push({
                   id: "area_name",

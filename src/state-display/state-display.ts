@@ -5,6 +5,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
+import type { EntityNameType } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   STRINGS_SEPARATOR_DOT,
@@ -54,6 +55,13 @@ export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
   timer: "remaining_time",
   update: "install_status",
   valve: ["state", "current_position"],
+};
+
+const NAME_CONTENT_TYPES: Partial<Record<string, EntityNameType>> = {
+  device_name: "device",
+  parent_device_name: "parent_device",
+  area_name: "area",
+  floor_name: "floor",
 };
 
 const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
@@ -190,13 +198,11 @@ class StateDisplay extends LitElement {
     if (content === "entity-id") {
       return stateObj.entity_id;
     }
-    if (
-      content === "device_name" ||
-      content === "area_name" ||
-      content === "floor_name"
-    ) {
-      const type = content.replace("_name", "") as "device" | "area" | "floor";
-      return this.hass.formatEntityName(stateObj, { type }) || undefined;
+    const nameType = NAME_CONTENT_TYPES[content];
+    if (nameType) {
+      return (
+        this.hass.formatEntityName(stateObj, { type: nameType }) || undefined
+      );
     }
 
     let relativeDateTime: string | number | undefined;
