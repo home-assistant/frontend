@@ -25,6 +25,7 @@ import type { HomeAssistant } from "../../../../types";
 import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
   AreaCardConfig,
+  ConditionalCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
   HeadingCardConfig,
@@ -37,6 +38,8 @@ import type {
   UpdatesCardConfig,
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import { computeDefaultSecurityAlertVisibility } from "../../cards/security-alerts/helpers";
+import { computeSecurityAlertCardEntityConfig } from "../../../security/strategies/security-alerts";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -457,6 +460,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
+    const hasVisibleSummaryCards = summaryCards.some(
+      (card) => !("hide_empty" in card && card.hide_empty)
+    );
+
     // Build summary cards for sidebar (full width: columns 12)
     const sidebarSummaryCards = summaryCards.map((card) => ({
       ...card,
@@ -503,77 +510,116 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           }
         : undefined;
 
-    const alertsSection: LovelaceSectionConfig | undefined = config
-      .alert_entities?.length
-      ? {
-          type: "grid",
-          column_span: maxColumns,
-          cards: [
-            {
-              type: "security-alerts",
-              alert_entities: config.alert_entities,
-              horizontal: true,
-              grid_options: { columns: "full" },
-            } satisfies SecurityAlertsCardConfig,
-          ],
-        }
-      : undefined;
+    const alertEntities = config.alert_entities?.map((alertEntity) =>
+      computeSecurityAlertCardEntityConfig(
+        hass.states[alertEntity.entity],
+        alertEntity
+      )
+    );
+
+    const alertsSection: LovelaceSectionConfig | undefined =
+      alertEntities?.length
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            cards: [
+              {
+                type: "security-alerts",
+                alert_entities: alertEntities,
+                horizontal: true,
+                grid_options: { columns: "full" },
+              } satisfies SecurityAlertsCardConfig,
+            ],
+          }
+        : undefined;
+
+    const emptyStateCard = {
+      type: "empty-state",
+      icon: "mdi:home-assistant",
+      content_only: true,
+      title: hass.localize("ui.panel.lovelace.strategy.home.welcome_title"),
+      content: hass.localize("ui.panel.lovelace.strategy.home.welcome_content"),
+      ...(config.home_panel && hass.user?.is_admin
+        ? {
+            buttons: [
+              {
+                icon: "mdi:plus",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_add_device"
+                ),
+                appearance: "filled" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "fire-dom-event" as const,
+                  home_panel: {
+                    type: "add_integration",
+                  },
+                },
+              },
+              {
+                icon: "mdi:home-edit",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                ),
+                appearance: "plain" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "navigate" as const,
+                  navigation_path: "/config/areas/dashboard",
+                },
+              },
+            ],
+          }
+        : {}),
+    } as EmptyStateCardConfig;
 
     // No sections, show empty state
     if (floorsSections.length === 0 && !alertsSection) {
       return {
         type: "panel",
-        cards: [
-          {
-            type: "empty-state",
-            icon: "mdi:home-assistant",
-            content_only: true,
-            title: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_title"
-            ),
-            content: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_content"
-            ),
-            ...(config.home_panel && hass.user?.is_admin
-              ? {
-                  buttons: [
-                    {
-                      icon: "mdi:plus",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_add_device"
-                      ),
-                      appearance: "filled",
-                      variant: "brand",
-                      tap_action: {
-                        action: "fire-dom-event",
-                        home_panel: {
-                          type: "add_integration",
-                        },
-                      },
-                    },
-                    {
-                      icon: "mdi:home-edit",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
-                      ),
-                      appearance: "plain",
-                      variant: "brand",
-                      tap_action: {
-                        action: "navigate",
-                        navigation_path: "/config/areas/dashboard",
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          } as EmptyStateCardConfig,
-        ],
+        cards: [emptyStateCard],
       };
     }
+
+    const emptyStateSection: LovelaceSectionConfig | undefined =
+      floorsSections.length === 0 &&
+      !favoritesSection &&
+      !hasVisibleSummaryCards &&
+      alertEntities?.length
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            cards: [
+              {
+                type: "conditional",
+                conditions: [
+                  {
+                    condition: "not",
+                    conditions: [
+                      {
+                        condition: "or",
+                        conditions: alertEntities.map((alertEntity) => ({
+                          condition: "and",
+                          conditions:
+                            alertEntity.visibility ??
+                            computeDefaultSecurityAlertVisibility(
+                              alertEntity.entity
+                            ),
+                        })),
+                      },
+                    ],
+                  },
+                ],
+                card: emptyStateCard,
+              } satisfies ConditionalCardConfig,
+            ],
+          }
+        : undefined;
 
     const sections = (
       [
         alertsSection,
+        emptyStateSection,
         favoritesSection,
         mobileSummarySection,
         ...floorsSections,
