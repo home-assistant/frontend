@@ -172,14 +172,20 @@ export class HuiHeadingBadgesEditor extends LitElement {
       `;
     }
 
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
-    );
+    const [entityName, deviceName, parentDeviceName, areaName] =
+      computeEntityNameList(
+        stateObj,
+        [
+          { type: "entity" },
+          { type: "device" },
+          { type: "parent_device" },
+          { type: "area" },
+        ],
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
 
     const isRTL = computeRTL(
       this.hass.language,
@@ -187,7 +193,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
     );
 
     const primary = entityName || deviceName || entityId;
-    const secondary = [entityName ? deviceName : undefined, areaName]
+    const secondary = [
+      entityName ? deviceName : undefined,
+      parentDeviceName,
+      areaName,
+    ]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
 

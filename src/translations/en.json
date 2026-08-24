@@ -771,10 +771,12 @@
           "types": {
             "floor": "Floor",
             "area": "Area",
+            "parent_device": "[%key:ui::components::device-picker::parent_device%]",
             "device": "Device",
             "entity": "Entity",
             "area_missing": "No area assigned",
             "floor_missing": "No floor assigned",
+            "parent_device_missing": "No parent device",
             "device_missing": "No related device"
           },
           "mode_composed": "Composed",
@@ -929,6 +931,7 @@
         "no_devices": "No devices available",
         "no_match": "No devices found for {term}",
         "device": "Device",
+        "parent_device": "Parent device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
         "placeholder": "Select a device",
@@ -1473,6 +1476,7 @@
         "remaining_time": "Remaining time",
         "install_status": "Install status",
         "device_name": "Device name",
+        "parent_device_name": "Parent device name",
         "area_name": "Area name",
         "floor_name": "Floor name"
       },
@@ -1702,6 +1706,7 @@
         "state": "State",
         "context": "Context",
         "floor": "Floor",
+        "parent_device": "[%key:ui::components::device-picker::parent_device%]",
         "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",

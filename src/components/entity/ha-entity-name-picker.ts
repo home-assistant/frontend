@@ -7,9 +7,12 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
+import {
+  ENTITY_NAME_TYPES,
+  type EntityNameItem,
+  type EntityNameType,
+} from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
-import type { EntityNameType } from "../../common/translations/entity-state";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
@@ -35,9 +38,7 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   </ha-combo-box-item>
 `;
 
-const KNOWN_TYPES = new Set(["entity", "device", "area", "floor"]);
-
-const UNIQUE_TYPES = new Set(["entity", "device", "area", "floor"]);
+const KNOWN_TYPES = new Set<string>(ENTITY_NAME_TYPES);
 
 const formatOptionValue = (item: EntityNameItem) => {
   if (item.type === "text" && item.text) {
@@ -387,6 +388,7 @@ export class HaEntityNamePicker extends LitElement {
     );
 
     if (context.device) options.add("device");
+    if (context.parentDevice) options.add("parent_device");
     if (context.area) options.add("area");
     if (context.floor) options.add("floor");
     return options;
@@ -399,9 +401,7 @@ export class HaEntityNamePicker extends LitElement {
 
     const types = this._validTypes(entityId);
 
-    const items = (
-      ["entity", "device", "area", "floor"] as const
-    ).map<PickerComboBoxItem>((name) => {
+    const items = ENTITY_NAME_TYPES.map<PickerComboBoxItem>((name) => {
       const stateObj = this.hass.states[entityId];
       const isValid = types.has(name);
       const primary = this.hass.localize(
@@ -464,7 +464,7 @@ export class HaEntityNamePicker extends LitElement {
 
     const excludedValues = new Set(
       this._items
-        .filter((item) => UNIQUE_TYPES.has(item.type))
+        .filter((item) => KNOWN_TYPES.has(item.type))
         .map((item) => formatOptionValue(item))
     );
 

@@ -196,7 +196,12 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
         const nameList = computeEntityNameList(
           entity,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
+          [
+            { type: "entity" },
+            { type: "device" },
+            { type: "parent_device" },
+            { type: "area" },
+          ],
           this._registries.entities,
           this._registries.devices,
           this._registries.areas,
@@ -219,9 +224,14 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
           continue;
         }
 
-        const [, deviceName, areaName] = nameList;
+        const [, deviceName, parentDeviceName, areaName] = nameList;
 
         if (deviceName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        if (parentDeviceName?.toLowerCase().includes(lowerFilter)) {
           result.push({ entity, nameList });
           continue;
         }
@@ -238,14 +248,18 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
   private _renderItem = (item: FilteredEntity) => {
     const { entity: entityState, nameList } = item;
-    const [entityName, deviceName, areaName] = nameList;
+    const [entityName, deviceName, parentDeviceName, areaName] = nameList;
 
     const isRTL = computeRTL(
       this._i18n.language,
       this._i18n.translationMetadata.translations
     );
     const primary = entityName || deviceName || entityState.entity_id;
-    const context = [areaName, entityName ? deviceName : undefined]
+    const context = [
+      areaName,
+      parentDeviceName,
+      entityName ? deviceName : undefined,
+    ]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
     const showEntityId = this._config?.userData?.showEntityIdPicker;
