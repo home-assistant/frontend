@@ -27,7 +27,14 @@ vi.mock("../../../src/components/ha-dialog-footer", () => {
   return {};
 });
 
+const mockForm = vi.hoisted(() => ({
+  delayedTag: undefined as string | undefined,
+}));
+
 vi.mock("../../../src/components/ha-form/ha-form", () => {
+  if (!customElements.get("ha-selector")) {
+    customElements.define("ha-selector", class extends HTMLElement {});
+  }
   customElements.define(
     "ha-form",
     class extends HTMLElement {
@@ -35,6 +42,14 @@ vi.mock("../../../src/components/ha-form/ha-form", () => {
 
       public connectedCallback(): void {
         if (this.shadowRoot) {
+          return;
+        }
+        if (mockForm.delayedTag) {
+          const selector = document.createElement("ha-selector");
+          selector
+            .attachShadow({ mode: "open" })
+            .append(document.createElement(mockForm.delayedTag));
+          this.attachShadow({ mode: "open" }).append(selector);
           return;
         }
         const selector = document.createElement("div");
@@ -54,10 +69,30 @@ const getInternals = (dialog: DialogForm) =>
 const getForms = (dialog: DialogForm): HTMLElement[] =>
   Array.from(dialog.shadowRoot!.querySelectorAll("ha-form"));
 
-const formControl = (form: HTMLElement): HTMLElement | null =>
-  (form.shadowRoot?.firstElementChild?.shadowRoot?.querySelector(
-    "input, textarea, button"
-  ) as HTMLElement | null) ?? null;
+const formControl = (form: HTMLElement): HTMLElement | null => {
+  const visit = (node: ParentNode): HTMLElement | null => {
+    if (node instanceof Element && node.shadowRoot) {
+      const inShadow = visit(node.shadowRoot);
+      if (inShadow) {
+        return inShadow;
+      }
+    }
+    for (const child of node.children) {
+      if (
+        child instanceof HTMLElement &&
+        child.matches("input, textarea, button")
+      ) {
+        return child;
+      }
+      const found = visit(child);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  };
+  return visit(form);
+};
 
 const outerParams = (data: FormDialogData = {}): FormDialogParams => ({
   title: "Outer",
@@ -112,6 +147,7 @@ const cancel = (dialog: DialogForm) =>
   (getInternals(dialog)["_cancel"] as () => void)();
 
 afterEach(() => {
+  mockForm.delayedTag = undefined;
   document.body.replaceChildren();
   vi.clearAllMocks();
 });
@@ -210,6 +246,36 @@ describe("dialog-form mounted nested forms", () => {
 
     await vi.waitUntil(
       () => deepActiveElement() === formControl(getForms(dialog)[0])
+    );
+  });
+
+  it("focuses a nested control after a cold selector chunk upgrades", async () => {
+    const tag = `ha-test-delayed-selector-${crypto.randomUUID()}`;
+    const dialog = await openDialog();
+    const parent = getForms(dialog)[0];
+    const opener = document.createElement("button");
+    parent.append(opener);
+    opener.focus();
+
+    mockForm.delayedTag = tag;
+    await showNestedDialog(dialog, parent, nestedParams());
+
+    customElements.define(
+      tag,
+      class extends HTMLElement {
+        public connectedCallback(): void {
+          if (this.shadowRoot) {
+            return;
+          }
+          this.attachShadow({ mode: "open" }).append(
+            document.createElement("input")
+          );
+        }
+      }
+    );
+
+    await vi.waitUntil(
+      () => deepActiveElement() === formControl(getForms(dialog)[1])
     );
   });
 

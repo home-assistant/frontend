@@ -150,6 +150,49 @@ export class DialogForm
     await nextRender();
   }
 
+  private async _waitForSelectorElements(): Promise<void> {
+    const selectors = this._form?.shadowRoot?.querySelectorAll("ha-selector");
+    if (selectors?.length) {
+      await Promise.all(
+        Array.from(selectors, (element) =>
+          "updateComplete" in element
+            ? (element as LitElement).updateComplete
+            : undefined
+        )
+      );
+    }
+
+    const pending = this._undefinedCustomElements(this._form);
+    if (!pending.length) {
+      return;
+    }
+
+    await Promise.all(pending.map((tag) => customElements.whenDefined(tag)));
+    await nextRender();
+  }
+
+  private _undefinedCustomElements(root?: ParentNode): string[] {
+    const tags = new Set<string>();
+    const visit = (node: ParentNode) => {
+      if (node instanceof Element && node.shadowRoot) {
+        visit(node.shadowRoot);
+      }
+      for (const child of node.children) {
+        if (
+          child.localName.includes("-") &&
+          !customElements.get(child.localName)
+        ) {
+          tags.add(child.localName);
+        }
+        visit(child);
+      }
+    };
+    if (root) {
+      visit(root);
+    }
+    return [...tags];
+  }
+
   private _focusFirstControl(root = this._form): void {
     if (!root) {
       return;
@@ -186,6 +229,12 @@ export class DialogForm
     expectedParams: FormDialogParams
   ): Promise<void> {
     await this._afterFormRender();
+
+    if (!this._open || this._params !== expectedParams) {
+      return;
+    }
+
+    await this._waitForSelectorElements();
 
     if (!this._open || this._params !== expectedParams) {
       return;
