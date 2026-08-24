@@ -189,8 +189,8 @@ export function createZHANetworkChartData(
       }
       const closestNeighbor = neighbors.sort((a, b) => {
         const priorityDiff =
-          (relationshipPriority[a.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY) -
-          (relationshipPriority[b.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY);
+          (RELATIONSHIP_PRIORITY[a.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY) -
+          (RELATIONSHIP_PRIORITY[b.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY);
         return priorityDiff !== 0
           ? priorityDiff
           : parseInt(b.lqi) - parseInt(a.lqi);
