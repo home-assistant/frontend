@@ -3,6 +3,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
+import { shareInFlightRequest } from "../common/util/share-in-flight-request";
 
 export interface RecorderInfo {
   backlog: number | null;
@@ -160,14 +161,24 @@ export const getRecorderEntityOptions = (
     entity_id,
   });
 
+type StatisticIdsType = "mean" | "sum";
+
+type StatisticIdsApi = Pick<HomeAssistant, "callWS"> &
+  Partial<Pick<HomeAssistant, "connection">>;
+
 export const getStatisticIds = (
-  hass: Pick<HomeAssistant, "callWS">,
-  statistic_type?: "mean" | "sum"
-) =>
-  hass.callWS<StatisticsMetaData[]>({
-    type: "recorder/list_statistic_ids",
-    statistic_type,
-  });
+  hass: StatisticIdsApi,
+  statistic_type?: StatisticIdsType
+): Promise<StatisticsMetaData[]> =>
+  shareInFlightRequest(
+    hass.connection ?? hass,
+    `recorder/list_statistic_ids:${statistic_type ?? "all"}`,
+    () =>
+      hass.callWS<StatisticsMetaData[]>({
+        type: "recorder/list_statistic_ids",
+        statistic_type,
+      })
+  );
 
 export const getStatisticMetadata = (
   hass: HomeAssistant,
