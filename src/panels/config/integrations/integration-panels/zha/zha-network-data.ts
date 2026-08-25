@@ -12,6 +12,15 @@ function getLQIWidth(lqi: number): number {
   return lqi > 200 ? 3 : lqi > 100 ? 2 : 1;
 }
 
+const RELATIONSHIP_PRIORITY: Record<string, number> = {
+  Parent: 0,
+  Sibling: 1,
+  NoneOfTheAbove: 2,
+  Child: 3,
+  PreviousChild: 5,
+};
+const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
+
 export function createZHANetworkChartData(
   devices: ZHADevice[],
   hass: HomeAssistant,
@@ -166,14 +175,6 @@ export function createZHANetworkChartData(
       // end device (e.g. a plug sitting right next to its router) over the
       // router's actual uplink, which severs it from the rest of the mesh
       // in the visualization even though the real network is connected.
-      const RELATIONSHIP_PRIORITY: Record<string, number> = {
-          Parent: 0,
-          Sibling: 1,
-          NoneOfTheAbove: 2,
-          Child: 3,
-          PreviousChild: 5, // stale: this device has left the network
-      };
-      const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
       const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
         device.neighbors ?? [];
       if (neighbors.length === 0) {
