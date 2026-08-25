@@ -1,9 +1,6 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface DialogThreadEphemeralKeyParams {
-  ephemeralKey: string;
-  /** Seconds */
-  lifetime: number;
   extendedAddress: string;
 }
 

@@ -26,10 +26,10 @@ export interface OTBREphemeralKey {
 }
 
 export const OTBRCreateEphemeralKey = (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   extended_address: string
 ): Promise<OTBREphemeralKey> =>
-  hass.callWS({
+  api.callWS({
     type: "otbr/create_ephemeral_key",
     extended_address,
   });

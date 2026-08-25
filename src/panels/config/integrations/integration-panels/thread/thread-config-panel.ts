@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
-import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
@@ -23,9 +22,7 @@ import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
-  OTBRCreateEphemeralKey,
   OTBRCreateNetwork,
-  OTBRDeleteEphemeralKey,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
@@ -75,8 +72,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   @state() private _datasets: ThreadDataSet[] = [];
 
   @state() private _otbrInfo?: OTBRInfoDict;
-
-  @state() private _sharing = false;
 
   protected render(): TemplateResult {
     const networks = this._groupRoutersByNetwork(this._routers, this._datasets);
@@ -224,7 +219,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                         )}
                         .otbr=${otbrForSharing}
                         .path=${mdiQrcode}
-                        .disabled=${this._sharing}
                         @click=${this._shareCredentials}
                       ></ha-icon-button>`
                     : ""
@@ -466,50 +460,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     });
   }
 
-  private async _shareCredentials(ev: Event) {
-    if (this._sharing) {
-      return;
-    }
+  private _shareCredentials(ev: Event) {
     const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
-    this._sharing = true;
-    try {
-      const result = await OTBRCreateEphemeralKey(
-        this.hass,
-        otbr.extended_address
-      );
-      if (!this.isConnected) {
-        // Navigated away before the code could be shown; don't leave it active
-        OTBRDeleteEphemeralKey(
-          this.hass,
-          otbr.extended_address,
-          result.ephemeral_key
-        ).catch(() => {
-          // The key expires on its own
-        });
-        return;
-      }
-      showThreadEphemeralKeyDialog(this, {
-        ephemeralKey: result.ephemeral_key,
-        lifetime: result.lifetime,
-        extendedAddress: otbr.extended_address,
-      });
-    } catch (err: any) {
-      const errorTexts: Record<string, LocalizeKeys> = {
-        ephemeral_key_not_supported:
-          "ui.panel.config.thread.share_credentials_not_supported",
-        ephemeral_key_in_use: "ui.panel.config.thread.share_credentials_in_use",
-      };
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.thread.share_credentials_failed"
-        ),
-        text: errorTexts[err.code]
-          ? this.hass.localize(errorTexts[err.code])
-          : err.message || err,
-      });
-    } finally {
-      this._sharing = false;
-    }
+    showThreadEphemeralKeyDialog(this, {
+      extendedAddress: otbr.extended_address,
+    });
   }
 
   private async _showDatasetInfo(ev: Event) {
