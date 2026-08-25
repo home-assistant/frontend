@@ -64,7 +64,7 @@ export const SENSOR_NUMERIC_DEVICE_CLASSES: string[] = [
   "wind_speed",
 ];
 
-export const SENSOR_DEVICE_CLASS_UNITS: Record<string, string[]> = {
+export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
   absolute_humidity: ["g/m³", "mg/m³"],
   apparent_power: ["kVA", "mVA", "VA"],
   aqi: [null],
@@ -248,7 +248,10 @@ export const SENSOR_DEVICE_CLASS_UNITS: Record<string, string[]> = {
   ],
 };
 
-export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<string, string[]> = {
+export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<
+  string,
+  (string | null)[]
+> = {
   absolute_humidity: ["g/m³", "mg/m³"],
   apparent_power: ["kVA", "mVA", "VA"],
   area: ["ac", "cm²", "ft²", "ha", "in²", "km²", "mi²", "mm²", "m²", "yd²"],
