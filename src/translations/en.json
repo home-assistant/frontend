@@ -5405,7 +5405,6 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}",
                     "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   },
                   "for_type": {
@@ -5446,9 +5445,6 @@
                   "type_input": "Value of an entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "crossed_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above}{duration, select, \n undefined {} \n other { for {duration}}\n}",
                     "crossed_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}",
                     "crossed_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}"
@@ -5703,9 +5699,6 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "Tests if the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
-                    "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
-                    "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
-                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}",
                     "is_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above}",
                     "is_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is below {below}",
                     "is_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above} and below {below}"
@@ -5724,8 +5717,6 @@
                   "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
-                    "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }",
                     "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
@@ -6055,7 +6046,7 @@
                 },
                 "check_condition": {
                   "description": {
-                    "full": "Test {condition}"
+                    "full": "Test: {condition}"
                   }
                 },
                 "set_conversation_response": {
