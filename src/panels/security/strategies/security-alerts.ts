@@ -62,9 +62,6 @@ export const computeDefaultSecurityAlertVisibility = (
     case "alarm_control_panel":
       condition.state = "triggered";
       break;
-    case "camera":
-      condition.state = [UNAVAILABLE, UNKNOWN];
-      break;
     case "cover":
       condition.state = ["open", "opening", "closing"];
       break;
