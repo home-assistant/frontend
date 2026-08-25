@@ -26,6 +26,7 @@ import "../ha-select-box";
 import "../ha-sortable";
 import "../radio/ha-radio-group";
 import "../radio/ha-radio-option";
+import { DOMAIN_DEVICE_CLASSES } from "../../data/device_classes";
 
 @customElement("ha-selector-device_class")
 export class HaDeviceClassSelector extends LitElement {
@@ -82,12 +83,8 @@ export class HaDeviceClassSelector extends LitElement {
   };
 
   private _getDeviceClasses = (): SelectOption[] => {
-    const DEVICE_CLASS_MAPPING = {
-      sensor: ["temperature", "humidity"],
-    };
-
     const domain = this.selector.device_class?.domain || "";
-    const domainClasses = DEVICE_CLASS_MAPPING[domain] ?? [];
+    const domainClasses = DOMAIN_DEVICE_CLASSES[domain] ?? [];
 
     return domainClasses.map((domainClass: string) => ({
       value: domainClass,
@@ -244,7 +241,7 @@ export class HaDeviceClassSelector extends LitElement {
       return;
     }
 
-    if (!this.selector.select?.multiple) {
+    if (!this.selector.device_class?.multiple) {
       fireEvent(this, "value-changed", {
         value: newValue,
       });

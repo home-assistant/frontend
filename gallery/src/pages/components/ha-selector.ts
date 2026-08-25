@@ -429,7 +429,6 @@ const SCHEMAS: {
         selector: {
           device_class: {
             domain: "sensor",
-            options: ["temperature", "humidity", "battery"],
           },
         },
       },
