@@ -2640,6 +2640,22 @@
           "learn_more": "Learn more"
         }
       },
+      "security": {
+        "editor": {
+          "title": "Edit security and safety page",
+          "description": "Configure your security and safety display preferences.",
+          "active_alert_entities": "Active alert entities",
+          "active_alert_entities_description": "Display any entities that require attention.",
+          "add_alert_entity": "Add entity",
+          "severity": {
+            "label": "Severity",
+            "alert": "Alert",
+            "warning": "Warning"
+          },
+          "load_failed": "Failed to load security and safety page configuration",
+          "save_failed": "Failed to save security and safety page configuration"
+        }
+      },
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
@@ -9161,6 +9177,7 @@
           "security": {
             "devices": "Devices",
             "other_devices": "Other devices",
+            "active_alerts": "Active alerts",
             "activity": "Activity"
           },
           "climate": {
