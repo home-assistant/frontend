@@ -835,8 +835,11 @@
         },
         "style": "Time format style"
       },
-      "filter-device-classes": {
-        "caption": "Device class"
+      "filter-entity-types": {
+        "caption": "Type",
+        "no_device_class": "No type",
+        "expand": "Expand",
+        "collapse": "Collapse"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -1615,6 +1618,7 @@
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
+            "serial": "[%key:ui::panel::config::dashboard::serial::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -2753,6 +2757,10 @@
           "radio_frequency": {
             "main": "Radio frequency",
             "secondary": "Control radio-based devices."
+          },
+          "serial": {
+            "main": "Serial",
+            "secondary": "Serial ports and the integrations and apps using them"
           },
           "knx": {
             "main": "KNX",
@@ -7519,6 +7527,38 @@
           "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
+        },
+        "serial": {
+          "title": "Serial",
+          "status_ok": "All ports connected",
+          "status_disconnected": "Ports disconnected",
+          "status_summary": "{in_use}/{total} connected ports in use",
+          "status_summary_disconnected": "{count} disconnected",
+          "connected": "Connected",
+          "connected_description": "These ports are used by at least one integration or app.",
+          "available": "Available",
+          "available_description": "These ports are connected but not used by any integration or app.",
+          "disconnected": "Disconnected",
+          "disconnected_description": "These ports are used by an integration or app but are currently not connected.",
+          "no_ports": "No serial ports found",
+          "loading_error": "Failed to load serial ports",
+          "serial_number": "S/N: {serial_number}",
+          "consumer_not_running": "{name} (not running)",
+          "can_be_used_with": "Can be used with {integrations}",
+          "discovered_by": "Discovered by {integration}, set it up",
+          "port_information": "Port information",
+          "fields": {
+            "device": "Device",
+            "resolved_device": "Resolved device",
+            "description": "Description",
+            "manufacturer": "Manufacturer",
+            "interface_description": "Interface description",
+            "interface_number": "Interface number",
+            "serial_number": "Serial number",
+            "vid": "Vendor ID",
+            "pid": "Product ID",
+            "bcd_device": "Device revision"
+          }
         },
         "dhcp": {
           "title": "DHCP discovery",

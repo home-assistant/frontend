@@ -1029,10 +1029,14 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       }
     }
 
-    if (changedProps.has("_currView") || changedProps.has("_entry")) {
-      if (this._currView === "settings" && this._entry) {
-        this._initDirtyTracking({ type: "deep" });
-      }
+    if (
+      this._currView === "settings" &&
+      this._entry &&
+      ((changedProps.has("_currView") &&
+        changedProps.get("_currView") !== "settings") ||
+        (changedProps.has("_entry") && !changedProps.get("_entry")))
+    ) {
+      this._initDirtyTracking({ type: "deep" });
     }
 
     if (changedProps.has("_currView")) {
