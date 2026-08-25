@@ -1,5 +1,5 @@
 import type { LocalizeFunc } from "../../common/translations/localize";
-import { SENSOR_NUMERIC_DEVICE_CLASSES } from "../sensor_numeric_device_classes";
+import { SENSOR_NUMERIC_DEVICE_CLASSES } from "../sensor_entity_constants";
 
 export const NO_DEVICE_CLASS = "none";
 
