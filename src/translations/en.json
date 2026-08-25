@@ -325,8 +325,11 @@
           "pause": "Pause",
           "cancel": "Cancel",
           "finish": "Finish",
+          "restart": "Restart",
           "set": "Set"
-        }
+        },
+        "presets": "Presets",
+        "start_preset": "Start {duration}"
       },
       "vacuum": {
         "actions": {
@@ -10896,6 +10899,25 @@
                   "increment": "Increment",
                   "decrement": "Decrement",
                   "reset": "Reset"
+                }
+              },
+              "timer-actions": {
+                "label": "Timer actions",
+                "customize": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::customize%]",
+                "actions": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::actions%]",
+                "actions_list": {
+                  "start": "[%key:ui::card::timer::actions::start%]",
+                  "pause": "[%key:ui::card::timer::actions::pause%]",
+                  "cancel": "[%key:ui::card::timer::actions::cancel%]",
+                  "finish": "[%key:ui::card::timer::actions::finish%]"
+                }
+              },
+              "timer-presets": {
+                "label": "Timer presets",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
                 }
               },
               "fan-preset-modes": {
