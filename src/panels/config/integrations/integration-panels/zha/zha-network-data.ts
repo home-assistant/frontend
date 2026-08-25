@@ -168,53 +168,78 @@ export function createZHANetworkChartData(
           existingLinks.push(link);
         }
       });
-    } else if (existingLinks.length === 0) {
-      // If there are no links, create a link to the closest neighbor.
-      // Prefer a neighbor the device's own Zigbee stack reports as its
-      // parent: picking by raw LQI alone regularly favors a nearby child
-      // end device (e.g. a plug sitting right next to its router) over the
-      // router's actual uplink, which severs it from the rest of the mesh
-      // in the visualization even though the real network is connected.
-      const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
-        device.neighbors ?? [];
-      if (neighbors.length === 0) {
-        // If there are no neighbors, look for links from other devices
-        devices.forEach((d) => {
-          if (d.neighbors && d.neighbors.length > 0) {
-            const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
-            if (neighbor) {
-              neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
-            }
-          }
-        });
-      }
-      const closestNeighbor = neighbors.sort((a, b) => {
-        const aPriority =
-          RELATIONSHIP_PRIORITY[a.relationship ?? ""] ??
-          UNKNOWN_RELATIONSHIP_PRIORITY;
-        const bPriority =
-          RELATIONSHIP_PRIORITY[b.relationship ?? ""] ??
-          UNKNOWN_RELATIONSHIP_PRIORITY;
-        const priorityDiff = aPriority - bPriority;
-        return priorityDiff !== 0
-          ? priorityDiff
-          : parseInt(b.lqi) - parseInt(a.lqi);
-      })[0];
-      if (closestNeighbor) {
-        links.push({
-          source: device.ieee,
-          target: closestNeighbor.ieee,
-          value: parseInt(closestNeighbor.lqi),
-          symbolSize: 5,
-          lineStyle: {
-            width: 1,
-            color: style.getPropertyValue("--dark-primary-color"),
-            type: "dotted",
-          },
-          ignoreForceLayout: true,
-        });
-      }
     }
+  });
+
+  // For every device whose routing table was empty (so it got no link
+  // above), independently compute its preferred fallback neighbor before
+  // creating any of these links. Doing this device-by-device while
+  // creating links (as before) meant whichever device the backend happens
+  // to list first "claims" the connection, and a sibling router listed
+  // later never gets to contribute its own — often better — choice,
+  // splitting the graph into islands depending on backend device order.
+  const fallbackTargets = new Map<string, { ieee: string; lqi: string }>();
+  devices.forEach((device) => {
+    const hasLink = links.some(
+      (link) => link.source === device.ieee || link.target === device.ieee
+    );
+    if (hasLink) {
+      return;
+    }
+    const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
+      device.neighbors ?? [];
+    if (neighbors.length === 0) {
+      // If there are no neighbors, look for links from other devices
+      devices.forEach((d) => {
+        if (d.neighbors && d.neighbors.length > 0) {
+          const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
+          if (neighbor) {
+            neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
+          }
+        }
+      });
+    }
+    // Prefer a neighbor the device's own Zigbee stack reports as its
+    // parent: picking by raw LQI alone regularly favors a nearby child end
+    // device (e.g. a plug sitting right next to its router) over the
+    // router's actual uplink, which severs it from the rest of the mesh in
+    // the visualization even though the real network is connected.
+    const closestNeighbor = neighbors.sort((a, b) => {
+      const aPriority =
+        RELATIONSHIP_PRIORITY[a.relationship ?? ""] ??
+        UNKNOWN_RELATIONSHIP_PRIORITY;
+      const bPriority =
+        RELATIONSHIP_PRIORITY[b.relationship ?? ""] ??
+        UNKNOWN_RELATIONSHIP_PRIORITY;
+      const priorityDiff = aPriority - bPriority;
+      return priorityDiff !== 0
+        ? priorityDiff
+        : parseInt(b.lqi) - parseInt(a.lqi);
+    })[0];
+    if (closestNeighbor) {
+      fallbackTargets.set(device.ieee, closestNeighbor);
+    }
+  });
+
+  const addedFallbackPairs = new Set<string>();
+  fallbackTargets.forEach((target, ieee) => {
+    const pairKey = [ieee, target.ieee].sort().join("|");
+    if (addedFallbackPairs.has(pairKey)) {
+      return;
+    }
+    addedFallbackPairs.add(pairKey);
+    links.push({
+      source: ieee,
+      target: target.ieee,
+      value: parseInt(target.lqi),
+      symbolSize: 5,
+      lineStyle: {
+        width: 1,
+        color: style.getPropertyValue("--dark-primary-color"),
+        type: "dotted",
+      },
+      ignoreForceLayout: true,
+    });
   });
 
   // Now set ignoreForceLayout to false for the best connection of each device
