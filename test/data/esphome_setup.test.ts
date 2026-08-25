@@ -75,8 +75,11 @@ const device = (
   }) as DeviceRegistryEntry;
 
 describe("hasESPHomeSetupCapabilities", () => {
-  it("is false when capabilities are missing or unavailable", () => {
+  it("is false when capabilities are missing", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
+  });
+
+  it("is true when advertised even if the device is unavailable", () => {
     expect(
       hasESPHomeSetupCapabilities(
         capabilities({
@@ -85,7 +88,7 @@ describe("hasESPHomeSetupCapabilities", () => {
         }),
         { mediaPlayerSupported: true }
       )
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("is false for a device with no advertised capabilities", () => {

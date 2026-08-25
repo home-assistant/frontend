@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAccessPoint,
   mdiBluetooth,
@@ -5,8 +6,8 @@ import {
   mdiMusic,
   mdiSwapHorizontal,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   fireEvent,
   type HASSDomEvent,
@@ -15,13 +16,13 @@ import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import { internationalizationContext } from "../../../../data/context";
 import {
   ESPHOME_CAPABILITY_ACCENTS,
   getESPHomeSetupCapabilityIds,
   type ESPHomeCapabilityId,
   type ESPHomeSetupStatus,
 } from "../../../../data/esphome_setup";
-import type { HomeAssistant } from "../../../../types";
 
 const CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: mdiBluetooth,
@@ -40,7 +41,9 @@ const CAPABILITY_TITLE_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
 
 @customElement("ha-esphome-setup-banner")
 export class HaESPHomeSetupBanner extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public deviceName!: string;
 
@@ -49,6 +52,10 @@ export class HaESPHomeSetupBanner extends LitElement {
   @property({ type: Boolean }) public started = false;
 
   protected render() {
+    if (!this._i18n) {
+      return nothing;
+    }
+    const localize = this._i18n.localize;
     const ids = getESPHomeSetupCapabilityIds(this.status);
     return html`
       <ha-card outlined>
@@ -57,31 +64,24 @@ export class HaESPHomeSetupBanner extends LitElement {
             <h2>
               ${
                 this.started
-                  ? this.hass.localize(
+                  ? localize(
                       "ui.panel.config.devices.esphome.setup_continue_title",
                       { name: this.deviceName }
                     )
-                  : this.hass.localize(
-                      "ui.panel.config.devices.esphome.setup_title"
-                    )
+                  : localize("ui.panel.config.devices.esphome.setup_title")
               }
             </h2>
             <p>
-              ${this.hass.localize(
-                "ui.panel.config.devices.esphome.setup_intro",
-                { count: ids.length }
-              )}
+              ${localize("ui.panel.config.devices.esphome.setup_intro", {
+                count: ids.length,
+              })}
             </p>
             <div class="actions">
               <ha-button @click=${this._setup}>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.esphome.setup_action"
-                )}
+                ${localize("ui.panel.config.devices.esphome.setup_action")}
               </ha-button>
               <ha-button appearance="plain" @click=${this._later}>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.esphome.setup_later"
-                )}
+                ${localize("ui.panel.config.devices.esphome.setup_later")}
               </ha-button>
             </div>
           </div>
@@ -100,6 +100,7 @@ export class HaESPHomeSetupBanner extends LitElement {
   }
 
   private _renderPip(id: ESPHomeCapabilityId) {
+    const localize = this._i18n!.localize;
     const completed = this.status[id] === "completed";
     return html`
       <div class="pip">
@@ -111,16 +112,20 @@ export class HaESPHomeSetupBanner extends LitElement {
           ${
             completed
               ? html`
-                  <span class="pip-check" aria-hidden="true">
+                  <span
+                    class="pip-check"
+                    role="img"
+                    aria-label=${localize(
+                      "ui.panel.config.devices.esphome.setup_status_completed"
+                    )}
+                  >
                     <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
                   </span>
                 `
               : ""
           }
         </span>
-        <span class="pip-label">
-          ${this.hass.localize(CAPABILITY_TITLE_KEYS[id])}
-        </span>
+        <span class="pip-label"> ${localize(CAPABILITY_TITLE_KEYS[id])} </span>
       </div>
     `;
   }

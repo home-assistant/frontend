@@ -1,35 +1,38 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { consume, type ContextType } from "@lit/context";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import type { HomeAssistant } from "../../../../types";
+import { internationalizationContext } from "../../../../data/context";
 
 @customElement("ha-esphome-setup-reminder")
 export class HaESPHomeSetupReminder extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property({ type: Number }) public remaining = 0;
 
   @property({ type: Number }) public count = 0;
 
   protected render() {
+    if (!this._i18n) {
+      return nothing;
+    }
+    const localize = this._i18n.localize;
     const title =
       this.remaining > 0
-        ? this.hass.localize(
-            "ui.panel.config.devices.esphome.setup_reminder_remaining",
-            { count: this.remaining }
-          )
-        : this.hass.localize(
-            "ui.panel.config.devices.esphome.setup_reminder_done"
-          );
+        ? localize("ui.panel.config.devices.esphome.setup_reminder_remaining", {
+            count: this.remaining,
+          })
+        : localize("ui.panel.config.devices.esphome.setup_reminder_done");
     const lead =
       this.remaining > 0
-        ? this.hass.localize(
-            "ui.panel.config.devices.esphome.setup_reminder_intro",
-            { count: this.count }
-          )
-        : this.hass.localize(
+        ? localize("ui.panel.config.devices.esphome.setup_reminder_intro", {
+            count: this.count,
+          })
+        : localize(
             "ui.panel.config.devices.esphome.setup_reminder_done_intro",
             { count: this.count }
           );
@@ -40,9 +43,7 @@ export class HaESPHomeSetupReminder extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button appearance="plain" @click=${this._setup}>
-            ${this.hass.localize(
-              "ui.panel.config.devices.esphome.setup_action"
-            )}
+            ${localize("ui.panel.config.devices.esphome.setup_action")}
           </ha-button>
         </div>
       </ha-card>

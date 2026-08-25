@@ -312,7 +312,15 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return nothing;
     }
     return html`
-      <span class="status-badge ${status}" aria-hidden="true">
+      <span
+        class="status-badge ${status}"
+        role="img"
+        aria-label=${this._i18n!.localize(
+          status === "completed"
+            ? "ui.panel.config.devices.esphome.setup_status_completed"
+            : "ui.panel.config.devices.esphome.setup_status_active"
+        )}
+      >
         <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
       </span>
     `;
@@ -820,8 +828,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     ).find(
       (item) =>
         item.handler === "zwave_js" &&
-        (item.context?.source === "esphome" ||
-          item.context?.unique_id === homeId)
+        item.context?.source === "esphome" &&
+        item.context?.unique_id === homeId
     );
     if (flow) {
       showConfigFlowDialog(this, {

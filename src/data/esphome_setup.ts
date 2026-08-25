@@ -67,7 +67,7 @@ export const hasESPHomeSetupCapabilities = (
   options: { mediaPlayerSupported?: boolean } = {}
 ): boolean =>
   Boolean(
-    capabilities?.available &&
+    capabilities &&
     (capabilities.bluetooth_proxy.supported ||
       options.mediaPlayerSupported ||
       capabilities.zwave_proxy.supported ||

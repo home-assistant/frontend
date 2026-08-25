@@ -233,9 +233,13 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _esphomeUserData: ESPHomeFrontendUserData | null = null;
 
+  @state() private _esphomeUserDataReady = false;
+
   private _deviceAlertsActionsTimeout?: number;
 
   private _unsubEsphomeUserData?: UnsubscribeFunc;
+
+  private _esphomeUserDataSubGeneration = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -421,9 +425,17 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeESPHomeUserData();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearTimeout(this._deviceAlertsActionsTimeout);
+    this._esphomeUserDataSubGeneration += 1;
     this._unsubEsphomeUserData?.();
     this._unsubEsphomeUserData = undefined;
   }
@@ -483,10 +495,11 @@ export class HaConfigDevicePage extends LitElement {
       this.deviceId,
       entities
     );
-    const showESPHomeSetup = hasESPHomeSetupCapabilities(
-      this._esphomeCapabilities,
-      { mediaPlayerSupported }
-    );
+    const showESPHomeSetup =
+      this._esphomeUserDataReady &&
+      hasESPHomeSetupCapabilities(this._esphomeCapabilities, {
+        mediaPlayerSupported,
+      });
     const esphomeDeferred = isESPHomeSetupDeferred(
       this._esphomeUserData,
       this.deviceId
@@ -973,7 +986,6 @@ export class HaConfigDevicePage extends LitElement {
       ${
         showESPHomeSetup && esphomeDeferred
           ? html`<ha-esphome-setup-reminder
-              .hass=${this.hass}
               .remaining=${esphomeRemaining}
               .count=${esphomeCapabilityCount}
               @esphome-setup=${this._showESPHomeSetup}
@@ -1199,7 +1211,6 @@ export class HaConfigDevicePage extends LitElement {
             ? html`
                 <ha-esphome-setup-banner
                   class="fullwidth"
-                  .hass=${this.hass}
                   .deviceName=${deviceName}
                   .status=${esphomeStatus}
                   .started=${esphomeStarted}
@@ -1228,16 +1239,30 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _subscribeESPHomeUserData() {
+    const generation = this._esphomeUserDataSubGeneration;
     try {
-      this._unsubEsphomeUserData = await subscribeFrontendUserData(
+      const unsub = await subscribeFrontendUserData(
         this.hass.connection,
         "esphome",
         ({ value }) => {
+          if (generation !== this._esphomeUserDataSubGeneration) {
+            return;
+          }
           this._esphomeUserData = value;
+          this._esphomeUserDataReady = true;
         }
       );
+      if (generation !== this._esphomeUserDataSubGeneration) {
+        unsub();
+        return;
+      }
+      this._unsubEsphomeUserData = unsub;
     } catch (_err) {
+      if (generation !== this._esphomeUserDataSubGeneration) {
+        return;
+      }
       this._esphomeUserData = null;
+      this._esphomeUserDataReady = true;
     }
   }
 
@@ -1305,7 +1330,7 @@ export class HaConfigDevicePage extends LitElement {
           err instanceof Error
             ? err.message
             : this.hass.localize(
-                "ui.panel.config.devices.esphome.setup_error_capabilities"
+                "ui.panel.config.devices.esphome.setup_error_defer"
               ),
       });
     }
