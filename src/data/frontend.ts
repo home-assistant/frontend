@@ -44,6 +44,7 @@ export interface SecurityAlertEntityConfig {
 
 export interface SecurityFrontendSystemData {
   alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
 }
 
 export interface EnergyFrontendSystemData {

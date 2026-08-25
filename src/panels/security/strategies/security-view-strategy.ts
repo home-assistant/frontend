@@ -18,13 +18,17 @@ import type {
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
-import type { LogbookCardConfig } from "../../lovelace/cards/types";
+import type {
+  LogbookCardConfig,
+  TileCardConfig,
+} from "../../lovelace/cards/types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { computeSecurityAlertCardConfig } from "./security-alerts";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
   alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
 }
 
 export const securityEntityFilters: EntityFilter[] = [
@@ -163,6 +167,37 @@ export class SecurityViewStrategy extends ReactiveElement {
     );
 
     const entities = findEntities(allEntities, securityFilters);
+
+    const favoriteEntities = (config.favorite_entities ?? []).filter(
+      (entityId) =>
+        hass.states[entityId] &&
+        isSecurityPanelEntity(hass, hass.states[entityId])
+    );
+
+    if (favoriteEntities.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 2,
+        cards: [
+          {
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.favorites"
+            ),
+            heading_style: "title",
+          },
+          ...favoriteEntities.map(
+            (entityId) =>
+              ({
+                type: "tile",
+                entity: entityId,
+                state_content: ["state", "area_name"],
+                show_entity_picture: true,
+              }) satisfies TileCardConfig
+          ),
+        ],
+      });
+    }
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
