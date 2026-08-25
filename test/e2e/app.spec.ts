@@ -384,7 +384,7 @@ test.describe("Security panel", () => {
       timeout: PANEL_TIMEOUT,
     });
 
-    const alertCard = page.locator("hui-security-alerts-card").first();
+    const alertCard = page.locator("hui-alert-card").first();
     await expect(alertCard).toBeAttached({ timeout: PANEL_TIMEOUT });
 
     if (!(await alertCard.isVisible().catch(() => false))) {

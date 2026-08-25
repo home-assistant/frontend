@@ -3,7 +3,7 @@ import { SecurityViewStrategy } from "../../../../src/panels/security/strategies
 import { createMockHass } from "../../../fixtures/hass";
 
 describe("security-view-strategy", () => {
-  it("uses active alert visibility for an alert-only sidebar", async () => {
+  it("renders active alerts as individual cards in a visible section", async () => {
     const hass = createMockHass();
     hass.config = { ...hass.config, components: [] };
 
@@ -15,16 +15,43 @@ describe("security-view-strategy", () => {
       hass
     );
 
-    expect(view.sidebar?.visibility).toEqual([
+    const alertSection = view.sidebar?.sections?.[0];
+
+    expect(alertSection?.visibility).toEqual([
       {
         condition: "or",
         conditions: [
+          {
+            condition: "and",
+            conditions: [
+              {
+                condition: "state",
+                entity: "binary_sensor.window",
+                state: "on",
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+    expect(alertSection?.cards).toEqual([
+      {
+        type: "heading",
+        heading: "ui.panel.lovelace.strategy.security.active_alerts",
+        heading_style: "title",
+      },
+      {
+        type: "alert",
+        entity: "binary_sensor.window",
+        color: "amber",
+        visibility: [
           {
             condition: "state",
             entity: "binary_sensor.window",
             state: "on",
           },
         ],
+        grid_options: { columns: 12 },
       },
     ]);
   });

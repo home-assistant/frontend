@@ -4,7 +4,9 @@ import type {
   SecurityAlertEntityConfig,
   SecurityAlertSeverity,
 } from "../../../data/frontend";
-import type { SecurityAlertsCardEntityConfig } from "../../lovelace/cards/types";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { StateCondition } from "../../lovelace/common/validate-condition";
+import type { AlertCardConfig } from "../../lovelace/cards/types";
 
 const DANGER_BINARY_SENSOR_DEVICE_CLASSES = [
   "carbon_monoxide",
@@ -48,14 +50,44 @@ export const computeDefaultSecurityAlertSeverity = (
   return "warning";
 };
 
-export const computeSecurityAlertCardEntityConfig = (
+export const computeDefaultSecurityAlertVisibility = (
+  entityId: string
+): StateCondition[] => {
+  const condition: StateCondition = {
+    condition: "state",
+    entity: entityId,
+  };
+
+  switch (computeDomain(entityId)) {
+    case "alarm_control_panel":
+      condition.state = "triggered";
+      break;
+    case "camera":
+      condition.state = [UNAVAILABLE, UNKNOWN];
+      break;
+    case "cover":
+      condition.state_not = "closed";
+      break;
+    case "lock":
+      condition.state_not = "locked";
+      break;
+    default:
+      condition.state = "on";
+  }
+
+  return [condition];
+};
+
+export const computeSecurityAlertCardConfig = (
   stateObj: HassEntity | undefined,
   alertEntity: SecurityAlertEntityConfig
-): SecurityAlertsCardEntityConfig => {
+): AlertCardConfig => {
   const severity =
     alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
   return {
+    type: "alert",
     entity: alertEntity.entity,
     color: severity === "alert" ? "red" : "amber",
+    visibility: computeDefaultSecurityAlertVisibility(alertEntity.entity),
   };
 };

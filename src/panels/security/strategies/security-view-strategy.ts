@@ -19,9 +19,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
 import type { LogbookCardConfig } from "../../lovelace/cards/types";
-import { computeDefaultSecurityAlertVisibility } from "../../lovelace/cards/security-alerts/helpers";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
-import { computeSecurityAlertCardEntityConfig } from "./security-alerts";
+import { computeSecurityAlertCardConfig } from "./security-alerts";
 
 export interface SecurityViewStrategyConfig {
   type: "security";
@@ -279,22 +278,37 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sidebarSections: LovelaceSectionConfig[] = [];
 
-    const alertEntities = config.alert_entities?.map((alertEntity) =>
-      computeSecurityAlertCardEntityConfig(
+    const alertCards = config.alert_entities?.map((alertEntity) =>
+      computeSecurityAlertCardConfig(
         hass.states[alertEntity.entity],
         alertEntity
       )
     );
 
-    if (alertEntities?.length) {
+    if (alertCards?.length) {
       sidebarSections.push({
         type: "grid",
+        visibility: [
+          {
+            condition: "or",
+            conditions: alertCards.map((alertCard) => ({
+              condition: "and",
+              conditions: alertCard.visibility!,
+            })),
+          },
+        ],
         cards: [
           {
-            type: "security-alerts",
-            alert_entities: alertEntities,
-            grid_options: { columns: 12 },
+            type: "heading",
+            heading: hass.localize(
+              "ui.panel.lovelace.strategy.security.active_alerts"
+            ),
+            heading_style: "title",
           },
+          ...alertCards.map((alertCard) => ({
+            ...alertCard,
+            grid_options: { columns: 12 },
+          })),
         ] satisfies LovelaceCardConfig[],
       });
     }
@@ -330,14 +344,15 @@ export class SecurityViewStrategy extends ReactiveElement {
       ...(sidebarSections.length > 0 && {
         sidebar: {
           sections: sidebarSections,
-          ...(!hasLogbookSection && alertEntities?.length
+          ...(!hasLogbookSection && alertCards?.length
             ? {
                 visibility: [
                   {
                     condition: "or" as const,
-                    conditions: alertEntities.flatMap((alertEntity) =>
-                      computeDefaultSecurityAlertVisibility(alertEntity.entity)
-                    ),
+                    conditions: alertCards.map((alertCard) => ({
+                      condition: "and" as const,
+                      conditions: alertCard.visibility!,
+                    })),
                   },
                 ],
               }
