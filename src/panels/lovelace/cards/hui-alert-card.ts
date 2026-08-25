@@ -68,7 +68,10 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     }
 
     const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const pulse = this._config.pulse !== false;
+    const areaName = this._formatters.formatEntityName(stateObj, {
+      type: "area",
+    });
+    const pulse = this._config.pulse === true;
     const hasColor =
       this._config.color !== undefined && this._config.color !== "none";
 
@@ -99,7 +102,9 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
               ${stateDisplay} ·
               <ha-relative-time
                 .datetime=${stateObj.last_changed}
+                .format=${"short"}
               ></ha-relative-time>
+              ${areaName ? html` · ${areaName}` : nothing}
             </span>
           </ha-tile-info>
         </ha-tile-container>
