@@ -192,4 +192,104 @@ describe("createZHANetworkChartData", () => {
     expect(otherEndOf("router")).toBe("n-none-of-the-above");
     expect(otherEndOf("router-2")).toBe("n-unrecognized");
   });
+
+  it("connects every device regardless of backend device order (child listed before its parent router)", () => {
+    // Regression test for a subtler variant of the same bug: the fallback
+    // link is only computed for a device if it doesn't already have a
+    // link. If the backend lists a child end device before its parent
+    // router, the child claims the link first, and the router - now
+    // appearing to "already have a link" - never gets to evaluate its own
+    // (better) neighbor choice, splitting the graph exactly as before but
+    // triggered by device order instead of by LQI.
+    const coordinator = device({
+      ieee: "coordinator",
+      device_type: "Coordinator",
+      nwk: 0,
+    });
+    const upstreamRouter = device({
+      ieee: "upstream-router",
+      device_type: "Router",
+      nwk: 1,
+      neighbors: [
+        {
+          ieee: "coordinator",
+          nwk: "0x0000",
+          lqi: "200",
+          depth: "0",
+          relationship: "Parent",
+        },
+      ],
+    });
+    const downstreamRouter = device({
+      ieee: "downstream-router",
+      device_type: "Router",
+      nwk: 2,
+      neighbors: [
+        {
+          ieee: "upstream-router",
+          nwk: "0x0001",
+          lqi: "80",
+          depth: "1",
+          relationship: "Sibling",
+        },
+        {
+          ieee: "child-end-device",
+          nwk: "0x0003",
+          lqi: "250",
+          depth: "2",
+          relationship: "Child",
+        },
+      ],
+    });
+    const childEndDevice = device({
+      ieee: "child-end-device",
+      device_type: "EndDevice",
+      nwk: 3,
+      neighbors: [
+        {
+          ieee: "downstream-router",
+          nwk: "0x0002",
+          lqi: "250",
+          depth: "2",
+          relationship: "Parent",
+        },
+      ],
+    });
+
+    // Same topology as the first test, but the child is listed before its
+    // parent router this time.
+    const { links } = createZHANetworkChartData(
+      [coordinator, upstreamRouter, childEndDevice, downstreamRouter],
+      hass,
+      document.createElement("div")
+    );
+
+    const adjacency = new Map<string, string[]>();
+    for (const link of links) {
+      adjacency.set(link.source, [
+        ...(adjacency.get(link.source) ?? []),
+        link.target,
+      ]);
+      adjacency.set(link.target, [
+        ...(adjacency.get(link.target) ?? []),
+        link.source,
+      ]);
+    }
+
+    const reachable = new Set(["coordinator"]);
+    const queue = ["coordinator"];
+    while (queue.length) {
+      const current = queue.shift()!;
+      for (const neighbor of adjacency.get(current) ?? []) {
+        if (!reachable.has(neighbor)) {
+          reachable.add(neighbor);
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    expect(reachable.has("upstream-router")).toBe(true);
+    expect(reachable.has("downstream-router")).toBe(true);
+    expect(reachable.has("child-end-device")).toBe(true);
+  });
 });
