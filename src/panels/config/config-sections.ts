@@ -3,6 +3,7 @@ import {
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiBluetooth,
+  mdiCableData,
   mdiCellphoneCog,
   mdiCog,
   mdiDatabase,
@@ -166,6 +167,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
+      adminOnly: true,
+    },
+    {
+      path: "/config/serial",
+      iconPath: mdiCableData,
+      iconColor: "#607D8B",
+      component: "usb",
+      translationKey: "serial",
       adminOnly: true,
     },
     {
