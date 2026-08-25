@@ -73,27 +73,6 @@ export const securityEntityFilters: EntityFilter[] = [
   },
 ];
 
-const _cachedSecurityEntityFilters = new WeakMap<
-  Pick<HomeAssistant, "states" | "entities" | "devices" | "areas" | "floors">,
-  ReturnType<typeof generateEntityFilter>[]
->();
-
-const _getSecurityEntityFilters = (
-  hass: Pick<
-    HomeAssistant,
-    "states" | "entities" | "devices" | "areas" | "floors"
-  >
-) => {
-  let filters = _cachedSecurityEntityFilters.get(hass);
-  if (!filters) {
-    filters = securityEntityFilters.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-    _cachedSecurityEntityFilters.set(hass, filters);
-  }
-  return filters;
-};
-
 export const isSecurityPanelEntity = (
   hass: Pick<
     HomeAssistant,
@@ -101,7 +80,9 @@ export const isSecurityPanelEntity = (
   >,
   stateObj: HassEntity
 ): boolean =>
-  _getSecurityEntityFilters(hass).some((filter) => filter(stateObj.entity_id));
+  securityEntityFilters.some((filter) =>
+    generateEntityFilter(hass, filter)(stateObj.entity_id)
+  );
 
 const processAreasForSecurity = (
   areaIds: string[],
