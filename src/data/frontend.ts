@@ -18,6 +18,10 @@ export interface SidebarFrontendUserData {
   hiddenPanels?: string[];
 }
 
+export interface ESPHomeFrontendUserData {
+  setupDeferred?: string[];
+}
+
 export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
@@ -46,6 +50,7 @@ declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
     sidebar: SidebarFrontendUserData;
+    esphome: ESPHomeFrontendUserData;
   }
   interface FrontendSystemData {
     core: CoreFrontendSystemData;
