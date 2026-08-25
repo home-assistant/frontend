@@ -217,6 +217,7 @@ class HaPanelHistory extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
+                      .entitySources=${this._entitySources}
                       .disabled=${this._isLoading}
                       .description=${this.hass.localize(
                         "ui.panel.history.no_targets"
@@ -735,6 +736,10 @@ class HaPanelHistory extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
+        :host {
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
+        }
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;

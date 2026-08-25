@@ -2,6 +2,7 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import type { DataTableFiltersValue } from "../data/data_table_filters";
@@ -43,16 +44,15 @@ export const countSourceFilters = (filters: SourceFilters): number =>
   Object.values(filters).filter((value) => value?.length).length;
 
 /**
- * Narrows entity IDs down by the selected filters: an entity is kept when it
- * matches every filter that has a selection.
+ * Matches an entity against the selected filters: it is kept when it matches
+ * every filter that has a selection. Undefined when nothing is selected.
  */
-export const applySourceFilters = (
-  entityIds: string[],
+export const sourceFilterFunc = (
   filters: SourceFilters,
   states: HomeAssistant["states"],
   entities: HomeAssistant["entities"],
   entitySources?: EntitySources
-): string[] => {
+): ((entityId: string) => boolean) | undefined => {
   const matchesType = filters.types?.length
     ? entityTypeFilterFunc(filters.types, states)
     : undefined;
@@ -61,10 +61,10 @@ export const applySourceFilters = (
     : undefined;
 
   if (!matchesType && !integrations) {
-    return entityIds;
+    return undefined;
   }
 
-  return entityIds.filter((entityId) => {
+  return (entityId: string) => {
     if (matchesType && !matchesType(entityId)) {
       return false;
     }
@@ -76,7 +76,19 @@ export const applySourceFilters = (
       }
     }
     return true;
-  });
+  };
+};
+
+/** Narrows entity IDs down by the selected filters. */
+export const applySourceFilters = (
+  entityIds: string[],
+  filters: SourceFilters,
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  entitySources?: EntitySources
+): string[] => {
+  const matches = sourceFilterFunc(filters, states, entities, entitySources);
+  return matches ? entityIds.filter(matches) : entityIds;
 };
 
 /**
@@ -96,6 +108,8 @@ export class HaSourcesPicker extends LitElement {
 
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
+
+  @property({ attribute: false }) public entitySources?: EntitySources;
 
   /** Explains what the page shows while no target is picked. */
   @property() public description?: string;
@@ -120,6 +134,12 @@ export class HaSourcesPicker extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .entityFilter=${this.entityFilter}
+        .activeFilter=${this._activeFilter(
+          this.filters,
+          this.hass.states,
+          this.hass.entities,
+          this.entitySources
+        )}
         .primaryEntitiesOnly=${false}
         .disabled=${this.disabled}
         @value-changed=${this._targetsChanged}
@@ -142,6 +162,8 @@ export class HaSourcesPicker extends LitElement {
       </div>
     `;
   }
+
+  private _activeFilter = memoizeOne(sourceFilterFunc);
 
   protected firstUpdated() {
     // The filter panels label themselves with keys from the config panel.

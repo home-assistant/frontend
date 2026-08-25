@@ -806,6 +806,7 @@
         "replace_device": "Replace",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
