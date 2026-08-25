@@ -30,18 +30,15 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { computeDefaultSecurityAlertSeverity } from "../strategies/security-alerts";
 import { isSecurityPanelEntity } from "../strategies/security-view-strategy";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { ValueChangedEvent } from "../../../types";
 
-type SecurityEditorHass = Pick<
-  HomeAssistant,
-  | "states"
-  | "entities"
-  | "devices"
-  | "areas"
-  | "floors"
-  | "language"
-  | "translationMetadata"
->;
+type SecurityEditorContext = ContextType<typeof registriesContext> & {
+  states: ContextType<typeof statesContext>;
+  language: ContextType<typeof internationalizationContext>["language"];
+  translationMetadata: ContextType<
+    typeof internationalizationContext
+  >["translationMetadata"];
+};
 
 @customElement("security-alerts-editor")
 export class SecurityAlertsEditor extends LitElement {
@@ -60,7 +57,7 @@ export class SecurityAlertsEditor extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  private _hassData?: SecurityEditorHass;
+  private _entityContext?: SecurityEditorContext;
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
@@ -69,10 +66,11 @@ export class SecurityAlertsEditor extends LitElement {
       changedProps.has("_registries") ||
       changedProps.has("_i18n")
     ) {
-      this._hassData = {
+      this._entityContext = {
         states: this._states,
         ...this._registries,
-        ...this._i18n,
+        language: this._i18n.language,
+        translationMetadata: this._i18n.translationMetadata,
       };
     }
   }
@@ -106,8 +104,8 @@ export class SecurityAlertsEditor extends LitElement {
   ) {
     const stateObj = this._states[alertEntity.entity];
     const { primary, secondary } =
-      stateObj && this._hassData
-        ? computeEntityPickerDisplay(this._hassData, stateObj)
+      stateObj && this._entityContext
+        ? computeEntityPickerDisplay(this._entityContext, stateObj)
         : { primary: alertEntity.entity, secondary: undefined };
     const severity =
       alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
@@ -157,7 +155,9 @@ export class SecurityAlertsEditor extends LitElement {
   }
 
   private _alertEntityFilter = (entity: HassEntity) =>
-    this._hassData ? isSecurityPanelEntity(this._hassData, entity) : false;
+    this._entityContext
+      ? isSecurityPanelEntity(this._entityContext, entity)
+      : false;
 
   private _getIndex(
     ev: HASSDomCurrentTargetEvent<HTMLElement>
