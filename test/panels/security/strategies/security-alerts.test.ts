@@ -38,7 +38,6 @@ describe("computeSecurityAlertCardConfig", () => {
       type: "alert",
       entity: "binary_sensor.smoke",
       color: "red",
-      pulse: true,
       visibility: [
         {
           condition: "state",
