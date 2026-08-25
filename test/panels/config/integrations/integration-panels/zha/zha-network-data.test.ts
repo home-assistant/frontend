@@ -133,14 +133,27 @@ describe("createZHANetworkChartData", () => {
     expect(reachable.has("downstream-router")).toBe(true);
     expect(reachable.has("child-end-device")).toBe(true);
   });
-    it("ranks NoneOfTheAbove above Child, and treats unrecognized relationships as better than PreviousChild", () => {
+
+  it("ranks NoneOfTheAbove above Child, and treats unrecognized relationships as better than PreviousChild", () => {
     const router = device({
       ieee: "router",
       device_type: "Router",
       nwk: 1,
       neighbors: [
-        { ieee: "n-child", nwk: "0x0001", lqi: "100", depth: "1", relationship: "Child" },
-        { ieee: "n-none-of-the-above", nwk: "0x0002", lqi: "100", depth: "1", relationship: "NoneOfTheAbove" },
+        {
+          ieee: "n-child",
+          nwk: "0x0001",
+          lqi: "100",
+          depth: "1",
+          relationship: "Child",
+        },
+        {
+          ieee: "n-none-of-the-above",
+          nwk: "0x0002",
+          lqi: "100",
+          depth: "1",
+          relationship: "NoneOfTheAbove",
+        },
       ],
     });
     const unknownRelationship = device({
@@ -148,15 +161,27 @@ describe("createZHANetworkChartData", () => {
       device_type: "Router",
       nwk: 2,
       neighbors: [
-        { ieee: "n-unrecognized", nwk: "0x0003", lqi: "100", depth: "1", relationship: "SomeFutureValue" },
-        { ieee: "n-previous-child", nwk: "0x0004", lqi: "100", depth: "1", relationship: "PreviousChild" },
+        {
+          ieee: "n-unrecognized",
+          nwk: "0x0003",
+          lqi: "100",
+          depth: "1",
+          relationship: "SomeFutureValue",
+        },
+        {
+          ieee: "n-previous-child",
+          nwk: "0x0004",
+          lqi: "100",
+          depth: "1",
+          relationship: "PreviousChild",
+        },
       ],
     });
 
     const { links } = createZHANetworkChartData(
       [router, unknownRelationship],
       hass,
-      {} as any
+      document.createElement("div")
     );
 
     const otherEndOf = (ieee: string) => {
