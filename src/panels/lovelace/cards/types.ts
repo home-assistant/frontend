@@ -54,7 +54,7 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
   theme?: string;
   show_add_event?: boolean;
   add_event_style?: "below" | "on_top" | "header";
-  add_event_size?: "s" | "m" | "l";
+  add_event_size?: "small" | "medium" | "large";
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
