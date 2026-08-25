@@ -189,9 +189,13 @@ export function createZHANetworkChartData(
         });
       }
       const closestNeighbor = neighbors.sort((a, b) => {
-        const priorityDiff =
-          (RELATIONSHIP_PRIORITY[a.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY) -
-          (RELATIONSHIP_PRIORITY[b.relationship ?? ""] ?? UNKNOWN_RELATIONSHIP_PRIORITY);
+        const aPriority =
+          RELATIONSHIP_PRIORITY[a.relationship ?? ""] ??
+          UNKNOWN_RELATIONSHIP_PRIORITY;
+        const bPriority =
+          RELATIONSHIP_PRIORITY[b.relationship ?? ""] ??
+          UNKNOWN_RELATIONSHIP_PRIORITY;
+        const priorityDiff = aPriority - bPriority;
         return priorityDiff !== 0
           ? priorityDiff
           : parseInt(b.lqi) - parseInt(a.lqi);
