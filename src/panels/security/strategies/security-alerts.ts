@@ -4,7 +4,6 @@ import type {
   SecurityAlertEntityConfig,
   SecurityAlertSeverity,
 } from "../../../data/frontend";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { StateCondition } from "../../lovelace/common/validate-condition";
 import type { AlertCardConfig } from "../../lovelace/cards/types";
 
@@ -66,11 +65,7 @@ export const computeDefaultSecurityAlertVisibility = (
       condition.state = "open";
       break;
     case "lock":
-      condition.state = [
-        "jammed",
-        "unlocked",
-        "open",
-      ];
+      condition.state = ["jammed", "unlocked", "open"];
       break;
     default:
       condition.state = "on";
