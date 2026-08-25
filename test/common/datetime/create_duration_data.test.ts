@@ -14,8 +14,39 @@ describe("createDurationData", () => {
       milliseconds: 1,
     });
 
+    expect(createDurationData("1:30:15.001", false, false)).toEqual({
+      hours: 1,
+      minutes: 30,
+      seconds: 15.001,
+    });
+
     expect(createDurationData("20")).toEqual({
       seconds: 20,
+    });
+
+    expect(createDurationData("3:00", false, false)).toEqual({
+      hours: 3,
+      minutes: 0,
+      seconds: 0,
+    });
+  });
+
+  it("should parse string negative duration correctly", () => {
+    expect(createDurationData("-1:30:15.001")).toEqual({
+      hours: -1,
+      minutes: -30,
+      seconds: -15,
+      milliseconds: -1,
+    });
+
+    expect(createDurationData("-1:30:15.001", false, false)).toEqual({
+      hours: -1,
+      minutes: -30,
+      seconds: -15.001,
+    });
+
+    expect(createDurationData("-20")).toEqual({
+      seconds: -20,
     });
   });
 
@@ -43,9 +74,10 @@ describe("createDurationData", () => {
   it("should handle days in object duration correctly", () => {
     expect(createDurationData({ days: 1, hours: 1 })).toEqual({
       hours: 25,
-      minutes: undefined,
-      seconds: undefined,
-      milliseconds: undefined,
     });
+  });
+  it("should handle days in object duration correctly, when enableDay is true", () => {
+    const d = { days: 1, hours: 1 };
+    expect(createDurationData(d, true)).toEqual(d);
   });
 });
