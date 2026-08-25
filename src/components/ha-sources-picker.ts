@@ -4,13 +4,12 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeDomain } from "../common/entity/compute_domain";
 import type { DataTableFiltersValue } from "../data/data_table_filters";
 import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
+import { entityTypeFilterFunc } from "../data/entity/entity_type";
 import type { EntitySources } from "../data/entity/entity_sources";
 import type { HomeAssistant } from "../types";
-import "./ha-filter-device-classes";
-import "./ha-filter-domains";
+import "./ha-filter-entity-types";
 import "./ha-filter-integrations";
 import "./ha-target-picker";
 
@@ -19,8 +18,8 @@ import "./ha-target-picker";
  * confused with `EntitySources`, which maps an entity to its integration.
  */
 export interface SourceFilters {
-  domains?: string[];
-  deviceClasses?: string[];
+  /** Domains (`sensor`) and domains narrowed to a device class (`sensor/power`). */
+  types?: string[];
   integrations?: string[];
 }
 
@@ -54,27 +53,20 @@ export const applySourceFilters = (
   entities: HomeAssistant["entities"],
   entitySources?: EntitySources
 ): string[] => {
-  const domains = filters.domains?.length ? filters.domains : undefined;
-  const deviceClasses = filters.deviceClasses?.length
-    ? filters.deviceClasses
+  const matchesType = filters.types?.length
+    ? entityTypeFilterFunc(filters.types, states)
     : undefined;
   const integrations = filters.integrations?.length
     ? filters.integrations
     : undefined;
 
-  if (!domains && !deviceClasses && !integrations) {
+  if (!matchesType && !integrations) {
     return entityIds;
   }
 
   return entityIds.filter((entityId) => {
-    if (domains && !domains.includes(computeDomain(entityId))) {
+    if (matchesType && !matchesType(entityId)) {
       return false;
-    }
-    if (deviceClasses) {
-      const deviceClass = states[entityId]?.attributes.device_class;
-      if (!deviceClass || !deviceClasses.includes(deviceClass)) {
-        return false;
-      }
     }
     if (integrations) {
       const integration =
@@ -89,8 +81,7 @@ export const applySourceFilters = (
 
 /**
  * Picker for what a page shows: the targets to include, narrowed down by
- * domain, device class and integration. Meant to be placed in an
- * `ha-filter-pane`.
+ * entity type and integration. Meant to be placed in an `ha-filter-pane`.
  *
  * The pages resolve every entity of a target, secondary ones included, so the
  * target picker counts them too.
@@ -136,18 +127,12 @@ export class HaSourcesPicker extends LitElement {
       <div
         class=${classMap({ filters: true, expanded: !!this._expandedFilter })}
       >
-        <ha-filter-domains
-          .value=${this.filters.domains}
-          .expanded=${this._expandedFilter === "domains"}
-          @data-table-filter-changed=${this._domainsChanged}
-          @expanded-changed=${this._domainsExpanded}
-        ></ha-filter-domains>
-        <ha-filter-device-classes
-          .value=${this.filters.deviceClasses}
-          .expanded=${this._expandedFilter === "deviceClasses"}
-          @data-table-filter-changed=${this._deviceClassesChanged}
-          @expanded-changed=${this._deviceClassesExpanded}
-        ></ha-filter-device-classes>
+        <ha-filter-entity-types
+          .value=${this.filters.types}
+          .expanded=${this._expandedFilter === "types"}
+          @data-table-filter-changed=${this._typesChanged}
+          @expanded-changed=${this._typesExpanded}
+        ></ha-filter-entity-types>
         <ha-filter-integrations
           .value=${this.filters.integrations}
           .expanded=${this._expandedFilter === "integrations"}
@@ -168,12 +153,8 @@ export class HaSourcesPicker extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value || {} });
   }
 
-  private _domainsChanged(ev: CustomEvent) {
-    this._filterChanged("domains", ev);
-  }
-
-  private _deviceClassesChanged(ev: CustomEvent) {
-    this._filterChanged("deviceClasses", ev);
+  private _typesChanged(ev: CustomEvent) {
+    this._filterChanged("types", ev);
   }
 
   private _integrationsChanged(ev: CustomEvent) {
@@ -191,12 +172,8 @@ export class HaSourcesPicker extends LitElement {
     });
   }
 
-  private _domainsExpanded(ev: CustomEvent) {
-    this._filterExpanded("domains", ev);
-  }
-
-  private _deviceClassesExpanded(ev: CustomEvent) {
-    this._filterExpanded("deviceClasses", ev);
+  private _typesExpanded(ev: CustomEvent) {
+    this._filterExpanded("types", ev);
   }
 
   private _integrationsExpanded(ev: CustomEvent) {
