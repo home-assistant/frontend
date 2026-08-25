@@ -101,7 +101,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionClick(ev: MouseEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
@@ -109,7 +109,7 @@ export class HaControlSelect extends LitElement {
   private _handleOptionMouseDown(ev: MouseEvent) {
     if (this.disabled) return;
     ev.preventDefault();
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
@@ -121,7 +121,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionFocus(ev: FocusEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
