@@ -1,5 +1,12 @@
-import { getSelectorInitialValue } from "./get-selector-initial-value";
+import {
+  getSelectorInitialValue,
+  getSelectorInitialValueOrUndefined,
+} from "./get-selector-initial-value";
 import type { HaFormData, HaFormSchema } from "./types";
+
+interface ComputeInitialHaFormDataOptions {
+  skipUnsupportedSelectors?: boolean;
+}
 
 const setDefaultValue = (
   field: HaFormSchema,
@@ -18,7 +25,8 @@ const setDefaultValue = (
 };
 
 export const computeInitialHaFormData = (
-  schema: HaFormSchema[] | readonly HaFormSchema[]
+  schema: HaFormSchema[] | readonly HaFormSchema[],
+  options?: ComputeInitialHaFormDataOptions
 ): Record<string, any> => {
   const data = {};
   schema.forEach((field) => {
@@ -33,7 +41,7 @@ export const computeInitialHaFormData = (
     } else if ("default" in field) {
       data[field.name] = setDefaultValue(field, field.default);
     } else if (field.type === "expandable") {
-      const expandableData = computeInitialHaFormData(field.schema);
+      const expandableData = computeInitialHaFormData(field.schema, options);
       if (field.required || Object.keys(expandableData).length) {
         // Only add expandable data if it's required or any of its children have initial values.
         data[field.name] = expandableData;
@@ -62,7 +70,9 @@ export const computeInitialHaFormData = (
         seconds: 0,
       };
     } else if ("selector" in field) {
-      const initialValue = getSelectorInitialValue(field.selector);
+      const initialValue = options?.skipUnsupportedSelectors
+        ? getSelectorInitialValueOrUndefined(field.selector)
+        : getSelectorInitialValue(field.selector);
       if (initialValue !== undefined) {
         data[field.name] = initialValue;
       }

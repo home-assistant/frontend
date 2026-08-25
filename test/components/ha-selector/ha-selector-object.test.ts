@@ -109,8 +109,7 @@ const resolveFormDialog = async (
   const operation = (
     getInternals(selector)[action] as (event: ItemActionEvent) => Promise<void>
   )(event);
-  await dialogShown;
-  await operation;
+  await Promise.all([dialogShown, operation]);
   return params!;
 };
 
@@ -149,6 +148,39 @@ describe("ha-selector-object form dialog flow", () => {
     expect(params.data).toEqual({
       name: "",
       states: [],
+    });
+  });
+
+  it("leaves unsupported required fields unset in Add dialog data", async () => {
+    const selector = await mountSelector([], {
+      object: {
+        multiple: true,
+        fields: {
+          name: {
+            required: true,
+            selector: { text: {} },
+          },
+          tap_action: {
+            required: true,
+            selector: {
+              ui_action: {
+                default_action: "none",
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const params = await resolveFormDialog(selector, "_addItem", {
+      name: "A",
+      tap_action: {
+        action: "none",
+      },
+    });
+
+    expect(params.data).toEqual({
+      name: "",
     });
   });
 

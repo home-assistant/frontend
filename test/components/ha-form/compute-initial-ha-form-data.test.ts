@@ -155,4 +155,50 @@ describe("computeInitialHaFormData", () => {
       },
     });
   });
+
+  it("throws for an unsupported required selector", () => {
+    expect(() =>
+      computeInitialHaFormData([
+        requiredField({
+          ui_action: {
+            default_action: "none",
+          },
+        }),
+      ])
+    ).toThrow("Selector ui_action not supported in initial form data");
+  });
+
+  it("keeps an unsupported first choose child unset", () => {
+    const schema = [
+      {
+        name: "mode",
+        required: true,
+        selector: {
+          choose: {
+            choices: {
+              First: {
+                selector: {
+                  ui_action: {
+                    default_action: "none",
+                  },
+                },
+              },
+              Second: {
+                selector: {
+                  text: {},
+                },
+              },
+            },
+          },
+        },
+      },
+    ] as const;
+
+    expect(computeInitialHaFormData(schema)).toStrictEqual({
+      mode: {
+        active_choice: "First",
+        First: undefined,
+      },
+    });
+  });
 });

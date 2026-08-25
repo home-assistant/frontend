@@ -243,7 +243,9 @@ export class HaObjectSelector extends LitElement {
     const newItem = await showFormDialog(this, {
       title: this.hass.localize("ui.common.add"),
       schema,
-      data: computeInitialHaFormData(schema),
+      data: computeInitialHaFormData(schema, {
+        skipUnsupportedSelectors: true,
+      }),
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),

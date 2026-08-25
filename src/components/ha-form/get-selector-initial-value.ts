@@ -27,7 +27,7 @@ const SELECTOR_INITIAL_VALUES = {
 
     return {
       active_choice: firstChoice,
-      [firstChoice]: getSelectorInitialValue(
+      [firstChoice]: getSelectorInitialValueOrUndefined(
         selector.choose.choices[firstChoice].selector
       ),
     };
@@ -110,6 +110,13 @@ const SELECTOR_INITIAL_VALUES = {
   ui_state_content: undefined,
   ui_time_format: undefined,
 } satisfies SelectorInitialValues;
+
+export const getSelectorInitialValueOrUndefined = (
+  selector: Selector
+): unknown => {
+  const type = Object.keys(selector)[0] as SelectorType;
+  return SELECTOR_INITIAL_VALUES[type]?.(selector as never);
+};
 
 export const getSelectorInitialValue = (selector: Selector): unknown => {
   const type = Object.keys(selector)[0] as SelectorType;
