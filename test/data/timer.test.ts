@@ -1,6 +1,12 @@
 import { assert, describe, it } from "vitest";
 
-import { timerDurationData } from "../../src/data/timer";
+import { createDurationData } from "../../src/common/datetime/create_duration_data";
+import {
+  computeDisplayTimer,
+  durationDataToTimerString,
+  normalizeTimerDuration,
+  timerDurationData,
+} from "../../src/data/timer";
 
 describe("timerDurationData", () => {
   it("derives the input prefill from the configured duration", () => {
@@ -40,6 +46,121 @@ describe("timerDurationData", () => {
         },
       } as any),
       { hours: 3, minutes: 30, seconds: 0, milliseconds: 0 }
+    );
+  });
+});
+
+describe("durationDataToTimerString", () => {
+  it("serializes with zero-padded minutes and seconds", () => {
+    assert.strictEqual(
+      durationDataToTimerString({ hours: 1, minutes: 5, seconds: 7 }),
+      "1:05:07"
+    );
+  });
+
+  it("treats missing fields as zero", () => {
+    assert.strictEqual(durationDataToTimerString({ minutes: 30 }), "0:30:00");
+    assert.strictEqual(durationDataToTimerString({}), "0:00:00");
+  });
+
+  it("folds days into hours", () => {
+    assert.strictEqual(
+      durationDataToTimerString({ days: 1, hours: 2 }),
+      "26:00:00"
+    );
+  });
+
+  it("round-trips through createDurationData", () => {
+    const data = createDurationData("2:15:30")!;
+    assert.strictEqual(durationDataToTimerString(data), "2:15:30");
+  });
+
+  it("normalizes out-of-range fields", () => {
+    assert.strictEqual(durationDataToTimerString({ seconds: 3600 }), "1:00:00");
+    assert.strictEqual(durationDataToTimerString({ minutes: 90 }), "1:30:00");
+  });
+
+  it("floors fractional seconds instead of serializing decimals", () => {
+    assert.strictEqual(durationDataToTimerString({ seconds: 1.5 }), "0:00:01");
+    assert.strictEqual(
+      durationDataToTimerString({ seconds: 1, milliseconds: 500 }),
+      "0:00:01"
+    );
+  });
+});
+
+describe("normalizeTimerDuration", () => {
+  it("decomposes overflowing fields into hours/minutes/seconds", () => {
+    assert.deepEqual(normalizeTimerDuration({ seconds: 3600 }), {
+      hours: 1,
+      minutes: 0,
+      seconds: 0,
+    });
+    assert.deepEqual(normalizeTimerDuration({ days: 1, hours: 2 }), {
+      hours: 26,
+      minutes: 0,
+      seconds: 0,
+    });
+  });
+
+  it("drops fractional seconds", () => {
+    assert.deepEqual(normalizeTimerDuration({ seconds: 90.9 }), {
+      hours: 0,
+      minutes: 1,
+      seconds: 30,
+    });
+  });
+});
+
+describe("computeDisplayTimer", () => {
+  const formatEntityState = (stateObj: any) =>
+    stateObj.state === "idle"
+      ? "Idle"
+      : stateObj.state === "paused"
+        ? "Paused"
+        : "Active";
+
+  it("shows the formatted state when idle", () => {
+    assert.strictEqual(
+      computeDisplayTimer(
+        formatEntityState,
+        { state: "idle", attributes: {} } as any,
+        undefined
+      ),
+      "Idle"
+    );
+  });
+
+  it("shows the formatted state when the remaining time is zero", () => {
+    assert.strictEqual(
+      computeDisplayTimer(
+        formatEntityState,
+        { state: "active", attributes: {} } as any,
+        0
+      ),
+      "Active"
+    );
+  });
+
+  it("shows the remaining time when active", () => {
+    assert.strictEqual(
+      computeDisplayTimer(
+        formatEntityState,
+        { state: "active", attributes: {} } as any,
+        90
+      ),
+      "1:30"
+    );
+  });
+
+  it("appends the formatted state when paused", () => {
+    assert.strictEqual(
+      computeDisplayTimer(
+        formatEntityState,
+        { state: "paused", attributes: {} } as any,
+        90
+      ),
+      "1:30 (Paused)"
     );
   });
 });
