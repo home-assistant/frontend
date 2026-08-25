@@ -1,20 +1,18 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
-import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
-import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
-import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
-import type { ValueChangedEvent } from "../../../types";
-import "./home-favorite-entity-list-item";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import type { HaEntityPicker } from "./ha-entity-picker";
+import "./ha-entity-picker";
+import "../ha-sortable";
+import "../ha-svg-icon";
+import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
+import type { ValueChangedEvent } from "../../types";
+import "./ha-favorite-entity-list-item";
 
-@customElement("home-favorites-editor")
-export class HomeFavoritesEditor extends LitElement {
+@customElement("ha-favorites-editor")
+export class HaFavoritesEditor extends LitElement {
   @property({ attribute: false }) public favorites: string[] = [];
 
   @property() public label?: string;
@@ -26,10 +24,6 @@ export class HomeFavoritesEditor extends LitElement {
 
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   protected render() {
     return html`
       ${this.label ? html`<p class="field-label">${this.label}</p>` : nothing}
@@ -37,21 +31,21 @@ export class HomeFavoritesEditor extends LitElement {
         this.helper ? html`<p class="field-helper">${this.helper}</p>` : nothing
       }
       <ha-sortable handle-selector=".handle" @item-moved=${this._moved}>
-        <div class="home-list">
+        <div class="favorites-list">
           ${repeat(
             this.favorites,
             (entityId) => entityId,
             (entityId, index) => html`
-              <div class="home-list-item favorite-row">
+              <div class="favorite-row">
                 <div class="handle">
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
                 </div>
-                <home-favorite-entity-list-item
+                <ha-favorite-entity-list-item
                   class="favorite-content"
                   .entityId=${entityId}
                   .index=${index}
                   @delete-favorite-entity=${this._remove}
-                ></home-favorite-entity-list-item>
+                ></ha-favorite-entity-list-item>
               </div>
             `
           )}
@@ -59,12 +53,7 @@ export class HomeFavoritesEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         add-button
-        .addButtonLabel=${
-          this.addButtonLabel ??
-          this._localize(
-            "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
-          )
-        }
+        .addButtonLabel=${this.addButtonLabel}
         .excludeEntities=${this.favorites}
         .entityFilter=${this.entityFilter}
         @value-changed=${this._add}
@@ -115,7 +104,7 @@ export class HomeFavoritesEditor extends LitElement {
       color: var(--secondary-text-color);
       font-size: 12px;
     }
-    .home-list {
+    .favorites-list {
       display: flex;
       flex-direction: column;
     }
@@ -144,6 +133,6 @@ export class HomeFavoritesEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "home-favorites-editor": HomeFavoritesEditor;
+    "ha-favorites-editor": HaFavoritesEditor;
   }
 }
