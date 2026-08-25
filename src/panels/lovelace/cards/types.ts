@@ -23,11 +23,7 @@ import type {
   LovelaceCardFeaturePosition,
 } from "../card-features/types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
-import type {
-  Condition,
-  LegacyCondition,
-  StateCondition,
-} from "../common/validate-condition";
+import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
 import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import type { TimestampRenderingFormat } from "../components/types";
@@ -722,23 +718,11 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface SecurityAlertsCardEntityConfig {
+export interface AlertCardConfig extends LovelaceCardConfig {
+  type: "alert";
   entity: string;
   color?: string;
   pulse?: boolean;
-  visibility?: StateCondition[];
-}
-
-export interface SecurityAlertCardConfig
-  extends
-    Omit<LovelaceCardConfig, "visibility">,
-    SecurityAlertsCardEntityConfig {
-  type: "security-alert";
-}
-
-export interface SecurityAlertsCardConfig extends LovelaceCardConfig {
-  type: "security-alerts";
-  alert_entities: SecurityAlertsCardEntityConfig[];
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

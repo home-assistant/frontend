@@ -256,9 +256,6 @@
         "count_updates": "{count} {count, plural,\n one {update available}\n other {updates available}\n}",
         "no_updates": "Up to date"
       },
-      "security-alerts": {
-        "title": "Active alerts"
-      },
       "media_player": {
         "source": "Source",
         "sound_mode": "Sound mode",
