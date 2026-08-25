@@ -1,8 +1,9 @@
+import { ContextProvider } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { afterEach, describe, expect, it } from "vitest";
+import { statesContext } from "../../../../src/data/context";
 import "../../../../src/panels/lovelace/cards/hui-alert-card";
 import type { AlertCardConfig } from "../../../../src/panels/lovelace/cards/types";
-import type { HomeAssistant } from "../../../../src/types";
 
 interface TestAlertCard extends HTMLElement {
   updateComplete: Promise<boolean>;
@@ -14,7 +15,6 @@ interface TestAlertCard extends HTMLElement {
     min_columns?: number;
     min_rows?: number;
   };
-  hass: HomeAssistant;
   _formatters: {
     formatEntityState: (stateObj: HassEntity) => string;
   };
@@ -39,15 +39,18 @@ const config = (overrides: Partial<AlertCardConfig> = {}): AlertCardConfig => ({
 });
 
 const createCard = async (cardConfig = config(), stateObj = state()) => {
+  const host = document.createElement("div");
+  document.body.appendChild(host);
+  new ContextProvider(host, {
+    context: statesContext,
+    initialValue: { [stateObj.entity_id]: stateObj },
+  });
   const element = document.createElement(
     "hui-alert-card"
   ) as unknown as TestAlertCard;
   element.setConfig(cardConfig);
-  element.hass = {
-    states: { [stateObj.entity_id]: stateObj },
-  } as HomeAssistant;
   element._formatters = { formatEntityState: () => "On" };
-  document.body.appendChild(element);
+  host.appendChild(element);
   await element.updateComplete;
   return element;
 };
@@ -92,13 +95,18 @@ describe("hui-alert-card", () => {
   });
 
   it("does not render without an entity state", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    new ContextProvider(host, {
+      context: statesContext,
+      initialValue: {},
+    });
     const element = document.createElement(
       "hui-alert-card"
     ) as unknown as TestAlertCard;
     element.setConfig(config());
-    element.hass = { states: {} } as HomeAssistant;
     element._formatters = { formatEntityState: () => "On" };
-    document.body.appendChild(element);
+    host.appendChild(element);
     await element.updateComplete;
 
     expect(element.shadowRoot!.querySelector("ha-card")).toBeNull();
