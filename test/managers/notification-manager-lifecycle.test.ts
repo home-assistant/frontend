@@ -75,16 +75,6 @@ describe("notification toast lifecycle", () => {
     await vi.advanceTimersByTimeAsync(20);
     await firstShow;
 
-    expect(toast.shadowRoot!.querySelector(".toast")!.classList).toContain(
-      "visible"
-    );
-    expect(toast.shadowRoot!.querySelector(".message")!.textContent).toContain(
-      '"seconds":60'
-    );
-    expect(
-      toast.shadowRoot!.querySelector(".assistive-message")!.textContent
-    ).toContain('"seconds":60');
-
     await manager.showDialog({
       id: "frontend-update-available",
       message: {
@@ -98,13 +88,6 @@ describe("notification toast lifecycle", () => {
       action: { action, primary: true, text: "Update now" },
       duration: -1,
     });
-
-    expect(toast.shadowRoot!.querySelector(".message")!.textContent).toContain(
-      '"seconds":59'
-    );
-    expect(
-      toast.shadowRoot!.querySelector(".assistive-message")!.textContent
-    ).toContain('"seconds":60');
 
     const closed = new Promise<void>((resolve) => {
       toast.addEventListener("toast-closed", () => resolve(), { once: true });

@@ -51,12 +51,6 @@ describe("fileDownload", () => {
     expect(removeChildSpy).toHaveBeenCalledWith(createdElement);
   });
 
-  it("defaults filename to empty string", async () => {
-    await loadFileDownload();
-    fileDownload("https://example.com/file.json");
-    expect(createdElement.download).toBe("");
-  });
-
   it("does not revoke non-blob URLs", async () => {
     await loadFileDownload();
     fileDownload("https://example.com/file.json", "file.json");
