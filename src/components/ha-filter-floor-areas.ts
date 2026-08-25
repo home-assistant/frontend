@@ -4,8 +4,13 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -64,9 +69,11 @@ export class HaFilterFloorAreas extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _shouldRender = false;
-
   @query("ha-list-selectable") private _list?: HaListSelectable;
+
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -86,7 +93,6 @@ export class HaFilterFloorAreas extends LitElement {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
@@ -107,9 +113,11 @@ export class HaFilterFloorAreas extends LitElement {
               : nothing
           }
         </div>
-        ${
-          this._shouldRender
-            ? html`
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`
+              <div class="content" ${ref(this._content)}>
                 <ha-list-selectable
                   class="ha-scrollbar"
                   multi
@@ -154,10 +162,10 @@ export class HaFilterFloorAreas extends LitElement {
                     (area) => this._renderArea(area)
                   )}
                 </ha-list-selectable>
-              `
-            : nothing
-        }
-      </ha-expansion-panel>
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -241,19 +249,6 @@ export class HaFilterFloorAreas extends LitElement {
         (val) => val !== removedItem.value
       ),
     };
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - 49}px`;
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -347,17 +342,11 @@ export class HaFilterFloorAreas extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list-selectable {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;

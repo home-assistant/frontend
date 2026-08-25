@@ -49,12 +49,13 @@ Do not pass `--help`, `--background`, or `--modern` to `script/build_frontend`; 
 
 Managed app, demo, gallery, and E2E app workflows share one lifetime lock, so only one build or development server can run at a time.
 
-## Unit And Utility Tests
+## When To Add Tests
 
-- Add or update Vitest tests for data processing, utility code, and behavior that can be tested without a browser.
-- Mock WebSocket connections and API calls at boundaries.
-- Cover loading, error, unavailable, and missing-entity states where relevant.
-- Test accessibility-sensitive behavior when it can be asserted without brittle DOM internals.
+- Write tests for code that computes something: data processing, utility functions, config validation, and what happens when the user interacts with a component.
+- Do not write tests that check what a component looks like: its text, CSS classes, styles, or slots. Do not write tests that check the default value of an option.
+- A component that only takes data from contexts and helpers and puts it in a template does not need a test.
+- If you are not sure a test is useful, describe the test and what it would catch, and let the user decide.
+- Tests never talk to a real Home Assistant. Replace `callWS`, `callApi`, and the connection with fakes.
 
 ## Dev Servers
 

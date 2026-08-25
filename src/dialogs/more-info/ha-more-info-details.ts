@@ -5,7 +5,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeFloorName } from "../../common/entity/compute_floor_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
@@ -15,7 +14,6 @@ import "../../components/ha-attribute-value";
 import "../../components/item/ha-list-item-value";
 import "../../components/list/ha-grouped-list";
 import type { LocalizeKeys } from "../../common/translations/localize";
-import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import { labelsContext } from "../../data/context";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
@@ -26,6 +24,7 @@ import type { FeatureEnum } from "../../common/entity/get_domain_features";
 import { getFeatures } from "../../common/entity/get_domain_features";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { titleCase } from "../../common/string/title-case";
+import { stringCompare } from "../../common/string/compare";
 
 interface DetailsViewParams {
   entityId: string;
@@ -74,7 +73,10 @@ class HaMoreInfoDetails extends LitElement {
       stateEntries,
       attributes,
       yamlData: stateYamlData,
-    } = this._getDetailData(this._stateObj);
+    } = this._getDetailData(
+      this._stateObj,
+      this.hass.formatEntityAttributeName
+    );
     const { floor, area, device } = getEntityContext(
       this._stateObj,
       this.hass.entities,
@@ -212,10 +214,13 @@ class HaMoreInfoDetails extends LitElement {
 
   private _getDetailData = memoizeOne(
     (
-      stateObj: HassEntity
+      stateObj: HassEntity,
+      // cache key only: a new function is assigned when translation-based
+      // format functions reload, invalidating results formatted via this.hass
+      _formatEntityAttributeName: HomeAssistant["formatEntityAttributeName"]
     ): {
       stateEntries: DetailEntry[];
-      attributes: string[];
+      attributes: { name: string; label: string }[];
       yamlData: {
         state: {
           translated: string;
@@ -228,11 +233,14 @@ class HaMoreInfoDetails extends LitElement {
     } => {
       const translatedState = this.hass.formatEntityState(stateObj);
 
-      const detailsAttributes = computeShownAttributes(stateObj);
-      const detailsAttributeSet = new Set(detailsAttributes);
-      const builtInAttributes = Object.keys(stateObj.attributes).filter(
-        (attribute) => !detailsAttributeSet.has(attribute)
-      );
+      const attributes = Object.keys(stateObj.attributes)
+        .map((a) => ({
+          name: a,
+          label: this.hass.formatEntityAttributeName(stateObj, a),
+        }))
+        .sort((a, b) =>
+          stringCompare(a.label, b.label, this.hass.locale.language)
+        );
 
       return {
         stateEntries: [
@@ -253,7 +261,7 @@ class HaMoreInfoDetails extends LitElement {
             value: this._formatTimestamp(stateObj.last_updated),
           },
         ],
-        attributes: [...detailsAttributes, ...builtInAttributes],
+        attributes,
         yamlData: {
           state: {
             translated: translatedState,
@@ -289,7 +297,7 @@ class HaMoreInfoDetails extends LitElement {
     );
   }
 
-  private _renderAttributes(attributes: string[]) {
+  private _renderAttributes(attributes: { name: string; label: string }[]) {
     if (attributes.length === 0) {
       return html`<div class="empty">
         ${this.hass.localize("ui.common.none")}
@@ -304,20 +312,13 @@ class HaMoreInfoDetails extends LitElement {
 
     return attributes.map(
       (attribute) => html`
-        <ha-list-item-value
-          .label=${computeAttributeNameDisplay(
-            this.hass.localize,
-            this._stateObj!,
-            this.hass.entities,
-            attribute
-          )}
-        >
+        <ha-list-item-value .label=${attribute.label}>
           ${
-            attribute === "supported_features" && featureEnum
+            attribute.name === "supported_features" && featureEnum
               ? this._renderFeatures(featureEnum, this._stateObj!)
               : html`
                   <ha-attribute-value
-                    .attribute=${attribute}
+                    .attribute=${attribute.name}
                     .stateObj=${this._stateObj}
                   ></ha-attribute-value>
                 `
