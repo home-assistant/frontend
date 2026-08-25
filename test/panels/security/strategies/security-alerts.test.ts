@@ -10,8 +10,20 @@ describe("computeDefaultSecurityAlertVisibility", () => {
     ["alarm_control_panel.house", { state: "triggered" }],
     ["binary_sensor.leak", { state: "on" }],
     ["camera.patio", { state: ["unavailable", "unknown"] }],
-    ["cover.garage_door", { state_not: "closed" }],
-    ["lock.front_door", { state_not: "locked" }],
+    ["cover.garage_door", { state: ["open", "opening", "closing"] }],
+    [
+      "lock.front_door",
+      {
+        state: [
+          "jammed",
+          "locking",
+          "unlocked",
+          "unlocking",
+          "opening",
+          "open",
+        ],
+      },
+    ],
   ])("uses the active state for %s", (entityId, stateCondition) => {
     expect(computeDefaultSecurityAlertVisibility(entityId)).toEqual([
       {
@@ -34,6 +46,7 @@ describe("computeSecurityAlertCardConfig", () => {
       type: "alert",
       entity: "binary_sensor.smoke",
       color: "red",
+      pulse: true,
       visibility: [
         {
           condition: "state",

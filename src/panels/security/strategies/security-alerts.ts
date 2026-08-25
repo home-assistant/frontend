@@ -66,10 +66,17 @@ export const computeDefaultSecurityAlertVisibility = (
       condition.state = [UNAVAILABLE, UNKNOWN];
       break;
     case "cover":
-      condition.state_not = "closed";
+      condition.state = ["open", "opening", "closing"];
       break;
     case "lock":
-      condition.state_not = "locked";
+      condition.state = [
+        "jammed",
+        "locking",
+        "unlocked",
+        "unlocking",
+        "opening",
+        "open",
+      ];
       break;
     default:
       condition.state = "on";
