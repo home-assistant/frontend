@@ -63,7 +63,7 @@ export const computeDefaultSecurityAlertVisibility = (
       condition.state = "triggered";
       break;
     case "cover":
-      condition.state = ["open", "opening", "closing"];
+      condition.state = "open";
       break;
     case "lock":
       condition.state = [
