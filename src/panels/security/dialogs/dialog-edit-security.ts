@@ -16,23 +16,15 @@ import {
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { ValueChangedEvent } from "../../../types";
 import "../../home/components/home-favorites-editor";
 import "../components/security-alerts-editor";
 import { isSecurityPanelEntity } from "../strategies/security-view-strategy";
 import type { EditSecurityDialogParams } from "./show-dialog-edit-security";
 
-type SecurityDialogHass = Pick<
-  HomeAssistant,
-  | "states"
-  | "entities"
-  | "devices"
-  | "areas"
-  | "floors"
-  | "language"
-  | "translationMetadata"
-  | "localize"
->;
+type SecurityDialogContext = ContextType<typeof registriesContext> & {
+  states: ContextType<typeof statesContext>;
+};
 
 @customElement("dialog-edit-security")
 export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontendSystemData>()(
@@ -54,19 +46,14 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
 
-  private _hassData?: SecurityDialogHass;
+  private _entityContext?: SecurityDialogContext;
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (
-      changedProps.has("_states") ||
-      changedProps.has("_registries") ||
-      changedProps.has("_i18n")
-    ) {
-      this._hassData = {
+    if (changedProps.has("_states") || changedProps.has("_registries")) {
+      this._entityContext = {
         states: this._states,
         ...this._registries,
-        ...this._i18n,
       };
     }
   }
@@ -142,7 +129,6 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
         <ha-icon slot="leading-icon" icon="mdi:star-outline"></ha-icon>
         <div class="expansion-content">
           <home-favorites-editor
-            .hass=${this._hassData}
             .favorites=${this._state?.favorite_entities ?? []}
             .entityFilter=${this._alertEntityFilter}
             .addButtonLabel=${this._i18n.localize(
@@ -195,7 +181,9 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
   }
 
   private _alertEntityFilter = (entity: HassEntity) =>
-    this._hassData ? isSecurityPanelEntity(this._hassData, entity) : false;
+    this._entityContext
+      ? isSecurityPanelEntity(this._entityContext, entity)
+      : false;
 
   private async _save(): Promise<void> {
     if (!this.params || !this._state) return;

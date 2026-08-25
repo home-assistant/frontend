@@ -124,7 +124,6 @@ export class DialogEditHome
             ></ha-form>
 
             <home-favorites-editor
-              .hass=${this.hass}
               .favorites=${this._state.favorite_entities}
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.strategy.home.favorite_entities"

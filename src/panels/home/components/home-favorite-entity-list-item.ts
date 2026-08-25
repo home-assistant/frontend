@@ -1,12 +1,18 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDelete } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
-import type { HomeAssistant } from "../../../types";
+import {
+  internationalizationContext,
+  registriesContext,
+} from "../../../data/context";
 
 declare global {
   interface HASSDomEvents {
@@ -19,16 +25,33 @@ declare global {
 
 @customElement("home-favorite-entity-list-item")
 export class HomeFavoriteEntityListItem extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "entity-id" }) public entityId!: string;
 
   @property({ type: Number }) public index = 0;
 
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   protected render() {
-    const stateObj = this.hass.states[this.entityId];
+    const stateObj = this._stateObj;
     const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj)
+      ? computeEntityPickerDisplay(
+          {
+            ...this._registries,
+            language: this._i18n.language,
+            translationMetadata: this._i18n.translationMetadata,
+          },
+          stateObj
+        )
       : { primary: this.entityId, secondary: undefined };
 
     return html`
@@ -42,7 +65,7 @@ export class HomeFavoriteEntityListItem extends LitElement {
         }
         <ha-icon-button
           .path=${mdiDelete}
-          .label=${this.hass.localize("ui.common.delete")}
+          .label=${this._i18n.localize("ui.common.delete")}
           @click=${this._delete}
         ></ha-icon-button>
       </ha-settings-row>

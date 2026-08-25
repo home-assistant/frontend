@@ -1,20 +1,20 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { ValueChangedEvent } from "../../../types";
 import "./home-favorite-entity-list-item";
 
 @customElement("home-favorites-editor")
 export class HomeFavoritesEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public favorites: string[] = [];
 
   @property() public label?: string;
@@ -25,6 +25,10 @@ export class HomeFavoritesEditor extends LitElement {
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render() {
     return html`
@@ -44,7 +48,6 @@ export class HomeFavoritesEditor extends LitElement {
                 </div>
                 <home-favorite-entity-list-item
                   class="favorite-content"
-                  .hass=${this.hass}
                   .entityId=${entityId}
                   .index=${index}
                   @delete-favorite-entity=${this._remove}
@@ -58,7 +61,7 @@ export class HomeFavoritesEditor extends LitElement {
         add-button
         .addButtonLabel=${
           this.addButtonLabel ??
-          this.hass.localize(
+          this._localize(
             "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
           )
         }
