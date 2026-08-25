@@ -1,10 +1,4 @@
-import {
-  mdiChevronDoubleLeft,
-  mdiChevronDoubleRight,
-  mdiChevronLeft,
-  mdiChevronRight,
-  mdiInformationOutline,
-} from "@mdi/js";
+import { mdiInformationOutline } from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,6 +8,10 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-icon-button-next";
+import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-icon-button-next-most";
+import "../../../../components/ha-icon-button-prev-most";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
@@ -168,22 +166,20 @@ class EventSubscribeCard extends LitElement {
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
-          <ha-icon-button
-            .path=${mdiChevronDoubleLeft}
+          <ha-icon-button-prev-most
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.oldest_event"
             )}
             @click=${this._showOldest}
-          ></ha-icon-button>
-          <ha-icon-button
-            .path=${mdiChevronLeft}
+          ></ha-icon-button-prev-most>
+          <ha-icon-button-prev
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.older_event"
             )}
             @click=${this._showOlder}
-          ></ha-icon-button>
+          ></ha-icon-button-prev>
           <div class="event-info">
             ${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.event_fired",
@@ -217,22 +213,20 @@ class EventSubscribeCard extends LitElement {
                 : nothing
             }
           </div>
-          <ha-icon-button
-            .path=${mdiChevronRight}
+          <ha-icon-button-next
             .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.newer_event"
             )}
             @click=${this._showNewer}
-          ></ha-icon-button>
-          <ha-icon-button
-            .path=${mdiChevronDoubleRight}
+          ></ha-icon-button-next>
+          <ha-icon-button-next-most
             .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.newest_event"
             )}
             @click=${this._showNewest}
-          ></ha-icon-button>
+          ></ha-icon-button-next-most>
         </div>
         <ha-yaml-editor
           .value=${event.event}

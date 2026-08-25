@@ -1,7 +1,5 @@
 import { consume } from "@lit/context";
 import {
-  mdiChevronLeft,
-  mdiChevronRight,
   mdiClose,
   mdiDevices,
   mdiHome,
@@ -58,6 +56,7 @@ import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker"
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-button";
 import "../ha-icon-button";
+import "../ha-icon-next";
 import "../ha-state-icon";
 import "../ha-svg-icon";
 import "../item/ha-list-item-base";
@@ -275,19 +274,7 @@ export class HaTargetPickerItemRow extends LitElement {
               ></ha-icon-button>
             `
           : this.subEntry && this.type === "entity"
-            ? html`
-                <ha-svg-icon
-                  .path=${
-                    computeRTL(
-                      this.hass.language,
-                      this.hass.translationMetadata.translations
-                    )
-                      ? mdiChevronLeft
-                      : mdiChevronRight
-                  }
-                  slot="end"
-                ></ha-svg-icon>
-              `
+            ? html` <ha-icon-next slot="end"></ha-icon-next> `
             : nothing
       }
     `;
