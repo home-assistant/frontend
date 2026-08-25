@@ -835,8 +835,11 @@
         },
         "style": "Time format style"
       },
-      "filter-device-classes": {
-        "caption": "Device class"
+      "filter-entity-types": {
+        "caption": "Type",
+        "no_device_class": "No type",
+        "expand": "Expand",
+        "collapse": "Collapse"
       },
       "subpage-data-table": {
         "filters": "Filters",

@@ -44,6 +44,7 @@ import {
   countTargets,
 } from "../../components/ha-sources-picker";
 import type { SourceFilters } from "../../components/ha-sources-picker";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import "../../components/ha-top-app-bar-fixed";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { EntitySources } from "../../data/entity/entity_sources";
@@ -331,8 +332,10 @@ export class HaPanelLogbook extends LitElement {
     return this.__filterEntityIds(
       targetEntities ?? this.__logbookEntityIds(this.hass.states),
       this._filters,
-      // Only the device class filter reads the states.
-      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      // Only a device class narrows down using the states.
+      entityTypesNeedStates(this._filters.types)
+        ? this.hass.states
+        : EMPTY_STATES,
       this.hass.entities,
       this._entitySources
     );
