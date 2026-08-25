@@ -2645,7 +2645,7 @@
           "title": "Edit security and safety page",
           "description": "Configure your security and safety display preferences.",
           "favorite_entities": "[%key:ui::panel::lovelace::editor::strategy::home::favorite_entities%]",
-          "favorite_entities_description": "Pin security and safety entities to the top of the page.",
+          "favorite_entities_description": "Pin entities to the top of the page.",
           "add_favorite_entity": "[%key:ui::panel::lovelace::editor::strategy::home::add_favorite_entity%]",
           "active_alert_entities": "Active alert entities",
           "active_alert_entities_description": "Display any entities that require attention.",
