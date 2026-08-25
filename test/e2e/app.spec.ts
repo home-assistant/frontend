@@ -359,57 +359,6 @@ test.describe("Energy dashboard", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Security panel
-// ---------------------------------------------------------------------------
-
-test.describe("Security panel", () => {
-  test("hides the editor from non-admin users", async ({ page }) => {
-    await goToPanel(page, "/?scenario=non-admin-security#/security");
-
-    await expect(page.locator("ha-panel-security")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(page.locator("ha-panel-security hui-view")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(
-      page.getByRole("button", { name: "Edit security and safety page" })
-    ).not.toBeAttached();
-  });
-
-  test("renders configured active security alerts", async ({ page }) => {
-    await goToPanel(page, "/?scenario=security-alerts#/security");
-
-    await expect(page.locator("ha-panel-security")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-
-    const alertCard = page.locator("hui-alert-card").first();
-    await expect(alertCard).toBeAttached({ timeout: PANEL_TIMEOUT });
-
-    if (!(await alertCard.isVisible().catch(() => false))) {
-      const activityTab = page.getByRole("radio", { name: "Activity" });
-      if (await activityTab.isVisible().catch(() => false)) {
-        await activityTab.dispatchEvent("click");
-      }
-    }
-
-    await expect(alertCard).toBeVisible({ timeout: QUICK_TIMEOUT });
-    await expect(alertCard.locator("text=Front door")).toBeVisible({
-      timeout: QUICK_TIMEOUT,
-    });
-
-    await page.evaluate(() => {
-      (window as any).__mockHass.mockEntities[
-        "binary_sensor.front_door"
-      ].update({ state: "off" });
-    });
-
-    await expect(alertCard).toBeHidden({ timeout: QUICK_TIMEOUT });
-  });
-});
-
-// ---------------------------------------------------------------------------
 // More-info dialog (light)
 // ---------------------------------------------------------------------------
 

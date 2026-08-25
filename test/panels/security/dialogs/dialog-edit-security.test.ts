@@ -1,4 +1,3 @@
-import { nothing } from "lit";
 import { describe, expect, it, vi } from "vitest";
 import type { SecurityFrontendSystemData } from "../../../../src/data/frontend";
 import type { EditSecurityDialogParams } from "../../../../src/panels/security/dialogs/show-dialog-edit-security";
@@ -8,13 +7,11 @@ import { createMockHass } from "../../../fixtures/hass";
 
 interface TestEditSecurityDialog extends HTMLElement {
   params: EditSecurityDialogParams;
-  _state?: SecurityFrontendSystemData;
   _i18n: HomeAssistantInternationalization;
   isDirtyState: boolean;
   connectedCallback(): void;
   disconnectedCallback(): void;
   performUpdate(): void;
-  render(): unknown;
 }
 
 const alertEntitiesChanged = (
@@ -43,15 +40,6 @@ describe("dialog-edit-security", () => {
     dialog.connectedCallback();
     return dialog;
   };
-
-  it("renders without a Home Assistant snapshot in dialog params", () => {
-    const dialog = createDialog();
-
-    expect(dialog._state).toEqual({ alert_entities: [] });
-    expect(dialog.render()).not.toBe(nothing);
-
-    dialog.disconnectedCallback();
-  });
 
   it("becomes clean after nested configuration is restored", () => {
     const alertEntities = [

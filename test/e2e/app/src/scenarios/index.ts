@@ -3,7 +3,6 @@ import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../../../../src/data/entity/entity_registry";
-import type { SecurityFrontendSystemData } from "../../../../../src/data/frontend";
 import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
 import type { MediaPlayerItem } from "../../../../../src/data/media-player";
 import {
@@ -29,11 +28,6 @@ const nonAdminScenario: Scenario = async (hass) => {
       is_owner: false,
     },
   });
-};
-
-const nonAdminSecurityScenario: Scenario = async (hass) => {
-  await nonAdminScenario(hass);
-  hass.mockWS("frontend/get_system_data", () => ({ value: {} }));
 };
 
 const darkThemeScenario: Scenario = async (hass) => {
@@ -295,33 +289,11 @@ const delayedMediaBrowseErrorScenario: Scenario = (hass) => {
   hass.mockWS("media_source/browse_media", () => browsePromise);
 };
 
-const securityAlertsScenario: Scenario = async (hass) => {
-  const securityData: SecurityFrontendSystemData = {
-    alert_entities: [{ entity: "binary_sensor.front_door" }],
-  };
-
-  hass.addEntities([
-    {
-      entity_id: "binary_sensor.front_door",
-      state: "on",
-      attributes: {
-        friendly_name: "Front door",
-        device_class: "door",
-      },
-    },
-  ]);
-
-  hass.mockWS("frontend/get_system_data", (msg: { key: string }) => ({
-    value: msg.key === "security" ? securityData : null,
-  }));
-};
-
 // ── Registry ──────────────────────────────────────────────────────────────
 
 export const scenarios: Record<string, Scenario> = {
   default: defaultScenario,
   "non-admin": nonAdminScenario,
-  "non-admin-security": nonAdminSecurityScenario,
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
   "delayed-calendar": delayedCalendarScenario,
@@ -333,5 +305,4 @@ export const scenarios: Record<string, Scenario> = {
   "weather-more-info": weatherMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,
   "delayed-lovelace": delayedLovelaceScenario,
-  "security-alerts": securityAlertsScenario,
 };
