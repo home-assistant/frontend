@@ -65,9 +65,9 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
     }
     this._state = {
       ...this.params.config,
-      ...(this.params.config.favorite_entities
-        ? { favorite_entities: [...this.params.config.favorite_entities] }
-        : {}),
+      favorite_entities: this.params.config.favorite_entities
+        ? [...this.params.config.favorite_entities]
+        : [],
       alert_entities: this.params.config.alert_entities
         ? [...this.params.config.alert_entities]
         : [],
