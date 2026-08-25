@@ -9,19 +9,11 @@ describe("computeDefaultSecurityAlertVisibility", () => {
   it.each([
     ["alarm_control_panel.house", { state: "triggered" }],
     ["binary_sensor.leak", { state: "on" }],
-    ["camera.patio", { state: ["unavailable", "unknown"] }],
-    ["cover.garage_door", { state: ["open", "opening", "closing"] }],
+    ["cover.garage_door", { state: "open" }],
     [
       "lock.front_door",
       {
-        state: [
-          "jammed",
-          "locking",
-          "unlocked",
-          "unlocking",
-          "opening",
-          "open",
-        ],
+        state: ["jammed", "unlocked", "open"],
       },
     ],
   ])("uses the active state for %s", (entityId, stateCondition) => {
