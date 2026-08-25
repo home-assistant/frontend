@@ -47,7 +47,7 @@ export const SENSOR_NUMERIC_DEVICE_CLASSES: string[] = [
 ${numericDeviceClasses.map((deviceClass) => `  "${deviceClass}",`).join("\n")}
 ];
 
-export const SENSOR_DEVICE_CLASS_UNITS: Record<string, string[]> = {
+export const SENSOR_DEVICE_CLASS_UNITS: Record<string, (string | null)[]> = {
 ${Object.entries(deviceClassUnits)
   .map(
     ([deviceClass, units]) =>
@@ -56,7 +56,7 @@ ${Object.entries(deviceClassUnits)
   .join("\n")}
 };
 
-export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<string, string[]> = {
+export const SENSOR_DEVICE_CLASS_CONVERTIBLE_UNITS: Record<string, (string | null)[]> = {
 ${Object.entries(convertibleClassUnits)
   .map(
     ([deviceClass, units]) =>
