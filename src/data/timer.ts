@@ -18,6 +18,7 @@ export type TimerEntity = HassEntityBase & {
     remaining: string;
     restore: boolean;
     finishes_at?: string;
+    last_transition?: string;
   };
 };
 
@@ -67,6 +68,18 @@ export const deleteTimer = (hass: HomeAssistant, id: string) =>
     type: "timer/delete",
     timer_id: id,
   });
+
+// True when this state change is the timer completing: it ran out or
+// timer.finish was called. Cancel also ends in "idle" but sets
+// last_transition to "cancelled", so it does not match.
+export const timerJustFinished = (
+  oldStateObj: HassEntity | undefined,
+  stateObj: HassEntity
+): boolean =>
+  oldStateObj !== undefined &&
+  oldStateObj.state !== "idle" &&
+  stateObj.state === "idle" &&
+  stateObj.attributes.last_transition === "finished";
 
 export const timerTimeRemaining = (
   stateObj: HassEntity

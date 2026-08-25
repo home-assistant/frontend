@@ -1,4 +1,4 @@
-import { assert, describe, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 
 import { createDurationData } from "../../src/common/datetime/create_duration_data";
 import {
@@ -6,7 +6,14 @@ import {
   durationDataToTimerString,
   normalizeTimerDuration,
   timerDurationData,
+  timerJustFinished,
 } from "../../src/data/timer";
+
+const timerState = (state: string, lastTransition?: string) =>
+  ({
+    state,
+    attributes: { last_transition: lastTransition },
+  }) as any;
 
 describe("timerDurationData", () => {
   it("derives the input prefill from the configured duration", () => {
@@ -109,6 +116,41 @@ describe("normalizeTimerDuration", () => {
       minutes: 1,
       seconds: 30,
     });
+  });
+});
+
+describe("timerJustFinished", () => {
+  it("detects a timer running out or being finished", () => {
+    expect(
+      timerJustFinished(timerState("active"), timerState("idle", "finished"))
+    ).toBe(true);
+    expect(
+      timerJustFinished(timerState("paused"), timerState("idle", "finished"))
+    ).toBe(true);
+  });
+
+  it("does not match a cancelled timer", () => {
+    expect(
+      timerJustFinished(timerState("active"), timerState("idle", "cancelled"))
+    ).toBe(false);
+  });
+
+  it("does not match without a state transition", () => {
+    expect(
+      timerJustFinished(
+        timerState("idle", "finished"),
+        timerState("idle", "finished")
+      )
+    ).toBe(false);
+    expect(timerJustFinished(undefined, timerState("idle", "finished"))).toBe(
+      false
+    );
+  });
+
+  it("does not match on older cores without last_transition", () => {
+    expect(timerJustFinished(timerState("active"), timerState("idle"))).toBe(
+      false
+    );
   });
 });
 

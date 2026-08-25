@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { TimerRemainingTimeController } from "../../../common/controllers/timer-remaining-time-controller";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
@@ -12,7 +13,11 @@ import "../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import { apiContext, formattersContext } from "../../../data/context";
 import type { TimerEntity } from "../../../data/timer";
-import { computeDisplayTimer, timerDurationData } from "../../../data/timer";
+import {
+  computeDisplayTimer,
+  timerDurationData,
+  timerJustFinished,
+} from "../../../data/timer";
 import type {
   HomeAssistantApi,
   HomeAssistantFormatters,
@@ -39,6 +44,8 @@ class MoreInfoTimer extends LitElement {
 
   @state() private _duration?: HaDurationData;
 
+  @state() private _finished = false;
+
   private _remainingTime = new TimerRemainingTimeController(this);
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -50,7 +57,17 @@ class MoreInfoTimer extends LitElement {
     }
     if (changedProps.has("stateObj")) {
       this._remainingTime.setStateObj(this.stateObj);
+      if (
+        this.stateObj &&
+        timerJustFinished(changedProps.get("stateObj"), this.stateObj)
+      ) {
+        this._finished = true;
+      }
     }
+  }
+
+  private _finishedAnimationEnded(): void {
+    this._finished = false;
   }
 
   protected render() {
@@ -62,6 +79,7 @@ class MoreInfoTimer extends LitElement {
 
     return html`
       <ha-more-info-state-header
+        class=${classMap({ finished: this._finished })}
         .stateObj=${this.stateObj}
         .stateOverride=${
           computeDisplayTimer(
@@ -70,6 +88,7 @@ class MoreInfoTimer extends LitElement {
             this._remainingTime.timeRemaining
           ) ?? undefined
         }
+        @animationend=${this._finishedAnimationEnded}
       ></ha-more-info-state-header>
       <div class="controls">
         <ha-duration-input
@@ -188,6 +207,19 @@ class MoreInfoTimer extends LitElement {
         flex-wrap: wrap;
         gap: var(--ha-space-2);
         justify-content: center;
+      }
+      ha-more-info-state-header.finished {
+        animation: timer-finished-pulse 0.5s ease-in-out 2;
+      }
+      @keyframes timer-finished-pulse {
+        50% {
+          color: var(--error-color);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        ha-more-info-state-header.finished {
+          animation: none;
+        }
       }
     `,
   ];
