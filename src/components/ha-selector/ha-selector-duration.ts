@@ -35,7 +35,8 @@ export class HaTimeDuration extends LitElement {
       createDurationData(
         value,
         selector.duration?.enable_day,
-        selector.duration?.enable_millisecond
+        selector.duration?.enable_millisecond,
+        selector.duration?.allow_negative
       )
   );
 

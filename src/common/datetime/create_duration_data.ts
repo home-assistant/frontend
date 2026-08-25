@@ -4,7 +4,8 @@ import type { ForDict } from "../../data/automation";
 export const createDurationData = (
   duration: string | number | ForDict | undefined,
   enableDay = false,
-  enableMillisecond = true
+  enableMillisecond = true,
+  negateParts = false
 ): HaDurationData | undefined => {
   if (duration === undefined) {
     return undefined;
@@ -14,7 +15,7 @@ export const createDurationData = (
       const durationString = duration.toString().trim();
       const negative = durationString[0] === "-";
       const parts = (durationString.split(":") || []).map((p) =>
-        negative && p ? -Math.abs(Number(p)) : Number(p)
+        negateParts && negative && p ? -Math.abs(Number(p)) : Number(p)
       );
 
       if (parts.length === 1) {

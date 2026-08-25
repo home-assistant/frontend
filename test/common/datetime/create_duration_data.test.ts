@@ -32,17 +32,30 @@ describe("createDurationData", () => {
   });
 
   it("should parse string negative duration correctly", () => {
-    expect(createDurationData("-1:30:15.001")).toEqual({
+    expect(createDurationData("-1:30:15.001", true, true, true)).toEqual({
       hours: -1,
       minutes: -30,
       seconds: -15,
       milliseconds: -1,
     });
 
-    expect(createDurationData("-1:30:15.001", false, false)).toEqual({
+    expect(createDurationData("-1:30:15.001", true, false, true)).toEqual({
       hours: -1,
       minutes: -30,
       seconds: -15.001,
+    });
+
+    expect(createDurationData("-1:30:15.001", true, true, false)).toEqual({
+      hours: -1,
+      minutes: 30,
+      seconds: 15,
+      milliseconds: 1,
+    });
+
+    expect(createDurationData("-1:30:15.001", true, false, false)).toEqual({
+      hours: -1,
+      minutes: 30,
+      seconds: 15.001,
     });
 
     expect(createDurationData("-20")).toEqual({
