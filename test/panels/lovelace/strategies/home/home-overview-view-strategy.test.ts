@@ -2,10 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { LovelaceSectionConfig } from "../../../../../src/data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../../src/data/lovelace/config/view";
 import { checkConditionsMet } from "../../../../../src/panels/lovelace/common/validate-condition";
-import type {
-  ConditionalCardConfig,
-  SecurityAlertsCardConfig,
-} from "../../../../../src/panels/lovelace/cards/types";
+import type { ConditionalCardConfig } from "../../../../../src/panels/lovelace/cards/types";
 import { HomeOverviewViewStrategy } from "../../../../../src/panels/lovelace/strategies/home/home-overview-view-strategy";
 import type { HomeAssistant } from "../../../../../src/types";
 import {
@@ -44,10 +41,27 @@ describe("HomeOverviewViewStrategy security alerts", () => {
       },
       createHass("on")
     );
-    const alertCard = sections(view)[0]?.cards?.[0] as SecurityAlertsCardConfig;
+    const alertSection = sections(view)[0];
 
-    expect(alertCard.alert_entities).toEqual([
-      { entity: "binary_sensor.front_door", color: "red" },
+    expect(alertSection.cards).toEqual([
+      {
+        type: "heading",
+        heading: "ui.panel.lovelace.strategy.security.active_alerts",
+        heading_style: "title",
+        grid_options: { columns: "full" },
+      },
+      {
+        type: "alert",
+        entity: "binary_sensor.front_door",
+        color: "red",
+        visibility: [
+          {
+            condition: "state",
+            entity: "binary_sensor.front_door",
+            state: "on",
+          },
+        ],
+      },
     ]);
   });
 
@@ -127,8 +141,8 @@ describe("HomeOverviewViewStrategy security alerts", () => {
       hass
     );
 
-    const alertCard = sections(view)[0]?.cards?.[0];
-    expect(alertCard?.type).toBe("security-alerts");
+    const alertCard = sections(view)[0]?.cards?.[1];
+    expect(alertCard?.type).toBe("alert");
   });
 
   it("does not show the area-less empty state with configured favorites", async () => {
