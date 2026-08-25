@@ -71,10 +71,7 @@ export const computeDefaultSecurityAlertVisibility = (
     case "lock":
       condition.state = [
         "jammed",
-        "locking",
         "unlocked",
-        "unlocking",
-        "opening",
         "open",
       ];
       break;
