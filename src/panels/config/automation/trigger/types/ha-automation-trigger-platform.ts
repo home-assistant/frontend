@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
@@ -422,20 +423,8 @@ export class HaPlatformTrigger extends LitElement {
         Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {

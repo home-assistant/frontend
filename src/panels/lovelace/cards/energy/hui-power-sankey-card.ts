@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   formatPowerShort,
   getEnergyDataCollection,
   getPowerFromState,
@@ -22,6 +23,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "./common/sankey";
@@ -278,6 +280,13 @@ class HuiPowerSankeyCard
       }
     }
 
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption,
+      this._data.statsMetadata,
+      "stat_rate"
+    );
+
     const {
       deviceNodes,
       parentLinks,
@@ -289,12 +298,13 @@ class HuiPowerSankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minPowerThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 1,
       ceilOtherValue: true,
       initialUntracked: homeNode.value,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentPower(id),
-      getLabel: (id, name) => name || this._getEntityLabel(id),
+      getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
     });
     links.push(...deviceLinks);

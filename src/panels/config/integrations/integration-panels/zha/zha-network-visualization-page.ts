@@ -162,7 +162,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const haDevice = this.hass.devices[device.device_reg_id] as
       DeviceRegistryEntry | undefined;
     const area = haDevice
-      ? getDeviceArea(haDevice, this.hass.areas)
+      ? getDeviceArea(haDevice, this.hass.areas, this.hass.devices)
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b

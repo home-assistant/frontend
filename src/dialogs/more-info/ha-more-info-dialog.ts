@@ -17,6 +17,7 @@ import {
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { provide } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -43,8 +44,10 @@ import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-reques
 import {
   getHistoryState,
   navigate,
+  replaceCurrentUrl,
   updateHistoryState,
 } from "../../common/navigate";
+import { createMoreInfoUrl } from "../../common/url/more-info-query-params";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
@@ -85,6 +88,7 @@ import {
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   type MoreInfoView,
 } from "./const";
+import { moreInfoContext, type MoreInfoContext } from "./context";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
@@ -102,6 +106,9 @@ export interface MoreInfoDialogParams {
   tab?: MoreInfoView;
   large?: boolean;
   data?: Record<string, any>;
+  hash?: URLSearchParams;
+  fromUrl?: boolean;
+  returnUrl?: string;
   parentElement?: LitElement;
 }
 
@@ -147,6 +154,12 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _data?: Record<string, any>;
 
+  @provide({ context: moreInfoContext })
+  @state()
+  private _moreInfoContext: MoreInfoContext = this._createMoreInfoContext();
+
+  private _returnUrl?: string;
+
   @state() private _currView: MoreInfoView = DEFAULT_VIEW;
 
   @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
@@ -181,6 +194,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const view = params.view || params.tab || DEFAULT_VIEW;
 
     this._data = params.data;
+    this._moreInfoContext = this._createMoreInfoContext(params.hash);
+    this._returnUrl = params.returnUrl;
     this._currView = view;
     this._initialView = view;
     this._childViewStack = [];
@@ -216,6 +231,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _dialogClosed() {
+    if (this._returnUrl) {
+      replaceCurrentUrl(this._returnUrl);
+    }
     this._entityId = undefined;
     this._parentEntityIds = [];
     this._entry = undefined;
@@ -224,6 +242,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
     this._childViewStack = [];
+    this._moreInfoContext = this._createMoreInfoContext();
+    this._returnUrl = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -271,7 +291,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return entity?.device_id ?? null;
   }
 
-  private _setView(view: MoreInfoView) {
+  private _setView(view: MoreInfoView, preserveHash = false) {
+    if (view !== this._currView && !preserveHash) {
+      this._moreInfoContext = this._createMoreInfoContext();
+    }
     updateHistoryState({
       dialogParams: {
         ...getHistoryState()?.dialogParams,
@@ -279,6 +302,38 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       },
     });
     this._currView = view;
+    this._syncUrl();
+  }
+
+  private _syncUrl() {
+    if (!this._returnUrl || !this._entityId) {
+      return;
+    }
+    replaceCurrentUrl(
+      createMoreInfoUrl(this._returnUrl, {
+        entityId: this._entityId,
+        view: this._currView,
+        hash: this._moreInfoContext.hash,
+      })
+    );
+  }
+
+  private _createMoreInfoContext(hash?: URLSearchParams): MoreInfoContext {
+    return {
+      hash: new URLSearchParams(hash),
+      setHashParam: (key, value) => this._setHashParam(key, value),
+    };
+  }
+
+  private _setHashParam(key: string, value?: string) {
+    const hash = new URLSearchParams(this._moreInfoContext.hash);
+    if (value) {
+      hash.set(key, value);
+    } else {
+      hash.delete(key);
+    }
+    this._moreInfoContext = this._createMoreInfoContext(hash);
+    this._syncUrl();
   }
 
   private _goBack() {
@@ -306,7 +361,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (this._parentEntityIds.length > 0) {
       this._entityId = this._parentEntityIds.pop();
       this._currView = DEFAULT_VIEW;
+      this._moreInfoContext = this._createMoreInfoContext();
       this._loadEntityRegistryEntry();
+      this._syncUrl();
     }
   }
 
@@ -972,10 +1029,14 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       }
     }
 
-    if (changedProps.has("_currView") || changedProps.has("_entry")) {
-      if (this._currView === "settings" && this._entry) {
-        this._initDirtyTracking({ type: "deep" });
-      }
+    if (
+      this._currView === "settings" &&
+      this._entry &&
+      ((changedProps.has("_currView") &&
+        changedProps.get("_currView") !== "settings") ||
+        (changedProps.has("_entry") && !changedProps.get("_entry")))
+    ) {
+      this._initDirtyTracking({ type: "deep" });
     }
 
     if (changedProps.has("_currView")) {
@@ -1007,19 +1068,22 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
     const view = ev.detail.view || ev.detail.tab || DEFAULT_VIEW;
     if (entityId === this._entityId) {
+      this._moreInfoContext = this._createMoreInfoContext(ev.detail.hash);
       this._infoEditMode = false;
       this._detailsYamlMode = false;
-      this._setView(view);
+      this._setView(view, true);
       return;
     }
     this._parentEntityIds = [...this._parentEntityIds, this._entityId!];
     this._entityId = entityId;
+    this._moreInfoContext = this._createMoreInfoContext(ev.detail.hash);
     this._currView = view === "details" ? view : DEFAULT_VIEW;
     this._initialView = view;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
     this._childViewStack = [];
     this._loadEntityRegistryEntry();
+    this._syncUrl();
   }
 
   private _enableEscapeKeyClose = () => {

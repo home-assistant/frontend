@@ -33,6 +33,7 @@ Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives fi
 - Do not query or manipulate DOM manually when Lit decorators, component refs, or render state are appropriate.
 - Scope styles to components, use theme custom properties, and keep layouts mobile-first and RTL-safe.
 - All user-facing text must be localized through the translation system.
+- Do not write tests just because you changed some code. Write a test when there is real logic that could break without anyone noticing, and explain what the test protects.
 
 ## Project Skills
 

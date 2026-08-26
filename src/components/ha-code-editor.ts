@@ -33,6 +33,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import { computeEntityName } from "../common/entity/compute_entity_name";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { copyToClipboard } from "../common/util/copy-clipboard";
@@ -752,6 +753,19 @@ export class HaCodeEditor extends ReactiveElement {
       this._states![key]
     );
 
+    const entityName = computeEntityName(
+      this._states![key],
+      this._registries!.entities,
+      this._registries!.devices
+    );
+    const deviceName = context.device
+      ? computeDeviceName(context.device)
+      : undefined;
+    const areaName = context.area ? computeAreaName(context.area) : undefined;
+    const floorName = context.floor
+      ? computeFloorName(context.floor)
+      : undefined;
+
     const completionItems: CompletionItem[] = [
       {
         label: this._i18n!.localize(
@@ -759,31 +773,39 @@ export class HaCodeEditor extends ReactiveElement {
         ),
         value: formattedState,
         subValue:
-          // If the state exactly matches the formatted state, don't show the raw state
           this._states![key].state === formattedState
             ? undefined
             : this._states![key].state,
       },
     ];
 
-    if (context.device && context.device.name) {
+    if (entityName) {
+      completionItems.push({
+        label: this._i18n!.localize(
+          "ui.components.entity.entity-picker.entity"
+        ),
+        value: entityName,
+      });
+    }
+
+    if (deviceName) {
       completionItems.push({
         label: this._i18n!.localize("ui.components.device-picker.device"),
-        value: context.device.name,
+        value: deviceName,
       });
     }
 
-    if (context.area && context.area.name) {
+    if (areaName) {
       completionItems.push({
         label: this._i18n!.localize("ui.components.area-picker.area"),
-        value: context.area.name,
+        value: areaName,
       });
     }
 
-    if (context.floor && context.floor.name) {
+    if (floorName) {
       completionItems.push({
         label: this._i18n!.localize("ui.components.floor-picker.floor"),
-        value: context.floor.name,
+        value: floorName,
       });
     }
 
