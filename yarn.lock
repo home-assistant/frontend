@@ -7980,10 +7980,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cropperjs@npm:1.6.2":
-  version: 1.6.2
-  resolution: "cropperjs@npm:1.6.2"
-  checksum: 10/4b97ac27b7fd65316a531372dd96ce1073b4620c1b012fbad5acb0fdc28952112466bc333a98c510fe2bc9dcdeee58f5c8619522c045c6166300621673e3d759
+"cropperjs@npm:1.6.3":
+  version: 1.6.3
+  resolution: "cropperjs@npm:1.6.3"
+  checksum: 10/eb6e4154fbe45cdd3fd730fc21dbae81597a2fbdac56d60d6b74fe62ef1eaaba1ca4fffd2a727bd728daff0f51178952dff423371c6e64348903a80450452447
   languageName: node
   linkType: hard
 
@@ -10060,7 +10060,7 @@ __metadata:
     color-name: "npm:2.1.1"
     comlink: "npm:4.4.2"
     core-js: "npm:3.50.0"
-    cropperjs: "npm:1.6.2"
+    cropperjs: "npm:1.6.3"
     culori: "npm:4.0.2"
     date-fns: "npm:4.4.0"
     deep-clone-simple: "npm:1.1.1"
