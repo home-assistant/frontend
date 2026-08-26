@@ -218,7 +218,7 @@ class MoreInfoTimer extends LitElement {
       }
       @media (prefers-reduced-motion: reduce) {
         ha-more-info-state-header.finished {
-          animation: none;
+          animation-duration: var(--ha-animation-duration-none);
         }
       }
     `,

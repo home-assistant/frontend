@@ -437,7 +437,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
       @media (prefers-reduced-motion: reduce) {
         ha-tile-icon.timer-finished {
-          animation: none;
+          animation-duration: var(--ha-animation-duration-none);
         }
       }
 
