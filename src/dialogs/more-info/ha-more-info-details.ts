@@ -1,10 +1,11 @@
-import { mdiContentCopy, mdiDevices, mdiTextureBox } from "@mdi/js";
+import { mdiCheck, mdiContentCopy, mdiDevices, mdiTextureBox } from "@mdi/js";
 import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeFloorName } from "../../common/entity/compute_floor_name";
@@ -18,6 +19,7 @@ import "../../components/ha-icon-next";
 import "../../components/ha-label";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-value";
 import "../../components/list/ha-grouped-list";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
@@ -64,6 +66,17 @@ class HaMoreInfoDetails extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   @state()
   private _labels?: LabelRegistryEntry[];
+
+  @state() private _copiedValue?: string;
+
+  private _copyFeedbackTimeout?: number;
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.clearTimeout(this._copyFeedbackTimeout);
+    this._copyFeedbackTimeout = undefined;
+    this._copiedValue = undefined;
+  }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
@@ -343,7 +356,13 @@ class HaMoreInfoDetails extends LitElement {
               <div class="label">${label}</div>
               <div class="value">${entry.value}</div>
             </div>
-            <ha-svg-icon slot="end" .path=${mdiContentCopy}></ha-svg-icon>
+            <ha-svg-icon
+              class=${this._copiedValue === entry.value ? "copy-success" : ""}
+              slot="end"
+              .path=${
+                this._copiedValue === entry.value ? mdiCheck : mdiContentCopy
+              }
+            ></ha-svg-icon>
           </ha-list-item-button>
         `;
       }
@@ -361,14 +380,22 @@ class HaMoreInfoDetails extends LitElement {
     });
   }
 
-  private async _copyValue(ev: Event) {
-    const value = (ev.currentTarget as HTMLElement).dataset.value;
+  private async _copyValue(ev: HASSDomCurrentTargetEvent<HaListItemButton>) {
+    const value = ev.currentTarget.dataset.value;
     if (value === undefined) {
       return;
     }
     await copyToClipboard(value);
+    const duration = 4000;
+    this._copiedValue = value;
+    window.clearTimeout(this._copyFeedbackTimeout);
+    this._copyFeedbackTimeout = window.setTimeout(() => {
+      this._copiedValue = undefined;
+      this._copyFeedbackTimeout = undefined;
+    }, duration);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
+      duration,
     });
   }
 
@@ -486,6 +513,10 @@ class HaMoreInfoDetails extends LitElement {
 
     ha-icon-next {
       color: var(--secondary-text-color);
+    }
+
+    ha-svg-icon.copy-success {
+      color: var(--success-color);
     }
 
     .empty {
