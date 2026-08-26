@@ -106,7 +106,7 @@ export class HuiEnergyGasGraphCard
         }
       : undefined;
   }
-  
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -183,7 +183,7 @@ export class HuiEnergyGasGraphCard
         unit: this._unit,
       }
     );
-  
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -210,10 +210,21 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const gasSources = energySourcesByType(energyData.prefs).gas;
+    const result = generateEnergyGasGraphData({
+      hass: this.hass,
+      energyData,
+      computedStyles: getComputedStyle(this),
+      now: endOfToday(),
+    });
 
+    const gasSources = energySourcesByType(energyData.prefs).gas;
     const gasDisplayPrecisions = gasSources
-      ?.map(
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === result.unit
+      )
+      .map(
         (source) =>
           this.hass.entities[source.stat_energy_from]?.display_precision
       )
@@ -222,13 +233,6 @@ export class HuiEnergyGasGraphCard
     this._displayPrecision = gasDisplayPrecisions?.length
       ? Math.max(...gasDisplayPrecisions)
       : undefined;
-    
-    const result = generateEnergyGasGraphData({
-      hass: this.hass,
-      energyData,
-      computedStyles: getComputedStyle(this),
-      now: endOfToday(),
-    });
 
     this._start = result.start;
     this._end = result.end;
