@@ -9,15 +9,13 @@ import {
 } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-sortable";
 import "./ha-entity-picker";
 import type { HaEntityPicker } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Array }) public value?: string[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -87,10 +85,6 @@ class HaEntitiesPicker extends LitElement {
   public reorder = false;
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const currentEntities = this._currentEntities;
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -105,7 +99,6 @@ class HaEntitiesPicker extends LitElement {
               <div class="entity">
                 <ha-entity-picker
                   .curValue=${entityId}
-                  .hass=${this.hass}
                   .includeDomains=${this.includeDomains}
                   .excludeDomains=${this.excludeDomains}
                   .includeEntities=${this.includeEntities}
@@ -118,14 +111,16 @@ class HaEntitiesPicker extends LitElement {
                   .createDomains=${this.createDomains}
                   @value-changed=${this._entityChanged}
                 ></ha-entity-picker>
-                ${this.reorder
-                  ? html`
-                      <ha-svg-icon
-                        class="entity-handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `
-                  : nothing}
+                ${
+                  this.reorder
+                    ? html`
+                        <ha-svg-icon
+                          class="entity-handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
+                      `
+                    : nothing
+                }
               </div>
             `
           )}
@@ -133,7 +128,6 @@ class HaEntitiesPicker extends LitElement {
       </ha-sortable>
       <div>
         <ha-entity-picker
-          .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeEntities=${this.includeEntities}

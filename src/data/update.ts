@@ -77,7 +77,10 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
-export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
+export const updateReleaseNotes = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entityId: string
+) =>
   hass.callWS<string | null>({
     type: "update/release_notes",
     entity_id: entityId,
@@ -181,6 +184,7 @@ export const checkForEntityUpdates = async (
   }
 
   showToast(element, {
+    id: "check-updates",
     message: hass.localize("ui.panel.config.updates.checking_updates"),
   });
 
@@ -191,6 +195,7 @@ export const checkForEntityUpdates = async (
       if (computeDomain(event.data.entity_id) === "update") {
         updated++;
         showToast(element, {
+          id: "check-updates",
           message: hass.localize("ui.panel.config.updates.updates_refreshed", {
             count: updated,
           }),
@@ -213,6 +218,7 @@ export const checkForEntityUpdates = async (
 
   if (updated === 0) {
     showToast(element, {
+      id: "check-updates",
       message: hass.localize("ui.panel.config.updates.no_new_updates"),
     });
   }
@@ -263,10 +269,7 @@ export const computeUpdateStateDisplay = (
 };
 
 export type UpdateType =
-  | "addon"
-  | "home_assistant"
-  | "home_assistant_os"
-  | "generic";
+  "addon" | "home_assistant" | "home_assistant_os" | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,

@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiBrightness6,
   mdiCreation,
@@ -9,7 +10,9 @@ import {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
@@ -32,7 +35,7 @@ import {
 } from "../../../data/light";
 import "../../../state-control/ha-state-control-toggle";
 import "../../../state-control/light/ha-state-control-light-brightness";
-import type { HomeAssistant } from "../../../types";
+import { apiContext, formattersContext } from "../../../data/context";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import "../components/lights/ha-favorite-color-button";
@@ -46,7 +49,17 @@ type MainControl = "brightness" | "color_temp" | "color";
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
@@ -60,7 +73,6 @@ class MoreInfoLight extends LitElement {
 
   private _renderEffectIcon = (value: string) =>
     html`<ha-attribute-icon
-      .hass=${this.hass}
       .stateObj=${this.stateObj}
       attribute="effect"
       .attributeValue=${value}
@@ -84,13 +96,16 @@ class MoreInfoLight extends LitElement {
 
   private get _stateOverride() {
     if (this.stateObj?.attributes.brightness) {
-      return this.hass.formatEntityAttributeValue(this.stateObj!, "brightness");
+      return this._formatters.formatEntityAttributeValue(
+        this.stateObj!,
+        "brightness"
+      );
     }
     return undefined;
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return nothing;
     }
 
@@ -124,174 +139,187 @@ class MoreInfoLight extends LitElement {
 
     return html`
       <ha-more-info-state-header
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .stateOverride=${this._stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
-        ${!supportsBrightness
-          ? html`
-              <ha-state-control-toggle
-                .stateObj=${this.stateObj}
-                .hass=${this.hass}
-                .iconPathOn=${mdiLightbulbOn}
-                .iconPathOff=${mdiLightbulbOff}
-              ></ha-state-control-toggle>
-            `
-          : nothing}
-        ${supportsColorTemp || supportsColor || supportsBrightness
-          ? html`
-              ${supportsBrightness && this._mainControl === "brightness"
-                ? html`
-                    <ha-state-control-light-brightness
-                      .stateObj=${this.stateObj}
-                      .hass=${this.hass}
-                    >
-                    </ha-state-control-light-brightness>
-                  `
-                : nothing}
-              ${supportsColor && this._mainControl === "color"
-                ? html`
-                    <light-color-rgb-picker
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj}
-                    >
-                    </light-color-rgb-picker>
-                  `
-                : nothing}
-              ${supportsColorTemp && this._mainControl === "color_temp"
-                ? html`
-                    <light-color-temp-picker
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj}
-                    >
-                    </light-color-temp-picker>
-                  `
-                : nothing}
-              <ha-icon-button-group>
-                ${supportsBrightness
-                  ? html`
-                      <ha-icon-button
-                        .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.toggle"
-                        )}
-                        @click=${this._toggle}
-                      >
-                        <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                      </ha-icon-button>
-                    `
-                  : nothing}
-                ${supportsColor || supportsColorTemp
-                  ? html`
-                      <div class="separator"></div>
-                      <ha-icon-button-toggle
-                        .selected=${this._mainControl === "brightness"}
-                        .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.formatEntityAttributeName(
-                          this.stateObj,
-                          "brightness"
-                        )}
-                        .control=${"brightness"}
-                        @click=${this._setMainControl}
-                      >
-                        <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
-                      </ha-icon-button-toggle>
-                    `
-                  : nothing}
-                ${supportsColor
-                  ? html`
-                      <ha-icon-button-toggle
-                        border-only
-                        .selected=${this._mainControl === "color"}
-                        .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.color"
-                        )}
-                        .control=${"color"}
-                        @click=${this._setMainControl}
-                      >
-                        <span class="wheel color"></span>
-                      </ha-icon-button-toggle>
-                    `
-                  : nothing}
-                ${supportsColorTemp
-                  ? html`
-                      <ha-icon-button-toggle
-                        border-only
-                        .selected=${this._mainControl === "color_temp"}
-                        .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.color_temp"
-                        )}
-                        .control=${"color_temp"}
-                        @click=${this._setMainControl}
-                      >
-                        <span class="wheel color-temp"></span>
-                      </ha-icon-button-toggle>
-                    `
-                  : nothing}
-                ${supportsWhite
-                  ? html`
-                      <div class="separator"></div>
-                      <ha-icon-button
-                        .disabled=${this.stateObj!.state === UNAVAILABLE}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.light.set_white"
-                        )}
-                        @click=${this._setWhite}
-                      >
-                        <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
-                      </ha-icon-button>
-                    `
-                  : nothing}
-              </ha-icon-button-group>
-              ${showFavoriteColors
-                ? html`
-                    <ha-more-info-light-favorite-colors
-                      .hass=${this.hass}
-                      .stateObj=${this.stateObj}
-                      .entry=${this.entry}
-                      .editMode=${this.editMode}
-                      @favorite-color-edit-started=${this._resetMainControl}
-                    >
-                    </ha-more-info-light-favorite-colors>
-                  `
-                : nothing}
-            `
-          : nothing}
+        ${
+          !supportsBrightness
+            ? html`
+                <ha-state-control-toggle
+                  .stateObj=${this.stateObj}
+                  .iconPathOn=${mdiLightbulbOn}
+                  .iconPathOff=${mdiLightbulbOff}
+                ></ha-state-control-toggle>
+              `
+            : nothing
+        }
+        ${
+          supportsColorTemp || supportsColor || supportsBrightness
+            ? html`
+                ${
+                  supportsBrightness && this._mainControl === "brightness"
+                    ? html`
+                        <ha-state-control-light-brightness
+                          .stateObj=${this.stateObj}
+                        >
+                        </ha-state-control-light-brightness>
+                      `
+                    : nothing
+                }
+                ${
+                  supportsColor && this._mainControl === "color"
+                    ? html`
+                        <light-color-rgb-picker .stateObj=${this.stateObj}>
+                        </light-color-rgb-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  supportsColorTemp && this._mainControl === "color_temp"
+                    ? html`
+                        <light-color-temp-picker .stateObj=${this.stateObj}>
+                        </light-color-temp-picker>
+                      `
+                    : nothing
+                }
+                <ha-icon-button-group>
+                  ${
+                    supportsBrightness
+                      ? html`
+                          <ha-icon-button
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._localize(
+                              "ui.dialogs.more_info_control.light.toggle"
+                            )}
+                            @click=${this._toggle}
+                          >
+                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                          </ha-icon-button>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsColor || supportsColorTemp
+                      ? html`
+                          <div class="separator"></div>
+                          <ha-icon-button-toggle
+                            .selected=${this._mainControl === "brightness"}
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._formatters.formatEntityAttributeName(
+                              this.stateObj,
+                              "brightness"
+                            )}
+                            .control=${"brightness"}
+                            @click=${this._setMainControl}
+                          >
+                            <ha-svg-icon .path=${mdiBrightness6}></ha-svg-icon>
+                          </ha-icon-button-toggle>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsColor
+                      ? html`
+                          <ha-icon-button-toggle
+                            border-only
+                            .selected=${this._mainControl === "color"}
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._localize(
+                              "ui.dialogs.more_info_control.light.color"
+                            )}
+                            .control=${"color"}
+                            @click=${this._setMainControl}
+                          >
+                            <span class="wheel color"></span>
+                          </ha-icon-button-toggle>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsColorTemp
+                      ? html`
+                          <ha-icon-button-toggle
+                            border-only
+                            .selected=${this._mainControl === "color_temp"}
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._localize(
+                              "ui.dialogs.more_info_control.light.color_temp"
+                            )}
+                            .control=${"color_temp"}
+                            @click=${this._setMainControl}
+                          >
+                            <span class="wheel color-temp"></span>
+                          </ha-icon-button-toggle>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsWhite
+                      ? html`
+                          <div class="separator"></div>
+                          <ha-icon-button
+                            .disabled=${this.stateObj!.state === UNAVAILABLE}
+                            .label=${this._localize(
+                              "ui.dialogs.more_info_control.light.set_white"
+                            )}
+                            @click=${this._setWhite}
+                          >
+                            <ha-svg-icon .path=${mdiFileWordBox}></ha-svg-icon>
+                          </ha-icon-button>
+                        `
+                      : nothing
+                  }
+                </ha-icon-button-group>
+                ${
+                  showFavoriteColors
+                    ? html`
+                        <ha-more-info-light-favorite-colors
+                          .stateObj=${this.stateObj}
+                          .entry=${this.entry}
+                          .editMode=${this.editMode}
+                          @favorite-color-edit-started=${this._resetMainControl}
+                        >
+                        </ha-more-info-light-favorite-colors>
+                      `
+                    : nothing
+                }
+              `
+            : nothing
+        }
       </div>
       <div>
         <ha-more-info-control-select-container>
-          ${supportsEffects && this.stateObj.attributes.effect_list
-            ? html`
-                <ha-control-select-menu
-                  .hass=${this.hass}
-                  .label=${this.hass.formatEntityAttributeName(
-                    this.stateObj,
-                    "effect"
-                  )}
-                  .value=${this.stateObj.attributes.effect}
-                  .disabled=${this.stateObj.state === UNAVAILABLE}
-                  @wa-select=${this._handleEffect}
-                  .options=${this.stateObj.attributes.effect_list.map(
-                    (effect) => ({
-                      value: effect,
-                      label: this.stateObj
-                        ? this.hass.formatEntityAttributeValue(
-                            this.stateObj,
-                            "effect",
-                            effect
-                          )
-                        : effect,
-                    })
-                  )}
-                  .renderIcon=${this._renderEffectIcon}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
-                </ha-control-select-menu>
-              `
-            : nothing}
+          ${
+            supportsEffects && this.stateObj.attributes.effect_list
+              ? html`
+                  <ha-control-select-menu
+                    .label=${this._formatters.formatEntityAttributeName(
+                      this.stateObj,
+                      "effect"
+                    )}
+                    .value=${this.stateObj.attributes.effect}
+                    .disabled=${this.stateObj.state === UNAVAILABLE}
+                    @wa-select=${this._handleEffect}
+                    .options=${this.stateObj.attributes.effect_list.map(
+                      (effect) => ({
+                        value: effect,
+                        label: this.stateObj
+                          ? this._formatters.formatEntityAttributeValue(
+                              this.stateObj,
+                              "effect",
+                              effect
+                            )
+                          : effect,
+                      })
+                    )}
+                    .renderIcon=${this._renderEffectIcon}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiCreation}></ha-svg-icon>
+                  </ha-control-select-menu>
+                `
+              : nothing
+          }
         </ha-more-info-control-select-container>
       </div>
     `;
@@ -300,13 +328,13 @@ class MoreInfoLight extends LitElement {
   private _toggle = () => {
     const service = this.stateObj?.state === "on" ? "turn_off" : "turn_on";
     forwardHaptic(this, "light");
-    this.hass.callService("light", service, {
+    this._api.callService("light", service, {
       entity_id: this.stateObj!.entity_id,
     });
   };
 
   private _setWhite = () => {
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       white: true,
     });
@@ -318,7 +346,7 @@ class MoreInfoLight extends LitElement {
 
     if (!newVal || oldVal === newVal) return;
 
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       effect: newVal,
     });
@@ -339,10 +367,10 @@ class MoreInfoLight extends LitElement {
           width: auto;
         }
         .wheel {
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           flex: none;
-          border-radius: var(--ha-border-radius-xl);
+          border-radius: var(--ha-border-radius-circle);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

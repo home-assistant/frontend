@@ -2,12 +2,14 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
   findEntities,
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
+import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
@@ -19,6 +21,7 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { ShortcutItem } from "../../../../data/home_shortcuts";
 import { resolveShortcutItems } from "../../../../data/home_shortcuts";
 import type { HomeAssistant } from "../../../../types";
+import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
@@ -48,6 +51,26 @@ export interface HomeOverviewViewStrategyConfig {
   hide_suggested_entities?: boolean;
   shortcuts?: ShortcutItem[];
 }
+
+const energyPreferencesPromises = new WeakMap<
+  HomeAssistant["connection"],
+  Promise<EnergyPreferences | undefined>
+>();
+
+export const preloadHomeEnergyPreferences = (hass: HomeAssistant) => {
+  if (!isComponentLoaded(hass.config, "energy")) {
+    return Promise.resolve(undefined);
+  }
+
+  const existing = energyPreferencesPromises.get(hass.connection);
+  if (existing) {
+    return existing;
+  }
+
+  const request = getEnergyPreferences(hass).catch(() => undefined);
+  energyPreferencesPromises.set(hass.connection, request);
+  return request;
+};
 
 const computeAreaCard = (
   areaId: string,
@@ -107,7 +130,24 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const entitiesWithoutAreas = findEntities(allEntities, otherDevicesFilters);
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
+
+    // Only show the devices tile if the other devices view has content: it
+    // only renders area-less primary entities that belong to a device.
+    const hasOtherDevices = allEntities.some(
+      (entityId) =>
+        otherDevicesFilters.some((filter) => filter(entityId)) &&
+        primaryFilter(entityId) &&
+        !!getEntityContext(
+          hass.states[entityId],
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        ).device
+    );
 
     const floorsSections: LovelaceSectionConfig[] = [];
     for (const floorStructure of home.floors) {
@@ -140,13 +180,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
-    if (home.areas.length > 0 || entitiesWithoutAreas.length > 0) {
+    if (home.areas.length > 0 || hasOtherDevices) {
       const cards: LovelaceCardConfig[] = [];
       for (const areaId of home.areas) {
         cards.push(computeAreaCard(areaId, hass));
       }
 
-      if (entitiesWithoutAreas.length > 0) {
+      if (hasOtherDevices) {
         cards.push({
           type: "tile",
           entity: "zone.home", // zone entity to represent unassigned area as it always exists
@@ -252,10 +292,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       generateEntityFilter(hass, filter)
     );
 
-    const climateFilters = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
     const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
       generateEntityFilter(hass, filter)
     );
@@ -268,9 +304,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
-    const hasClimate =
-      hass.panels.climate &&
-      findEntities(allEntities, climateFilters).length > 0;
+    const hasClimate = hass.panels.climate && hasClimateEntities(hass);
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;
@@ -287,10 +321,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       .filter(weatherFilter)
       .sort()[0];
 
-    const energyPrefs = isComponentLoaded(hass.config, "energy")
-      ? // It raises if not configured, just swallow that.
-        await getEnergyPreferences(hass).catch(() => undefined)
-      : undefined;
+    const energyPrefs = await preloadHomeEnergyPreferences(hass);
+    energyPreferencesPromises.delete(hass.connection);
 
     const hasEnergy =
       hass.panels.energy &&
@@ -483,7 +515,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:home-assistant",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.home.welcome_title"
@@ -530,8 +561,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        | LovelaceSectionRawConfig
-        | undefined
+        LovelaceSectionRawConfig | undefined
       )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
@@ -552,10 +582,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       ...(sidebarSection && {
         sidebar: {
           sections: [sidebarSection],
-          content_label: hass.localize("ui.panel.lovelace.strategy.home.home"),
-          sidebar_label: hass.localize(
-            "ui.panel.lovelace.strategy.home.summaries"
-          ),
           visibility: [LARGE_SCREEN_CONDITION],
         },
       }),

@@ -80,25 +80,26 @@ class StepFlowMenu extends LitElement {
     return html`
       ${description ? html`<div class="content">${description}</div>` : nothing}
       <div class="options">
-        ${options.map(
-          (option) => html`
+        ${options.map((option) => {
+          const optionDescription = optionDescriptions[option];
+          return html`
             <ha-list-item
               hasMeta
               .step=${option}
               @click=${this._handleStep}
-              ?twoline=${optionDescriptions[option]}
-              ?multiline-secondary=${optionDescriptions[option]}
+              ?twoline=${optionDescription}
+              ?multiline-secondary=${optionDescription}
             >
               <span>${translations[option]}</span>
-              ${optionDescriptions[option]
-                ? html`<span slot="secondary">
-                    ${optionDescriptions[option]}
-                  </span>`
-                : nothing}
+              ${
+                optionDescription
+                  ? html`<span slot="secondary"> ${optionDescription} </span>`
+                  : nothing
+              }
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }

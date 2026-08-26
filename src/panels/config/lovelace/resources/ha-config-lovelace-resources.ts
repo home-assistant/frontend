@@ -51,6 +51,8 @@ export class HaConfigLovelaceResources extends LitElement {
 
   @state() private _resources: LovelaceResource[] = [];
 
+  @state() private _loaded = false;
+
   @state() private _lovelaceInfo?: LovelaceInfo;
 
   @state()
@@ -106,9 +108,11 @@ export class HaConfigLovelaceResources extends LitElement {
         sortable: true,
         filterable: true,
         template: (resource) => html`
-          ${this.hass.localize(
-            `ui.panel.config.lovelace.resources.types.${resource.type}`
-          ) || resource.type}
+          ${
+            this.hass.localize(
+              `ui.panel.config.lovelace.resources.types.${resource.type}`
+            ) || resource.type
+          }
         `,
       },
       delete: {
@@ -132,7 +136,7 @@ export class HaConfigLovelaceResources extends LitElement {
   );
 
   protected render(): TemplateResult {
-    if (!this.hass || this._resources === undefined) {
+    if (!this.hass || !this._loaded) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
@@ -173,6 +177,7 @@ export class HaConfigLovelaceResources extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config/lovelace/dashboards"
         .tabs=${lovelaceResourcesTabs}
         .columns=${this._columns(this.hass.language, this.hass.localize)}
         .data=${this._resources}
@@ -190,18 +195,20 @@ export class HaConfigLovelaceResources extends LitElement {
         has-fab
         clickable
       >
-        ${isYamlMode
-          ? html`
-              <ha-icon-button
-                slot="toolbar-icon"
-                .label=${this.hass.localize(
-                  "ui.panel.config.lovelace.resources.reload_resources"
-                )}
-                .path=${mdiRefresh}
-                @click=${this._handleReloadResources}
-              ></ha-icon-button>
-            `
-          : ""}
+        ${
+          isYamlMode
+            ? html`
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.resources.reload_resources"
+                  )}
+                  .path=${mdiRefresh}
+                  @click=${this._handleReloadResources}
+                ></ha-icon-button>
+              `
+            : ""
+        }
         <ha-button slot="fab" size="l" @click=${this._addResource}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
@@ -224,6 +231,7 @@ export class HaConfigLovelaceResources extends LitElement {
     ]);
     this._resources = resources;
     this._lovelaceInfo = lovelaceInfo;
+    this._loaded = true;
   }
 
   private _editResource(ev: CustomEvent) {

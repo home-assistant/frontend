@@ -71,23 +71,31 @@ class DialogCalendarEventDetail extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="field">
             <ha-svg-icon .path=${mdiCalendarClock}></ha-svg-icon>
             <div class="value">
               ${this._formatDateRange()}<br />
-              ${this._data!.rrule
-                ? this._renderRRuleAsText(this._data.rrule)
-                : ""}
-              ${this._data.location
-                ? html`${this._data.location} <br />`
-                : nothing}
-              ${this._data.description
-                ? html`<br />
-                    <div class="description">${this._data.description}</div>`
-                : nothing}
+              ${
+                this._data!.rrule
+                  ? this._renderRRuleAsText(this._data.rrule)
+                  : ""
+              }
+              ${
+                this._data.location
+                  ? html`${this._data.location} <br />`
+                  : nothing
+              }
+              ${
+                this._data.description
+                  ? html`<br />
+                      <div class="description">${this._data.description}</div>`
+                  : nothing
+              }
             </div>
           </div>
 
@@ -101,28 +109,32 @@ class DialogCalendarEventDetail extends LitElement {
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._params.canDelete
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._deleteEvent}
+          ${
+            this._params.canDelete
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEvent}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass.localize("ui.components.calendar.event.delete")}
+                  </ha-button>
+                `
+              : ""
+          }
+          ${
+            this._params.canEdit
+              ? html`<ha-button
+                  slot="primaryAction"
+                  @click=${this._editEvent}
                   .disabled=${this._submitting}
                 >
-                  ${this.hass.localize("ui.components.calendar.event.delete")}
-                </ha-button>
-              `
-            : ""}
-          ${this._params.canEdit
-            ? html`<ha-button
-                slot="primaryAction"
-                @click=${this._editEvent}
-                .disabled=${this._submitting}
-              >
-                ${this.hass.localize("ui.components.calendar.event.edit")}
-              </ha-button>`
-            : ""}
+                  ${this.hass.localize("ui.components.calendar.event.edit")}
+                </ha-button>`
+              : ""
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -212,18 +224,9 @@ class DialogCalendarEventDetail extends LitElement {
         : this.hass.localize(
             "ui.components.calendar.event.confirm_delete.prompt"
           ),
-      confirmText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_this"
-          )
-        : this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete"
-          ),
-      confirmFutureText: entry.recurrence_id
-        ? this.hass.localize(
-            "ui.components.calendar.event.confirm_delete.delete_future"
-          )
-        : undefined,
+      confirmText: this.hass.localize("ui.common.delete"),
+      recurring: !!entry.recurrence_id,
+      destructive: true,
     });
     if (range === undefined) {
       // Cancel

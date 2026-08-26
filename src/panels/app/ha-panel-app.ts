@@ -32,7 +32,7 @@ interface AppPanelConfig {
 }
 
 // Time to wait for app to start before we ask the user if we should try again
-const START_WAIT_TIME = 20000; // ms
+const START_WAIT_TIME = 30000; // ms
 const RETRY_START_WAIT_TIME = 5000; // ms
 
 @customElement("ha-panel-app")
@@ -52,6 +52,11 @@ class HaPanelApp extends LitElement {
   @state() private _kioskMode = false;
 
   @state() private _iframeLoaded = false;
+
+  // Set when the addon signals (via subscribe-properties) that it handles the
+  // safe-area insets itself. We then stop padding the iframe and forward the
+  // inset values so the addon can draw into the safe area.
+  @state() private _handleSafeArea = false;
 
   private _enabledKioskMode = false;
 
@@ -88,11 +93,13 @@ class HaPanelApp extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("message", this._handleIframeMessage);
+    window.addEventListener("resize", this._handleResize);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("message", this._handleIframeMessage);
+    window.removeEventListener("resize", this._handleResize);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
@@ -116,23 +123,26 @@ class HaPanelApp extends LitElement {
 
     // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
     return html`
-      ${!this._kioskMode &&
-      (this.narrow || this.hass.dockedSidebar === "always_hidden")
-        ? html`
-            <div class="header">
-              <ha-icon-button
-                .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-                .path=${mdiMenu}
-                @click=${this._toggleMenu}
-              ></ha-icon-button>
-              <div class="main-title">${this._addon.name}</div>
-            </div>
-          `
-        : nothing}
+      ${
+        !this._kioskMode &&
+        (this.narrow || this.hass.dockedSidebar === "always_hidden")
+          ? html`
+              <div class="header">
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+                  .path=${mdiMenu}
+                  @click=${this._toggleMenu}
+                ></ha-icon-button>
+                <div class="main-title">${this._addon.name}</div>
+              </div>
+            `
+          : nothing
+      }
       <iframe
         class=${classMap({
           loaded: this._iframeLoaded,
           "kiosk-mode": this._kioskMode,
+          "handle-safe-area": this._handleSafeArea,
         })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
@@ -140,6 +150,14 @@ class HaPanelApp extends LitElement {
         ${ref(this._iframeRef)}
       >
       </iframe>
+      ${
+        !this._iframeLoaded
+          ? html`<hass-loading-screen
+              class="loading-overlay"
+              .message=${this._loadingMessage}
+            ></hass-loading-screen>`
+          : nothing
+      }
     `;
   }
 
@@ -169,6 +187,7 @@ class HaPanelApp extends LitElement {
         this._enabledKioskMode = false;
       }
       this._iframeSubscribeUpdates = false;
+      this._handleSafeArea = false;
       this._autoRetryUntil = undefined;
       this._fetchData(addon);
     }
@@ -284,8 +303,6 @@ class HaPanelApp extends LitElement {
       return;
     }
 
-    this._loadingMessage = undefined;
-
     if (this._fetchDataTimeout) {
       clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
@@ -327,28 +344,32 @@ class HaPanelApp extends LitElement {
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;
-    this._iframeLoaded = true;
 
-    if (
-      !this._addon ||
-      iframe.contentDocument?.body.textContent !== "502: Bad Gateway"
-    ) {
-      return;
-    }
+    const is502 =
+      !!this._addon &&
+      iframe.contentDocument?.body.textContent === "502: Bad Gateway";
 
-    // Auto-retry if within the retry window
-    if (this._autoRetryUntil && Date.now() < this._autoRetryUntil) {
+    // While the app is still starting, reload the iframe silently behind the
+    // loading screen instead of revealing the error page and tearing down
+    // the panel.
+    if (is502 && this._autoRetryUntil && Date.now() < this._autoRetryUntil) {
       this._reloadIframe();
       return;
     }
 
-    // Clear auto-retry window and show dialog
+    this._iframeLoaded = true;
+
+    if (!is502) {
+      return;
+    }
+
+    // Retry window elapsed, ask the user whether to keep waiting.
     this._autoRetryUntil = undefined;
 
     await this.updateComplete;
     showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.app.error_app_not_ready"),
-      title: this._addon.name,
+      title: this._addon!.name,
       confirmText: this.hass.localize("ui.panel.app.retry"),
       dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
@@ -362,7 +383,7 @@ class HaPanelApp extends LitElement {
   private async _reloadIframe(): Promise<void> {
     const addonSlug = this._addon!.slug;
     this._iframeLoaded = false;
-    this._addon = undefined;
+    this._loadingMessage = this.hass.localize("ui.panel.app.app_starting");
     await Promise.all([
       this.updateComplete,
       new Promise((resolve) => {
@@ -370,7 +391,15 @@ class HaPanelApp extends LitElement {
       }),
     ]);
     // Guard for user navigating away during the delay
-    if (this._getAddonSlug() === addonSlug) {
+    if (this._getAddonSlug() !== addonSlug) {
+      return;
+    }
+    // Reload the iframe content in place so the loading screen stays up
+    // without rebuilding the panel.
+    const iframeWindow = this._iframeRef.value?.contentWindow;
+    if (iframeWindow) {
+      iframeWindow.location.reload();
+    } else {
       this._fetchData(addonSlug);
     }
   }
@@ -396,6 +425,9 @@ class HaPanelApp extends LitElement {
 
       case "home-assistant/subscribe-properties":
         this._iframeSubscribeUpdates = true;
+        // An addon can opt out of the container padding and take care of the
+        // safe area itself; we then forward the inset values below.
+        this._handleSafeArea = !!data.handleSafeArea;
         this._sendPropertiesToIframe();
         if (data.kioskMode && !this.hass.kioskMode) {
           this._enabledKioskMode = true;
@@ -405,6 +437,7 @@ class HaPanelApp extends LitElement {
 
       case "home-assistant/unsubscribe-properties":
         this._iframeSubscribeUpdates = false;
+        this._handleSafeArea = false;
         if (this._enabledKioskMode) {
           fireEvent(window, "hass-kiosk-mode", { enable: false });
           this._enabledKioskMode = false;
@@ -413,16 +446,38 @@ class HaPanelApp extends LitElement {
     }
   };
 
+  // Safe-area insets can change on orientation change; keep a subscribing
+  // addon in sync.
+  private _handleResize = () => {
+    if (this._iframeSubscribeUpdates) {
+      this._sendPropertiesToIframe();
+    }
+  };
+
   private _sendPropertiesToIframe() {
     if (!this._iframeRef.value?.contentWindow) {
       return;
     }
 
+    const styles = getComputedStyle(this);
     this._iframeRef.value.contentWindow.postMessage(
       {
         type: "home-assistant/properties",
         narrow: this.narrow,
         route: this._computeRouteTail(this.route),
+        // Resolved insets so an addon that handles the safe area itself can
+        // apply them. Vertical uses the raw insets, horizontal the content
+        // variables (the docked sidebar already absorbs its side).
+        safeAreaInsets: {
+          top: styles.getPropertyValue("--safe-area-inset-top").trim(),
+          right:
+            styles.getPropertyValue("--safe-area-content-inset-right").trim() ||
+            styles.getPropertyValue("--safe-area-inset-right").trim(),
+          bottom: styles.getPropertyValue("--safe-area-inset-bottom").trim(),
+          left:
+            styles.getPropertyValue("--safe-area-content-inset-left").trim() ||
+            styles.getPropertyValue("--safe-area-inset-left").trim(),
+        },
       },
       "*"
     );
@@ -434,32 +489,46 @@ class HaPanelApp extends LitElement {
     :host {
       display: block;
       height: 100%;
+      position: relative;
     }
 
+    hass-loading-screen.loading-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Keep the addon iframe clear of the device safe areas. CSS variables don't
+       cross the iframe boundary, so this padding on the iframe element is the
+       only way to inset the embedded document. Vertical uses the raw insets;
+       horizontal uses the content variables, since the docked sidebar already
+       absorbs the inset on its side (avoids doubling it). */
     iframe {
       display: block;
+      box-sizing: border-box;
       width: 100%;
       height: 100%;
       border: 0;
       background-color: var(--primary-background-color);
       opacity: 0;
       transition: opacity var(--ha-animation-duration-normal) ease;
+      padding: var(--safe-area-inset-top)
+        var(--safe-area-content-inset-right, var(--safe-area-inset-right))
+        var(--safe-area-inset-bottom)
+        var(--safe-area-content-inset-left, var(--safe-area-inset-left));
     }
 
     iframe.loaded {
       opacity: 1;
     }
 
+    /* The addon takes care of the safe area itself (it receives the insets via
+       postMessage), so drop the container padding to let it draw full-bleed. */
+    iframe.handle-safe-area {
+      padding: 0;
+    }
+
+    /* When the header is shown it already covers the top inset. */
     .header + iframe {
-      height: calc(100% - 40px);
-    }
-
-    :host([narrow]) iframe {
-      padding-top: var(--safe-area-inset-top);
-      height: calc(100% - var(--safe-area-inset-top, 0px));
-    }
-
-    :host([narrow]) .header + iframe {
       padding-top: 0;
       height: calc(100% - 40px - var(--safe-area-inset-top, 0px));
     }
@@ -468,8 +537,17 @@ class HaPanelApp extends LitElement {
       display: flex;
       align-items: center;
       font-size: var(--ha-font-size-l);
-      height: 40px;
-      padding: 0 16px;
+      height: calc(40px + var(--safe-area-inset-top, 0px));
+      padding: var(--safe-area-inset-top)
+        calc(
+          16px +
+            var(--safe-area-content-inset-right, var(--safe-area-inset-right))
+        )
+        0
+        calc(
+          16px +
+            var(--safe-area-content-inset-left, var(--safe-area-inset-left))
+        );
       pointer-events: none;
       background-color: var(--app-header-background-color);
       font-weight: var(--ha-font-weight-normal);
@@ -477,11 +555,6 @@ class HaPanelApp extends LitElement {
       border-bottom: var(--app-header-border-bottom, none);
       box-sizing: border-box;
       --mdc-icon-size: 20px;
-    }
-
-    :host([narrow]) .header {
-      height: calc(40px + var(--safe-area-inset-top, 0px));
-      padding-top: var(--safe-area-inset-top, 0);
     }
 
     .main-title {

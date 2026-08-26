@@ -16,6 +16,7 @@ import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
   INITIAL_UPLOAD_FORM_DATA,
+  isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
   type BackupUploadFileFormData,
@@ -81,11 +82,12 @@ export class DialogUploadBackup
         .preventScrimClose=${this.isDirtyState || this._uploading}
         @closed=${this._dialogClosed}
       >
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-file-upload
-          .hass=${this.hass}
           .uploading=${this._uploading}
           .icon=${mdiFolderUpload}
           .accept=${SUPPORTED_UPLOAD_FORMAT}
@@ -141,7 +143,7 @@ export class DialogUploadBackup
 
   private async _upload() {
     const { file } = this._formData!;
-    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
+    if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.unsupported.title"

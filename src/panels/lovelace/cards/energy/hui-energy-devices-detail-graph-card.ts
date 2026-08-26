@@ -125,9 +125,11 @@ export class HuiEnergyDevicesDetailGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        ${
+          this._config.title
+            ? html`<h1 class="card-header">${this._config.title}</h1>`
+            : ""
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -147,6 +149,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._yAxisFractionDigits,
               this._legendData
             )}
+            .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}

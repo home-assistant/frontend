@@ -8,19 +8,26 @@ import {
   mdiVolumeHigh,
   mdiVolumeOff,
 } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
+import { apiContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -28,14 +35,7 @@ import type {
   ToggleCardFeatureConfig,
 } from "./types";
 
-export const supportsToggleCardFeature = (
-  hass: HomeAssistant,
-  context: LovelaceCardFeatureContext
-) => {
-  const stateObj = context.entity_id
-    ? hass.states[context.entity_id]
-    : undefined;
-  if (!stateObj) return false;
+const supportsToggleCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return [
     "switch",
@@ -45,6 +45,17 @@ export const supportsToggleCardFeature = (
     "siren",
     "automation",
   ].includes(domain);
+};
+
+export const supportsToggleCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
+  return supportsToggleCardFeatureFromState(stateObj);
 };
 
 const DOMAIN_ICONS: Record<string, { on: string; off: string }> = {
@@ -64,18 +75,21 @@ const DOMAIN_ICONS: Record<string, { on: string; off: string }> = {
 
 @customElement("hui-toggle-card-feature")
 class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: ToggleCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _config?: ToggleCardFeatureConfig;
 
   static getStubConfig(): ToggleCardFeatureConfig {
     return {
@@ -109,7 +123,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
   }
 
   private async _callService(turnOn): Promise<void> {
-    if (!this.hass || !this._stateObj) {
+    if (!this._stateObj) {
       return;
     }
     forwardHaptic(this, "light");
@@ -117,7 +131,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     const serviceDomain = stateDomain;
     const service = turnOn ? "turn_on" : "turn_off";
 
-    await this.hass.callService(serviceDomain, service, {
+    await this._api.callService(serviceDomain, service, {
       entity_id: this._stateObj.entity_id,
     });
   }
@@ -125,10 +139,9 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsToggleCardFeature(this.hass, this.context)
+      !supportsToggleCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -150,7 +163,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
       return html`
         <ha-control-button-group>
           <ha-control-button
-            .label=${this.hass.localize("ui.card.common.turn_off")}
+            .label=${this._localize("ui.card.common.turn_off")}
             @click=${this._turnOff}
             .disabled=${this._stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -163,7 +176,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
             <ha-svg-icon .path=${offIcon}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize("ui.card.common.turn_on")}
+            .label=${this._localize("ui.card.common.turn_on")}
             @click=${this._turnOn}
             .disabled=${this._stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -185,7 +198,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
         .pathOff=${offIcon}
         .checked=${isOn}
         @change=${this._valueChanged}
-        .label=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this._localize("ui.card.common.toggle")}
         .disabled=${this._stateObj.state === UNAVAILABLE}
       >
       </ha-control-switch>

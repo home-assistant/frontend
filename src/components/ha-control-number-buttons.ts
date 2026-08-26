@@ -53,8 +53,10 @@ export class HaControlNumberButton extends LitElement {
   });
 
   private _boundedValue(value: number) {
-    const clamped = conditionalClamp(value, this.min, this.max);
-    return Math.round(clamped / this._step) * this._step;
+    // Clamp after snapping: when the step does not divide the range evenly,
+    // snapping alone rounds past the bounds (min 1, max 99, step 10 → 0 / 100).
+    const stepped = Math.round(value / this._step) * this._step;
+    return conditionalClamp(stepped, this.min, this.max);
   }
 
   private get _step() {
@@ -67,10 +69,7 @@ export class HaControlNumberButton extends LitElement {
 
   private get _tenPercentStep() {
     if (this.max == null || this.min == null) return this._step;
-    const range = this.max - this.min / 10;
-
-    if (range <= this._step) return this._step;
-    return Math.max(range / 10);
+    return Math.max((this.max - this.min) / 10, this._step);
   }
 
   private _handlePlusButton() {
@@ -151,9 +150,11 @@ export class HaControlNumberButton extends LitElement {
           @keydown=${this._handleKeyDown}
         >
           ${value}
-          ${unit && !this._hideUnit.value
-            ? html`<span class="unit">${unit}</span>`
-            : nothing}
+          ${
+            unit && !this._hideUnit.value
+              ? html`<span class="unit">${unit}</span>`
+              : nothing
+          }
         </div>
         <button
           class="button minus"
@@ -161,8 +162,9 @@ export class HaControlNumberButton extends LitElement {
           tabindex="-1"
           aria-label="decrement"
           @click=${this._handleMinusButton}
-          .disabled=${this.disabled ||
-          (this.min != null && this._value <= this.min)}
+          .disabled=${
+            this.disabled || (this.min != null && this._value <= this.min)
+          }
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </button>
@@ -172,8 +174,9 @@ export class HaControlNumberButton extends LitElement {
           tabindex="-1"
           aria-label="increment"
           @click=${this._handlePlusButton}
-          .disabled=${this.disabled ||
-          (this.max != null && this._value >= this.max)}
+          .disabled=${
+            this.disabled || (this.max != null && this._value >= this.max)
+          }
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
         </button>

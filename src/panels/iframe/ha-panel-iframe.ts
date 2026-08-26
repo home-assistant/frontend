@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -15,6 +16,19 @@ class HaPanelIframe extends LitElement {
   @property({ attribute: false }) panel!: PanelInfo<{ url: string }>;
 
   render() {
+    // The sandbox keeps allow-same-origin, so a javascript: URL would run in
+    // the frontend's own origin
+    if (sanitizeUrl(this.panel.config.url) === "about:blank") {
+      return html`
+        <hass-error-screen
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          error="Unable to load iframes with this URL."
+          rootnav
+        ></hass-error-screen>
+      `;
+    }
+
     if (
       location.protocol === "https:" &&
       new URL(this.panel.config.url, location.toString()).protocol !== "https:"
@@ -49,10 +63,13 @@ class HaPanelIframe extends LitElement {
   }
 
   static styles = css`
+    /* Fill hass-subpage's content box, which already excludes the safe-area
+       insets (see hass-subpage .content), instead of positioning absolutely
+       and spilling into the bottom/side insets. */
     iframe {
       border: 0;
+      display: block;
       width: 100%;
-      position: absolute;
       height: 100%;
       background-color: var(--primary-background-color);
     }

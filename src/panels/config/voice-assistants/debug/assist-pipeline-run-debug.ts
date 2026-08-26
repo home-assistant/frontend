@@ -60,119 +60,128 @@ export class AssistPipelineRunDebug extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         .hass=${this.hass}
+        back-path="/config/voice-assistants/assistants"
         .header=${this.hass.localize(
           "ui.panel.config.voice_assistants.debug.pipeline.header"
         )}
       >
-        ${this._pipelineRuns.length > 0
-          ? html`
-              <ha-button
-                slot="toolbar-icon"
-                @click=${this._clearConversation}
-                .disabled=${!this._finished}
-                appearance="plain"
-              >
-                ${this.hass.localize("ui.common.clear")}
-              </ha-button>
-              <ha-button
-                appearance="plain"
-                slot="toolbar-icon"
-                @click=${this._downloadConversation}
-              >
-                ${this.hass.localize("ui.common.download")}
-              </ha-button>
-            `
-          : ""}
+        ${
+          this._pipelineRuns.length > 0
+            ? html`
+                <ha-button
+                  slot="toolbar-icon"
+                  @click=${this._clearConversation}
+                  .disabled=${!this._finished}
+                  appearance="plain"
+                >
+                  ${this.hass.localize("ui.common.clear")}
+                </ha-button>
+                <ha-button
+                  appearance="plain"
+                  slot="toolbar-icon"
+                  @click=${this._downloadConversation}
+                >
+                  ${this.hass.localize("ui.common.download")}
+                </ha-button>
+              `
+            : ""
+        }
 
         <div class="content">
           <div class="start-row">
-            ${this._pipelineRuns.length === 0
-              ? html`
-                  <ha-assist-pipeline-picker
-                    .hass=${this.hass}
-                    .value=${this._pipelineId}
-                    @value-changed=${this._pipelinePicked}
-                  ></ha-assist-pipeline-picker>
-                  <div class="start-buttons">
-                    <ha-button
-                      appearance="filled"
-                      @click=${this._runTextPipeline}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.debug.pipeline.run_text_pipeline"
-                      )}
-                    </ha-button>
-                    <ha-button
-                      appearance="filled"
-                      @click=${this._runAudioPipeline}
-                      .disabled=${!window.isSecureContext ||
-                      // @ts-ignore-next-line
-                      !(window.AudioContext || window.webkitAudioContext)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.debug.pipeline.run_audio_pipeline"
-                      )}
-                    </ha-button>
-                    <ha-button
-                      appearance="filled"
-                      @click=${this._runAudioWakeWordPipeline}
-                      .disabled=${!window.isSecureContext ||
-                      // @ts-ignore-next-line
-                      !(window.AudioContext || window.webkitAudioContext)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.debug.pipeline.run_audio_with_wake"
-                      )}
-                    </ha-button>
-                  </div>
-                `
-              : this._pipelineRuns[0].init_options!.start_stage === "intent"
+            ${
+              this._pipelineRuns.length === 0
                 ? html`
-                    <ha-input
-                      id="continue-conversation-text"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.voice_assistants.debug.pipeline.response"
-                      )}
-                      .disabled=${!this._finished}
-                      @keydown=${this._handleContinueKeyDown}
-                    ></ha-input>
-                    <ha-button
-                      @click=${this._runTextPipeline}
-                      .disabled=${!this._finished}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.voice_assistants.debug.pipeline.send"
-                      )}
-                    </ha-button>
-                  `
-                : this._finished
-                  ? this._pipelineRuns[0].init_options!.start_stage ===
-                    "wake_word"
-                    ? html`
-                        <ha-button
-                          appearance="filled"
-                          @click=${this._runAudioWakeWordPipeline}
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.voice_assistants.debug.pipeline.continue_listening"
-                          )}
-                        </ha-button>
-                      `
-                    : html`<ha-button
+                    <ha-assist-pipeline-picker
+                      .hass=${this.hass}
+                      .value=${this._pipelineId}
+                      @value-changed=${this._pipelinePicked}
+                    ></ha-assist-pipeline-picker>
+                    <div class="start-buttons">
+                      <ha-button
                         appearance="filled"
-                        @click=${this._runAudioPipeline}
+                        @click=${this._runTextPipeline}
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.debug.pipeline.continue_talking"
+                          "ui.panel.config.voice_assistants.debug.pipeline.run_text_pipeline"
                         )}
-                      </ha-button>`
-                  : html`
-                      <ha-checkbox id="continue-conversation" checked>
+                      </ha-button>
+                      <ha-button
+                        appearance="filled"
+                        @click=${this._runAudioPipeline}
+                        .disabled=${
+                          !window.isSecureContext ||
+                          // @ts-ignore-next-line
+                          !(window.AudioContext || window.webkitAudioContext)
+                        }
+                      >
                         ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.debug.pipeline.continue_conversation"
+                          "ui.panel.config.voice_assistants.debug.pipeline.run_audio_pipeline"
                         )}
-                      </ha-checkbox>
-                    `}
+                      </ha-button>
+                      <ha-button
+                        appearance="filled"
+                        @click=${this._runAudioWakeWordPipeline}
+                        .disabled=${
+                          !window.isSecureContext ||
+                          // @ts-ignore-next-line
+                          !(window.AudioContext || window.webkitAudioContext)
+                        }
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.debug.pipeline.run_audio_with_wake"
+                        )}
+                      </ha-button>
+                    </div>
+                  `
+                : this._pipelineRuns[0].init_options!.start_stage === "intent"
+                  ? html`
+                      <ha-input
+                        id="continue-conversation-text"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.voice_assistants.debug.pipeline.response"
+                        )}
+                        .disabled=${!this._finished}
+                        @keydown=${this._handleContinueKeyDown}
+                      ></ha-input>
+                      <ha-button
+                        @click=${this._runTextPipeline}
+                        .disabled=${!this._finished}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.debug.pipeline.send"
+                        )}
+                      </ha-button>
+                    `
+                  : this._finished
+                    ? this._pipelineRuns[0].init_options!.start_stage ===
+                      "wake_word"
+                      ? html`
+                          <ha-button
+                            appearance="filled"
+                            @click=${this._runAudioWakeWordPipeline}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.voice_assistants.debug.pipeline.continue_listening"
+                            )}
+                          </ha-button>
+                        `
+                      : html`<ha-button
+                          appearance="filled"
+                          @click=${this._runAudioPipeline}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.voice_assistants.debug.pipeline.continue_talking"
+                          )}
+                        </ha-button>`
+                    : html`
+                        <ha-checkbox id="continue-conversation" checked>
+                          ${this.hass.localize(
+                            "ui.panel.config.voice_assistants.debug.pipeline.continue_conversation"
+                          )}
+                        </ha-checkbox>
+                      `
+            }
           </div>
 
           ${this._pipelineRuns.map((run) =>

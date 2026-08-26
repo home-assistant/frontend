@@ -76,6 +76,7 @@ export class HuiDialogEditSection
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const sectionConfig = {
         ...this._config,
@@ -137,7 +138,6 @@ export class HuiDialogEditSection
         case "tab-settings":
           content = html`
             <hui-section-settings-editor
-              .hass=${this.hass}
               .config=${this._config}
               .viewConfig=${this._viewConfig}
               @value-changed=${this._configChanged}
@@ -203,25 +203,27 @@ export class HuiDialogEditSection
               )}
             </ha-dropdown-item>
           </ha-dropdown>
-          ${!this._yamlMode
-            ? html`
-                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                  ${TABS.map(
-                    (tab) => html`
-                      <ha-tab-group-tab
-                        slot="nav"
-                        .panel=${tab}
-                        .active=${this._currTab === tab}
-                      >
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
-                        )}
-                      </ha-tab-group-tab>
-                    `
-                  )}
-                </ha-tab-group>
-              `
-            : nothing}
+          ${
+            !this._yamlMode
+              ? html`
+                  <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                    ${TABS.map(
+                      (tab) => html`
+                        <ha-tab-group-tab
+                          slot="nav"
+                          .panel=${tab}
+                          .active=${this._currTab === tab}
+                        >
+                          ${this.hass!.localize(
+                            `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
+                          )}
+                        </ha-tab-group-tab>
+                      `
+                    )}
+                  </ha-tab-group>
+                `
+              : nothing
+          }
         </ha-dialog-header>
         ${content}
         <ha-dialog-footer slot="footer">

@@ -149,9 +149,11 @@ export class DemoAutomationDescribeAction extends LitElement {
       <ha-card header="Actions">
         <div class="action">
           <span>
-            ${this._action
-              ? describeAction(this.hass, [], this._action)
-              : "<invalid YAML>"}
+            ${
+              this._action
+                ? describeAction(this.hass, [], this._action)
+                : "<invalid YAML>"
+            }
           </span>
           <ha-yaml-editor
             label="Action Config"

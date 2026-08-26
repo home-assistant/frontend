@@ -64,6 +64,7 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDataCollection,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -296,61 +297,71 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           <section class="date-range" @click=${this._openDatePicker}>
             <ha-ripple></ha-ripple>
             <div class="header-title">
-              ${simpleRange === "year"
-                ? html`${formatDateYear(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )}`
-                : html`${simpleRange === "12month" ||
-                  simpleRange === "months" ||
-                  simpleRange === "quarter"
-                    ? html`${formatDateMonthShort(
-                        this._startDate,
-                        this.hass.locale,
-                        this.hass.config
-                      )}&ndash;${formatDateMonthShort(
-                        this._endDate || new Date(),
-                        this.hass.locale,
-                        this.hass.config
-                      )}`
-                    : html`${simpleRange === "month"
-                        ? html`${formatDateMonth(
+              ${
+                simpleRange === "year"
+                  ? html`${formatDateYear(
+                      this._startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}`
+                  : html`${
+                      simpleRange === "12month" ||
+                      simpleRange === "months" ||
+                      simpleRange === "quarter"
+                        ? html`${formatDateMonthShort(
                             this._startDate,
                             this.hass.locale,
                             this.hass.config
+                          )}&ndash;${formatDateMonthShort(
+                            this._endDate || new Date(),
+                            this.hass.locale,
+                            this.hass.config
                           )}`
-                        : simpleRange === "day"
-                          ? html`${formatDateVeryShort(
-                              this._startDate,
-                              this.hass.locale,
-                              this.hass.config
-                            )}`
-                          : html`${formatDateVeryShort(
-                              this._startDate,
-                              this.hass.locale,
-                              this.hass.config
-                            )}&ndash;${formatDateVeryShort(
-                              this._endDate || new Date(),
-                              this.hass.locale,
-                              this.hass.config
-                            )}`}`}`}
+                        : html`${
+                            simpleRange === "month"
+                              ? html`${formatDateMonth(
+                                  this._startDate,
+                                  this.hass.locale,
+                                  this.hass.config
+                                )}`
+                              : simpleRange === "day"
+                                ? html`${formatDateVeryShort(
+                                    this._startDate,
+                                    this.hass.locale,
+                                    this.hass.config
+                                  )}`
+                                : html`${formatDateVeryShort(
+                                    this._startDate,
+                                    this.hass.locale,
+                                    this.hass.config
+                                  )}&ndash;${formatDateVeryShort(
+                                    this._endDate || new Date(),
+                                    this.hass.locale,
+                                    this.hass.config
+                                  )}`
+                          }`
+                    }`
+              }
             </div>
-            ${showSubtitleYear
-              ? html`<div class="header-subtitle">
-                  ${formatDateYear(
-                    this._startDate,
-                    this.hass.locale,
-                    this.hass.config
-                  )}${showBothYear
-                    ? html`&ndash;${formatDateYear(
-                        this._endDate || new Date(),
-                        this.hass.locale,
-                        this.hass.config
-                      )}`
-                    : ``}
-                </div>`
-              : nothing}
+            ${
+              showSubtitleYear
+                ? html`<div class="header-subtitle">
+                    ${formatDateYear(
+                      this._startDate,
+                      this.hass.locale,
+                      this.hass.config
+                    )}${
+                      showBothYear
+                        ? html`&ndash;${formatDateYear(
+                            this._endDate || new Date(),
+                            this.hass.locale,
+                            this.hass.config
+                          )}`
+                        : ``
+                    }
+                  </div>`
+                : nothing
+            }
             <ha-spinner
               class=${classMap({
                 "loading-indicator": true,
@@ -361,17 +372,19 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           </section>
           <section class="date-actions">
             <div class="overflow">
-              ${!this.narrow
-                ? html`<ha-button
-                    appearance="filled"
-                    size="s"
-                    @click=${this._pickNow}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.components.energy_period_selector.now"
-                    )}
-                  </ha-button>`
-                : nothing}
+              ${
+                !this.narrow
+                  ? html`<ha-button
+                      appearance="filled"
+                      size="s"
+                      @click=${this._pickNow}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.components.energy_period_selector.now"
+                      )}
+                    </ha-button>`
+                  : nothing
+              }
               ${buttons.map((item) =>
                 this._collapseButtons || item.alwaysCollapse
                   ? nothing
@@ -382,33 +395,35 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                       ?disabled=${item.disabled}
                     ></ha-icon-button>`
               )}
-              ${this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
-                ? html`<ha-dropdown
-                    @wa-show=${this._handleIconOverflowMenuOpened}
-                    @click=${stopPropagation}
-                  >
-                    <ha-icon-button
-                      .label=${this.hass.localize("ui.common.overflow_menu")}
-                      .path=${mdiDotsVertical}
-                      slot="trigger"
-                    ></ha-icon-button>
-                    ${buttons.map((item) =>
-                      (this._collapseButtons || item.alwaysCollapse) &&
-                      !item.hidden
-                        ? html`<ha-dropdown-item
-                            ?disabled=${item.disabled}
-                            @click=${item.disabled ? undefined : item.action}
-                          >
-                            <ha-svg-icon
-                              slot="icon"
-                              .path=${item.path}
-                            ></ha-svg-icon>
-                            ${item.label}
-                          </ha-dropdown-item>`
-                        : nothing
-                    )}
-                  </ha-dropdown>`
-                : nothing}
+              ${
+                this._collapseButtons || buttons.some((x) => x.alwaysCollapse)
+                  ? html`<ha-dropdown
+                      @wa-show=${this._handleIconOverflowMenuOpened}
+                      @click=${stopPropagation}
+                    >
+                      <ha-icon-button
+                        .label=${this.hass.localize("ui.common.overflow_menu")}
+                        .path=${mdiDotsVertical}
+                        slot="trigger"
+                      ></ha-icon-button>
+                      ${buttons.map((item) =>
+                        (this._collapseButtons || item.alwaysCollapse) &&
+                        !item.hidden
+                          ? html`<ha-dropdown-item
+                              ?disabled=${item.disabled}
+                              @click=${item.disabled ? undefined : item.action}
+                            >
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${item.path}
+                              ></ha-svg-icon>
+                              ${item.label}
+                            </ha-dropdown-item>`
+                          : nothing
+                      )}
+                    </ha-dropdown>`
+                  : nothing
+              }
             </div>
           </section>
         </div>
@@ -530,7 +545,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _presetSelected(ev) {
     localStorage.setItem(
-      `energy-default-period-_${this.collectionKey || "energy"}`,
+      getEnergyDefaultPeriodStorageKey(this.hass, this.collectionKey),
       RANGE_KEYS[ev.detail.index]
     );
   }
@@ -660,6 +675,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
 
     this._updateCollectionPeriod();
+
+    // "yesterday" is the only preset whose range never includes today, making
+    // it the only remembered default that keeps reopening in the past.
+    const storageKey = getEnergyDefaultPeriodStorageKey(
+      this.hass,
+      this.collectionKey
+    );
+    if (localStorage.getItem(storageKey) === "yesterday") {
+      localStorage.setItem(storageKey, "today");
+    }
   }
 
   private _pickPrevious() {

@@ -151,7 +151,6 @@ export class HomeOtherDevicesViewStrategy extends ReactiveElement {
           {
             type: "empty-state",
             icon: "mdi:check-all",
-            icon_color: "primary",
             content_only: true,
             title: hass.localize(
               "ui.panel.lovelace.strategy.home-other-devices.all_organized_title"

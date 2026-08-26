@@ -1,18 +1,46 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-control-slider";
+import type { ClimateEntity } from "../../../data/climate";
+import { ClimateEntityFeature } from "../../../data/climate";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HumidifierEntity } from "../../../data/humidifier";
-import type { HomeAssistant } from "../../../types";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   TargetHumidityCardFeatureConfig,
 } from "./types";
+
+const supportsTargetHumidityCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "humidifier" ||
+    (domain === "climate" &&
+      supportsFeature(stateObj, ClimateEntityFeature.TARGET_HUMIDITY))
+  );
+};
 
 export const supportsTargetHumidityCardFeature = (
   hass: HomeAssistant,
@@ -22,8 +50,7 @@ export const supportsTargetHumidityCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "humidifier";
+  return supportsTargetHumidityCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-target-humidity-card-feature")
@@ -31,22 +58,30 @@ class HuiTargetHumidityCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HumidifierEntity | ClimateEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
 
   @state() private _config?: TargetHumidityCardFeatureConfig;
 
   @state() private _targetHumidity?: number;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      | HumidifierEntity
-      | undefined;
-  }
 
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
@@ -61,21 +96,16 @@ class HuiTargetHumidityCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues<this>): void {
+  protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._targetHumidity = this._stateObj!.attributes.humidity;
-      }
+    if (changedProp.has("_stateObj") && this._stateObj) {
+      this._targetHumidity = this._stateObj.attributes.humidity;
     }
   }
 
-  private _step = 1;
+  private get _step() {
+    return this._stateObj!.attributes.target_humidity_step ?? 1;
+  }
 
   private get _min() {
     return this._stateObj!.attributes.min_humidity ?? 0;
@@ -93,7 +123,8 @@ class HuiTargetHumidityCardFeature
   }
 
   private _callService() {
-    this.hass!.callService("humidifier", "set_humidity", {
+    const domain = computeStateDomain(this._stateObj!);
+    this._api.callService(domain, "set_humidity", {
       entity_id: this._stateObj!.entity_id,
       humidity: this._targetHumidity,
     });
@@ -102,10 +133,9 @@ class HuiTargetHumidityCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsTargetHumidityCardFeature(this.hass, this.context)
+      !supportsTargetHumidityCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -118,12 +148,12 @@ class HuiTargetHumidityCardFeature
         .step=${this._step}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
         @value-changed=${this._valueChanged}
-        .label=${this.hass.formatEntityAttributeName(
+        .label=${this._formatters.formatEntityAttributeName(
           this._stateObj,
           "humidity"
         )}
         unit="%"
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       ></ha-control-slider>
     `;
   }

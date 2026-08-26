@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { goBack } from "../common/navigate";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-icon-button-arrow-prev";
@@ -208,20 +209,26 @@ export class HaTopAppBarFixed extends LitElement {
         })}"
       >
         <div class="row">
-          ${paneHeader
-            ? html`<section class="section" id="title">
-                ${this._renderNavigationIcon()} ${title}
-              </section>`
-            : nothing}
+          ${
+            paneHeader
+              ? html`<section class="section" id="title">
+                  ${this._renderNavigationIcon()} ${title}
+                </section>`
+              : nothing
+          }
           <section class="section" id="navigation">
-            ${paneHeader
-              ? nothing
-              : html`${this._renderNavigationIcon()}
-                ${this.centerTitle ? nothing : title}`}
+            ${
+              paneHeader
+                ? nothing
+                : html`${this._renderNavigationIcon()}
+                  ${this.centerTitle ? nothing : title}`
+            }
           </section>
-          ${!paneHeader && this.centerTitle
-            ? html`<section class="section center">${title}</section>`
-            : nothing}
+          ${
+            !paneHeader && this.centerTitle
+              ? html`<section class="section center">${title}</section>`
+              : nothing
+          }
           <section class="section end" id="actions" role="toolbar">
             <slot name="actionItems"></slot>
           </section>
@@ -236,13 +243,15 @@ export class HaTopAppBarFixed extends LitElement {
   private _renderNavigationIcon() {
     return html`
       <slot name="navigationIcon">
-        ${this.backButton
-          ? html`
-              <ha-icon-button-arrow-prev
-                @click=${this._handleBackClick}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`<ha-menu-button></ha-menu-button>`}
+        ${
+          this.backButton
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._handleBackClick}
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`<ha-menu-button></ha-menu-button>`
+        }
       </slot>
     `;
   }
@@ -316,7 +325,9 @@ export class HaTopAppBarFixed extends LitElement {
     this._subRowResizeObserver = undefined;
   }
 
-  private _subRowSlotChanged = (ev: Event) => {
+  private _subRowSlotChanged = (
+    ev: HASSDomCurrentTargetEvent<HTMLSlotElement>
+  ) => {
     const slot = ev.currentTarget as HTMLSlotElement;
     this._hasSubRow = slot
       .assignedNodes({ flatten: true })

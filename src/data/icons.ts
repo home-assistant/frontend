@@ -39,6 +39,7 @@ import {
   mdiMicrophoneMessage,
   mdiMotionSensor,
   mdiPalette,
+  mdiRadioTower,
   mdiRayVertex,
   mdiRemote,
   mdiRobot,
@@ -52,7 +53,6 @@ import {
   mdiThermostat,
   mdiTimerOutline,
   mdiToggleSwitch,
-  mdiVideoInputAntenna,
   mdiWater,
   mdiWaterPercent,
   mdiWeatherPartlyCloudy,
@@ -129,7 +129,7 @@ export const FALLBACK_DOMAIN_ICONS = {
   plant: mdiFlower,
   power: mdiFlash,
   proximity: mdiAppleSafari,
-  radio_frequency: mdiVideoInputAntenna,
+  radio_frequency: mdiRadioTower,
   remote: mdiRemote,
   scene: mdiPalette,
   schedule: mdiCalendarClock,
@@ -241,11 +241,7 @@ type ConditionIcons = Record<
 >;
 
 export type IconCategory =
-  | "entity"
-  | "entity_component"
-  | "services"
-  | "triggers"
-  | "conditions";
+  "entity" | "entity_component" | "services" | "triggers" | "conditions";
 
 interface CategoryType {
   entity: PlatformIcons;
@@ -329,35 +325,34 @@ export const getCategoryIcons = async <
   domain?: string,
   force = false
 ): Promise<CategoryType[T] | Record<string, CategoryType[T]> | undefined> => {
+  const categoryResources = resources[category];
   if (!domain) {
-    if (!force && resources[category].all) {
-      return resources[category].all as Promise<
-        Record<string, CategoryType[T]>
-      >;
+    if (!force && categoryResources.all) {
+      return categoryResources.all as Promise<Record<string, CategoryType[T]>>;
     }
-    resources[category].all = getHassIcons(connection, category).then((res) => {
-      resources[category].domains = res.resources as any;
+    categoryResources.all = getHassIcons(connection, category).then((res) => {
+      categoryResources.domains = res.resources as any;
       return res?.resources as Record<string, CategoryType[T]>;
     }) as any;
-    return resources[category].all as Promise<Record<string, CategoryType[T]>>;
+    return categoryResources.all as Promise<Record<string, CategoryType[T]>>;
   }
-  if (!force && domain in resources[category].domains) {
-    return resources[category].domains[domain] as Promise<CategoryType[T]>;
+  if (!force && domain in categoryResources.domains) {
+    return categoryResources.domains[domain] as Promise<CategoryType[T]>;
   }
-  if (resources[category].all && !force) {
-    await resources[category].all;
-    if (domain in resources[category].domains) {
-      return resources[category].domains[domain] as Promise<CategoryType[T]>;
+  if (categoryResources.all && !force) {
+    await categoryResources.all;
+    if (domain in categoryResources.domains) {
+      return categoryResources.domains[domain] as Promise<CategoryType[T]>;
     }
   }
   if (!isComponentLoaded(hassConfig, domain)) {
     return undefined;
   }
   const result = getHassIcons(connection, category, domain);
-  resources[category].domains[domain] = result.then(
+  categoryResources.domains[domain] = result.then(
     (res) => res?.resources[domain]
   ) as any;
-  return resources[category].domains[domain] as Promise<CategoryType[T]>;
+  return categoryResources.domains[domain] as Promise<CategoryType[T]>;
 };
 
 export const getServiceIcons = async (
@@ -463,8 +458,7 @@ export const entityIcon = async (
   state?: string
 ) => {
   const entry = entities?.[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   if (entry?.icon) {
     return entry.icon;
   }
@@ -548,7 +542,9 @@ const getEntityIcon = async (
 };
 
 export const attributeIcon = async (
-  hass: HomeAssistant,
+  hassConfig: HomeAssistant["config"],
+  hassConnection: HomeAssistant["connection"],
+  entities: HomeAssistant["entities"],
   state: HassEntity,
   attribute: string,
   attributeValue?: string
@@ -556,9 +552,8 @@ export const attributeIcon = async (
   let icon: string | undefined;
   const domain = computeStateDomain(state);
   const deviceClass = state.attributes.device_class;
-  const entity = hass.entities?.[state.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+  const entity = entities[state.entity_id] as
+    EntityRegistryDisplayEntry | undefined;
   const platform = entity?.platform;
   const translation_key = entity?.translation_key;
   const value =
@@ -567,8 +562,8 @@ export const attributeIcon = async (
 
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(
-      hass.config,
-      hass.connection,
+      hassConfig,
+      hassConnection,
       platform
     );
     if (platformIcons) {
@@ -580,8 +575,8 @@ export const attributeIcon = async (
   }
   if (!icon) {
     const entityComponentIcons = await getComponentIcons(
-      hass.connection,
-      hass.config,
+      hassConnection,
+      hassConfig,
       domain
     );
     if (entityComponentIcons) {

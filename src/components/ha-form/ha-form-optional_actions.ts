@@ -12,15 +12,22 @@ import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-svg-icon";
 import "./ha-form";
+import "./ha-form-divider";
 import type { HaForm } from "./ha-form";
 import type {
   HaFormDataContainer,
+  HaFormDividerSchema,
   HaFormElement,
   HaFormOptionalActionsSchema,
   HaFormSchema,
 } from "./types";
 
 const NO_ACTIONS = [];
+
+const DIVIDER = {
+  name: "",
+  type: "divider",
+} as const satisfies HaFormDividerSchema;
 
 @customElement("ha-form-optional_actions")
 export class HaFormOptionalActions extends LitElement implements HaFormElement {
@@ -87,7 +94,9 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
       schema: readonly HaFormSchema[],
       displayActions: string[]
     ): HaFormSchema[] =>
-      schema.filter((item) => displayActions.includes(item.name))
+      schema
+        .filter((item) => displayActions.includes(item.name))
+        .flatMap((item) => [DIVIDER, item])
   );
 
   public render(): TemplateResult {
@@ -110,43 +119,53 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     );
 
     return html`
-      ${schema.length > 0
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this.data}
-              .schema=${schema}
-              .disabled=${this.disabled}
-              .computeLabel=${this.computeLabel}
-              .computeHelper=${this.computeHelper}
-              .localizeValue=${this.localizeValue}
-            ></ha-form>
-          `
-        : nothing}
-      ${hiddenActions.length > 0
-        ? html`
-            <ha-dropdown
-              @wa-select=${this._handleAddAction}
-              @closed=${stopPropagation}
-            >
-              <ha-button slot="trigger" appearance="filled" size="s">
-                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-                ${this.localize?.("ui.components.form-optional-actions.add") ||
-                "Add interaction"}
-              </ha-button>
-              ${hiddenActions.map((action) => {
-                const actionSchema = schemaMap.get(action);
-                return html`
-                  <ha-dropdown-item .value=${action}>
-                    ${this.computeLabel && actionSchema
-                      ? this.computeLabel(actionSchema)
-                      : action}
-                  </ha-dropdown-item>
-                `;
-              })}
-            </ha-dropdown>
-          `
-        : nothing}
+      ${
+        schema.length > 0
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this.data}
+                .schema=${schema}
+                .disabled=${this.disabled}
+                .computeLabel=${this.computeLabel}
+                .computeHelper=${this.computeHelper}
+                .localizeValue=${this.localizeValue}
+              ></ha-form>
+            `
+          : nothing
+      }
+      ${
+        hiddenActions.length > 0
+          ? html`
+              <ha-form-divider></ha-form-divider>
+              <ha-dropdown
+                @wa-select=${this._handleAddAction}
+                @closed=${stopPropagation}
+              >
+                <ha-button slot="trigger" appearance="filled" size="s">
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${
+                    this.localize?.(
+                      "ui.components.form-optional-actions.add"
+                    ) || "Add interaction"
+                  }
+                </ha-button>
+                ${hiddenActions.map((action) => {
+                  const actionSchema = schemaMap.get(action);
+                  return html`
+                    <ha-dropdown-item .value=${action}>
+                      ${
+                        this.computeLabel && actionSchema
+                          ? this.computeLabel(actionSchema)
+                          : action
+                      }
+                    </ha-dropdown-item>
+                  `;
+                })}
+              </ha-dropdown>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -8,6 +8,7 @@ import type {
 } from "../../../data/entity/entity_registry";
 import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import type { HomeAssistant } from "../../../types";
+import { getDeviceAreaId } from "./get_device_context";
 
 interface EntityContext {
   entity: EntityRegistryDisplayEntry | null;
@@ -24,8 +25,7 @@ export const getEntityContext = (
   floors: HomeAssistant["floors"]
 ): EntityContext => {
   const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
 
   if (!entry) {
     return {
@@ -47,14 +47,16 @@ export const getEntityAreaId = (
   if (!entry) return undefined;
   const deviceId = entry.device_id;
   const device = deviceId ? devices[deviceId] : undefined;
-  return entry.area_id || device?.area_id || undefined;
+  return (
+    entry.area_id ||
+    (device ? getDeviceAreaId(device, devices) : undefined) ||
+    undefined
+  );
 };
 
 export const getEntityEntryContext = (
   entry:
-    | EntityRegistryDisplayEntry
-    | EntityRegistryEntry
-    | ExtEntityRegistryEntry,
+    EntityRegistryDisplayEntry | EntityRegistryEntry | ExtEntityRegistryEntry,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
@@ -63,7 +65,8 @@ export const getEntityEntryContext = (
   const entity = entities[entry.entity_id];
   const deviceId = entry?.device_id;
   const device = deviceId ? devices[deviceId] : undefined;
-  const areaId = entry?.area_id || device?.area_id;
+  const areaId =
+    entry?.area_id || (device ? getDeviceAreaId(device, devices) : undefined);
   const area = areaId ? areas[areaId] : undefined;
   const floorId = area?.floor_id;
   const floor = floorId ? floors[floorId] : undefined;

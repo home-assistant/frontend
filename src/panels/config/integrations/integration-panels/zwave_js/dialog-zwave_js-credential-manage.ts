@@ -122,55 +122,61 @@ class DialogZwaveCredentialManage extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${showOverflowMenu
-          ? html`<ha-dropdown
-              slot="headerActionItems"
-              @closed=${stopPropagation}
-              @wa-select=${this._handleMenuAction}
-              placement="bottom-end"
-            >
-              <ha-icon-button
-                slot="trigger"
-                .label=${this.hass.localize("ui.common.menu")}
-                .path=${mdiDotsVertical}
-                ?disabled=${this._busy}
-              ></ha-icon-button>
-              <ha-dropdown-item value="delete_all" variant="danger">
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.delete_all"
-                )}
-              </ha-dropdown-item>
-            </ha-dropdown>`
-          : nothing}
-        ${this._loading
-          ? html`<div class="center">
-              <ha-spinner></ha-spinner>
-            </div>`
-          : this._capabilities && !this._capabilities.supports_user_management
-            ? html`<div class="content">
-                <ha-alert alert-type="warning">
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.credentials.errors.no_user_management"
-                  )}
-                </ha-alert>
-              </div>`
-            : html`<div class="content">
-                ${this._renderUsers(activeUsers)}
-              </div>`}
-        ${showFooter
-          ? html`<ha-dialog-footer slot="footer">
-              <ha-button
-                slot="primaryAction"
-                @click=${this._addUser}
-                ?disabled=${this._busy}
+        ${
+          showOverflowMenu
+            ? html`<ha-dropdown
+                slot="headerActionItems"
+                @closed=${stopPropagation}
+                @wa-select=${this._handleMenuAction}
+                placement="bottom-end"
               >
-                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.add"
-                )}
-              </ha-button>
-            </ha-dialog-footer>`
-          : nothing}
+                <ha-icon-button
+                  slot="trigger"
+                  .label=${this.hass.localize("ui.common.menu")}
+                  .path=${mdiDotsVertical}
+                  ?disabled=${this._busy}
+                ></ha-icon-button>
+                <ha-dropdown-item value="delete_all" variant="danger">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.users.delete_all"
+                  )}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : nothing
+        }
+        ${
+          this._loading
+            ? html`<div class="center">
+                <ha-spinner></ha-spinner>
+              </div>`
+            : this._capabilities && !this._capabilities.supports_user_management
+              ? html`<div class="content">
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.credentials.errors.no_user_management"
+                    )}
+                  </ha-alert>
+                </div>`
+              : html`<div class="content">
+                  ${this._renderUsers(activeUsers)}
+                </div>`
+        }
+        ${
+          showFooter
+            ? html`<ha-dialog-footer slot="footer">
+                <ha-button
+                  slot="primaryAction"
+                  @click=${this._addUser}
+                  ?disabled=${this._busy}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.users.add"
+                  )}
+                </ha-button>
+              </ha-dialog-footer>`
+            : nothing
+        }
       </ha-dialog>
     `;
   }
@@ -191,72 +197,80 @@ class DialogZwaveCredentialManage extends LitElement {
 
     return html`
       <div class="users-content">
-        ${hasNoCredentialTypes
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
-              )}
-            </ha-alert>`
-          : hasNoSelectableUserType
+        ${
+          hasNoCredentialTypes
             ? html`<ha-alert alert-type="warning">
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.errors.no_compatible_user_types"
+                  "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
                 )}
               </ha-alert>`
-            : nothing}
-        ${activeUsers.length === 0
-          ? html`<p class="empty">
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.credentials.users.no_users"
-              )}
-            </p>`
-          : html`
-              <ha-md-list>
-                ${activeUsers.map(
-                  (user) => html`
-                    <ha-md-list-item
-                      type="button"
-                      data-user-id=${user.user_id}
-                      @click=${this._handleUserClick}
-                    >
-                      <div slot="start" class="icon-background">
-                        <ha-svg-icon .path=${mdiAccountKey}></ha-svg-icon>
-                      </div>
-                      <div slot="headline">
-                        ${user.user_name ||
-                        this.hass.localize(
-                          "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-                          { index: user.user_id }
-                        )}
-                      </div>
-                      <div slot="supporting-text">
-                        <span>
-                          ${this.hass.localize(
-                            `ui.panel.config.zwave_js.credentials.users.user_types.${user.user_type}.label` as LocalizeKeys
-                          ) || user.user_type}
-                        </span>
-                        <span class="credential-count">
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.credentials.users.credential_count",
-                            { count: user.credentials.length }
-                          )}
-                        </span>
-                      </div>
-                      <ha-icon-button
-                        slot="end"
-                        .path=${mdiDelete}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.zwave_js.credentials.users.delete"
-                        )}
-                        data-user-id=${user.user_id}
-                        ?disabled=${this._busy}
-                        @click=${this._handleDeleteUserClick}
-                      ></ha-icon-button>
-                    </ha-md-list-item>
-                  `
+            : hasNoSelectableUserType
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.errors.no_compatible_user_types"
+                  )}
+                </ha-alert>`
+              : nothing
+        }
+        ${
+          activeUsers.length === 0
+            ? html`<p class="empty">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.credentials.users.no_users"
                 )}
-              </ha-md-list>
-            `}
+              </p>`
+            : html`
+                <ha-md-list>
+                  ${activeUsers.map(
+                    (user) => html`
+                      <ha-md-list-item
+                        type="button"
+                        data-user-id=${user.user_id}
+                        @click=${this._handleUserClick}
+                      >
+                        <div slot="start" class="icon-background">
+                          <ha-svg-icon .path=${mdiAccountKey}></ha-svg-icon>
+                        </div>
+                        <div slot="headline">
+                          ${
+                            user.user_name ||
+                            this.hass.localize(
+                              "ui.panel.config.zwave_js.credentials.users.unnamed_user",
+                              { index: user.user_id }
+                            )
+                          }
+                        </div>
+                        <div slot="supporting-text">
+                          <span>
+                            ${
+                              this.hass.localize(
+                                `ui.panel.config.zwave_js.credentials.users.user_types.${user.user_type}.label` as LocalizeKeys
+                              ) || user.user_type
+                            }
+                          </span>
+                          <span class="credential-count">
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.credentials.users.credential_count",
+                              { count: user.credentials.length }
+                            )}
+                          </span>
+                        </div>
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiDelete}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.zwave_js.credentials.users.delete"
+                          )}
+                          data-user-id=${user.user_id}
+                          ?disabled=${this._busy}
+                          @click=${this._handleDeleteUserClick}
+                        ></ha-icon-button>
+                      </ha-md-list-item>
+                    `
+                  )}
+                </ha-md-list>
+              `
+        }
       </div>
     `;
   }

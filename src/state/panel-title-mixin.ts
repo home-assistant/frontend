@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { getConfigSubpageTitle, getPanelTitleFromUrlPath } from "../data/panel";
-import { configSections } from "../panels/config/ha-panel-config";
+import { configSections } from "../panels/config/config-sections";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 

@@ -31,6 +31,7 @@ import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
@@ -115,18 +116,25 @@ export class HuiEnergyWaterGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html` <div class="card-header">
-              <span>${this._config.title ? this._config.title : nothing}</span>
-              ${this._total
-                ? html`<hui-energy-graph-chip
-                    .tooltip=${this._formatTotal(this._total)}
-                  >
-                    ${formatNumber(this._total, this.hass.locale)} ${this._unit}
-                  </hui-energy-graph-chip>`
-                : nothing}
-            </div>`
-          : nothing}
+        ${
+          this._config.title
+            ? html` <div class="card-header">
+                <span
+                  >${this._config.title ? this._config.title : nothing}</span
+                >
+                ${
+                  this._total
+                    ? html`<hui-energy-graph-chip
+                        .tooltip=${this._formatTotal(this._total)}
+                      >
+                        ${formatNumber(this._total, this.hass.locale)}
+                        ${this._unit}
+                      </hui-energy-graph-chip>`
+                    : nothing
+                }
+              </div>`
+            : nothing
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -147,15 +155,21 @@ export class HuiEnergyWaterGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
-          ${!this._chartData.length
-            ? html`<div class="no-data">
-                ${isToday(this._start)
-                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.no_data_period"
-                    )}
-              </div>`
-            : ""}
+          ${
+            !this._chartData.length
+              ? html`<div class="no-data">
+                  ${
+                    isToday(this._start)
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data_period"
+                        )
+                  }
+                </div>`
+              : ""
+          }
         </div>
       </ha-card>
     `;
@@ -250,8 +264,17 @@ export class HuiEnergyWaterGraphCard
       )
     );
 
-    fillDataGapsAndRoundCaps(datasets);
-    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+    fillDataGapsAndRoundCaps(
+      datasets,
+      true,
+      generateFillBuckets(
+        datasets,
+        this._start,
+        this._end,
+        getSuggestedPeriod(this._start, this._end)
+      )
+    );
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, waterSources);
   }

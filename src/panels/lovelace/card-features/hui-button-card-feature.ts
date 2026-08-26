@@ -1,21 +1,36 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-action-result";
+import type { HaActionResult } from "../../../components/ha-action-result";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import { apiContext, servicesContext } from "../../../data/context";
+import { forwardHaptic } from "../../../data/haptics";
 import {
-  hasRequiredScriptFields,
-  requiredScriptFieldsFilled,
+  hasRequiredScriptFieldsForServices,
+  requiredScriptFieldsFilledForServices,
 } from "../../../data/script";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   ButtonCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsButtonCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return ["button", "input_button", "scene", "script"].includes(domain);
+};
 
 export const supportsButtonCardFeature = (
   hass: HomeAssistant,
@@ -25,27 +40,35 @@ export const supportsButtonCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return ["button", "input_button", "scene", "script"].includes(domain);
+  return supportsButtonCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-button-card-feature")
 class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: servicesContext, subscribe: true })
+  private _services!: HomeAssistant["services"];
 
   @state() private _config?: ButtonCardFeatureConfig;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
-  }
+  @query("ha-action-result") private _result!: HaActionResult;
 
   private _pressButton() {
-    if (!this.hass || !this._stateObj) return;
+    if (!this._stateObj || this._result.busy) return;
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
@@ -54,8 +77,12 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     if (domain === "script") {
       const entityId = this._stateObj.entity_id;
       if (
-        hasRequiredScriptFields(this.hass!, entityId) &&
-        !requiredScriptFieldsFilled(this.hass!, entityId, this._config?.data)
+        hasRequiredScriptFieldsForServices(this._services, entityId) &&
+        !requiredScriptFieldsFilledForServices(
+          this._services,
+          entityId,
+          this._config?.data
+        )
       ) {
         showMoreInfoDialog(this, {
           entityId: entityId,
@@ -74,7 +101,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
         : {}),
     };
 
-    this.hass.callService(domain, service, serviceData);
+    forwardHaptic(this, "light");
+
+    this._result.run(this._api.callService(domain, service, serviceData));
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
@@ -93,10 +122,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsButtonCardFeature(this.hass, this.context)
+      !supportsButtonCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -108,8 +136,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this._config.action_name ??
-          this.hass.localize("ui.card.button.press")}
+          <ha-action-result>
+            ${this._config.action_name ?? this._localize("ui.card.button.press")}
+          </ha-action-result>
         </ha-control-button>
       </ha-control-button-group>
     `;

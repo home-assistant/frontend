@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -125,13 +126,15 @@ export class DialogEnergyCustomise
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${!this._hidden
-          ? html`<div class="loading">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`
-          : this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : html`<div class="groups">${this._renderGroups()}</div>`}
+        ${
+          !this._hidden
+            ? html`<div class="loading">
+                <ha-spinner size="large"></ha-spinner>
+              </div>`
+            : this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : html`<div class="groups">${this._renderGroups()}</div>`
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -145,10 +148,12 @@ export class DialogEnergyCustomise
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting ||
-            !this._hidden ||
-            !!this._error ||
-            !this.isDirtyState}
+            .disabled=${
+              this._submitting ||
+              !this._hidden ||
+              !!this._error ||
+              !this.isDirtyState
+            }
           >
             ${this._i18n.localize("ui.common.save")}
           </ha-button>
@@ -196,19 +201,21 @@ export class DialogEnergyCustomise
           @change=${this._toggleCard}
         ></ha-switch>
       </ha-settings-row>
-      ${applicable
-        ? nothing
-        : html`
-            <ha-tooltip .for=${rowId} placement="top">
-              ${this._i18n.localize(
-                "ui.panel.config.energy.customise.unavailable"
-              )}
-            </ha-tooltip>
-          `}
+      ${
+        applicable
+          ? nothing
+          : html`
+              <ha-tooltip .for=${rowId} placement="top">
+                ${this._i18n.localize(
+                  "ui.panel.config.energy.customise.unavailable"
+                )}
+              </ha-tooltip>
+            `
+      }
     `;
   }
 
-  private _toggleCard = (ev: Event): void => {
+  private _toggleCard = (ev: HASSDomCurrentTargetEvent<HaSwitch>): void => {
     const target = ev.currentTarget as HaSwitch;
     const cardKey = target.dataset.cardKey;
     if (!cardKey) {

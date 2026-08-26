@@ -229,75 +229,90 @@ export abstract class HuiElementEditor<
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
-        ${this.GUImode
-          ? html`
-              <div class="gui-editor" @edit-sub-element=${this._editSubElement}>
-                ${this._loading
-                  ? html` <ha-spinner class="center margin-bot"></ha-spinner> `
-                  : cache(
-                      this._subElementEditorConfig
-                        ? this._renderSubElement()
-                        : this.renderConfigElement()
-                    )}
-              </div>
-            `
-          : html`
-              <div class="yaml-editor">
-                <ha-yaml-editor
-                  .defaultValue=${this._config}
-                  autofocus
-                  .inDialog=${this.inDialog}
-                  @value-changed=${this._handleYAMLChanged}
-                  @keydown=${this._ignoreKeydown}
-                  dir="ltr"
-                ></ha-yaml-editor>
-              </div>
-            `}
-        ${this._guiSupported === false && this._loading === false
-          ? html`
-              <ha-alert
-                alert-type="info"
-                .title=${this.hass.localize(
-                  "ui.errors.config.visual_editor_not_supported"
-                )}
-              >
-                ${this.hass.localize(
-                  "ui.errors.config.visual_editor_not_supported_reason_type"
-                )}
-                <br />
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>
-            `
-          : nothing}
-        ${this._errors?.length
-          ? html`
-              <ha-alert
-                alert-type="error"
-                .title=${this.hass.localize(
-                  "ui.errors.config.configuration_error"
-                )}
-              >
-                <ul>
-                  ${this._errors.map((error) => html`<li>${error}</li>`)}
-                </ul>
-              </ha-alert>
-            `
-          : nothing}
-        ${this.hasWarning
-          ? html`
-              <ha-alert
-                alert-type="warning"
-                .title=${this.hass.localize(
-                  "ui.errors.config.visual_editor_not_supported"
-                )}
-              >
-                <ul>
-                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
-                </ul>
-                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </ha-alert>
-            `
-          : nothing}
+        ${
+          this.GUImode
+            ? html`
+                <div
+                  class="gui-editor"
+                  @edit-sub-element=${this._editSubElement}
+                >
+                  ${
+                    this._loading
+                      ? html`
+                          <ha-spinner class="center margin-bot"></ha-spinner>
+                        `
+                      : cache(
+                          this._subElementEditorConfig
+                            ? this._renderSubElement()
+                            : this.renderConfigElement()
+                        )
+                  }
+                </div>
+              `
+            : html`
+                <div class="yaml-editor">
+                  <ha-yaml-editor
+                    .defaultValue=${this._config}
+                    autofocus
+                    .inDialog=${this.inDialog}
+                    @value-changed=${this._handleYAMLChanged}
+                    @keydown=${this._ignoreKeydown}
+                    dir="ltr"
+                  ></ha-yaml-editor>
+                </div>
+              `
+        }
+        ${
+          this._guiSupported === false && this._loading === false
+            ? html`
+                <ha-alert
+                  alert-type="info"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.visual_editor_not_supported"
+                  )}
+                >
+                  ${this.hass.localize(
+                    "ui.errors.config.visual_editor_not_supported_reason_type"
+                  )}
+                  <br />
+                  ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+                </ha-alert>
+              `
+            : nothing
+        }
+        ${
+          this._errors?.length
+            ? html`
+                <ha-alert
+                  alert-type="error"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.configuration_error"
+                  )}
+                >
+                  <ul>
+                    ${this._errors.map((error) => html`<li>${error}</li>`)}
+                  </ul>
+                </ha-alert>
+              `
+            : nothing
+        }
+        ${
+          this.hasWarning
+            ? html`
+                <ha-alert
+                  alert-type="warning"
+                  .title=${this.hass.localize(
+                    "ui.errors.config.visual_editor_not_supported"
+                  )}
+                >
+                  <ul>
+                    ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
+                  </ul>
+                  ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+                </ha-alert>
+              `
+            : nothing
+        }
       </div>
     `;
   }

@@ -6,6 +6,10 @@ build/
 dist/
 /hass_frontend/
 /translations/
+/.compress-cache/
+/.rspack-cache/
+# Composite action source, not build output
+!/.github/actions/build/
 
 # yarn
 .yarn/*
@@ -54,8 +58,19 @@ src/cast/dev_const.ts
 # test coverage
 test/coverage/
 
+# Playwright e2e output
+test/e2e/reports/
+test/e2e/test-results/
+# E2E test app build output
+test/e2e/app/dist/
+# MCP server
+.playwright-mcp/
+
 # AI tooling
-.claude
+.claude/*
+!.claude/skills
 .cursor
 .opencode
+.serena
+
 test/benchmarks/results/

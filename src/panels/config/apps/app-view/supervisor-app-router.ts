@@ -17,8 +17,7 @@ class SupervisorAppRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon!:
-    | HassioAddonDetails
-    | StoreAddonDetails;
+    HassioAddonDetails | StoreAddonDetails;
 
   @property({ type: Boolean, attribute: "control-enabled" })
   public controlEnabled = false;

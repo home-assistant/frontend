@@ -164,51 +164,55 @@ class DialogLightColorFavorite extends DirtyStateProviderMixin<LightColorFavorit
         @closed=${this._dialogClosed}
       >
         <div class="header">
-          ${this._modes.length > 1
-            ? html`
-                <div class="modes">
-                  ${this._modes.map(
-                    (value) => html`
-                      <ha-icon-button-toggle
-                        border-only
-                        .selected=${value === this._mode}
-                        .label=${this.hass.localize(
-                          `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
-                        )}
-                        .mode=${value}
-                        @click=${this._modeChanged}
-                      >
-                        <span
-                          class="wheel ${classMap({ [value]: true })}"
-                        ></span>
-                      </ha-icon-button-toggle>
-                    `
-                  )}
-                </div>
-              `
-            : nothing}
+          ${
+            this._modes.length > 1
+              ? html`
+                  <div class="modes">
+                    ${this._modes.map(
+                      (value) => html`
+                        <ha-icon-button-toggle
+                          border-only
+                          .selected=${value === this._mode}
+                          .label=${this.hass.localize(
+                            `ui.dialogs.more_info_control.light.color_picker.mode.${value}`
+                          )}
+                          .mode=${value}
+                          @click=${this._modeChanged}
+                        >
+                          <span
+                            class="wheel ${classMap({ [value]: true })}"
+                          ></span>
+                        </ha-icon-button-toggle>
+                      `
+                    )}
+                  </div>
+                `
+              : nothing
+          }
         </div>
         <div class="content">
-          ${this._mode === "color_temp"
-            ? html`
-                <light-color-temp-picker
-                  .hass=${this.hass}
-                  .stateObj=${this.stateObj}
-                  @color-changed=${this._colorChanged}
-                >
-                </light-color-temp-picker>
-              `
-            : nothing}
-          ${this._mode === "color"
-            ? html`
-                <light-color-rgb-picker
-                  .hass=${this.hass}
-                  .stateObj=${this.stateObj}
-                  @color-changed=${this._colorChanged}
-                >
-                </light-color-rgb-picker>
-              `
-            : nothing}
+          ${
+            this._mode === "color_temp"
+              ? html`
+                  <light-color-temp-picker
+                    .stateObj=${this.stateObj}
+                    @color-changed=${this._colorChanged}
+                  >
+                  </light-color-temp-picker>
+                `
+              : nothing
+          }
+          ${
+            this._mode === "color"
+              ? html`
+                  <light-color-rgb-picker
+                    .stateObj=${this.stateObj}
+                    @color-changed=${this._colorChanged}
+                  >
+                  </light-color-rgb-picker>
+                `
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button

@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../../types";
 import "../ha-relative-time";
 import "../ha-tooltip";
@@ -23,49 +24,51 @@ class StateInfo extends LitElement {
 
     const name = this.hass.formatEntityName(this.stateObj, { type: "entity" });
 
+    // Inline style because the state-badge color API only colors active entities
     return html`<state-badge
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
-        .stateColor=${true}
-        .color=${this.color}
+        .stateColor=${!this.color}
+        style=${styleMap({ color: this.color })}
       ></state-badge>
       <div class="info">
         <div class="name ${this.inDialog ? "in-dialog" : ""}" .title=${name}>
           ${name}
         </div>
-        ${this.inDialog
-          ? html`<div class="time-ago">
-              <ha-tooltip for="relative-time">
-                <div class="row">
-                  <span class="column-name">
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.last_changed"
-                    )}:
-                  </span>
-                  <ha-relative-time
-                    .datetime=${this.stateObj.last_changed}
-                    capitalize
-                  ></ha-relative-time>
-                </div>
-                <div class="row">
-                  <span>
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.last_updated"
-                    )}:
-                  </span>
-                  <ha-relative-time
-                    .datetime=${this.stateObj.last_updated}
-                    capitalize
-                  ></ha-relative-time>
-                </div>
-              </ha-tooltip>
-              <ha-relative-time
-                id="relative-time"
-                .datetime=${this.stateObj.last_changed}
-                capitalize
-              ></ha-relative-time>
-            </div>`
-          : html`<div class="extra-info"><slot></slot></div>`}
+        ${
+          this.inDialog
+            ? html`<div class="time-ago">
+                <ha-tooltip for="relative-time">
+                  <div class="row">
+                    <span class="column-name">
+                      ${this.hass.localize(
+                        "ui.dialogs.more_info_control.last_changed"
+                      )}:
+                    </span>
+                    <ha-relative-time
+                      .datetime=${this.stateObj.last_changed}
+                      capitalize
+                    ></ha-relative-time>
+                  </div>
+                  <div class="row">
+                    <span>
+                      ${this.hass.localize(
+                        "ui.dialogs.more_info_control.last_updated"
+                      )}:
+                    </span>
+                    <ha-relative-time
+                      .datetime=${this.stateObj.last_updated}
+                      capitalize
+                    ></ha-relative-time>
+                  </div>
+                </ha-tooltip>
+                <ha-relative-time
+                  id="relative-time"
+                  .datetime=${this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+              </div>`
+            : html`<div class="extra-info"><slot></slot></div>`
+        }
       </div>`;
   }
 

@@ -27,7 +27,6 @@ export class HuiHomeDashboardStrategyEditor
 
     return html`
       <ha-entities-picker
-        .hass=${this.hass}
         .value=${this._config.favorite_entities || []}
         label=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.home.favorite_entities"

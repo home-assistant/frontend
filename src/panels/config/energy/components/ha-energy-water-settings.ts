@@ -81,47 +81,55 @@ export class EnergyWaterSettings extends LitElement {
               ></ha-energy-validation-result>
             `
           )}
-          ${waterSources.length > 0
-            ? html`
-                <div class="items-container">
-                  ${waterSources.map((source) => {
-                    const entityState =
-                      this.hass.states[source.stat_energy_from];
-                    return html`
-                      <div class="row" .source=${source}>
-                        ${entityState?.attributes.icon
-                          ? html`<ha-icon
-                              .icon=${entityState.attributes.icon}
-                            ></ha-icon>`
-                          : html`<ha-svg-icon .path=${mdiWater}></ha-svg-icon>`}
-                        <span class="content"
-                          >${source.name ||
-                          getStatisticLabel(
-                            this.hass,
-                            source.stat_energy_from,
-                            this.statsMetadata?.[source.stat_energy_from]
-                          )}</span
-                        >
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            "ui.panel.config.energy.water.edit_water_source"
-                          )}
-                          @click=${this._editSource}
-                          .path=${mdiPencil}
-                        ></ha-icon-button>
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            "ui.panel.config.energy.water.delete_water_source"
-                          )}
-                          @click=${this._deleteSource}
-                          .path=${mdiDelete}
-                        ></ha-icon-button>
-                      </div>
-                    `;
-                  })}
-                </div>
-              `
-            : ""}
+          ${
+            waterSources.length > 0
+              ? html`
+                  <div class="items-container">
+                    ${waterSources.map((source) => {
+                      const entityState =
+                        this.hass.states[source.stat_energy_from];
+                      return html`
+                        <div class="row" .source=${source}>
+                          ${
+                            entityState?.attributes.icon
+                              ? html`<ha-icon
+                                  .icon=${entityState.attributes.icon}
+                                ></ha-icon>`
+                              : html`<ha-svg-icon
+                                  .path=${mdiWater}
+                                ></ha-svg-icon>`
+                          }
+                          <span class="content"
+                            >${
+                              source.name ||
+                              getStatisticLabel(
+                                this.hass,
+                                source.stat_energy_from,
+                                this.statsMetadata?.[source.stat_energy_from]
+                              )
+                            }</span
+                          >
+                          <ha-icon-button
+                            .label=${this.hass.localize(
+                              "ui.panel.config.energy.water.edit_water_source"
+                            )}
+                            @click=${this._editSource}
+                            .path=${mdiPencil}
+                          ></ha-icon-button>
+                          <ha-icon-button
+                            .label=${this.hass.localize(
+                              "ui.panel.config.energy.water.delete_water_source"
+                            )}
+                            @click=${this._deleteSource}
+                            .path=${mdiDelete}
+                          ></ha-icon-button>
+                        </div>
+                      `;
+                    })}
+                  </div>
+                `
+              : ""
+          }
           <div class="row">
             <ha-button @click=${this._addSource} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon

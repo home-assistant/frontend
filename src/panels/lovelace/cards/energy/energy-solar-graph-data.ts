@@ -13,7 +13,9 @@ import { getEnergyColor } from "./common/color";
 import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCompareTransform,
+  getPeriodMidpointOffset,
 } from "./common/energy-chart-options";
 
 export interface EnergySolarGraphDataParams {
@@ -116,7 +118,11 @@ export function generateEnergySolarGraphData(
     )
   );
 
-  fillDataGapsAndRoundCaps(datasets as BarSeriesOption[]);
+  fillDataGapsAndRoundCaps(
+    datasets as BarSeriesOption[],
+    true,
+    generateFillBuckets(datasets as BarSeriesOption[], start, end, period)
+  );
 
   if (forecasts) {
     datasets.push(
@@ -140,7 +146,7 @@ export function generateEnergySolarGraphData(
     end,
     compareStart,
     compareEnd,
-    yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax),
+    yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax, true),
   };
 }
 
@@ -321,19 +327,18 @@ function processForecast(
 
       if (forecastsData) {
         const solarForecastData: LineSeriesOption["data"] = [];
-        // Only center forecast points for sub-daily periods to align with bars.
-        // Only start timestamps available, so estimate midpoint from the gap
-        // between the first two entries. Assumes uniform spacing.
-        let forecastOffset = 0;
-        if (period === "hour" || period === "5minute") {
-          const forecastTimes = Object.keys(forecastsData)
-            .map(Number)
-            .sort((a, b) => a - b);
-          forecastOffset =
-            forecastTimes.length >= 2
-              ? (forecastTimes[1] - forecastTimes[0]) / 2
-              : 0;
-        }
+        // Center forecast points for sub-daily periods from the gap between
+        // the first two entries, clamped to the nominal period so sparse or
+        // lone forecast buckets still align with the bars.
+        const forecastTimes = Object.keys(forecastsData)
+          .map(Number)
+          .sort((a, b) => a - b);
+        const forecastOffset = getPeriodMidpointOffset(
+          period,
+          forecastTimes.length >= 2
+            ? forecastTimes[1] - forecastTimes[0]
+            : undefined
+        );
         for (const [time, value] of Object.entries(forecastsData)) {
           const kWh = value / 1000;
           solarForecastData.push([Number(time) + forecastOffset, kWh]);

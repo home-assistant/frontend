@@ -23,20 +23,24 @@ export class HaCodeEditorJinjaHover extends LitElement {
       <div class="header">
         <div class="sig">
           <strong>${this.completion.label}</strong>
-          ${this.completion.detail
-            ? html`<span class="detail">(${this.completion.detail})</span>`
-            : nothing}
+          ${
+            this.completion.detail
+              ? html`<span class="detail">(${this.completion.detail})</span>`
+              : nothing
+          }
         </div>
-        ${this.docUrl
-          ? html`<a
-              class="doc-link"
-              href=${this.docUrl}
-              target="_blank"
-              rel="noreferrer"
-              title=${this.openDocumentation}
-              ><ha-svg-icon .path=${mdiHelpCircleOutline}></ha-svg-icon
-            ></a>`
-          : nothing}
+        ${
+          this.docUrl
+            ? html`<a
+                class="doc-link"
+                href=${this.docUrl}
+                target="_blank"
+                rel="noreferrer"
+                title=${this.openDocumentation}
+                ><ha-svg-icon .path=${mdiHelpCircleOutline}></ha-svg-icon
+              ></a>`
+            : nothing
+        }
       </div>
       ${info ? html`<div class="desc">${info}</div>` : nothing}
     `;

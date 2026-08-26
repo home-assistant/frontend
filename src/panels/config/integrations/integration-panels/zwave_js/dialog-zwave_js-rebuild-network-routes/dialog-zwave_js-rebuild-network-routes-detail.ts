@@ -101,38 +101,40 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
           }
         )}
       >
-        ${!this._configEntries
-          ? html`
-              <ha-fade-in .delay=${500}
-                ><ha-spinner size="large"></ha-spinner
-              ></ha-fade-in>
-            `
-          : !this._progress || this._progress.length === 0
-            ? html`<p>
-                ${this._i18n.localize(
-                  "ui.panel.config.zwave_js.rebuild_network_routes.details.no_devices"
-                )}
-              </p>`
-            : this._zwaveDevices
-              ? html`<ha-md-list>
-                  ${this._filteredDevices(
-                    this._progress,
-                    this._zwaveDevices
-                  ).map(
-                    (device) => html`
-                      <ha-md-list-item>
-                        <ha-domain-icon
-                          slot="start"
-                          .domain=${device.domain}
-                          brand-fallback
-                        ></ha-domain-icon>
-                        <span slot="headline">${device.name}</span>
-                        <span slot="supporting-text">${device.areaName}</span>
-                      </ha-md-list-item>
-                    `
+        ${
+          !this._configEntries
+            ? html`
+                <ha-fade-in .delay=${500}
+                  ><ha-spinner size="large"></ha-spinner
+                ></ha-fade-in>
+              `
+            : !this._progress || this._progress.length === 0
+              ? html`<p>
+                  ${this._i18n.localize(
+                    "ui.panel.config.zwave_js.rebuild_network_routes.details.no_devices"
                   )}
-                </ha-md-list>`
-              : nothing}
+                </p>`
+              : this._zwaveDevices
+                ? html`<ha-md-list>
+                    ${this._filteredDevices(
+                      this._progress,
+                      this._zwaveDevices
+                    ).map(
+                      (device) => html`
+                        <ha-md-list-item>
+                          <ha-domain-icon
+                            slot="start"
+                            .domain=${device.domain}
+                            brand-fallback
+                          ></ha-domain-icon>
+                          <span slot="headline">${device.name}</span>
+                          <span slot="supporting-text">${device.areaName}</span>
+                        </ha-md-list-item>
+                      `
+                    )}
+                  </ha-md-list>`
+                : nothing
+        }
       </ha-dialog>
     `;
   }
@@ -175,7 +177,11 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
             ) ||
             this._i18n.localize("ui.components.device-picker.unnamed_device");
 
-          const area = getDeviceArea(device, this._registries.areas);
+          const area = getDeviceArea(
+            device,
+            this._registries.areas,
+            this._registries.devices
+          );
 
           const areaName = area ? computeAreaName(area) : undefined;
 

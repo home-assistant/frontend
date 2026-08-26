@@ -22,6 +22,9 @@ import type {
 } from "../../../data/lovelace/config/action";
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
+import { canToggleState } from "../../../common/entity/can_toggle_state";
+import { canToggleDomain } from "../../../common/entity/can_toggle_domain";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -134,14 +137,34 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
+  private _filterToggleAction = memoizeOne(
+    (actions: UiAction[]): UiAction[] => {
+      return actions.filter((a) => a !== "toggle");
+    }
+  );
+
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
-    const actions = this.actions ?? DEFAULT_ACTIONS;
-
     let action = this.config?.action || (this.required ? "" : "default");
+
+    let actions = this.actions ?? DEFAULT_ACTIONS;
+
+    if (
+      this.context?.entity_id &&
+      action !== "toggle" &&
+      actions.includes("toggle")
+    ) {
+      const stateObj = this.hass.states[this.context.entity_id];
+      const canToggle = stateObj
+        ? canToggleState(this.hass, stateObj)
+        : canToggleDomain(this.hass, computeDomain(this.context.entity_id));
+      if (!canToggle) {
+        actions = this._filterToggleAction(actions);
+      }
+    }
 
     if (action === "call-service") {
       action = "perform-action";
@@ -178,62 +201,72 @@ export class HuiActionEditor extends LitElement {
           ]}
         >
         </ha-select>
-        ${this.tooltipText
-          ? html`
-              <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
-            `
-          : nothing}
+        ${
+          this.tooltipText
+            ? html`
+                <ha-help-tooltip .label=${this.tooltipText}></ha-help-tooltip>
+              `
+            : nothing
+        }
       </div>
-      ${this.config?.action === "navigate"
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .schema=${this._navigateSchema(
-                this.context?.entity_id,
-                this.context?.area_id
-              )}
-              .data=${this.config}
-              .computeLabel=${this._computeFormLabel}
-              @value-changed=${this._formValueChanged}
-            >
-            </ha-form>
-          `
-        : nothing}
-      ${this.config?.action === "url"
-        ? html`
-            <ha-input
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.url_path"
-              )}
-              .value=${this._url_path}
-              .configValue=${"url_path"}
-              @input=${this._valueChanged}
-            ></ha-input>
-          `
-        : nothing}
-      ${this.config?.action === "call-service" ||
-      this.config?.action === "perform-action"
-        ? html`
-            <ha-service-control
-              .hass=${this.hass}
-              .value=${this._serviceAction(this.config)}
-              narrow
-              @value-changed=${this._serviceValueChanged}
-            ></ha-service-control>
-          `
-        : nothing}
-      ${this.config?.action === "assist"
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .schema=${ASSIST_SCHEMA}
-              .data=${this.config}
-              .computeLabel=${this._computeFormLabel}
-              @value-changed=${this._formValueChanged}
-            >
-            </ha-form>
-          `
-        : nothing}
+      ${
+        this.config?.action === "navigate"
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .schema=${this._navigateSchema(
+                  this.context?.entity_id,
+                  this.context?.area_id
+                )}
+                .data=${this.config}
+                .computeLabel=${this._computeFormLabel}
+                @value-changed=${this._formValueChanged}
+              >
+              </ha-form>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "url"
+          ? html`
+              <ha-input
+                .label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.action-editor.url_path"
+                )}
+                .value=${this._url_path}
+                .configValue=${"url_path"}
+                @input=${this._valueChanged}
+              ></ha-input>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "call-service" ||
+        this.config?.action === "perform-action"
+          ? html`
+              <ha-service-control
+                .hass=${this.hass}
+                .value=${this._serviceAction(this.config)}
+                narrow
+                @value-changed=${this._serviceValueChanged}
+              ></ha-service-control>
+            `
+          : nothing
+      }
+      ${
+        this.config?.action === "assist"
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .schema=${ASSIST_SCHEMA}
+                .data=${this.config}
+                .computeLabel=${this._computeFormLabel}
+                @value-changed=${this._formValueChanged}
+              >
+              </ha-form>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -1,8 +1,16 @@
 import type { BarSeriesOption } from "echarts/types/dist/shared";
 
+/**
+ * `extraBuckets` (only used when `stacked`) seeds the bucket union with the
+ * expected statistics grid so sparse datasets get zero-filled across the whole
+ * range, including past their last real point. Without it, buckets are only
+ * derived from the data and trailing buckets are never filled (legacy
+ * behavior, kept for callers that don't pass a grid).
+ */
 export function fillDataGapsAndRoundCaps(
   datasets: BarSeriesOption[],
-  stacked = true
+  stacked = true,
+  extraBuckets?: number[]
 ) {
   if (!stacked) {
     // For non-stacked charts, we can simply apply an overall border to each stack
@@ -44,6 +52,7 @@ export function fillDataGapsAndRoundCaps(
           dataset.data!.map((datapoint) => Number(datapoint![0]))
         )
         .flat()
+        .concat(extraBuckets ?? [])
     )
   ).sort((a, b) => a - b);
 
@@ -61,9 +70,18 @@ export function fillDataGapsAndRoundCaps(
       const x = item.value?.[0];
       const stack = datasets[i].stack ?? "";
       if (x === undefined) {
-        continue;
+        // Past the end of this dataset's data. Only append trailing buckets
+        // when an explicit grid was provided; originally-empty datasets
+        // (e.g. compare placeholders) stay empty either way.
+        if (
+          dataPoint !== undefined ||
+          extraBuckets === undefined ||
+          !datasets[i].data!.length
+        ) {
+          continue;
+        }
       }
-      if (Number(x) !== bucket) {
+      if (x === undefined || Number(x) !== bucket) {
         datasets[i].data?.splice(index, 0, {
           value: [bucket, 0],
           itemStyle: {

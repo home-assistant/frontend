@@ -1,24 +1,50 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-slider";
+import {
+  apiContext,
+  entitiesContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
+import type { FrontendLocaleData } from "../../../data/translation";
 import { ValveEntityFeature, type ValveEntity } from "../../../data/valve";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   ValvePositionCardFeatureConfig,
 } from "./types";
+
+const supportsValvePositionCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "valve" &&
+    supportsFeature(stateObj, ValveEntityFeature.SET_POSITION)
+  );
+};
 
 export const supportsValvePositionCardFeature = (
   hass: HomeAssistant,
@@ -28,11 +54,7 @@ export const supportsValvePositionCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "valve" &&
-    supportsFeature(stateObj, ValveEntityFeature.SET_POSITION)
-  );
+  return supportsValvePositionCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-valve-position-card-feature")
@@ -40,20 +62,34 @@ class HuiValvePositionCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
 
-  @state() private _config?: ValvePositionCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: ValveEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as ValveEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state() private _config?: ValvePositionCardFeatureConfig;
 
   static getStubConfig(): ValvePositionCardFeatureConfig {
     return {
@@ -71,10 +107,9 @@ class HuiValvePositionCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsValvePositionCardFeature(this.hass, this.context)
+      !supportsValvePositionCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -108,14 +143,14 @@ class HuiValvePositionCardFeature
         show-handle
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
-          this.hass.localize,
+          this._localize,
           this._stateObj,
-          this.hass.entities,
+          this._entities,
           "current_position"
         )}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.valve.current_position}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       ></ha-control-slider>
     `;
   }
@@ -124,7 +159,7 @@ class HuiValvePositionCardFeature
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
 
-    this.hass!.callService("valve", "set_valve_position", {
+    this._api.callService("valve", "set_valve_position", {
       entity_id: this._stateObj!.entity_id,
       position: value,
     });

@@ -19,10 +19,7 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-list";
-import type {
-  DeviceEndpointSelectionChangedEvent,
-  ZHADeviceEndpointList,
-} from "./zha-device-endpoint-list";
+import type { ZHADeviceEndpointList } from "./zha-device-endpoint-list";
 import { showZHAAddGroupMembersDialog } from "./show-dialog-zha-add-group-members";
 
 @customElement("zha-group-page")
@@ -127,45 +124,51 @@ export class ZHAGroupPage extends LitElement {
 
           <div class="members-section">
             <h2>${this.hass.localize("ui.panel.config.zha.groups.members")}</h2>
-            ${this.group.members.length
-              ? html`
-                  <zha-device-endpoint-list
-                    id="removeMembers"
-                    scrollable
-                    show-device-link
-                    selectable
-                    .deviceEndpoints=${this.group.members}
-                    .narrow=${this.narrow}
-                    .emptyText=${this.hass.localize(
-                      "ui.panel.config.zha.groups.no_members"
-                    )}
-                    @selection-changed=${this._handleRemoveSelectionChanged}
-                  ></zha-device-endpoint-list>
-                `
-              : html`
-                  <ha-card class="empty-card">
-                    ${this.hass.localize(
-                      "ui.panel.config.zha.groups.no_members"
-                    )}
-                  </ha-card>
-                `}
-            <div class="buttons">
-              ${this.group.members.length
+            ${
+              this.group.members.length
                 ? html`
-                    <ha-button
-                      appearance="plain"
-                      variant="danger"
-                      .disabled=${!this._selectedDevicesToRemove.length ||
-                      this._processingRemove}
-                      @click=${this._removeMembersFromGroup}
-                      .loading=${this._processingRemove}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zha.groups.remove_members"
+                    <zha-device-endpoint-list
+                      id="removeMembers"
+                      scrollable
+                      show-device-link
+                      selectable
+                      .deviceEndpoints=${this.group.members}
+                      .narrow=${this.narrow}
+                      .emptyText=${this.hass.localize(
+                        "ui.panel.config.zha.groups.no_members"
                       )}
-                    </ha-button>
+                      @selection-changed=${this._handleRemoveSelectionChanged}
+                    ></zha-device-endpoint-list>
                   `
-                : nothing}
+                : html`
+                    <ha-card class="empty-card">
+                      ${this.hass.localize(
+                        "ui.panel.config.zha.groups.no_members"
+                      )}
+                    </ha-card>
+                  `
+            }
+            <div class="buttons">
+              ${
+                this.group.members.length
+                  ? html`
+                      <ha-button
+                        appearance="plain"
+                        variant="danger"
+                        .disabled=${
+                          !this._selectedDevicesToRemove.length ||
+                          this._processingRemove
+                        }
+                        @click=${this._removeMembersFromGroup}
+                        .loading=${this._processingRemove}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.groups.remove_members"
+                        )}
+                      </ha-button>
+                    `
+                  : nothing
+              }
               <ha-button @click=${this._showAddMembersDialog}>
                 <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
@@ -196,7 +199,7 @@ export class ZHAGroupPage extends LitElement {
   }
 
   private _handleRemoveSelectionChanged(
-    ev: HASSDomEvent<DeviceEndpointSelectionChangedEvent>
+    ev: HASSDomEvent<HASSDomEvents["selection-changed"]>
   ): void {
     this._selectedDevicesToRemove = ev.detail.value;
   }
@@ -221,10 +224,6 @@ export class ZHAGroupPage extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        hass-subpage {
-          --app-header-text-color: var(--sidebar-icon-color);
-        }
-
         .container {
           box-sizing: border-box;
           max-width: 720px;

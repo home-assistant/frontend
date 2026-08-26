@@ -56,6 +56,7 @@ export class HaSelectBox extends LitElement {
         class="list"
         style=${styleMap({ "--columns": columns })}
         .value=${this.value}
+        ?disabled=${this.disabled}
         @change=${this._radioChanged}
       >
         ${this.options.map((option) => this._renderOption(option))}
@@ -100,24 +101,32 @@ export class HaSelectBox extends LitElement {
             )}
             aria-labelledby=${`label-${option.value}`}
             .value=${option.value}
-            .disabled=${disabled}
+            .disabled=${option.disabled || false}
           ></ha-radio-option>
           <div class="text">
             <span id=${`label-${option.value}`} class="label"
               >${option.label}</span
             >
-            ${option.description
-              ? html`<span class="description" id="desc-${option.value}"
-                  >${option.description}</span
-                >`
-              : nothing}
+            ${
+              option.description
+                ? html`<span class="description" id="desc-${option.value}"
+                    >${option.description}</span
+                  >`
+                : nothing
+            }
           </div>
         </div>
-        ${imageSrc
-          ? html`
-              <img class=${imageFlip ? "flipped" : ""} alt="" src=${imageSrc} />
-            `
-          : nothing}
+        ${
+          imageSrc
+            ? html`
+                <img
+                  class=${imageFlip ? "flipped" : ""}
+                  alt=""
+                  src=${imageSrc}
+                />
+              `
+            : nothing
+        }
       </label>
     `;
   }

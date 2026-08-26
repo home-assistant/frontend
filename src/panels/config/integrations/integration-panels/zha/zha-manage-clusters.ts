@@ -104,12 +104,14 @@ export class ZHAManageClusters extends LitElement {
     return html`
       <ha-card class="cluster-detail-card">
         ${this._renderClusterHeader()}
-        ${this._selectedCluster
-          ? html`
-              ${this._renderClusterSegmentedTabs()}
-              ${this._renderSelectedClusterPanel()}
-            `
-          : nothing}
+        ${
+          this._selectedCluster
+            ? html`
+                ${this._renderClusterSegmentedTabs()}
+                ${this._renderSelectedClusterPanel()}
+              `
+            : nothing
+        }
       </ha-card>
     `;
   }
@@ -120,12 +122,14 @@ export class ZHAManageClusters extends LitElement {
         <div class="cluster-heading">
           <div class="cluster-name">${this._selectedCluster?.name}</div>
           <div class="cluster-description">
-            ${this._selectedCluster
-              ? computeClusterSecondary(
-                  this._selectedCluster,
-                  this.hass.localize
-                )
-              : nothing}
+            ${
+              this._selectedCluster
+                ? computeClusterSecondary(
+                    this._selectedCluster,
+                    this.hass.localize
+                  )
+                : nothing
+            }
           </div>
         </div>
         ${this._renderClusterPicker()}

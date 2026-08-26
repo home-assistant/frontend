@@ -73,34 +73,42 @@ export class HaPickerField extends PickerMixin(LitElement) {
         type="button"
         compact
       >
-        ${this.image
-          ? html`<img
-              alt=${this.label ?? ""}
-              slot="start"
-              .src=${this.image}
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-            />`
-          : this.icon
-            ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
-            : html`<slot name="start"></slot>`}
+        ${
+          this.image
+            ? html`<img
+                alt=${this.label ?? ""}
+                slot="start"
+                .src=${this.image}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+              />`
+            : this.icon
+              ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+              : html`<slot name="start"></slot>`
+        }
         ${overlineLabel}${headlineContent}
-        ${this.unknown
-          ? html`<div slot="supporting-text" class="unknown">
-              ${this.unknownItemText ||
-              this._i18n?.localize("ui.components.combo-box.unknown_item")}
-            </div>`
-          : nothing}
-        ${showClearIcon
-          ? html`
-              <ha-icon-button
-                class="clear"
-                slot="end"
-                @click=${this._clear}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.unknown
+            ? html`<div slot="supporting-text" class="unknown">
+                ${
+                  this.unknownItemText ||
+                  this._i18n?.localize("ui.components.combo-box.unknown_item")
+                }
+              </div>`
+            : nothing
+        }
+        ${
+          showClearIcon
+            ? html`
+                <ha-icon-button
+                  class="clear"
+                  slot="end"
+                  @click=${this._clear}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
         <ha-svg-icon
           class="arrow"
           slot="end"

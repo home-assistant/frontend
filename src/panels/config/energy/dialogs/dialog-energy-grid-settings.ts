@@ -1,7 +1,11 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
@@ -33,10 +37,11 @@ import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
   getInitialPowerConfig,
+  getPowerHelperEntityId,
   getPowerTypeFromConfig,
-  type HaEnergyPowerConfig,
+  isPowerConfigValid,
   type PowerType,
-} from "./ha-energy-power-config";
+} from "./power-config";
 import type { EnergySettingsGridDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
@@ -76,8 +81,6 @@ export class DialogEnergyGridSettings
   @state() private _energy_units?: string[];
 
   @state() private _error?: string;
-
-  @query("ha-energy-power-config") private _powerConfigEl?: HaEnergyPowerConfig;
 
   private _excludeList?: string[];
 
@@ -258,19 +261,21 @@ export class DialogEnergyGridSettings
             this._source?.stat_energy_from || this._source?.stat_energy_to
           )}
           .value=${this._source?.name || ""}
-          .placeholder=${this._source?.stat_energy_from
-            ? getStatisticLabel(
-                this.hass,
-                this._source.stat_energy_from,
-                this._params?.statsMetadata?.[this._source.stat_energy_from]
-              )
-            : this._source?.stat_energy_to
+          .placeholder=${
+            this._source?.stat_energy_from
               ? getStatisticLabel(
                   this.hass,
-                  this._source.stat_energy_to,
-                  this._params?.statsMetadata?.[this._source.stat_energy_to]
+                  this._source.stat_energy_from,
+                  this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
-              : ""}
+              : this._source?.stat_energy_to
+                ? getStatisticLabel(
+                    this.hass,
+                    this._source.stat_energy_to,
+                    this._params?.statsMetadata?.[this._source.stat_energy_to]
+                  )
+                : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -313,144 +318,166 @@ export class DialogEnergyGridSettings
           </ha-radio-option>
         </ha-radio-group>
 
-        ${this._importCostType === "stat"
-          ? html`
-              <ha-statistic-picker
-                .hass=${this.hass}
-                .value=${this._source.stat_cost}
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.cost_stat_label"
-                )}
-                @value-changed=${this._statCostChanged}
-              ></ha-statistic-picker>
-            `
-          : nothing}
-        ${this._importCostType === "entity"
-          ? html`
-              <ha-entity-picker
-                .hass=${this.hass}
-                .value=${this._source.entity_energy_price}
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.cost_entity_label"
-                )}
-                include-domains='["sensor", "input_number"]'
-                @value-changed=${this._entityCostChanged}
-              ></ha-entity-picker>
-            `
-          : nothing}
-        ${this._importCostType === "number"
-          ? html`
-              <ha-input
-                .value=${this._source.number_energy_price !== null
-                  ? String(this._source.number_energy_price)
-                  : ""}
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.cost_number_label"
-                )}
-                type="number"
-                step="any"
-                @input=${this._numberCostChanged}
-              >
-                <span slot="end">${this.hass.config.currency}/kWh</span>
-              </ha-input>
-            `
-          : nothing}
-        ${hasExport
-          ? html`
-              <p class="section-label">
-                ${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.export_compensation"
-                )}
-              </p>
-              <p class="section-description">
-                ${this.hass.localize(
-                  "ui.panel.config.energy.grid.dialog.export_compensation_para"
-                )}
-              </p>
-
-              <ha-radio-group
-                .value=${this._exportCostType}
-                name="exportCostType"
-                @change=${this._handleExportCostTypeChanged}
-              >
-                <ha-radio-option value="no_cost">
-                  ${this.hass.localize(
-                    "ui.panel.config.energy.grid.dialog.no_compensation_tracking"
+        ${
+          this._importCostType === "stat"
+            ? html`
+                <ha-statistic-picker
+                  .hass=${this.hass}
+                  .value=${this._source.stat_cost}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_stat_label"
                   )}
-                </ha-radio-option>
-                <ha-radio-option value="stat">
-                  ${this.hass.localize(
-                    "ui.panel.config.energy.grid.dialog.compensation_stat"
+                  @value-changed=${this._statCostChanged}
+                ></ha-statistic-picker>
+              `
+            : nothing
+        }
+        ${
+          this._importCostType === "entity"
+            ? html`
+                <ha-entity-picker
+                  .value=${this._source.entity_energy_price}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_entity_label"
                   )}
-                </ha-radio-option>
-                <ha-radio-option
-                  value="entity"
-                  .disabled=${externalExportSource}
+                  include-domains='["sensor", "input_number"]'
+                  @value-changed=${this._entityCostChanged}
+                ></ha-entity-picker>
+              `
+            : nothing
+        }
+        ${
+          this._importCostType === "number"
+            ? html`
+                <ha-input
+                  .value=${
+                    this._source.number_energy_price !== null
+                      ? String(this._source.number_energy_price)
+                      : ""
+                  }
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.cost_number_label"
+                  )}
+                  type="number"
+                  step="any"
+                  @input=${this._numberCostChanged}
                 >
+                  <span slot="end">${this.hass.config.currency}/kWh</span>
+                </ha-input>
+              `
+            : nothing
+        }
+        ${
+          hasExport
+            ? html`
+                <p class="section-label">
                   ${this.hass.localize(
-                    "ui.panel.config.energy.grid.dialog.compensation_entity"
+                    "ui.panel.config.energy.grid.dialog.export_compensation"
                   )}
-                </ha-radio-option>
-                <ha-radio-option
-                  value="number"
-                  .disabled=${externalExportSource}
-                >
+                </p>
+                <p class="section-description">
                   ${this.hass.localize(
-                    "ui.panel.config.energy.grid.dialog.compensation_number"
+                    "ui.panel.config.energy.grid.dialog.export_compensation_para"
                   )}
-                </ha-radio-option>
-              </ha-radio-group>
+                </p>
 
-              ${this._exportCostType === "stat"
-                ? html`
-                    <ha-statistic-picker
-                      .hass=${this.hass}
-                      .value=${this._source.stat_compensation}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.energy.grid.dialog.compensation_stat_label"
-                      )}
-                      @value-changed=${this._statCompensationChanged}
-                    ></ha-statistic-picker>
-                  `
-                : nothing}
-              ${this._exportCostType === "entity"
-                ? html`
-                    <ha-entity-picker
-                      .hass=${this.hass}
-                      .value=${this._source.entity_energy_price_export}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.energy.grid.dialog.compensation_entity_label"
-                      )}
-                      include-domains='["sensor", "input_number"]'
-                      @value-changed=${this._entityCompensationChanged}
-                    ></ha-entity-picker>
-                  `
-                : nothing}
-              ${this._exportCostType === "number"
-                ? html`
-                    <ha-input
-                      .value=${this._source.number_energy_price_export !== null
-                        ? String(this._source.number_energy_price_export)
-                        : ""}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.energy.grid.dialog.compensation_number_label"
-                      )}
-                      type="number"
-                      step="any"
-                      @input=${this._numberCompensationChanged}
-                    >
-                      <span slot="end">${this.hass.config.currency}/kWh</span>
-                    </ha-input>
-                  `
-                : nothing}
-            `
-          : nothing}
+                <ha-radio-group
+                  .value=${this._exportCostType}
+                  name="exportCostType"
+                  @change=${this._handleExportCostTypeChanged}
+                >
+                  <ha-radio-option value="no_cost">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.no_compensation_tracking"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option value="stat">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_stat"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option
+                    value="entity"
+                    .disabled=${externalExportSource}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_entity"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option
+                    value="number"
+                    .disabled=${externalExportSource}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.compensation_number"
+                    )}
+                  </ha-radio-option>
+                </ha-radio-group>
+
+                ${
+                  this._exportCostType === "stat"
+                    ? html`
+                        <ha-statistic-picker
+                          .hass=${this.hass}
+                          .value=${this._source.stat_compensation}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_stat_label"
+                          )}
+                          @value-changed=${this._statCompensationChanged}
+                        ></ha-statistic-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  this._exportCostType === "entity"
+                    ? html`
+                        <ha-entity-picker
+                          .value=${this._source.entity_energy_price_export}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_entity_label"
+                          )}
+                          include-domains='["sensor", "input_number"]'
+                          @value-changed=${this._entityCompensationChanged}
+                        ></ha-entity-picker>
+                      `
+                    : nothing
+                }
+                ${
+                  this._exportCostType === "number"
+                    ? html`
+                        <ha-input
+                          .value=${
+                            this._source.number_energy_price_export !== null
+                              ? String(this._source.number_energy_price_export)
+                              : ""
+                          }
+                          .label=${this.hass.localize(
+                            "ui.panel.config.energy.grid.dialog.compensation_number_label"
+                          )}
+                          type="number"
+                          step="any"
+                          @input=${this._numberCompensationChanged}
+                        >
+                          <span slot="end"
+                            >${this.hass.config.currency}/kWh</span
+                          >
+                        </ha-input>
+                      `
+                    : nothing
+                }
+              `
+            : nothing
+        }
 
         <ha-energy-power-config
           .hass=${this.hass}
           .powerType=${this._powerType}
           .powerConfig=${this._powerConfig}
           .excludeList=${this._excludeListPower}
+          .helperEntityId=${getPowerHelperEntityId(
+            this._params.source,
+            this._powerConfig
+          )}
           .localizeBaseKey=${"ui.panel.config.energy.grid.dialog"}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
@@ -465,8 +492,9 @@ export class DialogEnergyGridSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._isValid() ||
-            (!!this._params?.source && !this.isDirtyState)}
+            .disabled=${
+              !this._isValid() || (!!this._params?.source && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -487,10 +515,8 @@ export class DialogEnergyGridSettings
     }
 
     // Check power config validity (if power is configured)
-    if (hasPower) {
-      if (this._powerConfigEl && !this._powerConfigEl.isValid()) {
-        return false;
-      }
+    if (hasPower && !isPowerConfigValid(this._powerType, this._powerConfig)) {
+      return false;
     }
 
     return true;
@@ -571,7 +597,9 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _handleImportCostTypeChanged(ev: Event) {
+  private _handleImportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
     this._importCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
@@ -583,7 +611,9 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _handleExportCostTypeChanged(ev: Event) {
+  private _handleExportCostTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ) {
     this._exportCostType = (ev.currentTarget as HaRadioGroup).value as CostType;
     // Clear other cost fields when switching types
     this._source = {
@@ -608,9 +638,10 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCostChanged(ev: Event) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+  private _numberCostChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price: value };
     this._updateFormDirtyState();
   }
@@ -631,15 +662,16 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
-  private _numberCompensationChanged(ev: Event) {
-    const input = ev.currentTarget as HTMLInputElement;
-    const value = input.value ? parseFloat(input.value) : null;
+  private _numberCompensationChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const value = ev.currentTarget.value
+      ? parseFloat(ev.currentTarget.value)
+      : null;
     this._source = { ...this._source!, number_energy_price_export: value };
     this._updateFormDirtyState();
   }
 
   private _handlePowerConfigChanged(
-    ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
+    ev: HASSDomEvent<HASSDomEvents["power-config-changed"]>
   ) {
     this._powerType = ev.detail.powerType;
     this._powerConfig = ev.detail.powerConfig;

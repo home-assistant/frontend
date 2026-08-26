@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/chips/ha-input-chip";
 import "../../../components/ha-alert";
@@ -133,29 +134,35 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${entry
-          ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
-          : this.hass.localize("ui.panel.config.floors.editor.create_floor")}
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
+            : this.hass.localize("ui.panel.config.floors.editor.create_floor")
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
-            ${entry
-              ? html`
-                  <ha-settings-row>
-                    <span slot="heading">
-                      ${this.hass.localize(
-                        "ui.panel.config.floors.editor.floor_id"
-                      )}
-                    </span>
-                    <span slot="description">${entry.floor_id}</span>
-                  </ha-settings-row>
-                `
-              : nothing}
+            ${
+              entry
+                ? html`
+                    <ha-settings-row>
+                      <span slot="heading">
+                        ${this.hass.localize(
+                          "ui.panel.config.floors.editor.floor_id"
+                        )}
+                      </span>
+                      <span slot="description">${entry.floor_id}</span>
+                    </ha-settings-row>
+                  `
+                : nothing
+            }
 
             <ha-input
               autofocus
@@ -187,14 +194,16 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
               @value-changed=${this._iconChanged}
               .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
             >
-              ${!this._icon
-                ? html`
-                    <ha-floor-icon
-                      slot="start"
-                      .floor=${{ level: this._level }}
-                    ></ha-floor-icon>
-                  `
-                : nothing}
+              ${
+                !this._icon
+                  ? html`
+                      <ha-floor-icon
+                        slot="start"
+                        .floor=${{ level: this._level }}
+                      ></ha-floor-icon>
+                    `
+                  : nothing
+              }
             </ha-icon-picker>
 
             <h3 class="header">
@@ -203,35 +212,39 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
               )}
             </h3>
 
-            ${areas.length
-              ? html`<ha-chip-set>
-                  ${repeat(
-                    areas,
-                    (area) => area.area_id,
-                    (area) =>
-                      html`<ha-input-chip
-                        .area=${area}
-                        @click=${this._openArea}
-                        @remove=${this._removeArea}
-                        .label=${area?.name}
-                      >
-                        ${area.icon
-                          ? html`<ha-icon
-                              slot="icon"
-                              .icon=${area.icon}
-                            ></ha-icon>`
-                          : html`<ha-svg-icon
-                              slot="icon"
-                              .path=${mdiTextureBox}
-                            ></ha-svg-icon>`}
-                      </ha-input-chip>`
-                  )}
-                </ha-chip-set>`
-              : html`<p class="description">
-                  ${this.hass.localize(
-                    "ui.panel.config.floors.editor.areas_description"
-                  )}
-                </p>`}
+            ${
+              areas.length
+                ? html`<ha-chip-set>
+                    ${repeat(
+                      areas,
+                      (area) => area.area_id,
+                      (area) =>
+                        html`<ha-input-chip
+                          .area=${area}
+                          @click=${this._openArea}
+                          @remove=${this._removeArea}
+                          .label=${area?.name}
+                        >
+                          ${
+                            area.icon
+                              ? html`<ha-icon
+                                  slot="icon"
+                                  .icon=${area.icon}
+                                ></ha-icon>`
+                              : html`<ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiTextureBox}
+                                ></ha-svg-icon>`
+                          }
+                        </ha-input-chip>`
+                    )}
+                  </ha-chip-set>`
+                : html`<p class="description">
+                    ${this.hass.localize(
+                      "ui.panel.config.floors.editor.areas_description"
+                    )}
+                  </p>`
+            }
             <ha-area-picker
               no-add
               @value-changed=${this._addArea}
@@ -269,12 +282,16 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${!!this._submitting ||
-            (!!this._params?.entry && !this.isDirtyState)}
+            .disabled=${
+              !!this._submitting ||
+              (!!this._params?.entry && !this.isDirtyState)
+            }
           >
-            ${entry
-              ? this.hass.localize("ui.common.save")
-              : this.hass.localize("ui.common.create")}
+            ${
+              entry
+                ? this.hass.localize("ui.common.save")
+                : this.hass.localize("ui.common.create")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -320,13 +337,13 @@ class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
-  private _nameChanged(ev: InputEvent) {
+  private _nameChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
     this._updateDirtyState(this._currentState());
   }
 
-  private _levelChanged(ev: InputEvent) {
+  private _levelChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this._error = undefined;
     this._level =
       (ev.target as HaInput).value === ""

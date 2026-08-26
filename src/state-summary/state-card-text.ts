@@ -2,6 +2,7 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/input/ha-input";
@@ -19,7 +20,7 @@ class StateCardText extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
+      <state-badge .stateObj=${this.stateObj}></state-badge>
       <ha-input
         .label=${computeStateName(this.stateObj)}
         .disabled=${this.stateObj.state === UNAVAILABLE}
@@ -36,7 +37,7 @@ class StateCardText extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: InputEvent): void {
+  private _valueChanged(ev: InputEvent & HASSDomTargetEvent<HaInput>): void {
     const value = (ev.target as HaInput).value ?? "";
 
     // Filter out invalid text states

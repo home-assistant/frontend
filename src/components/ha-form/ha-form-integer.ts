@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
@@ -30,8 +31,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   @property({ type: Boolean }) public disabled = false;
 
   @query("ha-input, ha-slider", true) private _input?:
-    | HaInput
-    | HTMLInputElement;
+    HaInput | HTMLInputElement;
 
   private _lastValue?: HaFormIntegerData;
 
@@ -66,30 +66,36 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         <div>
           ${this.label}
           <div class="flex">
-            ${!this.schema.required
-              ? html`
-                  <ha-checkbox
-                    @change=${this._handleCheckboxChange}
-                    .checked=${this.data !== undefined}
-                    .disabled=${this.disabled}
-                  ></ha-checkbox>
-                `
-              : ""}
+            ${
+              !this.schema.required
+                ? html`
+                    <ha-checkbox
+                      @change=${this._handleCheckboxChange}
+                      .checked=${this.data !== undefined}
+                      .disabled=${this.disabled}
+                    ></ha-checkbox>
+                  `
+                : ""
+            }
             <ha-slider
               labeled
               .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
-              .disabled=${this.disabled ||
-              (this.data === undefined && !this.schema.required)}
+              .disabled=${
+                this.disabled ||
+                (this.data === undefined && !this.schema.required)
+              }
               @change=${this._valueChanged}
             ></ha-slider>
           </div>
-          ${this.helper
-            ? html`<ha-input-helper-text .disabled=${this.disabled}
-                >${this.helper}</ha-input-helper-text
-              >`
-            : nothing}
+          ${
+            this.helper
+              ? html`<ha-input-helper-text .disabled=${this.disabled}
+                  >${this.helper}</ha-input-helper-text
+                >`
+              : nothing
+          }
         </div>
       `;
     }
@@ -104,14 +110,18 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .validationMessage=${this.schema.required
-          ? this.localize?.("ui.common.error_required")
-          : undefined}
+        .validationMessage=${
+          this.schema.required
+            ? this.localize?.("ui.common.error_required")
+            : undefined
+        }
         @input=${this._valueChanged}
       >
-        ${this.schema.description?.suffix
-          ? html`<span slot="end">${this.schema.description.suffix}</span>`
-          : nothing}
+        ${
+          this.schema.description?.suffix
+            ? html`<span slot="end">${this.schema.description.suffix}</span>`
+            : nothing
+        }
       </ha-input>
     `;
   }
@@ -144,7 +154,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     );
   }
 
-  private _handleCheckboxChange(ev: Event) {
+  private _handleCheckboxChange(ev: HASSDomTargetEvent<HaCheckbox>) {
     const checked = (ev.target as HaCheckbox).checked;
     let value: HaFormIntegerData | undefined;
     if (checked) {
@@ -169,7 +179,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     });
   }
 
-  private _valueChanged(ev: InputEvent) {
+  private _valueChanged(
+    ev: InputEvent & HASSDomTargetEvent<HaInput | HTMLInputElement>
+  ) {
     const source = ev.target as HaInput | HTMLInputElement;
     const rawValue = source.value;
 

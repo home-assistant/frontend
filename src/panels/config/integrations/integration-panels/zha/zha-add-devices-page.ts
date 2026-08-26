@@ -76,6 +76,7 @@ class ZHAAddDevicesPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/zha/dashboard"
         .header=${this.hass.localize("ui.panel.config.zha.add_device")}
       >
         <ha-button
@@ -86,86 +87,92 @@ class ZHAAddDevicesPage extends LitElement {
           >${this._showLogs ? "Hide logs" : "Show logs"}</ha-button
         >
         <div class="searching">
-          ${this._active
-            ? html`
-                <h1>
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.add_device_page.spinner"
-                  )}
-                </h1>
-                <ha-spinner aria-label="Searching"></ha-spinner>
-              `
-            : html`
-                <div>
-                  <ha-button
-                    appearance="plain"
-                    @click=${this._subscribe}
-                    class="search-button"
-                  >
+          ${
+            this._active
+              ? html`
+                  <h1>
                     ${this.hass!.localize(
-                      "ui.panel.config.zha.add_device_page.search_again"
+                      "ui.panel.config.zha.add_device_page.spinner"
                     )}
-                  </ha-button>
-                </div>
-              `}
+                  </h1>
+                  <ha-spinner aria-label="Searching"></ha-spinner>
+                `
+              : html`
+                  <div>
+                    <ha-button
+                      appearance="plain"
+                      @click=${this._subscribe}
+                      class="search-button"
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.config.zha.add_device_page.search_again"
+                      )}
+                    </ha-button>
+                  </div>
+                `
+          }
         </div>
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="content">
-          ${Object.keys(this._discoveredDevices).length < 1
-            ? html`
-                <div class="discovery-text">
-                  <h4>
-                    ${this.hass.localize(
-                      "ui.panel.config.zha.add_device_page.pairing_mode",
-                      {
-                        documentation_link: html`
-                          <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href=${documentationUrl(
-                              this.hass,
-                              "/integrations/zha#adding-devices"
-                            )}
-                            >${this.hass.localize(
-                              "ui.panel.config.zha.add_device_page.pairing_mode_link"
-                            )}</a
-                          >
-                        `,
-                      }
-                    )}
-                  </h4>
-                  <h4>
-                    ${this.hass!.localize(
-                      this._active
-                        ? "ui.panel.config.zha.add_device_page.discovered_text"
-                        : "ui.panel.config.zha.add_device_page.no_devices_found"
-                    )}
-                  </h4>
-                </div>
-              `
-            : html`
-                ${Object.values(this._discoveredDevices).map(
-                  (device) => html`
-                    <zha-device-pairing-status-card
-                      class="card"
-                      .hass=${this.hass}
-                      .device=${device}
-                      .narrow=${this.narrow}
-                      .showHelp=${this._showHelp}
-                    ></zha-device-pairing-status-card>
-                  `
-                )}
-              `}
+          ${
+            Object.keys(this._discoveredDevices).length < 1
+              ? html`
+                  <div class="discovery-text">
+                    <h4>
+                      ${this.hass.localize(
+                        "ui.panel.config.zha.add_device_page.pairing_mode",
+                        {
+                          documentation_link: html`
+                            <a
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href=${documentationUrl(
+                                this.hass,
+                                "/integrations/zha#adding-devices"
+                              )}
+                              >${this.hass.localize(
+                                "ui.panel.config.zha.add_device_page.pairing_mode_link"
+                              )}</a
+                            >
+                          `,
+                        }
+                      )}
+                    </h4>
+                    <h4>
+                      ${this.hass!.localize(
+                        this._active
+                          ? "ui.panel.config.zha.add_device_page.discovered_text"
+                          : "ui.panel.config.zha.add_device_page.no_devices_found"
+                      )}
+                    </h4>
+                  </div>
+                `
+              : html`
+                  ${Object.values(this._discoveredDevices).map(
+                    (device) => html`
+                      <zha-device-pairing-status-card
+                        class="card"
+                        .hass=${this.hass}
+                        .device=${device}
+                        .narrow=${this.narrow}
+                        .showHelp=${this._showHelp}
+                      ></zha-device-pairing-status-card>
+                    `
+                  )}
+                `
+          }
         </div>
-        ${this._showLogs
-          ? html`<ha-textarea
-              readonly
-              class="log"
-              resize="auto"
-              .value=${this._formattedEvents}
-            >
-            </ha-textarea>`
-          : ""}
+        ${
+          this._showLogs
+            ? html`<ha-textarea
+                readonly
+                class="log"
+                resize="auto"
+                .value=${this._formattedEvents}
+              >
+              </ha-textarea>`
+            : ""
+        }
       </hass-subpage>
     `;
   }

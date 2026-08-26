@@ -5,6 +5,7 @@ import { historyGraphCardSuggestions } from "./hui-history-graph-card-suggestion
 import { humidifierCardSuggestions } from "./hui-humidifier-card-suggestions";
 import { mapCardSuggestions } from "./hui-map-card-suggestions";
 import { mediaControlCardSuggestions } from "./hui-media-control-card-suggestions";
+import { pictureCardSuggestions } from "./hui-picture-card-suggestions";
 import { pictureEntityCardSuggestions } from "./hui-picture-entity-card-suggestions";
 import { plantStatusCardSuggestions } from "./hui-plant-status-card-suggestions";
 import { statisticsGraphCardSuggestions } from "./hui-statistics-graph-card-suggestions";
@@ -23,6 +24,7 @@ export const CARD_SUGGESTION_PROVIDERS: Record<string, CardSuggestionProvider> =
     humidifier: humidifierCardSuggestions,
     map: mapCardSuggestions,
     "media-control": mediaControlCardSuggestions,
+    picture: pictureCardSuggestions,
     "picture-entity": pictureEntityCardSuggestions,
     "plant-status": plantStatusCardSuggestions,
     "statistics-graph": statisticsGraphCardSuggestions,

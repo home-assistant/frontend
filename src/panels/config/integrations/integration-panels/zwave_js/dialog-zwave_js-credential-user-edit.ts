@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -19,7 +20,6 @@ import {
   DEFAULT_CREDENTIAL_MIN_LENGTH,
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   deleteZwaveCredential,
-  deleteZwaveUser,
   enterableCredentialTypes,
   getCredentialError,
   compatibleUserTypes,
@@ -203,123 +203,140 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
         @closed=${this._dialogClosed}
       >
         <div class="form">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          ${showNoCredentialTypeWarning
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
-                )}
-              </ha-alert>`
-            : nothing}
-          ${showUserIdInfo
-            ? html`<p class="user-id-info">
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.unnamed_user",
-                  { index: this._params.user!.user_id }
-                )}
-              </p>`
-            : nothing}
-          ${this._supportsUserNames
-            ? html`
-                <ha-input
-                  .label=${this.hass.localize(
-                    "ui.panel.config.zwave_js.credentials.users.name"
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
+          ${
+            showNoCredentialTypeWarning
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.errors.no_compatible_credential_types"
                   )}
-                  .value=${this._userName}
-                  @input=${this._handleNameChange}
-                  maxlength=${maxNameLength}
-                  autofocus
-                ></ha-input>
-              `
-            : nothing}
-          ${hasEnterableType
-            ? html`
-                ${multipleEnterableTypes
-                  ? html`
-                      <ha-radio-group
-                        name="credential-type"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.zwave_js.credentials.credential_data.type"
-                        )}
-                        .value=${this._credentialType}
-                        @change=${this._handleCredentialTypeChanged}
-                      >
-                        ${this._enterableTypes.map(
-                          (type) => html`
-                            <ha-radio-option value=${type}>
-                              ${this.hass.localize(
-                                `ui.panel.config.zwave_js.credentials.credential_types.${type}` as LocalizeKeys
-                              )}
-                            </ha-radio-option>
-                          `
-                        )}
-                      </ha-radio-group>
-                    `
-                  : nothing}
-                <ha-input
-                  .label=${this.hass.localize(
-                    `ui.panel.config.zwave_js.credentials.credential_data.${this._credentialType}` as LocalizeKeys
+                </ha-alert>`
+              : nothing
+          }
+          ${
+            showUserIdInfo
+              ? html`<p class="user-id-info">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.users.unnamed_user",
+                    { index: this._params.user!.user_id }
                   )}
-                  .value=${this._credentialData}
-                  @input=${this._handleCredentialDataChange}
-                  @beforeinput=${this._handleCredentialBeforeInput}
-                  @blur=${this._handleCredentialBlur}
-                  type="password"
-                  password-toggle
-                  autocomplete="off"
-                  inputmode=${isPin ? "numeric" : "text"}
-                  pattern=${isPin ? "[0-9]+" : ".+"}
-                  placeholder=${this.hass.localize(
-                    isPin
-                      ? "ui.panel.config.zwave_js.credentials.credential_data.placeholder_pin"
-                      : "ui.panel.config.zwave_js.credentials.credential_data.placeholder",
-                    { min: minLength, max: maxLength }
-                  )}
-                  minlength=${minLength}
-                  maxlength=${maxLength}
-                  ?required=${isNew}
-                  auto-validate
-                  ?invalid=${this._credentialDataDirty &&
-                  !!this._credentialError}
-                  validation-message=${this._credentialError || ""}
-                ></ha-input>
-              `
-            : nothing}
-          ${showUserTypeSelect
-            ? html`
-                <div class="user-type-section">
-                  <label for="user-type-select">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.credentials.users.type"
+                </p>`
+              : nothing
+          }
+          ${
+            this._supportsUserNames
+              ? html`
+                  <ha-input
+                    .label=${this.hass.localize(
+                      "ui.panel.config.zwave_js.credentials.users.name"
                     )}
-                  </label>
-                  <ha-select-box
-                    id="user-type-select"
-                    .options=${userTypeOptions}
-                    .value=${this._userType}
-                    .maxColumns=${1}
-                    @value-changed=${this._handleUserTypeChanged}
-                  ></ha-select-box>
-                </div>
-              `
-            : showUserTypeReadOnly
+                    .value=${this._userName}
+                    @input=${this._handleNameChange}
+                    maxlength=${maxNameLength}
+                    autofocus
+                  ></ha-input>
+                `
+              : nothing
+          }
+          ${
+            hasEnterableType
+              ? html`
+                  ${
+                    multipleEnterableTypes
+                      ? html`
+                          <ha-radio-group
+                            name="credential-type"
+                            .label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.credentials.credential_data.type"
+                            )}
+                            .value=${this._credentialType}
+                            @change=${this._handleCredentialTypeChanged}
+                          >
+                            ${this._enterableTypes.map(
+                              (type) => html`
+                                <ha-radio-option value=${type}>
+                                  ${this.hass.localize(
+                                    `ui.panel.config.zwave_js.credentials.credential_types.${type}` as LocalizeKeys
+                                  )}
+                                </ha-radio-option>
+                              `
+                            )}
+                          </ha-radio-group>
+                        `
+                      : nothing
+                  }
+                  <ha-input
+                    .label=${this.hass.localize(
+                      `ui.panel.config.zwave_js.credentials.credential_data.${this._credentialType}` as LocalizeKeys
+                    )}
+                    .value=${this._credentialData}
+                    @input=${this._handleCredentialDataChange}
+                    @beforeinput=${this._handleCredentialBeforeInput}
+                    @blur=${this._handleCredentialBlur}
+                    type="password"
+                    password-toggle
+                    autocomplete="off"
+                    inputmode=${isPin ? "numeric" : "text"}
+                    pattern=${isPin ? "[0-9]+" : ".+"}
+                    placeholder=${this.hass.localize(
+                      isPin
+                        ? "ui.panel.config.zwave_js.credentials.credential_data.placeholder_pin"
+                        : "ui.panel.config.zwave_js.credentials.credential_data.placeholder",
+                      { min: minLength, max: maxLength }
+                    )}
+                    minlength=${minLength}
+                    maxlength=${maxLength}
+                    ?required=${isNew}
+                    auto-validate
+                    ?invalid=${
+                      this._credentialDataDirty && !!this._credentialError
+                    }
+                    validation-message=${this._credentialError || ""}
+                  ></ha-input>
+                `
+              : nothing
+          }
+          ${
+            showUserTypeSelect
               ? html`
                   <div class="user-type-section">
-                    <label>
+                    <label for="user-type-select">
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.credentials.users.type"
                       )}
                     </label>
-                    <p class="user-type-readonly">
-                      ${this.hass.localize(
-                        `ui.panel.config.zwave_js.credentials.users.user_types.${this._userType}.label` as LocalizeKeys
-                      ) || this._userType}
-                    </p>
+                    <ha-select-box
+                      id="user-type-select"
+                      .options=${userTypeOptions}
+                      .value=${this._userType}
+                      .maxColumns=${1}
+                      @value-changed=${this._handleUserTypeChanged}
+                    ></ha-select-box>
                   </div>
                 `
-              : nothing}
+              : showUserTypeReadOnly
+                ? html`
+                    <div class="user-type-section">
+                      <label>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.credentials.users.type"
+                        )}
+                      </label>
+                      <p class="user-type-readonly">
+                        ${
+                          this.hass.localize(
+                            `ui.panel.config.zwave_js.credentials.users.user_types.${this._userType}.label` as LocalizeKeys
+                          ) || this._userType
+                        }
+                      </p>
+                    </div>
+                  `
+                : nothing
+          }
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -337,11 +354,13 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
             ?disabled=${this._saving || !this._canSave}
             ?loading=${this._saving}
           >
-            ${isNew
-              ? this.hass.localize(
-                  "ui.panel.config.zwave_js.credentials.users.add"
-                )
-              : this.hass.localize("ui.common.save")}
+            ${
+              isNew
+                ? this.hass.localize(
+                    "ui.panel.config.zwave_js.credentials.users.add"
+                  )
+                : this.hass.localize("ui.common.save")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -460,7 +479,9 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
     }
   }
 
-  private _handleCredentialTypeChanged(ev: Event): void {
+  private _handleCredentialTypeChanged(
+    ev: HASSDomCurrentTargetEvent<HaRadioGroup>
+  ): void {
     this._credentialType = (ev.currentTarget as HaRadioGroup)
       .value as ZwaveCredentialType;
     // Switching types invalidates any data tied to the previous type's
@@ -520,27 +541,16 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
     credentialType: ZwaveCredentialType
   ): Promise<void> {
     const params = this._params!;
-    const { user_id } = await setZwaveUser(this.hass, params.entity_id, {
-      user_name: this._supportsUserNames ? this._userName.trim() : undefined,
-      user_type: this._userType,
-      active: true,
-    });
-
     try {
-      await setZwaveCredential(this.hass, params.entity_id, {
-        user_id,
+      await setZwaveUser(this.hass, params.entity_id, {
+        // Omit user_id to create a new user with the given credential.
+        user_name: this._supportsUserNames ? this._userName.trim() : undefined,
+        user_type: this._userType,
+        active: true,
         credential_type: credentialType,
         credential_data: this._credentialData,
       });
     } catch (err: unknown) {
-      // Roll back the user so the lock returns to its prior state. We
-      // ignore rollback errors — the credential error is the actionable
-      // one to surface; a stranded user will reappear on next refresh.
-      try {
-        await deleteZwaveUser(this.hass, params.entity_id, user_id);
-      } catch {
-        // Ignore.
-      }
       this._error = this.hass.localize(
         "ui.panel.config.zwave_js.credentials.errors.add_user_failed",
         {

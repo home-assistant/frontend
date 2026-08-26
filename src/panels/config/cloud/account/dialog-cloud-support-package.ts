@@ -41,24 +41,31 @@ export class DialogSupportPackage extends LitElement {
       <ha-dialog
         .open=${this._open}
         width="full"
-        header-title="Download support package"
+        .headerTitle=${this.hass.localize(
+          "ui.panel.config.cloud.account.download_support_package"
+        )}
         @closed=${this._dialogClosed}
       >
-        ${this._supportPackage
-          ? html`<ha-markdown-element
-              .content=${this._supportPackage}
-              breaks
-            ></ha-markdown-element>`
-          : html`
-              <div class="progress-container">
-                <ha-spinner></ha-spinner>
-                Generating preview...
-              </div>
-            `}
+        ${
+          this._supportPackage
+            ? html`<ha-markdown-element
+                .content=${this._supportPackage}
+                breaks
+              ></ha-markdown-element>`
+            : html`
+                <div class="progress-container">
+                  <ha-spinner></ha-spinner>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.support_package_generating_preview"
+                  )}...
+                </div>
+              `
+        }
         <div slot="footer" class="footer">
           <ha-alert>
-            This file may contain personal data about your home. Avoid sharing
-            them with unverified or untrusted parties.
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.support_package_privacy_warning"
+            )}
           </ha-alert>
           <hr />
           <ha-dialog-footer>
@@ -67,10 +74,10 @@ export class DialogSupportPackage extends LitElement {
               appearance="plain"
               @click=${this.closeDialog}
             >
-              Close
+              ${this.hass.localize("ui.common.close")}
             </ha-button>
             <ha-button slot="primaryAction" @click=${this._download}>
-              Download
+              ${this.hass.localize("ui.common.download")}
             </ha-button>
           </ha-dialog-footer>
         </div>

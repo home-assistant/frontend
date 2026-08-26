@@ -32,21 +32,19 @@ export class HuiMediaPlayerSourceCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (stateObj: MediaPlayerEntity | undefined, customize: boolean) =>
-      customizableListSchema({
-        field: "sources",
-        customize,
-        options:
-          stateObj?.attributes.source_list?.map((source) => ({
-            value: source,
-            label: this.hass!.formatEntityAttributeValue(
-              stateObj,
-              "source",
-              source
-            ),
-          })) ?? [],
-      })
+  private _schema = memoizeOne((stateObj: MediaPlayerEntity | undefined) =>
+    customizableListSchema({
+      field: "sources",
+      options:
+        stateObj?.attributes.source_list?.map((source) => ({
+          value: source,
+          label: this.hass!.formatEntityAttributeValue(
+            stateObj,
+            "source",
+            source
+          ),
+        })) ?? [],
+    })
   );
 
   protected render() {
@@ -56,12 +54,11 @@ export class HuiMediaPlayerSourceCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
     const data = customizableListData(this._config, "sources");
-    const schema = this._schema(stateObj, data.customize);
+    const schema = this._schema(stateObj);
 
     return html`
       <ha-form
@@ -79,8 +76,7 @@ export class HuiMediaPlayerSourceCardFeatureEditor
   ): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
     const defaults = stateObj?.attributes.source_list ?? [];
     const config =

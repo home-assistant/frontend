@@ -13,7 +13,10 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -52,7 +55,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
@@ -214,11 +217,13 @@ class HaBlueprintOverview extends LitElement {
               filled
               .active=${count > 0}
               label=${String(count)}
-              title=${blueprint.error
-                ? String(count)
-                : this.hass.localize(
-                    `ui.panel.config.blueprint.overview.view_${blueprint.type}`
-                  )}
+              title=${
+                blueprint.error
+                  ? String(count)
+                  : this.hass.localize(
+                      `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                    )
+              }
               ?disabled=${blueprint.error}
               data-fullpath=${blueprint.fullpath}
               @click=${this._handleUsageClick}
@@ -481,7 +486,7 @@ class HaBlueprintOverview extends LitElement {
     this._createNew(blueprint);
   }
 
-  private _handleUsageClick = (ev: Event) => {
+  private _handleUsageClick = (ev: HASSDomCurrentTargetEvent<HTMLElement>) => {
     ev.stopPropagation();
     ev.preventDefault();
     const target = ev.currentTarget as HTMLElement | null;
@@ -605,9 +610,11 @@ class HaBlueprintOverview extends LitElement {
                 (item) => {
                   const automationState = this.hass.states[item];
                   return html`<li>
-                    ${automationState
-                      ? `${computeStateName(automationState)} (${item})`
-                      : item}
+                    ${
+                      automationState
+                        ? `${computeStateName(automationState)} (${item})`
+                        : item
+                    }
                   </li>`;
                 }
               )}
@@ -615,8 +622,7 @@ class HaBlueprintOverview extends LitElement {
           }
         ),
         confirmText: this.hass!.localize(
-          "ui.panel.config.blueprint.overview.blueprint_in_use_view",
-          { type }
+          `ui.panel.config.blueprint.overview.blueprint_in_use_view_${blueprint.domain}`
         ),
       });
       if (result) {

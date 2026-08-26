@@ -105,49 +105,57 @@ export class HaMoreInfoFavorites extends LitElement {
                     })}
                     @action=${this._handleItemAction}
                   >
-                    ${this.renderItem
-                      ? this.renderItem(item, index, this.editMode)
-                      : nothing}
+                    ${
+                      this.renderItem
+                        ? this.renderItem(item, index, this.editMode)
+                        : nothing
+                    }
                   </div>
-                  ${this.editMode
-                    ? html`
-                        <button
-                          @click=${this._handleDelete}
-                          class="delete"
-                          data-index=${String(index)}
-                          aria-label=${ifDefined(this.deleteLabel?.(index))}
-                          title=${ifDefined(this.deleteLabel?.(index))}
-                        >
-                          <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
-                        </button>
-                      `
-                    : nothing}
+                  ${
+                    this.editMode
+                      ? html`
+                          <button
+                            @click=${this._handleDelete}
+                            class="delete"
+                            data-index=${String(index)}
+                            aria-label=${ifDefined(this.deleteLabel?.(index))}
+                            title=${ifDefined(this.deleteLabel?.(index))}
+                          >
+                            <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
+                          </button>
+                        `
+                      : nothing
+                  }
                 </div>
               </div>
             `
           )}
-          ${this.editMode && this.showAdd
-            ? html`
-                <ha-outlined-icon-button
-                  class="button"
-                  @click=${this._handleAdd}
-                  .label=${this.addLabel}
-                >
-                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                </ha-outlined-icon-button>
-              `
-            : nothing}
-          ${this.editMode && this.showDone
-            ? html`
-                <ha-outlined-icon-button
-                  @click=${this._handleDone}
-                  class="button"
-                  .label=${this.doneLabel}
-                >
-                  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-                </ha-outlined-icon-button>
-              `
-            : nothing}
+          ${
+            this.editMode && this.showAdd
+              ? html`
+                  <ha-outlined-icon-button
+                    class="button"
+                    @click=${this._handleAdd}
+                    .label=${this.addLabel}
+                  >
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  </ha-outlined-icon-button>
+                `
+              : nothing
+          }
+          ${
+            this.editMode && this.showDone
+              ? html`
+                  <ha-outlined-icon-button
+                    @click=${this._handleDone}
+                    class="button"
+                    .label=${this.doneLabel}
+                  >
+                    <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+                  </ha-outlined-icon-button>
+                `
+              : nothing
+          }
         </div>
       </ha-sortable>
     `;

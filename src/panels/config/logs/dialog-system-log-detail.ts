@@ -25,6 +25,15 @@ import { showToast } from "../../../util/toast";
 import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
+/** Compares the host, so a URL that merely contains ours does not pass. */
+const isOfficialDocumentationUrl = (url: string): boolean => {
+  try {
+    return new URL(url).hostname === "www.home-assistant.io";
+  } catch (_err) {
+    return false;
+  }
+};
+
 @customElement("dialog-system-log-detail")
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -76,7 +85,12 @@ class DialogSystemLogDetail extends LitElement {
       this._manifest &&
       (this._manifest.is_built_in ||
         // Custom components with our official docs should not link to our docs
-        !this._manifest.documentation.includes("://www.home-assistant.io"));
+        (!!this._manifest.documentation &&
+          !isOfficialDocumentationUrl(this._manifest.documentation)));
+
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
+      : this._manifest?.documentation;
 
     const title = this.hass.localize("ui.panel.config.logs.details", {
       level: html`<span class=${item.level}
@@ -98,80 +112,86 @@ class DialogSystemLogDetail extends LitElement {
           .label=${this.hass.localize("ui.panel.config.logs.copy")}
           .path=${mdiContentCopy}
         ></ha-icon-button>
-        ${this.isCustomIntegration
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.logs.error_from_custom_integration"
-              )}
-            </ha-alert>`
-          : ""}
+        ${
+          this.isCustomIntegration
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.logs.error_from_custom_integration"
+                )}
+              </ha-alert>`
+            : ""
+        }
         <div class="contents" tabindex="-1" autofocus>
           <p>
             ${this.hass.localize("ui.panel.config.logs.detail.logger")}:
             ${item.name}<br />
             ${this.hass.localize("ui.panel.config.logs.detail.source")}:
             ${item.source.join(":")}
-            ${integration
-              ? html`
-                  <br />
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.integration"
-                  )}:
-                  ${domainToName(this.hass.localize, integration)}
-                  ${!this._manifest ||
-                  // Can happen with custom integrations
-                  !showDocumentation
-                    ? ""
-                    : html`
-                        (<a
-                          href=${this._manifest.is_built_in
-                            ? documentationUrl(
-                                this.hass,
-                                `/integrations/${this._manifest.domain}`
-                              )
-                            : this._manifest.documentation}
-                          target="_blank"
-                          rel="noreferrer"
-                          >${this.hass.localize(
-                            "ui.panel.config.logs.detail.documentation"
-                          )}</a
-                        >${this._manifest.is_built_in ||
-                        this._manifest.issue_tracker
-                          ? html`,
-                              <a
-                                href=${integrationIssuesUrl(
-                                  integration,
-                                  this._manifest
-                                )}
-                                target="_blank"
-                                rel="noreferrer"
-                                >${this.hass.localize(
-                                  "ui.panel.config.logs.detail.issues"
-                                )}</a
-                              >`
-                          : ""})
-                      `}
-                `
-              : ""}
-            <br />
-            ${item.count > 0
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.first_occurred"
-                  )}:
-                  ${formatSystemLogTime(
-                    item.first_occurred,
-                    this.hass!.locale,
-                    this.hass!.config
-                  )}
-                  (${this.hass.localize(
-                    "ui.panel.config.logs.detail.number_of_occurrences",
-                    {
-                      count: item.count,
+            ${
+              integration
+                ? html`
+                    <br />
+                    ${this.hass.localize(
+                      "ui.panel.config.logs.detail.integration"
+                    )}:
+                    ${domainToName(this.hass.localize, integration)}
+                    ${
+                      !this._manifest ||
+                      // Can happen with custom integrations
+                      !showDocumentation ||
+                      !documentationLink
+                        ? ""
+                        : html`
+                            (<a
+                              href=${documentationLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              >${this.hass.localize(
+                                "ui.panel.config.logs.detail.documentation"
+                              )}</a
+                            >${
+                              this._manifest.is_built_in ||
+                              this._manifest.issue_tracker
+                                ? html`,
+                                    <a
+                                      href=${integrationIssuesUrl(
+                                        integration,
+                                        this._manifest
+                                      )}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      >${this.hass.localize(
+                                        "ui.panel.config.logs.detail.issues"
+                                      )}</a
+                                    >`
+                                : ""
+                            })
+                          `
                     }
-                  )}) <br />
-                `
-              : ""}
+                  `
+                : ""
+            }
+            <br />
+            ${
+              item.count > 0
+                ? html`
+                    ${this.hass.localize(
+                      "ui.panel.config.logs.detail.first_occurred"
+                    )}:
+                    ${formatSystemLogTime(
+                      item.first_occurred,
+                      this.hass!.locale,
+                      this.hass!.config
+                    )}
+                    (${this.hass.localize(
+                      "ui.panel.config.logs.detail.number_of_occurrences",
+                      {
+                        count: item.count,
+                      }
+                    )}) <br />
+                  `
+                : ""
+            }
             ${this.hass.localize("ui.panel.config.logs.detail.last_logged")}:
             ${formatSystemLogTime(
               item.timestamp,
@@ -179,13 +199,15 @@ class DialogSystemLogDetail extends LitElement {
               this.hass!.config
             )}
           </p>
-          ${item.message.length > 1
-            ? html`
-                <ul>
-                  ${item.message.map((msg) => html` <li>${msg}</li> `)}
-                </ul>
-              `
-            : item.message[0]}
+          ${
+            item.message.length > 1
+              ? html`
+                  <ul>
+                    ${item.message.map((msg) => html` <li>${msg}</li> `)}
+                  </ul>
+                `
+              : item.message[0]
+          }
           ${item.exception ? html` <pre>${item.exception}</pre> ` : nothing}
         </div>
       </ha-dialog>

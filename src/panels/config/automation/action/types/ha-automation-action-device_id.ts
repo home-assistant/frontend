@@ -13,11 +13,16 @@ import type {
   DeviceCapabilities,
 } from "../../../../../data/device/device_automation";
 import {
+  deviceAutomationEditorMode,
   deviceAutomationsEqual,
   fetchDeviceActionCapabilities,
   localizeExtraFieldsComputeHelperCallback,
   localizeExtraFieldsComputeLabelCallback,
 } from "../../../../../data/device/device_automation";
+import {
+  fetchDeviceCompositeSplits,
+  type DeviceCompositeSplits,
+} from "../../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
 
@@ -32,6 +37,10 @@ export class HaDeviceAction extends LitElement {
   @state() private _deviceId?: string;
 
   @state() private _capabilities?: DeviceCapabilities;
+
+  @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  private _loadingCompositeSplits = false;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -59,14 +68,19 @@ export class HaDeviceAction extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues<this>) {
-    if (!changedProperties.has("action")) {
-      return true;
+  public shouldUpdate(_changedProperties: PropertyValues<this>) {
+    const mode = deviceAutomationEditorMode(
+      this.hass,
+      this.action.device_id,
+      this._compositeSplits
+    );
+    if (mode === "loading") {
+      // The device is missing; wait for the composite split map before deciding
+      // whether it is a replaced device (editable) or genuinely unknown (YAML).
+      this._loadCompositeSplits();
+      return false;
     }
-    if (
-      this.action.device_id &&
-      !(this.action.device_id in this.hass.devices)
-    ) {
+    if (mode === "unknown-device") {
       fireEvent(
         this,
         "ui-mode-not-available",
@@ -79,6 +93,20 @@ export class HaDeviceAction extends LitElement {
       return false;
     }
     return true;
+  }
+
+  private async _loadCompositeSplits() {
+    if (this._loadingCompositeSplits) {
+      return;
+    }
+    this._loadingCompositeSplits = true;
+    try {
+      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+    } catch (_err) {
+      this._compositeSplits = {};
+    } finally {
+      this._loadingCompositeSplits = false;
+    }
   }
 
   protected render() {
@@ -104,25 +132,27 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields?.length
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.action, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass.localize,
-                this.action
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass.localize,
-                this.action
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields?.length
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.action, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 

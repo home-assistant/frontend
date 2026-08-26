@@ -43,12 +43,18 @@ class HaConfigNavigationList extends LitElement {
                 ></ha-svg-icon>
               </div>
               <span slot="headline">${page.name}</span>
-              ${this.hasSecondary
-                ? html`<span slot="supporting-text">${page.description}</span>`
-                : ""}
-              ${!this.narrow
-                ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : ""}
+              ${
+                this.hasSecondary
+                  ? html`<span slot="supporting-text"
+                      >${page.description}</span
+                    >`
+                  : ""
+              }
+              ${
+                !this.narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  : ""
+              }
             </ha-list-item-button>
           `;
         })}

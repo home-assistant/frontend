@@ -2,6 +2,7 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import "../../components/item/ha-row-item";
@@ -30,8 +31,8 @@ class HaSetVibrateRow extends LitElement {
     `;
   }
 
-  private async _checkedChanged(ev: Event) {
-    const vibrate = (ev.target as HaSwitch).checked;
+  private async _checkedChanged(ev: HASSDomTargetEvent<HaSwitch>) {
+    const vibrate = ev.target.checked;
     if (vibrate === this.hass.vibrate) {
       return;
     }

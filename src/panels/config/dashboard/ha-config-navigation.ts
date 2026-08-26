@@ -1,12 +1,18 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { consume } from "@lit/context";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { filterNavigationPages } from "../../../common/config/filter_navigation_pages";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import type { CloudStatus } from "../../../data/cloud";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-config-navigation-list";
 
@@ -18,21 +24,53 @@ class HaConfigNavigation extends LitElement {
 
   @property({ attribute: false }) public pages!: PageNavigation[];
 
-  @state() private _hasBluetoothConfigEntries = false;
+  @state() private _visiblePages?: PageNavigation[];
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    getConfigEntries(this.hass, {
-      domain: "bluetooth",
-    }).then((bluetoothEntries) => {
-      this._hasBluetoothConfigEntries = bluetoothEntries.length > 0;
-    });
+  private _hasBluetoothConfigEntries = false;
+
+  private _bluetoothEntriesLoaded?: Promise<void>;
+
+  private _childReadyRegistered = false;
+
+  private _filterNavigationPages = memoizeOne(
+    (
+      hass: HomeAssistant,
+      pages: PageNavigation[],
+      hasBluetoothConfigEntries: boolean
+    ) => filterNavigationPages(hass, pages, { hasBluetoothConfigEntries })
+  );
+
+  @consume({ context: childPanelReadyContext, subscribe: true })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
+
+  protected override updated(changedProps: Map<PropertyKey, unknown>) {
+    super.updated(changedProps);
+
+    const pagesOrHassChanged =
+      changedProps.has("pages") || changedProps.has("hass");
+
+    if (pagesOrHassChanged) {
+      const ready = this._resolveVisiblePages();
+      if (!this._childReadyRegistered && this._registerChildPanelReady) {
+        this._registerChildPanelReady(ready);
+        this._childReadyRegistered = true;
+      }
+      return;
+    }
+
+    if (
+      !this._childReadyRegistered &&
+      this._registerChildPanelReady &&
+      this.pages &&
+      this.hass
+    ) {
+      this._registerChildPanelReady(this._resolveVisiblePages());
+      this._childReadyRegistered = true;
+    }
   }
 
   protected render(): TemplateResult {
-    const pages = filterNavigationPages(this.hass, this.pages, {
-      hasBluetoothConfigEntries: this._hasBluetoothConfigEntries,
-    }).map((page) => ({
+    const pages = (this._visiblePages ?? []).map((page) => ({
       ...page,
       name:
         page.name ||
@@ -73,6 +111,42 @@ class HaConfigNavigation extends LitElement {
         .label=${this.hass.localize("panel.config")}
       ></ha-config-navigation-list>
     `;
+  }
+
+  private _loadBluetoothEntries(): Promise<void> {
+    if (!this._bluetoothEntriesLoaded) {
+      this._bluetoothEntriesLoaded = getConfigEntries(this.hass, {
+        domain: "bluetooth",
+      })
+        .then((entries) => {
+          this._hasBluetoothConfigEntries = entries.length > 0;
+        })
+        .catch(() => {
+          this._hasBluetoothConfigEntries = false;
+        });
+    }
+    return this._bluetoothEntriesLoaded;
+  }
+
+  private async _resolveVisiblePages(): Promise<void> {
+    if (this.pages.some((page) => page.component === "bluetooth")) {
+      await this._loadBluetoothEntries();
+    }
+
+    const visiblePages = this._filterNavigationPages(
+      this.hass,
+      this.pages,
+      this._hasBluetoothConfigEntries
+    );
+    const currentVisiblePages = this._visiblePages;
+    if (
+      !currentVisiblePages ||
+      visiblePages.length !== currentVisiblePages.length ||
+      visiblePages.some((page, index) => page !== currentVisiblePages[index])
+    ) {
+      this._visiblePages = visiblePages;
+    }
+    await this.updateComplete;
   }
 
   static styles: CSSResultGroup = css`

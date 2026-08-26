@@ -2,13 +2,17 @@ import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -22,8 +26,6 @@ import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -37,75 +39,66 @@ export class HaFilterVoiceAssistants extends LitElement {
 
   @state() private _voiceAssistantOptions: string[] = [];
 
-  @state() private _shouldRender = false;
+  private _content = createRef<HTMLElement>();
 
-  @query("ha-list") private _list?: HTMLElement;
+  private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
     return html`
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.dashboard.voice_assistants.main")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-list
-              @selected=${this._assistantsSelected}
-              class="ha-scrollbar"
-              multi
-            >
-              ${repeat(
-                this._voiceAssistantOptions,
-                (voiceAssistantId) => voiceAssistantId,
-                (voiceAssistantId) =>
-                  html`<ha-check-list-item
-                    .value=${voiceAssistantId}
-                    .selected=${(this.value || []).includes(voiceAssistantId)}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <voice-assistant-brand-icon
-                      slot="graphic"
-                      .voiceAssistantId=${voiceAssistantId}
-                      .hass=${this.hass}
-                    >
-                    </voice-assistant-brand-icon>
-                    ${voiceAssistants[voiceAssistantId].name}
-                  </ha-check-list-item>`
-              )}
-            </ha-list> `
-          : nothing}
       </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              <ha-list
+                @selected=${this._assistantsSelected}
+                class="ha-scrollbar"
+                multi
+              >
+                ${repeat(
+                  this._voiceAssistantOptions,
+                  (voiceAssistantId) => voiceAssistantId,
+                  (voiceAssistantId) =>
+                    html`<ha-check-list-item
+                      .value=${voiceAssistantId}
+                      .selected=${(this.value || []).includes(voiceAssistantId)}
+                      hasMeta
+                      graphic="icon"
+                    >
+                      <voice-assistant-brand-icon
+                        slot="graphic"
+                        .voiceAssistantId=${voiceAssistantId}
+                      >
+                      </voice-assistant-brand-icon>
+                      ${voiceAssistants[voiceAssistantId].name}
+                    </ha-check-list-item>`
+                )}
+              </ha-list>
+            </div>`
+          : nothing
+      }
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._voiceAssistantOptions = Object.keys(voiceAssistants);
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - 49}px`;
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -148,18 +141,11 @@ export class HaFilterVoiceAssistants extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          position: relative;
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;

@@ -37,7 +37,6 @@ export class HaFileSelector extends LitElement {
   protected render() {
     return html`
       <ha-file-upload
-        .hass=${this.hass}
         .accept=${this.selector.file?.accept}
         .icon=${mdiFile}
         .label=${this.label}
@@ -45,10 +44,12 @@ export class HaFileSelector extends LitElement {
         .disabled=${this.disabled}
         .supports=${this.helper}
         .uploading=${this._busy}
-        .value=${this.value
-          ? this._filename?.name ||
-            this._localize!("ui.components.selectors.file.unknown_file")
-          : undefined}
+        .value=${
+          this.value
+            ? this._filename?.name ||
+              this._localize!("ui.components.selectors.file.unknown_file")
+            : undefined
+        }
         @file-picked=${this._uploadFile}
         @change=${this._removeFile}
       ></ha-file-upload>

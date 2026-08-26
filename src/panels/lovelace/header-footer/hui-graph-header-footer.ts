@@ -122,7 +122,11 @@ export class HuiGraphHeaderFooter
     if (this._coordinates && !this._coordinates.length) {
       return html`
         <div class="container">
-          <div class="info">No state history found.</div>
+          <div class="info">
+            ${this.hass!.localize(
+              "ui.components.history_charts.no_history_found"
+            )}
+          </div>
         </div>
       `;
     }
@@ -156,15 +160,16 @@ export class HuiGraphHeaderFooter
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!.config, "history") ||
+      !this.hass ||
+      !this._config ||
       this._subscribed ||
-      !this._config
+      !isComponentLoaded(this.hass.config, "history")
     ) {
       return;
     }
     this._setLoadingCoordinates();
     this._subscribed = subscribeHistoryStatesTimeWindow(
-      this.hass!,
+      this.hass,
       (combinedHistory) => {
         if (!this._subscribed || !this._config) {
           // Message came in before we had a chance to unload

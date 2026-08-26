@@ -203,6 +203,7 @@ class DialogBackupOnboarding
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("_step") && this._step === "key") {
       this._save();
     }
@@ -223,49 +224,55 @@ class DialogBackupOnboarding
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${isFirstStep
-          ? html`
-              <ha-icon-button
-                slot="headerNavigationIcon"
-                data-dialog="close"
-                .label=${this.hass.localize("ui.common.close")}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `
-          : html`
-              <ha-icon-button-prev
-                slot="headerNavigationIcon"
-                @click=${this._previousStep}
-              ></ha-icon-button-prev>
-            `}
+        ${
+          isFirstStep
+            ? html`
+                <ha-icon-button
+                  slot="headerNavigationIcon"
+                  data-dialog="close"
+                  .label=${this.hass.localize("ui.common.close")}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+            : html`
+                <ha-icon-button-prev
+                  slot="headerNavigationIcon"
+                  @click=${this._previousStep}
+                ></ha-icon-button-prev>
+              `
+        }
         <div>${this._renderStepContent()}</div>
-        ${!FULL_DIALOG_STEPS.has(this._step)
-          ? html`
-              <ha-dialog-footer slot="footer">
-                ${isLastStep
-                  ? html`
-                      <ha-button
-                        slot="primaryAction"
-                        @click=${this._done}
-                        .disabled=${!this._isStepValid()}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.dialogs.onboarding.save_and_create"
-                        )}
-                      </ha-button>
-                    `
-                  : html`
-                      <ha-button
-                        slot="primaryAction"
-                        @click=${this._nextStep}
-                        .disabled=${!this._isStepValid()}
-                      >
-                        ${this.hass.localize("ui.common.next")}
-                      </ha-button>
-                    `}
-              </ha-dialog-footer>
-            `
-          : nothing}
+        ${
+          !FULL_DIALOG_STEPS.has(this._step)
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  ${
+                    isLastStep
+                      ? html`
+                          <ha-button
+                            slot="primaryAction"
+                            @click=${this._done}
+                            .disabled=${!this._isStepValid()}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.dialogs.onboarding.save_and_create"
+                            )}
+                          </ha-button>
+                        `
+                      : html`
+                          <ha-button
+                            slot="primaryAction"
+                            @click=${this._nextStep}
+                            .disabled=${!this._isStepValid()}
+                          >
+                            ${this.hass.localize("ui.common.next")}
+                          </ha-button>
+                        `
+                  }
+                </ha-dialog-footer>
+              `
+            : nothing
+        }
       </ha-dialog>
     `;
   }

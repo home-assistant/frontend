@@ -9,6 +9,7 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { clamp } from "../../../common/number/clamp";
+import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -87,11 +88,13 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       if (!totalWidth) return 1;
 
       const style = getComputedStyle(this);
+      const wrapper = this.shadowRoot!.querySelector(".wrapper")!;
+      const wrapperStyle = getComputedStyle(wrapper);
       const container = this.shadowRoot!.querySelector(".container")!;
       const containerStyle = getComputedStyle(container);
 
-      const paddingLeft = parsePx(containerStyle.paddingLeft);
-      const paddingRight = parsePx(containerStyle.paddingRight);
+      const paddingLeft = parsePx(wrapperStyle.paddingLeft);
+      const paddingRight = parsePx(wrapperStyle.paddingRight);
       const padding = paddingLeft + paddingRight;
       const minColumnWidth = parsePx(
         style.getPropertyValue("--column-min-width")
@@ -101,8 +104,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       const columns = Math.floor(
         (totalWidth - padding + columnGap) / (minColumnWidth + columnGap)
       );
-      const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
-      return clamp(columns, 1, maxColumns);
+      return Math.max(columns, 1);
     },
   });
 
@@ -136,7 +138,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._sidebarTabActive = Boolean(window.history.state?.sidebar);
+    this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
   }
 
   disconnectedCallback(): void {
@@ -155,7 +157,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _updateMaxColumnCount(): void {
-    const maxColumnCount = this._columnsController.value ?? 1;
+    // The column count is clamped here instead of in the resize callback, so
+    // that it follows the config of the view the element is currently used for
+    const maxColumns = this._config?.max_columns ?? DEFAULT_MAX_COLUMNS;
+    const maxColumnCount = clamp(
+      this._columnsController.value ?? 1,
+      1,
+      maxColumns
+    );
 
     if (maxColumnCount !== this._maxColumns) {
       this._maxColumns = maxColumnCount;
@@ -170,6 +179,16 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const editMode = this.lovelace.editMode;
     const hasSidebar =
       this._config?.sidebar && (this._sidebarVisible || editMode);
+    const singleColumn = this._maxColumns <= 1;
+
+    // The tab switcher is opt-in: a sidebar enables it by labelling both tabs,
+    // otherwise the sidebar stacks below the content.
+    const useSidebarTabs = Boolean(
+      singleColumn &&
+      hasSidebar &&
+      this._config?.sidebar?.content_label &&
+      this._config?.sidebar?.sidebar_label
+    );
 
     const totalSectionCount =
       this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
@@ -178,9 +197,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       Math.min(this._maxColumns, totalSectionCount),
       1
     );
-    // On mobile with sidebar, use full width for whichever view is active
-    const contentColumnCount =
-      hasSidebar && !this.narrow ? Math.max(1, columnCount - 1) : columnCount;
+
+    const contentColumnCount = hasSidebar
+      ? Math.max(1, columnCount - 1)
+      : columnCount;
 
     const sectionNeedsMargin = computeSectionsBackgroundAlignment(
       sections,
@@ -192,7 +212,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         class="wrapper ${classMap({
           "top-margin": Boolean(this._config?.top_margin),
           "has-sidebar": Boolean(hasSidebar),
-          narrow: this.narrow,
+          "single-column": singleColumn,
+          "has-sidebar-tabs": useSidebarTabs,
         })}"
         style=${styleMap({
           "--column-count": columnCount,
@@ -206,27 +227,29 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .viewIndex=${this.index}
           .config=${this._config?.header}
         ></hui-view-header>
-        ${this.narrow && hasSidebar
-          ? html`
-              <div class="mobile-tabs">
-                <ha-control-select
-                  .value=${this._sidebarTabActive ? "sidebar" : "content"}
-                  @value-changed=${this._viewChanged}
-                  .options=${[
-                    {
-                      value: "content",
-                      label: this._config!.sidebar!.content_label,
-                    },
-                    {
-                      value: "sidebar",
-                      label: this._config!.sidebar!.sidebar_label,
-                    },
-                  ]}
-                >
-                </ha-control-select>
-              </div>
-            `
-          : nothing}
+        ${
+          useSidebarTabs
+            ? html`
+                <div class="sidebar-tabs">
+                  <ha-control-select
+                    .value=${this._sidebarTabActive ? "sidebar" : "content"}
+                    @value-changed=${this._viewChanged}
+                    .options=${[
+                      {
+                        value: "content",
+                        label: this._config!.sidebar!.content_label,
+                      },
+                      {
+                        value: "sidebar",
+                        label: this._config!.sidebar!.sidebar_label,
+                      },
+                    ]}
+                  >
+                  </ha-control-select>
+                </div>
+              `
+            : nothing
+        }
         <div class="container">
           <ha-sortable
             .disabled=${!editMode}
@@ -234,12 +257,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             group="section"
             handle-selector=".handle"
             draggable-selector=".section"
-            .rollback=${false}
           >
             <div
               class="content ${classMap({
                 dense: Boolean(this._config?.dense_section_placement),
-                "mobile-hidden": this.narrow && this._sidebarTabActive,
+                hidden: useSidebarTabs && this._sidebarTabActive,
               })}"
             >
               ${repeat(
@@ -260,80 +282,88 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                         "--row-span": rowSpan,
                       })}
                     >
-                      ${editMode
-                        ? html`
-                            <hui-section-edit-mode
-                              .hass=${this.hass}
-                              .lovelace=${this.lovelace}
-                              .index=${idx}
-                              .viewIndex=${this.index}
-                            >
-                              ${this._renderSection(
-                                section,
-                                sectionNeedsMargin.has(idx)
-                              )}
-                            </hui-section-edit-mode>
-                          `
-                        : this._renderSection(
-                            section,
-                            sectionNeedsMargin.has(idx)
-                          )}
+                      ${
+                        editMode
+                          ? html`
+                              <hui-section-edit-mode
+                                .hass=${this.hass}
+                                .lovelace=${this.lovelace}
+                                .index=${idx}
+                                .viewIndex=${this.index}
+                              >
+                                ${this._renderSection(
+                                  section,
+                                  sectionNeedsMargin.has(idx)
+                                )}
+                              </hui-section-edit-mode>
+                            `
+                          : this._renderSection(
+                              section,
+                              sectionNeedsMargin.has(idx)
+                            )
+                      }
                     </div>
                   `;
                 }
               )}
-              ${editMode
-                ? html`
-                    <ha-sortable
-                      group="card"
-                      @item-added=${this._handleCardAdded}
-                      draggable-selector=".card"
-                      .rollback=${false}
-                    >
-                      <div class="create-section-container">
-                        <div class="drop-helper" aria-hidden="true">
-                          <p>
-                            ${this.hass.localize(
-                              "ui.panel.lovelace.editor.section.drop_card_create_section"
+              ${
+                editMode
+                  ? html`
+                      <ha-sortable
+                        group="card"
+                        @item-added=${this._handleCardAdded}
+                        draggable-selector=".card"
+                        .rollback=${false}
+                      >
+                        <div class="create-section-container">
+                          <div class="drop-helper" aria-hidden="true">
+                            <p>
+                              ${this.hass.localize(
+                                "ui.panel.lovelace.editor.section.drop_card_create_section"
+                              )}
+                            </p>
+                          </div>
+                          <button
+                            class="create-section"
+                            @click=${this._createSection}
+                            aria-label=${this.hass.localize(
+                              "ui.panel.lovelace.editor.section.create_section"
                             )}
-                          </p>
+                            .title=${this.hass.localize(
+                              "ui.panel.lovelace.editor.section.create_section"
+                            )}
+                          >
+                            <ha-ripple></ha-ripple>
+                            <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
+                          </button>
                         </div>
-                        <button
-                          class="create-section"
-                          @click=${this._createSection}
-                          aria-label=${this.hass.localize(
-                            "ui.panel.lovelace.editor.section.create_section"
-                          )}
-                          .title=${this.hass.localize(
-                            "ui.panel.lovelace.editor.section.create_section"
-                          )}
-                        >
-                          <ha-ripple></ha-ripple>
-                          <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
-                        </button>
-                      </div>
-                    </ha-sortable>
-                  `
-                : nothing}
+                      </ha-sortable>
+                    `
+                  : nothing
+              }
             </div>
           </ha-sortable>
-          ${this._config?.sidebar
-            ? html`
-                <hui-view-sidebar
-                  class=${classMap({
-                    "mobile-hidden":
-                      !hasSidebar || (this.narrow && !this._sidebarTabActive),
-                  })}
-                  .hass=${this.hass}
-                  .badges=${this.badges}
-                  .lovelace=${this.lovelace}
-                  .viewIndex=${this.index}
-                  .config=${this._config.sidebar}
-                  @sidebar-visibility-changed=${this
-                    ._handleSidebarVisibilityChanged}
-                ></hui-view-sidebar>
-              `
-            : nothing}
+          ${
+            this._config?.sidebar
+              ? html`
+                  <hui-view-sidebar
+                    class=${classMap({
+                      hidden:
+                        !hasSidebar ||
+                        (useSidebarTabs && !this._sidebarTabActive),
+                    })}
+                    .hass=${this.hass}
+                    .badges=${this.badges}
+                    .lovelace=${this.lovelace}
+                    .viewIndex=${this.index}
+                    .config=${this._config.sidebar}
+                    @sidebar-visibility-changed=${
+                      this._handleSidebarVisibilityChanged
+                    }
+                  ></hui-view-sidebar>
+                `
+              : nothing
+          }
         </div>
         <hui-view-footer
           .hass=${this.hass}
@@ -342,35 +372,37 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .config=${this._config?.footer}
         ></hui-view-footer>
         <div class="imported-cards-section">
-          ${editMode && this._config?.cards?.length
-            ? html`
-                <div class="section imported-cards">
-                  <div class="imported-card-header">
-                    <p class="title">
-                      <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.imported_cards_title"
+          ${
+            editMode && this._config?.cards?.length
+              ? html`
+                  <div class="section imported-cards">
+                    <div class="imported-card-header">
+                      <p class="title">
+                        <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.imported_cards_title"
+                        )}
+                      </p>
+                      <p class="subtitle">
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.imported_cards_description"
+                        )}
+                      </p>
+                    </div>
+                    <hui-section
+                      .lovelace=${this.lovelace}
+                      .hass=${this.hass}
+                      .config=${this._importedCardSectionConfig(
+                        this._config.cards
                       )}
-                    </p>
-                    <p class="subtitle">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.imported_cards_description"
-                      )}
-                    </p>
+                      .viewIndex=${this.index}
+                      preview
+                      import-only
+                    ></hui-section>
                   </div>
-                  <hui-section
-                    .lovelace=${this.lovelace}
-                    .hass=${this.hass}
-                    .config=${this._importedCardSectionConfig(
-                      this._config.cards
-                    )}
-                    .viewIndex=${this.index}
-                    preview
-                    import-only
-                  ></hui-section>
-                </div>
-              `
-            : nothing}
+                `
+              : nothing
+          }
         </div>
       </div>
     `;
@@ -423,13 +455,15 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           "align-background": alignBackground,
         })}"
       >
-        ${hasBackground
-          ? html`<hui-section-background
-              .hass=${this.hass}
-              .background=${section.config.background}
-              .theme=${section.config.theme}
-            ></hui-section-background>`
-          : nothing}
+        ${
+          hasBackground
+            ? html`<hui-section-background
+                .hass=${this.hass}
+                .background=${section.config.background}
+                .theme=${section.config.theme}
+              ></hui-section-background>`
+            : nothing
+        }
         ${section}
       </div>
     `;
@@ -476,10 +510,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this._sidebarTabActive = !this._sidebarTabActive;
 
     // Add sidebar state to history
-    window.history.replaceState(
-      { ...window.history.state, sidebar: this._sidebarTabActive },
-      ""
-    );
+    updateHistoryState({ sidebar: this._sidebarTabActive });
 
     // Restore scroll position after view updates
     this.updateComplete.then(() => {
@@ -584,8 +615,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         [sidebar-start] 1fr;
     }
 
-    /* On mobile with sidebar, content and sidebar both take full width */
-    .wrapper.narrow.has-sidebar .container {
+    /* With a single column, content and sidebar stack at full width */
+    .wrapper.single-column.has-sidebar .container {
       grid-template-columns: 1fr;
     }
 
@@ -593,18 +624,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       grid-column: sidebar-start / -1;
     }
 
-    .wrapper.narrow hui-view-sidebar {
+    .wrapper.single-column hui-view-sidebar {
       grid-column: 1 / -1;
+    }
+
+    .wrapper.has-sidebar-tabs hui-view-sidebar {
       padding-bottom: calc(
         var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
     }
 
-    .mobile-hidden {
+    .hidden {
       display: none !important;
     }
 
-    .mobile-tabs {
+    .sidebar-tabs {
       position: fixed;
       bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
       left: 50%;
@@ -613,7 +647,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       z-index: 1;
     }
 
-    .mobile-tabs ha-control-select {
+    .sidebar-tabs ha-control-select {
       width: max-content;
       min-width: 280px;
       max-width: 90%;
@@ -641,11 +675,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       gap: var(--row-gap) var(--column-gap);
     }
 
-    .wrapper.narrow .content {
+    .wrapper.single-column .content {
       grid-column: 1 / -1;
     }
 
-    .wrapper.narrow.has-sidebar .content {
+    .wrapper.has-sidebar-tabs .content {
       padding-bottom: calc(
         var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );

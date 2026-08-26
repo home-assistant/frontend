@@ -36,7 +36,7 @@ import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -208,8 +208,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | WeatherForecastCardConfig
-      | undefined;
+      WeatherForecastCardConfig | undefined;
 
     if (
       (changedProps.has("hass") && !oldHass) ||
@@ -221,8 +220,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     const stateObj = this.hass.states[this._config.entity] as
-      | WeatherEntity
-      | undefined;
+      WeatherEntity | undefined;
 
     this._dragScrollController.enabled = Boolean(
       stateObj &&
@@ -302,6 +300,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
+          "no-action": !hasAnyAction(this._config!),
           [this._sizeController.value?.height]: Boolean(
             this._sizeController.value
           ),
@@ -318,169 +317,193 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
       >
-        ${weather
-          ? html`
-              <div class="content">
-                <div class="icon-image">
-                  ${weatherStateIcon ||
-                  html`
-                    <ha-state-icon
-                      class="weather-icon"
-                      .stateObj=${stateObj}
-                    ></ha-state-icon>
-                  `}
-                </div>
-                <div class="info">
-                  <div class="name-state">
-                    <div class="state">
-                      ${this.hass.formatEntityState(stateObj)}
-                    </div>
-                    <div class="name" .title=${name}>${name}</div>
-                  </div>
-                  <div class="temp-attribute">
-                    <div class="temp">
-                      ${stateObj.attributes.temperature !== undefined &&
-                      stateObj.attributes.temperature !== null
-                        ? html`
-                            ${formatNumber(
-                              stateObj.attributes.temperature,
-                              this.hass.locale,
-                              {
-                                maximumFractionDigits:
-                                  temperatureFractionDigits,
-                              }
-                            )}&nbsp;<span
-                              >${getWeatherUnit(
-                                this.hass.config,
-                                stateObj,
-                                "temperature"
-                              )}</span
-                            >
-                          `
-                        : html`&nbsp;`}
-                    </div>
-                    <div class="attribute">
-                      ${this._config.secondary_info_attribute !== undefined
-                        ? html`
-                            ${this._config.secondary_info_attribute in
-                            weatherAttrIcons
-                              ? html`
-                                  <ha-svg-icon
-                                    class="attr-icon"
-                                    .path=${weatherAttrIcons[
-                                      this._config.secondary_info_attribute
-                                    ]}
-                                  ></ha-svg-icon>
-                                `
-                              : this.hass!.localize(
-                                  `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
-                                )}
-                            ${this._config.secondary_info_attribute ===
-                            "wind_speed"
-                              ? getWind(
-                                  this.hass,
-                                  stateObj,
-                                  stateObj.attributes.wind_speed,
-                                  stateObj.attributes.wind_bearing
-                                )
-                              : html`
-                                  ${this.hass.formatEntityAttributeValue(
-                                    stateObj,
-                                    this._config.secondary_info_attribute,
-                                    temperatureFractionDigits === 0 &&
-                                      isSecondaryInfoNumber &&
-                                      isSecondaryInfoAttributeTemperature
-                                      ? round(
-                                          stateObj.attributes[
-                                            this._config
-                                              .secondary_info_attribute
-                                          ],
-                                          temperatureFractionDigits
-                                        )
-                                      : undefined
-                                  )}
-                                `}
-                          `
-                        : getSecondaryWeatherAttribute(
-                            this.hass,
-                            stateObj,
-                            forecast!,
-                            temperatureFractionDigits
-                          )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            `
-          : ""}
-        ${forecast
-          ? html`
-              <div
-                class=${classMap({
-                  forecast: true,
-                  compact: compactForecast,
-                  dragging: this._dragScrollController.scrolling,
-                })}
-              >
-                ${showDayHeader
-                  ? this._groupForecastByDay(forecast).map((dayForecast) => {
-                      const firstItem = dayForecast[0];
-                      const dayHeader = firstItem
-                        ? formatDateWeekdayShort(
-                            new Date(firstItem.datetime),
-                            this.hass!.locale,
-                            this.hass!.config
-                          )
-                        : undefined;
-                      const firstRenderableIndex = dayForecast.findIndex(
-                        (item) =>
-                          this._showValue(item.templow) ||
-                          this._showValue(item.temperature)
-                      );
-
-                      return html`
-                        <div class="forecast-day">
-                          <div class="forecast-day-content">
-                            ${dayForecast.map((item, index) =>
-                              this._renderForecastItem(
-                                item,
-                                hourly,
-                                dayNight,
-                                showDayHeader,
-                                temperatureFractionDigits,
-                                index === firstRenderableIndex
-                                  ? dayHeader
-                                  : undefined
-                              )
-                            )}
-                          </div>
-                        </div>
-                      `;
-                    })
-                  : forecast.map(
-                      (item, index) => html`
-                        ${showInlineDayLabel
-                          ? this._renderInlineDayGroupLabel(
-                              item,
-                              index,
-                              forecast,
-                              dayNight,
-                              hourly,
-                              todayKey
-                            )
-                          : nothing}
-                        ${this._renderForecastItem(
-                          item,
-                          hourly,
-                          dayNight,
-                          showDayHeader,
-                          temperatureFractionDigits
-                        )}
+        ${
+          weather
+            ? html`
+                <div class="content">
+                  <div class="icon-image">
+                    ${
+                      weatherStateIcon ||
+                      html`
+                        <ha-state-icon
+                          class="weather-icon"
+                          .stateObj=${stateObj}
+                        ></ha-state-icon>
                       `
-                    )}
-              </div>
-            `
-          : ""}
+                    }
+                  </div>
+                  <div class="info">
+                    <div class="name-state">
+                      <div class="state">
+                        ${this.hass.formatEntityState(stateObj)}
+                      </div>
+                      <div class="name" .title=${name}>${name}</div>
+                    </div>
+                    <div class="temp-attribute">
+                      <div class="temp">
+                        ${
+                          stateObj.attributes.temperature !== undefined &&
+                          stateObj.attributes.temperature !== null
+                            ? html`
+                                ${formatNumber(
+                                  stateObj.attributes.temperature,
+                                  this.hass.locale,
+                                  {
+                                    maximumFractionDigits:
+                                      temperatureFractionDigits,
+                                  }
+                                )}&nbsp;<span
+                                  >${getWeatherUnit(
+                                    this.hass.config,
+                                    stateObj,
+                                    "temperature"
+                                  )}</span
+                                >
+                              `
+                            : html`&nbsp;`
+                        }
+                      </div>
+                      <div class="attribute">
+                        ${
+                          this._config.secondary_info_attribute !== undefined
+                            ? html`
+                                ${
+                                  this._config.secondary_info_attribute in
+                                  weatherAttrIcons
+                                    ? html`
+                                        <ha-svg-icon
+                                          class="attr-icon"
+                                          .path=${
+                                            weatherAttrIcons[
+                                              this._config
+                                                .secondary_info_attribute
+                                            ]
+                                          }
+                                        ></ha-svg-icon>
+                                      `
+                                    : this.hass!.localize(
+                                        `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
+                                      )
+                                }
+                                ${
+                                  this._config.secondary_info_attribute ===
+                                  "wind_speed"
+                                    ? getWind(
+                                        this.hass.formatEntityAttributeValue,
+                                        this.hass.localize,
+                                        stateObj,
+                                        stateObj.attributes.wind_speed,
+                                        stateObj.attributes.wind_bearing
+                                      )
+                                    : html`
+                                        ${this.hass.formatEntityAttributeValue(
+                                          stateObj,
+                                          this._config.secondary_info_attribute,
+                                          temperatureFractionDigits === 0 &&
+                                            isSecondaryInfoNumber &&
+                                            isSecondaryInfoAttributeTemperature
+                                            ? round(
+                                                stateObj.attributes[
+                                                  this._config
+                                                    .secondary_info_attribute
+                                                ],
+                                                temperatureFractionDigits
+                                              )
+                                            : undefined
+                                        )}
+                                      `
+                                }
+                              `
+                            : getSecondaryWeatherAttribute(
+                                this.hass,
+                                stateObj,
+                                forecast!,
+                                temperatureFractionDigits
+                              )
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `
+            : ""
+        }
+        ${
+          forecast
+            ? html`
+                <div
+                  class=${classMap({
+                    forecast: true,
+                    compact: compactForecast,
+                    dragging: this._dragScrollController.scrolling,
+                  })}
+                >
+                  ${
+                    showDayHeader
+                      ? this._groupForecastByDay(forecast).map(
+                          (dayForecast) => {
+                            const firstItem = dayForecast[0];
+                            const dayHeader = firstItem
+                              ? formatDateWeekdayShort(
+                                  new Date(firstItem.datetime),
+                                  this.hass!.locale,
+                                  this.hass!.config
+                                )
+                              : undefined;
+                            const firstRenderableIndex = dayForecast.findIndex(
+                              (item) =>
+                                this._showValue(item.templow) ||
+                                this._showValue(item.temperature)
+                            );
+
+                            return html`
+                              <div class="forecast-day">
+                                <div class="forecast-day-content">
+                                  ${dayForecast.map((item, index) =>
+                                    this._renderForecastItem(
+                                      item,
+                                      hourly,
+                                      dayNight,
+                                      showDayHeader,
+                                      temperatureFractionDigits,
+                                      index === firstRenderableIndex
+                                        ? dayHeader
+                                        : undefined
+                                    )
+                                  )}
+                                </div>
+                              </div>
+                            `;
+                          }
+                        )
+                      : forecast.map(
+                          (item, index) => html`
+                            ${
+                              showInlineDayLabel
+                                ? this._renderInlineDayGroupLabel(
+                                    item,
+                                    index,
+                                    forecast,
+                                    dayNight,
+                                    hourly,
+                                    todayKey
+                                  )
+                                : nothing
+                            }
+                            ${this._renderForecastItem(
+                              item,
+                              hourly,
+                              dayNight,
+                              showDayHeader,
+                              temperatureFractionDigits
+                            )}
+                          `
+                        )
+                  }
+                </div>
+              `
+            : ""
+        }
       </ha-card>
     `;
   }
@@ -494,12 +517,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _isForecastInteraction(ev: Event): boolean {
-    return ev
-      .composedPath()
-      .some(
-        (node) =>
-          node instanceof HTMLElement && node.classList.contains("forecast")
-      );
+    return (
+      (this._dragScrollController.scrolled ||
+        this._dragScrollController.scrolling) &&
+      ev
+        .composedPath()
+        .some(
+          (node) =>
+            node instanceof HTMLElement && node.classList.contains("forecast")
+        )
+    );
   }
 
   private _groupForecastByDay(forecast: ForecastAttribute[]) {
@@ -563,60 +590,76 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     return html`
       <div class="forecast-item">
-        ${showDayHeader
-          ? html`
-              <div class="forecast-day-header-slot">
-                ${dayHeader
-                  ? html`<div class="forecast-day-header">${dayHeader}</div>`
-                  : nothing}
-              </div>
-            `
-          : nothing}
+        ${
+          showDayHeader
+            ? html`
+                <div class="forecast-day-header-slot">
+                  ${
+                    dayHeader
+                      ? html`<div class="forecast-day-header">
+                          ${dayHeader}
+                        </div>`
+                      : nothing
+                  }
+                </div>
+              `
+            : nothing
+        }
         <div class="forecast-item-label ${showDayHeader ? "" : "no-header"}">
-          ${dayNight
-            ? html`<div class="daynight">
-                ${item.is_daytime !== false
-                  ? this.hass!.localize("ui.card.weather.day")
-                  : this.hass!.localize("ui.card.weather.night")}
-              </div>`
-            : hourly
-              ? formatTime(
-                  new Date(item.datetime),
-                  this.hass!.locale,
-                  this.hass!.config
-                )
-              : formatDateWeekdayShort(
-                  new Date(item.datetime),
-                  this.hass!.locale,
-                  this.hass!.config
-                )}
+          ${
+            dayNight
+              ? html`<div class="daynight">
+                  ${
+                    item.is_daytime !== false
+                      ? this.hass!.localize("ui.card.weather.day")
+                      : this.hass!.localize("ui.card.weather.night")
+                  }
+                </div>`
+              : hourly
+                ? formatTime(
+                    new Date(item.datetime),
+                    this.hass!.locale,
+                    this.hass!.config
+                  )
+                : formatDateWeekdayShort(
+                    new Date(item.datetime),
+                    this.hass!.locale,
+                    this.hass!.config
+                  )
+          }
         </div>
-        ${this._showValue(item.condition)
-          ? html`
-              <div class="forecast-image-icon">
-                ${getWeatherStateIcon(
-                  item.condition!,
-                  this,
-                  !(item.is_daytime || item.is_daytime === undefined)
-                )}
-              </div>
-            `
-          : nothing}
+        ${
+          this._showValue(item.condition)
+            ? html`
+                <div class="forecast-image-icon">
+                  ${getWeatherStateIcon(
+                    item.condition!,
+                    this,
+                    !(item.is_daytime || item.is_daytime === undefined)
+                  )}
+                </div>
+              `
+            : nothing
+        }
         <div class="temp">
-          ${this._showValue(item.temperature)
-            ? html`${formatNumber(item.temperature, this.hass!.locale, {
-                maximumFractionDigits: temperatureFractionDigits,
-              })}°`
-            : "—"}
+          ${
+            this._showValue(item.temperature)
+              ? html`${formatNumber(item.temperature, this.hass!.locale, {
+                  maximumFractionDigits: temperatureFractionDigits,
+                })}°`
+              : "—"
+          }
         </div>
         <div class="templow">
-          ${this._showValue(item.templow)
-            ? html`${formatNumber(item.templow!, this.hass!.locale, {
-                maximumFractionDigits: temperatureFractionDigits,
-              })}°`
-            : hourly
-              ? nothing
-              : "—"}
+          ${
+            this._showValue(item.templow)
+              ? html`${formatNumber(item.templow!, this.hass!.locale, {
+                  maximumFractionDigits: temperatureFractionDigits,
+                })}°`
+              : hourly
+                ? nothing
+                : "—"
+          }
         </div>
       </div>
     `;
@@ -686,6 +729,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           justify-content: center;
           box-sizing: border-box;
           padding: 16px 0;
+        }
+
+        ha-card.no-action {
+          cursor: default;
         }
 
         .content {

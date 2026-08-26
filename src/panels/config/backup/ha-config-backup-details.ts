@@ -112,8 +112,10 @@ class HaConfigBackupDetails extends LitElement {
         back-path="/config/backup/backups"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this._backup?.name ||
-        this.hass.localize("ui.panel.config.backup.details.header")}
+        .header=${
+          this._backup?.name ||
+          this.hass.localize("ui.panel.config.backup.details.header")
+        }
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleAction}>
           <ha-icon-button
@@ -131,61 +133,64 @@ class HaConfigBackupDetails extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <div class="content">
-          ${this._error &&
-          html`<ha-alert alert-type="error">${this._error}</ha-alert>`}
-          ${this._backup === null
-            ? html`
-                <ha-alert
-                  alert-type="warning"
-                  .title=${this.hass.localize(
-                    "ui.panel.config.backup.details.not_found"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.details.not_found_description",
-                    { backupId: this.backupId }
-                  )}
-                </ha-alert>
-              `
-            : !this._backup
-              ? html`<ha-fade-in .delay=${1000}
-                  ><ha-spinner></ha-spinner
-                ></ha-fade-in>`
-              : html`
-                  <ha-backup-details-summary
-                    .backup=${this._backup}
-                    .hass=${this.hass}
-                    .localize=${this.hass.localize}
-                    .isHassio=${isHassio}
-                  ></ha-backup-details-summary>
-                  <ha-backup-details-restore
-                    .backup=${this._backup}
-                    @backup-restore=${this._restore}
-                    .hass=${this.hass}
-                    .localize=${this.hass.localize}
-                  ></ha-backup-details-restore>
-                  <ha-card>
-                    <div class="card-header">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.details.locations.title"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <ha-list-base>
-                        ${this._agents.map((agent) => {
-                          const agentId = agent.id;
+          ${
+            this._error &&
+            html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          }
+          ${
+            this._backup === null
+              ? html`
+                  <ha-alert
+                    alert-type="warning"
+                    .title=${this.hass.localize(
+                      "ui.panel.config.backup.details.not_found"
+                    )}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.details.not_found_description",
+                      { backupId: this.backupId }
+                    )}
+                  </ha-alert>
+                `
+              : !this._backup
+                ? html`<ha-fade-in .delay=${1000}
+                    ><ha-spinner></ha-spinner
+                  ></ha-fade-in>`
+                : html`
+                    <ha-backup-details-summary
+                      .backup=${this._backup}
+                      .hass=${this.hass}
+                      .localize=${this.hass.localize}
+                      .isHassio=${isHassio}
+                    ></ha-backup-details-summary>
+                    <ha-backup-details-restore
+                      .backup=${this._backup}
+                      @backup-restore=${this._restore}
+                      .hass=${this.hass}
+                      .localize=${this.hass.localize}
+                    ></ha-backup-details-restore>
+                    <ha-card>
+                      <div class="card-header">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.details.locations.title"
+                        )}
+                      </div>
+                      <div class="card-content">
+                        <ha-list-base>
+                          ${this._agents.map((agent) => {
+                            const agentId = agent.id;
 
-                          const domain = computeDomain(agentId);
-                          const name = computeBackupAgentName(
-                            this.hass.localize,
-                            agentId,
-                            this.agents
-                          );
-                          const success = agent.success;
-                          const failed = !agent.success;
-                          const unencrypted = !agent.protected;
+                            const domain = computeDomain(agentId);
+                            const name = computeBackupAgentName(
+                              this.hass.localize,
+                              agentId,
+                              this.agents
+                            );
+                            const success = agent.success;
+                            const failed = !agent.success;
+                            const unencrypted = !agent.protected;
 
-                          return html`
+                            return html`
                             <ha-list-item-base>
                               ${
                                 isLocalAgent(agentId)
@@ -284,11 +289,12 @@ class HaConfigBackupDetails extends LitElement {
                               }
                             </ha-list-item-base>
                           `;
-                        })}
-                      </ha-list-base>
-                    </div>
-                  </ha-card>
-                `}
+                          })}
+                        </ha-list-base>
+                      </div>
+                    </ha-card>
+                  `
+          }
         </div>
       </hass-subpage>
     `;

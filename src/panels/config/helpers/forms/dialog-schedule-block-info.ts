@@ -44,7 +44,7 @@ class DialogScheduleBlockInfo extends DirtyStateProviderMixin<ScheduleBlockInfo>
       selector: { time: { no_second: true } },
     },
     {
-      name: "advanced_settings",
+      name: "more_options",
       type: "expandable" as const,
       flatten: true,
       expanded: expand,
@@ -157,9 +157,9 @@ class DialogScheduleBlockInfo extends DirtyStateProviderMixin<ScheduleBlockInfo>
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.end");
       case "data":
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.data");
-      case "advanced_settings":
+      case "more_options":
         return this.hass!.localize(
-          "ui.dialogs.helper_settings.generic.advanced_settings"
+          "ui.dialogs.helper_settings.generic.more_options"
         );
     }
     return "";

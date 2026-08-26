@@ -4,7 +4,8 @@ import { ensureArray } from "../array/ensure-array";
 import { isComponentLoaded } from "./is_component_loaded";
 
 export const canShowPage = (hass: HomeAssistant, page: PageNavigation) =>
-  isCore(page) || isLoadedIntegration(hass, page);
+  (isCore(page) || isLoadedIntegration(hass, page)) &&
+  (!page.filter || page.filter(hass));
 
 export const isLoadedIntegration = (
   hass: HomeAssistant,

@@ -24,6 +24,7 @@ export type HaListItemOptionSelectionPosition = "start" | "end";
  * @cssprop --ha-list-item-selected-background - Background color when selected (`appearance="line"`).
  *
  * @attr {boolean} selected - Whether the option is selected. Set by the parent `ha-list-selectable`.
+ * @attr {boolean} indeterminate - Draws the checkbox in an indeterminate state, for a row that stands for a partially selected set.
  * @attr {string} value - Value identifying the option.
  * @attr {("line"|"checkbox")} appearance - Visual style. "line" highlights the row; "checkbox" renders an `ha-checkbox`.
  * @attr {("start"|"end")} selection-position - Side the checkbox sits on when `appearance="checkbox"`.
@@ -31,6 +32,8 @@ export type HaListItemOptionSelectionPosition = "start" | "end";
 @customElement("ha-list-item-option")
 export class HaListItemOption extends HaListItemBase {
   @property({ type: Boolean, reflect: true }) public selected = false;
+
+  @property({ type: Boolean, reflect: true }) public indeterminate = false;
 
   @property({ type: String }) public value?: string;
 
@@ -56,11 +59,11 @@ export class HaListItemOption extends HaListItemBase {
 
   protected _renderBase(inner: TemplateResult): TemplateResult {
     return html`<div part="base" class="base" id="item">
-      ${this._renderRipple()}${this.selectionPosition === "start"
-        ? this._renderCheckbox()
-        : nothing}${inner}${this.selectionPosition === "end"
-        ? this._renderCheckbox()
-        : nothing}
+      ${this._renderRipple()}${
+        this.selectionPosition === "start" ? this._renderCheckbox() : nothing
+      }${inner}${
+        this.selectionPosition === "end" ? this._renderCheckbox() : nothing
+      }
     </div>`;
   }
 
@@ -80,6 +83,7 @@ export class HaListItemOption extends HaListItemBase {
     return html`<div part="checkbox" class="checkbox" inert>
       <ha-checkbox
         .checked=${this.selected}
+        .indeterminate=${this.indeterminate}
         .disabled=${this.disabled}
       ></ha-checkbox>
     </div>`;

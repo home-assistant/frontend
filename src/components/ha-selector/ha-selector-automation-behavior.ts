@@ -53,7 +53,6 @@ export class HaSelectorAutomationBehavior extends LitElement {
       value: behavior,
       label: this._localizeOption(behavior, "label"),
       description: this._localizeOption(behavior, "description"),
-      disabled: this.disabled,
       ...(isTrigger && {
         image: {
           src: `/static/images/form/automation_behavior_trigger_${behavior}.svg`,
@@ -66,15 +65,18 @@ export class HaSelectorAutomationBehavior extends LitElement {
       <ha-select-box
         .options=${options}
         .value=${this.value ?? ""}
+        .disabled=${this.disabled}
         max_columns="1"
         ?stacked_image=${isTrigger}
         @value-changed=${this._valueChanged}
       ></ha-select-box>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

@@ -7,14 +7,15 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-select";
-import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
+import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
-import { energyStatisticHelpUrl } from "../../../../data/energy";
 import {
-  getStatisticLabel,
+  computeEnergyLabel,
+  energyStatisticHelpUrl,
+} from "../../../../data/energy";
+import {
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -123,27 +124,6 @@ export class DialogEnergyDeviceSettingsWater
 
     const pickableUnit = this._volume_units?.join(", ") || "";
 
-    const includedInDeviceOptions = !this._possibleParents.length
-      ? [
-          {
-            value: "-",
-            disabled: true,
-            label: this.hass.localize(
-              "ui.panel.config.energy.device_consumption_water.dialog.no_upstream_devices"
-            ),
-          },
-        ]
-      : this._possibleParents.map((stat) => ({
-          value: stat.stat_consumption,
-          label:
-            stat.name ||
-            getStatisticLabel(
-              this.hass,
-              stat.stat_consumption,
-              this._params?.statsMetadata?.[stat.stat_consumption]
-            ),
-        }));
-
     return html`
       <ha-dialog
         .open=${this._open}
@@ -194,31 +174,36 @@ export class DialogEnergyDeviceSettingsWater
           type="text"
           .disabled=${!this._device}
           .value=${this._device?.name || ""}
-          .placeholder=${this._device
-            ? getStatisticLabel(
-                this.hass,
-                this._device.stat_consumption,
-                this._params?.statsMetadata?.[this._device.stat_consumption]
-              )
-            : ""}
+          .placeholder=${
+            this._device
+              ? computeEnergyLabel(
+                  this.hass,
+                  this._device.stat_consumption,
+                  this._params?.statsMetadata?.[this._device.stat_consumption]
+                )
+              : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
 
-        <ha-select
+        <ha-energy-upstream-device-picker
+          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.included_in_device"
           )}
-          .value=${this._device?.included_in_stat || ""}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.included_in_device_helper"
           )}
+          .value=${this._device?.included_in_stat}
+          .possibleParents=${this._possibleParents}
+          .statsMetadata=${this._params.statsMetadata}
+          .emptyLabel=${this.hass.localize(
+            "ui.panel.config.energy.device_consumption_water.dialog.no_upstream_devices"
+          )}
           .disabled=${!this._device}
-          @selected=${this._parentSelected}
-          clearable
-          .options=${includedInDeviceOptions}
-        >
-        </ha-select>
+          @value-changed=${this._parentChanged}
+        ></ha-energy-upstream-device-picker>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -230,8 +215,9 @@ export class DialogEnergyDeviceSettingsWater
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._device ||
-            (!!this._params?.device && !this.isDirtyState)}
+            .disabled=${
+              !this._device || (!!this._params?.device && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -293,7 +279,7 @@ export class DialogEnergyDeviceSettingsWater
     this._updateDirtyState(this._device);
   }
 
-  private _parentSelected(ev: HaSelectSelectEvent<string, true>) {
+  private _parentChanged(ev: ValueChangedEvent<string>) {
     const newDevice = {
       ...this._device!,
       included_in_stat: ev.detail.value,
@@ -324,7 +310,7 @@ export class DialogEnergyDeviceSettingsWater
           width: 100%;
           margin-bottom: var(--ha-space-4);
         }
-        ha-select {
+        ha-energy-upstream-device-picker {
           display: block;
           margin-top: var(--ha-space-4);
           width: 100%;

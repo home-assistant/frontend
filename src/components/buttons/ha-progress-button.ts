@@ -18,6 +18,8 @@ export class HaProgressButton extends LitElement {
 
   @property() appearance: Appearance = "accent";
 
+  @property() size: "xs" | "s" | "m" | "l" | "xl" = "m";
+
   @property({ attribute: false }) public iconPath?: string;
 
   @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
@@ -32,39 +34,50 @@ export class HaProgressButton extends LitElement {
     return html`
       <ha-button
         .appearance=${appearance}
+        .size=${this.size}
         .disabled=${this.disabled}
         .loading=${this.progress}
-        .variant=${this._result === "success"
-          ? "success"
-          : this._result === "error"
-            ? "danger"
-            : this.variant}
+        .variant=${
+          this._result === "success"
+            ? "success"
+            : this._result === "error"
+              ? "danger"
+              : this.variant
+        }
         class=${classMap({
           result: !!this._result,
           success: this._result === "success",
           error: this._result === "error",
         })}
       >
-        ${this.iconPath
-          ? html`<ha-svg-icon
-              .path=${this.iconPath}
-              slot="start"
-            ></ha-svg-icon>`
-          : nothing}
+        ${
+          this.iconPath
+            ? html`<ha-svg-icon
+                .path=${this.iconPath}
+                slot="start"
+              ></ha-svg-icon>`
+            : nothing
+        }
 
         <slot>${this.label}</slot>
       </ha-button>
-      ${!this._result
-        ? nothing
-        : html`
-            <div class="progress">
-              ${this._result === "success"
-                ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
-                : this._result === "error"
-                  ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                  : nothing}
-            </div>
-          `}
+      ${
+        !this._result
+          ? nothing
+          : html`
+              <div class="progress">
+                ${
+                  this._result === "success"
+                    ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
+                    : this._result === "error"
+                      ? html`<ha-svg-icon
+                          .path=${mdiAlertOctagram}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
+              </div>
+            `
+      }
     `;
   }
 
@@ -108,15 +121,26 @@ export class HaProgressButton extends LitElement {
       width: 100%;
     }
 
+    /* The icon lives in this shadow root, so callers cannot size it themselves. */
+    ha-button[size="xs"] ha-svg-icon[slot="start"],
+    ha-button[size="s"] ha-svg-icon[slot="start"] {
+      --mdc-icon-size: 16px;
+    }
+
+    /* Fade the content out rather than hiding it, so the button keeps its
+       accessible name while the result icon covers it. */
     ha-button.result::part(start),
     ha-button.result::part(end),
     ha-button.result::part(label),
-    ha-button.result::part(caret),
+    ha-button.result::part(caret) {
+      opacity: 0;
+    }
+
     ha-button.result::part(spinner) {
       visibility: hidden;
     }
 
-    :host([appearance="brand"]) ha-svg-icon {
+    .progress ha-svg-icon {
       color: var(--white-color);
     }
   `;

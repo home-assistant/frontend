@@ -21,9 +21,11 @@ export class ZWaveJsAddNodeGrantSecurityClasses extends LitElement {
 
   render() {
     return html`
-      ${this.error
-        ? html`<ha-alert alert-type="error"> ${this.error} </ha-alert>`
-        : nothing}
+      ${
+        this.error
+          ? html`<ha-alert alert-type="error"> ${this.error} </ha-alert>`
+          : nothing
+      }
       <p>
         ${this.hass.localize(
           "ui.panel.config.zwave_js.add_node.grant_security_classes.description"

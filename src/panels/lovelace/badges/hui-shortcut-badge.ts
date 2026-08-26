@@ -112,9 +112,11 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
           hasDoubleClick: hasAction(this._config.double_tap_action),
         })}
       >
-        ${icon
-          ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-          : html`<ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>`}
+        ${
+          icon
+            ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
+            : html`<ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>`
+        }
         ${text}
       </ha-badge>
     `;

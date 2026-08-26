@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,13 +8,27 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LightEntity } from "../../data/light";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-light-brightness")
 export class HaStateControlLightBrightness extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
 
@@ -35,7 +50,7 @@ export class HaStateControlLightBrightness extends LitElement {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
 
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       brightness_pct: value,
     });
@@ -68,7 +83,7 @@ export class HaStateControlLightBrightness extends LitElement {
         max="100"
         .showHandle=${stateActive(this.stateObj)}
         @value-changed=${this._valueChanged}
-        .label=${this.hass.formatEntityAttributeName(
+        .label=${this._formatters.formatEntityAttributeName(
           this.stateObj,
           "brightness"
         )}
@@ -78,7 +93,7 @@ export class HaStateControlLightBrightness extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         unit="%"
-        .locale=${this.hass.locale}
+        .locale=${this._i18n.locale}
       >
       </ha-control-slider>
     `;

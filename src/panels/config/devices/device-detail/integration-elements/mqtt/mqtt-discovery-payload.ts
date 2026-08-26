@@ -23,18 +23,22 @@ class MQTTDiscoveryPayload extends LitElement {
       >
         ${this.summary}
       </div>
-      ${this._open
-        ? html` <div class="payload">${this._renderPayload()}</div>`
-        : ""}
+      ${
+        this._open
+          ? html` <div class="payload">${this._renderPayload()}</div>`
+          : ""
+      }
     `;
   }
 
   private _renderPayload(): TemplateResult {
     const payload = this.payload;
     return html`
-      ${this.showAsYaml
-        ? html` <pre>${dump(payload)}</pre> `
-        : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `}
+      ${
+        this.showAsYaml
+          ? html` <pre>${dump(payload)}</pre> `
+          : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `
+      }
     `;
   }
 

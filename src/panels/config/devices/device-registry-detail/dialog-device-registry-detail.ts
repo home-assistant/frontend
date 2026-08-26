@@ -97,9 +97,11 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
+              : ""
+          }
           <div class="form">
             <ha-input
               autofocus
@@ -123,7 +125,10 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
             <div class="row">
               <ha-switch
                 .checked=${!this._disabledBy}
-                .disabled=${this._params.device.disabled_by === "config_entry"}
+                .disabled=${
+                  this._params.device.disabled_by === "config_entry" ||
+                  this._params.device.disabled_by === "device"
+                }
                 @change=${this._disabledByChanged}
               >
               </ha-switch>
@@ -141,21 +146,23 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
                   )}
                 </div>
                 <div class="secondary">
-                  ${this._disabledBy && this._disabledBy !== "user"
-                    ? this.hass.localize(
-                        "ui.dialogs.device-registry-detail.enabled_cause",
-                        {
-                          type: this.hass.localize(
-                            `ui.dialogs.device-registry-detail.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                          cause: this.hass.localize(
-                            `config_entry.disabled_by.${this._disabledBy}`
-                          ),
-                        }
-                      )
-                    : ""}
+                  ${
+                    this._disabledBy && this._disabledBy !== "user"
+                      ? this.hass.localize(
+                          "ui.dialogs.device-registry-detail.enabled_cause",
+                          {
+                            type: this.hass.localize(
+                              `ui.dialogs.device-registry-detail.type.${
+                                device.entry_type || "device"
+                              }`
+                            ),
+                            cause: this.hass.localize(
+                              `config_entry.disabled_by.${this._disabledBy}`
+                            ),
+                          }
+                        )
+                      : ""
+                  }
                   ${this.hass.localize(
                     "ui.dialogs.device-registry-detail.enabled_description"
                   )}

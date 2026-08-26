@@ -36,6 +36,10 @@ import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import {
+  computeCardFeatureLayout,
+  computeCardFeatureRows,
+} from "../card-features/common/feature-layout";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -151,14 +155,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
     const displayType = this._config?.display_type || "picture";
-    const featuresCount = this._config?.features?.length || 0;
+    const featureRows = this._config ? this._featureRows(this._config) : 0;
     return (
       1 +
       (displayType === "compact" ? (this._config?.vertical ? 1 : 0) : 2) +
-      (featuresPosition === "inline" ? 0 : featuresCount)
+      featureRows
     );
   }
 
@@ -170,13 +172,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       ? this._featurePosition(this._config)
       : "bottom";
     const featuresCount = this._config?.features?.length || 0;
-    if (featuresCount) {
+    if (this._config && featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
         columns = 12;
-      } else {
-        rows += featuresCount;
       }
+      rows += this._featureRows(this._config);
     }
 
     const displayType = this._config?.display_type || "picture";
@@ -417,8 +418,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       .map((sensorClass) => {
         if (sensorClass === "temperature" && area.temperature_entity_id) {
           const stateObj = this.hass.states[area.temperature_entity_id] as
-            | HassEntity
-            | undefined;
+            HassEntity | undefined;
           return !stateObj ||
             stateObj.state === UNAVAILABLE ||
             stateObj.state === UNKNOWN
@@ -427,8 +427,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         }
         if (sensorClass === "humidity" && area.humidity_entity_id) {
           const stateObj = this.hass.states[area.humidity_entity_id] as
-            | HassEntity
-            | undefined;
+            HassEntity | undefined;
           return !stateObj ||
             stateObj.state === UNAVAILABLE ||
             stateObj.state === UNKNOWN
@@ -557,15 +556,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  private _displayedFeatures = memoizeOne((config: AreaCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
+  private _featureLayout = memoizeOne((config: AreaCardConfig) =>
+    computeCardFeatureLayout(config.features, this._featurePosition(config))
+  );
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  });
+  private _featureRows = memoizeOne((config: AreaCardConfig) =>
+    computeCardFeatureRows(config.features, this._featurePosition(config))
+  );
 
   public willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("_config") || this._ratio === null) {
@@ -603,7 +600,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const features = this._featureLayout(this._config);
 
     const displayType = this._config.display_type || "picture";
 
@@ -622,55 +619,76 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
+    /* the picture takes the extra height, so only the compact type reserves a row */
+    const fixedInfoHeight =
+      displayType === "compact" &&
+      this.layout === "grid" &&
+      this._config.grid_options?.rows !== "auto";
+
     return html`
       <ha-card style=${styleMap(style)}>
-        ${displayType === "compact"
-          ? nothing
-          : html`
-              <div class="header">
-                <div
-                  class="picture"
-                  @action=${this._handleImageAction}
-                  .actionHandler=${this._hasImageAction
-                    ? actionHandler()
-                    : nothing}
-                  role=${ifDefined(this._hasImageAction ? "button" : undefined)}
-                  tabindex=${ifDefined(this._hasImageAction ? "0" : undefined)}
-                >
-                  ${(displayType === "picture" || displayType === "camera") &&
-                  (cameraEntityId || area.picture)
-                    ? html`
-                        <hui-image
-                          .cameraImage=${cameraEntityId}
-                          .cameraView=${this._config.camera_view}
-                          .image=${area.picture ? area.picture : undefined}
-                          .hass=${this.hass}
-                          fit-mode="cover"
-                          .aspectRatio=${ignoreAspectRatio
-                            ? undefined
-                            : this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
-                        ></hui-image>
-                      `
-                    : html`
-                        <ha-aspect-ratio
-                          .aspectRatio=${ignoreAspectRatio
-                            ? undefined
-                            : this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
-                        >
-                          <div class="icon-container">
-                            ${area.icon
-                              ? html`<ha-icon .icon=${area.icon}></ha-icon>`
-                              : nothing}
-                          </div>
-                        </ha-aspect-ratio>
-                      `}
+        ${
+          displayType === "compact"
+            ? nothing
+            : html`
+                <div class="header">
+                  <div
+                    class="picture"
+                    @action=${this._handleImageAction}
+                    .actionHandler=${
+                      this._hasImageAction ? actionHandler() : nothing
+                    }
+                    role=${ifDefined(this._hasImageAction ? "button" : undefined)}
+                    tabindex=${ifDefined(this._hasImageAction ? "0" : undefined)}
+                  >
+                    ${
+                      (displayType === "picture" || displayType === "camera") &&
+                      (cameraEntityId || area.picture)
+                        ? html`
+                            <hui-image
+                              .cameraImage=${cameraEntityId}
+                              .cameraView=${this._config.camera_view}
+                              .image=${area.picture ? area.picture : undefined}
+                              .hass=${this.hass}
+                              fit-mode="cover"
+                              .aspectRatio=${
+                                ignoreAspectRatio
+                                  ? undefined
+                                  : this._config.aspect_ratio ||
+                                    DEFAULT_ASPECT_RATIO
+                              }
+                            ></hui-image>
+                          `
+                        : html`
+                            <ha-aspect-ratio
+                              .aspectRatio=${
+                                ignoreAspectRatio
+                                  ? undefined
+                                  : this._config.aspect_ratio ||
+                                    DEFAULT_ASPECT_RATIO
+                              }
+                            >
+                              <div class="icon-container">
+                                ${
+                                  area.icon
+                                    ? html`<ha-icon
+                                        .icon=${area.icon}
+                                      ></ha-icon>`
+                                    : nothing
+                                }
+                              </div>
+                            </ha-aspect-ratio>
+                          `
+                    }
+                  </div>
+                  ${this._renderAlertSensors()}
                 </div>
-                ${this._renderAlertSensors()}
-              </div>
-            `}
+              `
+        }
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${Boolean(this._hasCardAction)}
           @action=${this._handleAction}
         >
@@ -679,27 +697,49 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             .icon=${icon}
             .iconPath=${icon ? undefined : mdiTextureBox}
           >
-            ${displayType === "compact"
-              ? this._renderAlertSensorBadge()
-              : nothing}
+            ${
+              displayType === "compact"
+                ? this._renderAlertSensorBadge()
+                : nothing
+            }
           </ha-tile-icon>
           <ha-tile-info
             slot="info"
+            class=${ifDefined(
+              this._config.vertical && fixedInfoHeight ? "twoline" : undefined
+            )}
             .primary=${primary}
             .secondary=${secondary}
           ></ha-tile-info>
-          ${features.length > 0
-            ? html`
-                <hui-card-features
-                  slot="features"
-                  .hass=${this.hass}
-                  .context=${this._featureContext}
-                  .color=${this._config.color}
-                  .features=${features}
-                  .position=${featurePosition}
-                ></hui-card-features>
-              `
-            : nothing}
+          ${
+            features.inline.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features-inline"
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features.inline}
+                    .position=${featurePosition}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
+          ${
+            features.below.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features"
+                    .columns=${features.columns}
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features.below}
+                    .position=${"bottom"}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
         </ha-tile-container>
       </ha-card>
     `;
@@ -801,6 +841,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         align-items: center;
         justify-content: center;
         color: white;
+      }
+      ha-tile-info.twoline::part(primary) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        white-space: normal;
+        overflow-wrap: anywhere;
       }
     `,
   ];

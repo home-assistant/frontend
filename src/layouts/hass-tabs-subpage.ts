@@ -12,9 +12,12 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { goBack, navigate } from "../common/navigate";
+import { getHistoryState, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
+import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -42,6 +45,7 @@ export interface PageNavigation {
   description?: string;
   iconColor?: string;
   info?: any;
+  filter?: (hass: HomeAssistant) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
@@ -120,16 +124,20 @@ export class HassTabsSubpage extends LitElement {
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
-              .name=${page.translationKey
-                ? localizeFunc(page.translationKey)
-                : page.name}
+              .name=${
+                page.translationKey
+                  ? localizeFunc(page.translationKey)
+                  : page.name
+              }
             >
-              ${page.iconPath
-                ? html`<ha-svg-icon
-                    slot="icon"
-                    .path=${page.iconPath}
-                  ></ha-svg-icon>`
-                : ""}
+              ${
+                page.iconPath
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>`
+                  : ""
+              }
             </ha-tab>
           </a>
         `
@@ -159,49 +167,56 @@ export class HassTabsSubpage extends LitElement {
       this._narrow,
       this.localizeFunc || this.hass.localize
     );
+    const backPath = sanitizeNavigationPath(this.backPath);
+
     return html`
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
-            ${this.mainPage || (!this.backPath && history.state?.root)
-              ? html`<ha-menu-button></ha-menu-button>`
-              : this.backPath
-                ? html`
-                    <ha-icon-button-arrow-prev
-                      .href=${this.backPath}
-                    ></ha-icon-button-arrow-prev>
-                  `
+            ${
+              this.mainPage || (!backPath && getHistoryState()?.root)
+                ? html`<ha-menu-button></ha-menu-button>`
                 : html`
                     <ha-icon-button-arrow-prev
+                      .href=${backPath}
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
-                  `}
-            ${this._narrow || !this.showTabs
-              ? html`<div class="main-title">
-                  <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
-                </div>`
-              : ""}
-            ${this.showTabs && !this._narrow
-              ? html`<div id="tabbar">${tabs}</div>`
-              : ""}
+                  `
+            }
+            ${
+              this._narrow || !this.showTabs
+                ? html`<div class="main-title">
+                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                  </div>`
+                : ""
+            }
+            ${
+              this.showTabs && !this._narrow
+                ? html`<div id="tabbar">${tabs}</div>`
+                : ""
+            }
             <div id="toolbar-icon">
               <slot name="toolbar-icon"></slot>
             </div>
           </div>
         </slot>
-        ${this.showTabs && this._narrow
-          ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
-          : ""}
+        ${
+          this.showTabs && this._narrow
+            ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
+            : ""
+        }
       </div>
       <div class="container">
-        ${this.pane
-          ? html`<div class="pane">
-              <div class="shadow-container"></div>
-              <div class="ha-scrollbar">
-                <slot name="pane"></slot>
-              </div>
-            </div>`
-          : nothing}
+        ${
+          this.pane
+            ? html`<div class="pane">
+                <div class="shadow-container"></div>
+                <div class="ha-scrollbar">
+                  <slot name="pane"></slot>
+                </div>
+              </div>`
+            : nothing
+        }
         <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
@@ -214,7 +229,7 @@ export class HassTabsSubpage extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
+  private _saveScrollPos(e: HASSDomTargetEvent<HTMLDivElement>) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
@@ -227,12 +242,8 @@ export class HassTabsSubpage extends LitElement {
     this._content.focus({ preventScroll: true });
   }
 
-  private _backTapped(): void {
-    if (this.backCallback) {
-      this.backCallback();
-      return;
-    }
-    goBack();
+  private _backTapped(ev: MouseEvent): void {
+    handleBackClick(ev, this.backPath, this.backCallback);
   }
 
   private _isActiveTabPath(tabPath: string, currentPath: string): boolean {

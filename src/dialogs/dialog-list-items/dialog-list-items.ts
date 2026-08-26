@@ -55,22 +55,28 @@ export class ListItemsDialog
           ${this._params.items.map(
             (item) => html`
               <ha-list-item-button @click=${this._itemClicked} .item=${item}>
-                ${item.iconPath
-                  ? html`
-                      <ha-svg-icon
-                        .path=${item.iconPath}
-                        slot="start"
-                      ></ha-svg-icon>
-                    `
-                  : item.icon
-                    ? html` <ha-icon icon=${item.icon} slot="start"></ha-icon> `
-                    : nothing}
+                ${
+                  item.iconPath
+                    ? html`
+                        <ha-svg-icon
+                          .path=${item.iconPath}
+                          slot="start"
+                        ></ha-svg-icon>
+                      `
+                    : item.icon
+                      ? html`
+                          <ha-icon icon=${item.icon} slot="start"></ha-icon>
+                        `
+                      : nothing
+                }
                 <span slot="headline">${item.label}</span>
-                ${item.description
-                  ? html`
-                      <span slot="supporting-text">${item.description}</span>
-                    `
-                  : nothing}
+                ${
+                  item.description
+                    ? html`
+                        <span slot="supporting-text">${item.description}</span>
+                      `
+                    : nothing
+                }
               </ha-list-item-button>
             `
           )}

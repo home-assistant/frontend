@@ -26,39 +26,66 @@ jobs:
     if: github.repository_owner == 'home-assistant'
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@e91ad1948e57189485b9c1ad608af0c303946f89 # master
+        uses: home-assistant/actions/helpers/verify-version@a7c616ce81ccda50150bf1595786c71b1883fabb # master
 
-      - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
         with:
-          node-version-file: ".nvmrc"
-
-      - name: Install dependencies
-        run: yarn install
+          immutable: false
+          cache: false
 
       - name: Download Translations
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The app fetches core (backend) translations live from HA, so the
+          # release build does not need Lokalise's backend project.
+          SKIP_BACKEND_TRANSLATIONS: "1"
+
+      # Restore the content-addressed compression cache. Unchanged chunks and
+      # static assets are then reused instead of re-run through brotli/zopfli.
+      - name: Restore compression cache
+        id: compress-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            compress-cache-${{ runner.os }}-
 
       - name: Build and release package
+        env:
+          COMPRESS_CACHE_DIR: ${{ github.workspace }}/.compress-cache
         run: |
           python3 -m pip install build
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/release
 
+      # The build keeps the cache under its size budget, so saving stays bounded.
+      # A unique key always writes; restore-keys picks the newest on the next
+      # run. Not gated on the restore step: a transient restore failure (it is
+      # continue-on-error) must not stop us persisting a freshly built cache.
+      - name: Save compression cache
+        if: success()
+        continue-on-error: true
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .compress-cache
+          key: compress-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           skip-existing: true
 
@@ -78,26 +105,28 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           version=$(echo "$GITHUB_REF" | awk -F"/" '{print $NF}' )
-          # Wait for the package to become available on PyPI
-          echo "Waiting for home-assistant-frontend==$version to appear on PyPI..."
+          # Wait for the exact wheel to appear on the simple index (the surface
+          # the wheels build's pip uses). The JSON API can report a version as
+          # available before it propagates here, which fails the wheels build.
+          wheel="home_assistant_frontend-${version}-py3-none-any.whl"
+          echo "Waiting for $wheel to appear on the PyPI simple index..."
           for i in $(seq 1 30); do
-            status=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/home-assistant-frontend/$version/json")
-            if [ "$status" = "200" ]; then
-              echo "Package is available on PyPI!"
+            if curl -sf "https://pypi.org/simple/home-assistant-frontend/" | grep -qF "$wheel"; then
+              echo "Package is available on the PyPI simple index!"
               break
             fi
             if [ "$i" = "30" ]; then
               echo "Timed out waiting for package to appear on PyPI"
               exit 1
             fi
-            echo "Not available yet (HTTP $status), retrying in 30 seconds... ($i/30)"
+            echo "Not available yet, retrying in 30 seconds... ($i/30)"
             sleep 30
           done
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@34957438948e0b3dcde73c77750643dadae594f5 # 2026.06.0
+        uses: home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716 # 2026.07.0
         with:
           abi: cp314
           tag: musllinux_1_2
@@ -113,19 +142,20 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
         with:
-          node-version-file: ".nvmrc"
-      - name: Install dependencies
-        run: yarn install
+          immutable: false
+          cache: false
       - name: Download Translations
         run: ./script/translations_download
         env:
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          # The landing-page build does not merge backend translations.
+          SKIP_BACKEND_TRANSLATIONS: "1"
       - name: Build landing-page
         run: landing-page/script/build_landing_page
       - name: Tar folder

@@ -71,125 +71,164 @@ export class HaDeviceCard extends LitElement {
         })}
       >
         <div class="card-content">
-          ${this.device.model
-            ? html`<div class="model">
-                ${this.device.model}
-                ${this.device.model_id ? html`(${this.device.model_id})` : ""}
-              </div>`
-            : this.device.model_id
-              ? html`<div class="model">${this.device.model_id}</div>`
-              : ""}
-          ${this.device.manufacturer
-            ? html`
-                <div class="manuf">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.manuf",
-                    { manufacturer: this.device.manufacturer }
-                  )}
-                </div>
-              `
-            : ""}
-          ${this.device.via_device_id
-            ? html`
-                <div class="extra-info">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.via"
-                  )}
-                  <span class="hub"
-                    ><a
-                      href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceNameDisplay(
-                        this.device.via_device_id
-                      )}</a
-                    ></span
-                  >
-                </div>
-              `
-            : ""}
-          ${this.device.sw_version
-            ? html`
-                <div class="extra-info">
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.${
-                      this.device.entry_type === "service" &&
-                      !this.device.hw_version
-                        ? "version"
-                        : "firmware"
-                    }`,
-                    { version: this.device.sw_version }
-                  )}
-                </div>
-              `
-            : ""}
-          ${this.device.hw_version
-            ? html`
-                <div class="extra-info">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.hardware",
-                    { version: this.device.hw_version }
-                  )}
-                </div>
-              `
-            : ""}
-          ${this.device.serial_number
-            ? html`
-                <div class="extra-info">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.serial_number",
-                    { serial_number: this.device.serial_number }
-                  )}
-                </div>
-              `
-            : ""}
+          ${
+            this.device.model
+              ? html`<div class="model">
+                  ${this.device.model}
+                  ${this.device.model_id ? html`(${this.device.model_id})` : ""}
+                </div>`
+              : this.device.model_id
+                ? html`<div class="model">${this.device.model_id}</div>`
+                : ""
+          }
+          ${
+            this.device.manufacturer
+              ? html`
+                  <div class="manuf">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.manuf",
+                      { manufacturer: this.device.manufacturer }
+                    )}
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.parent_device_id
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.part_of"
+                    )}
+                    <span class="hub"
+                      ><a
+                        href="/config/devices/device/${
+                          this.device.parent_device_id
+                        }"
+                        >${this._computeDeviceNameDisplay(
+                          this.device.parent_device_id
+                        )}</a
+                      ></span
+                    >
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.via_device_id
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.via"
+                    )}
+                    <span class="hub"
+                      ><a
+                        href="/config/devices/device/${this.device.via_device_id}"
+                        >${this._computeDeviceNameDisplay(
+                          this.device.via_device_id
+                        )}</a
+                      ></span
+                    >
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.sw_version
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.${
+                        this.device.entry_type === "service" &&
+                        !this.device.hw_version
+                          ? "version"
+                          : "firmware"
+                      }`,
+                      { version: this.device.sw_version }
+                    )}
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.hw_version
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.hardware",
+                      { version: this.device.hw_version }
+                    )}
+                  </div>
+                `
+              : ""
+          }
+          ${
+            this.device.serial_number
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.serial_number",
+                      { serial_number: this.device.serial_number }
+                    )}
+                  </div>
+                `
+              : ""
+          }
           ${this._getAddresses().map(
             ([type, value]) => html`
               <div class="extra-info">
-                ${type === "bluetooth" &&
-                isComponentLoaded(this.hass.config, "bluetooth")
-                  ? html`${titleCase(type)}:
-                      <a
-                        href="/config/bluetooth/advertisement-monitor?${createSearchParam(
-                          { address: value }
-                        )}"
-                        >${value.toUpperCase()}</a
-                      >`
-                  : type === "mac" &&
-                      isComponentLoaded(this.hass.config, "dhcp")
-                    ? html`MAC:
+                ${
+                  type === "bluetooth" &&
+                  isComponentLoaded(this.hass.config, "bluetooth")
+                    ? html`${titleCase(type)}:
                         <a
-                          href="/config/dhcp?${createSearchParam({
-                            mac_address: value,
-                          })}"
+                          href="/config/bluetooth/advertisement-monitor?${createSearchParam(
+                            { address: value }
+                          )}"
                           >${value.toUpperCase()}</a
                         >`
-                    : html`${type === "mac" ? "MAC" : titleCase(type)}:
-                      ${value.toUpperCase()}`}
+                    : type === "mac" &&
+                        isComponentLoaded(this.hass.config, "dhcp")
+                      ? html`MAC:
+                          <a
+                            href="/config/dhcp?${createSearchParam({
+                              mac_address: value,
+                            })}"
+                            >${value.toUpperCase()}</a
+                          >`
+                      : html`${type === "mac" ? "MAC" : titleCase(type)}:
+                        ${value.toUpperCase()}`
+                }
               </div>
             `
           )}
-          ${labels.length > 0
-            ? html`
-                <div class="extra-info labels">
-                  ${labels.map((labelId) => {
-                    const label = labelMap.get(labelId);
-                    return html`
-                      <ha-label
-                        .color=${label?.color}
-                        .description=${label?.description}
-                      >
-                        ${label?.icon
-                          ? html`<ha-icon
-                              slot="icon"
-                              .icon=${label.icon}
-                            ></ha-icon>`
-                          : nothing}
-                        ${label?.name || labelId}
-                      </ha-label>
-                    `;
-                  })}
-                </div>
-              `
-            : nothing}
+          ${
+            labels.length > 0
+              ? html`
+                  <div class="extra-info labels">
+                    ${labels.map((labelId) => {
+                      const label = labelMap.get(labelId);
+                      return html`
+                        <ha-label
+                          .color=${label?.color}
+                          .description=${label?.description}
+                        >
+                          ${
+                            label?.icon
+                              ? html`<ha-icon
+                                  slot="icon"
+                                  .icon=${label.icon}
+                                ></ha-icon>`
+                              : nothing
+                          }
+                          ${label?.name || labelId}
+                        </ha-label>
+                      `;
+                    })}
+                  </div>
+                `
+              : nothing
+          }
 
           <slot></slot>
         </div>

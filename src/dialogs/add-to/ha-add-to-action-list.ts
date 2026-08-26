@@ -79,15 +79,17 @@ class HaAddToActionList extends LitElement {
       <h3 class="section-header">
         ${this._localizeValue(section.title, section.titleKey)}
       </h3>
-      ${section.actions.length
-        ? html`<ha-list-base>
-            ${section.actions.map((action, actionIndex) =>
-              this._renderActionItem(action, sectionIndex, actionIndex)
-            )}
-          </ha-list-base>`
-        : html`<h4 class="empty">
-            ${this._localizeValue(section.empty, section.emptyKey)}
-          </h4>`}
+      ${
+        section.actions.length
+          ? html`<ha-list-base>
+              ${section.actions.map((action, actionIndex) =>
+                this._renderActionItem(action, sectionIndex, actionIndex)
+              )}
+            </ha-list-base>`
+          : html`<h4 class="empty">
+              ${this._localizeValue(section.empty, section.emptyKey)}
+            </h4>`
+      }
     `;
   }
 
@@ -108,19 +110,21 @@ class HaAddToActionList extends LitElement {
         )}
         @click=${this._actionSelected}
       >
-        ${action.icon
-          ? html`<ha-icon
-              class="start-icon"
-              slot="start"
-              .icon=${action.icon}
-            ></ha-icon>`
-          : action.iconPath
-            ? html`<ha-svg-icon
+        ${
+          action.icon
+            ? html`<ha-icon
                 class="start-icon"
                 slot="start"
-                .path=${action.iconPath}
-              ></ha-svg-icon>`
-            : nothing}
+                .icon=${action.icon}
+              ></ha-icon>`
+            : action.iconPath
+              ? html`<ha-svg-icon
+                  class="start-icon"
+                  slot="start"
+                  .path=${action.iconPath}
+                ></ha-svg-icon>`
+              : nothing
+        }
         <ha-svg-icon class="plus" slot="end" .path=${mdiPlus}></ha-svg-icon>
       </ha-list-item-button>
     `;

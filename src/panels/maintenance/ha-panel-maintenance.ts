@@ -5,6 +5,7 @@ import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
+import { ChildPanelReady } from "../../layouts/panel-ready";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
@@ -30,6 +31,8 @@ class PanelMaintenance extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _searchParams = new URLSearchParams(window.location.search);
+
+  private _childPanelReady?: ChildPanelReady;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -94,19 +97,22 @@ class PanelMaintenance extends LitElement {
         .backButton=${this._searchParams.has("historyBack")}
       >
         <div slot="title">${this.hass.localize("panel.maintenance")}</div>
-        ${this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view>
-              </hui-view-container>
-            `
-          : nothing}
+        ${
+          this._lovelace
+            ? html`
+                <hui-view-container .hass=${this.hass}>
+                  <hui-view-background .hass=${this.hass}>
+                  </hui-view-background>
+                  <hui-view
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .lovelace=${this._lovelace}
+                    .index=${this._viewIndex}
+                  ></hui-view>
+                </hui-view-container>
+              `
+            : nothing
+        }
       </ha-top-app-bar-fixed>
     `;
   }
@@ -124,6 +130,7 @@ class PanelMaintenance extends LitElement {
       return;
     }
 
+    this._childPanelReady ??= new ChildPanelReady(this);
     this._lovelace = {
       config: config,
       rawConfig: rawConfig,

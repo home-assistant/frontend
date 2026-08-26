@@ -49,46 +49,47 @@ export default class HaAutomationActionEditor extends LitElement {
       <div
         class=${classMap({
           "card-content": true,
-          disabled:
-            !this.indent &&
-            (this.disabled ||
-              (this.action.enabled === false && !this.yamlMode)),
+          disabled: !this.indent && this.disabled,
           yaml: yamlMode,
           indent: this.indent,
           card: !this.inSidebar,
         })}
       >
-        ${yamlMode
-          ? html`
-              ${!this.uiSupported
-                ? html`
-                    <ha-automation-editor-warning
-                      .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.unsupported_action"
-                      )}
-                      .localize=${this.hass.localize}
-                    ></ha-automation-editor-warning>
-                  `
-                : nothing}
-              <ha-yaml-editor
-                .defaultValue=${this.action}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(`ha-automation-action-${type}`, {
-                  hass: this.hass,
-                  action: this.action,
-                  disabled: this.disabled,
-                  narrow: this.narrow,
-                  optionsInSidebar: this.indent,
-                  indent: this.indent,
-                  inSidebar: this.inSidebar,
-                })}
-              </div>
-            `}
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.actions.unsupported_action"
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.action}
+                  @value-changed=${this._onYamlChange}
+                  .readOnly=${this.disabled}
+                ></ha-yaml-editor>
+              `
+            : html`
+                <div @value-changed=${this._onUiChanged}>
+                  ${dynamicElement(`ha-automation-action-${type}`, {
+                    hass: this.hass,
+                    action: this.action,
+                    disabled: this.disabled,
+                    narrow: this.narrow,
+                    optionsInSidebar: this.indent,
+                    indent: this.indent,
+                    inSidebar: this.inSidebar,
+                  })}
+                </div>
+              `
+        }
       </div>
     `;
   }

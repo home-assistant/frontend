@@ -5,8 +5,12 @@ import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
+import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import { TIMESTAMP_STATE_DOMAINS } from "../../../common/const";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-simple-entity-row")
 class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
@@ -42,7 +46,20 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${this.hass.formatEntityState(stateObj)}
+        ${
+          TIMESTAMP_STATE_DOMAINS.has(computeDomain(this._config.entity)) &&
+          stateObj.state !== UNAVAILABLE &&
+          stateObj.state !== UNKNOWN
+            ? html`
+                <hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(stateObj.state)}
+                  .format=${this._config.time_format}
+                  capitalize
+                ></hui-timestamp-display>
+              `
+            : this.hass.formatEntityState(stateObj)
+        }
       </hui-generic-entity-row>
     `;
   }

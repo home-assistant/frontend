@@ -66,14 +66,16 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
           slot="actionItems"
           class="save-button
               ${classMap({
-            saved: this._saving === false || this.isDirtyState,
-          })}"
+                saved: this._saving === false || this.isDirtyState,
+              })}"
         >
-          ${this.isDirtyState
-            ? this.hass!.localize(
-                "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
-              )
-            : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")}
+          ${
+            this.isDirtyState
+              ? this.hass!.localize(
+                  "ui.panel.lovelace.editor.raw_editor.unsaved_changes"
+                )
+              : this.hass!.localize("ui.panel.lovelace.editor.raw_editor.saved")
+          }
         </div>
         <ha-button
           slot="actionItems"
@@ -102,6 +104,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   }
 
   protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     const oldLovelace = changedProps.get("lovelace") as Lovelace | undefined;
     if (
       !this._saving &&

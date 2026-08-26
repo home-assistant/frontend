@@ -12,12 +12,14 @@ import {
   startOfMonth,
   addYears,
   addMonths,
+  addMinutes,
   addHours,
   startOfDay,
   addDays,
   subDays,
 } from "date-fns";
 import type {
+  BarSeriesOption,
   CallbackDataParams,
   LineSeriesOption,
   TopLevelFormatterParams,
@@ -36,6 +38,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
+import { createYAxisPrecisionBounds } from "../../../../../components/chart/y-axis-fraction-digits";
 import "../../../../../components/chart/ha-chart-tooltip-marker";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
@@ -95,10 +98,15 @@ export function getSuggestedMax(
 
 function createYAxisLabelFormatter(
   locale: FrontendLocaleData,
-  fractionDigits: number
+  getFractionDigits: () => number
 ) {
-  return (value: number): string =>
-    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
+  return (value: number): string => {
+    const fractionDigits = getFractionDigits();
+    return formatNumber(value, locale, {
+      minimumFractionDigits: value === 0 ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
+  };
 }
 
 export function getCommonOptions(
@@ -119,6 +127,11 @@ export function getCommonOptions(
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
+
+  // Recompute the tick-label precision from the visible axis extent so labels
+  // stay distinct when zooming in on a narrow range. Energy axes are anchored
+  // at 0, so the extent is unioned with 0 to match the rendered ticks.
+  let currentFractionDigits = yAxisFractionDigits;
 
   // Extend suggestedMax so compare bars that land past the main end
   // (e.g. Feb compared to Jan) stay visible instead of being clipped.
@@ -165,8 +178,17 @@ export function getCommonOptions(
       nameTextStyle: {
         align: "left",
       },
+      ...createYAxisPrecisionBounds({
+        includeZero: true,
+        onFractionDigits: (digits) => {
+          currentFractionDigits = digits;
+        },
+      }),
       axisLabel: {
-        formatter: createYAxisLabelFormatter(locale, yAxisFractionDigits),
+        formatter: createYAxisLabelFormatter(
+          locale,
+          () => currentFractionDigits
+        ),
       },
       splitLine: {
         show: true,
@@ -297,11 +319,11 @@ function formatTooltip(
     return nothing;
   }
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
-    ${rows.map(
-      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
-    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}`;
+    ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
+      sumPositive !== 0 && countPositive > 1 && formatTotal
+        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        : nothing
+    }`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {
@@ -364,6 +386,150 @@ export function computeStatMidpoint(
     );
   }
   return (start + end) / 2;
+}
+
+const PERIOD_MS: Record<string, number> = {
+  "5minute": 5 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+};
+
+/**
+ * Offset from a period's start to its midpoint, for centering sub-daily bars
+ * (and forecast lines) between axis ticks — 0 for daily+ periods, which sit at
+ * the start.
+ *
+ * `measuredGap` is the gap between the first two entries, when available. It
+ * adapts the offset to data that is finer-grained than the nominal period
+ * (e.g. external forecast data), but is clamped to the nominal period so
+ * sparse data (gaps between readings) can't inflate the offset, and a lone
+ * bucket (no gap to measure) still centers on the nominal midpoint.
+ */
+export function getPeriodMidpointOffset(
+  period: string,
+  measuredGap?: number
+): number {
+  const nominal = PERIOD_MS[period] ?? 0;
+  return (measuredGap ? Math.min(measuredGap, nominal) : nominal) / 2;
+}
+
+/**
+ * Generate the expected statistics-bucket grid across [start, end) so sparse
+ * data can be zero-filled. Without a dense grid, ECharts derives the bar band
+ * width from the minimum gap between data points: sparse data yields
+ * oversized bars, and a single point makes ECharts expand the time axis by
+ * ±40% of its span, ignoring the configured min/max.
+ *
+ * The grid is anchored on a real data bucket rather than on `start`: recorder
+ * buckets are UTC-aligned, so in half-hour timezones they don't sit on local
+ * period boundaries. Stepping from a real bucket keeps generated buckets
+ * exactly on the data's grid (midpoints for sub-daily periods, period starts
+ * otherwise). A non-compare series is preferred so the grid aligns with the
+ * main data; a compare series is only used as a fallback so a compare-only
+ * view — e.g. today has no data yet but the compare period does — still gets
+ * zero-filled instead of leaving a lone bar that expands the axis. Returns an
+ * empty array when there is no data to anchor on.
+ */
+export function generateFillBuckets(
+  datasets: BarSeriesOption[],
+  start: Date,
+  end: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): number[] {
+  const firstBucketX = (includeCompare: boolean): number | undefined => {
+    for (const dataset of datasets) {
+      if (
+        dataset.type !== "bar" ||
+        !dataset.data?.length ||
+        (!includeCompare && String(dataset.id).startsWith("compare-"))
+      ) {
+        continue;
+      }
+      const first = dataset.data[0];
+      const value =
+        first && typeof first === "object" && "value" in first
+          ? first.value
+          : first;
+      const x = Number((value as number[])?.[0]);
+      if (!Number.isNaN(x)) {
+        return x;
+      }
+    }
+    return undefined;
+  };
+
+  // Prefer a non-compare anchor; fall back to any bar series (compare included).
+  const anchor = firstBucketX(false) ?? firstBucketX(true);
+  if (anchor === undefined) {
+    return [];
+  }
+
+  const anchorDate = new Date(anchor);
+  // Step relative to the anchor (not iteratively) so month-length clamping
+  // and DST shifts can't accumulate drift.
+  const bucketAt = (n: number): number =>
+    (period === "5minute"
+      ? addMinutes(anchorDate, 5 * n)
+      : period === "hour"
+        ? addHours(anchorDate, n)
+        : period === "day"
+          ? addDays(anchorDate, n)
+          : addMonths(anchorDate, n)
+    ).getTime();
+
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+  const buckets: number[] = [];
+  for (let n = 0; ; n--) {
+    const ts = bucketAt(n);
+    if (ts < startMs) {
+      break;
+    }
+    buckets.push(ts);
+  }
+  for (let n = 1; ; n++) {
+    const ts = bucketAt(n);
+    if (ts >= endMs) {
+      break;
+    }
+    buckets.push(ts);
+  }
+  return buckets;
+}
+
+export interface UntrackedSplit {
+  /** Untracked consumption per timestamp, clamped to >= 0. */
+  positive: Record<number, number>;
+  /** Negative untracked per timestamp — only timestamps where the raw value
+   * was below zero (tracked devices reported more than total consumption). */
+  negative: Record<number, number>;
+}
+
+/**
+ * Split untracked energy consumption into positive and negative parts per
+ * timestamp.
+ *
+ * Untracked is `used_total - sum(tracked device consumption)`. It can go
+ * negative when meters report at coarser resolution than device sensors
+ * (e.g. an integer-kWh grid meter vs fractional device sensors). The positive
+ * part is the genuine untracked consumption; the negative part is surfaced as
+ * a separate, toggleable series so users can hide it without losing it as a
+ * diagnostic signal.
+ */
+export function splitUntrackedConsumption(
+  usedTotal: Record<number, number>,
+  totalDeviceConsumption: Record<number, number>
+): UntrackedSplit {
+  const positive: Record<number, number> = {};
+  const negative: Record<number, number> = {};
+  for (const time of Object.keys(usedTotal)) {
+    const ts = Number(time);
+    const raw = usedTotal[ts] - (totalDeviceConsumption[ts] || 0);
+    positive[ts] = Math.max(0, raw);
+    if (raw < 0) {
+      negative[ts] = raw;
+    }
+  }
+  return { positive, negative };
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

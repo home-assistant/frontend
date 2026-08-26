@@ -1,8 +1,8 @@
-import { mdiMapClock, mdiShape } from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import type { HomeAssistant } from "../types";
 import type {
   AutomationElementGroupCollection,
   Trigger,
@@ -14,15 +14,17 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
       dynamicGroups: {},
-      time_location: {
-        icon: mdiMapClock,
+      time: {
+        icon: mdiClockOutline,
         members: {
-          calendar: {},
-          sun: {},
           time: {},
           time_pattern: {},
-          zone: {},
         },
+        domains: ["calendar", "schedule"],
+      },
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
       },
       event: {},
       geo_location: {},
@@ -33,7 +35,6 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
       webhook: {},
       persistent_notification: {},
       helpers: {},
-      other: {},
     },
   },
   {
@@ -46,9 +47,9 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.triggers.groups.custom_integrations.label",
+      "ui.panel.config.automation.editor.triggers.groups.integrations.label",
     groups: {
-      customDynamicGroups: {},
+      integrationGroups: {},
     },
   },
 ] as const;
@@ -73,10 +74,10 @@ export interface TriggerDescription {
 export type TriggerDescriptions = Record<string, TriggerDescription>;
 
 export const subscribeTriggers = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (triggers: TriggerDescriptions) => void
 ) =>
-  hass.connection.subscribeMessage<TriggerDescriptions>(callback, {
+  connection.subscribeMessage<TriggerDescriptions>(callback, {
     type: "trigger_platforms/subscribe",
   });
 

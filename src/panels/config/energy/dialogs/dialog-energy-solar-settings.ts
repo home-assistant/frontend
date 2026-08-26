@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
@@ -12,6 +13,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/radio/ha-radio-group";
 import "../../../../components/input/ha-input";
+import { domainToName } from "../../../../data/integration";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import type { ConfigEntry } from "../../../../data/config_entries";
@@ -153,13 +155,15 @@ export class DialogEnergySolarSettings
           type="text"
           .disabled=${!this._source?.stat_energy_from}
           .value=${this._source?.name || ""}
-          .placeholder=${this._source?.stat_energy_from
-            ? getStatisticLabel(
-                this.hass,
-                this._source.stat_energy_from,
-                this._params?.statsMetadata?.[this._source.stat_energy_from]
-              )
-            : ""}
+          .placeholder=${
+            this._source?.stat_energy_from
+              ? getStatisticLabel(
+                  this.hass,
+                  this._source.stat_energy_from,
+                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                )
+              : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -206,47 +210,49 @@ export class DialogEnergySolarSettings
             )}
           </ha-radio-option>
         </ha-radio-group>
-        ${this._forecast
-          ? html`<div class="forecast-options">
-              ${this._configEntries?.map(
-                (entry) =>
-                  html`<ha-checkbox
-                    .entry=${entry}
-                    @change=${this._forecastCheckChanged}
-                    .checked=${!!this._source?.config_entry_solar_forecast?.includes(
-                      entry.entry_id
-                    )}
-                  >
-                    <div style="display: flex; align-items: center;">
-                      <img
-                        alt=""
-                        crossorigin="anonymous"
-                        referrerpolicy="no-referrer"
-                        style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
-                        src=${brandsUrl(
-                          {
-                            domain: entry.domain,
-                            type: "icon",
-                            darkOptimized: this.hass.themes?.darkMode,
-                          },
-                          this.hass.auth.data.hassUrl
-                        )}
-                      />${entry.title}
-                    </div>
-                  </ha-checkbox>`
-              )}
-              <ha-button
-                appearance="filled"
-                size="s"
-                @click=${this._addForecast}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.energy.solar.dialog.add_forecast"
+        ${
+          this._forecast
+            ? html`<div class="forecast-options">
+                ${this._configEntries?.map(
+                  (entry) =>
+                    html`<ha-checkbox
+                      .entry=${entry}
+                      @change=${this._forecastCheckChanged}
+                      .checked=${!!this._source?.config_entry_solar_forecast?.includes(
+                        entry.entry_id
+                      )}
+                    >
+                      <div style="display: flex; align-items: center;">
+                        <img
+                          alt=""
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
+                          src=${brandsUrl(
+                            {
+                              domain: entry.domain,
+                              type: "icon",
+                              darkOptimized: this.hass.themes?.darkMode,
+                            },
+                            this.hass.auth.data.hassUrl
+                          )}
+                        />${entry.title || domainToName(this.hass.localize, entry.domain)}
+                      </div>
+                    </ha-checkbox>`
                 )}
-              </ha-button>
-            </div>`
-          : ""}
+                <ha-button
+                  appearance="filled"
+                  size="s"
+                  @click=${this._addForecast}
+                >
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.solar.dialog.add_forecast"
+                  )}
+                </ha-button>
+              </div>`
+            : ""
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -258,8 +264,10 @@ export class DialogEnergySolarSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._source!.stat_energy_from ||
-            (!!this._params?.source && !this.isDirtyState)}
+            .disabled=${
+              !this._source!.stat_energy_from ||
+              (!!this._params?.source && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -284,7 +292,7 @@ export class DialogEnergySolarSettings
             );
   }
 
-  private _handleForecastChanged(ev: Event) {
+  private _handleForecastChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
     this._forecast = (ev.currentTarget as HaRadioGroup).value === "true";
     this._updateFormDirtyState();
   }

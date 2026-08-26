@@ -1,9 +1,10 @@
 import fs from "fs";
 import { glob } from "glob";
 import gulp from "gulp";
-import yaml from "js-yaml";
+import { load as loadYaml } from "js-yaml";
 import { marked } from "marked";
 import path from "path";
+import { createWorkflowLockTask } from "../output-lock.mjs";
 import paths from "../paths.cjs";
 import "./clean.js";
 import "./entry-html.js";
@@ -47,7 +48,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
       if (descriptionContent.startsWith("---")) {
         const metadataEnd = descriptionContent.indexOf("---", 3);
-        metadata = yaml.load(descriptionContent.substring(3, metadataEnd));
+        metadata = loadYaml(descriptionContent.substring(3, metadataEnd));
         descriptionContent = descriptionContent
           .substring(metadataEnd + 3)
           .trim();
@@ -164,6 +165,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
+    createWorkflowLockTask("develop-gallery"),
     "clean-gallery",
     "translations-enable-merge-backend",
     gulp.parallel(
@@ -195,6 +197,7 @@ gulp.task(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
+    createWorkflowLockTask("build-gallery"),
     "clean-gallery",
     "translations-enable-merge-backend",
     gulp.parallel(

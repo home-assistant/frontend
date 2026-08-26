@@ -33,23 +33,31 @@ interface ProgressSegment {
 
 const HA_STAGES: CreateBackupStage[] = ["home_assistant"];
 
-const ADDON_STAGES: CreateBackupStage[] = [
-  "addons",
-  "apps",
+// Quick metadata writes emitted while the backup is initialized, before the
+// Home Assistant stage (docker_config only by older Supervisors)
+const SETUP_STAGES: CreateBackupStage[] = [
   "addon_repositories",
   "app_repositories",
   "docker_config",
+];
+
+const ADDON_STAGES: CreateBackupStage[] = ["addons", "apps"];
+
+const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
+
+// Emitted after the backup file is finished, when the backend waits for
+// cold-backup add-ons to come back up
+const AWAIT_RESTART_STAGES: CreateBackupStage[] = [
   "await_addon_restarts",
   "await_app_restarts",
 ];
 
-const MEDIA_STAGES: CreateBackupStage[] = ["folders", "finishing_file"];
-
-// Ordered groups matching actual backend execution order
+// Ordered groups matching actual backend execution order. The await restart
+// stages share the last creation group to keep the progress monotonic.
 const STAGE_ORDER: CreateBackupStage[][] = [
+  [...SETUP_STAGES, ...HA_STAGES],
   ADDON_STAGES,
-  MEDIA_STAGES,
-  HA_STAGES,
+  [...MEDIA_STAGES, ...AWAIT_RESTART_STAGES],
   ["upload_to_agents"],
   ["cleaning_up"],
 ];
@@ -165,21 +173,21 @@ export class HaBackupOverviewProgress extends LitElement {
       return [
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.apps"
+            "ui.panel.config.backup.overview.progress.segments.home_assistant"
           ),
           state: this._getSegmentState(0, currentGroupIndex),
           flex: 2,
         },
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.media"
+            "ui.panel.config.backup.overview.progress.segments.apps"
           ),
           state: this._getSegmentState(1, currentGroupIndex),
           flex: 2,
         },
         {
           label: this.hass.localize(
-            "ui.panel.config.backup.overview.progress.segments.home_assistant"
+            "ui.panel.config.backup.overview.progress.segments.media"
           ),
           state: this._getSegmentState(2, currentGroupIndex),
           flex: 2,
@@ -201,18 +209,18 @@ export class HaBackupOverviewProgress extends LitElement {
       ];
     }
 
-    // Non-HAOS: No app segment, just Media, HA, Upload and Cleaning up
+    // Non-HAOS: No app segment, just HA, Media, Upload and Cleaning up
     return [
       {
         label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.media"
+          "ui.panel.config.backup.overview.progress.segments.home_assistant"
         ),
-        state: this._getSegmentState(1, currentGroupIndex),
+        state: this._getSegmentState(0, currentGroupIndex),
         flex: 2,
       },
       {
         label: this.hass.localize(
-          "ui.panel.config.backup.overview.progress.segments.home_assistant"
+          "ui.panel.config.backup.overview.progress.segments.media"
         ),
         state: this._getSegmentState(2, currentGroupIndex),
         flex: 2,
@@ -328,9 +336,9 @@ export class HaBackupOverviewProgress extends LitElement {
     return html`
       <div
         class="agent-list-wrapper ${this._collapsingAgents ? "collapsing" : ""}"
-        @animationend=${this._collapsingAgents
-          ? this._handleAgentCollapseEnd
-          : undefined}
+        @animationend=${
+          this._collapsingAgents ? this._handleAgentCollapseEnd : undefined
+        }
       >
         <ha-list-base class="agent-list">
           ${this.agents.map((agent) => {
@@ -408,13 +416,15 @@ export class HaBackupOverviewProgress extends LitElement {
         .description=${this._description}
         status="none"
       >
-        ${hasProgressContent
-          ? html`
-              <div class="progress-content">
-                ${segmentedProgress} ${agentProgress}
-              </div>
-            `
-          : nothing}
+        ${
+          hasProgressContent
+            ? html`
+                <div class="progress-content">
+                  ${segmentedProgress} ${agentProgress}
+                </div>
+              `
+            : nothing
+        }
       </ha-backup-summary-card>
     `;
   }

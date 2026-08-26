@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
 
 interface BranchConfig {
@@ -31,7 +32,7 @@ export class HatGraphBranch extends LitElement {
 
   private _maxHeight = 0;
 
-  private _updateBranches(ev: Event) {
+  private _updateBranches(ev: HASSDomTargetEvent<HTMLSlotElement>) {
     let total_width = 0;
     const heights: number[] = [];
     const branches: BranchConfig[] = [];
@@ -64,13 +65,14 @@ export class HatGraphBranch extends LitElement {
   render() {
     return html`
       <slot name="head"></slot>
-      ${!this.start
-        ? html`
-            <svg id="top" width=${this._totalWidth}>
-              ${this._branches.map((branch) =>
-                branch.start
-                  ? ""
-                  : svg`
+      ${
+        !this.start
+          ? html`
+              <svg id="top" width=${this._totalWidth}>
+                ${this._branches.map((branch) =>
+                  branch.start
+                    ? ""
+                    : svg`
                   <path
                     class=${classMap({
                       track: branch.track,
@@ -80,10 +82,11 @@ export class HatGraphBranch extends LitElement {
                       L ${branch.x} ${BRANCH_HEIGHT}
                       "/>
                 `
-              )}
-            </svg>
-          `
-        : nothing}
+                )}
+              </svg>
+            `
+          : nothing
+      }
       <div id="branches">
         <svg id="lines" width=${this._totalWidth} height=${this._maxHeight}>
           ${this._branches.map((branch) => {
@@ -103,12 +106,13 @@ export class HatGraphBranch extends LitElement {
         <slot @slotchange=${this._updateBranches}></slot>
       </div>
 
-      ${!this.short
-        ? html`
-            <svg id="bottom" width=${this._totalWidth}>
-              ${this._branches.map((branch) => {
-                if (branch.end) return "";
-                return svg`
+      ${
+        !this.short
+          ? html`
+              <svg id="bottom" width=${this._totalWidth}>
+                ${this._branches.map((branch) => {
+                  if (branch.end) return "";
+                  return svg`
                   <path
                     class=${classMap({
                       track: branch.track,
@@ -119,10 +123,11 @@ export class HatGraphBranch extends LitElement {
                       L ${this._totalWidth / 2} ${BRANCH_HEIGHT + SPACING}
                       "/>
                 `;
-              })}
-            </svg>
-          `
-        : nothing}
+                })}
+              </svg>
+            `
+          : nothing
+      }
     `;
   }
 

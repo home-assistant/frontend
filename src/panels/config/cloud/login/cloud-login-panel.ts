@@ -45,6 +45,7 @@ export class CloudLoginPanel extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config"
         header="Home Assistant Cloud"
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
@@ -108,14 +109,16 @@ export class CloudLoginPanel extends LitElement {
               </p>
             </div>
 
-            ${this.flashMessage
-              ? html`<ha-alert
-                  dismissable
-                  @alert-dismissed-clicked=${this._dismissFlash}
-                >
-                  ${this.flashMessage}
-                </ha-alert>`
-              : ""}
+            ${
+              this.flashMessage
+                ? html`<ha-alert
+                    dismissable
+                    @alert-dismissed-clicked=${this._dismissFlash}
+                  >
+                    ${this.flashMessage}
+                  </ha-alert>`
+                : ""
+            }
 
             <cloud-login
               .hass=${this.hass}

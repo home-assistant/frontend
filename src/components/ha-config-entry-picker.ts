@@ -57,9 +57,13 @@ class HaConfigEntryPicker extends LitElement {
     return html`
       <ha-generic-picker
         .hass=${this.hass}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.config-entry-picker.config_entry")
-          : this.label}
+        .label=${
+          this.label === undefined && this.hass
+            ? this.hass.localize(
+                "ui.components.config-entry-picker.config_entry"
+              )
+            : this.label
+        }
         .value=${this.value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -112,12 +116,14 @@ class HaConfigEntryPicker extends LitElement {
     return html`<span
       style="display: flex; align-items: center; gap: var(--ha-space-2);"
       slot="headline"
-      >${item?.icon
-        ? html`<ha-domain-icon
-            .domain=${item.icon!}
-            brand-fallback
-          ></ha-domain-icon>`
-        : nothing}${item?.primary || "Unknown"}</span
+      >${
+        item?.icon
+          ? html`<ha-domain-icon
+              .domain=${item.icon!}
+              brand-fallback
+            ></ha-domain-icon>`
+          : nothing
+      }${item?.primary || "Unknown"}</span
     >`;
   };
 

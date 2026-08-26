@@ -2,6 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { internationalizationContext } from "../../data/context";
 import { showToast } from "../../util/toast";
@@ -76,9 +77,11 @@ export class HaInputCopy extends LitElement {
         <div class="textfield-container">
           <ha-input
             .type=${this.type}
-            .value=${this._showMasked && this.maskedValue
-              ? this.maskedValue
-              : this.value}
+            .value=${
+              this._showMasked && this.maskedValue
+                ? this.maskedValue
+                : this.value
+            }
             .readonly=${this.readonly}
             .disabled=${this.disabled}
             @click=${this._focusInput}
@@ -86,17 +89,19 @@ export class HaInputCopy extends LitElement {
             .autoValidate=${this.autoValidate}
             .validationMessage=${this.validationMessage}
           >
-            ${this.maskedToggle && this.maskedValue
-              ? html`<ha-icon-button
-                  slot="end"
-                  class="toggle-unmasked"
-                  .label=${this._i18n.localize(
-                    `ui.common.${this._showMasked ? "show" : "hide"}`
-                  )}
-                  @click=${this._toggleMasked}
-                  .path=${this._showMasked ? mdiEye : mdiEyeOff}
-                ></ha-icon-button>`
-              : nothing}
+            ${
+              this.maskedToggle && this.maskedValue
+                ? html`<ha-icon-button
+                    slot="end"
+                    class="toggle-unmasked"
+                    .label=${this._i18n.localize(
+                      `ui.common.${this._showMasked ? "show" : "hide"}`
+                    )}
+                    @click=${this._toggleMasked}
+                    .path=${this._showMasked ? mdiEye : mdiEyeOff}
+                  ></ha-icon-button>`
+                : nothing
+            }
           </ha-input>
         </div>
         <ha-button @click=${this._copy} appearance="plain" size="s">
@@ -107,7 +112,7 @@ export class HaInputCopy extends LitElement {
     `;
   }
 
-  private _focusInput(ev: Event) {
+  private _focusInput(ev: HASSDomCurrentTargetEvent<HaInput>) {
     const inputElement = ev.currentTarget as HaInput;
     inputElement.select();
   }

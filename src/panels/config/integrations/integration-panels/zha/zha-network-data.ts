@@ -63,9 +63,10 @@ export function createZHANetworkChartData(
     }
 
     const haDevice = hass.devices[device.device_reg_id] as
-      | DeviceRegistryEntry
-      | undefined;
-    const area = haDevice ? getDeviceArea(haDevice, hass.areas) : undefined;
+      DeviceRegistryEntry | undefined;
+    const area = haDevice
+      ? getDeviceArea(haDevice, hass.areas, hass.devices)
+      : undefined;
     // Create node
     nodes.push({
       id: device.ieee,

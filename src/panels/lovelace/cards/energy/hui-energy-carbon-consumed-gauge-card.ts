@@ -139,38 +139,40 @@ class HuiEnergyCarbonGaugeCard
 
     return html`
       <ha-card>
-        ${value !== undefined
-          ? html`
-              <ha-gauge
-                min="0"
-                max="100"
-                .value=${value}
-                .formatOptions=${FORMAT_OPTIONS}
-                .locale=${this.hass.locale}
-                label="%"
-                style=${styleMap({
-                  "--gauge-color": this._computeSeverity(value),
-                })}
-              ></ha-gauge>
+        ${
+          value !== undefined
+            ? html`
+                <ha-gauge
+                  min="0"
+                  max="100"
+                  .value=${value}
+                  .formatOptions=${FORMAT_OPTIONS}
+                  .locale=${this.hass.locale}
+                  label="%"
+                  style=${styleMap({
+                    "--gauge-color": this._computeSeverity(value),
+                  })}
+                ></ha-gauge>
 
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
-              <ha-tooltip for="info" placement="left">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
-                )}
-              </ha-tooltip>
-              <div class="name">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
-                )}
-              </div>
-            `
-          : html`${this.hass.localize(
-              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_not_calculated"
-            )}`}
+                <ha-svg-icon
+                  id="info"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <ha-tooltip for="info" placement="left">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                  )}
+                </ha-tooltip>
+                <div class="name">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_consumed"
+                  )}
+                </div>
+              `
+            : html`${this.hass.localize(
+                "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.low_carbon_energy_not_calculated"
+              )}`
+        }
       </ha-card>
     `;
   }

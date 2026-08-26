@@ -1,7 +1,4 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
-import type { HassioResponse } from "./common";
-import { hassioApiResultExtractor } from "./common";
 
 interface IpConfiguration {
   address: string[];
@@ -55,66 +52,37 @@ export interface NetworkInfo {
 
 export const fetchNetworkInfo = async (
   hass: HomeAssistant
-): Promise<NetworkInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/network/info",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<NetworkInfo>>(
-      "GET",
-      "hassio/network/info"
-    )
-  );
-};
+): Promise<NetworkInfo> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/network/info",
+    method: "get",
+  });
 
 export const updateNetworkInterface = async (
   hass: HomeAssistant,
   network_interface: string,
   options: Partial<NetworkInterface>
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/network/interface/${network_interface}/update`,
-      method: "post",
-      data: options,
-      timeout: null,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<NetworkInfo>>(
-    "POST",
-    `hassio/network/interface/${network_interface}/update`,
-    options
-  );
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/network/interface/${network_interface}/update`,
+    method: "post",
+    data: options,
+    timeout: null,
+  });
 };
 
 export const accesspointScan = async (
   hass: HomeAssistant,
   network_interface: string
-): Promise<AccessPoints> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/network/interface/${network_interface}/accesspoints`,
-      method: "get",
-      timeout: null,
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<AccessPoints>>(
-      "GET",
-      `hassio/network/interface/${network_interface}/accesspoints`
-    )
-  );
-};
+): Promise<AccessPoints> =>
+  hass.callWS({
+    type: "supervisor/api",
+    endpoint: `/network/interface/${network_interface}/accesspoints`,
+    method: "get",
+    timeout: null,
+  });
 
 export const parseAddress = (address: string) => {
   const [ip, cidr] = address.split("/");

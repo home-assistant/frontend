@@ -16,14 +16,12 @@ interface CacheResult<T> {
  * @param args extra arguments to pass to the function to fetch the data
  * @returns
  */
-export const timeCachePromiseFunc = async <T>(
+export const timeCachePromiseFunc = async <T, H = HomeAssistant>(
   cacheKey: string,
   cacheTime: number,
-  func: (hass: HomeAssistant, ...args: any[]) => Promise<T>,
-  generateCacheKey:
-    | ((hass: HomeAssistant, lastResult: T) => unknown)
-    | undefined,
-  hass: HomeAssistant,
+  func: (hass: H, ...args: any[]) => Promise<T>,
+  generateCacheKey: ((hass: H, lastResult: T) => unknown) | undefined,
+  hass: H,
   ...args: any[]
 ): Promise<T> => {
   const anyHass = hass as any;
@@ -57,17 +55,20 @@ export const timeCachePromiseFunc = async <T>(
   }
 
   const resultPromise = func(hass, ...args);
-  anyHass[cacheKey] = resultPromise;
+  const cachePromise = resultPromise.then((result) => ({
+    result,
+    cacheKey: generateCacheKey?.(hass, result),
+  }));
+  anyHass[cacheKey] = cachePromise;
 
-  resultPromise.then(
+  cachePromise.then(
     // When successful, set timer to clear cache
     (result) => {
-      anyHass[cacheKey] = {
-        result,
-        cacheKey: generateCacheKey?.(hass, result),
-      };
+      anyHass[cacheKey] = result;
       setTimeout(() => {
-        anyHass[cacheKey] = undefined;
+        if (anyHass[cacheKey] === result) {
+          anyHass[cacheKey] = undefined;
+        }
       }, cacheTime);
     },
     // On failure, clear cache right away

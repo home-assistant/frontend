@@ -4,8 +4,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -14,7 +16,10 @@ import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import { getSignedPath } from "../../../data/auth";
-import { getErrorLogDownloadUrl } from "../../../data/error_log";
+import {
+  getCoreLogFileDownloadUnavailableReason,
+  getErrorLogDownloadUrl,
+} from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
 import type { LoggedError } from "../../../data/system_log";
 import {
@@ -88,6 +93,8 @@ export class SystemLogCard extends LitElement {
   );
 
   protected render() {
+    const logFileDownloadUnavailableReason =
+      getCoreLogFileDownloadUnavailableReason(this.hass);
     const filteredItems = this._items
       ? this._getFilteredItems(
           this.hass.localize,
@@ -101,105 +108,139 @@ export class SystemLogCard extends LitElement {
     return html`
       <div class="system-log-intro">
         <ha-card outlined>
-          ${this._items === undefined
-            ? html`
-                <div class="loading-container">
-                  <ha-spinner></ha-spinner>
-                </div>
-              `
-            : html`
-                <div class="header">
-                  <h1 class="card-header">${this.header || "Logs"}</h1>
-                  <div class="header-buttons">
-                    <ha-icon-button
-                      .path=${mdiDownload}
-                      @click=${this._downloadLogs}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.download_logs"
-                      )}
-                    ></ha-icon-button>
-                    <ha-icon-button
-                      .path=${mdiRefresh}
-                      @click=${this.fetchData}
-                      .label=${this.hass.localize("ui.common.refresh")}
-                    ></ha-icon-button>
-
-                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
-                      <ha-icon-button
-                        slot="trigger"
-                        .path=${mdiDotsVertical}
-                        .label=${this.hass.localize("ui.common.menu")}
-                      ></ha-icon-button>
-                      <ha-dropdown-item value="show-full-logs">
-                        <ha-svg-icon slot="icon" .path=${mdiText}></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.panel.config.logs.show_full_logs"
-                        )}
-                      </ha-dropdown-item>
-                    </ha-dropdown>
+          ${
+            this._items === undefined
+              ? html`
+                  <div class="loading-container">
+                    <ha-spinner></ha-spinner>
                   </div>
-                </div>
-                ${this._items.length === 0
-                  ? html`
-                      <div class="card-content empty-content">
-                        ${this.hass.localize("ui.panel.config.logs.no_issues")}
-                      </div>
-                    `
-                  : filteredItems.length === 0 && this.filter
-                    ? html`<div class="card-content">
-                        ${this.hass.localize(
-                          "ui.panel.config.logs.no_issues_search",
-                          { term: this.filter }
-                        )}
-                      </div>`
-                    : html`<ha-list
-                        >${filteredItems.map(
-                          (item, idx) => html`
-                            <ha-list-item
-                              @click=${this._openLog}
-                              .logItem=${item}
-                              twoline
-                            >
-                              ${item.message[0]}
-                              <span slot="secondary" class="secondary">
-                                ${this._timestamp(item)} –
-                                ${html`(<span class=${item.level}
-                                    >${this.hass.localize(
-                                      `ui.panel.config.logs.level.${item.level}`
-                                    )}</span
-                                  >) `}
-                                ${integrations[idx]
-                                  ? `${domainToName(
-                                      this.hass!.localize,
-                                      integrations[idx]!
-                                    )}${
-                                      isCustomIntegrationError(item)
-                                        ? ` (${this.hass.localize(
-                                            "ui.panel.config.logs.custom_integration"
-                                          )})`
-                                        : ""
-                                    }`
-                                  : item.source[0]}
-                                ${item.count > 1
-                                  ? html` - ${this._multipleMessages(item)} `
-                                  : nothing}
-                              </span>
-                            </ha-list-item>
-                          `
-                        )}</ha-list
-                      >`}
+                `
+              : html`
+                  <div class="header">
+                    <h1 class="card-header">
+                      ${
+                        this.header ||
+                        this.hass.localize("ui.panel.config.logs.caption")
+                      }
+                    </h1>
+                    <div class="header-buttons">
+                      ${
+                        logFileDownloadUnavailableReason
+                          ? nothing
+                          : html`<ha-icon-button
+                              .path=${mdiDownload}
+                              @click=${this._downloadLogs}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.logs.download_logs"
+                              )}
+                            ></ha-icon-button>`
+                      }
+                      <ha-icon-button
+                        .path=${mdiRefresh}
+                        @click=${this.fetchData}
+                        .label=${this.hass.localize("ui.common.refresh")}
+                      ></ha-icon-button>
 
-                <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    domain="system_log"
-                    service="clear"
-                    >${this.hass.localize(
-                      "ui.panel.config.logs.clear"
-                    )}</ha-call-service-button
-                  >
-                </div>
-              `}
+                      ${
+                        logFileDownloadUnavailableReason
+                          ? nothing
+                          : html`<ha-dropdown
+                              @wa-select=${this._handleOverflowAction}
+                            >
+                              <ha-icon-button
+                                slot="trigger"
+                                .path=${mdiDotsVertical}
+                                .label=${this.hass.localize("ui.common.menu")}
+                              ></ha-icon-button>
+                              <ha-dropdown-item value="show-full-logs">
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiText}
+                                ></ha-svg-icon>
+                                ${this.hass.localize(
+                                  "ui.panel.config.logs.show_full_logs"
+                                )}
+                              </ha-dropdown-item>
+                            </ha-dropdown>`
+                      }
+                    </div>
+                  </div>
+                  ${
+                    logFileDownloadUnavailableReason
+                      ? html`<ha-alert alert-type="warning">
+                          ${this.hass.localize(
+                            `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
+                          )}
+                        </ha-alert>`
+                      : nothing
+                  }
+                  ${
+                    this._items.length === 0
+                      ? html`
+                          <div class="card-content empty-content">
+                            ${this.hass.localize("ui.panel.config.logs.no_issues")}
+                          </div>
+                        `
+                      : filteredItems.length === 0 && this.filter
+                        ? html`<div class="card-content">
+                            ${this.hass.localize(
+                              "ui.panel.config.logs.no_issues_search",
+                              { term: this.filter }
+                            )}
+                          </div>`
+                        : html`<ha-list
+                            >${filteredItems.map(
+                              (item, idx) => html`
+                                <ha-list-item
+                                  @click=${this._openLog}
+                                  .logItem=${item}
+                                  twoline
+                                >
+                                  ${item.message[0]}
+                                  <span slot="secondary" class="secondary">
+                                    ${this._timestamp(item)} –
+                                    ${html`(<span class=${item.level}
+                                        >${this.hass.localize(
+                                          `ui.panel.config.logs.level.${item.level}`
+                                        )}</span
+                                      >) `}
+                                    ${
+                                      integrations[idx]
+                                        ? `${domainToName(
+                                            this.hass!.localize,
+                                            integrations[idx]!
+                                          )}${
+                                            isCustomIntegrationError(item)
+                                              ? ` (${this.hass.localize(
+                                                  "ui.panel.config.logs.custom_integration"
+                                                )})`
+                                              : ""
+                                          }`
+                                        : item.source[0]
+                                    }
+                                    ${
+                                      item.count > 1
+                                        ? html`
+                                            - ${this._multipleMessages(item)}
+                                          `
+                                        : nothing
+                                    }
+                                  </span>
+                                </ha-list-item>
+                              `
+                            )}</ha-list
+                          >`
+                  }
+
+                  <div class="card-actions">
+                    <ha-call-service-button domain="system_log" service="clear"
+                      >${this.hass.localize(
+                        "ui.panel.config.logs.clear"
+                      )}</ha-call-service-button
+                    >
+                  </div>
+                `
+          }
         </ha-card>
       </div>
     `;
@@ -232,6 +273,10 @@ export class SystemLogCard extends LitElement {
   }
 
   private async _downloadLogs() {
+    if (getCoreLogFileDownloadUnavailableReason(this.hass)) {
+      return;
+    }
+
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const downloadUrl = getErrorLogDownloadUrl(this.hass);
     const logFileName = `home-assistant_${timeString}.log`;
@@ -239,7 +284,9 @@ export class SystemLogCard extends LitElement {
     fileDownload(signedUrl.path, logFileName);
   }
 
-  private _openLog(ev: Event): void {
+  private _openLog(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { logItem: LoggedError }>
+  ): void {
     const item = (ev.currentTarget as any).logItem;
     showSystemLogDetailDialog(this, { item });
   }
@@ -287,6 +334,11 @@ export class SystemLogCard extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .secondary {
+      display: inline-block;
+      direction: var(--direction);
     }
 
     .error {

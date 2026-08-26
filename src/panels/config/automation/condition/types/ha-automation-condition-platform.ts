@@ -1,13 +1,22 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
-import type { PlatformCondition } from "../../../../../data/automation";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-tooltip";
+import type {
+  ForDict,
+  PlatformCondition,
+} from "../../../../../data/automation";
 import {
   getConditionDomain,
   getConditionObjectId,
@@ -15,10 +24,20 @@ import {
 } from "../../../../../data/condition";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
+import { getRecorderEntityOptions } from "../../../../../data/recorder";
 import type { TargetSelector } from "../../../../../data/selector";
-import { getTargetEntityCount } from "../../../../../data/target";
+import {
+  extractFromTarget,
+  getTargetEntityCount,
+} from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+
+// Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
+// when a condition has a `for:` duration, the recorder is only queried this far
+// back to prime it at setup, so longer durations can't be fully satisfied from
+// history after a restart or reload.
+const MAX_HISTORY_PRIMING_LOOKBACK_HOURS = 6;
 
 const showOptionalToggle = (field: ConditionDescription["fields"][string]) =>
   field.selector &&
@@ -41,6 +60,11 @@ export class HaPlatformCondition extends LitElement {
 
   @state() private _resolvedTargetEntityCount?: number;
 
+  @state() private _targetHasUnrecordedEntity = false;
+
+  // Incremented on each recording check so stale async responses are ignored.
+  private _recordingCheckId = 0;
+
   public static get defaultConfig(): PlatformCondition {
     return { condition: "" };
   }
@@ -51,12 +75,30 @@ export class HaPlatformCondition extends LitElement {
       this.hass.loadBackendTranslation("conditions");
       this.hass.loadBackendTranslation("selector");
     }
+
+    // The `for:` priming info depends on both the condition (target + duration)
+    // and the description (whether the condition targets entities at all), which
+    // can arrive in separate updates.
+    if (
+      changedProperties.has("condition") ||
+      changedProperties.has("description")
+    ) {
+      const previousCondition = changedProperties.get("condition") as
+        undefined | this["condition"];
+      if (
+        changedProperties.has("description") ||
+        previousCondition?.target !== this.condition?.target ||
+        previousCondition?.options?.for !== this.condition?.options?.for
+      ) {
+        this._updateDurationPrimingInfo();
+      }
+    }
+
     if (!changedProperties.has("condition")) {
       return;
     }
     const oldValue = changedProperties.get("condition") as
-      | undefined
-      | this["condition"];
+      undefined | this["condition"];
 
     // Fetch the manifest if we have a condition selected and the condition domain changed.
     // If no condition is selected, clear the manifest.
@@ -144,68 +186,67 @@ export class HaPlatformCondition extends LitElement {
       )
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/conditions/${this.condition.condition}`)
+      : this._manifest?.documentation;
+
     return html`
       <div class="description">
         ${description ? html`<p>${description}</p>` : nothing}
-        ${this._manifest
-          ? html`<a
-              href=${this._manifest.is_built_in
-                ? documentationUrl(
-                    this.hass,
-                    `/integrations/${this._manifest.domain}`
-                  )
-                : this._manifest.documentation}
-              title=${this.hass.localize(
-                "ui.components.service-control.integration_doc"
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                class="help-icon"
-                .label=${this.hass.localize(
+        ${
+          documentationLink
+            ? html`<a
+                href=${documentationLink}
+                title=${this.hass.localize(
                   "ui.components.service-control.integration_doc"
                 )}
-              ></ha-icon-button>
-            </a>`
-          : nothing}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  class="help-icon"
+                  .label=${this.hass.localize(
+                    "ui.components.service-control.integration_doc"
+                  )}
+                ></ha-icon-button>
+              </a>`
+            : nothing
+        }
       </div>
-      ${conditionDesc && "target" in conditionDesc
-        ? html`<ha-settings-row narrow>
-            <span slot="heading"
-              >${this.hass.localize(
-                "ui.components.service-control.target"
-              )}</span
-            >
-            <ha-selector
+      ${
+        conditionDesc && "target" in conditionDesc
+          ? html`<ha-selector
+              class="target-selector"
               .hass=${this.hass}
               .selector=${this._targetSelector(conditionDesc.target)}
               .disabled=${this.disabled}
               @value-changed=${this._targetChanged}
               .value=${this.condition?.target}
-            ></ha-selector
-          ></ha-settings-row>`
-        : nothing}
-      ${shouldRenderDataYaml
-        ? html`<ha-yaml-editor
-            .label=${this.hass.localize(
-              "ui.components.service-control.action_data"
-            )}
-            .name=${"data"}
-            .readOnly=${this.disabled}
-            .defaultValue=${this.condition?.options}
-            @value-changed=${this._dataChanged}
-          ></ha-yaml-editor>`
-        : Object.entries(conditionDesc.fields).map(([fieldName, dataField]) =>
-            this._renderField(
-              fieldName,
-              dataField,
-              hasOptional,
-              domain,
-              conditionName
+            ></ha-selector>`
+          : nothing
+      }
+      ${
+        shouldRenderDataYaml
+          ? html`<ha-yaml-editor
+              .label=${this.hass.localize(
+                "ui.components.service-control.action_data"
+              )}
+              .name=${"data"}
+              .readOnly=${this.disabled}
+              .defaultValue=${this.condition?.options}
+              @value-changed=${this._dataChanged}
+            ></ha-yaml-editor>`
+          : Object.entries(conditionDesc.fields).map(([fieldName, dataField]) =>
+              this._renderField(
+                fieldName,
+                dataField,
+                hasOptional,
+                domain,
+                conditionName
+              )
             )
-          )}
+      }
     `;
   }
 
@@ -244,49 +285,61 @@ export class HaPlatformCondition extends LitElement {
     );
 
     return html`<ha-settings-row narrow>
-      ${!showOptional
-        ? hasOptional
-          ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-          : nothing
-        : html`<ha-checkbox
-            .key=${fieldName}
-            .checked=${this._checkedKeys.has(fieldName) ||
-            (!!this.condition?.options &&
-              this.condition.options[fieldName] !== undefined)}
-            .disabled=${this.disabled}
-            @change=${this._checkboxChanged}
-            slot="prefix"
-          ></ha-checkbox>`}
+      ${
+        !showOptional
+          ? hasOptional
+            ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+            : nothing
+          : html`<ha-checkbox
+              .key=${fieldName}
+              .checked=${
+                this._checkedKeys.has(fieldName) ||
+                (!!this.condition?.options &&
+                  this.condition.options[fieldName] !== undefined)
+              }
+              .disabled=${this.disabled}
+              @change=${this._checkboxChanged}
+              slot="prefix"
+            ></ha-checkbox>`
+      }
       <span
         slot="heading"
         class=${showOptional ? "clickable" : ""}
         @click=${showOptional ? this._toggleCheckbox : undefined}
-        >${this.hass.localize(
-          `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || fieldName}</span
+        >${
+          this.hass.localize(
+            `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
+          ) || fieldName
+        }${this._renderForPrimingInfo(fieldName)}</span
       >
-      ${description
-        ? html`<span
-            class=${showOptional ? "clickable" : ""}
-            @click=${showOptional ? this._toggleCheckbox : undefined}
-            slot="description"
-            >${description}</span
-          >`
-        : nothing}
+      ${
+        description
+          ? html`<span
+              class=${showOptional ? "clickable" : ""}
+              @click=${showOptional ? this._toggleCheckbox : undefined}
+              slot="description"
+              >${description}</span
+            >`
+          : nothing
+      }
       <ha-selector
-        .disabled=${this.disabled ||
-        (showOptional &&
-          !this._checkedKeys.has(fieldName) &&
-          (!this.condition?.options ||
-            this.condition.options[fieldName] === undefined))}
+        .disabled=${
+          this.disabled ||
+          (showOptional &&
+            !this._checkedKeys.has(fieldName) &&
+            (!this.condition?.options ||
+              this.condition.options[fieldName] === undefined))
+        }
         .hass=${this.hass}
         .selector=${selector}
         .context=${this._generateContext(dataField)}
         .key=${fieldName}
         @value-changed=${this._dataChanged}
-        .value=${this.condition?.options
-          ? this.condition.options[fieldName]
-          : undefined}
+        .value=${
+          this.condition?.options
+            ? this.condition.options[fieldName]
+            : undefined
+        }
         .placeholder=${dataField.default}
         .localizeValue=${this._localizeValueCallback}
         .required=${dataField.required}
@@ -377,20 +430,8 @@ export class HaPlatformCondition extends LitElement {
         Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
       let defaultValue = field?.default;
 
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "constant" in field.selector
-      ) {
-        defaultValue = field.selector.constant?.value;
-      }
-
-      if (
-        defaultValue == null &&
-        field?.selector &&
-        "boolean" in field.selector
-      ) {
-        defaultValue = false;
+      if (defaultValue == null && field?.selector) {
+        defaultValue = getSelectorFallbackValue(field.selector);
       }
 
       if (defaultValue != null) {
@@ -472,6 +513,118 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
+  // Shows a small info icon beside the `for` duration field's label, with a
+  // tooltip explaining when history priming can't fully cover the duration.
+  private _renderForPrimingInfo(fieldName: string) {
+    if (fieldName !== "for") {
+      return nothing;
+    }
+    const text = this._durationPrimingInfoText();
+    if (!text) {
+      return nothing;
+    }
+    return html`<ha-svg-icon
+        id="for-priming-info"
+        tabindex="0"
+        class="priming-info-icon"
+        .path=${mdiAlertOutline}
+        @click=${stopPropagation}
+      ></ha-svg-icon>
+      <ha-tooltip for="for-priming-info">${text}</ha-tooltip>`;
+  }
+
+  private _durationPrimingInfoText(): string | undefined {
+    const forValue = this.condition.options?.for;
+
+    // Priming only happens for entity conditions that have a `for:` duration.
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target
+    ) {
+      return undefined;
+    }
+
+    if (this._targetHasUnrecordedEntity) {
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.entity_not_recorded"
+      );
+    }
+
+    if (this._durationExceedsLookback(forValue)) {
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.history_capped",
+        { hours: MAX_HISTORY_PRIMING_LOOKBACK_HOURS }
+      );
+    }
+
+    return undefined;
+  }
+
+  private _durationExceedsLookback(forValue: unknown): boolean {
+    const duration = createDurationData(
+      forValue as string | number | ForDict | undefined
+    );
+    if (!duration) {
+      return false;
+    }
+    return (
+      durationDataToSeconds(duration) >
+      MAX_HISTORY_PRIMING_LOOKBACK_HOURS * 3600
+    );
+  }
+
+  private async _updateDurationPrimingInfo(): Promise<void> {
+    const forValue = this.condition.options?.for;
+    const target = this.condition.target;
+
+    // Recording status only matters for an entity condition that has both a
+    // target and a `for:` duration.
+    const checkId = ++this._recordingCheckId;
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target ||
+      !target ||
+      !this.hass.config.components.includes("recorder")
+    ) {
+      this._targetHasUnrecordedEntity = false;
+      return;
+    }
+
+    try {
+      const { referenced_entities } = await extractFromTarget(
+        this.hass.callWS,
+        target
+      );
+      // Ignore if a newer check superseded this one.
+      if (checkId !== this._recordingCheckId) {
+        return;
+      }
+      if (!referenced_entities.length) {
+        this._targetHasUnrecordedEntity = false;
+        return;
+      }
+      const recordingDisabled = await Promise.all(
+        referenced_entities.map((entityId) =>
+          getRecorderEntityOptions(this.hass, entityId)
+            .then((options) => options.recording_disabled_by !== null)
+            // Unknown entity or command unavailable on older cores: don't warn.
+            .catch(() => false)
+        )
+      );
+      if (checkId !== this._recordingCheckId) {
+        return;
+      }
+      this._targetHasUnrecordedEntity = recordingDisabled.some(Boolean);
+    } catch (_err) {
+      // Target resolution failed; fall back to no warning rather than guessing.
+      if (checkId === this._recordingCheckId) {
+        this._targetHasUnrecordedEntity = false;
+      }
+    }
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -496,6 +649,14 @@ export class HaPlatformCondition extends LitElement {
     ha-yaml-editor {
       display: block;
       margin: 0 var(--ha-space-4);
+    }
+    ha-selector.target-selector {
+      display: block;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
     }
     ha-yaml-editor {
       padding: var(--ha-space-4) 0;
@@ -526,6 +687,15 @@ export class HaPlatformCondition extends LitElement {
     }
     .clickable {
       cursor: pointer;
+    }
+    .priming-info-icon {
+      --mdc-icon-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--warning-color);
+      margin-inline-start: var(--ha-space-1);
+      vertical-align: middle;
+      cursor: help;
     }
   `;
 }

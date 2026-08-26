@@ -79,31 +79,37 @@ export class EntitySettingsHelperTab extends LitElement {
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
       <div class="form">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
-        ${this._item === null
-          ? html`<ha-alert alert-type="info"
-              >${this.hass.localize(
-                "ui.dialogs.helper_settings.yaml_not_editable"
-              )}</ha-alert
-            >`
-          : nothing}
-        ${!this._componentLoaded
-          ? this.hass.localize(
-              "ui.dialogs.helper_settings.platform_not_loaded",
-              { platform: this.entry.platform }
-            )
-          : html`
-              <span @value-changed=${this._valueChanged}>
-                ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                  hass: this.hass,
-                  item: this._item,
-                  entry: this.entry,
-                  disabled: this._item === null,
-                })}
-              </span>
-            `}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
+        ${
+          this._item === null
+            ? html`<ha-alert alert-type="info"
+                >${this.hass.localize(
+                  "ui.dialogs.helper_settings.yaml_not_editable"
+                )}</ha-alert
+              >`
+            : nothing
+        }
+        ${
+          !this._componentLoaded
+            ? this.hass.localize(
+                "ui.dialogs.helper_settings.platform_not_loaded",
+                { platform: this.entry.platform }
+              )
+            : html`
+                <span @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                    disabled: this._item === null,
+                  })}
+                </span>
+              `
+        }
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
@@ -117,16 +123,19 @@ export class EntitySettingsHelperTab extends LitElement {
           variant="danger"
           appearance="plain"
           @click=${this._confirmDeleteItem}
-          .disabled=${this._submitting ||
-          (!this._item && !stateObj?.attributes.restored)}
+          .disabled=${
+            this._submitting || (!this._item && !stateObj?.attributes.restored)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!this._dirtyState?.isDirty ||
-          !!this._submitting ||
-          !!(this._item && !this._item.name)}
+          .disabled=${
+            !this._dirtyState?.isDirty ||
+            !!this._submitting ||
+            !!(this._item && !this._item.name)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
@@ -231,6 +240,7 @@ export class EntitySettingsHelperTab extends LitElement {
         }
         .form {
           padding: 20px 24px;
+          z-index: 0;
         }
         .buttons {
           box-sizing: border-box;
@@ -238,6 +248,9 @@ export class EntitySettingsHelperTab extends LitElement {
           justify-content: space-between;
           padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
+          position: sticky;
+          bottom: 0px;
+          z-index: 1;
         }
         .error {
           color: var(--error-color);

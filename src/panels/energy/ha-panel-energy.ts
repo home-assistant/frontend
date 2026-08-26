@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -16,7 +17,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { DEFAULT_POWER_COLLECTION_KEY } from "./constants";
+import { DEFAULT_POWER_COLLECTION_KEY } from "../../data/energy";
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
@@ -161,7 +162,9 @@ class PanelEnergy extends LitElement {
         .route=${this.route}
         .panel=${this.panel}
         .backButton=${this._searchParms.has("historyBack")}
-        .backPath=${this._searchParms.get("backPath") || "/"}
+        .backPath=${
+          sanitizeNavigationPath(this._searchParms.get("backPath")) || "/"
+        }
         @reload-energy-panel=${this._reloadConfig}
       >
       </hui-root>

@@ -5,9 +5,11 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
+import type { HaIconButton } from "../../components/ha-icon-button";
 import "../../components/ha-settings-row";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
@@ -54,36 +56,38 @@ class HaLongLivedTokens extends LitElement {
               "ui.panel.profile.long_lived_access_tokens.learn_auth_requests"
             )}
           </a>
-          ${!accessTokens.length
-            ? html`<p>
-                ${this.hass.localize(
-                  "ui.panel.profile.long_lived_access_tokens.empty_state"
-                )}
-              </p>`
-            : accessTokens.map(
-                (token) =>
-                  html`<ha-settings-row two-line>
-                    <span slot="heading">${token.client_name}</span>
-                    <div slot="description">
-                      ${this.hass.localize(
-                        "ui.panel.profile.long_lived_access_tokens.created",
-                        {
-                          date: relativeTime(
-                            new Date(token.created_at),
-                            this.hass.locale
-                          ),
-                        }
-                      )}
-                    </div>
-                    <ha-icon-button
-                      .token=${token}
-                      .disabled=${token.is_current}
-                      .label=${this.hass.localize("ui.common.delete")}
-                      .path=${mdiDelete}
-                      @click=${this._deleteToken}
-                    ></ha-icon-button>
-                  </ha-settings-row>`
-              )}
+          ${
+            !accessTokens.length
+              ? html`<p>
+                  ${this.hass.localize(
+                    "ui.panel.profile.long_lived_access_tokens.empty_state"
+                  )}
+                </p>`
+              : accessTokens.map(
+                  (token) =>
+                    html`<ha-settings-row two-line>
+                      <span slot="heading">${token.client_name}</span>
+                      <div slot="description">
+                        ${this.hass.localize(
+                          "ui.panel.profile.long_lived_access_tokens.created",
+                          {
+                            date: relativeTime(
+                              new Date(token.created_at),
+                              this.hass.locale
+                            ),
+                          }
+                        )}
+                      </div>
+                      <ha-icon-button
+                        .token=${token}
+                        .disabled=${token.is_current}
+                        .label=${this.hass.localize("ui.common.delete")}
+                        .path=${mdiDelete}
+                        @click=${this._deleteToken}
+                      ></ha-icon-button>
+                    </ha-settings-row>`
+                )
+          }
         </div>
 
         <div class="card-actions">
@@ -108,8 +112,10 @@ class HaLongLivedTokens extends LitElement {
     });
   }
 
-  private async _deleteToken(ev: Event): Promise<void> {
-    const token = (ev.currentTarget as any).token;
+  private async _deleteToken(
+    ev: HASSDomCurrentTargetEvent<HaIconButton & { token: RefreshToken }>
+  ): Promise<void> {
+    const token = ev.currentTarget.token;
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(

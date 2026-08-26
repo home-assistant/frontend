@@ -1,18 +1,24 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { internationalizationContext, labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -25,27 +31,38 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   @consume({ context: labelsContext, subscribe: true })
   @state()
   private _labels?: LabelRegistryEntry[];
 
-  @state() private _shouldRender = false;
-
   @state() private _filter?: string;
 
-  @query("ha-list") private _list?: HTMLElement;
+  private _content = createRef<HTMLElement>();
+
+  private _panel = new FilterPanelController(this, this._content);
 
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
-    (labels: LabelRegistryEntry[], filter: string | undefined, _value) =>
+    (
+      labels: LabelRegistryEntry[],
+      filter: string | undefined,
+      language: string | undefined,
+      _value
+    ) =>
       labels
         .filter(
           (label) =>
@@ -54,11 +71,7 @@ export class HaFilterLabels extends LitElement {
             label.label_id.toLowerCase().includes(filter)
         )
         .sort((a, b) =>
-          stringCompare(
-            a.name || a.label_id,
-            b.name || b.label_id,
-            this.hass.locale.language
-          )
+          stringCompare(a.name || a.label_id, b.name || b.label_id, language)
         )
   );
 
@@ -67,21 +80,25 @@ export class HaFilterLabels extends LitElement {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.labels.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${this._localize("ui.panel.config.labels.caption")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-input-search
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              <ha-input-search
                 appearance="outlined"
                 .value=${this._filter}
                 @input=${this._handleSearchChange}
@@ -96,6 +113,7 @@ export class HaFilterLabels extends LitElement {
                   this._filteredLabels(
                     this._labels || [],
                     this._filter,
+                    this._i18n.locale.language,
                     this.value
                   ),
                   (label) => label.label_id,
@@ -109,51 +127,31 @@ export class HaFilterLabels extends LitElement {
                         .color=${label.color}
                         .description=${label.description}
                       >
-                        ${label.icon
-                          ? html`<ha-icon
-                              slot="icon"
-                              .icon=${label.icon}
-                            ></ha-icon>`
-                          : nothing}
+                        ${
+                          label.icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${label.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
                         ${label.name}
                       </ha-label>
                     </ha-check-list-item>`
                 )}
-              </ha-list> `
-          : nothing}
-      </ha-expansion-panel>
-      ${this.expanded
-        ? html`<ha-list-item
-            graphic="icon"
-            @click=${this._manageLabels}
-            class="add"
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.labels.manage_labels")}
-          </ha-list-item>`
-        : nothing}
+              </ha-list>
+              <ha-list-item graphic="icon" @click=${this._manageLabels}>
+                <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+                ${this._localize("ui.panel.config.labels.manage_labels")}
+              </ha-list-item>
+            </div>`
+          : nothing
+      }
     `;
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
-        // 49px - height of a header + 1px
-        // 4px - padding-top of the search-input
-        // 32px - height of the search input
-        // 48px - height of ha-list-item
-      }, 300);
-    }
   }
 
   private _manageLabels() {
     navigate("/config/labels");
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -169,6 +167,7 @@ export class HaFilterLabels extends LitElement {
     const filteredLabels = this._filteredLabels(
       this._labels || [],
       this._filter,
+      this._i18n.locale.language,
       this.value
     );
 
@@ -209,18 +208,11 @@ export class HaFilterLabels extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          position: relative;
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;
@@ -248,12 +240,6 @@ export class HaFilterLabels extends LitElement {
         }
         .warning {
           color: var(--error-color);
-        }
-        .add {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          left: 0;
         }
         ha-input-search {
           display: block;

@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -18,6 +19,7 @@ import {
   subscribeLabFeatures,
 } from "../../../data/labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -37,7 +39,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _preview_features: LabPreviewFeature[] = [];
+  @state() private _preview_features?: LabPreviewFeature[];
 
   @state() private _highlightedPreviewFeature?: string;
 
@@ -97,6 +99,10 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    if (this._preview_features === undefined) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
     const sortedFeatures = this._sortedPreviewFeatures(
       this.hass.localize,
       this._preview_features
@@ -109,63 +115,67 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         back-path="/config/system"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
-        ${sortedFeatures.length
-          ? html`
-              <ha-icon-button
-                slot="toolbar-icon"
-                .href=${documentationUrl(this.hass, "/integrations/labs/")}
-                target="_blank"
-                rel="noopener noreferrer"
-                .title=${this.hass.localize("ui.common.help")}
-                .label=${this.hass.localize("ui.common.help")}
-                .path=${mdiHelpCircleOutline}
-              ></ha-icon-button>
-            `
-          : nothing}
-        <div class="content">
-          ${!sortedFeatures.length
+        ${
+          sortedFeatures.length
             ? html`
-                <div class="empty">
-                  <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
-                  <h1>
-                    ${this.hass.localize("ui.panel.config.labs.empty.title")}
-                  </h1>
-                  ${this.hass.localize(
-                    "ui.panel.config.labs.empty.description"
-                  )}
-                  <a
-                    href=${documentationUrl(this.hass, "/integrations/labs/")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize("ui.panel.config.labs.learn_more")}
-                    <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                  </a>
-                </div>
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  .href=${documentationUrl(this.hass, "/integrations/labs/")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  .title=${this.hass.localize("ui.common.help")}
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircleOutline}
+                ></ha-icon-button>
               `
-            : html`
-                <ha-card outlined>
-                  <div class="card-content intro-card">
+            : nothing
+        }
+        <div class="content">
+          ${
+            !sortedFeatures.length
+              ? html`
+                  <div class="empty">
+                    <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
                     <h1>
-                      ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                      ${this.hass.localize("ui.panel.config.labs.empty.title")}
                     </h1>
-                    <p class="intro-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.labs.intro_description"
-                      )}
-                    </p>
-                    <ha-alert alert-type="warning">
-                      ${this.hass.localize(
-                        "ui.panel.config.labs.intro_warning"
-                      )}
-                    </ha-alert>
+                    ${this.hass.localize(
+                      "ui.panel.config.labs.empty.description"
+                    )}
+                    <a
+                      href=${documentationUrl(this.hass, "/integrations/labs/")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize("ui.panel.config.labs.learn_more")}
+                      <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                    </a>
                   </div>
-                </ha-card>
+                `
+              : html`
+                  <ha-card outlined>
+                    <div class="card-content intro-card">
+                      <h1>
+                        ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                      </h1>
+                      <p class="intro-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.labs.intro_description"
+                        )}
+                      </p>
+                      <ha-alert alert-type="warning">
+                        ${this.hass.localize(
+                          "ui.panel.config.labs.intro_warning"
+                        )}
+                      </ha-alert>
+                    </div>
+                  </ha-card>
 
-                ${sortedFeatures.map((preview_feature) =>
-                  this._renderPreviewFeature(preview_feature)
-                )}
-              `}
+                  ${sortedFeatures.map((preview_feature) =>
+                    this._renderPreviewFeature(preview_feature)
+                  )}
+                `
+          }
         </div>
       </hass-subpage>
     `;
@@ -194,6 +204,9 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
       : integrationName;
 
     const isHighlighted = this._highlightedPreviewFeature === previewFeatureId;
+
+    const feedbackUrl = sanitizeHttpUrl(preview_feature.feedback_url);
+    const reportIssueUrl = sanitizeHttpUrl(preview_feature.report_issue_url);
 
     // Build description with learn more link if available
     const descriptionWithLink = preview_feature.learn_more_url
@@ -232,32 +245,36 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         </div>
         <div class="card-actions">
           <div>
-            ${preview_feature.feedback_url
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    href=${preview_feature.feedback_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.labs.provide_feedback"
-                    )}
-                  </ha-button>
-                `
-              : nothing}
-            ${preview_feature.report_issue_url
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    href=${preview_feature.report_issue_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize("ui.panel.config.labs.report_issue")}
-                  </ha-button>
-                `
-              : nothing}
+            ${
+              feedbackUrl
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      href=${feedbackUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.labs.provide_feedback"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
+            ${
+              reportIssueUrl
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      href=${reportIssueUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize("ui.panel.config.labs.report_issue")}
+                    </ha-button>
+                  `
+                : nothing
+            }
           </div>
           <ha-button
             appearance="filled"

@@ -118,6 +118,16 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     );
   };
 
+  private _combinedFilter = memoizeOne(
+    (
+      entityFilter: HaEntityPickerEntityFilterFunc | undefined,
+      activeFilter: (entityId: string) => boolean
+    ): HaEntityPickerEntityFilterFunc =>
+      (stateObj) =>
+        (!entityFilter || entityFilter(stateObj)) &&
+        activeFilter(stateObj.entity_id)
+  );
+
   private _selectorTarget() {
     return this._params?.selector?.target || null;
   }
@@ -126,6 +136,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!this._params) {
       return nothing;
     }
+
+    const { activeFilter } = this._params;
 
     let deviceFilter: HaDevicePickerDeviceFilterFunc | undefined;
     let entityFilter: HaEntityPickerEntityFilterFunc | undefined;
@@ -143,6 +155,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       includeDomains = this._params.includeDomains;
       includeDeviceClasses = this._params.includeDeviceClasses;
       primaryEntitiesOnly = this._params.primaryEntitiesOnly;
+    }
+
+    if (activeFilter) {
+      entityFilter = this._combinedFilter(entityFilter, activeFilter);
     }
 
     const waitingForSources =
@@ -168,21 +184,23 @@ class DialogTargetDetails extends LitElement implements HassDialog {
             .ariaLabel=${`${this.hass.localize(`ui.components.target-picker.type.${this._params.type}`)}: ${this._params.title}`}
             wrap-focus
           >
-            ${waitingForSources
-              ? nothing
-              : html`
-                  <ha-target-picker-item-row
-                    .hass=${this.hass}
-                    .type=${this._params.type}
-                    .itemId=${this._params.itemId}
-                    .deviceFilter=${deviceFilter}
-                    .entityFilter=${entityFilter}
-                    .includeDomains=${includeDomains}
-                    .includeDeviceClasses=${includeDeviceClasses}
-                    .primaryEntitiesOnly=${primaryEntitiesOnly}
-                    expand
-                  ></ha-target-picker-item-row>
-                `}
+            ${
+              waitingForSources
+                ? nothing
+                : html`
+                    <ha-target-picker-item-row
+                      .hass=${this.hass}
+                      .type=${this._params.type}
+                      .itemId=${this._params.itemId}
+                      .deviceFilter=${deviceFilter}
+                      .entityFilter=${entityFilter}
+                      .includeDomains=${includeDomains}
+                      .includeDeviceClasses=${includeDeviceClasses}
+                      .primaryEntitiesOnly=${primaryEntitiesOnly}
+                      expand
+                    ></ha-target-picker-item-row>
+                  `
+            }
           </ha-list-base>
         </div>
       </ha-adaptive-dialog>

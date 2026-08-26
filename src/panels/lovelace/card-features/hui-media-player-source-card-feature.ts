@@ -1,4 +1,5 @@
 import type { PropertyValues } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -15,6 +16,16 @@ import type {
   MediaPlayerSourceCardFeatureConfig,
 } from "./types";
 
+const supportsMediaPlayerSourceCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "media_player" &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
+  );
+};
+
 export const supportsMediaPlayerSourceCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -23,11 +34,7 @@ export const supportsMediaPlayerSourceCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "media_player" &&
-    supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
-  );
+  return supportsMediaPlayerSourceCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-media-player-source-card-feature")
@@ -52,7 +59,7 @@ class HuiMediaPlayerSourceCardFeature
   protected readonly _serviceAction = "select_source";
 
   protected get _label(): string {
-    return this.hass!.localize("ui.card.media_player.source");
+    return this._localize("ui.card.media_player.source");
   }
 
   protected readonly _hideLabel = false;
@@ -75,25 +82,18 @@ class HuiMediaPlayerSourceCardFeature
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    const entityId = this.context?.entity_id;
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
     return (
       changedProps.has("_currentValue") ||
       changedProps.has("context") ||
-      hasConfigChanged(this, changedProps) ||
-      (changedProps.has("hass") &&
-        (!oldHass ||
-          !entityId ||
-          oldHass.states[entityId] !== this.hass?.states[entityId]))
+      changedProps.has("_stateObj") ||
+      hasConfigChanged(this, changedProps)
     );
   }
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsMediaPlayerSourceCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsMediaPlayerSourceCardFeatureFromState(this._stateObj)
     );
   }
 }

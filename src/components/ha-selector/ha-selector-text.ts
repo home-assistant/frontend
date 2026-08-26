@@ -3,15 +3,13 @@ import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property() public value?: any;
 
   @property() public name?: string;
@@ -30,6 +28,10 @@ export class HaTextSelector extends LitElement {
 
   @query("ha-input, ha-textarea") private _input?: HTMLInputElement;
 
+  @query("ha-input-multi") private _inputMulti?: {
+    reportValidity: () => boolean;
+  };
+
   public async focus() {
     await this.updateComplete;
     this._input?.focus();
@@ -37,7 +39,7 @@ export class HaTextSelector extends LitElement {
 
   public reportValidity(): boolean {
     if (this.selector.text?.multiple) {
-      return true;
+      return this._inputMulti?.reportValidity() ?? true;
     }
     return this._input?.reportValidity() ?? true;
   }
@@ -54,6 +56,8 @@ export class HaTextSelector extends LitElement {
           .inputPrefix=${this.selector.text?.prefix}
           .helper=${this.helper}
           .autocomplete=${this.selector.text?.autocomplete}
+          .pattern=${this.selector.text?.pattern}
+          .validationMessage=${this.selector.text?.validation_message}
           @value-changed=${this._handleChange}
         >
         </ha-input-multi>
@@ -82,6 +86,9 @@ export class HaTextSelector extends LitElement {
       .hint=${this.helper}
       .disabled=${this.disabled}
       .type=${this.selector.text?.type}
+      .pattern=${this.selector.text?.pattern}
+      .validationMessage=${this.selector.text?.validation_message}
+      .autoValidate=${this.selector.text?.pattern !== undefined}
       @input=${this._handleChange}
       @change=${this._handleChange}
       .label=${this.label || ""}
@@ -89,12 +96,16 @@ export class HaTextSelector extends LitElement {
       .autocomplete=${this.selector.text?.autocomplete}
       .passwordToggle=${this.selector.text?.type === "password"}
     >
-      ${this.selector.text?.prefix
-        ? html`<span slot="start">${this.selector.text.prefix}</span>`
-        : nothing}
-      ${this.selector.text?.suffix
-        ? html`<span slot="end">${this.selector.text.suffix}</span>`
-        : nothing}
+      ${
+        this.selector.text?.prefix
+          ? html`<span slot="start">${this.selector.text.prefix}</span>`
+          : nothing
+      }
+      ${
+        this.selector.text?.suffix
+          ? html`<span slot="end">${this.selector.text.suffix}</span>`
+          : nothing
+      }
     </ha-input>`;
   }
 

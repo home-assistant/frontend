@@ -72,10 +72,7 @@ export class HaListVirtualized extends HaListBase {
 
   /** Block alignment used when scrolling to `pinIndex`. */
   @property({ attribute: "pin-block" }) public pinBlock:
-    | "start"
-    | "center"
-    | "end"
-    | "nearest" = "center";
+    "start" | "center" | "end" | "nearest" = "center";
 
   @state() private _unpinned = false;
 
@@ -116,14 +113,16 @@ export class HaListVirtualized extends HaListBase {
         .items=${this.rows}
         .renderItem=${this.rowRenderer}
         style="min-height: 36px; height: 100%;"
-        .layout=${!this._unpinned && this.pinIndex !== undefined
-          ? {
-              pin: {
-                index: this.pinIndex,
-                block: this.pinBlock,
-              },
-            }
-          : undefined}
+        .layout=${
+          !this._unpinned && this.pinIndex !== undefined
+            ? {
+                pin: {
+                  index: this.pinIndex,
+                  block: this.pinBlock,
+                },
+              }
+            : undefined
+        }
         @unpinned=${this._handleUnpinned}
         @rangeChanged=${this._handleRangeChanged}
       >

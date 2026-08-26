@@ -95,49 +95,53 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         prevent-scrim-close
         @closed=${this.closeDialog}
       >
-        ${this._step === "new"
-          ? html`
-              <ha-icon-button-prev
-                slot="headerNavigationIcon"
-                @click=${this._previousStep}
-              ></ha-icon-button-prev>
-            `
-          : html`
-              <ha-icon-button
-                slot="headerNavigationIcon"
-                data-dialog="close"
-                .label=${this.hass.localize("ui.common.close")}
-                .path=${mdiClose}
-              ></ha-icon-button>
-            `}
+        ${
+          this._step === "new"
+            ? html`
+                <ha-icon-button-prev
+                  slot="headerNavigationIcon"
+                  @click=${this._previousStep}
+                ></ha-icon-button-prev>
+              `
+            : html`
+                <ha-icon-button
+                  slot="headerNavigationIcon"
+                  data-dialog="close"
+                  .label=${this.hass.localize("ui.common.close")}
+                  .path=${mdiClose}
+                ></ha-icon-button>
+              `
+        }
         ${this._renderStepContent()}
         <ha-dialog-footer slot="footer">
-          ${this._step === "current"
-            ? html`
-                <ha-button slot="primaryAction" @click=${this._nextStep}>
-                  ${this.hass.localize("ui.common.next")}
-                </ha-button>
-              `
-            : this._step === "new"
+          ${
+            this._step === "current"
               ? html`
-                  <ha-button
-                    slot="primaryAction"
-                    @click=${this._submit}
-                    .disabled=${!this._newEncryptionKey}
-                    variant="danger"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.backup.dialogs.change_encryption_key.actions.change"
-                    )}
+                  <ha-button slot="primaryAction" @click=${this._nextStep}>
+                    ${this.hass.localize("ui.common.next")}
                   </ha-button>
                 `
-              : html`
-                  <ha-button slot="primaryAction" @click=${this._done}>
-                    ${this.hass.localize(
-                      "ui.panel.config.backup.dialogs.change_encryption_key.actions.done"
-                    )}
-                  </ha-button>
-                `}
+              : this._step === "new"
+                ? html`
+                    <ha-button
+                      slot="primaryAction"
+                      @click=${this._submit}
+                      .disabled=${!this._newEncryptionKey}
+                      variant="danger"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.dialogs.change_encryption_key.actions.change"
+                      )}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button slot="primaryAction" @click=${this._done}>
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.dialogs.change_encryption_key.actions.done"
+                      )}
+                    </ha-button>
+                  `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

@@ -75,9 +75,11 @@ export class ZHAClusterAttributes extends LitElement {
           >
           </ha-select>
         </div>
-        ${this._selectedAttributeId !== undefined
-          ? this._renderAttributeInteractions()
-          : nothing}
+        ${
+          this._selectedAttributeId !== undefined
+            ? this._renderAttributeInteractions()
+            : nothing
+        }
       </div>
     `;
   }
@@ -109,7 +111,6 @@ export class ZHAClusterAttributes extends LitElement {
       </div>
       <div class="card-actions">
         <ha-call-service-button
-          .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
           .data=${this._setAttributeServiceData}
@@ -148,8 +149,7 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private _computeReadAttributeServiceData():
-    | ReadAttributeServiceData
-    | undefined {
+    ReadAttributeServiceData | undefined {
     if (!this.selectedCluster || !this.device) {
       return undefined;
     }
@@ -166,8 +166,7 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private _computeSetAttributeServiceData():
-    | SetAttributeServiceData
-    | undefined {
+    SetAttributeServiceData | undefined {
     if (!this.selectedCluster || !this.device) {
       return undefined;
     }

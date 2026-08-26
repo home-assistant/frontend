@@ -1,5 +1,5 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
-import { load } from "js-yaml";
+import { load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, queryAll } from "lit/decorators";
@@ -33,7 +33,10 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showEditorToast } from "../automation/editor-toast";
 import "../automation/action/ha-automation-action";
 import type HaAutomationAction from "../automation/action/ha-automation-action";
-import { ManualEditorMixin } from "../automation/ha-manual-editor-mixin";
+import {
+  ManualEditorMixin,
+  PASTED_CONFIG_TOAST_ID,
+} from "../automation/ha-manual-editor-mixin";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -47,6 +50,7 @@ const scriptConfigStruct = object({
   mode: optional(enums([typeof MODES])),
   max: optional(number()),
   fields: optional(object()),
+  variables: optional(object()),
 });
 
 @customElement("manual-script-editor")
@@ -197,7 +201,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
     let loaded: any;
     try {
-      loaded = load(paste);
+      loaded = load(paste, { schema: YAML11_SCHEMA });
     } catch (_err: any) {
       showEditorToast(this, {
         message: this.hass.localize(
@@ -232,8 +236,9 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
     const actionType = getActionType(config);
     if (
-      !["sequence", "unknown"].includes(actionType) ||
-      (actionType === "sequence" && "metadata" in config)
+      !["sequence", "variables", "unknown"].includes(actionType) ||
+      (actionType === "sequence" && "metadata" in config) ||
+      (actionType === "variables" && !("sequence" in config))
     ) {
       config = { sequence: [config] };
     }
@@ -312,12 +317,14 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
       return;
     }
 
-    if ("fields" in config) {
-      workingCopy.fields = {
-        ...workingCopy.fields,
-        ...config.fields,
-      };
-    }
+    ["fields", "variables"].forEach((key) => {
+      if (key in config) {
+        workingCopy[key] = {
+          ...workingCopy[key],
+          ...config[key],
+        };
+      }
+    });
     if ("sequence" in config) {
       workingCopy.sequence = ensureArray(workingCopy.sequence || []).concat(
         ensureArray(config.sequence)
@@ -335,6 +342,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
   protected showPastedToastWithUndo() {
     showEditorToast(this, {
+      id: PASTED_CONFIG_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.config.script.editor.paste_toast_message"
       ),

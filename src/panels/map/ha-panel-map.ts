@@ -23,20 +23,17 @@ class HaPanelMap extends LitElement {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
         <div slot="title">${this.hass.localize("panel.map")}</div>
-        ${!__DEMO__ && this.hass.user?.is_admin
-          ? html`<ha-icon-button
-              slot="actionItems"
-              .label=${this.hass!.localize("ui.panel.map.edit_zones")}
-              .path=${mdiPencil}
-              @click=${this._openZonesEditor}
-            ></ha-icon-button>`
-          : ""}
-        <ha-map
-          .hass=${this.hass}
-          .entities=${this._entities}
-          auto-fit
-          interactive-zones
-        ></ha-map>
+        ${
+          !__DEMO__ && this.hass.user?.is_admin
+            ? html`<ha-icon-button
+                slot="actionItems"
+                .label=${this.hass!.localize("ui.panel.map.edit_zones")}
+                .path=${mdiPencil}
+                @click=${this._openZonesEditor}
+              ></ha-icon-button>`
+            : ""
+        }
+        <ha-map .entities=${this._entities} auto-fit interactive-zones></ha-map>
       </ha-top-app-bar-fixed>
     `;
   }

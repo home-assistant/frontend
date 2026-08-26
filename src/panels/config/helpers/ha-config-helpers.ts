@@ -24,7 +24,7 @@ import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { navigate } from "../../../common/navigate";
+import { getHistoryState, navigate } from "../../../common/navigate";
 import type {
   LocalizeFunc,
   LocalizeKeys,
@@ -54,7 +54,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-state-icon";
+import "../../../components/ha-entity-id-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { getSignedPath } from "../../../data/auth";
@@ -122,7 +122,7 @@ import {
   getEntityIdTableColumn,
   getLabelsTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
@@ -133,6 +133,23 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+
+interface LimitedEntity {
+  entity_id: HassEntity["entity_id"];
+  attributes: {
+    friendly_name?: HassEntity["attributes"]["friendly_name"];
+    editable?: HassEntity["attributes"]["editable"];
+  };
+}
+function equalLimitedEntity(a: LimitedEntity, b: LimitedEntity): boolean {
+  return (
+    a === b ||
+    (a.entity_id === b.entity_id &&
+      a.attributes?.friendly_name === b.attributes?.friendly_name &&
+      a.attributes?.editable === b.attributes?.editable)
+  );
+}
 
 interface HelperItem {
   id: string;
@@ -142,7 +159,7 @@ interface HelperItem {
   editable?: boolean;
   type: string;
   configEntry?: ConfigEntry;
-  entity?: HassEntity;
+  entity?: LimitedEntity;
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
@@ -221,7 +238,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities?: HassEntity[];
+  @state() private _helperEntities?: LimitedEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -338,7 +355,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon .stateObj=${helper.entity}></ha-state-icon>`
+            ? html`<ha-entity-id-icon
+                .entityId=${helper.entity_id}
+                state-title
+              ></ha-entity-id-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"
@@ -465,7 +485,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _getItems = memoizeOne(
     (
       localize: LocalizeFunc,
-      stateItems: HassEntity[],
+      stateItems: LimitedEntity[],
       disabledEntries: EntityRegistryEntry[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>,
@@ -500,7 +520,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           type: configEntry
             ? configEntry.domain
             : this._entitySource![entityState.entity_id] ||
-              computeStateDomain(entityState),
+              computeDomain(entityState.entity_id),
           configEntry,
           entity: entityState,
         };
@@ -552,9 +572,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
-          const label_entries = (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          );
+          const label_entries = (labels || [])
+            .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+            .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -624,9 +644,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config"}
+        back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
         .searchLabel=${this.hass.localize(
@@ -637,14 +655,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         has-filters
-        .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter)
-            ? filter.length
-            : filter &&
-              Object.values(filter).some((val) =>
-                Array.isArray(val) ? val.length : val
-              )
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._activeGrouping ?? "category"}
@@ -669,7 +689,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-filter-floor-areas
-          .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -679,7 +698,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
-          .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -689,7 +707,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -708,7 +725,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
         <ha-filter-voice-assistants
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-voice-assistants"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -717,86 +733,98 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
 
-        ${!this.narrow
-          ? html`<ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._handleBulkCategory}
-              >
-                <ha-assist-chip
-                  slot="trigger"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.move_category"
-                  )}
+        ${
+          !this.narrow
+            ? html`<ha-dropdown
+                  slot="selection-bar"
+                  @wa-select=${this._handleBulkCategory}
                 >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiMenuDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                ${this._renderCategoryItems()}
-              </ha-dropdown>
-              ${labelsInOverflow
-                ? nothing
-                : html`<ha-dropdown
-                    slot="selection-bar"
-                    @wa-select=${this._handleBulkLabel}
-                  >
-                    <ha-assist-chip
-                      slot="trigger"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.picker.bulk_actions.add_label"
-                      )}
-                    >
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
-                    ${this._renderLabelItems()}
-                  </ha-dropdown>`}`
-          : nothing}
-        ${this.narrow || labelsInOverflow
-          ? html` <ha-dropdown
-              slot="selection-bar"
-              @wa-select=${this._handleBulkAction}
-            >
-              ${this.narrow
-                ? html`<ha-assist-chip
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
+                  <ha-assist-chip
                     slot="trigger"
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.move_category"
+                    )}
                   >
                     <ha-svg-icon
                       slot="trailing-icon"
                       .path=${mdiMenuDown}
                     ></ha-svg-icon>
-                  </ha-assist-chip>`
-                : html`<ha-icon-button
-                    .path=${mdiDotsVertical}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
-                    slot="trigger"
-                  ></ha-icon-button>`}
-              ${this.narrow
-                ? html`<ha-dropdown-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_actions.move_category"
-                    )}
-                    ${this._renderCategoryItems("submenu")}
-                  </ha-dropdown-item>`
-                : nothing}
-              ${this.narrow || this.hass.dockedSidebar === "docked"
-                ? html`<ha-dropdown-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_actions.add_label"
-                    )}
-                    ${this._renderLabelItems("submenu")}
-                  </ha-dropdown-item>`
-                : nothing}
-            </ha-dropdown>`
-          : nothing}
+                  </ha-assist-chip>
+                  ${this._renderCategoryItems()}
+                </ha-dropdown>
+                ${
+                  labelsInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkLabel}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.picker.bulk_actions.add_label"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderLabelItems()}
+                      </ha-dropdown>`
+                }`
+            : nothing
+        }
+        ${
+          this.narrow || labelsInOverflow
+            ? html` <ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._handleBulkAction}
+              >
+                ${
+                  this.narrow
+                    ? html`<ha-assist-chip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      >
+                        <ha-svg-icon
+                          slot="trailing-icon"
+                          .path=${mdiMenuDown}
+                        ></ha-svg-icon>
+                      </ha-assist-chip>`
+                    : html`<ha-icon-button
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      ></ha-icon-button>`
+                }
+                ${
+                  this.narrow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        )}
+                        ${this._renderCategoryItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+                ${
+                  this.narrow || this.hass.dockedSidebar === "docked"
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                        ${this._renderLabelItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+              </ha-dropdown>`
+            : nothing
+        }
 
         <ha-integration-overflow-menu
           .hass=${this.hass}
@@ -979,7 +1007,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     }
 
     this._fromUrl = true;
-    this._filter = history.state?.filter || "";
+    this._filter = getHistoryState()?.filter || "";
 
     this._filters = {
       "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
@@ -1053,9 +1081,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         }),
         text: html`<pre>
 ${rejected
-            .map((r) => r.reason.message || r.reason.code || r.reason)
-            .join("\r\n")}</pre
-        >`,
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1095,9 +1122,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-            .map((r) => r.reason.message || r.reason.code || r.reason)
-            .join("\r\n")}</pre
-        >`,
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1273,7 +1299,9 @@ ${rejected
     if (
       !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
-      !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
+      !this._helperEntities.every((val, idx) =>
+        equalLimitedEntity(newHelpers[idx], val)
+      )
     ) {
       this._helperEntities = newHelpers;
       if (Object.keys(this._filters).length > 0) {
@@ -1429,9 +1457,11 @@ ${rejected
             .slot=${slot}
             .value=${`category_${category.category_id}`}
           >
-            ${category.icon
-              ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
-              : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
+            ${
+              category.icon
+                ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`
+            }
             ${category.name}
           </ha-dropdown-item>`
       )}
@@ -1466,9 +1496,11 @@ ${rejected
             .indeterminate=${partial}
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
-            ${label.icon
-              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-              : nothing}
+            ${
+              label.icon
+                ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+                : nothing
+            }
             ${label.name}
           </ha-label>
         </ha-dropdown-item>`;

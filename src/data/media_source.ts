@@ -1,5 +1,5 @@
 import type { HomeAssistant } from "../types";
-import type { MediaPlayerItem } from "./media-player";
+import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
 
 export interface ResolvedMediaSource {
   url: string;
@@ -22,6 +22,19 @@ export const browseLocalMediaPlayer = (
   hass.callWS<MediaPlayerItem>({
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
+  });
+
+export const searchMedia = (
+  hass: HomeAssistant,
+  mediaContentId: string | undefined,
+  searchQuery: string,
+  mediaFilterClasses?: string[]
+): Promise<SearchMediaResult> =>
+  hass.callWS<SearchMediaResult>({
+    type: "media_source/search_media",
+    media_content_id: mediaContentId,
+    search_query: searchQuery,
+    media_filter_classes: mediaFilterClasses,
   });
 
 export const MANUAL_MEDIA_SOURCE_PREFIX = "__MANUAL_ENTRY__";
@@ -54,9 +67,13 @@ export const uploadLocalMedia = async (
     }
   );
   if (resp.status === 413) {
-    throw new Error(`Uploaded file is too large (${file.name})`);
+    throw new Error(
+      hass.localize("ui.common.upload_file_too_large", {
+        name: file.name,
+      })
+    );
   } else if (resp.status !== 200) {
-    throw new Error("Unknown error");
+    throw new Error(hass.localize("ui.common.unknown_error"));
   }
   return resp.json();
 };

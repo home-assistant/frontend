@@ -31,7 +31,7 @@ export interface TodoItem {
   completed?: string | null;
 }
 
-export const enum TodoListEntityFeature {
+export enum TodoListEntityFeature {
   CREATE_TODO_ITEM = 1,
   DELETE_TODO_ITEM = 2,
   UPDATE_TODO_ITEM = 4,

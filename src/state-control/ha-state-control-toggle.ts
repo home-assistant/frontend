@@ -1,23 +1,29 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stateActive } from "../common/entity/state_active";
 import { stateColorCss } from "../common/entity/state_color";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-control-button";
 import "../components/ha-control-switch";
+import { apiContext } from "../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import { forwardHaptic } from "../data/haptics";
 import { stateControlToggleStyle } from "../resources/state-control-styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-state-control-toggle")
 export class HaStateControlToggle extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -44,7 +50,7 @@ export class HaStateControlToggle extends LitElement {
   }
 
   private async _callService(turnOn): Promise<void> {
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return;
     }
     forwardHaptic(this, "light");
@@ -60,7 +66,7 @@ export class HaStateControlToggle extends LitElement {
       service = turnOn ? "turn_on" : "turn_off";
     }
 
-    await this.hass.callService(serviceDomain, service, {
+    await this._api.callService(serviceDomain, service, {
       entity_id: this.stateObj.entity_id,
     });
   }
@@ -79,7 +85,7 @@ export class HaStateControlToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize("ui.card.common.turn_on")}
+            .label=${this._localize("ui.card.common.turn_on")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -92,7 +98,7 @@ export class HaStateControlToggle extends LitElement {
             <ha-svg-icon .path=${this.iconPathOn || mdiFlash}></ha-svg-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize("ui.card.common.turn_off")}
+            .label=${this._localize("ui.card.common.turn_off")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -118,7 +124,7 @@ export class HaStateControlToggle extends LitElement {
         .checked=${isOn}
         .showHandle=${stateActive(this.stateObj)}
         @change=${this._valueChanged}
-        .label=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this._localize("ui.card.common.toggle")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,

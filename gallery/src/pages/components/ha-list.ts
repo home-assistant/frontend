@@ -29,6 +29,50 @@ const positions: Position[] = ["start", "end"];
 const selectedStates = [false, true];
 const disabledStates = [false, true];
 
+interface TreeChild {
+  key: string;
+  label: string;
+}
+
+interface TreeGroup {
+  key: string;
+  label: string;
+  children: TreeChild[];
+}
+
+const treeGroups: TreeGroup[] = [
+  {
+    key: "binary_sensor",
+    label: "Binary sensor",
+    children: [
+      { key: "door", label: "Door" },
+      { key: "motion", label: "Motion" },
+      { key: "window", label: "Window" },
+    ],
+  },
+  {
+    key: "cover",
+    label: "Cover",
+    children: [
+      { key: "garage", label: "Garage" },
+      { key: "shutter", label: "Shutter" },
+    ],
+  },
+];
+
+interface TreeRow {
+  group: TreeGroup;
+  child?: TreeChild;
+}
+
+const treeRows: TreeRow[] = treeGroups.flatMap((group) => [
+  { group },
+  ...group.children.map((child) => ({ group, child })),
+]);
+
+const treeKey = (group: TreeGroup, child: TreeChild) =>
+  `${group.key}/${child.key}`;
+
 @customElement("demo-components-ha-list")
 export class DemoHaList extends LitElement {
   @state() private _buttonClicks = 0;
@@ -40,6 +84,8 @@ export class DemoHaList extends LitElement {
   @state() private _multiCheckStart: number | Set<number> = new Set();
 
   @state() private _multiCheckEnd: number | Set<number> = new Set();
+
+  @state() private _tree = new Set<string>();
 
   private _options = ["Alpha", "Beta", "Gamma", "Delta", "Epsilon"];
 
@@ -244,8 +290,7 @@ export class DemoHaList extends LitElement {
           )}
         </ha-list-selectable>
         <pre>
-selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
-        >
+selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre>
       </ha-card>
 
       <ha-card
@@ -272,8 +317,46 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
           )}
         </ha-list-selectable>
         <pre>
-selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
+selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre>
+      </ha-card>
+
+      <ha-card header="Controlled selection with indeterminate groups">
+        <ha-list-selectable
+          multi
+          controlled
+          aria-label="Controlled tree"
+          @ha-list-item-selected=${this._onTreeToggle}
+          @ha-list-item-deselected=${this._onTreeToggle}
         >
+          ${treeGroups.map((group) => {
+            const groupState = this._groupState(group);
+            return html`
+              <ha-list-item-option
+                appearance="checkbox"
+                selection-position="end"
+                .value=${group.key}
+                ?selected=${groupState === "all"}
+                ?indeterminate=${groupState === "some"}
+              >
+                <span slot="headline">${group.label}</span>
+              </ha-list-item-option>
+              ${group.children.map(
+                (child) => html`
+                  <ha-list-item-option
+                    class="child"
+                    appearance="checkbox"
+                    selection-position="end"
+                    .value=${treeKey(group, child)}
+                    ?selected=${this._tree.has(treeKey(group, child))}
+                  >
+                    <span slot="headline">${child.label}</span>
+                  </ha-list-item-option>
+                `
+              )}
+            `;
+          })}
+        </ha-list-selectable>
+        <pre>selected: ${JSON.stringify([...this._tree])}</pre>
       </ha-card>
 
       <ha-card header="Option: all combinations">
@@ -363,6 +446,43 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
     return next;
   }
 
+  private _groupState(group: TreeGroup): "none" | "some" | "all" {
+    const selected = group.children.filter((child) =>
+      this._tree.has(treeKey(group, child))
+    ).length;
+    if (selected === 0) {
+      return "none";
+    }
+    return selected === group.children.length ? "all" : "some";
+  }
+
+  private _onTreeToggle = (ev: CustomEvent<number>) => {
+    const row = treeRows[ev.detail];
+    if (!row) {
+      return;
+    }
+    const next = new Set(this._tree);
+    if (row.child) {
+      const key = treeKey(row.group, row.child);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+    } else {
+      const select = this._groupState(row.group) !== "all";
+      row.group.children.forEach((child) => {
+        const key = treeKey(row.group, child);
+        if (select) {
+          next.add(key);
+        } else {
+          next.delete(key);
+        }
+      });
+    }
+    this._tree = next;
+  };
+
   private _onSingle = (ev: CustomEvent<number>) => {
     this._single = ev.detail;
   };
@@ -444,6 +564,9 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
     }
     .drag-handle {
       cursor: grab;
+    }
+    .child::part(base) {
+      padding-inline-start: var(--ha-space-12);
     }
   `;
 }

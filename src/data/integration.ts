@@ -1,12 +1,14 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { sanitizeHttpUrl } from "../common/url/sanitize-http-url";
 import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
   dhcp: "config/dhcp",
+  infrared: "config/infrared",
   matter: "config/matter",
   mqtt: "config/mqtt",
   ssdp: "config/ssdp",
@@ -17,13 +19,7 @@ export const integrationsWithPanel = {
 };
 
 export type IntegrationType =
-  | "device"
-  | "helper"
-  | "hub"
-  | "service"
-  | "hardware"
-  | "entity"
-  | "system";
+  "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
 
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
@@ -33,7 +29,7 @@ export interface IntegrationManifest {
   domain: string;
   name: string;
   config_flow: boolean;
-  documentation: string;
+  documentation?: string;
   issue_tracker?: string;
   dependencies?: string[];
   after_dependencies?: string[];
@@ -83,11 +79,27 @@ export enum LogSeverity {
 
 export type IntegrationLogPersistance = "none" | "once" | "permanent";
 
+/**
+ * A custom integration supplies its own manifest, so its URLs are untrusted
+ * input. Strip them here, where manifests enter the frontend, so no consumer can
+ * turn one into a link that runs script.
+ */
+const sanitizeManifest = <T extends IntegrationManifest | undefined>(
+  manifest: T
+): T =>
+  manifest
+    ? ({
+        ...manifest,
+        documentation: sanitizeHttpUrl(manifest.documentation),
+        issue_tracker: sanitizeHttpUrl(manifest.issue_tracker),
+      } as T)
+    : manifest;
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
-  manifest.issue_tracker ||
+  sanitizeHttpUrl(manifest.issue_tracker) ||
   `https://github.com/home-assistant/core/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (
@@ -106,7 +118,9 @@ export const fetchIntegrationManifests = (
   if (integrations) {
     params.integrations = integrations;
   }
-  return hass.callWS<IntegrationManifest[]>(params);
+  return hass
+    .callWS<IntegrationManifest[]>(params)
+    .then((manifests) => manifests.map(sanitizeManifest));
 };
 
 export const fetchIntegrationManifestsCollection = async (
@@ -118,7 +132,7 @@ export const fetchIntegrationManifestsCollection = async (
   });
   const manifests: DomainManifestLookup = {};
   for (const manifest of fetched) {
-    manifests[manifest.domain] = manifest;
+    manifests[manifest.domain] = sanitizeManifest(manifest);
   }
   setValue(manifests);
   // One-time fetch — nothing to unsubscribe from
@@ -130,7 +144,10 @@ export const fetchIntegrationManifestsCollection = async (
 export const fetchIntegrationManifest = (
   hass: HomeAssistant,
   integration: string
-) => hass.callWS<IntegrationManifest>({ type: "manifest/get", integration });
+) =>
+  hass
+    .callWS<IntegrationManifest>({ type: "manifest/get", integration })
+    .then(sanitizeManifest);
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });

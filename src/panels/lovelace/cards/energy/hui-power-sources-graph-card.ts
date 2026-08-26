@@ -98,9 +98,11 @@ export class HuiPowerSourcesGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        ${
+          this._config.title
+            ? html`<h1 class="card-header">${this._config.title}</h1>`
+            : ""
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -119,16 +121,23 @@ export class HuiPowerSourcesGraphCard
               this._legendData,
               this._yAxisFractionDigits
             )}
+            .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
-          ${!this._chartData.some((dataset) => dataset.data!.length)
-            ? html`<div class="no-data">
-                ${isToday(this._start)
-                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.no_data_period"
-                    )}
-              </div>`
-            : nothing}
+          ${
+            !this._chartData.some((dataset) => dataset.data!.length)
+              ? html`<div class="no-data">
+                  ${
+                    isToday(this._start)
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data_period"
+                        )
+                  }
+                </div>`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
@@ -166,6 +175,10 @@ export class HuiPowerSourcesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    if (!this.isConnected) {
+      return;
+    }
+
     const result = generatePowerSourcesGraphData({
       localize: this.hass.localize,
       states: this.hass.states,

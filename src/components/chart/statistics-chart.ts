@@ -34,6 +34,7 @@ import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import { generateStatisticsChartData } from "./statistics-chart-data";
+import { createYAxisPrecisionBounds } from "./y-axis-fraction-digits";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -79,10 +80,7 @@ export class StatisticsChart extends LitElement {
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType:
-    | "line"
-    | "line-stack"
-    | "bar"
-    | "bar-stack" = "line";
+    "line" | "line-stack" | "bar" | "bar-stack" = "line";
 
   @property({ attribute: false }) public minYAxis?: number;
 
@@ -197,19 +195,23 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
-        .clickLabelForMoreInfo=${this.clickForMoreInfo &&
-        !this._statisticIds.every(isExternalStatistic)}
+        .clickLabelForMoreInfo=${
+          this.clickForMoreInfo &&
+          !this._statisticIds.every(isExternalStatistic)
+        }
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
 
-  private _datasetHidden(ev: CustomEvent) {
+  private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
-  private _datasetUnhidden(ev: CustomEvent) {
+  private _datasetUnhidden(
+    ev: HASSDomEvent<HASSDomEvents["dataset-unhidden"]>
+  ) {
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
@@ -330,9 +332,9 @@ export class StatisticsChart extends LitElement {
 
     return html`${rows.map(
       (row, i) =>
-        html`${row.time
-            ? html`${row.time}<br />`
-            : nothing}<ha-chart-tooltip-marker
+        html`${
+            row.time ? html`${row.time}<br />` : nothing
+          }<ha-chart-tooltip-marker
             .color=${row.color}
           ></ha-chart-tooltip-marker>
           ${row.seriesName}:
@@ -392,6 +394,11 @@ export class StatisticsChart extends LitElement {
       }
     }
 
+    const yAxisScale =
+      this.chartType.startsWith("line") ||
+      this.logarithmicScale ||
+      minYAxis !== undefined ||
+      maxYAxis !== undefined;
     this._chartOptions = {
       xAxis: [
         {
@@ -435,13 +442,17 @@ export class StatisticsChart extends LitElement {
         )
           ? "right"
           : "left",
-        scale:
-          this.chartType.startsWith("line") ||
-          this.logarithmicScale ||
-          minYAxis !== undefined ||
-          maxYAxis !== undefined,
-        min: this._clampYAxis(minYAxis),
-        max: this._clampYAxis(maxYAxis),
+        scale: yAxisScale,
+        ...createYAxisPrecisionBounds({
+          min: this._clampYAxis(minYAxis),
+          max: this._clampYAxis(maxYAxis),
+          // Bar charts stay anchored at 0, so precision must reflect the
+          // 0-based range that is actually rendered.
+          includeZero: !yAxisScale,
+          onFractionDigits: (digits) => {
+            this._yAxisFractionDigits = digits;
+          },
+        }),
         splitLine: {
           show: true,
         },
@@ -552,6 +563,7 @@ export class StatisticsChart extends LitElement {
 
   private _formatYAxisLabel = (value: number) =>
     formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
 

@@ -3,6 +3,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
@@ -320,26 +321,30 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
-          ${!isRemoteScanner
-            ? html`<ha-icon-button
-                slot="end"
-                .path=${mdiCogOutline}
-                .entry=${entry}
-                @click=${this._openOptionFlow}
-                .label=${this.hass.localize(
-                  "ui.panel.config.bluetooth.option_flow"
-                )}
-              ></ha-icon-button>`
-            : nothing}
+          ${
+            !isRemoteScanner
+              ? html`<ha-icon-button
+                  slot="end"
+                  .path=${mdiCogOutline}
+                  .entry=${entry}
+                  @click=${this._openOptionFlow}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.bluetooth.option_flow"
+                  )}
+                ></ha-icon-button>`
+              : nothing
+          }
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-md-list-item>
-        ${hasMismatch && scannerDetails
-          ? this._renderScannerMismatchWarning(
-              deviceName,
-              scannerState,
-              scannerType
-            )
-          : nothing}
+        ${
+          hasMismatch && scannerDetails
+            ? this._renderScannerMismatchWarning(
+                deviceName,
+                scannerState,
+                scannerType
+              )
+            : nothing
+        }
       `;
     });
   }
@@ -447,7 +452,9 @@ export class BluetoothAdapterInfoPage extends LitElement {
     return this._formatModeLabel(scannerState.current_mode);
   }
 
-  private async _handleEnable(ev: Event) {
+  private async _handleEnable(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entry: ConfigEntry }>
+  ) {
     const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };
     const entryId = button.entry.entry_id;
     try {
@@ -470,7 +477,9 @@ export class BluetoothAdapterInfoPage extends LitElement {
     }
   }
 
-  private _openOptionFlow(ev: Event) {
+  private _openOptionFlow(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entry: ConfigEntry }>
+  ) {
     ev.preventDefault();
     ev.stopPropagation();
     const button = ev.currentTarget as HTMLElement & { entry: ConfigEntry };
