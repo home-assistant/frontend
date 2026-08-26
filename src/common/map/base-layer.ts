@@ -3,8 +3,12 @@ import type { Map as LeafletMap } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 
+// Only the raster fallback needs this: a Leaflet tile layer reads it, while
+// the vector layer takes its attribution from the source in the style, which
+// the TileJSON fills in. That is the better way around - the credit follows
+// whoever ends up serving the tiles.
 const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 // Shortbread vector tiles, served by the OpenStreetMap Foundation under
 // https://operations.osmfoundation.org/policies/vector/. Only their tile
@@ -97,10 +101,6 @@ const createVectorLayer = async (
       // for the tiles alone keeps it to the origin, never the page URL.
       transformRequest: (url) => ({ url, referrerPolicy: "origin" }),
     });
-    // The plugin only types the MapLibre options, but the layer hands this to
-    // Leaflet's attribution control once the style has loaded.
-    layer.options.attribution = OSM_ATTRIBUTION;
-
     // The plugin builds the MapLibre map in `onAdd`, so this is where a
     // missing WebGL context, a blocked worker or a rejected blob URL throws.
     // Adding the layer has to stay inside the guard for the raster fallback to

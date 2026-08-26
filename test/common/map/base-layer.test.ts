@@ -86,6 +86,9 @@ describe("createBaseLayer", () => {
     // devices that depend on it.
     expect(vi.mocked(leaflet.tileLayer).mock.calls[0][1]).toMatchObject({
       referrerPolicy: "origin",
+      // The vector layer gets this from the style's source instead, so the
+      // raster layer is the only one that has to carry it itself.
+      attribution: expect.stringContaining("openstreetmap.org/copyright"),
     });
   });
 
