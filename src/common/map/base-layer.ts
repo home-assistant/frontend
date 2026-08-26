@@ -118,7 +118,13 @@ const createVectorLayer = async (
     return undefined;
   }
 
-  let currentDarkMode = darkMode;
+  // What is on screen, and what was last asked for. Those differ while a style
+  // is in flight, and a failed request has to roll back to the former: with
+  // several requests in flight the opposite of the failed one is not
+  // necessarily what is displayed, and guessing wrong makes the next toggle a
+  // no-op that leaves the map on the other theme for good.
+  let appliedDarkMode = darkMode;
+  let requestedDarkMode = darkMode;
   // Styles are fetched, so a burst of theme changes can resolve out of order.
   // Only the newest request may touch the map.
   let latestRequest = 0;
@@ -145,22 +151,23 @@ const createVectorLayer = async (
 
   return {
     setDarkMode: (newDarkMode: boolean) => {
-      if (!vector || newDarkMode === currentDarkMode) {
+      if (!vector || newDarkMode === requestedDarkMode) {
         return;
       }
-      currentDarkMode = newDarkMode;
+      requestedDarkMode = newDarkMode;
       const request = ++latestRequest;
 
       loadStyle(VECTOR_STYLES[newDarkMode ? "dark" : "light"])
         .then((style) => {
           if (request === latestRequest) {
+            appliedDarkMode = newDarkMode;
             layer.getMaplibreMap()?.setStyle(style);
           }
         })
         .catch(() => {
           if (request === latestRequest) {
             // Keep the style that is on screen, and let the next toggle retry.
-            currentDarkMode = !newDarkMode;
+            requestedDarkMode = appliedDarkMode;
           }
         });
     },
@@ -176,6 +183,11 @@ const createRasterLayer = (
       attribution: OSM_ATTRIBUTION,
       maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
       maxZoom: MAP_MAX_ZOOM,
+      // The tile images inherit the page's same-origin referrer policy, which
+      // sends nothing at all cross-origin. OSM's raster tile policy asks for a
+      // referrer, and being blocked would take out the fallback on exactly the
+      // devices that depend on it.
+      referrerPolicy: "origin",
     })
     .addTo(map);
 

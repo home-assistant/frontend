@@ -81,6 +81,12 @@ describe("createBaseLayer", () => {
     expect(isRaster()).toBe(true);
     expect(maplibreGL).not.toHaveBeenCalled();
     expect(rasterLayer.addTo).toHaveBeenCalledWith(map);
+    // The page sends no referrer cross-origin, and OSM's raster tile policy
+    // asks for one. Being blocked would take out the fallback on exactly the
+    // devices that depend on it.
+    expect(vi.mocked(leaflet.tileLayer).mock.calls[0][1]).toMatchObject({
+      referrerPolicy: "origin",
+    });
   });
 
   it("uses vector tiles when WebGL2 is available", async () => {
@@ -150,6 +156,37 @@ describe("setDarkMode", () => {
 
     baseLayer.setDarkMode(true);
     expect(glMap.setStyle).toHaveBeenCalledOnce();
+  });
+
+  // A failed request must roll back to the style that is actually on screen.
+  // Rolling back to the opposite of the failed request instead would desync
+  // the tracked mode, and the next toggle to that mode would do nothing.
+  it("can retry a mode whose request failed while another was in flight", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    const baseLayer = await createBaseLayer(leaflet, map, false);
+
+    const failing = vi.fn(async () => {
+      throw new Error("offline");
+    });
+    vi.stubGlobal("fetch", failing);
+
+    // Dark is superseded by light, which then fails: the map is still light.
+    baseLayer.setDarkMode(true);
+    baseLayer.setDarkMode(false);
+    await vi.waitFor(() => expect(failing).toHaveBeenCalledTimes(2));
+    // Both rejections have to land before the retry, or this passes whatever
+    // the rollback does.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ json: async () => structuredClone(STYLE) }))
+    );
+    baseLayer.setDarkMode(true);
+
+    await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
   });
 
   // Styles are fetched, so a burst of theme changes can resolve out of order.
