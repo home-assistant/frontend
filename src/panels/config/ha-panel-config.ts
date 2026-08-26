@@ -1,9 +1,10 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
-import { fetchCloudStatus } from "../../data/cloud";
+import { fetchCloudStatus, subscribeCloudEvents } from "../../data/cloud";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
@@ -256,6 +257,10 @@ class HaPanelConfig extends HassRouterPage {
 
   private _listeners: (() => void)[] = [];
 
+  private _unsubCloudEvents?: Promise<UnsubscribeFunc>;
+
+  private _cloudStatusRequestId = 0;
+
   public connectedCallback() {
     super.connectedCallback();
     this._listeners.push(
@@ -268,6 +273,7 @@ class HaPanelConfig extends HassRouterPage {
         this._wideSidebar = matches;
       })
     );
+    this._subscribeCloudEvents();
   }
 
   public disconnectedCallback() {
@@ -275,8 +281,31 @@ class HaPanelConfig extends HassRouterPage {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    this._unsubCloudEvents?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubCloudEvents = undefined;
     entityRegistryByEntityId.clear();
     entityRegistryById.clear();
+  }
+
+  private _subscribeCloudEvents() {
+    if (
+      this._unsubCloudEvents ||
+      !this.hass ||
+      !isComponentLoaded(this.hass.config, "cloud")
+    ) {
+      return;
+    }
+
+    const subscription = subscribeCloudEvents(this.hass, () => {
+      this._updateCloudStatus();
+    });
+    this._unsubCloudEvents = subscription;
+
+    subscription.catch(() => {
+      if (this._unsubCloudEvents === subscription) {
+        this._unsubCloudEvents = undefined;
+      }
+    });
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -285,9 +314,11 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("services");
     if (isComponentLoaded(this.hass.config, "cloud")) {
       this._updateCloudStatus();
+      this._subscribeCloudEvents();
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {
           this._updateCloudStatus();
+          this._subscribeCloudEvents();
         }
       });
     }
@@ -321,7 +352,13 @@ class HaPanelConfig extends HassRouterPage {
   }
 
   private async _updateCloudStatus() {
-    this._cloudStatus = await fetchCloudStatus(this.hass);
+    const requestId = ++this._cloudStatusRequestId;
+    const status = await fetchCloudStatus(this.hass);
+
+    if (requestId !== this._cloudStatusRequestId) {
+      return;
+    }
+    this._cloudStatus = status;
 
     if (
       // Relayer connecting
