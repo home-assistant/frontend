@@ -33,6 +33,17 @@ import { computeAttributeValueDisplay } from "../../common/entity/compute_attrib
 // re-measured up from whenever the tick precision changes on zoom.
 const MIN_Y_AXIS_WIDTH = 25;
 
+// Headroom kept above and below the data, as a fraction of its span, so series
+// are not drawn onto the edges of the plot. Besides reading better, this gives
+// area-filled series (climate HVAC action, humidifier action) somewhere to
+// render: they fill from their value down to the bottom of the plot, so one
+// sitting at the axis minimum — a thermostat running at the low end of the
+// window — would otherwise collapse to nothing. Kept as a fraction because the
+// tick-precision helper needs the same number as the `boundaryGap` option.
+const Y_AXIS_BOUNDARY_GAP = 0.1;
+
+const asPercent = (gap: number) => `${gap * 100}%`;
+
 // Used to recover the underlying entity_id from a legend dataset id.
 // Kept in sync with the suffixes appended at dataset construction below
 // for climate / water_heater / humidifier multi-attribute charts.
@@ -316,6 +327,12 @@ export class StateHistoryChartLine extends LitElement {
           return this._roundYAxis(value, Math.ceil);
         };
       }
+      // ECharts ignores the gap on a side whose bound is fixed, so zero it out
+      // there to keep the tick-precision estimate in step with the real axis.
+      const boundaryGap = [
+        minYAxis === undefined ? Y_AXIS_BOUNDARY_GAP : 0,
+        maxYAxis === undefined ? Y_AXIS_BOUNDARY_GAP : 0,
+      ] as const;
       this._chartOptions = {
         xAxis: {
           type: "time",
@@ -325,9 +342,11 @@ export class StateHistoryChartLine extends LitElement {
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
+          boundaryGap: [asPercent(boundaryGap[0]), asPercent(boundaryGap[1])],
           ...createYAxisPrecisionBounds({
             min: this._clampYAxis(minYAxis),
             max: this._clampYAxis(maxYAxis),
+            boundaryGap,
             onFractionDigits: (digits) => {
               if (digits !== this._yAxisFractionDigits) {
                 this._yAxisFractionDigits = digits;

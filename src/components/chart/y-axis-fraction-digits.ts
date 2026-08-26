@@ -39,6 +39,11 @@ interface YAxisExtentValues {
 type YAxisBound =
   number | ((values: YAxisExtentValues) => number | undefined) | undefined;
 
+// The span ECharts multiplies `boundaryGap` by. It falls back to the magnitude
+// of the minimum when the data is flat, so a constant series still gets padded.
+const spanOf = ({ min, max }: YAxisExtentValues): number =>
+  max - min || Math.abs(min);
+
 const resolveYAxisBound = (
   bound: YAxisBound,
   values: YAxisExtentValues
@@ -55,18 +60,27 @@ export function createYAxisPrecisionBounds(options: {
   max?: YAxisBound;
   // Set for bar axes anchored at 0, so precision reflects the 0-based range.
   includeZero?: boolean;
+  // The `[below, above]` fractions of the data span that `yAxis.boundaryGap`
+  // adds to the extent. ECharts sizes its ticks from the widened extent, so
+  // fold the same padding in here or the derived precision can disagree with
+  // the ticks actually rendered.
+  boundaryGap?: readonly [number, number];
   onFractionDigits: (digits: number) => void;
 }): {
   min: (values: YAxisExtentValues) => number | undefined;
   max: (values: YAxisExtentValues) => number | undefined;
 } {
-  const { min, max, includeZero, onFractionDigits } = options;
+  const { min, max, includeZero, boundaryGap, onFractionDigits } = options;
+  const [gapBelow, gapAbove] = boundaryGap ?? [0, 0];
   return {
     min: (values) => {
       const resolvedMin = resolveYAxisBound(min, values);
       const resolvedMax = resolveYAxisBound(max, values);
-      const extentMin = resolvedMin ?? values.min;
-      const extentMax = resolvedMax ?? values.max;
+      // ECharts drops the gap on a side whose bound is fixed, so a resolved
+      // bound is used as-is. Both sides scale the same unpadded data span.
+      const span = spanOf(values);
+      const extentMin = resolvedMin ?? values.min - gapBelow * span;
+      const extentMax = resolvedMax ?? values.max + gapAbove * span;
       onFractionDigits(
         computeYAxisFractionDigits(extentMin, extentMax, includeZero)
       );
