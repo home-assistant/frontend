@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
 import paths from "../paths.cjs";
+import { ensureMapAssets, mapAssetsDir } from "./map-assets.js";
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);
@@ -89,7 +90,7 @@ function copyQrScannerWorker(staticDir) {
   copyFileDir(npmPath("qr-scanner/qr-scanner-worker.min.js"), staticPath("js"));
 }
 
-function copyMapPanel(staticDir) {
+async function copyMapPanel(staticDir) {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
     npmPath("leaflet/dist/leaflet.css"),
@@ -103,6 +104,10 @@ function copyMapPanel(staticDir) {
     npmPath("leaflet/dist/images"),
     staticPath("images/leaflet/images/")
   );
+
+  // Style, glyphs and sprites for the vector base map
+  await ensureMapAssets();
+  fs.copySync(mapAssetsDir, staticPath("map/"));
 }
 
 function copyZXingWasm(staticDir) {
@@ -139,7 +144,7 @@ gulp.task("copy-static-app", async () => {
   copyMdiIcons(staticDir);
 
   // Panel assets
-  copyMapPanel(staticDir);
+  await copyMapPanel(staticDir);
 
   // Qr Scanner assets
   copyZXingWasm(staticDir);
@@ -155,7 +160,7 @@ gulp.task("copy-static-demo", async () => {
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
   copyPolyfills(paths.demo_output_static);
-  copyMapPanel(paths.demo_output_static);
+  await copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
   copyTranslations(paths.demo_output_static);
   copyLocaleData(paths.demo_output_static);
@@ -168,7 +173,7 @@ gulp.task("copy-static-cast", async () => {
   // Copy cast static files
   fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
   copyPolyfills(paths.cast_output_static);
-  copyMapPanel(paths.cast_output_static);
+  await copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
   copyTranslations(paths.cast_output_static);
   copyLocaleData(paths.cast_output_static);
@@ -184,7 +189,7 @@ gulp.task("copy-static-gallery", async () => {
     paths.gallery_output_root
   );
 
-  copyMapPanel(paths.gallery_output_static);
+  await copyMapPanel(paths.gallery_output_static);
   copyFonts(paths.gallery_output_static);
   copyTranslations(paths.gallery_output_static);
   copyLocaleData(paths.gallery_output_static);
@@ -215,7 +220,7 @@ gulp.task("copy-static-e2e-test-app", async () => {
   }
 
   copyPolyfills(paths.e2eTestApp_output_static);
-  copyMapPanel(paths.e2eTestApp_output_static);
+  await copyMapPanel(paths.e2eTestApp_output_static);
   copyFonts(paths.e2eTestApp_output_static);
   copyTranslations(paths.e2eTestApp_output_static);
   copyLocaleData(paths.e2eTestApp_output_static);

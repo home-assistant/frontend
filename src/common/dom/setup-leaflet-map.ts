@@ -1,13 +1,26 @@
-import type { Map, TileLayer } from "leaflet";
+import type { Map } from "leaflet";
+import type { MapBaseLayer } from "../map/base-layer";
+import { createBaseLayer, MAP_MAX_ZOOM, MAP_MIN_ZOOM } from "../map/base-layer";
 
 // Sets up a Leaflet map on the provided DOM element
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type LeafletModuleType = typeof import("leaflet");
 
+export interface LeafletMapSetup {
+  map: Map;
+  leaflet: LeafletModuleType;
+  baseLayer: MapBaseLayer;
+}
+
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
-  initialView?: { latitude: number; longitude: number; zoom?: number }
-): Promise<[Map, LeafletModuleType, TileLayer]> => {
+  initialView?: {
+    latitude: number;
+    longitude: number;
+    zoom?: number;
+    darkMode?: boolean;
+  }
+): Promise<LeafletMapSetup> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
@@ -17,7 +30,10 @@ export const setupLeafletMap = async (
 
   await import("leaflet.markercluster");
 
-  const map = Leaflet.map(mapElement);
+  const map = Leaflet.map(mapElement, {
+    minZoom: MAP_MIN_ZOOM,
+    maxZoom: MAP_MAX_ZOOM,
+  });
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");
@@ -38,21 +54,11 @@ export const setupLeafletMap = async (
     );
   }
 
-  const tileLayer = createTileLayer(Leaflet).addTo(map);
-
-  return [map, Leaflet, tileLayer];
-};
-
-const createTileLayer = (leaflet: LeafletModuleType): TileLayer =>
-  leaflet.tileLayer(
-    `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}${
-      leaflet.Browser.retina ? "@2x.png" : ".png"
-    }`,
-    {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd",
-      minZoom: 0,
-      maxZoom: 20,
-    }
+  const baseLayer = await createBaseLayer(
+    Leaflet,
+    initialView?.darkMode ?? false
   );
+  baseLayer.layer.addTo(map);
+
+  return { map, leaflet: Leaflet, baseLayer };
+};

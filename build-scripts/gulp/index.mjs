@@ -14,6 +14,7 @@ import "./gen-icons-json.js";
 import "./gen-sensor-entity-constants.js";
 import "./landing-page.js";
 import "./locale-data.js";
+import "./map-assets.js";
 import "./rspack.js";
 import "./service-worker.js";
 import "./translations.js";
