@@ -123,11 +123,15 @@ class HuiEnergyDistrubutionCard
     }
     if (
       this._data &&
-      energySourcesByType(this._data.prefs).gas?.some(
-        (source) =>
-          this.hass.entities[source.stat_energy_from]?.display_precision !==
-          oldHass.entities[source.stat_energy_from]?.display_precision
-      )
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
     ) {
       return true;
     }
@@ -463,8 +467,8 @@ class HuiEnergyDistrubutionCard
                               this.hass,
                               gasUsage,
                               this._data.gasUnit,
-                               undefined,
-                               gasDisplayPrecision
+                              undefined,
+                              gasDisplayPrecision
                             )}
                           </div>
                           <svg width="80" height="30">
