@@ -7,6 +7,7 @@ import {
   mdiHome,
   mdiLabel,
   mdiMinusBox,
+  mdiSwapHorizontal,
   mdiTextureBox,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -177,36 +178,51 @@ export class HaTargetPickerItemRow extends LitElement {
                   referrerpolicy="no-referrer"
                   src=${this._iconImg}
                 />`
-              : fallbackIconPath
-                ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                : this.type === "entity"
-                  ? html`
-                      <ha-state-icon
-                        .stateObj=${
-                          stateObject ||
-                          ({
-                            entity_id: this.itemId,
-                            attributes: {},
-                          } as HassEntity)
-                        }
-                      >
-                      </ha-state-icon>
-                    `
-                  : nothing
+              : canMigrate
+                ? html`<ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>`
+                : fallbackIconPath
+                  ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
+                  : this.type === "entity"
+                    ? html`
+                        <ha-state-icon
+                          .stateObj=${
+                            stateObject ||
+                            ({
+                              entity_id: this.itemId,
+                              attributes: {},
+                            } as HassEntity)
+                          }
+                        >
+                        </ha-state-icon>
+                      `
+                    : nothing
         }
       </div>
 
-      <span slot="headline">${(canMigrate && replacement?.name) || name}</span>
+      <span slot="headline"
+        >${
+          canMigrate
+            ? this.hass.localize(
+                "ui.components.target-picker.device_replaced_headline"
+              )
+            : name
+        }</span
+      >
       ${
         notFound || (context && !this.hideContext)
           ? html`<span slot="supporting-text"
               >${
                 notFound
                   ? canMigrate
-                    ? this.hass.localize(
-                        "ui.components.target-picker.device_replaced",
-                        { count: replacement!.candidates.length }
-                      )
+                    ? replacement!.candidates.length === 1 && replacement!.name
+                      ? this.hass.localize(
+                          "ui.components.target-picker.device_replaced_by_one",
+                          { device: replacement!.name }
+                        )
+                      : this.hass.localize(
+                          "ui.components.target-picker.device_replaced",
+                          { count: replacement!.candidates.length }
+                        )
                     : this.hass.localize(
                         `ui.components.target-picker.${this.type}_not_found`
                       )
@@ -256,7 +272,7 @@ export class HaTargetPickerItemRow extends LitElement {
                 @click=${this._migrate}
               >
                 ${this.hass.localize(
-                  "ui.components.target-picker.replace_device"
+                  "ui.components.target-picker.replace_update"
                 )}
               </ha-button>
             `
