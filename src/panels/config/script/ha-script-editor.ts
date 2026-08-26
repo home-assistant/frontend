@@ -621,7 +621,11 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     if (changedProps.has("entityId") && this.entityId) {
+      const generation = ++this.loadGeneration;
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
+        if (generation !== this.loadGeneration) {
+          return;
+        }
         this.config = normalizeScriptConfig(c.config);
         this._initDirtyTracking(
           { type: "deep" },
@@ -652,9 +656,13 @@ export class HaScriptEditor extends SubscribeMixin(
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
+    const generation = this.loadGeneration;
     const validation = await validateConfig(this.hass, {
       actions: this.config.sequence,
     });
+    if (generation !== this.loadGeneration) {
+      return;
+    }
     this.validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
@@ -839,6 +847,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _takeControl() {
     const config = this.config as BlueprintScriptConfig;
+    const generation = this.loadGeneration;
 
     try {
       const result = await substituteBlueprint(
@@ -847,6 +856,9 @@ export class HaScriptEditor extends SubscribeMixin(
         config.use_blueprint.path,
         config.use_blueprint.input || {}
       );
+      if (generation !== this.loadGeneration) {
+        return;
+      }
 
       const newConfig = {
         ...normalizeScriptConfig(result.substituted_config),
@@ -862,6 +874,9 @@ export class HaScriptEditor extends SubscribeMixin(
       this.readOnly = true;
       this.errors = undefined;
     } catch (err: any) {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
       this.errors = err.message;
     }
   }

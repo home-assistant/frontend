@@ -173,6 +173,11 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
    */
   private _justSavedId?: string;
 
+  /** Bumped when the edited scene changes so stale scene loads are ignored. */
+  private _loadGeneration = 0;
+
+  private _subscribeGeneration = 0;
+
   private _entityRegCreated?: (
     value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
   ) => void;
@@ -936,11 +941,20 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    this._unsubscribeEvents =
-      await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => this._stateChanged(event),
-        "state_changed"
-      );
+    const generation = ++this._subscribeGeneration;
+    const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
+    if (
+      generation !== this._subscribeGeneration ||
+      this._mode !== "live" ||
+      !this.isConnected
+    ) {
+      unsubscribe();
+      return;
+    }
+    this._unsubscribeEvents = unsubscribe;
   }
 
   private _showMoreInfo(ev: Event) {
@@ -949,10 +963,14 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _loadConfig() {
+    const generation = ++this._loadGeneration;
     let config: SceneConfig;
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
+      if (generation !== this._loadGeneration) {
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -965,6 +983,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
               ),
       });
       goBack("/config/scene/dashboard");
+      return;
+    }
+
+    if (generation !== this._loadGeneration) {
       return;
     }
 
@@ -985,6 +1007,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   /** Emulate a freshly opened editor when the edited scene changes. */
   private _resetEditorState() {
+    this._loadGeneration++;
     if (this._mode === "live") {
       this._stopLiveMode();
     }

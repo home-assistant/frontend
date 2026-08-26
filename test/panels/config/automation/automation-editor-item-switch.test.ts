@@ -107,6 +107,33 @@ describe("automation editor item switch", () => {
     expect(el.config?.alias).toBe("a");
   });
 
+  test("ignores a config fetch that resolves after switching items", async () => {
+    const el = createEditor();
+    let resolveA!: (value: AutomationConfig) => void;
+    (el.hass.callApi as any).mockImplementation(
+      (_method: string, path: string) => {
+        const id = path.split("/").pop();
+        if (id === "a") {
+          return new Promise((resolve) => {
+            resolveA = resolve;
+          });
+        }
+        return Promise.resolve(configFor(id!));
+      }
+    );
+    el.automationId = "a";
+    runUpdated(el, { automationId: undefined });
+
+    el.automationId = "b";
+    runUpdated(el, { automationId: "a" });
+    await flush();
+    expect(el.config?.alias).toBe("b");
+
+    resolveA(configFor("a"));
+    await flush();
+    expect(el.config?.alias).toBe("b");
+  });
+
   test("switching to another entity in the read-only view resets the editor state", async () => {
     const el = createEditor();
     el.entityId = "automation.one";

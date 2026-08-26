@@ -713,7 +713,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     }
 
     if (changedProps.has("entityId") && this.entityId) {
+      const generation = ++this.loadGeneration;
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
+        if (generation !== this.loadGeneration) {
+          return;
+        }
         this.config = normalizeAutomationConfig(c.config);
         this._initDirtyTracking(
           { type: "deep" },
@@ -759,11 +763,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
+    const generation = this.loadGeneration;
     const validation = await validateConfig(this.hass, {
       triggers: this.config.triggers,
       conditions: this.config.conditions,
       actions: this.config.actions,
     });
+    if (generation !== this.loadGeneration) {
+      return;
+    }
     this.validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
@@ -928,6 +936,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private async _takeControl() {
     const config = this.config as BlueprintAutomationConfig;
+    const generation = this.loadGeneration;
 
     try {
       const result = await substituteBlueprint(
@@ -936,6 +945,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         config.use_blueprint.path,
         config.use_blueprint.input || {}
       );
+      if (generation !== this.loadGeneration) {
+        return;
+      }
 
       const newConfig = {
         ...normalizeAutomationConfig(result.substituted_config),
@@ -952,6 +964,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.readOnly = true;
       this.errors = undefined;
     } catch (err: any) {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
       this.errors = err.message;
     }
   }

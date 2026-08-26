@@ -162,6 +162,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
      */
     protected justSavedId?: string;
 
+    /** Bumped when the edited item changes so stale item loads are ignored. */
+    protected loadGeneration = 0;
+
     private _relatedContextAreaId?: string;
 
     protected willUpdate(changedProps: PropertyValues): void {
@@ -286,6 +289,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
      * editor.
      */
     protected resetEditorState() {
+      this.loadGeneration++;
       this.config = undefined;
       this.mode = "gui";
       this.readOnly = false;
@@ -324,8 +328,12 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected async loadConfig(id: string) {
       const hooks = this.domainHooks;
       const domain = hooks.domain;
+      const generation = ++this.loadGeneration;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
+        if (generation !== this.loadGeneration) {
+          return;
+        }
         this.readOnly = false;
         const report: AutomationMigrationReport = { deprecated: false };
         this.config = hooks.normalizeConfig(config, report);
@@ -342,6 +350,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         );
         hooks.checkValidation();
       } catch (err: any) {
+        if (generation !== this.loadGeneration) {
+          return;
+        }
         if (err.status_code !== 404) {
           const alertText =
             err.body?.message || err.body || err.error || "Unknown error";
