@@ -9,6 +9,7 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-list";
 import "../../../../components/ha-radio-list-item";
 import "../../../../components/ha-select";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
@@ -42,12 +43,15 @@ export class HuiDialogSelectView extends LitElement {
 
   @state() private _selectedViewIdx = 0;
 
+  @state() private _loading = false;
+
   @state() private _open = false;
 
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
     this._urlPath = params.urlPath;
     this._selectedViewIdx = 0;
+    this._loading = false;
     this._params = params;
     this._open = true;
     if (this._params.allowDashboardChange) {
@@ -105,54 +109,7 @@ export class HuiDialogSelectView extends LitElement {
               </ha-select>`
             : nothing
         }
-        ${
-          !this._config || (this._config.views || []).length < 1
-            ? html`<ha-alert alert-type="error"
-                >${this.hass.localize(
-                  this._config
-                    ? "ui.panel.lovelace.editor.select_view.no_views"
-                    : "ui.panel.lovelace.editor.select_view.no_config"
-                )}</ha-alert
-              >`
-            : this._config.views.length > 1
-              ? html`
-                  <ha-list>
-                    ${this._config.views.map((view, idx) => {
-                      const isStrategy = isStrategyView(view);
-
-                      return html`
-                        <ha-radio-list-item
-                          .graphic=${
-                            this._config?.views.some(({ icon }) => icon)
-                              ? "icon"
-                              : nothing
-                          }
-                          @click=${this._viewChanged}
-                          .value=${idx.toString()}
-                          .selected=${this._selectedViewIdx === idx}
-                          .disabled=${
-                            isStrategy && !this._params?.includeStrategyViews
-                          }
-                          ?autofocus=${
-                            idx === 0 && !this._params!.allowDashboardChange
-                          }
-                        >
-                          <span>
-                            ${view.title}${
-                              isStrategy
-                                ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
-                                : nothing
-                            }
-                          </span>
-
-                          <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
-                        </ha-radio-list-item>
-                      `;
-                    })}
-                  </ha-list>
-                `
-              : nothing
-        }
+        ${this._renderViews()}
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -163,13 +120,75 @@ export class HuiDialogSelectView extends LitElement {
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._config || (this._config.views || []).length < 1}
+            .disabled=${!this._selectableConfig}
             @click=${this._selectView}
           >
             ${this._params.actionLabel || this.hass!.localize("ui.common.move")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
+    `;
+  }
+
+  // While a config is loading the views on screen still belong to the
+  // previously selected dashboard, so nothing may be picked from them.
+  private get _selectableConfig(): LovelaceConfig | undefined {
+    return !this._loading && this._config?.views?.length
+      ? this._config
+      : undefined;
+  }
+
+  private _renderViews() {
+    if (this._loading) {
+      return html`<div class="loading">
+        <ha-spinner size="medium"></ha-spinner>
+      </div>`;
+    }
+
+    if (!this._selectableConfig) {
+      return html`<ha-alert alert-type="error">
+        ${this.hass.localize(
+          this._config
+            ? "ui.panel.lovelace.editor.select_view.no_views"
+            : "ui.panel.lovelace.editor.select_view.no_config"
+        )}
+      </ha-alert>`;
+    }
+
+    const views = this._selectableConfig.views;
+    if (views.length < 2) {
+      return nothing;
+    }
+
+    const hasIcon = views.some(({ icon }) => icon);
+
+    return html`
+      <ha-list>
+        ${views.map((view, idx) => {
+          const isStrategy = isStrategyView(view);
+
+          return html`
+            <ha-radio-list-item
+              .graphic=${hasIcon ? "icon" : nothing}
+              @click=${this._viewChanged}
+              .value=${idx.toString()}
+              .selected=${this._selectedViewIdx === idx}
+              .disabled=${isStrategy && !this._params?.includeStrategyViews}
+              ?autofocus=${idx === 0 && !this._params!.allowDashboardChange}
+            >
+              <span>
+                ${view.title}${
+                  isStrategy
+                    ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
+                    : nothing
+                }
+              </span>
+
+              <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
+            </ha-radio-list-item>
+          `;
+        })}
+      </ha-list>
     `;
   }
 
@@ -184,7 +203,7 @@ export class HuiDialogSelectView extends LitElement {
       return;
     }
     this._urlPath = urlPath;
-    this._selectedViewIdx = 0;
+    this._loading = true;
     let config: LovelaceConfig | undefined;
     try {
       config = (await fetchConfig(
@@ -200,6 +219,8 @@ export class HuiDialogSelectView extends LitElement {
       return;
     }
     this._config = config;
+    this._selectedViewIdx = 0;
+    this._loading = false;
   }
 
   private _viewChanged(e) {
@@ -211,10 +232,14 @@ export class HuiDialogSelectView extends LitElement {
   }
 
   private _selectView(): void {
+    const config = this._selectableConfig;
+    if (!config) {
+      return;
+    }
     fireEvent(this, "view-selected", { view: this._selectedViewIdx });
     this._params!.viewSelectedCallback(
       this._urlPath!,
-      this._config!,
+      config,
       this._selectedViewIdx
     );
     this.closeDialog();
@@ -226,6 +251,10 @@ export class HuiDialogSelectView extends LitElement {
       css`
         ha-select {
           width: 100%;
+        }
+        .loading {
+          display: flex;
+          justify-content: center;
         }
         mwc-radio-list-item {
           direction: ltr;
