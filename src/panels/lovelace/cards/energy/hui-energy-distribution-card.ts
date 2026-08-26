@@ -162,6 +162,20 @@ class HuiEnergyDistrubutionCard
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === this._data.gasUnit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
     const hasReturnToGrid =
       types.grid?.some((source) => source.stat_energy_to) ?? false;
 
@@ -437,7 +451,9 @@ class HuiEnergyDistrubutionCard
                             ${formatConsumptionShort(
                               this.hass,
                               gasUsage,
-                              this._data.gasUnit
+                              this._data.gasUnit,
+                               undefined,
+                               gasDisplayPrecision
                             )}
                           </div>
                           <svg width="80" height="30">
