@@ -1,6 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
 import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -29,11 +28,13 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import { computeDefaultSecurityAlertSeverity } from "../strategies/security-alerts";
-import { isSecurityPanelEntity } from "../strategies/security-view-strategy";
+import {
+  createSecurityEntityFilter,
+  type SecurityEntityContext,
+} from "../security-entity-filter";
 import type { ValueChangedEvent } from "../../../types";
 
-type SecurityEditorContext = ContextType<typeof registriesContext> & {
-  states: ContextType<typeof statesContext>;
+type SecurityEditorContext = SecurityEntityContext & {
   language: ContextType<typeof internationalizationContext>["language"];
   translationMetadata: ContextType<
     typeof internationalizationContext
@@ -92,7 +93,7 @@ export class SecurityAlertsEditor extends LitElement {
           "ui.panel.security.editor.add_alert_entity"
         )}
         .excludeEntities=${this.alertEntities.map(({ entity }) => entity)}
-        .entityFilter=${this._alertEntityFilter}
+        .entityFilter=${this._entityFilter}
         @value-changed=${this._add}
       ></ha-entity-picker>
     `;
@@ -154,10 +155,7 @@ export class SecurityAlertsEditor extends LitElement {
     fireEvent(this, "value-changed", { value: next });
   }
 
-  private _alertEntityFilter = (entity: HassEntity) =>
-    this._entityContext
-      ? isSecurityPanelEntity(this._entityContext, entity)
-      : false;
+  private _entityFilter = createSecurityEntityFilter(() => this._entityContext);
 
   private _getIndex(
     ev: HASSDomCurrentTargetEvent<HTMLElement>

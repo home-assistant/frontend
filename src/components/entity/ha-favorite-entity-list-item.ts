@@ -3,28 +3,28 @@ import { mdiDelete } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
-import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/state-badge";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
+import { consumeEntityState } from "../../common/decorators/consume-context-entry";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
+import { fireEvent } from "../../common/dom/fire_event";
+import "./state-badge";
+import "../ha-icon-button";
+import "../ha-settings-row";
 import {
   internationalizationContext,
   registriesContext,
-} from "../../../data/context";
+} from "../../data/context";
 
 declare global {
   interface HASSDomEvents {
     "delete-favorite-entity": { index: number };
   }
   interface HTMLElementTagNameMap {
-    "home-favorite-entity-list-item": HomeFavoriteEntityListItem;
+    "ha-favorite-entity-list-item": HaFavoriteEntityListItem;
   }
 }
 
-@customElement("home-favorite-entity-list-item")
-export class HomeFavoriteEntityListItem extends LitElement {
+@customElement("ha-favorite-entity-list-item")
+export class HaFavoriteEntityListItem extends LitElement {
   @property({ attribute: "entity-id" }) public entityId!: string;
 
   @property({ type: Number }) public index = 0;

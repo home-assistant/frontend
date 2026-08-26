@@ -16,7 +16,7 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import "../components/home-favorites-editor";
+import "../../../components/entity/ha-favorites-editor";
 import "../components/home-shortcuts-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
@@ -123,13 +123,16 @@ export class DialogEditHome
               @value-changed=${this._welcomeChanged}
             ></ha-form>
 
-            <home-favorites-editor
+            <ha-favorites-editor
               .favorites=${this._state.favorite_entities}
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.strategy.home.favorite_entities"
               )}
+              .addButtonLabel=${this.hass.localize(
+                "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
+              )}
               @value-changed=${this._favoriteEntitiesChanged}
-            ></home-favorites-editor>
+            ></ha-favorites-editor>
 
             <ha-form
               .hass=${this.hass}
@@ -308,7 +311,7 @@ export class DialogEditHome
         display: block;
       }
 
-      home-favorites-editor {
+      ha-favorites-editor {
         display: block;
         margin-top: var(--ha-space-2);
         margin-bottom: var(--ha-space-4);
