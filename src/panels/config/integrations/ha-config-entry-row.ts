@@ -45,6 +45,7 @@ import {
 } from "../../../data/config_entries";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
+import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -479,14 +480,16 @@ export class HaConfigEntryRow extends LitElement {
                       </ha-md-list-item>
                       ${
                         this._devicesExpanded
-                          ? ownDevices.map(
-                              (device) =>
+                          ? groupDevicesByParent(ownDevices).map(
+                              ({ device, isChild, isLastChild }) =>
                                 html`<ha-config-entry-device-row
                                   .hass=${this.hass}
                                   .narrow=${this.narrow}
                                   .entry=${item}
                                   .device=${device}
                                   .entities=${entities}
+                                  .isChild=${isChild}
+                                  .isLastChild=${isLastChild}
                                 ></ha-config-entry-device-row>`
                             )
                           : nothing
@@ -509,14 +512,16 @@ export class HaConfigEntryRow extends LitElement {
                 `
               )}`
             : html`
-                ${ownDevices.map(
-                  (device) =>
+                ${groupDevicesByParent(ownDevices).map(
+                  ({ device, isChild, isLastChild }) =>
                     html`<ha-config-entry-device-row
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .entry=${item}
                       .device=${device}
                       .entities=${entities}
+                      .isChild=${isChild}
+                      .isLastChild=${isLastChild}
                     ></ha-config-entry-device-row>`
                 )}
               `

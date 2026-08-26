@@ -1,6 +1,7 @@
 import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import { callWS } from "../util/websocket";
+import type { DeviceRegistryEntry } from "./device/device_registry";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -464,6 +465,27 @@ export interface RequestedGrant {
   /** Whether client side authentication is requested or to be granted */
   clientSideAuth: boolean;
 }
+
+/**
+ * Get the Z-Wave node ID of a device from its registry identifiers, which have
+ * the form `<home id>-<node id>[-<manufacturer>:<product type>:<product id>]`.
+ * Returns undefined for devices without a node, e.g. provisioning entries.
+ */
+export const getNodeIdFromDevice = (
+  device: DeviceRegistryEntry
+): number | undefined => {
+  for (const [domain, identifier] of device.identifiers) {
+    // a provisioning entry is identified by its DSK, whose blocks parse as numbers
+    if (domain !== "zwave_js" || identifier.startsWith("provision_")) {
+      continue;
+    }
+    const nodeId = parseInt(identifier.split("-")[1]);
+    if (!isNaN(nodeId)) {
+      return nodeId;
+    }
+  }
+  return undefined;
+};
 
 export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,

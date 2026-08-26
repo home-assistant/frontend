@@ -99,7 +99,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 </div>
               `
             : html`
-                <div class="flex state">
+                <div class="flex box">
                   <ha-input
                     auto-validate
                     .disabled=${stateObj.state === UNAVAILABLE}
@@ -135,6 +135,10 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     .state {
       min-width: 45px;
       text-align: end;
+    }
+    .box {
+      flex-grow: 0;
+      min-width: 45px;
     }
     ha-input::part(wa-input) {
       text-align: end;

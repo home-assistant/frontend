@@ -6,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   formatFlowRateShort,
   getEnergyDataCollection,
   getFlowRateFromState,
@@ -21,6 +22,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -241,6 +243,13 @@ class HuiWaterFlowSankeyCard
       }
     }
 
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption_water,
+      this._data.statsMetadata,
+      "stat_rate"
+    );
+
     const {
       deviceNodes,
       parentLinks,
@@ -252,12 +261,13 @@ class HuiWaterFlowSankeyCard
       localize: this.hass.localize,
       rootNodeId,
       minThreshold: minFlowThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 1,
       ceilOtherValue: true,
       initialUntracked: effectiveTotalInflow,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentFlowRate(id),
-      getLabel: (id, name) => name || this._getEntityLabel(id),
+      getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
     });
     links.push(...deviceLinks);

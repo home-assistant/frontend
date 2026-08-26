@@ -22,7 +22,7 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 
 - `yarn lint` passes when practical for the scope.
 - `yarn test` or focused relevant tests are green when practical for the scope.
-- Tests are added or updated for new data processing and utilities where applicable.
+- Each test added by the change protects real logic, not the look of a component.
 - User-facing text is localized and follows `ha-frontend-user-facing-text` guidance.
 - Components handle loading, error, unavailable, and missing-entity states.
 - Entity existence is checked before property access.

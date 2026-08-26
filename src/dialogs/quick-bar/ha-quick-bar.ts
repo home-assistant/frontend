@@ -60,6 +60,7 @@ import type { HomeAssistant } from "../../types";
 import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "../restart/automation-restart-status";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../voice-command-dialog/show-ha-voice-command-dialog";
 import {
@@ -799,9 +800,9 @@ export class QuickBar extends LitElement {
             title: this.hass.localize(
               `ui.dialogs.restart.${actionItem.action}.confirm_title`
             ),
-            text: this.hass.localize(
-              `ui.dialogs.restart.${actionItem.action}.confirm_description`
-            ),
+            text: html`${this.hass.localize(
+                `ui.dialogs.restart.${actionItem.action}.confirm_description`
+              )}<br /><br /><automation-restart-status></automation-restart-status>`,
             confirmText: this.hass.localize(
               `ui.dialogs.restart.${actionItem.action}.confirm_action`
             ),

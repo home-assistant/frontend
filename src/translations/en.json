@@ -702,9 +702,9 @@
           "geo_location": "[%key:ui::panel::config::automation::editor::triggers::type::geo_location::label%]",
           "homeassistant": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::label%]",
           "mqtt": "[%key:ui::panel::config::automation::editor::triggers::type::mqtt::label%]",
-          "numeric_state": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+          "numeric_state": "[%key:ui::panel::config::automation::editor::conditions::type::numeric_state::label%]",
           "persistent_notification": "[%key:ui::panel::config::automation::editor::triggers::type::persistent_notification::label%]",
-          "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+          "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
           "sun": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
           "tag": "[%key:ui::panel::config::automation::editor::triggers::type::tag::label%]",
           "template": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
@@ -790,11 +790,6 @@
         }
       },
       "target-picker": {
-        "expand": "Expand",
-        "expand_floor_id": "Split this floor into separate areas",
-        "expand_area_id": "Split this area into separate devices and entities",
-        "expand_device_id": "Split this device into separate entities",
-        "expand_label_id": "Split this label into separate areas, devices and entities",
         "add_target": "Add target",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
@@ -807,11 +802,11 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
-        "replaced_device": "Replaced device",
         "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
         "replace_device": "Replace",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
@@ -840,6 +835,12 @@
           "long": "Long"
         },
         "style": "Time format style"
+      },
+      "filter-entity-types": {
+        "caption": "Type",
+        "no_device_class": "No type",
+        "expand": "Expand",
+        "collapse": "Collapse"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -932,6 +933,12 @@
           "description": "This device was replaced by multiple devices. Choose which one to use.",
           "recommended": "Recommended"
         }
+      },
+      "device-class-picker": {
+        "device_class": "Device class",
+        "add": "Add device class",
+        "no_device_classes": "No device classes available",
+        "no_match": "No device classes found for {term}"
       },
       "category-picker": {
         "clear": "Clear",
@@ -1129,7 +1136,11 @@
         "zoom_reset": "Reset zoom",
         "expand_legend": "More",
         "collapse_legend": "Less",
-        "toggle_visibility": "Toggle visibility"
+        "toggle_visibility": "Toggle visibility",
+        "chart": "Chart",
+        "time": "Time",
+        "value": "Value",
+        "category": "Category"
       },
       "map": {
         "error": "Unable to load map"
@@ -1608,11 +1619,13 @@
             "labs": "[%key:ui::panel::config::labs::caption%]",
             "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
             "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
+            "mqtt": "[%key:ui::panel::config::dashboard::mqtt::main%]",
             "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
+            "serial": "[%key:ui::panel::config::dashboard::serial::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -1667,6 +1680,11 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "context": "Context",
+        "entity": "Entity",
+        "floor": "Floor",
+        "entity_id": "Entity ID",
+        "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
         "raw": "Raw",
@@ -2049,6 +2067,15 @@
         "description": "Description",
         "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
       },
+      "logbook_detail": {
+        "title": "Activity details",
+        "state": "State",
+        "event": "Event",
+        "time": "Time",
+        "what_happened": "What happened",
+        "no_known_cause": "No cause was recorded for this activity.",
+        "action_used": "Action used: {name}"
+      },
       "voice-settings": {
         "expose_header": "Expose",
         "aliases_header": "Aliases",
@@ -2073,6 +2100,8 @@
         "error_backup_state": "An error occurred while getting the current backup state. Error: {error}",
         "wait_for_upload": "Wait for backup upload to finish",
         "wait_for_restore": "Wait for backup restore to finish",
+        "interrupt_automations": "The following automations and scripts are currently running and will be interrupted:",
+        "no_interrupt_automations": "No automations or scripts are currently running.",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -2083,14 +2112,14 @@
           "title": "Restart Home Assistant",
           "description": "Interrupts all running automations and scripts.",
           "confirm_title": "Restart Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "All integrations will be reloaded.",
           "confirm_action": "Restart",
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
           "confirm_title": "Stop Home Assistant?",
-          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_description": "Home Assistant will be stopped.",
           "confirm_action": "Stop"
         },
         "reboot": {
@@ -2617,6 +2646,25 @@
           "learn_more": "Learn more"
         }
       },
+      "security": {
+        "editor": {
+          "title": "Edit security and safety page",
+          "description": "Configure your security and safety display preferences.",
+          "favorite_entities": "[%key:ui::panel::lovelace::editor::strategy::home::favorite_entities%]",
+          "favorite_entities_description": "Pin entities to the top of the page.",
+          "add_favorite_entity": "[%key:ui::panel::lovelace::editor::strategy::home::add_favorite_entity%]",
+          "active_alert_entities": "Active alert entities",
+          "active_alert_entities_description": "Display any entities that require attention.",
+          "add_alert_entity": "Add entity",
+          "severity": {
+            "label": "Severity",
+            "alert": "Alert",
+            "warning": "Warning"
+          },
+          "load_failed": "Failed to load security and safety page configuration",
+          "save_failed": "Failed to save security and safety page configuration"
+        }
+      },
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
@@ -2720,6 +2768,10 @@
             "main": "Matter",
             "secondary": "Cross-vendor smart home standard"
           },
+          "mqtt": {
+            "main": "MQTT",
+            "secondary": "Lightweight network protocol designed for IoT devices"
+          },
           "thread": {
             "main": "Thread",
             "secondary": "Mesh network often used for Matter devices"
@@ -2731,6 +2783,10 @@
           "radio_frequency": {
             "main": "Radio frequency",
             "secondary": "Control radio-based devices."
+          },
+          "serial": {
+            "main": "Serial",
+            "secondary": "Serial ports and the integrations and apps using them"
           },
           "knx": {
             "main": "KNX",
@@ -2769,7 +2825,6 @@
           "caption": "Updates",
           "description": "Manage updates of Home Assistant, apps, and devices",
           "group_system": "Home Assistant",
-          "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
           "no_updates": "No updates available",
@@ -5348,7 +5403,7 @@
                   }
                 },
                 "state": {
-                  "label": "State",
+                  "label": "State changed",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
                   "for": "For",
@@ -5356,7 +5411,7 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   },
                   "for_type": {
                     "choices": {
@@ -5386,7 +5441,7 @@
                   }
                 },
                 "numeric_state": {
-                  "label": "Numeric state",
+                  "label": "Numeric state crossed threshold",
                   "above": "Above",
                   "below": "Below",
                   "lower_limit": "Lower limit",
@@ -5396,9 +5451,9 @@
                   "type_input": "Value of an entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "crossed_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above}{duration, select, \n undefined {} \n other { for {duration}}\n}",
+                    "crossed_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}",
+                    "crossed_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}"
                   },
                   "threshold_type": {
                     "choices": {
@@ -5642,7 +5697,7 @@
                 "numeric_state": {
                   "type_value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
                   "type_input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]",
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+                  "label": "Numeric state",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "lower_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::lower_limit%]",
@@ -5650,9 +5705,9 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "Tests if the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
-                    "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
-                    "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
-                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
+                    "is_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above}",
+                    "is_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is below {below}",
+                    "is_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above} and below {below}"
                   }
                 },
                 "or": {
@@ -5664,12 +5719,11 @@
                   }
                 },
                 "state": {
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
-                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+                  "label": "State",
+                  "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
-                    "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
                 "sun": {
@@ -5998,7 +6052,7 @@
                 },
                 "check_condition": {
                   "description": {
-                    "full": "Test {condition}"
+                    "full": "Test: {condition}"
                   }
                 },
                 "set_conversation_response": {
@@ -6131,7 +6185,8 @@
             "error": "{path} could not be loaded",
             "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
-            "blueprint_in_use_view": "view {type}",
+            "blueprint_in_use_view_automation": "View automations",
+            "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
             "add_blueprint": "Import blueprint",
@@ -6380,12 +6435,25 @@
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
             "title": "Cloud login",
-            "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
-            "introduction2": "This service is run by our partner ",
-            "introduction2a": ", a company founded by the founders of Home Assistant.",
-            "introduction3": "Home Assistant Cloud is a subscription service with a free one-month trial. No payment information necessary.",
-            "learn_more_link": "Learn more about Home Assistant Cloud",
+            "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
+            "hero_title": "Tools for your home, support for the Open Home",
+            "hero_lead": "The easy, secure, and private way to get more out of Home Assistant, and the simplest way to fund its development.",
+            "trial_note": "Try free for a month. No payment information required up front.",
+            "partner_note": "This service is run by our partner {nabu_casa_link}, a company founded by the founders of Home Assistant.",
+            "feature_remote_title": "Access from anywhere",
+            "feature_remote_body": "Securely reach your Home Assistant from any device, with no port forwarding or VPN.",
+            "feature_backup_title": "Backups kept safe",
+            "feature_backup_body": "Your latest Home Assistant backup, stored off-site and encrypted, ready to restore your full system on first boot.",
+            "feature_voice_control_title": "Native Alexa and Google support",
+            "feature_voice_control_body": "Control every Home Assistant device through Amazon Alexa and Google Assistant, so the devices and routines you already rely on keep working. Set up in minutes, not hours.",
+            "feature_voice_quality_title": "Faster speech for your own assistant",
+            "feature_voice_quality_body": "More languages and higher accuracy for Home Assistant's privacy-first voice assistant.",
+            "feature_companion_title": "Companion app",
+            "feature_companion_body": "Reach your home from your phone anywhere, with location and sensor updates flowing back securely and no ports to open.",
+            "feature_support_title": "Support Home Assistant",
+            "feature_support_body": "Your subscription funds the Open Home Foundation, keeping Home Assistant independent with no ads or data harvesting.",
             "sign_in": "Sign in",
+            "sign_in_lead": "Sign in to your Nabu Casa account.",
             "email": "Email",
             "email_error_msg": "Invalid email",
             "password": "Password",
@@ -6395,15 +6463,11 @@
             "cancel": "Cancel",
             "submit": "Submit",
             "forgot_password": "Forgot password?",
-            "start_trial": "Start your free 1-month trial",
-            "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
             "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
             "alert_mfa_code_required": "You need to enter your two-factor authentication code.",
             "alert_mfa_expired_or_not_started": "Multi-factor authentication expired, or not started. Please try again.",
-            "alert_totp_code_invalid": "Invalid two-factor authentication code.",
-            "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
-            "cloud_pipeline_text": "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"
+            "alert_totp_code_invalid": "Invalid two-factor authentication code."
           },
           "forgot_password": {
             "title": "Forgot password",
@@ -6415,17 +6479,9 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "title": "Register account",
-            "headline": "Start your free trial",
+            "headline": "Start free trial",
             "information": "Create an account to start your free one-month trial with Home Assistant Cloud. No payment information necessary.",
-            "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
-            "feature_remote_control": "Control of Home Assistant away from home",
-            "feature_google_home": "Integration with Google Assistant",
-            "feature_amazon_alexa": "Integration with Amazon Alexa",
-            "feature_webhook_apps": "Easy integration with webhook-based apps like OwnTracks",
-            "information3": "This service is run by our partner ",
-            "information3a": ", a company founded by the founders of Home Assistant.",
-            "information4": "By registering an account, you agree to the following terms and conditions.",
+            "terms_notice": "By creating an account, you agree to our {terms} and {privacy_policy}.",
             "link_terms_conditions": "Terms and conditions",
             "link_privacy_policy": "Privacy policy",
             "create_account": "Create account",
@@ -6434,10 +6490,17 @@
             "password": "Password",
             "password_error_msg": "Passwords are at least 8 characters",
             "start_trial": "Start trial",
+            "sign_in_instead": "Sign in instead",
+            "check_your_email": "Check your email",
+            "confirm_email_body": "Open the confirmation link in the email we just sent to {email}.",
+            "waiting_for_confirmation": "Waiting for confirmation. We'll sign you in automatically.",
+            "checking_confirmation": "Checking for your confirmation…",
+            "auto_login_failed": "We couldn't sign you in automatically. Confirm your email, then sign in.",
+            "nothing_arrived": "Nothing arrived? Check your spam folder, or {resend_link}.",
+            "resend_link": "resend the confirmation email",
             "resend_confirm_email": "Resend confirmation email",
             "clicked_confirm": "I opened the confirmation link",
             "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
-            "account_created": "Account created! Check your email for instructions on how to activate your account.",
             "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
@@ -6785,7 +6848,8 @@
           "disabled_by": {
             "user": "user",
             "integration": "integration",
-            "config_entry": "config entry"
+            "config_entry": "config entry",
+            "device": "parent device"
           },
           "enabled_description": "Disabled devices and services will not be shown and entities belonging to them will be disabled, too.",
           "open_configuration_url": "Visit",
@@ -6796,6 +6860,10 @@
           "delete_device_integration": "Remove device from {integration}",
           "connected_devices": {
             "heading": "Connected devices",
+            "show_more": "+{count} devices not shown"
+          },
+          "child_devices": {
+            "heading": "Sub-devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
@@ -6879,6 +6947,8 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "parent_device": "Parent device",
+            "part_of_device": "Part of {name}",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -7010,6 +7080,8 @@
             "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",
             "allow_login": "Allow login",
             "allow_login_description": "Allow access using username and password.",
+            "select_user": "Select user account",
+            "create_new_user": "Create a new username",
             "username": "[%key:ui::panel::config::users::editor::username%]",
             "password": "[%key:ui::panel::config::users::editor::password%]",
             "admin": "[%key:ui::panel::config::users::editor::admin%]",
@@ -7171,6 +7243,7 @@
             "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "via": "Connected via",
+            "part_of": "Part of",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
             "version": "Version {version}",
@@ -7366,8 +7439,16 @@
         },
         "mqtt": {
           "title": "MQTT",
-          "settings_title": "MQTT settings",
-          "option_flow": "Configure MQTT options",
+          "option_flow": "MQTT options",
+          "option_flow_description": "Set discovery options",
+          "config_flow": "Connection",
+          "config_flow_description": "Broker connection settings",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "my_network_title": "My network",
+          "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
+          "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
@@ -7471,6 +7552,38 @@
           "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
+        },
+        "serial": {
+          "title": "Serial",
+          "status_ok": "All ports connected",
+          "status_disconnected": "Ports disconnected",
+          "status_summary": "{in_use}/{total} connected ports in use",
+          "status_summary_disconnected": "{count} disconnected",
+          "connected": "Connected",
+          "connected_description": "These ports are used by at least one integration or app.",
+          "available": "Available",
+          "available_description": "These ports are connected but not used by any integration or app.",
+          "disconnected": "Disconnected",
+          "disconnected_description": "These ports are used by an integration or app but are currently not connected.",
+          "no_ports": "No serial ports found",
+          "loading_error": "Failed to load serial ports",
+          "serial_number": "S/N: {serial_number}",
+          "consumer_not_running": "{name} (not running)",
+          "can_be_used_with": "Can be used with {integrations}",
+          "discovered_by": "Discovered by {integration}, set it up",
+          "port_information": "Port information",
+          "fields": {
+            "device": "Device",
+            "resolved_device": "Resolved device",
+            "description": "Description",
+            "manufacturer": "Manufacturer",
+            "interface_description": "Interface description",
+            "interface_number": "Interface number",
+            "serial_number": "Serial number",
+            "vid": "Vendor ID",
+            "pid": "Product ID",
+            "bcd_device": "Device revision"
+          }
         },
         "dhcp": {
           "title": "DHCP discovery",
@@ -8388,6 +8501,7 @@
             "status_online": "Online",
             "status_offline": "Offline",
             "my_network_title": "My network",
+            "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
             "device_count": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
             "entity_count": "{count, plural,\n  one {# entity}\n  other {# entities}\n}",
@@ -8434,6 +8548,48 @@
                 "input_label": "Dataset",
                 "confirm": "Set Thread"
               }
+            }
+          },
+          "visualization": {
+            "header": "Network visualization",
+            "refresh_topology": "Refresh topology",
+            "border_router": "Border router",
+            "router": "Router",
+            "end_device": "End device",
+            "wifi_ap": "Wi-Fi access point",
+            "offline": "Offline",
+            "online": "Online",
+            "unknown_device": "Unknown device",
+            "unknown_devices": "Unknown devices",
+            "node": "Node {node_id}",
+            "node_id": "Node ID",
+            "network": "Network",
+            "role": "Role",
+            "status": "Status",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "area": "Area",
+            "last_seen": "Last seen",
+            "via_route_table": "Learned from routing table",
+            "empty": "No network topology data is available yet.",
+            "not_supported": "The connected Matter server does not support network topology. Update your Matter server to use this feature.",
+            "error_loading": "Failed to load the network topology: {error}",
+            "strength": {
+              "strong": "Strong",
+              "medium": "Medium",
+              "weak": "Weak",
+              "none": "None",
+              "unknown": "Unknown"
+            },
+            "roles": {
+              "leader": "Leader",
+              "router": "Router",
+              "reed": "Router-eligible end device",
+              "end_device": "End device",
+              "sleepy_end_device": "Sleepy end device",
+              "unassigned": "Unassigned",
+              "station": "Station",
+              "ap": "Access point"
             }
           },
           "network_type": {
@@ -9029,6 +9185,8 @@
           "security": {
             "devices": "Devices",
             "other_devices": "Other devices",
+            "active_alerts": "Active alerts",
+            "favorites": "[%key:ui::panel::lovelace::strategy::home::favorites%]",
             "activity": "Activity"
           },
           "climate": {
@@ -9989,6 +10147,8 @@
               "description": "This card shows the distribution of energy in your home on a Sankey graph.",
               "group_by_floor": "Group by floor",
               "group_by_area": "Group by area",
+              "max_devices": "Maximum devices per parent",
+              "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. The limit applies per upstream device, not per floor or area. Defaults to 20.",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -10467,7 +10627,7 @@
                 "bottom": "Bottom",
                 "bottom_description": "Displays all features stacked",
                 "inline": "Inline",
-                "inline_description": "Displays only the first feature"
+                "inline_description": "Displays features in two columns, starting next to the name"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",
@@ -11500,6 +11660,7 @@
         "analytics": {
           "header": "Help us help you",
           "finish": "Next",
+          "waiting": "Waiting for Home Assistant to finish starting up…",
           "preferences": {
             "base": {
               "title": "[%key:ui::panel::config::analytics::preferences::base::title%]",
@@ -11624,8 +11785,6 @@
               "cancel": "[%key:ui::panel::config::cloud::login::cancel%]",
               "submit": "[%key:ui::panel::config::cloud::login::submit%]",
               "forgot_password": "[%key:ui::panel::config::cloud::login::forgot_password%]",
-              "start_trial": "[%key:ui::panel::config::cloud::login::start_trial%]",
-              "trial_info": "[%key:ui::panel::config::cloud::login::trial_info%]",
               "alert_password_change_required": "[%key:ui::panel::config::cloud::login::alert_password_change_required%]",
               "alert_email_confirm_necessary": "[%key:ui::panel::config::cloud::login::alert_email_confirm_necessary%]",
               "alert_mfa_code_required": "[%key:ui::panel::config::cloud::login::alert_mfa_code_required%]",
@@ -11701,9 +11860,16 @@
         }
       },
       "history": {
-        "start_search": "Select areas, devices, entities or labels above",
+        "sources": "Sources",
+        "sources_count": "Sources: {count}",
+        "add_targets": "Add targets",
+        "change_sources": "Change sources",
+        "no_targets": "No targets selected",
+        "start_search_title": "Nothing to show yet",
+        "start_search": "Select areas, devices, entities or labels to see their history",
+        "no_results_title": "No results found",
+        "no_results": "No history for the current selection. Try changing the targets, filters, or time range.",
         "add_all": "Add all entities",
-        "remove_all": "Remove all selections",
         "download_data": "Download data",
         "download_data_error": "Unable to download data",
         "add_card": "Add current view as card",
@@ -11711,6 +11877,12 @@
         "error_no_data": "You need to select some data sources first."
       },
       "logbook": {
+        "sources": "[%key:ui::panel::history::sources%]",
+        "sources_count": "[%key:ui::panel::history::sources_count%]",
+        "change_sources": "[%key:ui::panel::history::change_sources%]",
+        "no_targets": "Showing all activity. Add targets to narrow it down.",
+        "no_results_title": "[%key:ui::panel::history::no_results_title%]",
+        "no_results": "No activity for the current selection. Try changing the targets, filters, or time range.",
         "download_data": "[%key:ui::panel::history::download_data%]",
         "download_data_error": "[%key:ui::panel::history::download_data_error%]",
         "error_no_data": "No activity for the selected target in the selected time range."

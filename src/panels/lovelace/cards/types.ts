@@ -174,6 +174,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
+  max_devices?: number;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
@@ -724,6 +725,13 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface AlertCardConfig extends LovelaceCardConfig {
+  type: "alert";
+  entity: string;
+  color?: string;
+  pulse?: boolean;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

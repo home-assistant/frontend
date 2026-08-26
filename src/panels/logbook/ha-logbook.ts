@@ -29,15 +29,17 @@ const idsChanged = (oldIds?: string[], newIds?: string[]) => {
   if (oldIds === undefined && newIds === undefined) {
     return false;
   }
-  return (
-    !oldIds ||
-    !newIds ||
-    oldIds.length !== newIds.length ||
-    oldIds.some((val) => !newIds.includes(val)) ||
-    newIds.some((val) => !oldIds.includes(val))
-  );
+  if (!oldIds || !newIds || oldIds.length !== newIds.length) {
+    return true;
+  }
+  const newIdSet = new Set(newIds);
+  return oldIds.some((val) => !newIdSet.has(val));
 };
 
+/**
+ * @slot empty - Shown instead of the default text when there is no activity,
+ * for surfaces that can offer a way out (e.g. changing the filters).
+ */
 @customElement("ha-logbook")
 export class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -126,9 +128,11 @@ export class HaLogbook extends LitElement {
     }
 
     if (this._logbookEntries.length === 0) {
-      return html`<div class="no-entries">
-        ${this.hass.localize("ui.components.logbook.entries_not_found")}
-      </div>`;
+      return html`<slot name="empty">
+        <div class="no-entries">
+          ${this.hass.localize("ui.components.logbook.entries_not_found")}
+        </div>
+      </slot>`;
     }
 
     return html`
@@ -243,17 +247,21 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       this._unsubLogbook.then((unsub) => unsub());
       this._unsubLogbook = undefined;
-      this._logbookEntries = loading ? undefined : [];
       this._pendingStreamMessages = [];
     }
+    this._logbookEntries = loading ? undefined : [];
   }
 
   public connectedCallback() {
     super.connectedCallback();
     this._attachReadyListener();
     if (this.hasUpdated) {
-      // Ensure clean state before subscribing
-      this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      if (this._filterAlwaysEmptyResults) {
+        this._unsubscribe(false);
+      } else {
+        // Ensure clean state before subscribing
+        this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
+      }
     }
   }
 

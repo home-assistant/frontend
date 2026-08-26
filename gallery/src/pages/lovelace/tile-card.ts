@@ -132,12 +132,12 @@ const ENTITIES = [
       fan_modes: ["on_low", "on_high", "auto_low", "auto_high", "off"],
       preset_modes: ["home", "eco", "away"],
       swing_modes: ["auto", "1", "2", "3", "off"],
-      switch_horizontal_modes: ["auto", "4", "5", "6", "off"],
       current_temperature: 23,
       target_temp_high: 24,
       target_temp_low: 21,
       fan_mode: "auto_low",
       preset_mode: "home",
+      swing_horizontal_modes: ["auto", "4", "5", "6", "off"],
       swing_mode: "auto",
       swing_horizontal_mode: "off",
       supported_features:
@@ -338,6 +338,84 @@ const CONFIGS = [
       type: "tile",
       entity: "fan.fan_demo",
       features: [{ type: "fan-oscillate" }],
+    },
+  },
+  {
+    heading: "Inline features: one feature",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [{ type: "climate-hvac-modes", style: "dropdown" }],
+    },
+  },
+  {
+    heading: "Inline features: two features",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Inline features: three features",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Inline features: four features",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Inline features: five features",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+        { type: "climate-swing-horizontal-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Bottom features: five features",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      features_position: "bottom",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+        { type: "climate-fan-modes", style: "dropdown" },
+        { type: "climate-swing-modes", style: "dropdown" },
+        { type: "climate-swing-horizontal-modes", style: "dropdown" },
+      ],
     },
   },
 ] satisfies DemoCardConfig<TileCardConfig>[];

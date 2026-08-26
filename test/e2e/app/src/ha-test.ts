@@ -187,6 +187,7 @@ export class HaTest extends HomeAssistantAppEl {
             disabled_by: null,
             domain: entry.domain,
             entry_id: entry.entry_id,
+            error_reason_translation_domain: null,
             error_reason_translation_key: null,
             error_reason_translation_placeholders: null,
             num_subentries: 0,
@@ -247,16 +248,12 @@ export class HaTest extends HomeAssistantAppEl {
     window.__mockHass = hass;
 
     // SPA navigation
-    document.body.addEventListener(
-      "click",
-      (e) => {
-        const href = isNavigationClick(e);
-        if (!href) return;
-        e.preventDefault();
+    window.addEventListener("click", (e) => {
+      const href = isNavigationClick(e);
+      if (href) {
         navigate(href);
-      },
-      { capture: true }
-    );
+      }
+    });
 
     this.hassConnected();
   }

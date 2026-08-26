@@ -93,6 +93,13 @@ export class HaTargetPickerItemRow extends LitElement {
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   /**
+   * Entities that pass the filters the page currently has on. Narrows the
+   * count, and the target details, but not what the target resolves to.
+   */
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
+
+  /**
    * Show only targets with entities from specific domains.
    * @type {Array}
    * @attr include-domains
@@ -189,7 +196,7 @@ export class HaTargetPickerItemRow extends LitElement {
         }
       </div>
 
-      <div slot="headline">${(canMigrate && replacement?.name) || name}</div>
+      <span slot="headline">${(canMigrate && replacement?.name) || name}</span>
       ${
         notFound || (context && !this.hideContext)
           ? html`<span slot="supporting-text"
@@ -222,12 +229,7 @@ export class HaTargetPickerItemRow extends LitElement {
                 ${
                   this.expand || !entries.referenced_entities.length
                     ? html`<span class="main">
-                        ${this.hass.localize(
-                          "ui.components.target-picker.entities_count",
-                          {
-                            count: entries.referenced_entities.length,
-                          }
-                        )}
+                        ${this._entitiesLabel(entries)}
                       </span>`
                     : html`<ha-button
                         appearance="filled"
@@ -235,12 +237,7 @@ export class HaTargetPickerItemRow extends LitElement {
                         size="xs"
                         @click=${this._openDetails}
                       >
-                        ${this.hass.localize(
-                          "ui.components.target-picker.entities_count",
-                          {
-                            count: entries.referenced_entities.length,
-                          }
-                        )}
+                        ${this._entitiesLabel(entries)}
                       </ha-button>`
                 }
               </div>
@@ -334,6 +331,28 @@ export class HaTargetPickerItemRow extends LitElement {
     `;
   }
 
+  private _entityCounts(entries: ExtractFromTargetResultReferenced) {
+    const total = entries.referenced_entities.length;
+    return {
+      total,
+      count: this.activeFilter
+        ? entries.referenced_entities.filter(this.activeFilter).length
+        : total,
+    };
+  }
+
+  private _entitiesLabel(entries: ExtractFromTargetResultReferenced): string {
+    const { count, total } = this._entityCounts(entries);
+    return this.activeFilter
+      ? this.hass.localize(
+          "ui.components.target-picker.entities_count_filtered",
+          { count, total }
+        )
+      : this.hass.localize("ui.components.target-picker.entities_count", {
+          count,
+        });
+  }
+
   private _renderEntries() {
     const entries = this.parentEntries || this._entries;
 
@@ -393,6 +412,9 @@ export class HaTargetPickerItemRow extends LitElement {
               nextEntries.referenced_entities =
                 entries?.referenced_entities.filter((entity_id) => {
                   const entity = this.hass.entities[entity_id];
+                  if (!entity) {
+                    return false;
+                  }
                   return (
                     entity.area_id === rowItem ||
                     !entity.device_id ||
@@ -416,6 +438,9 @@ export class HaTargetPickerItemRow extends LitElement {
       this.type === "label" && entries
         ? entries.referenced_entities.filter((entity_id) => {
             const entity = this.hass.entities[entity_id];
+            if (!entity) {
+              return false;
+            }
             return (
               entity.labels.includes(this.itemId) &&
               !entries.referenced_devices.includes(entity.device_id || "")
@@ -424,7 +449,7 @@ export class HaTargetPickerItemRow extends LitElement {
         : nextType === "device" && entries
           ? entries.referenced_entities.filter(
               (entity_id) =>
-                this.hass.entities[entity_id].area_id === this.itemId
+                this.hass.entities[entity_id]?.area_id === this.itemId
             )
           : [];
 
@@ -433,7 +458,7 @@ export class HaTargetPickerItemRow extends LitElement {
         ? entries.referenced_devices.filter(
             (device_id) =>
               !devicesInAreas.includes(device_id) &&
-              this.hass.devices[device_id].labels.includes(this.itemId)
+              this.hass.devices[device_id]?.labels.includes(this.itemId)
           )
         : [];
 
@@ -528,6 +553,12 @@ export class HaTargetPickerItemRow extends LitElement {
         entries.referenced_areas = entries.referenced_areas.filter(
           (area_id) => {
             const area = this.hass.areas[area_id];
+            // Absent from the registry is not a filter decision: drop the id
+            // without marking it hidden, so entities targeted through their
+            // own area or label are not dropped along with it.
+            if (!area) {
+              return false;
+            }
             if (
               (this.type === "floor" || area.labels.includes(this.itemId)) &&
               areaMeetsFilter(
@@ -560,6 +591,9 @@ export class HaTargetPickerItemRow extends LitElement {
         entries.referenced_devices = entries.referenced_devices.filter(
           (device_id) => {
             const device = this.hass.devices[device_id];
+            if (!device) {
+              return false;
+            }
             if (
               !hiddenAreaIds.includes(device.area_id || "") &&
               deviceMeetsFilter(
@@ -585,6 +619,11 @@ export class HaTargetPickerItemRow extends LitElement {
       entries.referenced_entities = entries.referenced_entities.filter(
         (entity_id) => {
           const entity = this.hass.entities[entity_id];
+          // Core can reference entities that are absent from the display
+          // registry (e.g. disabled ones expanded from an area).
+          if (!entity) {
+            return false;
+          }
           if (hiddenDeviceIds.includes(entity.device_id || "")) {
             return false;
           }
@@ -796,6 +835,7 @@ export class HaTargetPickerItemRow extends LitElement {
       itemId: this.itemId,
       deviceFilter: this.deviceFilter,
       entityFilter: this.entityFilter,
+      activeFilter: this.activeFilter,
       includeDomains: this.includeDomains,
       includeDeviceClasses: this.includeDeviceClasses,
       primaryEntitiesOnly: this.primaryEntitiesOnly,

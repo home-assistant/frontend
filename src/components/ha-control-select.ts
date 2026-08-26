@@ -101,7 +101,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionClick(ev: MouseEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
@@ -109,7 +109,7 @@ export class HaControlSelect extends LitElement {
   private _handleOptionMouseDown(ev: MouseEvent) {
     if (this.disabled) return;
     ev.preventDefault();
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
@@ -121,7 +121,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionFocus(ev: FocusEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
@@ -143,7 +143,8 @@ export class HaControlSelect extends LitElement {
             ? repeat(
                 this.options,
                 (option) => option.value,
-                (option) => this._renderOption(option)
+                (option, index) =>
+                  this._renderOption(option, index === this._tabbableIndex)
               )
             : nothing
         }
@@ -151,7 +152,14 @@ export class HaControlSelect extends LitElement {
     `;
   }
 
-  private _renderOption(option: ControlSelectOption) {
+  /* a radio group with no selection puts its first option in the tab sequence */
+  private get _tabbableIndex() {
+    const selectedIndex =
+      this.options?.findIndex((option) => option.value === this.value) ?? -1;
+    return selectedIndex === -1 ? 0 : selectedIndex;
+  }
+
+  private _renderOption(option: ControlSelectOption, tabbable: boolean) {
     const isSelected = this.value === option.value;
 
     return html`
@@ -162,7 +170,7 @@ export class HaControlSelect extends LitElement {
           selected: isSelected,
         })}
         role="radio"
-        tabindex=${isSelected ? "0" : "-1"}
+        tabindex=${tabbable ? "0" : "-1"}
         .value=${option.value}
         aria-checked=${isSelected ? "true" : "false"}
         aria-label=${ifDefined(option.ariaLabel ?? option.label)}

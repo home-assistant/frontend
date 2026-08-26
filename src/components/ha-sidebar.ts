@@ -664,6 +664,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          overscroll-behavior: contain;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
