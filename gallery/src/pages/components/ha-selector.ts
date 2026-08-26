@@ -432,6 +432,15 @@ const SCHEMAS: {
           },
         },
       },
+      device_class_multiple: {
+        name: "Device Class (Multiple)",
+        selector: {
+          device_class: {
+            domain: "binary_sensor",
+            multiple: true,
+          },
+        },
+      },
       select_custom: {
         name: "Select (Custom)",
         selector: {

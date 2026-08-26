@@ -934,6 +934,12 @@
           "recommended": "Recommended"
         }
       },
+      "device-class-picker": {
+        "device_class": "Device class",
+        "add": "Add device class",
+        "no_device_classes": "No device classes available",
+        "no_match": "No device classes found for {term}"
+      },
       "category-picker": {
         "clear": "Clear",
         "show_categories": "Show categories",
