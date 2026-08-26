@@ -33,6 +33,15 @@ import { computeAttributeValueDisplay } from "../../common/entity/compute_attrib
 // re-measured up from whenever the tick precision changes on zoom.
 const MIN_Y_AXIS_WIDTH = 25;
 
+// Area-filled series (climate HVAC action, humidifier action) are drawn from
+// their value down to the bottom of the plot, so they collapse to nothing when
+// that value sits at the auto-scaled Y-axis minimum — which is exactly when a
+// thermostat has driven the temperature to the low end of the window. Reserve
+// this fraction of the data span below the minimum so those periods stay
+// visible. Expressed as a fraction because the tick-precision helper needs the
+// same number that ECharts applies for the `boundaryGap` option below.
+const AREA_FILL_Y_BOUNDARY_GAP = 0.1;
+
 // Used to recover the underlying entity_id from a legend dataset id.
 // Kept in sync with the suffixes appended at dataset construction below
 // for climate / water_heater / humidifier multi-attribute charts.
@@ -316,6 +325,10 @@ export class StateHistoryChartLine extends LitElement {
           return this._roundYAxis(value, Math.ceil);
         };
       }
+      const minBoundaryGap =
+        minYAxis === undefined && this._hasAreaFilledSeries()
+          ? AREA_FILL_Y_BOUNDARY_GAP
+          : 0;
       this._chartOptions = {
         xAxis: {
           type: "time",
@@ -325,9 +338,16 @@ export class StateHistoryChartLine extends LitElement {
         yAxis: {
           type: this.logarithmicScale ? "log" : "value",
           name: this.unit,
+          // Only pad when the minimum is left to auto-scaling; an explicit
+          // bound (or the logarithmic one computed above) fixes the axis and
+          // makes ECharts ignore the boundary gap anyway.
+          boundaryGap: minBoundaryGap
+            ? [`${minBoundaryGap * 100}%`, 0]
+            : undefined,
           ...createYAxisPrecisionBounds({
             min: this._clampYAxis(minYAxis),
             max: this._clampYAxis(maxYAxis),
+            minBoundaryGap,
             onFractionDigits: (digits) => {
               if (digits !== this._yAxisFractionDigits) {
                 this._yAxisFractionDigits = digits;
@@ -422,6 +442,10 @@ export class StateHistoryChartLine extends LitElement {
         },
       };
     }
+  }
+
+  private _hasAreaFilledSeries(): boolean {
+    return this._chartData.some((dataset) => dataset.areaStyle);
   }
 
   private _hasEntityStatesChanged(oldHass: HomeAssistant): boolean {

@@ -39,6 +39,11 @@ interface YAxisExtentValues {
 type YAxisBound =
   number | ((values: YAxisExtentValues) => number | undefined) | undefined;
 
+// The span ECharts multiplies `boundaryGap` by. It falls back to the magnitude
+// of the minimum when the data is flat, so a constant series still gets padded.
+const spanOf = ({ min, max }: YAxisExtentValues): number =>
+  max - min || Math.abs(min);
+
 const resolveYAxisBound = (
   bound: YAxisBound,
   values: YAxisExtentValues
@@ -55,17 +60,23 @@ export function createYAxisPrecisionBounds(options: {
   max?: YAxisBound;
   // Set for bar axes anchored at 0, so precision reflects the 0-based range.
   includeZero?: boolean;
+  // Fraction of the data span that `yAxis.boundaryGap` adds below the minimum.
+  // ECharts sizes its ticks from the widened extent, so fold the same padding
+  // in here or the derived precision can disagree with the rendered ticks.
+  minBoundaryGap?: number;
   onFractionDigits: (digits: number) => void;
 }): {
   min: (values: YAxisExtentValues) => number | undefined;
   max: (values: YAxisExtentValues) => number | undefined;
 } {
-  const { min, max, includeZero, onFractionDigits } = options;
+  const { min, max, includeZero, minBoundaryGap, onFractionDigits } = options;
   return {
     min: (values) => {
       const resolvedMin = resolveYAxisBound(min, values);
       const resolvedMax = resolveYAxisBound(max, values);
-      const extentMin = resolvedMin ?? values.min;
+      // A fixed `min` disables the boundary gap, matching ECharts.
+      const extentMin =
+        resolvedMin ?? values.min - (minBoundaryGap ?? 0) * spanOf(values);
       const extentMax = resolvedMax ?? values.max;
       onFractionDigits(
         computeYAxisFractionDigits(extentMin, extentMax, includeZero)

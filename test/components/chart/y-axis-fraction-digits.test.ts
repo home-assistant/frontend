@@ -137,4 +137,45 @@ describe("createYAxisPrecisionBounds", () => {
     min({ min: 0.3, max: 0.3 + 1e-15 });
     expect(onFractionDigits).toHaveBeenLastCalledWith(1);
   });
+
+  it("derives digits from the extent a boundary gap widens", () => {
+    const onFractionDigits = vi.fn();
+    const { min } = createYAxisPrecisionBounds({
+      minBoundaryGap: 0.1,
+      onFractionDigits,
+    });
+
+    // 18..21.2 alone ticks at 0.5, but the gap drops the axis to 17.68, and
+    // ECharts ticks that 3.52 range at whole numbers. Reporting 1 digit here
+    // would render the ticks as "18.0, 19.0, ...".
+    expect(min({ min: 18, max: 21.2 })).toBeUndefined();
+    expect(onFractionDigits).toHaveBeenLastCalledWith(0);
+  });
+
+  it("ignores the boundary gap when the minimum is fixed", () => {
+    const onFractionDigits = vi.fn();
+    const { min } = createYAxisPrecisionBounds({
+      min: 18,
+      minBoundaryGap: 0.1,
+      onFractionDigits,
+    });
+
+    // ECharts disables boundaryGap once min is set, so precision must not
+    // assume the widened extent.
+    expect(min({ min: 18, max: 21.2 })).toBe(18);
+    expect(onFractionDigits).toHaveBeenLastCalledWith(1);
+  });
+
+  it("pads a flat extent by its magnitude, as ECharts does", () => {
+    const onFractionDigits = vi.fn();
+    const { min } = createYAxisPrecisionBounds({
+      minBoundaryGap: 0.1,
+      onFractionDigits,
+    });
+
+    // Zero span would leave a constant series with no headroom, so ECharts
+    // falls back to |min|: 20 -> 18, ticked at 0.5.
+    min({ min: 20, max: 20 });
+    expect(onFractionDigits).toHaveBeenLastCalledWith(1);
+  });
 });
