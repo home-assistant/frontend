@@ -112,11 +112,22 @@ class HuiEnergyDistrubutionCard
     ) {
       return true;
     }
-    const oldStates = changedProps.get("hass").states;
+    const oldHass = changedProps.get("hass");
+    const oldStates = oldHass.states;
     if (
       this._data?.co2SignalEntity &&
       this.hass.states[this._data.co2SignalEntity] !==
         oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision !==
+          oldHass.entities[source.stat_energy_from]?.display_precision
+      )
     ) {
       return true;
     }
