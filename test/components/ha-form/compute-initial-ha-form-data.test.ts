@@ -168,7 +168,7 @@ describe("computeInitialHaFormData", () => {
     ).toThrow("Selector ui_action not supported in initial form data");
   });
 
-  it("keeps an unsupported first choose child unset", () => {
+  it("omits a first choose child without an initial value", () => {
     const schema = [
       {
         name: "mode",
@@ -197,7 +197,6 @@ describe("computeInitialHaFormData", () => {
     expect(computeInitialHaFormData(schema)).toStrictEqual({
       mode: {
         active_choice: "First",
-        First: undefined,
       },
     });
   });

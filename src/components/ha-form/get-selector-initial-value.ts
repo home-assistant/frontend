@@ -25,12 +25,13 @@ const SELECTOR_INITIAL_VALUES = {
       return {};
     }
 
-    return {
-      active_choice: firstChoice,
-      [firstChoice]: getSelectorInitialValueOrUndefined(
-        selector.choose.choices[firstChoice].selector
-      ),
-    };
+    const childValue = getSelectorInitialValueOrUndefined(
+      selector.choose.choices[firstChoice].selector
+    );
+
+    return childValue === undefined
+      ? { active_choice: firstChoice }
+      : { active_choice: firstChoice, [firstChoice]: childValue };
   },
   color_rgb: () => [0, 0, 0],
   condition: () => [],
