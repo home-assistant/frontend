@@ -1,6 +1,6 @@
-import { startOfDay } from "date-fns";
+import { addDays, endOfDay, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
-import { assert, describe, it } from "vitest";
+import { afterEach, assert, describe, it, vi } from "vitest";
 
 import { calcDate } from "../../src/common/datetime/calc_date";
 import {
@@ -13,13 +13,24 @@ import {
 } from "../../src/data/translation";
 import {
   computeConsumptionSingle,
+  computeEnergyLabel,
+  computeEnergyDeviceLabels,
   formatConsumptionShort,
   calculateSolarConsumedGauge,
   formatPowerShort,
   getNextEnergyPeriodStart,
   getEnergyDefaultPeriodStorageKey,
+  getEnergyFirstStatisticAt,
+  getEnergyLiveDayPeriod,
+  shouldFallbackEnergyPeriodToYesterday,
+  getEnergyDataCollection,
+  EMPTY_PREFERENCES,
 } from "../../src/data/energy";
+import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
+import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
+import type { StatisticsMetaData } from "../../src/data/recorder";
 import type { HomeAssistant } from "../../src/types";
+import { createMockEntityState, createMockHass } from "../fixtures/hass";
 
 const checkConsumptionResult = (
   input: {
@@ -860,27 +871,55 @@ describe("Self-consumed solar gauge tests", () => {
   });
 });
 
-describe("getNextEnergyPeriodStart", () => {
-  const locale: FrontendLocaleData = {
-    language: "en",
-    number_format: NumberFormat.language,
-    time_format: TimeFormat.language,
-    date_format: DateFormat.language,
-    time_zone: TimeZone.server,
-    first_weekday: FirstWeekday.language,
+// Pin the time zone (via TimeZone.server) so energy period tests do not
+// depend on the machine's local zone.
+const energyPeriodLocale: FrontendLocaleData = {
+  language: "en",
+  number_format: NumberFormat.language,
+  time_format: TimeFormat.language,
+  date_format: DateFormat.language,
+  time_zone: TimeZone.server,
+  first_weekday: FirstWeekday.language,
+};
+const energyPeriodConfig = { time_zone: "America/New_York" } as HassConfig;
+const energyPeriodDay = (now: Date, offset = 0) => {
+  const day = calcDate(
+    now,
+    addDays,
+    energyPeriodLocale,
+    energyPeriodConfig,
+    offset
+  );
+  return {
+    start: calcDate(day, startOfDay, energyPeriodLocale, energyPeriodConfig),
+    end: calcDate(day, endOfDay, energyPeriodLocale, energyPeriodConfig),
   };
-  // Pin the time zone (via TimeZone.server) so the test does not depend on the
-  // machine's local zone.
-  const config = { time_zone: "America/New_York" } as HassConfig;
+};
 
+describe("getNextEnergyPeriodStart", () => {
   const isMidnight = (date: Date) =>
-    calcDate(date, startOfDay, locale, config).getTime() === date.getTime();
+    calcDate(
+      date,
+      startOfDay,
+      energyPeriodLocale,
+      energyPeriodConfig
+    ).getTime() === date.getTime();
 
   it("rolls the real-time view over at midnight, statistics an hour later", () => {
     const now = new Date("2026-06-19T15:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
-    const statistics = getNextEnergyPeriodStart(false, now, locale, config);
+    const realTime = getNextEnergyPeriodStart(
+      true,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
+    const statistics = getNextEnergyPeriodStart(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
 
     // Real-time rolls over exactly at the next midnight.
     assert.isTrue(isMidnight(realTime));
@@ -890,9 +929,14 @@ describe("getNextEnergyPeriodStart", () => {
     );
 
     // Statistics roll over an hour after midnight, on the same day boundary.
-    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000 - 1);
+    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000);
     assert.equal(
-      calcDate(statistics, startOfDay, locale, config).getTime(),
+      calcDate(
+        statistics,
+        startOfDay,
+        energyPeriodLocale,
+        energyPeriodConfig
+      ).getTime(),
       realTime.getTime()
     );
   });
@@ -900,7 +944,12 @@ describe("getNextEnergyPeriodStart", () => {
   it("advances the real-time view to the next midnight when called after midnight", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(true, now, locale, config);
+    const realTime = getNextEnergyPeriodStart(
+      true,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig
+    );
 
     assert.isTrue(isMidnight(realTime));
     // Next midnight is June 21, not the already-passed June 20 midnight.
@@ -908,6 +957,352 @@ describe("getNextEnergyPeriodStart", () => {
       realTime.getTime(),
       new Date("2026-06-21T00:00:00-04:00").getTime()
     );
+  });
+
+  it("wakes a non-today live day at today 01:00 during hour 0", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const todayOne = new Date("2026-06-20T01:00:00-04:00").getTime();
+
+    for (const offset of [-1, -2]) {
+      assert.equal(
+        getNextEnergyPeriodStart(
+          false,
+          now,
+          energyPeriodLocale,
+          energyPeriodConfig,
+          energyPeriodDay(now, offset).start
+        ).getTime(),
+        todayOne
+      );
+    }
+  });
+
+  it("keeps tomorrow 01:00 when statistics is already on today during hour 0", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+
+    assert.equal(
+      getNextEnergyPeriodStart(
+        false,
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig,
+        energyPeriodDay(now).start
+      ).getTime(),
+      new Date("2026-06-21T01:00:00-04:00").getTime()
+    );
+  });
+});
+
+describe("shouldFallbackEnergyPeriodToYesterday", () => {
+  it("is true for the statistics view before 01:00", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    assert.isTrue(
+      shouldFallbackEnergyPeriodToYesterday(
+        false,
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
+    );
+    assert.equal(
+      getEnergyFirstStatisticAt(
+        now,
+        energyPeriodLocale,
+        energyPeriodConfig
+      ).getTime(),
+      new Date("2026-06-20T01:00:00-04:00").getTime()
+    );
+  });
+
+  it("is false at 01:00 and for the real-time view", () => {
+    const atOne = new Date("2026-06-20T01:00:00-04:00");
+    const beforeOne = new Date("2026-06-20T00:30:00-04:00");
+    assert.isFalse(
+      shouldFallbackEnergyPeriodToYesterday(
+        false,
+        atOne,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
+    );
+    assert.isFalse(
+      shouldFallbackEnergyPeriodToYesterday(
+        true,
+        beforeOne,
+        energyPeriodLocale,
+        energyPeriodConfig
+      )
+    );
+  });
+});
+
+describe("getEnergyLiveDayPeriod", () => {
+  it("keeps yesterday during hour 0 when that is the current period", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const { start, end } = energyPeriodDay(now, -1);
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      start
+    );
+    assert.equal(live.start.getTime(), start.getTime());
+    assert.equal(live.end.getTime(), end.getTime());
+  });
+
+  it("keeps today during hour 0 when the user already picked today", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const { start, end } = energyPeriodDay(now);
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      start
+    );
+    assert.equal(live.start.getTime(), start.getTime());
+    assert.equal(live.end.getTime(), end.getTime());
+  });
+
+  it("advances a stale yesterday to today after 01:00", () => {
+    const now = new Date("2026-06-20T10:00:00-04:00");
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -1).start
+    );
+    const expected = energyPeriodDay(now);
+    assert.equal(live.start.getTime(), expected.start.getTime());
+    assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+
+  it("advances a two-day-old live day to today", () => {
+    const now = new Date("2026-06-20T10:00:00-04:00");
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -2).start
+    );
+    const expected = energyPeriodDay(now);
+    assert.equal(live.start.getTime(), expected.start.getTime());
+    assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+
+  it("falls back to yesterday for a stale live day during hour 0", () => {
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const live = getEnergyLiveDayPeriod(
+      false,
+      now,
+      energyPeriodLocale,
+      energyPeriodConfig,
+      energyPeriodDay(now, -2).start
+    );
+    const expected = energyPeriodDay(now, -1);
+    assert.equal(live.start.getTime(), expected.start.getTime());
+    assert.equal(live.end.getTime(), expected.end.getTime());
+  });
+});
+
+describe("getEnergyDataCollection live day", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  const createCollection = (
+    key: string,
+    preset?: string,
+    midnightRollover = false
+  ) => {
+    const hass = createMockHass();
+    hass.locale = energyPeriodLocale;
+    hass.config = { ...hass.config, time_zone: "America/New_York" };
+    const callWS = vi.fn(async (msg: { type: string }) => {
+      if (msg.type === "energy/info") {
+        return { cost_sensors: {}, solar_forecast_domains: [] };
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    if (preset) {
+      localStorage.setItem(getEnergyDefaultPeriodStorageKey(hass, key), preset);
+    }
+    return {
+      collection: getEnergyDataCollection(hass, {
+        key,
+        prefs: EMPTY_PREFERENCES,
+        midnightRollover,
+      }),
+      callWS,
+    };
+  };
+
+  const energyInfoFetches = (callWS: ReturnType<typeof vi.fn>) =>
+    callWS.mock.calls.filter((call) => call[0].type === "energy/info");
+
+  it("advances hour-0 yesterday to today at 01:00 and fetches the new day", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+
+    const { collection, callWS } = createCollection("energy_timer");
+    const refresh = vi.spyOn(collection, "refresh");
+    const unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    refresh.mockClear();
+    callWS.mockClear();
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date(), -1).start.getTime()
+    );
+
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+    // Cards render EnergyData from the websocket store, not collection.start.
+    // The 01:00 callback must refresh() so getEnergyData runs for today.
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    unsub();
+  });
+
+  it("catches up a stale live day on resubscribe", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection, callWS } = createCollection("energy_catchup");
+    const refresh = vi.spyOn(collection, "refresh");
+    let unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    refresh.mockClear();
+    callWS.mockClear();
+
+    unsub();
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    unsub();
+  });
+
+  it("does not double-refresh on a cold subscribe after the unsub grace", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection, callWS } = createCollection("energy_cold_refresh");
+    const refresh = vi.spyOn(collection, "refresh");
+    let unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    refresh.mockClear();
+    callWS.mockClear();
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+    // The library's first fetch is not collection.refresh(); this spy only
+    // sees the extra refresh used during the unsub-grace re-subscribe.
+    assert.equal(refresh.mock.calls.length, 0);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    unsub();
+  });
+
+  it("keeps a custom setPeriod range overnight", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection } = createCollection("energy_custom_period");
+    let unsub = collection.subscribe(() => undefined);
+    const custom = energyPeriodDay(new Date(), -5);
+    collection.setPeriod(custom.start, custom.end);
+    unsub();
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    unsub = collection.subscribe(() => undefined);
+
+    assert.equal(collection.start.getTime(), custom.start.getTime());
+
+    unsub();
+  });
+
+  it("does not advance the period after the last subscriber leaves", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+
+    const { collection } = createCollection("energy_unsub_timer");
+    const unsub = collection.subscribe(() => undefined);
+    const start = collection.start.getTime();
+    unsub();
+
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), start);
+  });
+
+  it("does not roll a remembered week preset over to today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection } = createCollection("energy_week_stored", "this_week");
+    const weekStart = collection.start.getTime();
+    const unsub = collection.subscribe(() => undefined);
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), weekStart);
+
+    unsub();
+  });
+
+  it("does not roll a remembered week preset over to today with midnightRollover", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
+
+    const { collection } = createCollection(
+      "energy_week_stored_now",
+      "this_week",
+      true
+    );
+    const weekStart = collection.start.getTime();
+    const unsub = collection.subscribe(() => undefined);
+
+    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
+    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+
+    assert.equal(collection.start.getTime(), weekStart);
+
+    unsub();
   });
 });
 
@@ -941,6 +1336,154 @@ describe("getEnergyDefaultPeriodStorageKey", () => {
   it("rejects a collection key with the wrong prefix", () => {
     assert.throws(() =>
       getEnergyDefaultPeriodStorageKey({} as HomeAssistant, "dashboard")
+    );
+  });
+});
+
+describe("computeEnergyLabel", () => {
+  const ENTITY_ID = "sensor.washer_energy";
+
+  const createEntry = (
+    entry: Partial<EntityRegistryDisplayEntry>
+  ): EntityRegistryDisplayEntry =>
+    ({
+      entity_id: ENTITY_ID,
+      labels: [],
+      ...entry,
+    }) as EntityRegistryDisplayEntry;
+
+  const createDevice = (
+    device: Partial<DeviceRegistryEntry>
+  ): DeviceRegistryEntry =>
+    ({ id: "device1", name_by_user: null, ...device }) as DeviceRegistryEntry;
+
+  const createHass = (
+    friendlyName: string,
+    entry?: Partial<EntityRegistryDisplayEntry>,
+    device?: Partial<DeviceRegistryEntry>
+  ) =>
+    createMockHass(
+      {
+        [ENTITY_ID]: createMockEntityState(ENTITY_ID, "1", {
+          friendly_name: friendlyName,
+        }),
+      },
+      {
+        entities: entry ? { [ENTITY_ID]: createEntry(entry) } : {},
+        devices: device ? { device1: createDevice(device) } : {},
+      }
+    );
+
+  it("composes the device and entity name", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+  });
+
+  it("uses the device name alone when the entity has no name of its own", () => {
+    const hass = createHass(
+      "Washer",
+      { name: "Washer", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer");
+  });
+
+  it("distinguishes entities sharing a name by their device", () => {
+    const hass = createHass(
+      "Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Dishwasher" }
+    );
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Dishwasher Energy");
+  });
+
+  it("keeps a name set by the user", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass, ENTITY_ID, undefined, "Laundry"),
+      "Laundry"
+    );
+  });
+
+  it("ignores an empty name", () => {
+    const hass = createHass(
+      "Washer Energy",
+      { name: "Energy", device_id: "device1" },
+      { name: "Washer" }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass, ENTITY_ID, undefined, ""),
+      "Washer Energy"
+    );
+  });
+
+  it("falls back to the friendly name for an entity outside the registry", () => {
+    const hass = createHass("Washer Energy");
+
+    assert.equal(computeEnergyLabel(hass, ENTITY_ID), "Washer Energy");
+  });
+
+  it("uses the statistic metadata name when there is no entity", () => {
+    const hass = createMockHass();
+
+    assert.equal(
+      computeEnergyLabel(hass, "external:solar", {
+        statistic_id: "external:solar",
+        name: "Solar production",
+      } as StatisticsMetaData),
+      "Solar production"
+    );
+  });
+
+  it("falls back to the statistic id when there is nothing to name it with", () => {
+    const hass = createMockHass();
+
+    assert.equal(computeEnergyLabel(hass, "external:solar"), "external:solar");
+  });
+});
+
+describe("computeEnergyDeviceLabels", () => {
+  const DEVICES = [
+    {
+      stat_consumption: "sensor.washer_energy",
+      stat_rate: "sensor.washer_power",
+    },
+    { stat_consumption: "sensor.heater_energy", name: "Heater" },
+  ];
+
+  const hass = createMockHass({
+    "sensor.washer_energy": createMockEntityState("sensor.washer_energy", "1", {
+      friendly_name: "Washer Energy",
+    }),
+    "sensor.washer_power": createMockEntityState("sensor.washer_power", "5", {
+      friendly_name: "Washer Power",
+    }),
+  });
+
+  it("keys labels by the consumption statistic", () => {
+    assert.deepEqual(computeEnergyDeviceLabels(hass, DEVICES), {
+      "sensor.washer_energy": "Washer Energy",
+      "sensor.heater_energy": "Heater",
+    });
+  });
+
+  it("keys labels by the rate statistic, skipping devices without one", () => {
+    assert.deepEqual(
+      computeEnergyDeviceLabels(hass, DEVICES, undefined, "stat_rate"),
+      { "sensor.washer_power": "Washer Power" }
     );
   });
 });

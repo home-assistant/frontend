@@ -62,9 +62,11 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
+import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import {
+  conditionDescriptionsContext,
   fullEntitiesContext,
   manifestsContext,
 } from "../../../../data/context";
@@ -90,6 +92,8 @@ import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { getDeviceTarget } from "../target/get_device_target";
+import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
@@ -205,6 +209,10 @@ export default class HaAutomationActionRow extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions?: ConditionDescriptions;
+
   @state() private _running = false;
 
   @state() private _runResult?: {
@@ -292,13 +300,19 @@ export default class HaAutomationActionRow extends LitElement {
       ? this._extractTargets(this.action as ServiceAction)
       : type === "device_id" && (this.action as DeviceAction).device_id
         ? { device_id: (this.action as DeviceAction).device_id }
-        : undefined;
+        : type === "condition"
+          ? this._extractConditionTarget(this.action as Condition)
+          : undefined;
 
     const serviceTargetSpec =
-      type === "service" && action
-        ? this.hass.services?.[computeDomain(action)]?.[computeObjectId(action)]
+      type === "condition"
+        ? this._conditionDescriptions?.[(this.action as Condition).condition]
             ?.target
-        : undefined;
+        : type === "service" && action
+          ? this.hass.services?.[computeDomain(action)]?.[
+              computeObjectId(action)
+            ]?.target
+          : undefined;
 
     const noteTooltipText = truncateWithEllipsis(
       this.action.note?.trim() || "",
@@ -775,6 +789,28 @@ export default class HaAutomationActionRow extends LitElement {
       return { entity_id: action.entity_id };
     }
     return {};
+  }
+
+  private _extractConditionTarget(
+    condition: Condition
+  ): HassServiceTarget | undefined {
+    if (typeof condition !== "object") {
+      return undefined;
+    }
+    if ("target" in condition && condition.target) {
+      return condition.target;
+    }
+    if (
+      (condition.condition === "state" ||
+        condition.condition === "numeric_state") &&
+      "entity_id" in condition
+    ) {
+      return getEntityTarget(condition.entity_id);
+    }
+    if (condition.condition === "device" && "device_id" in condition) {
+      return getDeviceTarget(condition.device_id as string);
+    }
+    return undefined;
   }
 
   private _renderTargets = memoizeOne(

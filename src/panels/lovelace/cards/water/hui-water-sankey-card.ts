@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  computeEnergyDeviceLabels,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -26,6 +27,7 @@ import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
   buildSankeyLayout,
+  DEFAULT_MAX_SANKEY_DEVICES,
   fireSankeyNodeMoreInfo,
   MIN_SANKEY_THRESHOLD_FACTOR,
 } from "../energy/common/sankey";
@@ -215,8 +217,14 @@ class HuiWaterSankeyCard
         ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
         : 0;
 
-    const deviceLabel = (statConsumption: string, name?: string) =>
-      name ||
+    const deviceLabels = computeEnergyDeviceLabels(
+      this.hass,
+      prefs.device_consumption_water,
+      this._data!.statsMetadata
+    );
+
+    const deviceLabel = (statConsumption: string) =>
+      deviceLabels[statConsumption] ||
       getStatisticLabel(
         this.hass,
         statConsumption,
@@ -234,6 +242,7 @@ class HuiWaterSankeyCard
       localize: this.hass.localize,
       rootNodeId: "home",
       minThreshold: minWaterThreshold,
+      maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 0,
       ceilOtherValue: false,
       initialUntracked: homeNode.value,

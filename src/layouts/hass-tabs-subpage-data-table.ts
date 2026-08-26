@@ -28,12 +28,13 @@ import type {
   SortingDirection,
 } from "../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
+import "../components/ha-adaptive-dialog";
 import "../components/ha-button";
-import "../components/ha-dialog";
 import "../components/ha-dialog-footer";
 import "../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
 import "../components/ha-dropdown-item";
+import "../components/ha-filter-pane-chip";
 import "../components/ha-icon-button";
 import "../components/ha-svg-icon";
 import "../components/input/ha-input-search";
@@ -237,20 +238,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     const localize = this.localizeFunc || this.hass.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
-      ? html`<div class="relative">
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.filters")}
-            .active=${this.filters}
-            @click=${this._toggleFilters}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
-          </ha-assist-chip>
-          ${
-            this.filters
-              ? html`<div class="badge">${this.filters}</div>`
-              : nothing
-          }
-        </div>`
+      ? html`<ha-filter-pane-chip
+          .label=${localize("ui.components.subpage-data-table.filters")}
+          .path=${mdiFilterVariant}
+          .count=${this.filters}
+          .active=${!!this.filters}
+          @click=${this._toggleFilters}
+        ></ha-filter-pane-chip>`
       : nothing;
 
     const selectModeBtn =
@@ -471,18 +465,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               ? nothing
               : html`<div class="pane" slot="pane">
                   <div class="table-header">
-                    <ha-assist-chip
+                    <ha-filter-pane-chip
                       .label=${localize(
                         "ui.components.subpage-data-table.filters"
                       )}
+                      .path=${mdiFilterVariant}
                       active
                       @click=${this._toggleFilters}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiFilterVariant}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
+                    ></ha-filter-pane-chip>
                     ${
                       this.filters
                         ? html`<ha-icon-button
@@ -576,16 +566,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       </hass-tabs-subpage>
       ${
         this.showFilters && !showPane
-          ? html`<ha-dialog
-              .open=${true}
+          ? html`<ha-adaptive-dialog
+              open
+              flexcontent
               width="full"
               header-title=${localize("ui.components.subpage-data-table.filters")}
               @closed=${this._closeFilters}
             >
               <ha-icon-button
                 slot="headerNavigationIcon"
+                data-dialog="close"
                 .path=${mdiClose}
-                @click=${this._closeFilters}
                 .label=${localize(
                   "ui.components.subpage-data-table.close_filter"
                 )}
@@ -606,13 +597,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 <slot name="filter-pane"></slot>
               </div>
               <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this._closeFilters}>
+                <ha-button slot="primaryAction" data-dialog="close">
                   ${localize("ui.components.subpage-data-table.show_results", {
                     number: this.data.length,
                   })}
                 </ha-button>
               </ha-dialog-footer>
-            </ha-dialog>`
+            </ha-adaptive-dialog>`
           : nothing
       }
     `;
@@ -885,24 +876,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding: 16px;
     }
 
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      inset-inline-end: -4px;
-      inset-inline-start: initial;
-      min-width: 16px;
-      box-sizing: border-box;
-      border-radius: var(--ha-border-radius-circle);
-      font-size: var(--ha-font-size-xs);
-      font-weight: var(--ha-font-weight-normal);
-      background-color: var(--primary-color);
-      line-height: var(--ha-line-height-normal);
-      text-align: center;
-      padding: 0px 2px;
-      color: var(--text-primary-color);
-    }
-
     .narrow-header-row {
       display: flex;
       align-items: center;
@@ -951,11 +924,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       gap: var(--ha-space-2);
     }
 
-    .relative {
-      position: relative;
-    }
-
-    ha-assist-chip {
+    ha-assist-chip,
+    ha-filter-pane-chip {
       --ha-assist-chip-container-shape: 10px;
       --ha-assist-chip-container-color: var(--card-background-color);
     }
@@ -965,20 +935,19 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       --md-assist-chip-trailing-space: 8px;
     }
 
-    ha-dialog {
+    ha-adaptive-dialog {
       --dialog-content-padding: 0;
+      /* Fixed height so the sheet does not resize while filtering. */
+      --ha-bottom-sheet-height: calc(100dvh - var(--ha-space-12));
+      --ha-dialog-min-height: calc(var(--safe-height) - var(--ha-space-20));
     }
 
     .filter-dialog-content {
-      height: calc(
-        100vh -
-          70px - var(--header-height, 0px) - var(
-            --safe-area-inset-top,
-            0px
-          ) - var(--safe-area-inset-bottom, 0px)
-      );
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     ha-dropdown ha-assist-chip {

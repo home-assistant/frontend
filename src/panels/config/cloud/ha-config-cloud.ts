@@ -1,12 +1,14 @@
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type { CloudStatus } from "../../../data/cloud";
+import { cancelCloudAutoLogin } from "../../../data/cloud";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
 import "./account/cloud-account";
-import "./login/cloud-login-panel";
+import "./start/cloud-start";
 
 const LOGGED_IN_URLS = [
   "account",
@@ -18,7 +20,12 @@ const LOGGED_IN_URLS = [
   "webhooks",
 ] as const;
 
-const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"] as const;
+const NOT_LOGGED_IN_URLS = [
+  "start",
+  "login",
+  "register",
+  "forgot-password",
+] as const;
 
 type CloudPage =
   (typeof LOGGED_IN_URLS)[number] | (typeof NOT_LOGGED_IN_URLS)[number];
@@ -36,7 +43,7 @@ class HaConfigCloud extends HassRouterPage {
   @property({ attribute: false }) public cloudStatus!: CloudStatus;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "login",
+    defaultPage: "start",
     showLoading: true,
     initialLoad: () => this._cloudStatusLoaded,
     // Guard the different pages based on if we're logged in.
@@ -45,14 +52,30 @@ class HaConfigCloud extends HassRouterPage {
         if (!LOGGED_IN_URLS.some((url) => url === page)) {
           return "account";
         }
-      } else if (!NOT_LOGGED_IN_URLS.some((url) => url === page)) {
-        return "login";
+        return undefined;
       }
+
+      if (!NOT_LOGGED_IN_URLS.some((url) => url === page)) {
+        return "start";
+      }
+
+      if (
+        page !== "register" &&
+        this.cloudStatus.auto_login &&
+        !this._autoLoginCancelled
+      ) {
+        return "register";
+      }
+
       return undefined;
     },
     routes: {
+      start: {
+        tag: "cloud-start",
+      },
       login: {
         tag: "cloud-login-panel",
+        load: () => import("./login/cloud-login-panel"),
       },
       register: {
         tag: "cloud-register",
@@ -96,6 +119,10 @@ class HaConfigCloud extends HassRouterPage {
 
   @state() private _loginEmail = "";
 
+  private _autoLoginCancelled = false;
+
+  private _lastPage = "";
+
   private _resolveCloudStatusLoaded!: () => void;
 
   private _cloudStatusLoaded = new Promise<void>((resolve) => {
@@ -122,6 +149,14 @@ class HaConfigCloud extends HassRouterPage {
         navigate(this.route.prefix, { replace: true });
       }
     }
+
+    // A flash belongs to the page it was routed to. Cleared here rather than in
+    // beforeRender, which runs inside update() where assigning state schedules a
+    // second cycle.
+    if (this._lastPage === "login" && this._currentPage !== "login") {
+      this._flashMessage = "";
+    }
+    this._lastPage = this._currentPage;
   }
 
   protected createElement(tag: string) {
@@ -132,7 +167,25 @@ class HaConfigCloud extends HassRouterPage {
     el.addEventListener("flash-message-changed", (ev) => {
       this._flashMessage = (ev as ValueChangedEvent<string>).detail.value;
     });
+    el.addEventListener("cloud-cancel-auto-login", () => {
+      this._autoLoginCancelled = true;
+      this._cancelAutoLogin();
+    });
+    el.addEventListener("cloud-auto-login-started", () => {
+      this._autoLoginCancelled = false;
+    });
     return el;
+  }
+
+  private async _cancelAutoLogin() {
+    try {
+      await cancelCloudAutoLogin(this.hass);
+    } catch (_err) {
+      // Both callers are fire-and-forget navigations with nowhere to report
+      // this; the refresh below still reconciles whatever the backend kept.
+    } finally {
+      fireEvent(this, "ha-refresh-cloud-status");
+    }
   }
 
   protected updatePageEl(el) {
