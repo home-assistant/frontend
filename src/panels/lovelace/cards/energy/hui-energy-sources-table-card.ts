@@ -87,11 +87,32 @@ export class HuiEnergySourcesTableCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
+    if (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
       !changedProps.has("hass")
-    );
+    ) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass");
+
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   protected _renderRow(
