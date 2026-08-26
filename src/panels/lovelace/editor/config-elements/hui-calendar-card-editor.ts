@@ -87,6 +87,7 @@ export class HuiCalendarCardEditor
           schema: [
             {
               name: "add_event_style",
+              visible: { field: "show_add_event", operator: "eq", value: true },
               required: false,
               selector: {
                 select: {
@@ -116,6 +117,14 @@ export class HuiCalendarCardEditor
             },
             {
               name: "add_event_size",
+              visible: [
+                { field: "show_add_event", operator: "eq", value: true },
+                {
+                  field: "add_event_style",
+                  operator: "not_eq",
+                  value: "header",
+                },
+              ],
               required: false,
               selector: {
                 select: {
