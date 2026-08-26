@@ -15,6 +15,7 @@ import "../../components/ha-attribute-value";
 import "../../components/ha-floor-icon";
 import "../../components/ha-icon";
 import "../../components/ha-icon-next";
+import "../../components/ha-label";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-value";
@@ -42,6 +43,7 @@ interface DetailsViewParams {
 interface DetailEntry {
   translationKey: LocalizeKeys;
   value: string;
+  displayValue?: TemplateResult;
   href?: string;
   icon?: TemplateResult;
   copyable?: boolean;
@@ -104,12 +106,12 @@ class HaMoreInfoDetails extends LitElement {
       ? this.hass.localize(`component.${this.entry.platform}.title`) ||
         this.entry.platform
       : undefined;
-    const labelNames =
-      this.entry?.labels.map(
-        (labelId) =>
-          this._labels?.find((label) => label.label_id === labelId)?.name ??
-          labelId
-      ) ?? [];
+    const labels =
+      this.entry?.labels.map((labelId) => ({
+        id: labelId,
+        entry: this._labels?.find((label) => label.label_id === labelId),
+      })) ?? [];
+    const labelNames = labels.map(({ id, entry }) => entry?.name ?? id);
     const contextEntries: DetailEntry[] = [];
 
     if (floor && floorName) {
@@ -171,6 +173,28 @@ class HaMoreInfoDetails extends LitElement {
       {
         translationKey: "ui.dialogs.more_info_control.labels",
         value: labelNames.join(", ") || this.hass.localize("ui.common.none"),
+        displayValue: labels.length
+          ? html`<div class="labels">
+              ${labels.map(
+                ({ id, entry }) => html`
+                  <ha-label
+                    .color=${entry?.color ?? undefined}
+                    .description=${entry?.description ?? undefined}
+                  >
+                    ${
+                      entry?.icon
+                        ? html`<ha-icon
+                            slot="icon"
+                            .icon=${entry.icon}
+                          ></ha-icon>`
+                        : nothing
+                    }
+                    ${entry?.name ?? id}
+                  </ha-label>
+                `
+              )}
+            </div>`
+          : undefined,
       }
     );
     const yamlData = {
@@ -299,7 +323,7 @@ class HaMoreInfoDetails extends LitElement {
       if (!entry.href && !entry.copyable) {
         return html`
           <ha-list-item-value .label=${label}
-            >${entry.value}</ha-list-item-value
+            >${entry.displayValue ?? entry.value}</ha-list-item-value
           >
         `;
       }
@@ -441,6 +465,18 @@ class HaMoreInfoDetails extends LitElement {
       min-width: 0;
       text-align: end;
       overflow-wrap: anywhere;
+    }
+
+    .labels {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: var(--ha-space-1);
+    }
+
+    .labels ha-label {
+      min-width: 0;
+      max-width: 100%;
     }
 
     ha-icon-next {
