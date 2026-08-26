@@ -128,6 +128,7 @@ export interface FanSpeedCardFeatureConfig {
 export interface AlarmModesCardFeatureConfig {
   type: "alarm-modes";
   modes?: AlarmMode[];
+  show_labels?: boolean;
 }
 
 export interface ClimateFanModesCardFeatureConfig {

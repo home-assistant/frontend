@@ -63,6 +63,12 @@ export class HuiAlarmModesCardFeatureEditor
             },
           },
         },
+        {
+          name: "show_labels",
+          selector: {
+            boolean: {},
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -117,6 +123,7 @@ export class HuiAlarmModesCardFeatureEditor
     switch (schema.name) {
       case "modes":
       case "customize_modes":
+      case "show_labels":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.alarm-modes.${schema.name}`
         );

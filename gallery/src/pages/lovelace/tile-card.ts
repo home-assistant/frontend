@@ -12,6 +12,7 @@ import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
 import { FanEntityFeature } from "../../../../src/data/fan";
+import { AlarmControlPanelEntityFeature } from "../../../../src/data/alarm_control_panel";
 import type { TileCardConfig } from "../../../../src/panels/lovelace/cards/types";
 
 const ENTITIES = [
@@ -161,6 +162,20 @@ const ENTITIES = [
         FanEntityFeature.DIRECTION +
         FanEntityFeature.SET_SPEED +
         FanEntityFeature.OSCILLATE,
+    },
+  },
+  {
+    entity_id: "alarm_control_panel.home",
+    state: "disarmed",
+    attributes: {
+      friendly_name: "Home Alarm",
+      code_format: null,
+      supported_features:
+        AlarmControlPanelEntityFeature.ARM_HOME +
+        AlarmControlPanelEntityFeature.ARM_AWAY +
+        AlarmControlPanelEntityFeature.ARM_NIGHT +
+        AlarmControlPanelEntityFeature.ARM_VACATION +
+        AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS,
     },
   },
 ];
@@ -415,6 +430,31 @@ const CONFIGS = [
         { type: "climate-fan-modes", style: "dropdown" },
         { type: "climate-swing-modes", style: "dropdown" },
         { type: "climate-swing-horizontal-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Alarm modes feature",
+    config: {
+      type: "tile",
+      entity: "alarm_control_panel.home",
+      features: [
+        {
+          type: "alarm-modes",
+        },
+      ],
+    },
+  },
+  {
+    heading: "Alarm modes feature with labels",
+    config: {
+      type: "tile",
+      entity: "alarm_control_panel.home",
+      features: [
+        {
+          type: "alarm-modes",
+          show_labels: true,
+        },
       ],
     },
   },

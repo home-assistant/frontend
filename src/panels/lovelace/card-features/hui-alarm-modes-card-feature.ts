@@ -184,7 +184,7 @@ class HuiAlarmModeCardFeature
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        hide-option-label
+        ?hide-option-label=${!this._config.show_labels}
         .label=${this._localize("ui.card.alarm_control_panel.modes_label")}
         style=${styleMap({
           "--control-select-color": color,

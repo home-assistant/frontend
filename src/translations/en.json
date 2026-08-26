@@ -10674,7 +10674,8 @@
                   "armed_custom_bypass": "[%key:ui::card::alarm_control_panel::modes::armed_custom_bypass%]",
                   "disarmed": "[%key:ui::card::alarm_control_panel::modes::disarmed%]"
                 },
-                "customize_modes": "Customize alarm modes"
+                "customize_modes": "Customize alarm modes",
+                "show_labels": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::show_labels%]"
               },
               "light-brightness": {
                 "label": "Light brightness"
