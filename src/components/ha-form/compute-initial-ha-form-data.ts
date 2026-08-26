@@ -124,7 +124,9 @@ export const computeInitialHaFormData = (
         "condition" in selector
       ) {
         data[field.name] = [];
-      } else if ("media" in selector || "target" in selector) {
+      } else if ("media" in selector) {
+        data[field.name] = selector.media?.multiple ? [] : {};
+      } else if ("target" in selector) {
         data[field.name] = {};
       } else if ("state" in selector) {
         data[field.name] = selector.state?.multiple ? [] : "";

@@ -369,6 +369,7 @@ export interface MediaSelector {
     clearable?: boolean;
     hide_content_type?: boolean;
     content_id_helper?: string;
+    multiple?: boolean;
   } | null;
 }
 
