@@ -44,7 +44,6 @@ describe("security-view-strategy", () => {
         type: "alert",
         entity: "binary_sensor.window",
         color: "amber",
-        pulse: false,
         visibility: [
           {
             condition: "state",
