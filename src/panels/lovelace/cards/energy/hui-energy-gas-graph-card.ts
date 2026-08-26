@@ -151,7 +151,7 @@ export class HuiEnergyGasGraphCard
               this._unit,
               this._compareStart,
               this._compareEnd,
-              this._yAxisFractionDigits
+              this._displayPrecision ?? this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
