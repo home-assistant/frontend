@@ -30,7 +30,15 @@ const leaflet = {
   tileLayer: vi.fn(() => rasterLayer),
 } as unknown as LeafletModuleType;
 
-const map = {} as any;
+// `createVectorLayer` listens on both the MapLibre map and the Leaflet map.
+const glHandlers: Record<string, () => void> = {};
+const glMap = {
+  setStyle: vi.fn(),
+  on: vi.fn((event: string, handler: () => void) => {
+    glHandlers[event] = handler;
+  }),
+};
+const map = { on: vi.fn() } as any;
 
 // The WebGL2 probe is cached for the lifetime of the module, so every test
 // needs its own copy of it.
@@ -49,6 +57,10 @@ beforeEach(() => {
   maplibreLayer.options = {};
   maplibreGL.mockReturnValue(maplibreLayer);
   maplibreLayer.addTo.mockImplementation(() => maplibreLayer);
+  maplibreLayer.getMaplibreMap.mockReturnValue(glMap);
+  for (const event of Object.keys(glHandlers)) {
+    delete glHandlers[event];
+  }
   vi.stubGlobal(
     "fetch",
     vi.fn(async () => ({ json: async () => structuredClone(STYLE) }))
@@ -125,10 +137,7 @@ describe("createBaseLayer", () => {
 });
 
 describe("setDarkMode", () => {
-  const glMap = { setStyle: vi.fn() };
-
   beforeEach(() => {
-    maplibreLayer.getMaplibreMap.mockReturnValue(glMap);
     glMap.setStyle.mockClear();
   });
 
@@ -179,5 +188,53 @@ describe("setDarkMode", () => {
 
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
     expect(glMap.setStyle.mock.calls[0][0]).toMatchObject({ name: "light" });
+  });
+});
+
+// Browsers cap the number of live WebGL contexts and drop the oldest. With
+// more map cards than that cap - measured at 16 in Chrome - the first cards
+// lose their context and never get it back, because nothing frees a slot.
+describe("WebGL context loss", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("falls back to raster tiles when the context stays lost", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+    expect(leaflet.tileLayer).not.toHaveBeenCalled();
+
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+
+    expect(maplibreLayer.remove).toHaveBeenCalled();
+    expect(isRaster()).toBe(true);
+  });
+
+  it("keeps the vector layer when the context comes back", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+
+    glHandlers.webglcontextlost();
+    glHandlers.webglcontextrestored();
+    vi.runAllTimers();
+
+    expect(maplibreLayer.remove).not.toHaveBeenCalled();
+    expect(leaflet.tileLayer).not.toHaveBeenCalled();
+  });
+
+  it("stops answering theme changes once it has fallen back", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    const baseLayer = await createBaseLayer(leaflet, map, false);
+
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+    baseLayer.setDarkMode(true);
+
+    expect(glMap.setStyle).not.toHaveBeenCalled();
   });
 });

@@ -22,6 +22,13 @@ const RASTER_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 // keep rendering up to MAP_MAX_ZOOM.
 const RASTER_MAX_NATIVE_ZOOM = 19;
 
+// Browsers keep a limited number of live WebGL contexts - around 16 in Chrome -
+// and drop the oldest when a new one is created. A dashboard with more map
+// cards than that leaves its first cards blank: MapLibre asks for the context
+// back, but nothing frees a slot for it. A transient loss, a GPU reset say,
+// does get restored, so give that a moment before falling back to raster.
+const CONTEXT_RESTORE_GRACE = 2000;
+
 // The zoom range belongs to the map rather than to the base layer: only Leaflet
 // tile layers report their own limits, and marker clustering needs the map to
 // have a maximum zoom whichever base layer is in use.
@@ -73,6 +80,7 @@ const loadStyle = async (url: string): Promise<StyleSpecification> => {
 
 const createVectorLayer = async (
   createLayer: typeof maplibreGL,
+  leaflet: LeafletModuleType,
   map: LeafletMap,
   darkMode: boolean
 ): Promise<MapBaseLayer | undefined> => {
@@ -114,10 +122,30 @@ const createVectorLayer = async (
   // Styles are fetched, so a burst of theme changes can resolve out of order.
   // Only the newest request may touch the map.
   let latestRequest = 0;
+  let vector = true;
+
+  const glMap = layer.getMaplibreMap();
+  let fallbackTimeout: number | undefined;
+
+  glMap.on("webglcontextlost", () => {
+    clearTimeout(fallbackTimeout);
+    fallbackTimeout = window.setTimeout(() => {
+      vector = false;
+      try {
+        layer.remove();
+      } catch {
+        // Nothing left to detach, the raster layer replaces it either way.
+      }
+      createRasterLayer(leaflet, map);
+    }, CONTEXT_RESTORE_GRACE);
+  });
+  glMap.on("webglcontextrestored", () => clearTimeout(fallbackTimeout));
+  // Leaving the timer to fire on a map that is already gone would revive it.
+  map.on("unload", () => clearTimeout(fallbackTimeout));
 
   return {
     setDarkMode: (newDarkMode: boolean) => {
-      if (newDarkMode === currentDarkMode) {
+      if (!vector || newDarkMode === currentDarkMode) {
         return;
       }
       currentDarkMode = newDarkMode;
@@ -164,7 +192,12 @@ export const createBaseLayer = async (
     try {
       const { maplibreGL: createLayer } =
         await import("@maplibre/maplibre-gl-leaflet");
-      vectorLayer = await createVectorLayer(createLayer, map, darkMode);
+      vectorLayer = await createVectorLayer(
+        createLayer,
+        leaflet,
+        map,
+        darkMode
+      );
     } catch {
       // An instance that cannot load the chunk still gets a map, just a raster
       // one, rather than an empty card.
