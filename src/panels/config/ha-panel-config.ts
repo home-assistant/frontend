@@ -273,7 +273,10 @@ class HaPanelConfig extends HassRouterPage {
         this._wideSidebar = matches;
       })
     );
-    this._subscribeCloudEvents();
+    if (this.hass && isComponentLoaded(this.hass.config, "cloud")) {
+      this._subscribeCloudEvents();
+      this._updateCloudStatus();
+    }
   }
 
   public disconnectedCallback() {
@@ -313,8 +316,6 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      this._updateCloudStatus();
-      this._subscribeCloudEvents();
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {
           this._updateCloudStatus();

@@ -254,7 +254,9 @@ export class CloudRegister extends LitElement {
           <p>
             ${this.hass.localize(
               "ui.panel.config.cloud.register.confirm_email_body",
-              { email: this._pendingEmail }
+              {
+                email: html`<span class="email">${this._pendingEmail}</span>`,
+              }
             )}
           </p>
           ${
@@ -591,6 +593,11 @@ export class CloudRegister extends LitElement {
           max-width: 420px;
           color: var(--secondary-text-color);
           line-height: var(--ha-line-height-normal);
+        }
+        .confirm .email {
+          display: inline-block;
+          max-width: 100%;
+          overflow-wrap: anywhere;
         }
         .waiting {
           display: flex;
