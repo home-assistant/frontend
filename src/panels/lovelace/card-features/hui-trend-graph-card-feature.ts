@@ -3,6 +3,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
@@ -188,7 +189,7 @@ class HuiHistoryChartCardFeature
     }
     if (this._coordinates && !this._coordinates.length) {
       return html`
-        <div class="container">
+        <div class=${classMap({ container: true, "no-history-found": true })}>
           <div class="info">
             ${this.hass!.localize(
               "ui.components.history_charts.no_history_found"
@@ -278,6 +279,14 @@ class HuiHistoryChartCardFeature
       justify-content: flex-end;
       align-items: flex-end;
       pointer-events: none !important;
+    }
+
+    .no-history-found {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     hui-graph-base {
