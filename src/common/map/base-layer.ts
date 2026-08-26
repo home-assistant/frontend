@@ -1,5 +1,5 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
-import type { Layer } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 
@@ -29,7 +29,6 @@ export const MAP_MIN_ZOOM = 0;
 export const MAP_MAX_ZOOM = 20;
 
 export interface MapBaseLayer {
-  layer: Layer;
   // Vector styles carry their own dark cartography. The raster layer has no
   // dark variant and is inverted with a CSS filter instead, so this is a no-op
   // for it.
@@ -74,62 +73,105 @@ const loadStyle = async (url: string): Promise<StyleSpecification> => {
 
 const createVectorLayer = async (
   createLayer: typeof maplibreGL,
+  map: LeafletMap,
   darkMode: boolean
-): Promise<MapBaseLayer> => {
+): Promise<MapBaseLayer | undefined> => {
+  let layer: ReturnType<typeof maplibreGL> | undefined;
+
+  try {
+    layer = createLayer({
+      style: await loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"]),
+      // Renders CJK, kana and hangul with a font from the device, which is why
+      // we only have to ship a tenth of the glyph set.
+      localIdeographFontFamily: "sans-serif",
+      // The page sets a same-origin referrer policy, but the OSMF asks for a
+      // referrer to see which application their tiles are serving. Sending it
+      // for the tiles alone keeps it to the origin, never the page URL.
+      transformRequest: (url) => ({ url, referrerPolicy: "origin" }),
+    });
+    // The plugin only types the MapLibre options, but the layer hands this to
+    // Leaflet's attribution control once the style has loaded.
+    layer.options.attribution = OSM_ATTRIBUTION;
+
+    // The plugin builds the MapLibre map in `onAdd`, so this is where a
+    // missing WebGL context, a blocked worker or a rejected blob URL throws.
+    // Adding the layer has to stay inside the guard for the raster fallback to
+    // cover those, not just a browser without WebGL2 at all.
+    layer.addTo(map);
+  } catch {
+    if (layer) {
+      try {
+        layer.remove();
+      } catch {
+        // The layer never finished being added, so there may be nothing to
+        // tear down. Either way the raster layer replaces it.
+      }
+    }
+    return undefined;
+  }
+
   let currentDarkMode = darkMode;
-  const layer = createLayer({
-    style: await loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"]),
-    // Renders CJK, kana and hangul with a font from the device, which is why
-    // we only have to ship a tenth of the glyph set.
-    localIdeographFontFamily: "sans-serif",
-    // The page sets a same-origin referrer policy, but the OSMF asks for a
-    // referrer to see which application their tiles are serving. Sending it
-    // for the tiles alone keeps it to the origin, never the page URL.
-    transformRequest: (url) => ({ url, referrerPolicy: "origin" }),
-  });
-  // The plugin only types the MapLibre options, but the layer hands this to
-  // Leaflet's attribution control once the style has loaded.
-  layer.options.attribution = OSM_ATTRIBUTION;
+  // Styles are fetched, so a burst of theme changes can resolve out of order.
+  // Only the newest request may touch the map.
+  let latestRequest = 0;
 
   return {
-    layer,
     setDarkMode: (newDarkMode: boolean) => {
       if (newDarkMode === currentDarkMode) {
         return;
       }
       currentDarkMode = newDarkMode;
+      const request = ++latestRequest;
+
       loadStyle(VECTOR_STYLES[newDarkMode ? "dark" : "light"])
-        .then((style) => layer.getMaplibreMap()?.setStyle(style))
+        .then((style) => {
+          if (request === latestRequest) {
+            layer.getMaplibreMap()?.setStyle(style);
+          }
+        })
         .catch(() => {
-          // Keep the style that is on screen, and let the next toggle retry.
-          currentDarkMode = !newDarkMode;
+          if (request === latestRequest) {
+            // Keep the style that is on screen, and let the next toggle retry.
+            currentDarkMode = !newDarkMode;
+          }
         });
     },
   };
 };
 
-const createRasterLayer = (leaflet: LeafletModuleType): MapBaseLayer => ({
-  layer: leaflet.tileLayer(RASTER_TILE_URL, {
-    attribution: OSM_ATTRIBUTION,
-    maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
-    maxZoom: MAP_MAX_ZOOM,
-  }),
-  setDarkMode: () => undefined,
-});
+const createRasterLayer = (
+  leaflet: LeafletModuleType,
+  map: LeafletMap
+): MapBaseLayer => {
+  leaflet
+    .tileLayer(RASTER_TILE_URL, {
+      attribution: OSM_ATTRIBUTION,
+      maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
+      maxZoom: MAP_MAX_ZOOM,
+    })
+    .addTo(map);
+
+  return { setDarkMode: () => undefined };
+};
 
 export const createBaseLayer = async (
   leaflet: LeafletModuleType,
+  map: LeafletMap,
   darkMode: boolean
 ): Promise<MapBaseLayer> => {
   if (supportsWebGL2()) {
+    let vectorLayer: MapBaseLayer | undefined;
     try {
       const { maplibreGL: createLayer } =
         await import("@maplibre/maplibre-gl-leaflet");
-      return await createVectorLayer(createLayer, darkMode);
+      vectorLayer = await createVectorLayer(createLayer, map, darkMode);
     } catch {
       // An instance that cannot load the chunk still gets a map, just a raster
       // one, rather than an empty card.
     }
+    if (vectorLayer) {
+      return vectorLayer;
+    }
   }
-  return createRasterLayer(leaflet);
+  return createRasterLayer(leaflet, map);
 };

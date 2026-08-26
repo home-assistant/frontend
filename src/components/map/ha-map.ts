@@ -333,6 +333,14 @@ export class HaMap extends ReactiveElement {
         zoom: this.zoom,
         darkMode: this._darkMode,
       });
+      // Setting up fetches a style, so the element can be gone by now.
+      // `disconnectedCallback` had no map to tear down, and keeping this one
+      // would leave a live map - and its WebGL context - on a detached host,
+      // and its container too initialized to set up again on reconnect.
+      if (!this.isConnected) {
+        setup.map.remove();
+        return;
+      }
       this.leafletMap = setup.map;
       this.Leaflet = setup.leaflet;
       this._baseLayer = setup.baseLayer;

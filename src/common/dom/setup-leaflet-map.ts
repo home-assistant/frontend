@@ -54,11 +54,13 @@ export const setupLeafletMap = async (
     );
   }
 
+  // The base layer adds itself: the vector layer only builds its MapLibre map
+  // once it is on the map, and that failing has to fall back to raster.
   const baseLayer = await createBaseLayer(
     Leaflet,
+    map,
     initialView?.darkMode ?? false
   );
-  baseLayer.layer.addTo(map);
 
   return { map, leaflet: Leaflet, baseLayer };
 };
