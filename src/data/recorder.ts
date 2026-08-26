@@ -168,7 +168,7 @@ type StatisticIdsApi = Pick<HomeAssistant, "callWS">;
 export const getStatisticIds = (
   hass: StatisticIdsApi,
   statistic_type?: StatisticIdsType
-): Promise<StatisticsMetaData[]> =>
+): Promise<readonly Readonly<StatisticsMetaData>[]> =>
   shareInFlightRequest(
     hass.callWS,
     `recorder/list_statistic_ids:${statistic_type ?? "all"}`,
