@@ -48,6 +48,7 @@ export type Selector =
   | DeviceSelector
   | FloorSelector
   | LegacyDeviceSelector
+  | DeviceClassSelector
   | DurationSelector
   | EntitySelector
   | EntityNameSelector
@@ -481,6 +482,13 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
     box_max_columns?: number;
+  } | null;
+}
+
+export interface DeviceClassSelector {
+  device_class: {
+    domain: string;
+    multiple?: boolean;
   } | null;
 }
 

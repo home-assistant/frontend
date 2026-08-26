@@ -424,6 +424,14 @@ const SCHEMAS: {
           },
         },
       },
+      device_class: {
+        name: "Device Class",
+        selector: {
+          device_class: {
+            domain: "sensor",
+          },
+        },
+      },
       select_custom: {
         name: "Select (Custom)",
         selector: {

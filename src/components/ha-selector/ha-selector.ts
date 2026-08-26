@@ -30,6 +30,7 @@ const LOAD_ELEMENTS = {
   date: () => import("./ha-selector-date"),
   datetime: () => import("./ha-selector-datetime"),
   device: () => import("./ha-selector-device"),
+  device_class: () => import("./ha-selector-device-class"),
   duration: () => import("./ha-selector-duration"),
   entity: () => import("./ha-selector-entity"),
   entity_name: () => import("./ha-selector-entity-name"),
