@@ -1115,20 +1115,24 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this.isDirtyState) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this.isDirtyState) {
+      return true;
     }
-    return true;
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.leave"),
+      dismissText: this.hass!.localize("ui.common.stay"),
+      destructive: true,
+    });
+    if (confirmed) {
+      this._markDirtyStateClean();
+    }
+    return confirmed;
   }
 
   private async _duplicate() {

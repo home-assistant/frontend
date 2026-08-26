@@ -80,6 +80,60 @@ const ensureDialogsClosed = async (timestamp: number): Promise<boolean> => {
   return ensureDialogsClosed(timestamp);
 };
 
+/**
+ * Lets a page with unsaved changes (e.g. the automation editor) veto
+ * navigation. `isDirty` is read live at navigation time; `prompt` resolves
+ * true when navigation may proceed.
+ */
+export interface UnsavedChangesGuard {
+  isDirty(): boolean;
+  prompt(): Promise<boolean>;
+}
+
+const unsavedChangesGuards = new Set<UnsavedChangesGuard>();
+
+export const registerUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
+  unsavedChangesGuards.add(guard);
+};
+
+export const unregisterUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
+  unsavedChangesGuards.delete(guard);
+};
+
+let pendingUnsavedPrompt: Promise<boolean> | undefined;
+
+/**
+ * Asks each dirty guard whether navigation may proceed. Returns true when
+ * nothing is dirty or every prompt was confirmed. Concurrent navigations
+ * share one pending prompt instead of stacking dialogs; the dirty check runs
+ * before joining it, so a navigation triggered from inside a prompt (e.g. by
+ * its save action) cannot deadlock on its own promise.
+ */
+const ensureUnsavedChangesConfirmed = (): Promise<boolean> => {
+  const dirtyGuards = [...unsavedChangesGuards].filter((guard) =>
+    guard.isDirty()
+  );
+  if (!dirtyGuards.length) {
+    return Promise.resolve(true);
+  }
+  if (!pendingUnsavedPrompt) {
+    pendingUnsavedPrompt = (async () => {
+      try {
+        for (const guard of dirtyGuards) {
+          // eslint-disable-next-line no-await-in-loop
+          if (!(await guard.prompt())) {
+            return false;
+          }
+        }
+        return true;
+      } finally {
+        pendingUnsavedPrompt = undefined;
+      }
+    })();
+  }
+  return pendingUnsavedPrompt;
+};
+
 const buildHistoryState = (
   data: Record<string, unknown> | undefined,
   from?: string
@@ -91,7 +145,7 @@ const buildHistoryState = (
   return { ...state, from };
 };
 
-export const navigate = async (path: string, options?: NavigateOptions) => {
+const performNavigation = async (path: string, options?: NavigateOptions) => {
   const canProceed = await ensureDialogsClosed(Date.now());
   if (!canProceed) {
     return false;
@@ -130,6 +184,15 @@ export const navigate = async (path: string, options?: NavigateOptions) => {
   return true;
 };
 
+export const navigate = async (path: string, options?: NavigateOptions) => {
+  // Only guard actual departures: navigating to the current path keeps the
+  // page, and any unsaved state on it, mounted.
+  if (path !== currentPath() && !(await ensureUnsavedChangesConfirmed())) {
+    return false;
+  }
+  return performNavigation(path, options);
+};
+
 /**
  * Whether the previous history entry is a page this app navigated away from.
  * `history.length` cannot answer this: a login redirect goes through
@@ -142,6 +205,9 @@ export const canGoBack = (): boolean =>
 /**
  * Navigate back to the page we came from, falling back to a path when the
  * previous entry is not ours (deep link, login redirect, fresh tab).
+ * Deliberately not guarded against unsaved changes: pages with such a guard
+ * confirm in their own back handlers, and delete flows leave through here
+ * after the edited item is already gone.
  */
 export const goBack = async (fallbackPath?: string): Promise<void> => {
   const canProceed = await ensureDialogsClosed(Date.now());
@@ -156,5 +222,5 @@ export const goBack = async (fallbackPath?: string): Promise<void> => {
     return;
   }
 
-  await navigate(fallbackPath || "/", { replace: true });
+  await performNavigation(fallbackPath || "/", { replace: true });
 };
