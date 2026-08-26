@@ -76,22 +76,11 @@ export class HAFullCalendar extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({
-    attribute: "add-fab",
-    converter: {
-      fromAttribute: (value) => {
-        if (value === null) return false;
-        if (value === "") return [];
-        return value.split(" ").map((v) => v.trim());
-      },
-    },
-  })
-  public addFab: string[] | false = false;
+  @property({ attribute: "add-fab", type: Boolean }) public addFab = false;
 
-  private _addfabSize = () =>
-    ["small", "medium", "large"].filter(
-      (v) => this.addFab && this.addFab.includes(v)
-    )[0] || "large";
+  @property({ attribute: "add-fab-size" }) public addFabSize = "large";
+
+  @property({ attribute: "add-fab-style" }) public addFabStyle = "on_top";
 
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
@@ -199,7 +188,7 @@ export class HAFullCalendar extends LitElement {
                           ${
                             this.addFab &&
                             this._hasMutableCalendars &&
-                            this.addFab.includes("header")
+                            this.addFabStyle === "header"
                               ? html`<ha-button
                                   size="s"
                                   class="fab-header"
@@ -256,7 +245,7 @@ export class HAFullCalendar extends LitElement {
                             ${
                               this.addFab &&
                               this._hasMutableCalendars &&
-                              this.addFab.includes("header")
+                              this.addFabStyle === "header"
                                 ? html`<ha-button
                                     size="s"
                                     class="fab-header"
@@ -285,10 +274,10 @@ export class HAFullCalendar extends LitElement {
       ${
         this.addFab &&
         this._hasMutableCalendars &&
-        !this.addFab.includes("header")
+        this.addFabStyle !== "header"
           ? html`<ha-button
-              size=${this._addfabSize().charAt(0)}
-              class=${classMap({ below: this.addFab.includes("below") })}
+              size=${this.addFabSize.charAt(0)}
+              class=${classMap({ below: this.addFabStyle === "below" })}
               slot="fab"
               @click=${this._createEvent}
             >
