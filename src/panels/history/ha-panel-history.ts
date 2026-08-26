@@ -49,6 +49,7 @@ import {
   countTargets,
 } from "../../components/ha-sources-picker";
 import type { SourceFilters } from "../../components/ha-sources-picker";
+import { entityTypesNeedStates } from "../../data/entity/entity_type";
 import "../../components/ha-spinner";
 import "../../components/ha-top-app-bar-fixed";
 import type { EntitySources } from "../../data/entity/entity_sources";
@@ -216,6 +217,7 @@ class HaPanelHistory extends LitElement {
                       .hass=${this.hass}
                       .value=${this._targetPickerValue}
                       .filters=${this._filters}
+                      .entitySources=${this._entitySources}
                       .disabled=${this._isLoading}
                       .description=${this.hass.localize(
                         "ui.panel.history.no_targets"
@@ -536,8 +538,10 @@ class HaPanelHistory extends LitElement {
         this.hass.areas
       ),
       this._filters,
-      // Only the device class filter reads the states.
-      this._filters.deviceClasses?.length ? this.hass.states : EMPTY_STATES,
+      // Only a device class narrows down using the states.
+      entityTypesNeedStates(this._filters.types)
+        ? this.hass.states
+        : EMPTY_STATES,
       this.hass.entities,
       this._entitySources
     );
@@ -732,6 +736,10 @@ class HaPanelHistory extends LitElement {
       haStyle,
       haStyleScrollbar,
       css`
+        :host {
+          /* The target picker chips need more room than a plain filter list. */
+          --ha-filter-pane-width: 340px;
+        }
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;

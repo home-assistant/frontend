@@ -34,6 +34,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -88,6 +91,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .itemId=${item}
                     .deviceFilter=${this.deviceFilter}
                     .entityFilter=${this.entityFilter}
+                    .activeFilter=${this.activeFilter}
                     .includeDomains=${this.includeDomains}
                     .includeDeviceClasses=${this.includeDeviceClasses}
                     .primaryEntitiesOnly=${this.primaryEntitiesOnly}

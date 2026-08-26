@@ -8,4 +8,4 @@ set -eu -o pipefail
 
 cd "$(dirname "$0")/.."
 
-./node_modules/.bin/gulp gen-numeric-device-classes
+./node_modules/.bin/gulp gen-sensor-entity-constants

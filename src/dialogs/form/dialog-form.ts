@@ -10,6 +10,7 @@ import deepClone from "deep-clone-simple";
 import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
@@ -123,6 +124,7 @@ export class DialogForm
     this._initialData = deepClone(this._data);
     this._error = undefined;
     this._resetDirtyTracking();
+    void this._focusActiveForm(nested);
   };
 
   private _popStack(): StackEntry | undefined {
@@ -142,16 +144,111 @@ export class DialogForm
     return prev;
   }
 
+  private async _afterFormRender(): Promise<void> {
+    await this.updateComplete;
+    await this._form?.updateComplete;
+    await nextRender();
+  }
+
+  private async _waitForSelectorElements(): Promise<void> {
+    const selectors = this._form?.shadowRoot?.querySelectorAll("ha-selector");
+    if (selectors?.length) {
+      await Promise.all(
+        Array.from(selectors, (element) =>
+          "updateComplete" in element
+            ? (element as LitElement).updateComplete
+            : undefined
+        )
+      );
+    }
+
+    const pending = this._undefinedCustomElements(this._form);
+    if (!pending.length) {
+      return;
+    }
+
+    await Promise.all(pending.map((tag) => customElements.whenDefined(tag)));
+    await nextRender();
+  }
+
+  private _undefinedCustomElements(root?: ParentNode): string[] {
+    const tags = new Set<string>();
+    const visit = (node: ParentNode) => {
+      if (node instanceof Element && node.shadowRoot) {
+        visit(node.shadowRoot);
+      }
+      for (const child of node.children) {
+        if (
+          child.localName.includes("-") &&
+          !customElements.get(child.localName)
+        ) {
+          tags.add(child.localName);
+        }
+        visit(child);
+      }
+    };
+    if (root) {
+      visit(root);
+    }
+    return [...tags];
+  }
+
+  private _focusFirstControl(root = this._form): void {
+    if (!root) {
+      return;
+    }
+
+    const visit = (node: ParentNode): HTMLElement | undefined => {
+      if (node instanceof Element && node.shadowRoot) {
+        const inShadow = visit(node.shadowRoot);
+        if (inShadow) {
+          return inShadow;
+        }
+      }
+
+      for (const child of node.children) {
+        if (
+          child instanceof HTMLElement &&
+          child.matches("input, textarea, select, button")
+        ) {
+          return child;
+        }
+        const found = visit(child);
+        if (found) {
+          return found;
+        }
+      }
+
+      return undefined;
+    };
+
+    visit(root)?.focus();
+  }
+
+  private async _focusActiveForm(
+    expectedParams: FormDialogParams
+  ): Promise<void> {
+    await this._afterFormRender();
+
+    if (!this._open || this._params !== expectedParams) {
+      return;
+    }
+
+    await this._waitForSelectorElements();
+
+    if (!this._open || this._params !== expectedParams) {
+      return;
+    }
+
+    this._focusFirstControl();
+  }
+
   private async _restoreFocusAndScroll(
     scrollTop: number,
     expectedParams: FormDialogParams,
     focusTarget?: Element
   ): Promise<void> {
-    await this.updateComplete;
-    await this._form?.updateComplete;
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => resolve());
-    });
+    await this._afterFormRender();
 
     if (!this._open || this._params !== expectedParams || !this._dialog) {
       return;
@@ -159,6 +256,8 @@ export class DialogForm
 
     if (focusTarget instanceof HTMLElement && focusTarget.isConnected) {
       focusTarget.focus();
+    } else {
+      this._focusFirstControl();
     }
 
     this._dialog.bodyContainer.scrollTop = scrollTop;

@@ -27,11 +27,37 @@ vi.mock("../../../src/components/ha-dialog-footer", () => {
   return {};
 });
 
+const mockForm = vi.hoisted(() => ({
+  delayedTag: undefined as string | undefined,
+}));
+
 vi.mock("../../../src/components/ha-form/ha-form", () => {
+  if (!customElements.get("ha-selector")) {
+    customElements.define("ha-selector", class extends HTMLElement {});
+  }
   customElements.define(
     "ha-form",
     class extends HTMLElement {
       public reportValidity = vi.fn(() => true);
+
+      public connectedCallback(): void {
+        if (this.shadowRoot) {
+          return;
+        }
+        if (mockForm.delayedTag) {
+          const selector = document.createElement("ha-selector");
+          selector
+            .attachShadow({ mode: "open" })
+            .append(document.createElement(mockForm.delayedTag));
+          this.attachShadow({ mode: "open" }).append(selector);
+          return;
+        }
+        const selector = document.createElement("div");
+        selector
+          .attachShadow({ mode: "open" })
+          .append(document.createElement("input"));
+        this.attachShadow({ mode: "open" }).append(selector);
+      }
     }
   );
   return {};
@@ -42,6 +68,31 @@ const getInternals = (dialog: DialogForm) =>
 
 const getForms = (dialog: DialogForm): HTMLElement[] =>
   Array.from(dialog.shadowRoot!.querySelectorAll("ha-form"));
+
+const formControl = (form: HTMLElement): HTMLElement | null => {
+  const visit = (node: ParentNode): HTMLElement | null => {
+    if (node instanceof Element && node.shadowRoot) {
+      const inShadow = visit(node.shadowRoot);
+      if (inShadow) {
+        return inShadow;
+      }
+    }
+    for (const child of node.children) {
+      if (
+        child instanceof HTMLElement &&
+        child.matches("input, textarea, button")
+      ) {
+        return child;
+      }
+      const found = visit(child);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  };
+  return visit(form);
+};
 
 const outerParams = (data: FormDialogData = {}): FormDialogParams => ({
   title: "Outer",
@@ -96,25 +147,12 @@ const cancel = (dialog: DialogForm) =>
   (getInternals(dialog)["_cancel"] as () => void)();
 
 afterEach(() => {
+  mockForm.delayedTag = undefined;
   document.body.replaceChildren();
   vi.clearAllMocks();
 });
 
 describe("dialog-form mounted nested forms", () => {
-  it("keeps parent forms mounted while nested", async () => {
-    const dialog = await openDialog();
-    const parent = getForms(dialog)[0];
-
-    await showNestedDialog(dialog, parent, nestedParams());
-
-    const forms = getForms(dialog);
-    expect(forms).toHaveLength(2);
-    expect(forms[0].hidden).toBe(true);
-    expect(forms[1].hidden).toBe(false);
-    expect(forms[0].hasAttribute("autofocus")).toBe(false);
-    expect(forms[1].hasAttribute("autofocus")).toBe(true);
-  });
-
   it("returns to the parent after nested submit", async () => {
     const dialog = await openDialog();
     const nested = nestedParams({ value: "nested" });
@@ -130,6 +168,23 @@ describe("dialog-form mounted nested forms", () => {
     expect(getForms(dialog)[0].hidden).toBe(false);
   });
 
+  it("moves focus to the first nested form control when a level is pushed", async () => {
+    const dialog = await openDialog();
+    const parent = getForms(dialog)[0];
+    const opener = document.createElement("button");
+    parent.append(opener);
+    opener.focus();
+
+    expect(deepActiveElement()).toBe(opener);
+
+    await showNestedDialog(dialog, parent, nestedParams());
+
+    await vi.waitUntil(
+      () => deepActiveElement() === formControl(getForms(dialog)[1])
+    );
+    expect(getForms(dialog)[0].hidden).toBe(true);
+  });
+
   it.each(["submit", "cancel"] as const)(
     "restores focus to the opener after nested %s",
     async (action) => {
@@ -140,6 +195,9 @@ describe("dialog-form mounted nested forms", () => {
       opener.focus();
 
       await showNestedDialog(dialog, parent, nestedParams());
+      await vi.waitUntil(
+        () => deepActiveElement() === formControl(getForms(dialog)[1])
+      );
 
       const child = getForms(dialog)[1];
       const childFocusTarget = document.createElement("button");
@@ -157,6 +215,72 @@ describe("dialog-form mounted nested forms", () => {
       await vi.waitUntil(() => deepActiveElement() === opener);
     }
   );
+
+  it("focuses the first parent form control when the opener is gone after nested submit", async () => {
+    const dialog = await openDialog();
+    const parent = getForms(dialog)[0];
+    const opener = document.createElement("button");
+    parent.append(opener);
+    opener.focus();
+
+    await showNestedDialog(dialog, parent, nestedParams());
+    await vi.waitUntil(
+      () => deepActiveElement() === formControl(getForms(dialog)[1])
+    );
+    opener.remove();
+    submit(dialog);
+
+    await vi.waitUntil(
+      () => deepActiveElement() === formControl(getForms(dialog)[0])
+    );
+  });
+
+  it("focuses a nested control after a cold selector chunk upgrades", async () => {
+    const tag = `ha-test-delayed-selector-${crypto.randomUUID()}`;
+    const dialog = await openDialog();
+    const parent = getForms(dialog)[0];
+    const opener = document.createElement("button");
+    parent.append(opener);
+    opener.focus();
+
+    mockForm.delayedTag = tag;
+    await showNestedDialog(dialog, parent, nestedParams());
+
+    customElements.define(
+      tag,
+      class extends HTMLElement {
+        public connectedCallback(): void {
+          if (this.shadowRoot) {
+            return;
+          }
+          this.attachShadow({ mode: "open" }).append(
+            document.createElement("input")
+          );
+        }
+      }
+    );
+
+    await vi.waitUntil(
+      () => deepActiveElement() === formControl(getForms(dialog)[1])
+    );
+  });
+
+  it("does not steal focus after a nested level is immediately cancelled", async () => {
+    const dialog = await openDialog();
+    const parent = getForms(dialog)[0];
+    const opener = document.createElement("button");
+    parent.append(opener);
+    opener.focus();
+
+    await showNestedDialog(dialog, parent, nestedParams());
+    cancel(dialog);
+
+    await vi.waitUntil(() => deepActiveElement() === opener);
+    await new Promise((resolve) => {
+      setTimeout(resolve, 50);
+    });
+    expect(deepActiveElement()).toBe(opener);
+  });
 
   it("keeps the parent open after a custom object selector nested save", async () => {
     const dialog = await openDialog();

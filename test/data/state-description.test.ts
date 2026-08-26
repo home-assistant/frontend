@@ -58,10 +58,10 @@ const hass = {
 } as unknown as HomeAssistant;
 
 const describeRowTrigger = (trigger: Trigger) =>
-  describeTrigger(trigger, hass, [], { hideEntities: true });
+  describeTrigger(trigger, hass, []);
 
 const describeRowCondition = (condition: Condition) =>
-  describeCondition(condition, hass, [], { hideEntities: true });
+  describeCondition(condition, hass, []);
 
 describe("describing state triggers and conditions", () => {
   const trigger: Trigger = {
@@ -75,16 +75,7 @@ describe("describing state triggers and conditions", () => {
     state: "on",
   };
 
-  it("names the entities by default", () => {
-    expect(describeTrigger(trigger, hass, [])).toBe(
-      "When Kitchen light changes to on"
-    );
-    expect(describeCondition(condition, hass, [])).toBe(
-      "If Kitchen light is on"
-    );
-  });
-
-  it("leaves the entities out when they are rendered as targets", () => {
+  it("leaves the entities out, they are rendered as targets", () => {
     expect(describeRowTrigger(trigger)).toBe("State changed to on");
     expect(describeRowCondition(condition)).toBe("State is on");
   });
@@ -115,16 +106,7 @@ describe("describing numeric state triggers and conditions", () => {
     above: 20,
   };
 
-  it("names the entities by default", () => {
-    expect(describeTrigger(trigger, hass, [])).toBe(
-      "When Temperature is above 20"
-    );
-    expect(describeCondition(condition, hass, [])).toBe(
-      "If Temperature is above 20"
-    );
-  });
-
-  it("leaves the entities out when they are rendered as targets", () => {
+  it("leaves the entities out, they are rendered as targets", () => {
     expect(describeRowTrigger(trigger)).toBe("Numeric state crossed above 20");
     expect(describeRowCondition(condition)).toBe("Numeric state is above 20");
   });

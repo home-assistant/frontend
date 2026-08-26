@@ -10,12 +10,16 @@ interface MeanFrame {
 }
 
 interface MinMaxFrame {
+  // A frame can hold a gap marker before any value lands in it, so the min/max
+  // slots below only mean something once this is true.
+  hasValue: boolean;
   minPoint: Point;
   minX: number;
   minY: number;
   maxPoint: Point;
   maxX: number;
   maxY: number;
+  gapPoint: Point | undefined;
 }
 
 const SECOND = 1000;
@@ -47,6 +51,25 @@ function snapFrameSize(step: number): number {
     snapped = size;
   }
   return snapped;
+}
+
+// y is NaN for a frame seeded by a gap marker, which has no value yet.
+function newFrame(
+  point: Point,
+  x: number,
+  y: number,
+  gapPoint: Point | undefined
+): MinMaxFrame {
+  return {
+    hasValue: gapPoint === undefined,
+    minPoint: point,
+    minX: x,
+    minY: y,
+    maxPoint: point,
+    maxX: x,
+    maxY: y,
+    gapPoint,
+  };
 }
 
 export function downSampleLineData<
@@ -82,7 +105,10 @@ export function downSampleLineData<
       const pointData = getPointData(point);
       if (!Array.isArray(pointData)) continue;
       const x = Number(pointData[0]);
-      const y = Number(pointData[1]);
+      const rawY = pointData[1] as number | null;
+      // Number(null) is 0, which would drag the mean towards zero
+      if (rawY === null) continue;
+      const y = Number(rawY);
       if (isNaN(x) || isNaN(y)) continue;
 
       const frameIndex = Math.floor(x / step);
@@ -120,21 +146,34 @@ export function downSampleLineData<
     const pointData = getPointData(point);
     if (!Array.isArray(pointData)) continue;
     const x = Number(pointData[0]);
-    const y = Number(pointData[1]);
-    if (isNaN(x) || isNaN(y)) continue;
+    if (isNaN(x)) continue;
+    const rawY = pointData[1] as number | null;
+    if (rawY === null) {
+      // The chart data modules push a null value to break the line where an
+      // entity was unavailable. Number(null) is 0, so such a marker must stay
+      // out of the comparisons below, where it would win the minimum slot
+      // whenever the readings are positive and discard the frame's real
+      // minimum. One marker per frame is enough to break the line, and keeping
+      // them all would blow up the output on series that are mostly null. The
+      // last one wins: where the break lands only depends on which points it
+      // sits between, not on its own x.
+      const gapIndex = Math.floor(x / step);
+      const gapFrame = frames.get(gapIndex);
+      if (gapFrame) {
+        gapFrame.gapPoint = point;
+      } else {
+        frames.set(gapIndex, newFrame(point, x, NaN, point));
+      }
+      continue;
+    }
+    const y = Number(rawY);
+    if (isNaN(y)) continue;
 
     const frameIndex = Math.floor(x / step);
     const frame = frames.get(frameIndex);
     if (!frame) {
-      frames.set(frameIndex, {
-        minPoint: point,
-        minX: x,
-        minY: y,
-        maxPoint: point,
-        maxX: x,
-        maxY: y,
-      });
-    } else {
+      frames.set(frameIndex, newFrame(point, x, y, undefined));
+    } else if (frame.hasValue) {
       // Match the original strict-less / strict-greater comparisons so the
       // first occurrence wins on ties.
       if (y < frame.minY) {
@@ -147,18 +186,40 @@ export function downSampleLineData<
         frame.maxX = x;
         frame.maxY = y;
       }
+    } else {
+      // the frame held nothing but a marker so far
+      frame.hasValue = true;
+      frame.minPoint = point;
+      frame.minX = x;
+      frame.minY = y;
+      frame.maxPoint = point;
+      frame.maxX = x;
+      frame.maxY = y;
     }
   }
 
   const result: T[] = [];
   for (const frame of frames.values()) {
-    // The order of the data must be preserved so max may be before min
-    if (frame.minX > frame.maxX) {
-      result.push(frame.maxPoint as T);
+    if (frame.hasValue) {
+      // The order of the data must be preserved so max may be before min
+      if (frame.minX > frame.maxX) {
+        result.push(frame.maxPoint as T);
+      }
+      result.push(frame.minPoint as T);
+      if (frame.minX < frame.maxX) {
+        result.push(frame.maxPoint as T);
+      }
     }
-    result.push(frame.minPoint as T);
-    if (frame.minX < frame.maxX) {
-      result.push(frame.maxPoint as T);
+    if (frame.gapPoint !== undefined) {
+      // A marker followed by a value in its own frame is a gap that closed
+      // within one frame, which is about one device pixel: too narrow to show.
+      // The kept points are exactly min and max, so comparing against the
+      // later of the two catches that without any work on the ingest path. A
+      // marker-only frame compares against its own x and always passes.
+      const lastValueX = frame.minX > frame.maxX ? frame.minX : frame.maxX;
+      if (Number(getPointData(frame.gapPoint)[0]) >= lastValueX) {
+        result.push(frame.gapPoint as T);
+      }
     }
   }
 
