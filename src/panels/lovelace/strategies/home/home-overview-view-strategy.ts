@@ -34,6 +34,7 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
+import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -271,15 +272,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         column_span: maxColumns,
         cards: [
           favoritesHeadingCard,
-          ...favoriteEntities.map(
-            (entityId) =>
-              ({
-                type: "tile",
-                entity: entityId,
-                state_content: ["state", "area_name"],
-                show_entity_picture: true,
-              }) satisfies TileCardConfig
-          ),
+          ...favoriteEntities.map(computeFavoriteCardConfig),
         ],
       };
     }
