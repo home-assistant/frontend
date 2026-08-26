@@ -1,4 +1,4 @@
-import { mdiAlertOutline } from "@mdi/js";
+import { mdiSwapHorizontal } from "@mdi/js";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
@@ -22,6 +22,7 @@ import {
   type DeviceRegistryEntry,
 } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
+import { domainToName } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-alert";
@@ -250,26 +251,26 @@ export class HaDevicePicker extends LitElement {
   };
 
   private _valueRenderer = memoizeOne(
-    (
-      configEntriesLookup: Record<string, ConfigEntry>,
-      replacementName: string | undefined
-    ) =>
+    (configEntriesLookup: Record<string, ConfigEntry>, isReplaced: boolean) =>
       (value: string) => {
         const deviceId = value;
         const device = this.hass.devices[deviceId];
 
         if (!device) {
-          // When the device was replaced and a replacement is available, show
-          // the replacement device's name. Otherwise fall back to the normal
-          // "not found" display of the raw id.
-          if (replacementName) {
+          // The removed device has no name left to show, so say what happened
+          // to it instead. The alert below names the replacements. Without a
+          // replacement, fall back to the normal "not found" display.
+          if (isReplaced) {
             return html`
               <ha-svg-icon
                 slot="start"
-                style="color: var(--warning-color)"
-                .path=${mdiAlertOutline}
+                .path=${mdiSwapHorizontal}
               ></ha-svg-icon>
-              <span slot="headline">${replacementName}</span>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.components.device-picker.device_replaced"
+                )}</span
+              >
             `;
           }
           return html`<span slot="headline">${deviceId}</span>`;
@@ -406,24 +407,15 @@ export class HaDevicePicker extends LitElement {
     // Only treat the value as "replaced" when there is an available
     // replacement device; otherwise fall back to normal "not found" behavior.
     const canReplace = !!replacement?.candidates.length;
-    const replacementName = canReplace
-      ? computeDeviceName(
-          this.hass.devices[
-            replacement!.primaryId &&
-            replacement!.candidates.includes(replacement!.primaryId)
-              ? replacement!.primaryId
-              : replacement!.candidates[0]
-          ]
-        )
-      : undefined;
 
     const valueRenderer = this._valueRenderer(
       this._configEntryLookup,
-      replacementName
+      canReplace
     );
 
     return html`
       <ha-generic-picker
+        .noUnknownState=${canReplace}
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
@@ -443,14 +435,9 @@ export class HaDevicePicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
         .searchKeys=${deviceComboBoxKeys}
-        .unknownItemText=${
-          replacement?.candidates.length
-            ? this.hass.localize(
-                "ui.components.device-picker.device_replaced_count",
-                { count: replacement.candidates.length }
-              )
-            : this.hass.localize("ui.components.device-picker.unknown")
-        }
+        .unknownItemText=${this.hass.localize(
+          "ui.components.device-picker.unknown"
+        )}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -464,30 +451,52 @@ export class HaDevicePicker extends LitElement {
   }) {
     const { candidates } = replacement;
 
-    const replacementName =
-      candidates.length === 1
-        ? computeDeviceName(this.hass.devices[candidates[0]])
-        : undefined;
+    // The split devices all inherit the composite's name, so the integration is
+    // what tells them apart.
+    const replacementDevice =
+      candidates.length === 1 ? this.hass.devices[candidates[0]] : undefined;
+    const replacementName = replacementDevice
+      ? computeDeviceName(replacementDevice)
+      : undefined;
+    const replacementDomain = replacementDevice?.primary_config_entry
+      ? this._configEntryLookup[replacementDevice.primary_config_entry]?.domain
+      : undefined;
 
     return html`
       <ha-alert alert-type="warning">
         ${
-          replacementName
+          replacementName && replacementDomain
             ? this.hass.localize(
-                "ui.components.device-picker.device_replaced_by_one",
-                { device: replacementName }
+                "ui.components.device-picker.device_replaced_by_one_integration",
+                {
+                  device: replacementName,
+                  integration: domainToName(
+                    this.hass.localize,
+                    replacementDomain
+                  ),
+                }
               )
-            : this.hass.localize(
-                "ui.components.device-picker.device_replaced_by_multiple",
-                { count: candidates.length }
-              )
+            : replacementName
+              ? this.hass.localize(
+                  "ui.components.device-picker.device_replaced_by_one",
+                  { device: replacementName }
+                )
+              : this.hass.localize(
+                  "ui.components.device-picker.device_replaced_by_multiple",
+                  { count: candidates.length }
+                )
         }
         <ha-button
           slot="action"
           appearance="plain"
+          variant="warning"
           @click=${this._handleReplace}
         >
-          ${this.hass.localize("ui.components.device-picker.replace_device")}
+          ${
+            candidates.length === 1
+              ? this.hass.localize("ui.components.device-picker.replace_update")
+              : this.hass.localize("ui.components.device-picker.replace_choose")
+          }
         </ha-button>
       </ha-alert>
     `;

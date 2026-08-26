@@ -7,6 +7,7 @@ import {
   mdiFormatListBulleted,
   mdiMenuDown,
   mdiShape,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import {
@@ -321,14 +322,25 @@ export class HaAutomationRowTargets extends LitElement {
 
     let lastTargetType: string | null = null;
 
+    // The collapsed summary hides the individual targets, so carry over the
+    // warning when any of them no longer exists.
+    const hasMissingTarget = rows.some(
+      ([targetType, targetId]) => !this._checkTargetExists(targetType, targetId)
+    );
+
     return html`
       <ha-dropdown
         @wa-select=${this._handleTargetSelect}
         @click=${stopPropagation}
         @keydown=${stopPropagation}
       >
-        <button slot="trigger" class="target">
-          <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
+        <button
+          slot="trigger"
+          class=${classMap({ target: true, warning: hasMissingTarget })}
+        >
+          <ha-svg-icon
+            .path=${hasMissingTarget ? mdiAlert : mdiFormatListBulleted}
+          ></ha-svg-icon>
           <div class="label">
             ${this._i18n.localize(
               "ui.panel.config.automation.editor.target_summary.targets",
@@ -470,6 +482,7 @@ export class HaAutomationRowTargets extends LitElement {
         if (targetType === "device" && this._compositeSplits?.[targetId]) {
           // The device was replaced by one or more split devices; make clear
           // this reference needs to be updated, distinct from "unknown device".
+          icon = mdiSwapHorizontal;
           label = this._i18n.localize(
             "ui.panel.config.automation.editor.target_summary.device_replaced"
           );
@@ -684,6 +697,9 @@ export class HaAutomationRowTargets extends LitElement {
     }
     ha-dropdown-item.warning {
       background-color: var(--ha-color-fill-warning-quiet-resting);
+      color: var(--ha-color-on-warning-normal);
+    }
+    ha-dropdown-item.warning ha-svg-icon {
       color: var(--ha-color-on-warning-normal);
     }
     ha-dropdown-item.warning:hover {
