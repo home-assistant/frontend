@@ -178,6 +178,7 @@ class HaMoreInfoDetails extends LitElement {
               ${labels.map(
                 ({ id, entry }) => html`
                   <ha-label
+                    class="text-ellipsis"
                     .color=${entry?.color ?? undefined}
                     .description=${entry?.description ?? undefined}
                   >
@@ -331,6 +332,10 @@ class HaMoreInfoDetails extends LitElement {
       if (entry.copyable) {
         return html`
           <ha-list-item-button
+            aria-label=${this.hass.localize(
+              "ui.dialogs.more_info_control.copy_value",
+              { label, value: entry.value }
+            )}
             data-value=${entry.value}
             @click=${this._copyValue}
           >

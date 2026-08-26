@@ -1676,6 +1676,7 @@
         "details": "Details",
         "floor": "Floor",
         "entity_id": "Entity ID",
+        "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
