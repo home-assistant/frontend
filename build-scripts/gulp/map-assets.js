@@ -47,9 +47,12 @@ const LOCAL_IDEOGRAPH_BLOCKS = [
   [0xfe30, 0xfe4f], // CJK compatibility forms
 ];
 
-// The style only uses bold for motorway shields, which carry road refs. Latin,
-// Greek and Cyrillic cover every ref we render, so the rest of bold is dropped.
+// The styles we ship only use bold for motorway shields, which carry road refs.
+// Latin, Greek and Cyrillic cover every ref we render, so the rest of bold is
+// dropped - that is half of the glyph set. Anything else in bold would be a
+// name from OSM, in any script on earth, so `assertBoldStaysOnRefs` guards it.
 const BOLD_MAX_CODEPOINT = 0x04ff;
+const BOLD_TEXT_FIELD = "{ref}";
 
 const cacheDir = path.resolve(paths.root_dir, ".map-assets");
 const outputDir = path.resolve(paths.build_dir, "map");
@@ -114,6 +117,27 @@ const keepGlyph = (entryPath) => {
 const keepSprite = (entryPath) =>
   /^basics\/sprites(@2x)?\.(json|png)$/.test(entryPath);
 
+// Dropping most of bold only holds while bold is reserved for road refs. The
+// `neutrino` style, for one, uses it for country and state labels, which would
+// turn to tofu outside Latin, Greek and Cyrillic. Fail the build rather than
+// ship a map that silently loses its labels in half the world.
+const assertBoldStaysOnRefs = (name, style) => {
+  const offenders = style.layers
+    .filter((layer) =>
+      (layer.layout?.["text-font"] ?? []).some((font) => font.endsWith("_bold"))
+    )
+    .filter((layer) => layer.layout["text-field"] !== BOLD_TEXT_FIELD)
+    .map((layer) => layer.id);
+
+  if (offenders.length) {
+    throw new Error(
+      `Style "${name}" uses bold for ${offenders.join(", ")}, which can hold ` +
+        `names in any script. Raise BOLD_MAX_CODEPOINT to cover the full set ` +
+        `before shipping this style.`
+    );
+  }
+};
+
 const styleOptions = {
   // Keeps the generated URLs origin relative, so they resolve against whatever
   // host the instance is reached on.
@@ -148,14 +172,17 @@ const buildMapAssets = async () => {
     }),
     // The dark style is a real cartography rather than an inverted raster
     // layer, so both themes are generated up front and swapped at runtime.
-    writeFile(
-      path.join(outputDir, "light.json"),
-      JSON.stringify(colorful(styleOptions))
-    ),
-    writeFile(
-      path.join(outputDir, "dark.json"),
-      JSON.stringify(eclipse(styleOptions))
-    ),
+    ...[
+      ["light", colorful],
+      ["dark", eclipse],
+    ].map(([name, builder]) => {
+      const style = builder(styleOptions);
+      assertBoldStaysOnRefs(name, style);
+      return writeFile(
+        path.join(outputDir, `${name}.json`),
+        JSON.stringify(style)
+      );
+    }),
   ]);
 };
 
