@@ -203,7 +203,7 @@
     "lodash.merge": "4.6.2",
     "lodash.template": "4.18.1",
     "map-stream": "0.0.7",
-    "minify-literals": "2.1.0",
+    "minify-literals": "2.2.0",
     "pinst": "3.0.0",
     "prettier": "3.9.6",
     "rspack-manifest-plugin": "5.2.2",
