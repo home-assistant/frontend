@@ -231,7 +231,6 @@ export class HuiCalendarCard
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
             loading: loading,
-            addfab: this._config.show_add_event,
           })}
           .narrow=${this._narrow}
           .events=${this._events}
