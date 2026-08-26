@@ -15,7 +15,7 @@ import { fetchConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
-import { getDefaultPanelUrlPath } from "../../../../data/panel";
+import { LOVELACE_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
@@ -47,6 +47,7 @@ export class HuiDialogSelectView extends LitElement {
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
     this._urlPath = params.urlPath;
+    this._selectedViewIdx = 0;
     this._params = params;
     this._open = true;
     if (this._params.allowDashboardChange) {
@@ -68,8 +69,6 @@ export class HuiDialogSelectView extends LitElement {
       return nothing;
     }
 
-    const defaultPanel = getDefaultPanelUrlPath(this.hass);
-
     return html`
       <ha-dialog
         .open=${this._open}
@@ -86,19 +85,19 @@ export class HuiDialogSelectView extends LitElement {
                   "ui.panel.lovelace.editor.select_view.dashboard_label"
                 )}
                 .disabled=${!this._dashboards.length}
-                .value=${this._urlPath || defaultPanel}
+                .value=${this._urlPath ?? LOVELACE_PANEL}
                 @selected=${this._dashboardChanged}
                 autofocus
                 .options=${this._dashboards
                   .map((dashboard) => ({
                     value: dashboard.url_path,
-                    label: `${dashboard.title}${dashboard.id === "lovelace" ? ` (${this.hass.localize("ui.common.default")})` : ""}`,
+                    label: `${dashboard.title}${dashboard.id === LOVELACE_PANEL ? ` (${this.hass.localize("ui.common.default")})` : ""}`,
                     disabled: dashboard.mode !== "storage",
                   }))
                   .sort((a, b) =>
-                    a.value === "lovelace"
+                    a.value === LOVELACE_PANEL
                       ? -1
-                      : b.value === "lovelace"
+                      : b.value === LOVELACE_PANEL
                         ? 1
                         : a.label.localeCompare(b.label)
                   )}
@@ -180,24 +179,27 @@ export class HuiDialogSelectView extends LitElement {
   }
 
   private async _dashboardChanged(ev: ValueChangedEvent<string>) {
-    let urlPath: string | null = ev.detail.value;
+    const urlPath = ev.detail.value === LOVELACE_PANEL ? null : ev.detail.value;
     if (urlPath === this._urlPath) {
       return;
     }
-    if (urlPath === "lovelace") {
-      urlPath = null;
-    }
     this._urlPath = urlPath;
     this._selectedViewIdx = 0;
+    let config: LovelaceConfig | undefined;
     try {
-      this._config = (await fetchConfig(
+      config = (await fetchConfig(
         this.hass.connection,
         urlPath,
         false
       )) as LovelaceConfig;
     } catch (_err: any) {
-      this._config = undefined;
+      config = undefined;
     }
+    // Responses can resolve out of order.
+    if (urlPath !== this._urlPath) {
+      return;
+    }
+    this._config = config;
   }
 
   private _viewChanged(e) {
