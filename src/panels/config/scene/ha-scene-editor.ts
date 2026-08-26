@@ -32,6 +32,7 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -40,6 +41,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import {
   fireRelatedContext,
@@ -164,6 +166,13 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   private _newSceneId?: string;
 
+  /**
+   * Id of a scene that was just saved from the "new" editor. The follow-up
+   * navigation from edit/new to edit/<id> reuses this element and must not
+   * reset the editor state.
+   */
+  private _justSavedId?: string;
+
   private _entityRegCreated?: (
     value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
   ) => void;
@@ -230,6 +239,13 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   protected render() {
     if (!this.hass) {
       return nothing;
+    }
+    if (!this._config) {
+      return html`
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="large"></ha-spinner>
+        </ha-fade-in>
+      `;
     }
     return html`
       <hass-subpage
@@ -669,6 +685,18 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
     if (
       changedProps.has("sceneId") &&
+      oldscene !== undefined &&
+      oldscene !== this.sceneId
+    ) {
+      if (this.sceneId && this.sceneId === this._justSavedId) {
+        this._justSavedId = undefined;
+      } else {
+        this._resetEditorState();
+      }
+    }
+
+    if (
+      changedProps.has("sceneId") &&
       this.sceneId &&
       this.hass &&
       // Only refresh config if we picked a new scene. If same ID, don't fetch it.
@@ -956,6 +984,33 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     this._sceneRevision = 0;
     this._initDirtyTracking({ type: "shallow" }, 0);
     this._config = config;
+  }
+
+  /** Emulate a freshly opened editor when the edited scene changes. */
+  private _resetEditorState() {
+    if (this._mode === "live") {
+      applyScene(this.hass, this._storedStates);
+    }
+    this._config = undefined;
+    this._mode = "review";
+    this._errors = undefined;
+    this._yamlErrors = undefined;
+    this._scene = undefined;
+    this._entities = [];
+    this._single_entities = [];
+    this._devices = [];
+    this._storedStates = {};
+    this._activateContextId = undefined;
+    this._entityRegistryUpdate = undefined;
+    this._entityRegCreated = undefined;
+    this._newSceneId = undefined;
+    this._saving = false;
+    if (this._unsubscribeEvents) {
+      this._unsubscribeEvents();
+      this._unsubscribeEvents = undefined;
+    }
+    this._sceneRevision = 0;
+    this._initDirtyTracking({ type: "shallow" }, 0);
   }
 
   private _initEntities(config: SceneConfig) {
@@ -1311,6 +1366,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
       this._markDirtyStateClean();
       if (isNewScene) {
+        this._justSavedId = id;
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
     } catch (err: any) {
@@ -1400,6 +1456,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     return [
       haStyle,
       css`
+        ha-fade-in {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
         ha-card {
           overflow: hidden;
           margin-top: 8px;
