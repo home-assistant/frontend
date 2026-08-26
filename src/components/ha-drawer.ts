@@ -95,6 +95,10 @@ export class HaDrawer extends LitElement {
   }
 
   private _handleAfterHide(ev: Event) {
+    // Ignore wa-after-hide from nested Web Awesome components (e.g. tooltips)
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
     ev.stopPropagation();
     this.open = false;
     fireEvent(this, "hass-drawer-closed");
