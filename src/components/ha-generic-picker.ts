@@ -13,6 +13,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { configContext } from "../data/context";
@@ -245,7 +246,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
               : html`
                   <wa-popover
                     .open=${this._pickerWrapperOpen}
-                    style="--body-width: ${this._popoverWidth}px; --body-min-height: ${this._popoverMinHeight}px;"
+                    style=${styleMap({
+                      "--body-width": `${this._popoverWidth}px`,
+                      "--body-min-height": `${this._popoverMinHeight}px`,
+                    })}
                     without-arrow
                     distance="0"
                     .placement=${this.popoverPlacement}
