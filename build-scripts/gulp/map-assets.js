@@ -23,6 +23,12 @@ import paths from "../paths.cjs";
 const TILE_URL =
   "https://vector.openstreetmap.org/shortbread_v1/{z}/{x}/{y}.mvt";
 
+// OSM asks consumers to resolve the tiles through the TileJSON rather than to
+// hardcode that URL, so they can move the tiles without every client needing a
+// release. It also carries the attribution, zoom range and bounds.
+const TILEJSON_URL =
+  "https://vector.openstreetmap.org/shortbread_v1/tilejson.json";
+
 // Where the assets end up relative to the served root.
 const ASSET_PATH = "/static/map";
 
@@ -138,6 +144,29 @@ const assertBoldStaysOnRefs = (name, style) => {
   }
 };
 
+// The style builder can only write a tile URL, so the source is repointed at
+// the TileJSON afterwards. Matching on TILE_URL keeps that honest: if the
+// builder ever stops emitting it, the style still resolves to OSM's tiles
+// rather than silently falling back to the builder's own default host.
+const useTileJson = (name, style) => {
+  const sources = Object.values(style.sources).filter((source) =>
+    source.tiles?.includes(TILE_URL)
+  );
+
+  if (!sources.length) {
+    throw new Error(
+      `Style "${name}" has no source on ${TILE_URL}, so it cannot be pointed ` +
+        `at the TileJSON. Check what @versatiles/style emits.`
+    );
+  }
+
+  for (const source of sources) {
+    delete source.tiles;
+    source.url = TILEJSON_URL;
+  }
+  return style;
+};
+
 const styleOptions = {
   // Keeps the generated URLs origin relative, so they resolve against whatever
   // host the instance is reached on.
@@ -176,7 +205,7 @@ const buildMapAssets = async () => {
       ["light", colorful],
       ["dark", eclipse],
     ].map(([name, builder]) => {
-      const style = builder(styleOptions);
+      const style = useTileJson(name, builder(styleOptions));
       assertBoldStaysOnRefs(name, style);
       return writeFile(
         path.join(outputDir, `${name}.json`),
