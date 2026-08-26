@@ -50,28 +50,37 @@ describe("supportsTimerPresetsCardFeature", () => {
 describe("computeTimerPresets", () => {
   it("formats string presets", () => {
     expect(computeTimerPresets(["0:05:00", "1:00:00"], locale)).toEqual([
-      { duration: "0:05:00", label: "5:00" },
-      { duration: "1:00:00", label: "1:00:00" },
+      { duration: 300, label: "5:00" },
+      { duration: 3600, label: "1:00:00" },
     ]);
   });
 
   it("labels numeric presets the same as their string form", () => {
     expect(computeTimerPresets([90, "0:01:30"], locale)).toEqual([
       { duration: 90, label: "1:30" },
-      { duration: "0:01:30", label: "1:30" },
+      { duration: 90, label: "1:30" },
     ]);
     expect(computeTimerPresets([3600], locale)).toEqual([
       { duration: 3600, label: "1:00:00" },
     ]);
     expect(computeTimerPresets([45, "0:00:45"], locale)).toEqual([
       { duration: 45, label: "45 seconds" },
-      { duration: "0:00:45", label: "45 seconds" },
+      { duration: 45, label: "45 seconds" },
     ]);
   });
 
   it("drops zero and unparseable presets", () => {
     expect(
       computeTimerPresets(["0:00:00", 0, "1:2:3:4", "0:10:00"], locale)
-    ).toEqual([{ duration: "0:10:00", label: "10:00" }]);
+    ).toEqual([{ duration: 600, label: "10:00" }]);
+  });
+
+  it("sends the normalized duration for lenient parsed presets", () => {
+    // createDurationData coerces invalid segments to 0 like the automation
+    // editor does. The normalized seconds must be what is sent to timer.start,
+    // never the raw malformed string.
+    expect(computeTimerPresets(["1:nope:00"], locale)).toEqual([
+      { duration: 3600, label: "1:00:00" },
+    ]);
   });
 });

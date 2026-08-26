@@ -53,26 +53,28 @@ export const supportsTimerPresetsCardFeature = (
 };
 
 interface TimerPreset {
-  duration: string | number;
+  duration: number;
   label: string;
 }
 
-// Presets with an unparseable or zero duration are dropped. Labels are
-// normalized to hours/minutes/seconds so numeric presets ("90") render the
-// same as their string form ("0:01:30").
+// Presets with an unparseable or zero duration are dropped. Durations are
+// normalized to seconds so what is shown and what is sent to timer.start
+// always match, and numeric presets ("90") render the same as their string
+// form ("0:01:30").
 export const computeTimerPresets = (
   presets: (string | number)[],
   locale: FrontendLocaleData
 ): TimerPreset[] =>
   presets.reduce<TimerPreset[]>((result, preset) => {
     const durationData = createDurationData(preset);
-    if (durationData && durationDataToSeconds(durationData) > 0) {
+    const seconds = durationData ? durationDataToSeconds(durationData) : 0;
+    if (durationData && seconds > 0) {
       const label = formatNumericDuration(
         locale,
         normalizeTimerDuration(durationData)
       );
       if (label) {
-        result.push({ duration: preset, label });
+        result.push({ duration: seconds, label });
       }
     }
     return result;
