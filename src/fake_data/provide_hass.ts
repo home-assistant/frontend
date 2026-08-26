@@ -33,7 +33,12 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, Resources, ValuePart } from "../types";
+import type {
+  HomeAssistant,
+  Resources,
+  ThemeSettings,
+  ValuePart,
+} from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -83,7 +88,10 @@ export interface MockHomeAssistant extends HomeAssistant {
     loader: () => Promise<unknown>
   );
   mockEvent(event);
-  mockTheme(theme: Record<string, string> | null);
+  mockTheme(
+    theme: Record<string, string> | null,
+    selectedTheme?: ThemeSettings
+  );
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
@@ -291,6 +299,7 @@ export const provideHass = (
         icon: undefined,
         platform: "demo",
         labels: [],
+        area_id: ent.areaId,
       } satisfies EntityRegistryDisplayEntry;
     });
     if (replace) {
@@ -472,6 +481,17 @@ export const provideHass = (
         ? response[1](hass(), method, path, parameters)
         : Promise.reject(`API Mock for ${path} is not implemented`);
     },
+    // Mocks return a plain body; wrap it so callers can stream it like a fetch
+    // Response. Callbacks may return a Response themselves to set headers.
+    async callApiRaw(method, path, parameters, headers) {
+      const result = await hassObj.callApi<any>(
+        method,
+        path,
+        parameters,
+        headers
+      );
+      return result instanceof Response ? result : new Response(result);
+    },
     hassUrl: (path?) => path,
     fetchWithAuth: () => Promise.reject("Not implemented"),
     sendWS: (msg) => hassObj.connection.sendMessage(msg),
@@ -503,25 +523,35 @@ export const provideHass = (
     },
     mockAPI,
     mockEvent(event) {
-      (eventListeners[event] || []).forEach((fn) => fn(event));
+      (eventListeners[event] || []).forEach((fn) => {
+        fn(event);
+      });
     },
-    mockTheme(theme) {
+    mockTheme(theme, selectedTheme) {
       invalidateThemeCache();
+      selectedTheme ??= {
+        theme: theme ? "fake-data" : "default",
+        dark: false,
+      };
+      const themeName = selectedTheme.theme;
+      const darkMode =
+        selectedTheme.dark ??
+        matchMedia("(prefers-color-scheme: dark)").matches;
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
+        selectedTheme,
         themes: {
           ...hass().themes,
-          themes: {
-            mock: theme as any,
-          },
+          darkMode,
+          theme: themeName,
+          themes: theme ? { [themeName]: theme as any } : {},
         },
       });
-      const { themes, selectedTheme } = hass();
+      const { themes } = hass();
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme!.theme,
-        { dark: false },
+        themeName,
+        { ...selectedTheme, dark: darkMode },
         true
       );
     },

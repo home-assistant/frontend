@@ -1,4 +1,3 @@
-import { memoize } from "@fullcalendar/core/internal";
 import { setHours, setMinutes } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
@@ -411,7 +410,7 @@ export type BackupType = "automatic" | "manual" | "app_update";
 
 const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "app_update", "manual"];
 
-export const getBackupTypes = memoize((isHassio: boolean) =>
+export const getBackupTypes = memoizeOne((isHassio: boolean) =>
   isHassio
     ? BACKUP_TYPE_ORDER
     : BACKUP_TYPE_ORDER.filter((type) => type !== "app_update")

@@ -20,7 +20,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import {
   PREVIEW_CLICK_CALLBACK,
   type PictureElementsCardConfig,
@@ -29,6 +29,7 @@ import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
+import type { UIConfigChangedEvent } from "../hui-element-editor";
 import { configElementStyle } from "./config-elements-style";
 import "../hui-picture-elements-card-row-editor";
 import type { LovelaceElementConfig } from "../../elements/types";
@@ -228,7 +229,7 @@ export class HuiPictureElementsCardEditor
       : {}),
   }));
 
-  private _formChanged(ev: CustomEvent): void {
+  private _formChanged(ev: ValueChangedEvent<PictureElementsCardConfig>): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;
@@ -261,7 +262,9 @@ export class HuiPictureElementsCardEditor
     }
   }
 
-  private _handleSubElementChanged(ev: CustomEvent): void {
+  private _handleSubElementChanged(
+    ev: UIConfigChangedEvent<LovelaceElementConfig>
+  ): void {
     ev.stopPropagation();
     if (!this._config || !this.hass) {
       return;

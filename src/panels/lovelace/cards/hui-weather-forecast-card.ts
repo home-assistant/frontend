@@ -36,7 +36,7 @@ import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -300,6 +300,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
+          "no-action": !hasAnyAction(this._config!),
           [this._sizeController.value?.height]: Boolean(
             this._sizeController.value
           ),
@@ -516,12 +517,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _isForecastInteraction(ev: Event): boolean {
-    return ev
-      .composedPath()
-      .some(
-        (node) =>
-          node instanceof HTMLElement && node.classList.contains("forecast")
-      );
+    return (
+      (this._dragScrollController.scrolled ||
+        this._dragScrollController.scrolling) &&
+      ev
+        .composedPath()
+        .some(
+          (node) =>
+            node instanceof HTMLElement && node.classList.contains("forecast")
+        )
+    );
   }
 
   private _groupForecastByDay(forecast: ForecastAttribute[]) {
@@ -724,6 +729,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           justify-content: center;
           box-sizing: border-box;
           padding: 16px 0;
+        }
+
+        ha-card.no-action {
+          cursor: default;
         }
 
         .content {

@@ -1,13 +1,18 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiChevronRight } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-list";
 import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
@@ -183,7 +188,7 @@ export class ZHADeviceEndpointList extends LitElement {
             ? html`
                 <ha-icon-button
                   slot="end"
-                  .path=${mdiOpenInNew}
+                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
@@ -211,7 +216,7 @@ export class ZHADeviceEndpointList extends LitElement {
             ? html`
                 <ha-icon-button
                   slot="end"
-                  .path=${mdiOpenInNew}
+                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
@@ -269,11 +274,16 @@ export class ZHADeviceEndpointList extends LitElement {
       .join(" · ");
   }
 
-  private _handleFilterChanged(ev: Event): void {
-    this._filter = (ev.currentTarget as HTMLInputElement).value;
+  private _handleFilterChanged(
+    ev: HASSDomCurrentTargetEvent<HaInputSearch>
+  ): void {
+    this._filter = ev.currentTarget.value ?? "";
   }
 
-  private _handleItemSelected(ev: CustomEvent<number>): void {
+  private _handleItemSelected(
+    ev: HASSDomEvent<HASSDomEvents["ha-list-item-selected"]> &
+      HASSDomCurrentTargetEvent<HaListSelectable>
+  ): void {
     const list = ev.currentTarget as HaListSelectable;
     let selectedDeviceIds = this._selectedDeviceIds;
 
@@ -290,7 +300,10 @@ export class ZHADeviceEndpointList extends LitElement {
     }
   }
 
-  private _handleItemDeselected(ev: CustomEvent<number>): void {
+  private _handleItemDeselected(
+    ev: HASSDomEvent<HASSDomEvents["ha-list-item-deselected"]> &
+      HASSDomCurrentTargetEvent<HaListSelectable>
+  ): void {
     const list = ev.currentTarget as HaListSelectable;
     let selectedDeviceIds = this._selectedDeviceIds;
 

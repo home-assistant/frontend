@@ -22,11 +22,15 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { transform } from "../../common/decorators/transform";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
@@ -44,6 +48,8 @@ import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
+import type { ChartSonification } from "./chart-sonification";
+import { canSonifyChart, sonifyChart } from "./chart-sonification";
 import { downSampleLineData } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
@@ -51,6 +57,7 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+const DEFAULT_CHART_WIDTH = 500;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -110,6 +117,11 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  // Lets cards that key their data on ids have display names announced
+  // instead when the chart is navigated with Chart2Music.
+  @property({ attribute: false })
+  public sonificationLabelFormatter?: (label: string) => string | undefined;
+
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
@@ -141,6 +153,17 @@ export class HaChartBase extends LitElement {
   @state() private _hiddenDatasets = new Set<string>();
 
   @query(".chart") private _chartContainer?: HTMLDivElement;
+
+  @query(".sonification-output")
+  private _sonificationOutput?: HTMLDivElement;
+
+  private _sonification?: ChartSonification;
+
+  @state() private _sonificationLoading = false;
+
+  @state() private _sonificationUnavailable = false;
+
+  @state() private _sonificationFocusHeld = false;
 
   private _modifierPressed = false;
 
@@ -194,6 +217,7 @@ export class HaChartBase extends LitElement {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    this._disposeSonification();
     this.chart?.dispose();
     this.chart = undefined;
     this._originalZrFlush = undefined;
@@ -308,6 +332,18 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
+      // New data, or a series shown again, may well be convertible where the
+      // last set was not.
+      this._sonificationUnavailable = false;
+      // The connection is built from the series that had data at the time, so
+      // drop it and let the next focus rebuild it against the current set.
+      if (
+        this._sonification &&
+        (changedProps.has("_hiddenDatasets") ||
+          !canSonifyChart(this.data, this._hiddenDatasets))
+      ) {
+        this._disposeSonification();
+      }
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
@@ -333,6 +369,9 @@ export class HaChartBase extends LitElement {
   }
 
   protected render() {
+    const sonifiable =
+      !this._sonificationUnavailable &&
+      canSonifyChart(this.data, this._hiddenDatasets);
     return html`
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
@@ -344,8 +383,23 @@ export class HaChartBase extends LitElement {
             height: this.height ? undefined : `${this._getDefaultHeight()}px`,
           })}
         >
-          <div class="chart"></div>
+          <div
+            class="chart"
+            role=${ifDefined(sonifiable ? "application" : undefined)}
+            tabindex=${ifDefined(
+              sonifiable ? "0" : this._sonificationFocusHeld ? "-1" : undefined
+            )}
+            aria-label=${ifDefined(
+              sonifiable
+                ? this.hass.localize("ui.components.history_charts.chart")
+                : undefined
+            )}
+            aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
+            @focus=${this._handleChartFocus}
+            @blur=${this._handleChartBlur}
+          ></div>
         </div>
+        <div class="sonification-output"></div>
         ${this._renderLegend()}
         <div class="top-controls ${classMap({ small: this.smallControls })}">
           <slot name="search"></slot>
@@ -517,6 +571,61 @@ export class HaChartBase extends LitElement {
     </div>`;
   }
 
+  // Chart2Music adds ~45 kB gzipped, so it is only fetched once someone actually
+  // moves keyboard focus into a chart.
+  private async _handleChartFocus() {
+    // Dropping tabindex off the active element resets focus to the document and
+    // costs the user their place in the tab order, so stay programmatically
+    // focusable for as long as we hold focus, however we stop being sonifiable.
+    this._sonificationFocusHeld = true;
+    if (this._sonification || this._sonificationLoading || !this.chart) {
+      return;
+    }
+    this._sonificationLoading = true;
+    try {
+      const sonification = await sonifyChart(this.chart, {
+        cc: this._sonificationOutput!,
+        localize: this.hass.localize,
+        locale: this.hass.locale,
+        config: this.hass.config,
+        formatLabel: this.sonificationLabelFormatter,
+        onError: () => {
+          // Charts the extension cannot describe stay silent rather than
+          // dropping an error on someone who only pressed Tab.
+        },
+      });
+      if (!this.isConnected || !this.chart) {
+        sonification?.dispose();
+        return;
+      }
+      if (!sonification) {
+        // Nothing came back, so stop offering a focus stop that leads nowhere.
+        this._sonificationUnavailable = true;
+        return;
+      }
+      this._sonification = sonification;
+      if (this.shadowRoot?.activeElement === this._chartContainer) {
+        // Chart2Music reads its summary and key hints on focus, which already
+        // happened while it was still being fetched.
+        this._chartContainer!.dispatchEvent(new FocusEvent("focus"));
+      }
+    } catch (_err) {
+      // Never let a failure here escape a focus handler. The tab stop stays, so
+      // focusing the chart again retries.
+    } finally {
+      this._sonificationLoading = false;
+    }
+  }
+
+  private _handleChartBlur() {
+    this._sonificationFocusHeld = false;
+  }
+
+  private _disposeSonification() {
+    this._sonification?.dispose();
+    this._sonification = undefined;
+  }
+
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
@@ -529,6 +638,9 @@ export class HaChartBase extends LitElement {
     if (this._loading) return;
     this._loading = true;
     try {
+      // The connection holds a reference to the chart instance, so it cannot
+      // outlive it. Focusing the chart again reconnects.
+      this._disposeSonification();
       if (this.chart) {
         this.chart.dispose();
       }
@@ -1048,7 +1160,9 @@ export class HaChartBase extends LitElement {
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
-              this.clientWidth * window.devicePixelRatio,
+              // 0 while inside a hidden container, e.g. a section with a visibility condition
+              (this.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
               minX,
               maxX
             ),
@@ -1213,7 +1327,9 @@ export class HaChartBase extends LitElement {
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
-  private _legendPointerDown(ev: PointerEvent) {
+  private _legendPointerDown(
+    ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     // Mouse uses Ctrl/Cmd+click instead
     if (ev.pointerType === "mouse") {
       return;
@@ -1243,7 +1359,9 @@ export class HaChartBase extends LitElement {
     }
   }
 
-  private _toggleDataset(ev: MouseEvent) {
+  private _toggleDataset(
+    ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
     ev.stopPropagation();
     if (!this.chart) {
       return;
@@ -1265,7 +1383,7 @@ export class HaChartBase extends LitElement {
     this._handleDatasetToggle(id);
   }
 
-  private _labelClick(ev: MouseEvent) {
+  private _labelClick(ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>) {
     ev.stopPropagation();
     if (!this.chart) {
       return;
@@ -1439,6 +1557,23 @@ export class HaChartBase extends LitElement {
     .chart {
       height: 100%;
       width: 100%;
+    }
+    .chart:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: var(--ha-border-radius-sm);
+    }
+    /* Chart2Music renders its announcements here. It must stay in the layout for
+       screen readers to pick up the live region, so hide it visually only. */
+    .sonification-output {
+      position: absolute;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
     }
     .top-controls {
       position: absolute;

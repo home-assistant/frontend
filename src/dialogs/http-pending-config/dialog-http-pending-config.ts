@@ -1,33 +1,26 @@
+import { mdiArrowRight } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { formatNumericDuration } from "../../common/datetime/format_duration";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import "../../components/ha-svg-icon";
 import type { HttpConfig } from "../../data/http";
-import { promoteHttpConfig, saveHttpConfig } from "../../data/http";
+import {
+  HTTP_CONFIG_FIELDS,
+  promoteHttpConfig,
+  saveHttpConfig,
+} from "../../data/http";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { HttpPendingConfigDialogParams } from "./show-dialog-http-pending-config";
-
-const HTTP_FIELDS: (keyof HttpConfig)[] = [
-  "server_port",
-  "server_host",
-  "ssl_certificate",
-  "ssl_key",
-  "ssl_peer_certificate",
-  "ssl_profile",
-  "cors_allowed_origins",
-  "use_x_forwarded_for",
-  "trusted_proxies",
-  "use_x_frame_options",
-  "ip_ban_enabled",
-  "login_attempts_threshold",
-];
 
 @customElement("dialog-http-pending-config")
 export class DialogHttpPendingConfig
@@ -50,16 +43,33 @@ export class DialogHttpPendingConfig
 
   private _interval?: number;
 
+  // This dialog must only be dismissed through its own footer buttons
+  // (confirm / revert / close). This flag is flipped right before such a
+  // button closes the dialog, so `closeDialog()` can refuse every other
+  // close request (navigation, back button, `closeAllDialogs`, …).
+  private _resolved = false;
+
   public showDialog(params: HttpPendingConfigDialogParams): void {
     this._params = params;
     this._open = true;
     this._busy = undefined;
     this._error = undefined;
     this._reverted = false;
+    this._resolved = false;
     this._startCountdown();
+    // The field labels live in the config panel fragment, which is not loaded
+    // yet when this dialog pops up on startup. Load it so the changed-field
+    // names resolve; the dialog re-renders once hass updates.
+    this.hass.loadFragmentTranslation("config");
   }
 
   public closeDialog(): boolean {
+    // Refuse programmatic close requests (navigation, back button,
+    // `closeAllDialogs`) so a pending HTTP config is never left silently
+    // unresolved. The dialog only closes once the user picks a footer action.
+    if (!this._resolved) {
+      return false;
+    }
     this._open = false;
     this._stopCountdown();
     return true;
@@ -114,9 +124,31 @@ export class DialogHttpPendingConfig
       return [];
     }
     const { stable, pending } = this._params.state;
-    return HTTP_FIELDS.filter(
+    return HTTP_CONFIG_FIELDS.filter(
       (key) => JSON.stringify(stable[key]) !== JSON.stringify(pending[key])
     );
+  }
+
+  private _formatValue(key: keyof HttpConfig, value: unknown): string {
+    if (value === undefined || value === null || value === "") {
+      return this.hass.localize("ui.dialogs.http_pending_config.not_set");
+    }
+    if (typeof value === "boolean") {
+      return this.hass.localize(value ? "ui.common.yes" : "ui.common.no");
+    }
+    if (Array.isArray(value)) {
+      return value.length
+        ? value.join(", ")
+        : this.hass.localize("ui.dialogs.http_pending_config.not_set");
+    }
+    if (key === "ssl_profile") {
+      return (
+        this.hass.localize(
+          `ui.panel.config.network.http.ssl_profile_${value}` as any
+        ) || String(value)
+      );
+    }
+    return String(value);
   }
 
   protected render() {
@@ -125,6 +157,11 @@ export class DialogHttpPendingConfig
     }
 
     const changes = this._changedFields;
+    const { stable, pending } = this._params.state;
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     return html`
       <ha-dialog
@@ -187,9 +224,25 @@ export class DialogHttpPendingConfig
                     ${changes.map(
                       (key) => html`
                         <li>
-                          ${this.hass.localize(
-                            `ui.panel.config.network.http.fields.${key}` as any
-                          )}
+                          <span class="field">
+                            ${this.hass.localize(
+                              `ui.panel.config.network.http.fields.${key}` as any
+                            )}
+                          </span>
+                          <span class="values">
+                            <span class="old"
+                              >${this._formatValue(key, stable[key])}</span
+                            >
+                            <ha-svg-icon
+                              .path=${mdiArrowRight}
+                              style=${styleMap({
+                                transform: rtl ? "scaleX(-1)" : "",
+                              })}
+                            ></ha-svg-icon>
+                            <span class="new"
+                              >${this._formatValue(key, pending![key])}</span
+                            >
+                          </span>
                         </li>
                       `
                     )}
@@ -297,6 +350,9 @@ export class DialogHttpPendingConfig
   }
 
   private _notifyResolved(): void {
+    // Mark the dialog as user-resolved so `closeDialog()` is allowed to close
+    // it; every footer action calls this before setting `_open = false`.
+    this._resolved = true;
     this._params?.onResolved?.();
     // The form on Settings > System > Network may be mounted and showing
     // stale state; let it know to refetch.
@@ -320,12 +376,36 @@ export class DialogHttpPendingConfig
         margin-bottom: var(--ha-space-2);
       }
       ul {
+        list-style: none;
         margin: 0 0 var(--ha-space-4) 0;
-        padding-left: var(--ha-space-6);
-        color: var(--secondary-text-color);
+        padding: 0;
       }
       li {
+        padding: var(--ha-space-2) 0;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      li:last-child {
+        border-bottom: none;
+      }
+      .field {
+        display: block;
+        font-weight: var(--ha-font-weight-medium);
         margin-bottom: var(--ha-space-1);
+      }
+      .values {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--ha-space-2);
+        color: var(--secondary-text-color);
+        word-break: break-word;
+      }
+      .values .new {
+        color: var(--primary-text-color);
+      }
+      .values ha-svg-icon {
+        --mdc-icon-size: 18px;
+        flex-shrink: 0;
       }
       ha-alert {
         display: block;

@@ -1,9 +1,77 @@
+// A range smaller than this fraction of the axis magnitude is floating-point
+// noise (e.g. from summed statistics), not real precision.
+const NEGLIGIBLE_RANGE_RATIO = 1e-10;
+
 // Derive the number of decimal digits to use for Y-axis labels from the
-// observed data range. We estimate the tick interval as `range / 10` (twice
-// ECharts' default splitNumber of 5, as a safety margin against finer "nice"
-// intervals), then derive `ceil(-log10(interval))`.
-export function computeYAxisFractionDigits(min: number, max: number): number {
-  const range = max - min;
+// observed data range. We mirror how ECharts sizes its ticks: it splits the
+// range into ~5 intervals (its default `splitNumber`) and rounds that raw
+// interval to a "nice" 1/2/3/5×10ⁿ value, then reports the decimals that nice
+// interval needs. This matches the precision ECharts actually renders, so
+// labels are neither truncated to identical values nor padded with extra zeros.
+export function computeYAxisFractionDigits(
+  min: number,
+  max: number,
+  // Bar axes render from 0, so union the extent with 0 to match.
+  includeZero = false
+): number {
+  const lo = includeZero ? Math.min(min, 0) : min;
+  const hi = includeZero ? Math.max(max, 0) : max;
+  const range = hi - lo;
   if (!Number.isFinite(range) || range <= 0) return 1;
-  return Math.max(0, Math.ceil(-Math.log10(range / 10)));
+  // A near-zero range is fp noise; deriving digits from it would pad the labels
+  // with a tail of zeros (e.g. "0.20000000000000"), so treat it as flat.
+  const magnitude = Math.max(Math.abs(lo), Math.abs(hi));
+  if (range <= magnitude * NEGLIGIBLE_RANGE_RATIO) return 1;
+  const rawInterval = range / 5;
+  const exponent = Math.floor(Math.log10(rawInterval));
+  const mantissa = rawInterval / 10 ** exponent; // in [1, 10)
+  // Rounding the mantissa to a nice value only ever carries to the next power
+  // of ten (mantissa ≥ 7 → 10), which needs one fewer decimal.
+  const niceExponent = mantissa >= 7 ? exponent + 1 : exponent;
+  return Math.max(0, -niceExponent);
+}
+
+interface YAxisExtentValues {
+  min: number;
+  max: number;
+}
+
+type YAxisBound =
+  number | ((values: YAxisExtentValues) => number | undefined) | undefined;
+
+const resolveYAxisBound = (
+  bound: YAxisBound,
+  values: YAxisExtentValues
+): number | undefined => (typeof bound === "function" ? bound(values) : bound);
+
+// Wrap the Y-axis `min`/`max` options in callbacks so the tick-label precision
+// tracks the currently visible axis extent. ECharts re-invokes these callbacks
+// with the extent of the visible (zoom-filtered) data on every dataZoom, and
+// always before the label formatter runs, so recomputing the fraction digits
+// here keeps zoomed-in labels distinct. The callbacks return the original
+// bounds unchanged, so auto-scaling still applies when a bound is not set.
+export function createYAxisPrecisionBounds(options: {
+  min?: YAxisBound;
+  max?: YAxisBound;
+  // Set for bar axes anchored at 0, so precision reflects the 0-based range.
+  includeZero?: boolean;
+  onFractionDigits: (digits: number) => void;
+}): {
+  min: (values: YAxisExtentValues) => number | undefined;
+  max: (values: YAxisExtentValues) => number | undefined;
+} {
+  const { min, max, includeZero, onFractionDigits } = options;
+  return {
+    min: (values) => {
+      const resolvedMin = resolveYAxisBound(min, values);
+      const resolvedMax = resolveYAxisBound(max, values);
+      const extentMin = resolvedMin ?? values.min;
+      const extentMax = resolvedMax ?? values.max;
+      onFractionDigits(
+        computeYAxisFractionDigits(extentMin, extentMax, includeZero)
+      );
+      return resolvedMin;
+    },
+    max: (values) => resolveYAxisBound(max, values),
+  };
 }

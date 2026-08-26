@@ -1,9 +1,10 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
-import { fetchCloudStatus } from "../../data/cloud";
+import { fetchCloudStatus, subscribeCloudEvents } from "../../data/cloud";
 import {
   entityRegistryByEntityId,
   entityRegistryById,
@@ -82,12 +83,14 @@ class HaPanelConfig extends HassRouterPage {
       info: {
         tag: "ha-config-info",
         load: () => import("./info/ha-config-info"),
+        waitForReady: true,
       },
       // customize was removed in 2021.12, fallback to dashboard
       customize: "dashboard",
       dashboard: {
         tag: "ha-config-dashboard",
         load: () => import("./dashboard/ha-config-dashboard"),
+        waitForReady: true,
       },
       entities: {
         tag: "ha-config-entities",
@@ -104,6 +107,7 @@ class HaPanelConfig extends HassRouterPage {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+        waitForReady: true,
       },
       labels: {
         tag: "ha-config-labels",
@@ -170,6 +174,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-section-ai-tasks",
         load: () => import("./core/ha-config-section-ai-tasks"),
       },
+      "entity-id-format": {
+        tag: "ha-config-section-entity-id-format",
+        load: () => import("./core/ha-config-section-entity-id-format"),
+      },
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
@@ -204,6 +212,11 @@ class HaPanelConfig extends HassRouterPage {
         tag: "infrared-config-dashboard-router",
         load: () =>
           import("./integrations/integration-panels/infrared/infrared-config-dashboard-router"),
+      },
+      serial: {
+        tag: "serial-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/serial/serial-config-dashboard"),
       },
       dhcp: {
         tag: "dhcp-config-panel",
@@ -244,6 +257,10 @@ class HaPanelConfig extends HassRouterPage {
 
   private _listeners: (() => void)[] = [];
 
+  private _unsubCloudEvents?: Promise<UnsubscribeFunc>;
+
+  private _cloudStatusRequestId = 0;
+
   public connectedCallback() {
     super.connectedCallback();
     this._listeners.push(
@@ -256,6 +273,10 @@ class HaPanelConfig extends HassRouterPage {
         this._wideSidebar = matches;
       })
     );
+    if (this.hass && isComponentLoaded(this.hass.config, "cloud")) {
+      this._subscribeCloudEvents();
+      this._updateCloudStatus();
+    }
   }
 
   public disconnectedCallback() {
@@ -263,8 +284,31 @@ class HaPanelConfig extends HassRouterPage {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
+    this._unsubCloudEvents?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubCloudEvents = undefined;
     entityRegistryByEntityId.clear();
     entityRegistryById.clear();
+  }
+
+  private _subscribeCloudEvents() {
+    if (
+      this._unsubCloudEvents ||
+      !this.hass ||
+      !isComponentLoaded(this.hass.config, "cloud")
+    ) {
+      return;
+    }
+
+    const subscription = subscribeCloudEvents(this.hass, () => {
+      this._updateCloudStatus();
+    });
+    this._unsubCloudEvents = subscription;
+
+    subscription.catch(() => {
+      if (this._unsubCloudEvents === subscription) {
+        this._unsubCloudEvents = undefined;
+      }
+    });
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -272,10 +316,10 @@ class HaPanelConfig extends HassRouterPage {
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      this._updateCloudStatus();
       this.addEventListener("connection-status", (ev) => {
         if (ev.detail === "connected") {
           this._updateCloudStatus();
+          this._subscribeCloudEvents();
         }
       });
     }
@@ -309,7 +353,13 @@ class HaPanelConfig extends HassRouterPage {
   }
 
   private async _updateCloudStatus() {
-    this._cloudStatus = await fetchCloudStatus(this.hass);
+    const requestId = ++this._cloudStatusRequestId;
+    const status = await fetchCloudStatus(this.hass);
+
+    if (requestId !== this._cloudStatusRequestId) {
+      return;
+    }
+    this._cloudStatus = status;
 
     if (
       // Relayer connecting

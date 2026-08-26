@@ -43,11 +43,15 @@ class IntegrationsStartupTime extends LitElement {
       <ha-md-list>
         ${this._setups?.map((setup) => {
           const manifest = this._manifests && this._manifests[setup.domain];
-          const docLink = manifest
-            ? manifest.is_built_in
-              ? documentationUrl(this.hass, `/integrations/${manifest.domain}`)
-              : manifest.documentation
-            : "";
+          const docLink =
+            (manifest
+              ? manifest.is_built_in
+                ? documentationUrl(
+                    this.hass,
+                    `/integrations/${manifest.domain}`
+                  )
+                : manifest.documentation
+              : "") || "";
 
           const setupSeconds = setup.seconds?.toFixed(2);
           return html`

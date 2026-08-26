@@ -64,6 +64,7 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDataCollection,
+  getEnergyDefaultPeriodStorageKey,
 } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
@@ -544,7 +545,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _presetSelected(ev) {
     localStorage.setItem(
-      `energy-default-period-_${this.collectionKey || "energy"}`,
+      getEnergyDefaultPeriodStorageKey(this.hass, this.collectionKey),
       RANGE_KEYS[ev.detail.index]
     );
   }
@@ -674,6 +675,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     }
 
     this._updateCollectionPeriod();
+
+    // "yesterday" is the only preset whose range never includes today, making
+    // it the only remembered default that keeps reopening in the past.
+    const storageKey = getEnergyDefaultPeriodStorageKey(
+      this.hass,
+      this.collectionKey
+    );
+    if (localStorage.getItem(storageKey) === "yesterday") {
+      localStorage.setItem(storageKey, "today");
+    }
   }
 
   private _pickPrevious() {

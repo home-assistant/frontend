@@ -986,7 +986,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private async _delete() {
     if (this.automationId) {
       await deleteAutomation(this.hass, this.automationId);
-      goBack("/config");
+      goBack(this.dashboardPath);
     }
   }
 

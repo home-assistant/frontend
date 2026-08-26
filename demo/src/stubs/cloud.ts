@@ -6,11 +6,6 @@ import { ONBOARDING_ITEMS } from "../../../src/data/cloud";
 import type { CloudTTSInfo } from "../../../src/data/cloud/tts";
 import type { Webhook } from "../../../src/data/webhook";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import {
-  getCloudDemoScenario,
-  setCloudDemoScenario,
-  subscribeCloudDemoScenario,
-} from "./cloud-demo-state";
 
 const emptyFilter = () => ({
   include_domains: [],
@@ -34,14 +29,30 @@ const demoWebhooks: Webhook[] = [
   },
 ];
 
-// A single mutable status object so that preference changes made in the demo
-// (both via the real UI and the demo scenario controls) are reflected back.
+const demoCloudhooks = Object.fromEntries(
+  demoWebhooks.map((webhook) => [
+    webhook.webhook_id,
+    {
+      webhook_id: webhook.webhook_id,
+      cloudhook_id: `demo-${webhook.webhook_id}`,
+      cloudhook_url: `https://hooks.nabu.casa/demo-${webhook.webhook_id}`,
+      managed: false,
+    },
+  ])
+);
+
+// A single mutable status object seeded to one fixed demo state: an active cloud
+// subscription with remote ready, cloud backups recent, webhooks set up and voice
+// set up (Alexa linked), but cameras (WebRTC) off, so onboarding is still in
+// progress (streaming is the remaining step) and not postponed. Page-driven
+// changes (connect remote, postpone onboarding, add/delete webhooks) mutate this
+// object directly and reset on reload.
 const cloudStatus: CloudStatusLoggedIn = {
   logged_in: true,
   cloud: "connected",
   cloud_last_disconnect_reason: null,
   email: "demo@home-assistant.io",
-  google_registered: true,
+  google_registered: false,
   google_entities: emptyFilter(),
   google_domains: ["light", "switch", "climate", "cover"],
   alexa_registered: true,
@@ -58,20 +69,20 @@ const cloudStatus: CloudStatusLoggedIn = {
   http_use_ssl: false,
   active_subscription: true,
   onboarding_postponed: false,
-  onboarding_completed: true,
+  onboarding_completed: false,
   prefs: {
-    google_enabled: true,
+    google_enabled: false,
     alexa_enabled: true,
     remote_enabled: true,
     remote_allow_remote_enable: true,
     strict_connection: "disabled",
     google_secure_devices_pin: undefined,
-    cloudhooks: {},
+    cloudhooks: demoCloudhooks,
     alexa_report_state: true,
     google_report_state: true,
     tts_default_voice: ["en-US", "JennyNeural"],
-    cloud_ice_servers_enabled: true,
-    onboarded_items: [...ONBOARDING_ITEMS],
+    cloud_ice_servers_enabled: false,
+    onboarded_items: [],
     onboarding_postponed_until: null,
   },
 };
@@ -93,94 +104,6 @@ const ttsInfo: CloudTTSInfo = {
   ],
 };
 
-// Map the high-level demo scenario onto the mutable cloud status / subscription.
-const applyScenario = () => {
-  const scenario = getCloudDemoScenario();
-
-  switch (scenario.account) {
-    case "trialing":
-      cloudStatus.active_subscription = true;
-      subscription.subscription = { status: "trialing" };
-      break;
-    case "canceled":
-      cloudStatus.active_subscription = false;
-      subscription.subscription = { status: "canceled" };
-      break;
-    case "expired":
-      cloudStatus.active_subscription = false;
-      subscription.subscription = { status: "expired" };
-      break;
-    case "unknown":
-      cloudStatus.active_subscription = true;
-      subscription.subscription = { status: "unknown" };
-      break;
-    default:
-      // "active"
-      cloudStatus.active_subscription = true;
-      subscription.subscription = { status: "active" };
-  }
-
-  cloudStatus.prefs.onboarded_items = scenario.onboarded
-    ? [...ONBOARDING_ITEMS]
-    : [];
-  cloudStatus.onboarding_completed = scenario.onboarded;
-  cloudStatus.onboarding_postponed = scenario.postponed;
-  cloudStatus.prefs.onboarding_postponed_until = scenario.postponed
-    ? new Date(Date.now() + 24 * 3600 * 1000).toISOString()
-    : null;
-  cloudStatus.prefs.remote_enabled = scenario.remote;
-  cloudStatus.remote_connected = scenario.remote;
-  cloudStatus.remote_certificate_status = scenario.remoteStatus;
-  cloudStatus.alexa_registered = scenario.alexa;
-  cloudStatus.google_registered = scenario.google;
-  cloudStatus.prefs.cloud_ice_servers_enabled = scenario.webrtc;
-
-  const hasCloudhooks = Object.keys(cloudStatus.prefs.cloudhooks).length > 0;
-  if (scenario.webhooks && !hasCloudhooks) {
-    cloudStatus.prefs.cloudhooks = Object.fromEntries(
-      demoWebhooks.map((webhook) => [
-        webhook.webhook_id,
-        {
-          webhook_id: webhook.webhook_id,
-          cloudhook_id: `demo-${webhook.webhook_id}`,
-          cloudhook_url: `https://hooks.nabu.casa/demo-${webhook.webhook_id}`,
-          managed: false,
-        },
-      ])
-    );
-  } else if (!scenario.webhooks && hasCloudhooks) {
-    cloudStatus.prefs.cloudhooks = {};
-  }
-};
-
-applyScenario();
-subscribeCloudDemoScenario(applyScenario);
-
-// Reflect UI-driven changes (onboarding toggles, remote connect/disconnect)
-// back into the demo scenario so the demo controls panel stays in sync with the
-// mocked state. Only writes when a value actually changed, to avoid needless
-// re-projection. `applyScenario` re-applies the (now matching) scenario, so
-// this stays idempotent and does not fight the direct mutation above.
-const syncScenarioFromStatus = () => {
-  const scenario = getCloudDemoScenario();
-  const next = {
-    onboarded: cloudStatus.onboarding_completed,
-    postponed: cloudStatus.onboarding_postponed,
-    remote: cloudStatus.prefs.remote_enabled,
-    webrtc: cloudStatus.prefs.cloud_ice_servers_enabled,
-    webhooks: Object.keys(cloudStatus.prefs.cloudhooks).length > 0,
-  };
-  if (
-    scenario.onboarded !== next.onboarded ||
-    scenario.postponed !== next.postponed ||
-    scenario.remote !== next.remote ||
-    scenario.webrtc !== next.webrtc ||
-    scenario.webhooks !== next.webhooks
-  ) {
-    setCloudDemoScenario(next);
-  }
-};
-
 export const mockCloud = (hass: MockHomeAssistant) => {
   hass.mockWS("cloud/status", () => ({
     ...cloudStatus,
@@ -193,7 +116,6 @@ export const mockCloud = (hass: MockHomeAssistant) => {
   hass.mockWS("cloud/update_prefs", (msg) => {
     const { type, ...prefs } = msg;
     cloudStatus.prefs = { ...cloudStatus.prefs, ...prefs };
-    syncScenarioFromStatus();
     return { success: true };
   });
 
@@ -202,7 +124,6 @@ export const mockCloud = (hass: MockHomeAssistant) => {
       Date.now() + 24 * 3600 * 1000
     ).toISOString();
     cloudStatus.onboarding_postponed = true;
-    syncScenarioFromStatus();
     // Backend returns the full logged-in status object.
     return { ...cloudStatus, prefs: { ...cloudStatus.prefs } };
   });
@@ -222,7 +143,6 @@ export const mockCloud = (hass: MockHomeAssistant) => {
       (onboardingItem) =>
         cloudStatus.prefs.onboarded_items.includes(onboardingItem)
     );
-    syncScenarioFromStatus();
     // Backend returns the full logged-in status object.
     return { ...cloudStatus, prefs: { ...cloudStatus.prefs } };
   });
@@ -245,20 +165,17 @@ export const mockCloud = (hass: MockHomeAssistant) => {
     const cloudhooks = { ...cloudStatus.prefs.cloudhooks };
     delete cloudhooks[msg.webhook_id];
     cloudStatus.prefs.cloudhooks = cloudhooks;
-    syncScenarioFromStatus();
     return null;
   });
 
   hass.mockWS("cloud/remote/connect", () => {
     cloudStatus.remote_connected = true;
     cloudStatus.prefs.remote_enabled = true;
-    syncScenarioFromStatus();
     return null;
   });
   hass.mockWS("cloud/remote/disconnect", () => {
     cloudStatus.remote_connected = false;
     cloudStatus.prefs.remote_enabled = false;
-    syncScenarioFromStatus();
     return null;
   });
 

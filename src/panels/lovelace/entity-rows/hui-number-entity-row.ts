@@ -7,6 +7,7 @@ import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
+import { showNumberSlider } from "../../../data/number";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -75,12 +76,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${
-          stateObj.attributes.mode === "slider" ||
-          (stateObj.attributes.mode === "auto" &&
-            (Number(stateObj.attributes.max) -
-              Number(stateObj.attributes.min)) /
-              Number(stateObj.attributes.step) <=
-              256)
+          showNumberSlider(stateObj)
             ? html`
                 <div class="flex">
                   <ha-slider
@@ -103,7 +99,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 </div>
               `
             : html`
-                <div class="flex state">
+                <div class="flex box">
                   <ha-input
                     auto-validate
                     .disabled=${stateObj.state === UNAVAILABLE}
@@ -111,7 +107,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
                     .max=${Number(stateObj.attributes.max)}
-                    .value=${stateObj.state}
+                    .value=${Number(stateObj.state).toString()}
                     type="number"
                     @change=${this._selectedValueChanged}
                   >
@@ -139,6 +135,10 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     .state {
       min-width: 45px;
       text-align: end;
+    }
+    .box {
+      flex-grow: 0;
+      min-width: 45px;
     }
     ha-input::part(wa-input) {
       text-align: end;

@@ -947,7 +947,7 @@ exports[`generateStateHistoryChartLineData > matches snapshot for a climate enti
     "climate.thermostat",
   ],
   "visualMap": undefined,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 

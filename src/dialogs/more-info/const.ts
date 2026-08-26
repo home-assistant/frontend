@@ -7,21 +7,11 @@ import { isNumericEntity } from "../../data/history";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
 
-export const MORE_INFO_VIEWS = [
-  "info",
-  "history",
-  "settings",
-  "related",
-  "add_to",
-  "details",
-] as const;
-
-export type MoreInfoView = (typeof MORE_INFO_VIEWS)[number];
-
-export const isMoreInfoView = (
-  value: string | undefined
-): value is MoreInfoView =>
-  value !== undefined && (MORE_INFO_VIEWS as readonly string[]).includes(value);
+export {
+  isMoreInfoView,
+  MORE_INFO_VIEWS,
+  type MoreInfoView,
+} from "./more-info-view";
 
 export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**

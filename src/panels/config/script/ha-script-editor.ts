@@ -896,7 +896,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _delete() {
     await deleteScript(this.hass, this.scriptId!);
-    goBack("/config");
+    goBack(this.dashboardPath);
   }
 
   private async _promptScriptAlias(): Promise<boolean> {

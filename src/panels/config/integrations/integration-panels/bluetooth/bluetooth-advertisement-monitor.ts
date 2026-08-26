@@ -249,6 +249,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     const entry = this._data.find((ent) => ent.address === ev.detail.id);
     showBluetoothDeviceInfoDialog(this, {
       entry: entry!,
+      deviceId: this._sourceDevices[ev.detail.id]?.id,
     });
   }
 

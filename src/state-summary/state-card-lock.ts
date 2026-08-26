@@ -29,7 +29,7 @@ class StateCardLock extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${
-          !supportsOpen
+          supportsOpen
             ? html`<ha-button
                 appearance="plain"
                 size="s"

@@ -304,14 +304,21 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _renderHelper() {
     const showError = this.invalid && this.errorMessage;
-    const showHelper = !showError && this.helper;
 
-    if (!showError && !showHelper) {
+    if (!showError && !this.helper) {
       return nothing;
     }
 
     return html`<ha-input-helper-text .disabled=${this.disabled}>
-      ${showError ? this.errorMessage : this.helper}
+      ${
+        showError
+          ? html`<span class="error">${this.errorMessage}</span> ${
+                this.helper
+                  ? html`<span class="helper">${this.helper}</span>`
+                  : nothing
+              }`
+          : this.helper
+      }
     </ha-input-helper-text>`;
   }
 
@@ -447,6 +454,13 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         }
         :host([invalid]) ha-input-helper-text {
           color: var(--mdc-theme-error, var(--error-color, #b00020));
+        }
+        ha-input-helper-text .error,
+        ha-input-helper-text .helper {
+          display: block;
+        }
+        ha-input-helper-text .helper {
+          color: var(--secondary-text-color);
         }
 
         wa-popover {

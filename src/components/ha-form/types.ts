@@ -4,6 +4,7 @@ import type { HaDurationData } from "../ha-duration-input";
 
 export type HaFormSchema =
   | HaFormConstantSchema
+  | HaFormDividerSchema
   | HaFormStringSchema
   | HaFormIntegerSchema
   | HaFormFloatSchema
@@ -22,6 +23,9 @@ export interface HaFormBaseSchema {
   default?: HaFormData;
   required?: boolean;
   disabled?: boolean;
+  // Field is visible while the condition holds (visible by default).
+  // Serializable so it can be shared with the backend and other renderers.
+  visible?: boolean | HaFormCondition | HaFormCondition[];
   description?: {
     suffix?: string;
     // This value will be set initially when form is loaded
@@ -29,6 +33,36 @@ export interface HaFormBaseSchema {
   };
   context?: Record<string, string>;
 }
+
+export type HaFormConditionOperator =
+  "eq" | "not_eq" | "in" | "not_in" | "exists" | "not_exists";
+
+export interface HaFormFieldCondition {
+  field: string;
+  operator?: HaFormConditionOperator;
+  value?: HaFormData | readonly HaFormData[];
+}
+
+export interface HaFormAndCondition {
+  condition: "and";
+  conditions: readonly HaFormCondition[];
+}
+
+export interface HaFormOrCondition {
+  condition: "or";
+  conditions: readonly HaFormCondition[];
+}
+
+export interface HaFormNotCondition {
+  condition: "not";
+  conditions: readonly HaFormCondition[];
+}
+
+export type HaFormCondition =
+  | HaFormFieldCondition
+  | HaFormAndCondition
+  | HaFormOrCondition
+  | HaFormNotCondition;
 
 export interface HaFormGridSchema extends HaFormBaseSchema {
   type: "grid";
@@ -62,6 +96,10 @@ export interface HaFormSelector extends HaFormBaseSchema {
 export interface HaFormConstantSchema extends HaFormBaseSchema {
   type: "constant";
   value?: string;
+}
+
+export interface HaFormDividerSchema extends HaFormBaseSchema {
+  type: "divider";
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {

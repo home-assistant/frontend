@@ -76,6 +76,7 @@ export class HuiDialogEditSection
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const sectionConfig = {
         ...this._config,
@@ -137,7 +138,6 @@ export class HuiDialogEditSection
         case "tab-settings":
           content = html`
             <hui-section-settings-editor
-              .hass=${this.hass}
               .config=${this._config}
               .viewConfig=${this._viewConfig}
               @value-changed=${this._configChanged}

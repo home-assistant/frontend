@@ -22,6 +22,10 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import {
+  computeCardFeatureLayout,
+  computeCardFeatureRows,
+} from "../card-features/common/feature-layout";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
@@ -81,6 +85,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: TileCardConfig;
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
@@ -105,14 +111,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
-    const featuresCount = this._config?.features?.length || 0;
-    return (
-      1 +
-      (this._config?.vertical ? 1 : 0) +
-      (featuresPosition === "inline" ? 0 : featuresCount)
-    );
+    const featureRows = this._config ? this._featureRows(this._config) : 0;
+    return 1 + (this._config?.vertical ? 1 : 0) + featureRows;
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -121,12 +121,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     let rows = 1;
     const featurePosition = this._config && this._featurePosition(this._config);
     const featuresCount = this._config?.features?.length || 0;
-    if (featuresCount) {
+    if (this._config && featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
-      } else {
-        rows += featuresCount;
       }
+      rows += this._featureRows(this._config);
     }
 
     if (this._config?.vertical) {
@@ -145,7 +144,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _handleIconAction(ev: CustomEvent) {
+  private _handleIconAction(ev: ActionHandlerEvent) {
     ev.stopPropagation();
     const config = {
       entity: this._config!.entity,
@@ -232,15 +231,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  private _displayedFeatures = memoizeOne((config: TileCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
+  private _featureLayout = memoizeOne((config: TileCardConfig) =>
+    computeCardFeatureLayout(config.features, this._featurePosition(config))
+  );
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  });
+  private _featureRows = memoizeOne((config: TileCardConfig) =>
+    computeCardFeatureRows(config.features, this._featurePosition(config))
+  );
 
   protected render() {
     if (!this._config || !this.hass) {
@@ -284,15 +281,19 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
 
     const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const features = this._featureLayout(this._config);
 
     const hasImage = Boolean(imageUrl);
+
+    const fixedInfoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap({ active })}>
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${this._hasCardAction}
           .actionHandlerOptions=${{
             hasHold: hasAction(this._config!.hold_action),
@@ -335,14 +336,28 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             }
           </ha-tile-info>
           ${
-            features.length > 0
+            features.inline.length > 0
               ? html`
                   <hui-card-features
-                    slot="features"
+                    slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
                     .color=${this._config.color}
-                    .features=${features}
+                    .features=${features.inline}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
+          ${
+            features.below.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features"
+                    .columns=${features.columns}
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features.below}
                   ></hui-card-features>
                 `
               : nothing

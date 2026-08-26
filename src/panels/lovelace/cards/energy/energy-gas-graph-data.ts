@@ -12,6 +12,7 @@ import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
 import {
   type EnergyDataPoint,
+  generateFillBuckets,
   getCompareTransform,
 } from "./common/energy-chart-options";
 
@@ -113,8 +114,12 @@ export function generateEnergyGasGraphData(
     )
   );
 
-  fillDataGapsAndRoundCaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  fillDataGapsAndRoundCaps(
+    datasets,
+    true,
+    generateFillBuckets(datasets, start, end, period)
+  );
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
   const chartData = datasets;
   const total = processTotal(energyData.stats, gasSources);
 

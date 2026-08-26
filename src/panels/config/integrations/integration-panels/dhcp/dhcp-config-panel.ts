@@ -95,6 +95,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config/integrations/integration/dhcp"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
         .noDataText=${this.hass.localize(

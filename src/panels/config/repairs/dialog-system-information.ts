@@ -5,6 +5,8 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import { sanitizeNavigationPath } from "../../../common/url/sanitize-navigation-path";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
@@ -326,25 +328,24 @@ class DialogSystemInformation extends LitElement {
         const keys: TemplateResult[] = [];
 
         for (const key of Object.keys(domainInfo.info)) {
+          const infoValue = domainInfo.info[key];
           let value: unknown;
 
-          if (
-            domainInfo.info[key] &&
-            typeof domainInfo.info[key] === "object"
-          ) {
-            const info = domainInfo.info[key] as SystemCheckValueObject;
+          if (infoValue && typeof infoValue === "object") {
+            const info = infoValue as SystemCheckValueObject;
 
             if (info.type === "pending") {
               value = html` <ha-spinner size="small"></ha-spinner> `;
             } else if (info.type === "failed") {
+              const moreInfoUrl = sanitizeHttpUrl(info.more_info);
               value = html`
                 <span class="error">${info.error}</span>${
-                  !info.more_info
+                  !moreInfoUrl
                     ? ""
                     : html`
                         –
                         <a
-                          href=${info.more_info}
+                          href=${moreInfoUrl}
                           target="_blank"
                           rel="noreferrer noopener"
                         >
@@ -363,7 +364,7 @@ class DialogSystemInformation extends LitElement {
               );
             }
           } else {
-            value = domainInfo.info[key];
+            value = infoValue;
           }
 
           keys.push(html`
@@ -380,18 +381,22 @@ class DialogSystemInformation extends LitElement {
           `);
         }
         if (domain !== "homeassistant") {
+          // No target, so an in-app path is also a valid destination here
+          const manageUrl =
+            sanitizeHttpUrl(domainInfo.manage_url) ??
+            sanitizeNavigationPath(domainInfo.manage_url);
           sections.push(html`
             <div class="card-header">
               <h3>${domainToName(this.hass.localize, domain)}</h3>
               ${
-                !domainInfo.manage_url
+                !manageUrl
                   ? ""
                   : html`
                       <ha-button
                         appearance="plain"
                         size="s"
                         class="manage"
-                        href=${domainInfo.manage_url}
+                        href=${manageUrl}
                       >
                         ${this.hass.localize(
                           "ui.panel.config.info.system_health.manage"
@@ -431,10 +436,11 @@ class DialogSystemInformation extends LitElement {
       ];
 
       for (const key of Object.keys(domainInfo.info)) {
+        const infoValue = domainInfo.info[key];
         let value: unknown;
 
-        if (domainInfo.info[key] && typeof domainInfo.info[key] === "object") {
-          const info = domainInfo.info[key] as SystemCheckValueObject;
+        if (infoValue && typeof infoValue === "object") {
+          const info = infoValue as SystemCheckValueObject;
 
           if (info.type === "pending") {
             value = "pending";
@@ -448,7 +454,7 @@ class DialogSystemInformation extends LitElement {
             );
           }
         } else {
-          value = domainInfo.info[key];
+          value = infoValue;
         }
         if (first) {
           parts.push(`${key} | ${value}\n-- | --`);

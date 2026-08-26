@@ -34,6 +34,8 @@ export class HaButtonToggleGroup extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "full-width" })
   public fullWidth = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public variant:
     "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
 
@@ -57,6 +59,7 @@ export class HaButtonToggleGroup extends LitElement {
               .value=${button.value}
               @click=${this._handleClick}
               .title=${button.label}
+              .disabled=${this.disabled}
               .appearance=${this.active === button.value ? "accent" : "filled"}
             >
               ${

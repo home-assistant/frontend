@@ -101,12 +101,16 @@ export const renderConfigEntryError = (
 ): TemplateResult => {
   if (entry.reason) {
     if (entry.error_reason_translation_key) {
+      // The error may be translated by another integration, e.g. one raised by
+      // a shared helper and owned by the homeassistant integration.
+      const translationDomain =
+        entry.error_reason_translation_domain || entry.domain;
       const lokalisePromExc = hass
-        .loadBackendTranslation("exceptions", entry.domain)
+        .loadBackendTranslation("exceptions", translationDomain)
         .then(
           (localize) =>
             localize(
-              `component.${entry.domain}.exceptions.${entry.error_reason_translation_key}.message`,
+              `component.${translationDomain}.exceptions.${entry.error_reason_translation_key}.message`,
               entry.error_reason_translation_placeholders ?? undefined
             ) || entry.reason
         );
@@ -368,21 +372,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    const documentationLink = this._manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
+      : this._manifest?.documentation;
+
     return html`
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/integrations/dashboard"
+      >
         ${
-          this._manifest
+          documentationLink
             ? html`
                 <a
                   slot="toolbar-icon"
-                  href=${
-                    this._manifest.is_built_in
-                      ? documentationUrl(
-                          this.hass,
-                          `/integrations/${this._manifest.domain}`
-                        )
-                      : this._manifest.documentation
-                  }
+                  href=${documentationLink}
                   rel="noreferrer"
                   target="_blank"
                 >
@@ -904,7 +909,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     if (row) {
       row.scrollIntoView({
-        block: "center",
+        block: "start",
       });
       row.classList.add("highlight");
     }
@@ -1398,7 +1403,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           font-size: 32px;
           font-weight: 700;
           line-height: 40px;
-          text-align: left;
+          text-align: start;
           text-underline-position: from-font;
           text-decoration-skip-ink: none;
           margin: 0;
@@ -1542,6 +1547,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-config-entry-row {
           display: block;
           margin-bottom: 16px;
+          scroll-margin-top: var(--ha-space-10);
         }
         a {
           text-decoration: none;

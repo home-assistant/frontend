@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -228,7 +229,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
         ) as ConfigEntry[];
       boardId = boardData.board!.hassio_board_id;
       boardName = boardData.name;
-      documentationURL = boardData.url;
+      documentationURL = sanitizeHttpUrl(boardData.url);
       imageURL = hardwareBrandsUrl(
         {
           category: "boards",

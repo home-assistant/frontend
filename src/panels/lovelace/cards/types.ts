@@ -94,16 +94,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?:
-    | "entity-id"
-    | "last-changed"
-    | "last-triggered"
-    | "last-updated"
-    | "area"
-    | "position"
-    | "state"
-    | "tilt-position"
-    | "brightness";
+  secondary_info?: string | string[];
   action_name?: string;
   action?: string;
   /** @deprecated use "action" instead */
@@ -115,7 +106,9 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
   show_name?: boolean;
   show_icon?: boolean;
 }
@@ -129,7 +122,9 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
@@ -182,6 +177,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   layout?: "auto" | "vertical" | "horizontal";
   group_by_floor?: boolean;
   group_by_area?: boolean;
+  max_devices?: number;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
@@ -197,6 +193,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
@@ -216,11 +213,13 @@ export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
   max_devices?: number;
   hide_compound_stats?: boolean;
   modes?: ("bar" | "pie")[];
+  expand_legend?: boolean;
 }
 
 export interface EnergyDevicesDetailGraphCardConfig extends EnergyCardConfig {
   type: "energy-devices-detail-graph";
   max_devices?: number;
+  expand_legend?: boolean;
 }
 
 export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
@@ -252,6 +251,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
 export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
+  expand_legend?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -333,7 +333,9 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
   time_format?: TimestampRenderingFormat;
 }
 
@@ -345,7 +347,9 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: (string | GlanceConfigEntity)[];
   columns?: number;
+  /** @deprecated use `color` instead */
   state_color?: boolean;
+  color?: string;
 }
 
 export interface HumidifierCardConfig extends LovelaceCardConfig {
@@ -422,6 +426,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   theme_mode?: ThemeMode;
   cluster?: boolean;
   conditions?: Condition[];
+  scale_ruler?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {
@@ -448,11 +453,28 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
+  date_format?: ClockCardDatePart[];
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
   face_style?: "markers" | "numbers_upright" | "roman";
 }
+
+export type ClockCardDatePart =
+  | "weekday-short"
+  | "weekday-long"
+  | "day-numeric"
+  | "day-2-digit"
+  | "month-short"
+  | "month-long"
+  | "month-numeric"
+  | "month-2-digit"
+  | "year-2-digit"
+  | "year-numeric"
+  | "separator-dash"
+  | "separator-slash"
+  | "separator-dot"
+  | "separator-new-line";
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -697,6 +719,13 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface AlertCardConfig extends LovelaceCardConfig {
+  type: "alert";
+  entity: string;
+  color?: string;
+  pulse?: boolean;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

@@ -1,0 +1,130 @@
+<script>
+  /*
+   * Boot-time recovery from a stale index.html.
+   *
+   * index.html pins the content-hashed entry bundles (core.<hash>.js /
+   * app.<hash>.js). After a frontend release those files are deleted from
+   * disk, so a cached (stale) index.html imports URLs that now 404 and the
+   * app never boots - the launch screen stays up forever. No bundled JS can
+   * recover this, because the bundle itself failed to load, so this guard has
+   * to live inline in the HTML document.
+   *
+   * On a failed entry load we navigate once to the same URL with a
+   * cache-busting query param (and, on https, after dropping the service
+   * worker + its caches) so the browser fetches a fresh index.html that points
+   * at the current hashes. The param doubles as a one-shot loop guard: if the
+   * freshly fetched index still fails we stop and show a message instead of
+   * reloading forever. core.ts strips the param again after a successful boot.
+   */
+  (function () {
+    var BUST_PARAM = "ha_cache_bust";
+    // Only production entry bundles carry a content hash. Requiring the hash
+    // keeps the guard inert in development (unhashed core.js / app.js) and
+    // scoped to the entry chunks whose 404 is fatal to boot - not translations
+    // or lazily loaded panels, which fail non-fatally and are handled elsewhere.
+    // Injected from stale-build-patterns.json (the single source shared with
+    // the bundled util/recover-stale-build.ts) so the two never drift.
+    var HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
+    var MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
+
+    function booted() {
+      // The launch screen is only removed once the app has taken over the
+      // page. If it is gone, any later chunk failure is post-boot (a lazy
+      // panel/dialog) and is not the stale-index boot failure this guard
+      // targets, so we leave it alone.
+      return !document.getElementById("ha-launch-screen");
+    }
+
+    function showFatal() {
+      var box = document.getElementById("ha-launch-screen-info-box");
+      if (box) {
+        box.textContent =
+          "Could not load Home Assistant. Please refresh the page, and clear your browser cache if the problem persists.";
+      }
+    }
+
+    function recover() {
+      if (location.search.indexOf(BUST_PARAM + "=") !== -1) {
+        // We already reloaded once with a fresh index and it still failed;
+        // stop to avoid a reload loop.
+        showFatal();
+        return;
+      }
+      var target =
+        location.pathname +
+        location.search +
+        (location.search ? "&" : "?") +
+        BUST_PARAM +
+        "=" +
+        Date.now() +
+        location.hash;
+      // On https the service worker "/" route ignores the query string
+      // (ignoreSearch), so a bust param alone would still be answered with the
+      // stale cached index. Drop the worker and its caches first so the reload
+      // is served fresh from the network.
+      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+        var go = function () {
+          location.replace(target);
+        };
+        Promise.all([
+          navigator.serviceWorker
+            .getRegistrations()
+            .then(function (regs) {
+              return Promise.all(
+                regs.map(function (r) {
+                  return r.unregister();
+                })
+              );
+            })
+            .catch(function () {}),
+          self.caches
+            ? caches
+                .keys()
+                .then(function (keys) {
+                  return Promise.all(
+                    keys.map(function (k) {
+                      return caches.delete(k);
+                    })
+                  );
+                })
+                .catch(function () {})
+            : null,
+        ]).then(go, go);
+      } else {
+        location.replace(target);
+      }
+    }
+
+    function maybeRecover(url, message) {
+      if (booted()) {
+        return;
+      }
+      if (
+        (url && HASHED_ENTRY.test(url)) ||
+        (message && (HASHED_ENTRY.test(message) || MODULE_ERROR.test(message)))
+      ) {
+        recover();
+      }
+    }
+
+    // Resource-load errors (<script>, modulepreload <link>) do not bubble, so
+    // they are only observable in the capture phase at the window.
+    window.addEventListener(
+      "error",
+      function (ev) {
+        var el = ev.target;
+        if (el && (el.tagName === "SCRIPT" || el.tagName === "LINK")) {
+          maybeRecover(el.href || el.src, null);
+        }
+      },
+      true
+    );
+
+    // A failed dynamic import() rejects; the inline entry imports do not catch
+    // it, so the rejection surfaces here.
+    window.addEventListener("unhandledrejection", function (ev) {
+      var reason = ev && ev.reason;
+      maybeRecover(null, reason && (reason.message || String(reason)));
+    });
+  })();
+</script>

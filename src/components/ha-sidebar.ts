@@ -17,7 +17,7 @@ import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
 import { subscribeFrontendUserData } from "../data/frontend";
-import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import type { ActionHandlerEvent } from "../data/lovelace/action_handler";
 import {
   FIXED_PANELS,
   getDefaultPanelUrlPath,
@@ -634,7 +634,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     });
   }
 
-  private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     if (ev.detail.action !== "hold") {
       return;
     }
@@ -646,7 +646,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     fireEvent(this, "hass-show-notifications");
   }
 
-  private _toggleSidebar(ev: CustomEvent) {
+  private _toggleSidebar(ev: ActionHandlerEvent) {
     if (ev.detail.action !== "tap") {
       return;
     }
@@ -664,6 +664,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          overscroll-behavior: contain;
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;

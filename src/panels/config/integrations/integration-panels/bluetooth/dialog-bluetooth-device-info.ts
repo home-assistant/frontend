@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { navigate } from "../../../../../common/navigate";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
@@ -48,6 +49,14 @@ class DialogBluetoothDeviceInfo extends LitElement {
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private _openDevice(): void {
+    if (!this._params?.deviceId) {
+      return;
+    }
+    navigate(`/config/devices/device/${this._params.deviceId}`);
+    this.closeDialog();
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -137,6 +146,17 @@ class DialogBluetoothDeviceInfo extends LitElement {
             : nothing
         }
         <ha-dialog-footer slot="footer">
+          ${
+            this._params.deviceId
+              ? html`
+                  <ha-button slot="primaryAction" @click=${this._openDevice}>
+                    ${this.hass.localize(
+                      "ui.panel.config.bluetooth.open_device"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             slot="secondaryAction"
             appearance="plain"
