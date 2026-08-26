@@ -109,7 +109,8 @@ export class HuiEnergySourcesTableCard
     name?: string
   ) {
     const displayPrecision =
-      type === "gas"
+      type === "gas" &&
+      this.hass.states[statId]?.attributes.unit_of_measurement === energyUnit
         ? this.hass.entities[statId]?.display_precision
         : undefined;
 
@@ -341,25 +342,6 @@ export class HuiEnergySourcesTableCard
         )
       : allTypes;
 
-    const gasDisplayPrecisions = types.gas
-      ?.map(
-        (source) =>
-          this.hass.entities[source.stat_energy_from]?.display_precision
-      )
-      .filter((precision): precision is number => precision !== undefined);
-
-    const gasDisplayPrecision = gasDisplayPrecisions?.length
-      ? Math.max(...gasDisplayPrecisions)
-      : undefined;
-
-    const gasFormatOptions =
-      gasDisplayPrecision !== undefined
-        ? {
-            minimumFractionDigits: gasDisplayPrecision,
-            maximumFractionDigits: gasDisplayPrecision,
-          }
-        : undefined;
-
     const computedStyles = getComputedStyle(this);
 
     // Check if any source has cost configuration
@@ -390,6 +372,30 @@ export class HuiEnergySourcesTableCard
       gas: this._data.gasUnit,
       water: this._data.waterUnit,
     };
+
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === units.gas
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
+
+    const gasFormatOptions =
+      gasDisplayPrecision !== undefined
+        ? {
+            minimumFractionDigits: gasDisplayPrecision,
+            maximumFractionDigits: gasDisplayPrecision,
+          }
+        : undefined;
 
     const compare = this._data.statsCompare !== undefined;
 
