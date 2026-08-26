@@ -163,15 +163,14 @@ export const getRecorderEntityOptions = (
 
 type StatisticIdsType = "mean" | "sum";
 
-type StatisticIdsApi = Pick<HomeAssistant, "callWS"> &
-  Partial<Pick<HomeAssistant, "connection">>;
+type StatisticIdsApi = Pick<HomeAssistant, "callWS">;
 
 export const getStatisticIds = (
   hass: StatisticIdsApi,
   statistic_type?: StatisticIdsType
 ): Promise<StatisticsMetaData[]> =>
   shareInFlightRequest(
-    hass.connection ?? hass,
+    hass.callWS,
     `recorder/list_statistic_ids:${statistic_type ?? "all"}`,
     () =>
       hass.callWS<StatisticsMetaData[]>({

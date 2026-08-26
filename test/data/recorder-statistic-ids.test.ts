@@ -5,11 +5,10 @@ import {
   type StatisticsMetaData,
 } from "../../src/data/recorder";
 
-const createHass = (callWS = vi.fn(), connection = {}) =>
+const createHass = (callWS = vi.fn()) =>
   ({
-    connection,
     callWS,
-  }) as unknown as Pick<HomeAssistant, "connection" | "callWS">;
+  }) as unknown as Pick<HomeAssistant, "callWS">;
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
@@ -39,7 +38,7 @@ describe("getStatisticIds", () => {
     await Promise.all([first, second]);
   });
 
-  it("shares concurrent requests when the caller has no connection", async () => {
+  it("works with callers that only expose callWS", async () => {
     const request = deferred<StatisticsMetaData[]>();
     const callWS = vi.fn().mockReturnValue(request.promise);
     const api = { callWS } as Pick<HomeAssistant, "callWS">;
@@ -54,12 +53,11 @@ describe("getStatisticIds", () => {
     await Promise.all([first, second]);
   });
 
-  it("shares requests across hass objects with the same connection", async () => {
+  it("shares requests across callers with the same callWS", async () => {
     const request = deferred<StatisticsMetaData[]>();
     const callWS = vi.fn().mockReturnValue(request.promise);
-    const connection = {};
-    const firstHass = createHass(callWS, connection);
-    const secondHass = createHass(callWS, connection);
+    const firstHass = createHass(callWS);
+    const secondHass = createHass(callWS);
 
     const first = getStatisticIds(firstHass);
     const second = getStatisticIds(secondHass);
@@ -96,21 +94,19 @@ describe("getStatisticIds", () => {
     });
   });
 
-  it("does not share requests across connections", async () => {
+  it("does not share requests across different callWS owners", async () => {
     const firstRequest = deferred<StatisticsMetaData[]>();
     const secondRequest = deferred<StatisticsMetaData[]>();
-    const callWS = vi
-      .fn()
-      .mockReturnValueOnce(firstRequest.promise)
-      .mockReturnValueOnce(secondRequest.promise);
 
-    const firstHass = createHass(callWS);
-    const secondHass = createHass(callWS);
+    const firstCallWS = vi.fn().mockReturnValue(firstRequest.promise);
+    const secondCallWS = vi.fn().mockReturnValue(secondRequest.promise);
 
-    const first = getStatisticIds(firstHass);
-    const second = getStatisticIds(secondHass);
+    const first = getStatisticIds(createHass(firstCallWS));
+    const second = getStatisticIds(createHass(secondCallWS));
 
-    expect(callWS).toHaveBeenCalledTimes(2);
+    expect(firstCallWS).toHaveBeenCalledTimes(1);
+    expect(secondCallWS).toHaveBeenCalledTimes(1);
+    expect(second).not.toBe(first);
 
     firstRequest.resolve([]);
     secondRequest.resolve([]);
