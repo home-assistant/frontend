@@ -19,13 +19,10 @@ import { extract } from "tar";
 import paths from "../paths.cjs";
 
 // Tiles come from the OpenStreetMap Foundation, under their vector tile usage
-// policy: https://operations.osmfoundation.org/policies/vector/
-const TILE_URL =
-  "https://vector.openstreetmap.org/shortbread_v1/{z}/{x}/{y}.mvt";
-
-// OSM asks consumers to resolve the tiles through the TileJSON rather than to
-// hardcode that URL, so they can move the tiles without every client needing a
-// release. It also carries the attribution, zoom range and bounds.
+// policy: https://operations.osmfoundation.org/policies/vector/. We never name
+// the tile URL: the OSMF asks consumers to resolve it through the TileJSON so
+// they can move the tiles without every client needing a release. It carries
+// the attribution, zoom range and bounds along with it.
 const TILEJSON_URL =
   "https://vector.openstreetmap.org/shortbread_v1/tilejson.json";
 
@@ -144,26 +141,22 @@ const assertBoldStaysOnRefs = (name, style) => {
   }
 };
 
-// The style builder can only write a tile URL, so the source is repointed at
-// the TileJSON afterwards. Matching on TILE_URL keeps that honest: if the
-// builder ever stops emitting it, the style still resolves to OSM's tiles
-// rather than silently falling back to the builder's own default host.
+// The style builder can only write a tile URL template, so the source is
+// repointed at the TileJSON afterwards. The shortbread styles carry exactly one
+// source; anything else means the shape changed under us and the tile URL the
+// builder defaults to - its own host, not OSM - would ship unnoticed.
 const useTileJson = (name, style) => {
-  const sources = Object.values(style.sources).filter((source) =>
-    source.tiles?.includes(TILE_URL)
-  );
+  const sources = Object.values(style.sources);
 
-  if (!sources.length) {
+  if (sources.length !== 1) {
     throw new Error(
-      `Style "${name}" has no source on ${TILE_URL}, so it cannot be pointed ` +
-        `at the TileJSON. Check what @versatiles/style emits.`
+      `Style "${name}" has ${sources.length} sources, expected exactly one to ` +
+        `point at the TileJSON. Check what @versatiles/style emits.`
     );
   }
 
-  for (const source of sources) {
-    delete source.tiles;
-    source.url = TILEJSON_URL;
-  }
+  delete sources[0].tiles;
+  sources[0].url = TILEJSON_URL;
   return style;
 };
 
@@ -171,7 +164,6 @@ const styleOptions = {
   // Keeps the generated URLs origin relative, so they resolve against whatever
   // host the instance is reached on.
   baseUrl: "",
-  tiles: [TILE_URL],
   glyphs: `${ASSET_PATH}/fonts/{fontstack}/{range}.pbf`,
   sprite: [{ id: "basics", url: `${ASSET_PATH}/sprites/basics/sprites` }],
 };
