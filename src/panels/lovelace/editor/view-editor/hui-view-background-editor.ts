@@ -165,7 +165,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   }
 
   private _currentBackgroundImage(): string | undefined {
-    const background = this._backgroundData(this._config);
+    const background = this._backgroundData(this.config);
     return typeof background.image === "object"
       ? background.image.media_content_id
       : background.image;
