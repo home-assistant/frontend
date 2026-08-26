@@ -6473,7 +6473,7 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "headline": "Start your free trial",
+            "headline": "Start free trial",
             "information": "Create an account to start your free one-month trial with Home Assistant Cloud. No payment information necessary.",
             "terms_notice": "By creating an account, you agree to our {terms} and {privacy_policy}.",
             "link_terms_conditions": "Terms and conditions",
