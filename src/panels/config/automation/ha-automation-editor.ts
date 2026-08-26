@@ -663,26 +663,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       );
 
     const oldAutomationId = changedProps.get("automationId");
-    if (
-      changedProps.has("automationId") &&
-      oldAutomationId !== undefined &&
-      oldAutomationId !== this.automationId
-    ) {
-      if (this.automationId && this.automationId === this.justSavedId) {
-        this.justSavedId = undefined;
-      } else {
-        this.resetEditorState();
-      }
-    }
-
-    const oldEntityId = changedProps.get("entityId");
-    if (
-      changedProps.has("entityId") &&
-      oldEntityId !== undefined &&
-      oldEntityId !== this.entityId
-    ) {
-      this.resetEditorState();
-    }
+    this.resetOnItemSwitch(oldAutomationId, this.automationId);
+    this.resetOnItemSwitch(changedProps.get("entityId"), this.entityId);
 
     if (
       changedProps.has("automationId") &&

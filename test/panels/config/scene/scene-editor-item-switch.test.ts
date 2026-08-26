@@ -4,11 +4,7 @@ import "../../../../src/panels/config/scene/ha-scene-editor";
 import type { HaSceneEditor } from "../../../../src/panels/config/scene/ha-scene-editor";
 import { showSceneEditor } from "../../../../src/data/scene";
 import { createMockHass } from "../../../fixtures/hass";
-
-const flush = () =>
-  new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
+import { flush, runUpdated } from "../../../fixtures/lit";
 
 const createEditor = (): any => {
   const el = document.createElement("ha-scene-editor") as HaSceneEditor;
@@ -21,16 +17,7 @@ const createEditor = (): any => {
   (hass as any).connection = { subscribeEvents: vi.fn(async () => vi.fn()) };
   el.hass = hass;
   el.scenes = [];
-  el.narrow = false;
-  el.isWide = false;
   return el;
-};
-
-// Simulate the router re-pointing a reused editor element at another scene:
-// set the property, then invoke the lifecycle hook with the old value the
-// way Lit would after an update.
-const runUpdated = (el: any, changed: Record<string, unknown>) => {
-  el.updated(new Map(Object.entries(changed)));
 };
 
 describe("scene editor item switch", () => {

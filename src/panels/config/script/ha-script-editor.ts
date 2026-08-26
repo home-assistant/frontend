@@ -570,28 +570,11 @@ export class HaScriptEditor extends SubscribeMixin(
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");
-    if (
-      changedProps.has("scriptId") &&
+    if (!this.entityId) {
       // the show route assigns scriptId internally
-      !this.entityId &&
-      oldScript !== undefined &&
-      oldScript !== this.scriptId
-    ) {
-      if (this.scriptId && this.scriptId === this.justSavedId) {
-        this.justSavedId = undefined;
-      } else {
-        this.resetEditorState();
-      }
+      this.resetOnItemSwitch(oldScript, this.scriptId);
     }
-
-    const oldEntityId = changedProps.get("entityId");
-    if (
-      changedProps.has("entityId") &&
-      oldEntityId !== undefined &&
-      oldEntityId !== this.entityId
-    ) {
-      this.resetEditorState();
-    }
+    this.resetOnItemSwitch(changedProps.get("entityId"), this.entityId);
 
     if (
       changedProps.has("scriptId") &&

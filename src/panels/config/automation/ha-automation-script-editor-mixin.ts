@@ -283,8 +283,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     /**
      * Reset per-item state when the edited item changes while this element is
      * reused (same route page, different id), emulating a freshly opened
-     * editor. Callers skip the reset when the changed property's old value is
-     * `undefined`, which marks the first assignment on a fresh element.
+     * editor.
      */
     protected resetEditorState() {
       this.config = undefined;
@@ -300,6 +299,26 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       this.currentEntityId = undefined;
       this.saving = false;
       this._initDirtyTracking({ type: "deep" });
+    }
+
+    /**
+     * Invoke from `updated()` with a changed id property's old and new value.
+     * Resets the editor state on a switch to a different item, except when
+     * the old value is `undefined` (the first assignment on a fresh element)
+     * or the id was just assigned by saving a new item.
+     */
+    protected resetOnItemSwitch(
+      oldId: string | null | undefined,
+      newId: string | null
+    ) {
+      if (oldId === undefined || oldId === newId) {
+        return;
+      }
+      if (newId && newId === this.justSavedId) {
+        this.justSavedId = undefined;
+      } else {
+        this.resetEditorState();
+      }
     }
 
     protected async loadConfig(id: string) {

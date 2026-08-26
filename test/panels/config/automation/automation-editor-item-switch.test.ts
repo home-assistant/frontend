@@ -4,6 +4,7 @@ import "../../../../src/panels/config/automation/ha-automation-editor";
 import type { HaAutomationEditor } from "../../../../src/panels/config/automation/ha-automation-editor";
 import type { AutomationConfig } from "../../../../src/data/automation";
 import { createMockHass } from "../../../fixtures/hass";
+import { flush, runUpdated } from "../../../fixtures/lit";
 
 const configFor = (alias: string): AutomationConfig => ({
   alias,
@@ -11,11 +12,6 @@ const configFor = (alias: string): AutomationConfig => ({
   conditions: [],
   actions: [],
 });
-
-const flush = () =>
-  new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
 
 const createEditor = (): any => {
   const el = document.createElement(
@@ -28,16 +24,7 @@ const createEditor = (): any => {
   (hass as any).callWS = vi.fn(async () => ({ config: configFor("state") }));
   el.hass = hass;
   el.automations = [];
-  el.narrow = false;
-  el.isWide = false;
   return el;
-};
-
-// Simulate the router re-pointing a reused editor element at another item:
-// set the property, then invoke the lifecycle hook with the old value the
-// way Lit would after an update.
-const runUpdated = (el: any, changed: Record<string, unknown>) => {
-  el.updated(new Map(Object.entries(changed)));
 };
 
 describe("automation editor item switch", () => {

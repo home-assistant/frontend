@@ -683,11 +683,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
     const oldscene = changedProps.get("sceneId");
 
-    if (
-      changedProps.has("sceneId") &&
-      oldscene !== undefined &&
-      oldscene !== this.sceneId
-    ) {
+    if (oldscene !== undefined && oldscene !== this.sceneId) {
       if (this.sceneId && this.sceneId === this._justSavedId) {
         this._justSavedId = undefined;
       } else {
@@ -867,13 +863,18 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   private _enterYamlMode() {
     if (this._mode === "live") {
       this._generateConfigFromLive();
-      if (this._unsubscribeEvents) {
-        this._unsubscribeEvents();
-        this._unsubscribeEvents = undefined;
-      }
-      applyScene(this.hass, this._storedStates);
+      this._stopLiveMode();
     }
     this._mode = "yaml";
+  }
+
+  /** Unsubscribe from live updates and restore the pre-live entity states. */
+  private _stopLiveMode() {
+    if (this._unsubscribeEvents) {
+      this._unsubscribeEvents();
+      this._unsubscribeEvents = undefined;
+    }
+    applyScene(this.hass, this._storedStates);
   }
 
   private async _toggleLiveMode() {
@@ -909,11 +910,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   private _exitLiveMode() {
     this._generateConfigFromLive();
-    if (this._unsubscribeEvents) {
-      this._unsubscribeEvents();
-      this._unsubscribeEvents = undefined;
-    }
-    applyScene(this.hass, this._storedStates);
+    this._stopLiveMode();
     this._mode = "review";
   }
 
@@ -989,7 +986,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   /** Emulate a freshly opened editor when the edited scene changes. */
   private _resetEditorState() {
     if (this._mode === "live") {
-      applyScene(this.hass, this._storedStates);
+      this._stopLiveMode();
     }
     this._config = undefined;
     this._mode = "review";
@@ -1005,10 +1002,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     this._entityRegCreated = undefined;
     this._newSceneId = undefined;
     this._saving = false;
-    if (this._unsubscribeEvents) {
-      this._unsubscribeEvents();
-      this._unsubscribeEvents = undefined;
-    }
     this._sceneRevision = 0;
     this._initDirtyTracking({ type: "shallow" }, 0);
   }
