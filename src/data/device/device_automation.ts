@@ -182,26 +182,70 @@ export const deviceAutomationEditorMode = (
     : "unknown-device";
 };
 
-// Like deviceAutomationsEqual, but ignores device_id and entity_id so an
-// automation can be matched to the equivalent one on a different device (for
-// example when a referenced device was replaced by a split device).
-export const deviceAutomationsSimilar = (
+// Whether two device automations describe the same kind of automation, meaning
+// the same domain, type, subtype and event. Which device and which entity they
+// apply to is ignored, so an automation can be matched against the ones another
+// device offers.
+const deviceAutomationsSameType = (a: DeviceAutomation, b: DeviceAutomation) =>
+  deviceAutomationIdentifiers
+    .filter((property) => property !== "device_id" && property !== "entity_id")
+    .every((property) => Object.is(a[property], b[property]));
+
+// Whether two device automations point at the same entity. Both the entity
+// registry id and the entity id are accepted as reference, on either side.
+const deviceAutomationsSameEntity = (
+  entityRegistry: EntityRegistryEntry[],
   a: DeviceAutomation,
   b: DeviceAutomation
 ) => {
-  if (typeof a !== typeof b) {
+  if (!a.entity_id && !b.entity_id) {
+    return true;
+  }
+  if (!a.entity_id || !b.entity_id) {
     return false;
   }
-  return deviceAutomationIdentifiers
-    .filter((property) => property !== "device_id" && property !== "entity_id")
-    .every((property) => {
-      const inA = property in a;
-      const inB = property in b;
-      if (!inA && !inB) {
-        return true;
-      }
-      return Object.is(a[property], b[property]);
-    });
+  return (
+    a.entity_id === b.entity_id ||
+    compareEntityIdWithEntityRegId(entityRegistry, a.entity_id, b.entity_id)
+  );
+};
+
+// Finds, among the automations a device offers, the one matching the given
+// automation, so a device automation can follow its device after the device was
+// replaced. A device exposes the same automation type once per entity, so
+// matching on the type alone picks an arbitrary entity. Splitting a device
+// leaves the entity registry ids untouched, which makes the entity the reliable
+// match, the type only serving as a fallback for entity-less automations.
+export const findEquivalentDeviceAutomation = <T extends DeviceAutomation>(
+  entityRegistry: EntityRegistryEntry[],
+  automations: T[],
+  automation: DeviceAutomation
+): T | undefined => {
+  const sameType = automations.filter((candidate) =>
+    deviceAutomationsSameType(candidate, automation)
+  );
+  const sameEntity = sameType.find((candidate) =>
+    deviceAutomationsSameEntity(entityRegistry, candidate, automation)
+  );
+  return sameEntity || sameType[0];
+};
+
+// Everything the automation list does not return: the extra fields of the
+// capabilities schema (`for`, `above`, ...) and the config of the row holding
+// the automation (`enabled`, `id`, `alias`, ...).
+export const deviceAutomationExtraConfig = <T extends DeviceAutomation>(
+  automation: T
+): Partial<T> => {
+  const extraConfig: Partial<T> = {};
+  for (const property in automation) {
+    if (
+      property !== "metadata" &&
+      !deviceAutomationIdentifiers.includes(property)
+    ) {
+      extraConfig[property] = automation[property];
+    }
+  }
+  return extraConfig;
 };
 
 const compareEntityIdWithEntityRegId = (
