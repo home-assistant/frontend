@@ -111,6 +111,12 @@ export class HaScriptEditor extends SubscribeMixin(
     return super.isDirtyState || !!this.yamlErrors;
   }
 
+  protected override resetEditorState() {
+    super.resetEditorState();
+    this._undoRedoController.reset();
+    this._newScriptId = undefined;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
@@ -566,6 +572,29 @@ export class HaScriptEditor extends SubscribeMixin(
     const oldScript = changedProps.get("scriptId");
     if (
       changedProps.has("scriptId") &&
+      // the show route assigns scriptId internally
+      !this.entityId &&
+      oldScript !== undefined &&
+      oldScript !== this.scriptId
+    ) {
+      if (this.scriptId && this.scriptId === this.justSavedId) {
+        this.justSavedId = undefined;
+      } else {
+        this.resetEditorState();
+      }
+    }
+
+    const oldEntityId = changedProps.get("entityId");
+    if (
+      changedProps.has("entityId") &&
+      oldEntityId !== undefined &&
+      oldEntityId !== this.entityId
+    ) {
+      this.resetEditorState();
+    }
+
+    if (
+      changedProps.has("scriptId") &&
       this.scriptId &&
       !this.entityId &&
       this.hass &&
@@ -964,6 +993,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     await this._saveScript(id);
     if (!this.scriptId) {
+      this.justSavedId = String(id);
       navigate(`/config/script/edit/${id}`, { replace: true });
     }
   }

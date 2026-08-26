@@ -155,6 +155,13 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
 
+    /**
+     * Id of an item that was just saved from the "new" editor. The follow-up
+     * navigation from edit/new to edit/<id> reuses this element and must not
+     * reset the editor state.
+     */
+    protected justSavedId?: string;
+
     private _relatedContextAreaId?: string;
 
     protected willUpdate(changedProps: PropertyValues): void {
@@ -271,6 +278,28 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
      */
     protected confirmUnsavedChanged(): Promise<boolean> {
       return Promise.resolve(true);
+    }
+
+    /**
+     * Reset per-item state when the edited item changes while this element is
+     * reused (same route page, different id), emulating a freshly opened
+     * editor. Callers skip the reset when the changed property's old value is
+     * `undefined`, which marks the first assignment on a fresh element.
+     */
+    protected resetEditorState() {
+      this.config = undefined;
+      this.mode = "gui";
+      this.readOnly = false;
+      this.errors = undefined;
+      this.yamlErrors = undefined;
+      this.validationErrors = undefined;
+      this.blueprintConfig = undefined;
+      this.deprecatedConfigMigrated = false;
+      this.entityRegistryUpdate = undefined;
+      this.entityRegCreated = undefined;
+      this.currentEntityId = undefined;
+      this.saving = false;
+      this._initDirtyTracking({ type: "deep" });
     }
 
     protected async loadConfig(id: string) {

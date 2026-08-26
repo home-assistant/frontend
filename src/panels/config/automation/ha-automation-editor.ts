@@ -150,6 +150,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     return super.isDirtyState || !!this.yamlErrors;
   }
 
+  protected override resetEditorState() {
+    super.resetEditorState();
+    this._undoRedoController.reset();
+    this._newAutomationId = undefined;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
@@ -659,6 +665,27 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     const oldAutomationId = changedProps.get("automationId");
     if (
       changedProps.has("automationId") &&
+      oldAutomationId !== undefined &&
+      oldAutomationId !== this.automationId
+    ) {
+      if (this.automationId && this.automationId === this.justSavedId) {
+        this.justSavedId = undefined;
+      } else {
+        this.resetEditorState();
+      }
+    }
+
+    const oldEntityId = changedProps.get("entityId");
+    if (
+      changedProps.has("entityId") &&
+      oldEntityId !== undefined &&
+      oldEntityId !== this.entityId
+    ) {
+      this.resetEditorState();
+    }
+
+    if (
+      changedProps.has("automationId") &&
       this.automationId &&
       // Only refresh config if we picked a new automation. If same ID, don't fetch it.
       oldAutomationId !== this.automationId
@@ -1050,6 +1077,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
     await this._saveAutomation(id);
     if (!this.automationId) {
+      this.justSavedId = id;
       navigate(`/config/automation/edit/${id}`, { replace: true });
     }
   }
