@@ -7,7 +7,11 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
-import { expandConditionWithShorthand } from "../../../../data/automation";
+import {
+  CONDITION_ROW_CONFIG_KEYS,
+  expandConditionWithShorthand,
+  pickRowConfig,
+} from "../../../../data/automation";
 import type { ConditionDescription } from "../../../../data/condition";
 import { COLLAPSIBLE_CONDITION_ELEMENTS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
@@ -125,8 +129,7 @@ export default class HaAutomationConditionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.condition.alias ? { alias: this.condition.alias } : {}),
-      ...(this.condition.note ? { note: this.condition.note } : {}),
+      ...pickRowConfig(this.condition, CONDITION_ROW_CONFIG_KEYS),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

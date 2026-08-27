@@ -8,7 +8,11 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/input/ha-input";
 import type { Trigger } from "../../../../data/automation";
-import { migrateAutomationTrigger } from "../../../../data/automation";
+import {
+  TRIGGER_ROW_CONFIG_KEYS,
+  migrateAutomationTrigger,
+  pickRowConfig,
+} from "../../../../data/automation";
 import type { TriggerDescription } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import { haStyle } from "../../../../resources/styles";
@@ -144,8 +148,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (isTriggerList(this.trigger)) return;
     ev.stopPropagation();
     const value = {
-      ...(this.trigger.alias ? { alias: this.trigger.alias } : {}),
-      ...(this.trigger.note ? { note: this.trigger.note } : {}),
+      ...pickRowConfig(this.trigger, TRIGGER_ROW_CONFIG_KEYS),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

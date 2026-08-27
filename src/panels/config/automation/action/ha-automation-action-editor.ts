@@ -3,6 +3,10 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  ACTION_ROW_CONFIG_KEYS,
+  pickRowConfig,
+} from "../../../../data/automation";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { COLLAPSIBLE_ACTION_ELEMENTS } from "../../../../data/action";
@@ -107,8 +111,7 @@ export default class HaAutomationActionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.action.alias ? { alias: this.action.alias } : {}),
-      ...(this.action.note ? { note: this.action.note } : {}),
+      ...pickRowConfig(this.action, ACTION_ROW_CONFIG_KEYS),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

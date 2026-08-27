@@ -9,6 +9,7 @@ import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import type { PlatformTrigger } from "../../../../../data/automation";
+import { TRIGGER_ROW_CONFIG_KEYS } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
@@ -27,15 +28,11 @@ const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   !("boolean" in field.selector && field.default);
 
 const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
+  ...TRIGGER_ROW_CONFIG_KEYS,
   "trigger",
   "target",
-  "alias",
-  "note",
-  "id",
-  "variables",
-  "enabled",
   "options",
-] as const;
+];
 
 @customElement("ha-automation-trigger-platform")
 export class HaPlatformTrigger extends LitElement {
