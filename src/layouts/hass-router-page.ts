@@ -18,6 +18,10 @@ const extractPage = (path: string, defaultPage: string) => {
     : path.substr(1, subpathStart - 1);
 };
 
+/** Remaining path is a single item id (`/abc`), not nested routing (`/edit/abc`). */
+const isItemIdPath = (path: string | undefined) =>
+  !!path && /^\/[^/]+$/.test(path);
+
 export interface RouteOptions {
   // HTML tag of the route page.
   tag: string;
@@ -138,6 +142,21 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     if (this._currentPage === newPage) {
+      const oldRoute = changedProps.get("route");
+      const oldTail = oldRoute ? computeRouteTail(oldRoute).path : undefined;
+      const newTail = route ? this._computeTail(route).path : undefined;
+      // A single extra segment is an item id and is not reused. Nested tails
+      // (`/edit/abc`) stay on the same router so cached dashboards survive.
+      if (
+        oldTail !== newTail &&
+        (isItemIdPath(oldTail) || isItemIdPath(newTail)) &&
+        routeOptions &&
+        typeof routeOptions === "object"
+      ) {
+        delete this._cache[newPage];
+        this._createPanel(routerOptions, newPage, routeOptions);
+        return;
+      }
       if (this.lastChild) {
         this.updatePageEl(this.lastChild, changedProps);
       }
@@ -365,7 +384,11 @@ export class HassRouterPage extends ReactiveElement {
     this.updatePageEl(panelEl);
     this.appendChild(panelEl);
 
-    if (routerOptions.cacheAll || routeOptions.cache) {
+    const tailPath = this.route ? this._computeTail(this.route).path : "";
+    if (
+      (routerOptions.cacheAll || routeOptions.cache) &&
+      !isItemIdPath(tailPath)
+    ) {
       this._cache[page] = panelEl;
     }
   }

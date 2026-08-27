@@ -221,7 +221,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsubscribeEvents) {
+    if (this._mode === "live" && this.hass && !document.hidden) {
+      this._stopLiveMode();
+    } else if (this._unsubscribeEvents) {
       this._unsubscribeEvents();
       this._unsubscribeEvents = undefined;
     }
@@ -839,11 +841,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   private _enterYamlMode() {
     if (this._mode === "live") {
       this._generateConfigFromLive();
-      if (this._unsubscribeEvents) {
-        this._unsubscribeEvents();
-        this._unsubscribeEvents = undefined;
-      }
-      applyScene(this.hass, this._storedStates);
+      this._stopLiveMode();
     }
     this._mode = "yaml";
   }
@@ -881,12 +879,17 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   private _exitLiveMode() {
     this._generateConfigFromLive();
+    this._stopLiveMode();
+    this._mode = "review";
+  }
+
+  /** Unsubscribe from live updates and restore the pre-live entity states. */
+  private _stopLiveMode() {
     if (this._unsubscribeEvents) {
       this._unsubscribeEvents();
       this._unsubscribeEvents = undefined;
     }
     applyScene(this.hass, this._storedStates);
-    this._mode = "review";
   }
 
   private _yamlChanged(ev: CustomEvent) {
@@ -911,11 +914,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    this._unsubscribeEvents =
-      await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => this._stateChanged(event),
-        "state_changed"
-      );
+    const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
+    if (!this.isConnected || this._mode !== "live") {
+      unsubscribe();
+      return;
+    }
+    this._unsubscribeEvents = unsubscribe;
   }
 
   private _showMoreInfo(ev: Event) {
@@ -928,6 +935,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -940,6 +950,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
               ),
       });
       goBack("/config/scene/dashboard");
+      return;
+    }
+
+    if (!this.isConnected) {
       return;
     }
 
