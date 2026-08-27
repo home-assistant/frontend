@@ -127,10 +127,20 @@ class PathPanel extends HTMLElement {
 class DashPanel extends HTMLElement {}
 
 class PathRouter extends HassRouterPage {
+  public editLoads = 0;
+
   protected routerOptions: RouterOptions = {
     routes: {
       dashboard: { tag: "test-dash-panel", cache: true },
-      edit: { tag: "test-path-panel", cache: true, itemId: true },
+      edit: {
+        tag: "test-path-panel",
+        cache: true,
+        itemId: true,
+        load: () => {
+          this.editLoads += 1;
+          return Promise.resolve();
+        },
+      },
       view: { tag: "test-path-panel", cache: true },
     },
   };
@@ -341,6 +351,7 @@ describe("HassRouterPage item ids", () => {
 
     const first = element.lastElementChild as PathPanel;
     expect(first.itemId).toBe("a");
+    expect(element.editLoads).toBe(1);
 
     element.route = { prefix: "/config/automation", path: "/edit/b" };
     await element.updateComplete;
@@ -349,6 +360,7 @@ describe("HassRouterPage item ids", () => {
     expect(second).not.toBe(first);
     expect(second.itemId).toBe("b");
     expect(first.isConnected).toBe(false);
+    expect(element.editLoads).toBe(2);
 
     element.remove();
   });

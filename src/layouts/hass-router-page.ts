@@ -148,14 +148,15 @@ export class HassRouterPage extends ReactiveElement {
         routeOptions.itemId &&
         oldTail !== newTail
       ) {
-        delete this._cache[newPage];
-        this._createPanel(routerOptions, newPage, routeOptions);
+        // Fall through to the normal create path so `load` / loading screen
+        // still run. itemId pages are not cached, so this is a new element.
+        this._currentPage = "";
+      } else {
+        if (this.lastChild) {
+          this.updatePageEl(this.lastChild, changedProps);
+        }
         return;
       }
-      if (this.lastChild) {
-        this.updatePageEl(this.lastChild, changedProps);
-      }
-      return;
     }
 
     if (!routeOptions) {
