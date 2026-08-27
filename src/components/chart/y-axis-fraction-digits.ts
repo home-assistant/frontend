@@ -9,14 +9,14 @@ const NEGLIGIBLE_RANGE_RATIO = 1e-10;
 // precision derived here cannot drift from the ticks it renders.
 const SPLIT_NUMBER = 5;
 
-// Fraction of the data span added at each end, so that ECharts' tick rounding —
-// which floors the minimum and ceils the maximum to a tick multiple — always has
-// something to round away. Quantized states otherwise land exactly on a tick,
-// the rounding changes nothing, and area-filled series collapse to zero height.
-// Any value between roughly 1e-15 and 1 / SPLIT_NUMBER works: large enough to
-// survive float64 addition at the data's magnitude, small enough that it can
-// never cross a tick by itself.
-const GAP_FRACTION_OF_SPAN = 1e-6;
+// How thin a gap between the data and the plot edge counts as no gap at all,
+// as a fraction of the data span. ECharts floors the axis minimum and ceils the
+// maximum to a tick multiple, which usually leaves headroom, but quantized
+// states often land exactly on a tick and get none — collapsing area-filled
+// series, which are drawn from their value down to the axis minimum. Widening
+// the extent by this much before that rounding bumps any axis with less
+// headroom out to a full tick, and leaves the rest where they are.
+const GAP_FRACTION_OF_SPAN = 0.02;
 
 // Derive the number of decimal digits to use for Y-axis labels from the
 // observed data range, by asking ECharts for the same tick interval it will

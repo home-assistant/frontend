@@ -58,8 +58,10 @@ describe("Y-axis tick nudge", () => {
     expect(renderExtent([18, 21.2, 19], withGap())).toEqual([17.5, 21.5]);
   });
 
-  it("leaves an axis that already had a gap untouched", () => {
-    const data = [1.11109, 1.85849, 1.4];
+  it("leaves an axis with real headroom untouched", () => {
+    // Its minimum sits well clear of the tick below it, so the rounding it
+    // already gets is enough and the widened extent floors to the same place.
+    const data = [18.3, 21.2, 19.5];
     expect(renderExtent(data, withGap())).toEqual(
       renderExtent(data, { scale: true })
     );
@@ -71,7 +73,7 @@ describe("Y-axis tick nudge", () => {
     expect(
       renderExtent([0, 3500, 1200], {
         scale: true,
-        boundaryGap: [1e-6, 1e-6],
+        boundaryGap: [0.02, 0.02],
       })[0]
     ).toBe(-1000);
   });

@@ -142,7 +142,7 @@ describe("createYAxisPrecisionBounds", () => {
     const { min, max, boundaryGap, splitNumber } = makeBounds();
 
     // The gap is applied by ECharts, so the bounds stay auto-scaled.
-    expect(boundaryGap).toEqual([1e-6, 1e-6]);
+    expect(boundaryGap).toEqual([0.02, 0.02]);
     // Pinned rather than assumed, since the precision here is derived from it.
     expect(splitNumber).toBe(5);
     expect(min({ min: 18, max: 21.2 })).toBeUndefined();
@@ -158,7 +158,7 @@ describe("createYAxisPrecisionBounds", () => {
     expect(max({ min: 0, max: 3500 })).toBeUndefined();
 
     // A minimum clear of the gap is left to ECharts.
-    expect(min({ min: 0.01, max: 3500 })).toBeUndefined();
+    expect(min({ min: 100, max: 3500 })).toBeUndefined();
   });
 
   it("anchors an all-negative series at zero from above", () => {
