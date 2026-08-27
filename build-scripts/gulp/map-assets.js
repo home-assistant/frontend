@@ -1,13 +1,9 @@
-// Task to assemble the static assets of the vector base map: the MapLibre
-// style, the SDF glyphs it references and its icon sprites.
+// Assembles the static assets of the vector base map - style, SDF glyphs and
+// icon sprites - into /static/map/. vector.openstreetmap.org sets CORS headers
+// on its tiles only, so these cannot be loaded from there by a browser.
 //
-// All three are served from our own /static/map/. vector.openstreetmap.org
-// sets CORS headers on the tiles only, and self-hosting keeps the base map
-// under our control instead of adding a second host that can disappear.
-//
-// Glyphs and sprites are published as release archives by the VersaTiles
-// project, the same assets vector.openstreetmap.org serves. They are
-// downloaded once into a local cache and verified against a pinned digest.
+// Glyphs and sprites come from pinned VersaTiles releases, cached locally and
+// verified against a digest.
 
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
@@ -18,14 +14,12 @@ import gulp from "gulp";
 import { extract } from "tar";
 import paths from "../paths.cjs";
 
-// Tiles come from the OpenStreetMap Foundation, under their vector tile usage
-// policy: https://operations.osmfoundation.org/policies/vector/. We never name
-// the tile URL: the OSMF asks consumers to resolve it through the TileJSON so
-// they can move the tiles without every client needing a release.
+// The tile URL is deliberately never named here: the OSMF asks consumers to
+// resolve it through the TileJSON so they can move the tiles without every
+// client needing a release. https://operations.osmfoundation.org/policies/vector/
 const TILEJSON_URL =
   "https://vector.openstreetmap.org/shortbread_v1/tilejson.json";
 
-// Where the assets end up relative to the served root.
 const ASSET_PATH = "/static/map";
 
 const ARCHIVES = {
@@ -39,9 +33,8 @@ const ARCHIVES = {
   },
 };
 
-// Codepoint blocks MapLibre renders with a local system font through
-// `localIdeographFontFamily`, so their glyphs never have to be downloaded.
-// They are 90% of the Noto Sans SDF set, which is why we can ship the rest.
+// Rendered with a device font through `localIdeographFontFamily`, so these are
+// never downloaded - and they are 90% of the Noto Sans SDF set.
 const LOCAL_IDEOGRAPH_BLOCKS = [
   [0x2e80, 0x9fff], // CJK radicals through CJK Unified Ideographs, incl. kana
   [0xac00, 0xd7ff], // Hangul syllables
@@ -49,10 +42,9 @@ const LOCAL_IDEOGRAPH_BLOCKS = [
   [0xfe30, 0xfe4f], // CJK compatibility forms
 ];
 
-// The styles we ship only use bold for motorway shields, which carry road refs.
-// Latin, Greek and Cyrillic cover every ref we render, so the rest of bold is
-// dropped - that is half of the glyph set. Anything else in bold would be a
-// name from OSM, in any script on earth, so `assertBoldStaysOnRefs` guards it.
+// Our styles use bold only for motorway shields, so Latin, Greek and Cyrillic
+// cover every ref and the rest of bold - half the glyph set - is dropped.
+// `assertBoldStaysOnRefs` guards the assumption.
 const BOLD_MAX_CODEPOINT = 0x04ff;
 const BOLD_TEXT_FIELD = "{ref}";
 
@@ -92,7 +84,6 @@ const cachedArchive = async (name, { url, sha256: expected }) => {
   return file;
 };
 
-// Glyph files are named after the 256 codepoint range they cover.
 const glyphRange = (entryPath) => {
   const match = /^(?<font>[^/]+)\/(?<start>\d+)-(?<end>\d+)\.pbf$/.exec(
     entryPath
@@ -115,14 +106,11 @@ const keepGlyph = (entryPath) => {
   );
 };
 
-// MapLibre only ever asks for the 1x and 2x sprite sheets.
 const keepSprite = (entryPath) =>
   /^basics\/sprites(@2x)?\.(json|png)$/.test(entryPath);
 
-// Dropping most of bold only holds while bold is reserved for road refs. The
-// `neutrino` style, for one, uses it for country and state labels, which would
-// turn to tofu outside Latin, Greek and Cyrillic. Fail the build rather than
-// ship a map that silently loses its labels in half the world.
+// `neutrino`, for one, sets country and state labels in bold - names in any
+// script, which would turn to tofu. Fail the build rather than ship that.
 const assertBoldStaysOnRefs = (name, style) => {
   const offenders = style.layers
     .filter((layer) =>
@@ -140,11 +128,9 @@ const assertBoldStaysOnRefs = (name, style) => {
   }
 };
 
-// Fields the TileJSON is the authority on. MapLibre lets the style win over
-// the fetched TileJSON - it extends the TileJSON with the source options and
-// picks from the result - so whatever we leave in here is frozen at build time.
-// Dropping them is what makes switching the tile source remotely switch all of
-// it, attribution and zoom range included, and not just the tile URLs.
+// MapLibre extends the fetched TileJSON with the style's source options, so
+// anything left here wins and freezes at build time. Dropping them is what lets
+// a remote switch move the attribution and zoom range too, not just the URLs.
 const TILEJSON_FIELDS = [
   "tiles",
   "attribution",
@@ -154,10 +140,9 @@ const TILEJSON_FIELDS = [
   "scheme",
 ];
 
-// The style builder can only write a tile URL template, so the source is
-// repointed at the TileJSON afterwards. The shortbread styles carry exactly one
-// source; anything else means the shape changed under us and the tile URL the
-// builder defaults to - its own host, not OSM - would ship unnoticed.
+// The builder can only write a tile URL, so the source is repointed afterwards.
+// Keyed on there being exactly one source: any other shape means the builder's
+// own default host would ship unnoticed.
 const useTileJson = (name, style) => {
   const sources = Object.values(style.sources);
 
@@ -176,8 +161,7 @@ const useTileJson = (name, style) => {
 };
 
 const styleOptions = {
-  // Keeps the generated URLs origin relative, so they resolve against whatever
-  // host the instance is reached on.
+  // Keeps the generated URLs origin relative.
   baseUrl: "",
   glyphs: `${ASSET_PATH}/fonts/{fontstack}/{range}.pbf`,
   sprite: [{ id: "basics", url: `${ASSET_PATH}/sprites/basics/sprites` }],
@@ -206,8 +190,7 @@ const buildMapAssets = async () => {
       cwd: path.join(outputDir, "sprites"),
       filter: keepSprite,
     }),
-    // The dark style is a real cartography rather than an inverted raster
-    // layer, so both themes are generated up front and swapped at runtime.
+    // Both themes up front: dark is a real cartography, not an inverted raster.
     ...[
       ["light", colorful],
       ["dark", eclipse],
@@ -222,8 +205,7 @@ const buildMapAssets = async () => {
   ]);
 };
 
-// Every build that gathers static files needs these assets, so the work is
-// shared instead of being wired into each pipeline separately.
+// Shared so it does not have to be wired into every pipeline separately.
 let pending;
 export const ensureMapAssets = () => {
   pending ??= buildMapAssets();
