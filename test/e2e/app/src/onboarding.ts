@@ -100,6 +100,7 @@ const commandResults: Record<string, unknown> = {
   },
   "lovelace/info": { resource_mode: "storage" },
   "lovelace/resources": [],
+  "map_tiles/access_token": { token: "map-tiles-token" },
   "recorder/info": {
     migration_in_progress: false,
     migration_is_live: false,
@@ -176,6 +177,13 @@ export async function setupOnboardingMocks(
   page: Page
 ): Promise<OnboardingCalls> {
   const calls: OnboardingCalls = { tokenRequests: [] };
+
+  // The location step shows a map, which asks core's tile proxy for tiles core
+  // is not running here. Answer them so the outcome does not depend on what the
+  // dev server does with an unknown /api path.
+  await page.route("**/api/map_tiles/**", (route) =>
+    route.fulfill({ status: 404, body: "" })
+  );
 
   await page.route("**/api/onboarding**", async (route) => {
     const request = route.request();

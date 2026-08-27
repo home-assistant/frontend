@@ -1,20 +1,15 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { waitForMs } from "../common/util/wait";
 
-// The map tiles are proxied by core, which is what lets them be requested with
-// an application User-Agent and without a referrer. That proxy is token gated.
 export const MAP_TILES_PATH = "/api/map_tiles";
 
-// Mirrors the brands token handling in util/brands-url.ts: refresh well within
-// the token's lifetime so a dashboard left open for days keeps working.
+// Well inside the token's lifetime, as util/brands-url.ts does.
 const TOKEN_REFRESH_MS = 30 * 60 * 1000;
 
-// Nothing on the map loads without a token, so the first attempts are awaited -
-// but only briefly, or a backend without the proxy would hold the map hostage
-// for half a minute. The rest ride through the window after a restart where the
-// WebSocket server is up but the integration has not registered its handler
-// yet, in the background: a late token still reaches the raster layer through
-// `subscribeMapTilesToken`, and the next map to open.
+// Nothing loads without a token, so the first attempts are awaited - briefly,
+// or a backend without the proxy would hold the map hostage. The rest retry in
+// the background, for the window after a restart where the WebSocket is up but
+// the handler is not registered yet.
 const BLOCKING_DELAYS_MS = [0, 400, 1000];
 const BACKGROUND_DELAYS_MS = [2000, 5000, 10000, 15000];
 
@@ -32,11 +27,6 @@ const fetchToken = async (connection: Connection): Promise<void> => {
   }
 };
 
-/**
- * Fetches a token if there is none yet and keeps it fresh for as long as a map
- * is on screen. Resolves once a token is available, or without one if the
- * backend does not have the proxy - callers fall back rather than fail.
- */
 const attempt = async (connection: Connection, delays: number[]) => {
   /* eslint-disable no-await-in-loop -- retries are intentionally sequential */
   for (const delay of delays) {
@@ -93,9 +83,8 @@ export const subscribeMapTilesToken = (
 };
 
 /**
- * Resolves a URL against the current page and adds the token if it points at
- * the proxy. MapLibre hands tile URLs to a worker, which has no document to
- * resolve a relative URL against, so this has to produce an absolute one.
+ * MapLibre hands tile URLs to a worker, which has no document to resolve a
+ * relative URL against, so the result has to be absolute.
  */
 export const withMapTilesToken = (url: string): string => {
   let parsed: URL;

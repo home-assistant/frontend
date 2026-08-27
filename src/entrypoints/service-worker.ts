@@ -117,11 +117,9 @@ const initRouting = () => {
     })
   );
 
-  // Map tiles, glyphs and sprites are proxied by core behind a token that
-  // rotates every half hour. Strip it from the cache key, or every rotation
-  // would refetch every tile a dashboard has ever shown. The TileJSON is
-  // deliberately not matched here: it is the switching point for the tile
-  // source, so it stays on the network.
+  // Strip the rotating token from the cache key, or every rotation refetches
+  // every tile. The TileJSON is deliberately not matched: it is the switching
+  // point for the tile source, so it stays on the network.
   registerRoute(
     ({ url }) =>
       /^\/api\/map_tiles\/(vector|raster|fonts|sprites)\//.test(url.pathname),
@@ -135,8 +133,7 @@ const initRouting = () => {
             return url.href;
           },
         },
-        // A tile fetched with a stale token comes back 403; caching that would
-        // pin the failure in place.
+        // A stale token gives a 403; caching that would pin the failure.
         new CacheableResponsePlugin({ statuses: [0, 200] }),
         new ExpirationPlugin({
           maxEntries: 500,
