@@ -25,13 +25,12 @@ const STYLE = {
   sprite: [{ id: "basics", url: "/static/map/sprites/basics/sprites" }],
 };
 
-const rasterLayer = { addTo: vi.fn() };
-// Kept as a local so tests can flip it: @types/leaflet has it readonly.
-const browser = { retina: false };
+const rasterLayer = { addTo: vi.fn(), options: {} as Record<string, unknown> };
 const leaflet = {
   tileLayer: vi.fn(() => rasterLayer),
-  Browser: browser,
 } as unknown as LeafletModuleType;
+
+const TOKEN = "test-token";
 
 // `createVectorLayer` listens on both the MapLibre map and the Leaflet map.
 const glHandlers: Record<string, () => void> = {};
@@ -79,40 +78,28 @@ describe("createBaseLayer", () => {
   it("falls back to raster tiles without WebGL2", async () => {
     const createBaseLayer = await setWebGL2(false);
 
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(isRaster()).toBe(true);
     expect(maplibreGL).not.toHaveBeenCalled();
     expect(rasterLayer.addTo).toHaveBeenCalledWith(map);
     const [url, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
-    // No referrer: the only one a browser can send is its origin, which
-    // identifies a Nabu Casa installation. The fallback source is chosen so it
-    // does not need one.
-    expect(options).not.toHaveProperty("referrerPolicy");
+    // Through core's proxy, which is what identifies Home Assistant upstream -
+    // a browser can set neither a User-Agent nor a Referer.
+    expect(url).toContain("/api/map_tiles/raster/{z}/{x}/{y}.png");
+    // Leaflet substitutes options into the template on every tile request, so
+    // the token can be refreshed without recreating the layer.
+    expect(url).toContain("token={token}");
+    expect(options).toMatchObject({ token: TOKEN });
     // The vector layer takes its credit from the style's source instead, so the
-    // raster layer is the only one carrying attribution itself - and it credits
-    // both the data and whoever rendered it.
+    // raster layer is the only one carrying attribution itself.
     expect(options.attribution).toContain("openstreetmap.org/copyright");
-    expect(options.attribution).toContain("carto.com/attributions");
-    expect(url).toMatch(/\{z\}\/\{x\}\/\{y\}/);
-  });
-
-  // The devices on the fallback are the old retina tablets, and the source
-  // serves @2x, so they get sharp tiles without quadrupling the requests.
-  it("asks for @2x raster tiles on a retina screen", async () => {
-    const createBaseLayer = await setWebGL2(false);
-    browser.retina = true;
-
-    await createBaseLayer(leaflet, map, false);
-
-    expect(vi.mocked(leaflet.tileLayer).mock.calls[0][0]).toContain("@2x.png");
-    browser.retina = false;
   });
 
   it("uses vector tiles when WebGL2 is available", async () => {
     const createBaseLayer = await setWebGL2(true);
 
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(maplibreGL).toHaveBeenCalledOnce();
     expect(maplibreLayer.addTo).toHaveBeenCalledWith(map);
@@ -128,7 +115,7 @@ describe("createBaseLayer", () => {
       })
     );
 
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(isRaster()).toBe(true);
   });
@@ -141,7 +128,7 @@ describe("createBaseLayer", () => {
       throw new Error("Failed to initialize WebGL");
     });
 
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(isRaster()).toBe(true);
     expect(maplibreLayer.remove).toHaveBeenCalled();
@@ -156,7 +143,7 @@ describe("createBaseLayer", () => {
       throw new Error("nothing to remove");
     });
 
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(isRaster()).toBe(true);
   });
@@ -169,7 +156,7 @@ describe("setDarkMode", () => {
 
   it("swaps the style, and ignores a repeat of the current mode", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false);
+    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
 
     baseLayer.setDarkMode(true);
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
@@ -183,7 +170,7 @@ describe("setDarkMode", () => {
   // the tracked mode, and the next toggle to that mode would do nothing.
   it("can retry a mode whose request failed while another was in flight", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false);
+    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
 
     const failing = vi.fn(async () => {
       throw new Error("offline");
@@ -230,7 +217,7 @@ describe("setDarkMode", () => {
 
     // The layer only settles once its first style resolves, so let that one
     // through before the map exists to switch.
-    const pending = createBaseLayer(leaflet, map, false);
+    const pending = createBaseLayer(leaflet, map, false, TOKEN);
     await vi.waitFor(() => expect(resolvers).toHaveLength(1));
     resolvers.shift()!(styleResponse("light"));
     const baseLayer = await pending;
@@ -262,7 +249,7 @@ describe("WebGL context loss", () => {
 
   it("falls back to raster tiles when the context stays lost", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
     expect(leaflet.tileLayer).not.toHaveBeenCalled();
 
     glHandlers.webglcontextlost();
@@ -274,7 +261,7 @@ describe("WebGL context loss", () => {
 
   it("keeps the vector layer when the context comes back", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     glHandlers.webglcontextlost();
     glHandlers.webglcontextrestored();
@@ -290,7 +277,7 @@ describe("WebGL context loss", () => {
   it("waits for the page to be visible before falling back", async () => {
     const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();
@@ -306,7 +293,7 @@ describe("WebGL context loss", () => {
   it("keeps the vector layer when a hidden page gets its context back", async () => {
     const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     glHandlers.webglcontextlost();
     glHandlers.webglcontextrestored();
@@ -321,7 +308,7 @@ describe("WebGL context loss", () => {
   it("stops listening for visibility once it has fallen back", async () => {
     const remove = vi.spyOn(document, "removeEventListener");
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();
@@ -338,7 +325,7 @@ describe("WebGL context loss", () => {
 
   it("stops answering theme changes once it has fallen back", async () => {
     const createBaseLayer = await setWebGL2(true);
-    const baseLayer = await createBaseLayer(leaflet, map, false);
+    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
 
     glHandlers.webglcontextlost();
     vi.runAllTimers();

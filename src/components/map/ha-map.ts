@@ -29,6 +29,7 @@ import type { MapBaseLayer } from "../../common/map/base-layer";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
+import { ensureMapTilesToken } from "../../data/map_tiles";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
 import { filterXSS } from "../../common/util/xss";
 import {
@@ -327,11 +328,19 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
+      // The tiles are proxied by core behind a token, so nothing loads without
+      // one. A host that provides no connection, or a backend without the
+      // proxy, leaves the map without tiles rather than failing to set up.
+      const token = this._connection
+        ? await ensureMapTilesToken(this._connection.connection)
+        : undefined;
+
       const setup = await setupLeafletMap(map, {
         latitude: this._config?.latitude ?? 52.3731339,
         longitude: this._config?.longitude ?? 4.8903147,
         zoom: this.zoom,
         darkMode: this._darkMode,
+        token,
       });
       // Setting up fetches a style, so the element can be gone by now.
       // `disconnectedCallback` had no map to tear down, and keeping this one
