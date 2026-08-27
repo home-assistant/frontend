@@ -11,9 +11,11 @@ import {
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
   hasZWaveJSEntryForDevice,
+  isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
 } from "../../src/data/esphome_setup";
+import type { SerialPortUsage } from "../../src/data/usb";
 
 const capabilities = (
   overrides: Partial<ESPHomeDeviceCapabilities> = {}
@@ -33,12 +35,38 @@ const deriveOptions = (
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
     zwaveJsEntryExists: boolean;
+    serialConfigured: boolean;
   }> = {}
 ) => ({
   mediaPlayerSupported: false,
   musicAssistantLoaded: false,
   zwaveJsEntryExists: false,
+  serialConfigured: false,
   ...overrides,
+});
+
+const serialProxy = (
+  url = "esphome-hass://esphome/entry?port_name=uart0",
+  name = "UART"
+) => ({
+  name,
+  port_type: "TTL" as const,
+  url,
+});
+
+const serialUsage = (
+  device: string,
+  consumerCount = 0
+): Pick<SerialPortUsage, "device" | "consumers"> => ({
+  device,
+  consumers: Array.from({ length: consumerCount }, (_, index) => ({
+    kind: "config_entry" as const,
+    title: `Consumer ${index + 1}`,
+    active: true,
+    domain: "monoprice",
+    config_entry_id: `entry-${index}`,
+    slug: null,
+  })),
 });
 
 const entry = (overrides: Partial<ConfigEntry>): ConfigEntry =>
@@ -221,21 +249,49 @@ describe("deriveESPHomeSetupStatus", () => {
     ).toBe("completed");
   });
 
-  it("keeps serial at not-started when ports are advertised", () => {
+  it("marks serial completed only when an advertised UART is in use", () => {
+    const caps = capabilities({
+      serial_proxies: [serialProxy()],
+    });
+
+    expect(deriveESPHomeSetupStatus(caps, deriveOptions()).serial).toBe(
+      "not-started"
+    );
     expect(
-      deriveESPHomeSetupStatus(
-        capabilities({
-          serial_proxies: [
-            {
-              name: "RS232",
-              port_type: "RS232",
-              url: "esphome-hass://proxy/rs232",
-            },
-          ],
-        }),
-        deriveOptions()
-      ).serial
-    ).toBe("not-started");
+      deriveESPHomeSetupStatus(caps, deriveOptions({ serialConfigured: true }))
+        .serial
+    ).toBe("completed");
+  });
+});
+
+describe("isESPHomeSerialConfigured", () => {
+  const url = "esphome-hass://esphome/entry?port_name=uart0";
+
+  it("is true when a matching port has consumers", () => {
+    expect(
+      isESPHomeSerialConfigured(
+        [serialProxy(url)],
+        [serialUsage(url, 1), serialUsage("/dev/ttyUSB0", 1)]
+      )
+    ).toBe(true);
+  });
+
+  it("is false when the matching port has no consumers", () => {
+    expect(
+      isESPHomeSerialConfigured(
+        [serialProxy(url)],
+        [serialUsage(url), serialUsage("/dev/ttyUSB0", 1)]
+      )
+    ).toBe(false);
+  });
+
+  it("is false when consumers are on a different device URL", () => {
+    expect(
+      isESPHomeSerialConfigured(
+        [serialProxy(url)],
+        [serialUsage("esphome-hass://esphome/other?port_name=uart0", 1)]
+      )
+    ).toBe(false);
   });
 });
 
@@ -305,6 +361,20 @@ describe("remaining capabilities and continue-setup", () => {
       })
     );
 
+    expect(countRemainingESPHomeCapabilities(status)).toBe(0);
+    expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
+  });
+
+  it("treats a configured serial port as remaining-zero and started", () => {
+    const status = deriveESPHomeSetupStatus(
+      capabilities({
+        bluetooth_proxy: { supported: true },
+        serial_proxies: [serialProxy()],
+      }),
+      deriveOptions({ serialConfigured: true })
+    );
+
+    expect(status.serial).toBe("completed");
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
   });

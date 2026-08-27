@@ -7011,6 +7011,7 @@
             "setup_serial_choose": "Choose an integration",
             "setup_serial_intro": "Choose an integration to set up a serial device on this ESPHome device. The integration will let you pick the serial port.",
             "setup_serial_ports": "Ports on this device",
+            "setup_serial_configured": "Configured",
             "setup_serial_integrations": "Serial integrations"
           }
         },

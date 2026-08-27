@@ -50,6 +50,7 @@ import {
   ESPHOME_SERIAL_INTEGRATIONS,
   getESPHomeSetupCapabilityIds,
   hasZWaveJSEntryForDevice,
+  isESPHomeSerialConfigured,
   MUSIC_ASSISTANT_ADDON_SLUG,
   MUSIC_ASSISTANT_DOCS_URL,
   type ESPHomeCapabilityId,
@@ -64,6 +65,7 @@ import {
 } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
 import { domainToName, fetchIntegrationManifest } from "../../data/integration";
+import { listSerialPortsWithUsage, type SerialPortUsage } from "../../data/usb";
 import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -140,6 +142,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _configEntries?: ContextType<typeof configEntriesContext>;
 
   @state() private _capabilities?: ESPHomeDeviceCapabilities;
+
+  @state() private _serialPorts: SerialPortUsage[] = [];
 
   @state() private _fetching = true;
 
@@ -298,7 +302,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       ? this._renderConnectivityActions(status)
                       : nothing
                   }
-                  ${id === "serial" ? this._renderSerialActions() : nothing}
+                  ${id === "serial" ? this._renderSerialActions(status) : nothing}
                 </div>
               `
             : nothing
@@ -515,8 +519,60 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderSerialActions() {
+  private _serialConsumers(url: string) {
+    return (
+      this._serialPorts.find((port) => port.device === url)?.consumers ?? []
+    );
+  }
+
+  private _renderSerialPortList() {
+    const ports = this._capabilities?.serial_proxies ?? [];
+    if (!ports.length) {
+      return nothing;
+    }
+    const localize = this._i18n!.localize;
     return html`
+      <ul class="ports">
+        ${ports.map((port) => {
+          const consumers = this._serialConsumers(port.url);
+          return html`
+            <li>
+              <span class="port-text">
+                <span class="port-name">${port.name}</span>
+                ${
+                  port.port_type
+                    ? html`<span class="port-type">${port.port_type}</span>`
+                    : nothing
+                }
+                ${
+                  consumers.length
+                    ? html`<span class="port-type">
+                        ${consumers.map((consumer) => consumer.title).join(", ")}
+                      </span>`
+                    : nothing
+                }
+              </span>
+              ${
+                consumers.length
+                  ? html`
+                      <span class="chip active">
+                        ${localize(
+                          "ui.panel.config.devices.esphome.setup_serial_configured"
+                        )}
+                      </span>
+                    `
+                  : nothing
+              }
+            </li>
+          `;
+        })}
+      </ul>
+    `;
+  }
+
+  private _renderSerialActions(status: ESPHomeCapabilityStatus) {
+    return html`
+      ${status === "completed" ? this._renderSerialPortList() : nothing}
       <div class="actions">
         <ha-button @click=${this._showSerial}>
           ${this._i18n!.localize(
@@ -579,22 +635,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                   "ui.panel.config.devices.esphome.setup_serial_ports"
                 )}
               </h3>
-              <ul class="ports">
-                ${ports.map(
-                  (port) => html`
-                    <li>
-                      ${port.name}
-                      ${
-                        port.port_type
-                          ? html`<span class="port-type"
-                              >${port.port_type}</span
-                            >`
-                          : nothing
-                      }
-                    </li>
-                  `
-                )}
-              </ul>
+              ${this._renderSerialPortList()}
             `
           : nothing
       }
@@ -662,6 +703,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
             this._configEntries
           )
         : false,
+      serialConfigured: isESPHomeSerialConfigured(
+        this._capabilities.serial_proxies,
+        this._serialPorts
+      ),
     });
   }
 
@@ -676,7 +721,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         this._api,
         this.params.deviceId
       );
+      const serialPorts = await this._fetchSerialUsage(capabilities);
       this._capabilities = capabilities;
+      this._serialPorts = serialPorts;
       const status = this._status();
       if (status && this._expanded === undefined) {
         this._expanded =
@@ -693,6 +740,24 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
             );
     } finally {
       this._fetching = false;
+    }
+  }
+
+  private async _fetchSerialUsage(
+    capabilities: ESPHomeDeviceCapabilities
+  ): Promise<SerialPortUsage[]> {
+    if (
+      !capabilities.serial_proxies.length ||
+      !this._api ||
+      !this._hassConfig ||
+      !isComponentLoaded(this._hassConfig.config, "usb")
+    ) {
+      return [];
+    }
+    try {
+      return await listSerialPortsWithUsage(this._api);
+    } catch {
+      return [];
     }
   }
 
@@ -1175,12 +1240,36 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           font-weight: var(--ha-font-weight-medium);
         }
         .ports {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
           margin: 0 0 var(--ha-space-4);
-          padding-inline-start: var(--ha-space-5);
+          padding: 0;
+          list-style: none;
+        }
+        .ports li {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-3);
+          padding: var(--ha-space-3);
+          border: 1px solid var(--divider-color);
+          border-radius: var(--ha-border-radius-lg);
+          background: var(--card-background-color);
+        }
+        .port-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          min-width: 0;
+          flex: 1;
+        }
+        .port-name {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
         }
         .port-type {
           color: var(--secondary-text-color);
-          margin-inline-start: var(--ha-space-2);
+          font-size: var(--ha-font-size-s);
         }
         ha-list-item-button ha-domain-icon {
           width: 24px;

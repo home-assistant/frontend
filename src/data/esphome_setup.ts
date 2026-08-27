@@ -1,8 +1,9 @@
 import { computeDomain } from "../common/entity/compute_domain";
 import type { ConfigEntry } from "./config_entries";
 import type { DeviceRegistryEntry } from "./device/device_registry";
-import type { ESPHomeDeviceCapabilities } from "./esphome";
+import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
+import type { SerialPortUsage } from "./usb";
 
 export const MUSIC_ASSISTANT_ADDON_SLUG = "d5369777_music_assistant";
 
@@ -29,7 +30,7 @@ export interface ESPHomeSetupStatus {
   bluetooth?: "completed";
   audio?: "active" | "completed";
   connectivity?: "not-started" | "detected" | "completed";
-  serial?: "not-started";
+  serial?: "not-started" | "completed";
 }
 
 export const CAPABILITY_ORDER: ESPHomeCapabilityId[] = [
@@ -98,12 +99,21 @@ export const hasZWaveJSEntryForDevice = (
   );
 };
 
+export const isESPHomeSerialConfigured = (
+  serialProxies: readonly Pick<ESPHomeSerialProxy, "url">[],
+  ports: readonly Pick<SerialPortUsage, "device" | "consumers">[]
+): boolean =>
+  serialProxies.some((proxy) =>
+    ports.some((port) => port.device === proxy.url && port.consumers.length > 0)
+  );
+
 export const deriveESPHomeSetupStatus = (
   capabilities: ESPHomeDeviceCapabilities,
   options: {
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
     zwaveJsEntryExists: boolean;
+    serialConfigured?: boolean;
   }
 ): ESPHomeSetupStatus => {
   const status: ESPHomeSetupStatus = {};
@@ -127,7 +137,7 @@ export const deriveESPHomeSetupStatus = (
   }
 
   if (capabilities.serial_proxies.length > 0) {
-    status.serial = "not-started";
+    status.serial = options.serialConfigured ? "completed" : "not-started";
   }
 
   return status;
@@ -148,7 +158,9 @@ export const countRemainingESPHomeCapabilities = (
 export const hasStartedNonBluetoothESPHomeSetup = (
   status: ESPHomeSetupStatus
 ): boolean =>
-  status.audio === "completed" || status.connectivity === "completed";
+  status.audio === "completed" ||
+  status.connectivity === "completed" ||
+  status.serial === "completed";
 
 export const isESPHomeSetupDeferred = (
   data: ESPHomeFrontendUserData | null | undefined,

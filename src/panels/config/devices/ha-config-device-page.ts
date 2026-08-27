@@ -95,6 +95,7 @@ import {
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
   hasZWaveJSEntryForDevice,
+  isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
 } from "../../../data/esphome_setup";
@@ -105,6 +106,7 @@ import {
 } from "../../../data/frontend";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { listSerialPortsWithUsage } from "../../../data/usb";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
@@ -230,6 +232,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   @state() private _esphomeCapabilities?: ESPHomeDeviceCapabilities;
+
+  @state() private _esphomeSerialConfigured = false;
 
   @state() private _esphomeUserData: ESPHomeFrontendUserData | null = null;
 
@@ -401,6 +405,7 @@ export class HaConfigDevicePage extends LitElement {
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
       this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -516,6 +521,7 @@ export class HaConfigDevicePage extends LitElement {
             this.hass.devices,
             this.entries
           ),
+          serialConfigured: this._esphomeSerialConfigured,
         })
       : undefined;
     const esphomeRemaining = esphomeStatus
@@ -1271,6 +1277,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = this.hass.devices[deviceId];
     if (!device) {
       this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
       return;
     }
     const domains = this._integrations(
@@ -1280,6 +1287,7 @@ export class HaConfigDevicePage extends LitElement {
     ).map((entry) => entry.domain);
     if (!domains.includes("esphome")) {
       this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
       return;
     }
     try {
@@ -1287,15 +1295,32 @@ export class HaConfigDevicePage extends LitElement {
         this.hass,
         deviceId
       );
+      let serialConfigured = false;
+      if (
+        capabilities.serial_proxies.length > 0 &&
+        isComponentLoaded(this.hass.config, "usb")
+      ) {
+        try {
+          const ports = await listSerialPortsWithUsage(this.hass);
+          serialConfigured = isESPHomeSerialConfigured(
+            capabilities.serial_proxies,
+            ports
+          );
+        } catch (_err) {
+          serialConfigured = false;
+        }
+      }
       if (this.deviceId !== deviceId) {
         return;
       }
       this._esphomeCapabilities = capabilities;
+      this._esphomeSerialConfigured = serialConfigured;
     } catch (_err) {
       if (this.deviceId !== deviceId) {
         return;
       }
       this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
     }
   }
 
