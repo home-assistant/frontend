@@ -72,13 +72,25 @@ describe("computeYAxisFractionDigits", () => {
 });
 
 describe("createYAxisPrecisionBounds", () => {
-  it("computes digits from the visible extent when no bounds are set", () => {
+  const makeBounds = (
+    options: Omit<
+      Parameters<typeof createYAxisPrecisionBounds>[0],
+      "onFractionDigits"
+    > = {}
+  ) => {
     const onFractionDigits = vi.fn();
-    const { min, max } = createYAxisPrecisionBounds({ onFractionDigits });
+    return {
+      ...createYAxisPrecisionBounds({ ...options, onFractionDigits }),
+      onFractionDigits,
+    };
+  };
+
+  it("computes digits from the visible extent when no bounds are set", () => {
+    const { min, max, onFractionDigits } = makeBounds();
 
     // Zoomed-out extent -> coarse precision, callbacks leave scaling to ECharts
-    expect(min({ min: 0, max: 100 })).toBeUndefined();
-    expect(max({ min: 0, max: 100 })).toBeUndefined();
+    expect(min({ min: 10, max: 100 })).toBeUndefined();
+    expect(max({ min: 10, max: 100 })).toBeUndefined();
     expect(onFractionDigits).toHaveBeenLastCalledWith(0);
 
     // Zoomed-in narrow extent -> more decimals so ticks stay distinct
@@ -87,12 +99,7 @@ describe("createYAxisPrecisionBounds", () => {
   });
 
   it("computes digits from numeric bounds and returns them unchanged", () => {
-    const onFractionDigits = vi.fn();
-    const { min, max } = createYAxisPrecisionBounds({
-      min: 1.85,
-      max: 2,
-      onFractionDigits,
-    });
+    const { min, max, onFractionDigits } = makeBounds({ min: 1.85, max: 2 });
 
     // Fixed bounds pin the range, so the visible extent is ignored
     expect(min({ min: 1.9, max: 1.95 })).toBe(1.85);
@@ -101,11 +108,9 @@ describe("createYAxisPrecisionBounds", () => {
   });
 
   it("resolves function bounds and passes their result through", () => {
-    const onFractionDigits = vi.fn();
-    const { min, max } = createYAxisPrecisionBounds({
+    const { min, max, onFractionDigits } = makeBounds({
       min: ({ min: dataMin }) => dataMin - 1,
       max: ({ max: dataMax }) => dataMax + 1,
-      onFractionDigits,
     });
 
     expect(min({ min: 10, max: 11 })).toBe(9);
@@ -115,11 +120,7 @@ describe("createYAxisPrecisionBounds", () => {
   });
 
   it("unions the extent with zero for anchored axes", () => {
-    const onFractionDigits = vi.fn();
-    const { min } = createYAxisPrecisionBounds({
-      includeZero: true,
-      onFractionDigits,
-    });
+    const { min, onFractionDigits } = makeBounds({ includeZero: true });
 
     // Data sits at 20..25, but a bar axis renders from 0 -> coarse precision
     min({ min: 20, max: 25 });
@@ -131,10 +132,66 @@ describe("createYAxisPrecisionBounds", () => {
   });
 
   it("does not over-pad when the visible extent collapses to noise", () => {
-    const onFractionDigits = vi.fn();
-    const { min } = createYAxisPrecisionBounds({ onFractionDigits });
+    const { min, onFractionDigits } = makeBounds();
 
     min({ min: 0.3, max: 0.3 + 1e-15 });
     expect(onFractionDigits).toHaveBeenLastCalledWith(1);
+  });
+
+  it("widens the extent so ECharts always rounds out a gap", () => {
+    const { min, max, boundaryGap, splitNumber } = makeBounds();
+
+    // The gap is applied by ECharts, so the bounds stay auto-scaled.
+    expect(boundaryGap).toEqual([1e-6, 1e-6]);
+    // Pinned rather than assumed, since the precision here is derived from it.
+    expect(splitNumber).toBe(5);
+    expect(min({ min: 18, max: 21.2 })).toBeUndefined();
+    expect(max({ min: 18, max: 21.2 })).toBeUndefined();
+  });
+
+  it("anchors at zero instead of widening a non-negative series below it", () => {
+    const { min, max } = makeBounds();
+
+    // Without this, ECharts floors the widened -0.0035 to a full interval below
+    // zero, inventing a negative region on a power chart.
+    expect(min({ min: 0, max: 3500 })).toBe(0);
+    expect(max({ min: 0, max: 3500 })).toBeUndefined();
+
+    // A minimum clear of the gap is left to ECharts.
+    expect(min({ min: 0.01, max: 3500 })).toBeUndefined();
+  });
+
+  it("anchors an all-negative series at zero from above", () => {
+    const { min, max } = makeBounds();
+
+    expect(max({ min: -3500, max: 0 })).toBe(0);
+    expect(min({ min: -3500, max: 0 })).toBeUndefined();
+
+    // Mixed-sign data is widened at both ends.
+    expect(min({ min: -20, max: 20 })).toBeUndefined();
+    expect(max({ min: -20, max: 20 })).toBeUndefined();
+  });
+
+  it("keeps the expanded window ECharts gives a constant series", () => {
+    const { min, max, onFractionDigits } = makeBounds();
+
+    // ECharts only expands a flat extent while its bounds are equal, so the gap
+    // would otherwise collapse this to 20.99998..21.00002 at five decimals.
+    expect(min({ min: 21, max: 21 })).toBe(10);
+    expect(max({ min: 21, max: 21 })).toBe(35);
+    expect(onFractionDigits).toHaveBeenLastCalledWith(0);
+
+    // A series flat at zero has no magnitude to expand by.
+    expect(min({ min: 0, max: 0 })).toBe(0);
+    expect(max({ min: 0, max: 0 })).toBe(1);
+  });
+
+  it("never widens a zero-anchored axis", () => {
+    const { min, max, boundaryGap } = makeBounds({ includeZero: true });
+
+    // Widening below zero would defeat ECharts' anchoring and float the bars.
+    expect(boundaryGap).toEqual([0, 0]);
+    expect(min({ min: 0, max: 3500 })).toBeUndefined();
+    expect(max({ min: 20, max: 20 })).toBeUndefined();
   });
 });
