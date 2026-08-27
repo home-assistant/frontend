@@ -36,7 +36,12 @@ const CONTEXT_RESTORE_GRACE = 2000;
 // The zoom range belongs to the map rather than to the base layer: only Leaflet
 // tile layers report their own limits, and marker clustering needs the map to
 // have a maximum zoom whichever base layer is in use.
-export const MAP_MIN_ZOOM = 0;
+//
+// The floor is 1 rather than 0 on the adapter's own advice: at Leaflet zoom 0 it
+// drives the MapLibre map to -1, below the range MapLibre is specified for. No
+// drift was measurable there, but nobody looks at their house from world zoom,
+// so there is nothing to weigh against staying inside spec.
+export const MAP_MIN_ZOOM = 1;
 export const MAP_MAX_ZOOM = 20;
 
 export interface MapBaseLayer {
