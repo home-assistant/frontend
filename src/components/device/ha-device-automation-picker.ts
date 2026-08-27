@@ -11,9 +11,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
-  deviceAutomationExtraConfig,
   deviceAutomationsEqual,
-  findEquivalentDeviceAutomation,
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
@@ -181,12 +179,15 @@ export abstract class HaDeviceAutomationPicker<
       (a, idx) => value === `${a.device_id}_${idx}`
     );
 
-    const text = automation
+    const described =
+      automation ?? (this.value?.domain ? this.value : undefined);
+
+    const text = described
       ? this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
           this._entityReg,
-          automation
+          described
         )
       : value === NO_AUTOMATION_KEY
         ? this.NO_AUTOMATION_TEXT
@@ -196,45 +197,29 @@ export abstract class HaDeviceAutomationPicker<
   };
 
   private async _updateDeviceInfo() {
+    // Asking a removed device for its automations fails rather than returning
+    // an empty list.
     this._automations = this.deviceId
       ? (
-          await this._fetchDeviceAutomations(this.hass.callWS, this.deviceId)
+          await this._fetchDeviceAutomations(
+            this.hass.callWS,
+            this.deviceId
+          ).catch(() => [] as T[])
         ).sort(sortDeviceAutomations)
       : // No device, clear the list of automations
         [];
 
+    // If there is no value, or if we have changed the device ID, reset the value.
     if (!this.value || this.value.device_id !== this.deviceId) {
-      this._updateValueForDevice();
+      this._setValue(
+        this._automations.length
+          ? this._automations[0]
+          : this._createNoAutomation(this.deviceId)
+      );
     }
     this._renderEmpty = true;
     await this.updateComplete;
     this._renderEmpty = false;
-  }
-
-  // The current value belongs to another device, either because there is no
-  // value yet or because the device was just changed. Move it to the same
-  // automation on the new device when there is one, otherwise start over.
-  private _updateValueForDevice() {
-    if (this.deviceId && this.value) {
-      const equivalent = findEquivalentDeviceAutomation(
-        this._entityReg,
-        this._automations!,
-        this.value
-      );
-      if (equivalent) {
-        this._setValue({
-          ...equivalent,
-          ...deviceAutomationExtraConfig(this.value),
-        });
-        return;
-      }
-    }
-
-    this._setValue(
-      this._automations!.length
-        ? this._automations![0]
-        : this._createNoAutomation(this.deviceId)
-    );
   }
 
   private _automationChanged(ev: ValueChangedEvent<string>) {

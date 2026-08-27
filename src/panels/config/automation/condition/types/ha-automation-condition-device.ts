@@ -14,6 +14,8 @@ import type {
 } from "../../../../../data/device/device_automation";
 import {
   deviceAutomationEditorMode,
+  fetchReplacementDevices,
+  fetchDeviceConditions,
   deviceAutomationsEqual,
   fetchDeviceConditionCapabilities,
   localizeExtraFieldsComputeHelperCallback,
@@ -39,6 +41,8 @@ export class HaDeviceCondition extends LitElement {
   @state() private _capabilities?: DeviceCapabilities;
 
   @state() private _compositeSplits?: DeviceCompositeSplits;
+
+  @state() private _replacementDeviceIds?: string[];
 
   private _loadingCompositeSplits = false;
 
@@ -102,7 +106,17 @@ export class HaDeviceCondition extends LitElement {
     }
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      // Resolve the candidates before exposing the split map, so the picker
+      // never offers one that cannot host the automation.
+      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._replacementDeviceIds = await fetchReplacementDevices(
+        this.hass,
+        this._entityReg,
+        this.condition,
+        compositeSplits,
+        fetchDeviceConditions
+      );
+      this._compositeSplits = compositeSplits;
     } catch (_err) {
       this._compositeSplits = {};
     } finally {
@@ -116,6 +130,7 @@ export class HaDeviceCondition extends LitElement {
     return html`
       <ha-device-picker
         .value=${deviceId}
+        .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
         .disabled=${this.disabled}
@@ -187,6 +202,15 @@ export class HaDeviceCondition extends LitElement {
 
   private _devicePicked(ev) {
     ev.stopPropagation();
+    // The automation exists as is on the replacement, so only the reference
+    // changes and the rest of the configuration is left untouched.
+    if (this._replacementDeviceIds?.includes(ev.target.value)) {
+      this._deviceId = undefined;
+      fireEvent(this, "value-changed", {
+        value: { ...this.condition, device_id: ev.target.value },
+      });
+      return;
+    }
     this._deviceId = ev.target.value;
     if (this._deviceId === undefined) {
       fireEvent(this, "value-changed", {
