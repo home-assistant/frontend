@@ -3,12 +3,13 @@ import type { Map as LeafletMap } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 
-// The credit the OSM licence asks for. Both layers display this: the raster
-// layer because a Leaflet tile layer reads `attribution`, and the vector layer
-// because upstream's TileJSON declares only "&copy; OpenStreetMap", without
-// "contributors". Letting the provider's own string through would be the better
-// arrangement - the credit then follows whoever serves the tiles - and it is
-// what this reverts to once our own TileJSON carries a complete one.
+// Only the raster fallback needs this: a Leaflet tile layer reads it, while
+// the vector layer takes its attribution from the source in the style, which
+// the TileJSON fills in. That is deliberately the better way around - the
+// credit follows whoever serves the tiles, and once that TileJSON is ours it
+// can be corrected remotely instead of in a release. Do not override it here:
+// upstream's currently omits "contributors", and that is theirs to fix or ours
+// to serve, not something to hardcode past.
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
@@ -107,10 +108,6 @@ const createVectorLayer = async (
       // referrer to see which application their tiles are serving. Sending it
       // for the tiles alone keeps it to the origin, never the page URL.
       transformRequest: (url) => ({ url, referrerPolicy: "origin" }),
-      // The adapter reads this instead of `options.attribution`, and it
-      // replaces the style's source attribution rather than adding to it, so
-      // there is one credit on screen and it is the one the licence asks for.
-      attributionControl: { customAttribution: OSM_ATTRIBUTION },
     });
     // The plugin builds the MapLibre map in `onAdd`, so this is where a
     // missing WebGL context, a blocked worker or a rejected blob URL throws.
