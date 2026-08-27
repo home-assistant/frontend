@@ -1,12 +1,7 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
-import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
+import type { Map as LeafletMap } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
-import {
-  MAP_TILES_PATH,
-  subscribeMapTilesToken,
-  withMapTilesToken,
-} from "../../data/map_tiles";
 
 // Shortbread vector tiles from the OpenStreetMap Foundation. Only their tile
 // endpoint sends CORS headers, so the style, glyphs and sprites are ours to
@@ -19,10 +14,13 @@ const VECTOR_STYLES = {
 } as const;
 
 // Fallback for browsers without WebGL2, which MapLibre needs even for raster,
-// so it stays a Leaflet tile layer. OSM serves no @2x variant of these.
-const RASTER_TILE_URL = `${MAP_TILES_PATH}/raster/{z}/{x}/{y}.png?token={token}`;
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// so it stays a Leaflet tile layer. Still CARTO, and temporarily so: OSM's
+// raster blocks a browser that sends no Referer, and the only referrer a browser
+// can send is its origin, which identifies a Nabu Casa installation.
+const RASTER_TILE_URL = "https://basemaps.cartocdn.com/rastertiles/voyager";
+const CARTO_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+  '&copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 // Browsers keep about 16 live WebGL contexts and drop the oldest, so a dashboard
 // full of map cards loses its first ones for good - nothing frees a slot for
@@ -34,10 +32,6 @@ const CONTEXT_RESTORE_GRACE = 2000;
 // Leaflet zoom 0 the adapter drives MapLibre to -1, outside its range.
 export const MAP_MIN_ZOOM = 1;
 export const MAP_MAX_ZOOM = 20;
-
-// Leaflet substitutes any option into the URL template, but its types only
-// cover the ones it defines itself.
-type TokenTileLayerOptions = TileLayerOptions & { token?: string };
 
 export interface MapBaseLayer {
   // A no-op for raster, which has no dark variant and is inverted in CSS.
@@ -81,17 +75,17 @@ const createVectorLayer = async (
   createLayer: typeof maplibreGL,
   leaflet: LeafletModuleType,
   map: LeafletMap,
-  darkMode: boolean,
-  token: string | undefined
+  darkMode: boolean
 ): Promise<MapBaseLayer | undefined> => {
   let layer: ReturnType<typeof maplibreGL> | undefined;
 
   try {
     layer = createLayer({
       style: await loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"]),
-      // Every request goes to the token gated proxy, and tiles are fetched from
-      // a worker that has no document to resolve a relative URL against.
-      transformRequest: (url) => ({ url: withMapTilesToken(url) }),
+      // Draws CJK, kana and hangul with a device font, which is why we ship a
+      // tenth of the glyph set. No referrer is set: the endpoint serves without
+      // one, and the only one a browser can send identifies the installation.
+      localIdeographFontFamily: "sans-serif",
     });
     // The plugin builds the MapLibre map in `onAdd`, so a refused context, a
     // blocked worker or a rejected blob URL throws here. Keep it inside the
@@ -136,7 +130,7 @@ const createVectorLayer = async (
     } catch {
       // Nothing left to detach.
     }
-    createRasterLayer(leaflet, map, token);
+    createRasterLayer(leaflet, map);
   };
 
   const scheduleSwap = () => {
@@ -191,26 +185,20 @@ const createVectorLayer = async (
 
 const createRasterLayer = (
   leaflet: LeafletModuleType,
-  map: LeafletMap,
-  token: string | undefined
+  map: LeafletMap
 ): MapBaseLayer => {
-  const layer = leaflet
-    .tileLayer(RASTER_TILE_URL, {
-      attribution: OSM_ATTRIBUTION,
-      maxZoom: MAP_MAX_ZOOM,
-      // Leaflet throws while building a tile URL if a template variable is
-      // undefined, so an absent token has to be empty rather than missing: the
-      // tiles 403 and the map stays empty, but the markers still draw.
-      token: token ?? "",
-    } as TokenTileLayerOptions)
+  leaflet
+    .tileLayer(
+      // These are the old retina tablets, and CARTO serves @2x - sharp tiles at
+      // the same request count, where `detectRetina` would fetch a zoom deeper
+      // at four times as many.
+      `${RASTER_TILE_URL}/{z}/{x}/{y}${leaflet.Browser.retina ? "@2x" : ""}.png`,
+      {
+        attribution: CARTO_ATTRIBUTION,
+        maxZoom: MAP_MAX_ZOOM,
+      }
+    )
     .addTo(map);
-
-  // Leaflet substitutes the template from `options` on every tile request, so
-  // updating this is enough for a refreshed token to be picked up.
-  const unsubscribe = subscribeMapTilesToken((newToken) => {
-    (layer.options as TokenTileLayerOptions).token = newToken;
-  });
-  map.on("unload", unsubscribe);
 
   return { setDarkMode: () => undefined };
 };
@@ -218,8 +206,7 @@ const createRasterLayer = (
 export const createBaseLayer = async (
   leaflet: LeafletModuleType,
   map: LeafletMap,
-  darkMode: boolean,
-  token: string | undefined
+  darkMode: boolean
 ): Promise<MapBaseLayer> => {
   if (supportsWebGL2()) {
     let vectorLayer: MapBaseLayer | undefined;
@@ -230,8 +217,7 @@ export const createBaseLayer = async (
         createLayer,
         leaflet,
         map,
-        darkMode,
-        token
+        darkMode
       );
     } catch {
       // No chunk, no vector map - but still a map.
@@ -240,5 +226,5 @@ export const createBaseLayer = async (
       return vectorLayer;
     }
   }
-  return createRasterLayer(leaflet, map, token);
+  return createRasterLayer(leaflet, map);
 };
