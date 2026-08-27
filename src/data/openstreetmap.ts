@@ -35,8 +35,6 @@ export const searchPlaces = (
   addressdetails?: boolean,
   limit?: number
 ): Promise<OpenStreetMapPlace[]> =>
-  // A browser cannot set the User-Agent header, so identification towards
-  // Nominatim is done with the `email` query parameter.
   fetch(
     `https://nominatim.openstreetmap.org/search.php?q=${address}&format=jsonv2${
       limit ? `&limit=${limit}` : ""
@@ -55,8 +53,6 @@ export const reverseGeocode = (
   hass: HomeAssistant,
   zoom?: number
 ): Promise<OpenStreetMapPlace> =>
-  // A browser cannot set the User-Agent header, so identification towards
-  // Nominatim is done with the `email` query parameter.
   fetch(
     `https://nominatim.openstreetmap.org/reverse.php?lat=${location[0]}&lon=${
       location[1]
