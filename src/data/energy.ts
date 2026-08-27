@@ -1909,20 +1909,13 @@ export const downloadEnergyData = (
   const device_consumption_water = energyData.prefs.device_consumption_water;
   const stats = energyData.state.stats;
 
-  const timeSet = new Set<number>();
-  Object.values(stats).forEach((stat) => {
-    stat.forEach((datapoint) => {
-      timeSet.add(datapoint.start);
-    });
-  });
-  const times = Array.from(timeSet).sort();
-
-  const headers =
-    "entity_id,type,unit," +
-    times.map((t) => new Date(t).toISOString()).join(",") +
-    "\n";
-  const csv: string[] = [];
-  csv[0] = headers;
+  interface CsvRow {
+    id: string;
+    type: string;
+    unit: string;
+    data: StatisticValue[];
+  }
+  const rows: CsvRow[] = [];
 
   const processCsvRow = function (
     id: string,
@@ -1930,20 +1923,7 @@ export const downloadEnergyData = (
     unit: string,
     data: StatisticValue[]
   ) {
-    let n = 0;
-    const row: string[] = [];
-    row.push(id);
-    row.push(type);
-    row.push(unit.normalize("NFKD"));
-    times.forEach((t) => {
-      if (n < data.length && data[n].start === t) {
-        row.push((data[n].change ?? "").toString());
-        n++;
-      } else {
-        row.push("");
-      }
-    });
-    csv.push(row.join(",") + "\n");
+    rows.push({ id, type, unit, data });
   };
 
   const processStat = function (stat: string, type: string, unit: string) {
@@ -2189,6 +2169,33 @@ export const downloadEnergyData = (
       consumption.used_total
     );
   }
+
+  const timeSet = new Set<number>();
+  rows.forEach((row) => {
+    row.data.forEach((datapoint) => {
+      timeSet.add(datapoint.start);
+    });
+  });
+  const times = Array.from(timeSet).sort();
+
+  const csv: string[] = [
+    "entity_id,type,unit," +
+      times.map((t) => new Date(t).toISOString()).join(",") +
+      "\n",
+  ];
+  rows.forEach(({ id, type, unit, data }) => {
+    let n = 0;
+    const row: string[] = [id, type, unit.normalize("NFKD")];
+    times.forEach((t) => {
+      if (n < data.length && data[n].start === t) {
+        row.push((data[n].change ?? "").toString());
+        n++;
+      } else {
+        row.push("");
+      }
+    });
+    csv.push(row.join(",") + "\n");
+  });
 
   const blob = new Blob(csv, {
     type: "text/csv",
