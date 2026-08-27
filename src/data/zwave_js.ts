@@ -526,6 +526,16 @@ export const fetchZwaveNetworkStatus = (
   });
 };
 
+/** Node IDs of the nodes each node can reach directly, keyed by node ID. */
+export const fetchZwaveNetworkNeighbors = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<Record<number, number[]>> =>
+  hass.callWS({
+    type: "zwave_js/network_neighbors",
+    entry_id,
+  });
+
 export const fetchZwaveDataCollectionStatus = (
   hass: HomeAssistant,
   entry_id: string
