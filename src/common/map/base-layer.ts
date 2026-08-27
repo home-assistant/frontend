@@ -132,22 +132,55 @@ const createVectorLayer = async (
 
   const glMap = layer.getMaplibreMap();
   let fallbackTimeout: number | undefined;
+  let contextLost = false;
+
+  // Only ever fires after the three of these are initialized.
+  const handleVisibilityChange = () => {
+    if (contextLost) {
+      scheduleSwap();
+    }
+  };
+
+  const swapToRaster = () => {
+    vector = false;
+    // The MapLibre map goes with the layer, so there is nothing left to wait
+    // for a context for.
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    try {
+      layer.remove();
+    } catch {
+      // Nothing left to detach, the raster layer replaces it either way.
+    }
+    createRasterLayer(leaflet, map);
+  };
+
+  const scheduleSwap = () => {
+    clearTimeout(fallbackTimeout);
+    // A backgrounded tab is the other reason a context goes away, and there it
+    // does come back when the page is shown again. Only run the clock while the
+    // map is on screen, or switching apps for a while would be enough to come
+    // back to a raster map.
+    if (!vector || document.hidden) {
+      return;
+    }
+    fallbackTimeout = window.setTimeout(swapToRaster, CONTEXT_RESTORE_GRACE);
+  };
 
   glMap.on("webglcontextlost", () => {
-    clearTimeout(fallbackTimeout);
-    fallbackTimeout = window.setTimeout(() => {
-      vector = false;
-      try {
-        layer.remove();
-      } catch {
-        // Nothing left to detach, the raster layer replaces it either way.
-      }
-      createRasterLayer(leaflet, map);
-    }, CONTEXT_RESTORE_GRACE);
+    contextLost = true;
+    scheduleSwap();
   });
-  glMap.on("webglcontextrestored", () => clearTimeout(fallbackTimeout));
-  // Leaving the timer to fire on a map that is already gone would revive it.
-  map.on("unload", () => clearTimeout(fallbackTimeout));
+  glMap.on("webglcontextrestored", () => {
+    contextLost = false;
+    clearTimeout(fallbackTimeout);
+  });
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  map.on("unload", () => {
+    // Leaving these behind would revive a map that is already gone.
+    clearTimeout(fallbackTimeout);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+  });
 
   return {
     setDarkMode: (newDarkMode: boolean) => {
@@ -188,6 +221,10 @@ const createRasterLayer = (
       // referrer, and being blocked would take out the fallback on exactly the
       // devices that depend on it.
       referrerPolicy: "origin",
+      // The devices that end up here are the old retina tablets, and OSM
+      // serves no @2x raster tiles, so sharp tiles have to come from loading a
+      // zoom level deeper at half the tile size.
+      detectRetina: true,
     })
     .addTo(map);
 

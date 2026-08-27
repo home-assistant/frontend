@@ -34,6 +34,7 @@ export const setupLeafletMap = async (
     minZoom: MAP_MIN_ZOOM,
     maxZoom: MAP_MAX_ZOOM,
   });
+  map.attributionControl.setPrefix("");
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");

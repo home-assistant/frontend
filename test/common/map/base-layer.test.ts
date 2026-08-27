@@ -86,6 +86,9 @@ describe("createBaseLayer", () => {
     // devices that depend on it.
     expect(vi.mocked(leaflet.tileLayer).mock.calls[0][1]).toMatchObject({
       referrerPolicy: "origin",
+      // OSM serves no @2x raster tiles, and the devices that end up on the
+      // fallback are the old retina tablets.
+      detectRetina: true,
       // The vector layer gets this from the style's source instead, so the
       // raster layer is the only one that has to carry it itself.
       attribution: expect.stringContaining("openstreetmap.org/copyright"),
@@ -265,6 +268,58 @@ describe("WebGL context loss", () => {
 
     expect(maplibreLayer.remove).not.toHaveBeenCalled();
     expect(leaflet.tileLayer).not.toHaveBeenCalled();
+  });
+
+  // Backgrounding a tab loses the context too, and there it comes back when
+  // the page is shown again. Running the clock anyway would mean switching
+  // apps for a few seconds was enough to come back to a raster map.
+  it("waits for the page to be visible before falling back", async () => {
+    const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+    expect(leaflet.tileLayer).not.toHaveBeenCalled();
+
+    hidden.mockReturnValue(false);
+    document.dispatchEvent(new Event("visibilitychange"));
+    vi.runAllTimers();
+
+    expect(isRaster()).toBe(true);
+  });
+
+  it("keeps the vector layer when a hidden page gets its context back", async () => {
+    const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(true);
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+
+    glHandlers.webglcontextlost();
+    glHandlers.webglcontextrestored();
+
+    hidden.mockReturnValue(false);
+    document.dispatchEvent(new Event("visibilitychange"));
+    vi.runAllTimers();
+
+    expect(leaflet.tileLayer).not.toHaveBeenCalled();
+  });
+
+  it("stops listening for visibility once it has fallen back", async () => {
+    const remove = vi.spyOn(document, "removeEventListener");
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+
+    expect(remove).toHaveBeenCalledWith(
+      "visibilitychange",
+      expect.any(Function)
+    );
+    // And a later visibility change must not add a second raster layer.
+    document.dispatchEvent(new Event("visibilitychange"));
+    vi.runAllTimers();
+    expect(isRaster()).toBe(true);
   });
 
   it("stops answering theme changes once it has fallen back", async () => {

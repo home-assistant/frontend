@@ -21,8 +21,7 @@ import paths from "../paths.cjs";
 // Tiles come from the OpenStreetMap Foundation, under their vector tile usage
 // policy: https://operations.osmfoundation.org/policies/vector/. We never name
 // the tile URL: the OSMF asks consumers to resolve it through the TileJSON so
-// they can move the tiles without every client needing a release. It carries
-// the attribution, zoom range and bounds along with it.
+// they can move the tiles without every client needing a release.
 const TILEJSON_URL =
   "https://vector.openstreetmap.org/shortbread_v1/tilejson.json";
 
@@ -141,6 +140,20 @@ const assertBoldStaysOnRefs = (name, style) => {
   }
 };
 
+// Fields the TileJSON is the authority on. MapLibre lets the style win over
+// the fetched TileJSON - it extends the TileJSON with the source options and
+// picks from the result - so whatever we leave in here is frozen at build time.
+// Dropping them is what makes switching the tile source remotely switch all of
+// it, attribution and zoom range included, and not just the tile URLs.
+const TILEJSON_FIELDS = [
+  "tiles",
+  "attribution",
+  "bounds",
+  "minzoom",
+  "maxzoom",
+  "scheme",
+];
+
 // The style builder can only write a tile URL template, so the source is
 // repointed at the TileJSON afterwards. The shortbread styles carry exactly one
 // source; anything else means the shape changed under us and the tile URL the
@@ -155,7 +168,9 @@ const useTileJson = (name, style) => {
     );
   }
 
-  delete sources[0].tiles;
+  for (const field of TILEJSON_FIELDS) {
+    delete sources[0][field];
+  }
   sources[0].url = TILEJSON_URL;
   return style;
 };
