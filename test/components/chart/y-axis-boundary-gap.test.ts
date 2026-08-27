@@ -42,10 +42,11 @@ const renderExtent = (
   return extent;
 };
 
-const withGap = (includeZero = false) => ({
+const withGap = (includeZero = false, unit?: string) => ({
   scale: !includeZero,
   ...createYAxisPrecisionBounds({
     includeZero,
+    unit,
     onFractionDigits: () => undefined,
   }),
 });
@@ -86,6 +87,12 @@ describe("Y-axis tick nudge", () => {
     expect(renderExtent([0, 0, 0], withGap())).toEqual(
       renderExtent([0, 0, 0], { scale: true })
     );
+  });
+
+  it("does not round a percentage axis past 100", () => {
+    const battery = [20, 100, 60, 20, 80];
+    expect(renderExtent(battery, withGap())).toEqual([0, 120]);
+    expect(renderExtent(battery, withGap(false, "%"))).toEqual([0, 100]);
   });
 
   it("re-anchors at zero when a chart switches to a zero-anchored type", () => {

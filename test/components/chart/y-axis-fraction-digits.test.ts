@@ -186,6 +186,42 @@ describe("createYAxisPrecisionBounds", () => {
     expect(max({ min: 0, max: 0 })).toBe(1);
   });
 
+  it("stops a percentage axis at 100 the way it stops at zero", () => {
+    const { max } = makeBounds({ unit: "%" });
+
+    // A battery that reaches full would otherwise round out to an axis
+    // labelled up to 120%.
+    expect(max({ min: 20, max: 100 })).toBe(100);
+    expect(max({ min: 20, max: 99 })).toBe(100);
+
+    // Well clear of the ceiling, so it still gets its gap.
+    expect(max({ min: 40, max: 60 })).toBeUndefined();
+
+    // Not every % sensor is bounded: power factor is signed and can read over
+    // 100, and a series already past the ceiling must be left alone.
+    expect(max({ min: -80, max: 140 })).toBeUndefined();
+  });
+
+  it("holds a constant percentage under the ceiling too", () => {
+    const { max } = makeBounds({ unit: "%" });
+
+    // A device left on the charger reads a flat 100%, and the expansion a flat
+    // series gets is a fraction of its magnitude, so it overshoots on its own.
+    expect(max({ min: 100, max: 100 })).toBe(100);
+    expect(max({ min: 80, max: 80 })).toBe(100);
+
+    // Far enough below that the expansion never reaches the ceiling.
+    expect(max({ min: 54, max: 54 })).toBe(90);
+  });
+
+  it("only treats a percentage as bounded", () => {
+    // The same extent without the unit is widened as usual.
+    expect(makeBounds().max({ min: 20, max: 100 })).toBeUndefined();
+    expect(
+      makeBounds({ unit: "W" }).max({ min: 20, max: 100 })
+    ).toBeUndefined();
+  });
+
   it("never widens a zero-anchored axis", () => {
     const { min, max, boundaryGap } = makeBounds({ includeZero: true });
 
