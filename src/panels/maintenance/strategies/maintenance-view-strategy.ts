@@ -16,9 +16,10 @@ import type { TileCardConfig } from "../../lovelace/cards/types";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
-  type EntityRegistryDisplayEntry,
-  findBatteryChargingEntity,
-} from "../../../data/entity/entity_registry";
+  type DeviceEntityDisplayLookup,
+  getDeviceEntityDisplayLookup,
+} from "../../../data/device/device_registry";
+import { findBatteryChargingEntity } from "../../../data/entity/entity_registry";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
@@ -37,44 +38,48 @@ export const maintenanceEntityFilters: EntityFilter[] = [
 
 const LOW_BATTERY_THRESHOLD = 20;
 
-const _deviceEntities = memoizeOne(
-  (
-    deviceId: string,
-    entities: HomeAssistant["entities"]
-  ): EntityRegistryDisplayEntry[] => {
-    const entries = Object.values(entities);
-    return entries.filter((entity) => entity.device_id === deviceId);
-  }
+const _deviceEntityLookup = memoizeOne((entities: HomeAssistant["entities"]) =>
+  getDeviceEntityDisplayLookup(Object.values(entities))
 );
 
 export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
-): string[] =>
-  entityIds.filter((entityId) => {
+): string[] => {
+  let deviceEntityLookup: DeviceEntityDisplayLookup | undefined;
+
+  return entityIds.filter((entityId) => {
     const state = hass.states[entityId]?.state ?? "";
+
     if (computeDomain(entityId) === "binary_sensor") {
       return state === BINARY_STATE_ON;
     }
 
-    const deviceId = hass.entities[entityId]?.device_id;
-    const entities = deviceId ? _deviceEntities(deviceId, hass.entities) : [];
-
-    const batteryChargingEntity = findBatteryChargingEntity(
-      hass.states,
-      entities
-    );
-    const batteryCharging = batteryChargingEntity
-      ? hass.states[batteryChargingEntity?.entity_id]
-      : undefined;
-
-    if (batteryCharging && batteryCharging.state === "on") {
+    const stateValue = parseFloat(state);
+    if (isNaN(stateValue) || stateValue > LOW_BATTERY_THRESHOLD) {
       return false;
     }
 
-    const stateValue = parseFloat(state);
-    return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
+    const deviceId = hass.entities[entityId]?.device_id;
+    if (!deviceId) {
+      return true;
+    }
+
+    if (!deviceEntityLookup) {
+      deviceEntityLookup = _deviceEntityLookup(hass.entities);
+    }
+
+    const batteryChargingEntity = findBatteryChargingEntity(
+      hass.states,
+      deviceEntityLookup[deviceId] ?? []
+    );
+    const batteryCharging = batteryChargingEntity
+      ? hass.states[batteryChargingEntity.entity_id]
+      : undefined;
+
+    return batteryCharging?.state !== "on";
   });
+};
 
 export const filterUnavailableBatteryEntities = (
   hass: HomeAssistant,
