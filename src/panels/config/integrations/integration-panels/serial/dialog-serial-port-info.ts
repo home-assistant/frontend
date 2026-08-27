@@ -1,11 +1,11 @@
+import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-footer";
+import "../../../../../components/ha-adaptive-dialog";
+import "../../../../../components/ha-icon-button";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import type { SerialPortInfoDialogParams } from "./show-dialog-serial-port-info";
@@ -85,13 +85,19 @@ class DialogSerialPortInfo extends LitElement {
     }
 
     return html`
-      <ha-dialog
+      <ha-adaptive-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.serial.port_information"
         )}
         @closed=${this._dialogClosed}
       >
+        <ha-icon-button
+          slot="headerActionItems"
+          .label=${this.hass.localize("ui.common.copy")}
+          .path=${mdiContentCopy}
+          @click=${this._copyToClipboard}
+        ></ha-icon-button>
         <table>
           <tbody>
             ${this._fields().map(
@@ -104,19 +110,7 @@ class DialogSerialPortInfo extends LitElement {
             )}
           </tbody>
         </table>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._copyToClipboard}
-          >
-            ${this.hass.localize("ui.common.copy")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${this.hass.localize("ui.common.close")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-dialog>
+      </ha-adaptive-dialog>
     `;
   }
 
