@@ -266,7 +266,6 @@ class HaPanelHistory extends LitElement {
                             .startTime=${this._startDate}
                             .endTime=${this._endDate}
                             .narrow=${this.narrow}
-                            inside-labels
                             sync-charts
                           >
                           </state-history-charts>
@@ -810,12 +809,7 @@ class HaPanelHistory extends LitElement {
           flex: 1;
           min-width: 0;
           overflow: hidden auto;
-          padding: 16px 8px;
-        }
-
-        /* Line the charts up with the toolbar when there are no axis labels. */
-        :host([narrow]) .results {
-          padding-inline: 16px;
+          padding: 16px;
         }
 
         .progress-wrapper {

@@ -479,7 +479,12 @@ export class HaAutomationRowTargets extends LitElement {
         warning = true;
         badgeTargetId = undefined;
         badgeTargetType = undefined;
-        if (targetType === "device" && this._compositeSplits?.[targetId]) {
+        if (
+          targetType === "device" &&
+          this._compositeSplits?.[targetId]?.split_ids.some(
+            (id) => id in this._registries.devices
+          )
+        ) {
           // The device was replaced by one or more split devices; make clear
           // this reference needs to be updated, distinct from "unknown device".
           icon = mdiSwapHorizontal;

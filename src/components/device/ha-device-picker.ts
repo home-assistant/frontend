@@ -105,6 +105,14 @@ export class HaDevicePicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  /**
+   * The split devices that can actually replace the current value, when the
+   * caller knows better than this picker. Narrows the replacement candidates,
+   * so the user is only asked to choose when there is a real choice.
+   */
+  @property({ attribute: false })
+  public replacementDeviceIds?: string[];
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
@@ -188,7 +196,8 @@ export class HaDevicePicker extends LitElement {
       value: string | undefined,
       _devices: HomeAssistant["devices"],
       compositeSplits: DeviceCompositeSplits | undefined,
-      items: (DevicePickerItem | string)[]
+      items: (DevicePickerItem | string)[],
+      replacementDeviceIds: string[] | undefined
     ) => {
       if (!value || !compositeSplits || this.hass.devices[value]) {
         return undefined;
@@ -204,7 +213,11 @@ export class HaDevicePicker extends LitElement {
           .filter((item): item is DevicePickerItem => typeof item !== "string")
           .map((item) => item.id)
       );
-      const candidates = split.split_ids.filter((id) => selectableIds.has(id));
+      const candidates = split.split_ids.filter(
+        (id) =>
+          selectableIds.has(id) &&
+          (!replacementDeviceIds || replacementDeviceIds.includes(id))
+      );
       return { candidates, primaryId: split.primary_id };
     }
   );
@@ -400,7 +413,8 @@ export class HaDevicePicker extends LitElement {
             this.value,
             this.hass.devices,
             this._compositeSplits,
-            this._getItems()
+            this._getItems(),
+            this.replacementDeviceIds
           )
         : undefined;
 
@@ -507,7 +521,8 @@ export class HaDevicePicker extends LitElement {
       this.value,
       this.hass.devices,
       this._compositeSplits,
-      this._getItems()
+      this._getItems(),
+      this.replacementDeviceIds
     );
     if (!replacement?.candidates.length) {
       return;

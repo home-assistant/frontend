@@ -564,75 +564,73 @@ export class HaTargetPickerItemRow extends LitElement {
         this.primaryEntitiesOnly
       );
 
+      let referencedAreas = entries.referenced_areas;
       const hiddenAreaIds: string[] = [];
       if (this.type === "floor" || this.type === "label") {
-        entries.referenced_areas = entries.referenced_areas.filter(
-          (area_id) => {
-            const area = this.hass.areas[area_id];
-            // Absent from the registry is not a filter decision: drop the id
-            // without marking it hidden, so entities targeted through their
-            // own area or label are not dropped along with it.
-            if (!area) {
-              return false;
-            }
-            if (
-              (this.type === "floor" || area.labels.includes(this.itemId)) &&
-              areaMeetsFilter(
-                area,
-                this.hass.devices,
-                this.hass.entities,
-                this.deviceFilter,
-                this.includeDomains,
-                this.includeDeviceClasses,
-                this.hass.states,
-                this.entityFilter,
-                !this.primaryEntitiesOnly
-              )
-            ) {
-              return true;
-            }
-
-            hiddenAreaIds.push(area_id);
+        referencedAreas = referencedAreas.filter((area_id) => {
+          const area = this.hass.areas[area_id];
+          // Absent from the registry is not a filter decision: drop the id
+          // without marking it hidden, so entities targeted through their
+          // own area or label are not dropped along with it.
+          if (!area) {
             return false;
           }
-        );
+          if (
+            (this.type === "floor" || area.labels.includes(this.itemId)) &&
+            areaMeetsFilter(
+              area,
+              this.hass.devices,
+              this.hass.entities,
+              this.deviceFilter,
+              this.includeDomains,
+              this.includeDeviceClasses,
+              this.hass.states,
+              this.entityFilter,
+              !this.primaryEntitiesOnly
+            )
+          ) {
+            return true;
+          }
+
+          hiddenAreaIds.push(area_id);
+          return false;
+        });
       }
 
+      let referencedDevices = entries.referenced_devices;
       const hiddenDeviceIds: string[] = [];
       if (
         this.type === "floor" ||
         this.type === "area" ||
         this.type === "label"
       ) {
-        entries.referenced_devices = entries.referenced_devices.filter(
-          (device_id) => {
-            const device = this.hass.devices[device_id];
-            if (!device) {
-              return false;
-            }
-            if (
-              !hiddenAreaIds.includes(device.area_id || "") &&
-              deviceMeetsFilter(
-                device,
-                this.hass.entities,
-                this.deviceFilter,
-                this.includeDomains,
-                this.includeDeviceClasses,
-                this.hass.states,
-                this.entityFilter,
-                !this.primaryEntitiesOnly
-              )
-            ) {
-              return true;
-            }
-
-            hiddenDeviceIds.push(device_id);
+        referencedDevices = referencedDevices.filter((device_id) => {
+          const device = this.hass.devices[device_id];
+          if (!device) {
             return false;
           }
-        );
+          if (
+            !hiddenAreaIds.includes(device.area_id || "") &&
+            deviceMeetsFilter(
+              device,
+              this.hass.entities,
+              this.deviceFilter,
+              this.includeDomains,
+              this.includeDeviceClasses,
+              this.hass.states,
+              this.entityFilter,
+              !this.primaryEntitiesOnly
+            )
+          ) {
+            return true;
+          }
+
+          hiddenDeviceIds.push(device_id);
+          return false;
+        });
       }
 
-      entries.referenced_entities = entries.referenced_entities.filter(
+      const referencedEntities = entries.referenced_entities.filter(
         (entity_id) => {
           const entity = this.hass.entities[entity_id];
           // Core can reference entities that are absent from the display
@@ -647,9 +645,9 @@ export class HaTargetPickerItemRow extends LitElement {
             (this.type === "area" && entity.area_id === this.itemId) ||
             (this.type === "floor" &&
               entity.area_id &&
-              entries.referenced_areas.includes(entity.area_id)) ||
+              referencedAreas.includes(entity.area_id)) ||
             (this.type === "label" && entity.labels.includes(this.itemId)) ||
-            entries.referenced_devices.includes(entity.device_id || "")
+            referencedDevices.includes(entity.device_id || "")
           ) {
             return entityRegMeetsFilter(
               entity,
@@ -664,7 +662,12 @@ export class HaTargetPickerItemRow extends LitElement {
         }
       );
 
-      this._entries = entries;
+      this._entries = {
+        ...entries,
+        referenced_areas: referencedAreas,
+        referenced_devices: referencedDevices,
+        referenced_entities: referencedEntities,
+      };
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Failed to extract target", e);
