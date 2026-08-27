@@ -129,8 +129,8 @@ export default class HaAutomationConditionEditor extends LitElement {
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...pickRowConfig(this.condition, CONDITION_ROW_CONFIG_KEYS),
       ...ev.detail.value,
+      ...pickRowConfig(this.condition, CONDITION_ROW_CONFIG_KEYS),
     };
     fireEvent(this, "value-changed", { value });
   }

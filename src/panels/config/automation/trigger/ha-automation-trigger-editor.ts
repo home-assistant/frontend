@@ -148,8 +148,8 @@ export default class HaAutomationTriggerEditor extends LitElement {
     if (isTriggerList(this.trigger)) return;
     ev.stopPropagation();
     const value = {
-      ...pickRowConfig(this.trigger, TRIGGER_ROW_CONFIG_KEYS),
       ...ev.detail.value,
+      ...pickRowConfig(this.trigger, TRIGGER_ROW_CONFIG_KEYS),
     };
     fireEvent(this, "value-changed", { value });
   }
