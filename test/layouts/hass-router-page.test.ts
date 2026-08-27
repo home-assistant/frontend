@@ -130,12 +130,13 @@ class PathRouter extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     routes: {
       dashboard: { tag: "test-dash-panel", cache: true },
-      edit: { tag: "test-path-panel", cache: true },
+      edit: { tag: "test-path-panel", cache: true, itemId: true },
+      view: { tag: "test-path-panel", cache: true },
     },
   };
 
   protected updatePageEl(el: PathPanel) {
-    if (this._currentPage === "edit") {
+    if (this._currentPage === "edit" || this._currentPage === "view") {
       el.itemId = this.routeTail.path.slice(1);
     }
   }
@@ -400,6 +401,49 @@ describe("HassRouterPage item ids", () => {
 
     expect(element.lastElementChild).toBe(first);
     expect(first.itemId).toBe("a");
+
+    element.remove();
+  });
+
+  it("reuses a page with a one-segment tail when itemId is not set", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/lovelace", path: "/view/0" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as PathPanel;
+    expect(first.itemId).toBe("0");
+
+    element.route = { prefix: "/lovelace", path: "/view/1" };
+    await element.updateComplete;
+
+    expect(element.lastElementChild).toBe(first);
+    expect(first.itemId).toBe("1");
+
+    element.remove();
+  });
+
+  it("does not recreate a nested router when opening an item from the dashboard", async () => {
+    const element = document.createElement(
+      "test-parent-router"
+    ) as ParentRouter;
+    element.route = { prefix: "/config", path: "/automation/dashboard" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const nested = element.lastElementChild as PathRouter;
+    expect(nested).toBeInstanceOf(PathRouter);
+    await nested.updateComplete;
+    const dashboard = nested.lastElementChild as DashPanel;
+    expect(dashboard).toBeInstanceOf(DashPanel);
+
+    element.route = { prefix: "/config", path: "/automation/edit/a" };
+    await element.updateComplete;
+    await nested.updateComplete;
+
+    expect(element.lastElementChild).toBe(nested);
+    const editor = nested.lastElementChild as PathPanel;
+    expect(editor.itemId).toBe("a");
 
     element.remove();
   });
