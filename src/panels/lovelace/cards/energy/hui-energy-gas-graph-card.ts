@@ -67,8 +67,6 @@ export class HuiEnergyGasGraphCard
 
   @state() private _total?: number;
 
-  @state() private _displayPrecision?: number;
-
   private _energyData?: EnergyData;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
@@ -115,35 +113,41 @@ export class HuiEnergyGasGraphCard
         );
       })
     ) {
-      const gasDisplayPrecisions = energySourcesByType(
-        this._energyData.prefs
-      ).gas
-        ?.filter(
-          (source) =>
-            this.hass.states[source.stat_energy_from]?.attributes
-              .unit_of_measurement === this._unit
-        )
-        .map(
-          (source) =>
-            this.hass.entities[source.stat_energy_from]?.display_precision
-        )
-        .filter((precision): precision is number => precision !== undefined);
-
-      this._displayPrecision = gasDisplayPrecisions?.length
-        ? Math.max(...gasDisplayPrecisions)
-        : undefined;
-
       return true;
     }
 
     return false;
   }
 
+  private get _displayPrecision(): number | undefined {
+    if (!this._energyData) {
+      return undefined;
+    }
+
+    const gasDisplayPrecisions = energySourcesByType(this._energyData.prefs).gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === this._unit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+
+    return gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
+  }
+
   private get _gasFormatOptions(): Intl.NumberFormatOptions | undefined {
-    return this._displayPrecision !== undefined
+    const displayPrecision = this._displayPrecision;
+
+    return displayPrecision !== undefined
       ? {
-          minimumFractionDigits: this._displayPrecision,
-          maximumFractionDigits: this._displayPrecision,
+          minimumFractionDigits: displayPrecision,
+          maximumFractionDigits: displayPrecision,
         }
       : undefined;
   }
@@ -259,23 +263,6 @@ export class HuiEnergyGasGraphCard
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
     });
-
-    const gasSources = energySourcesByType(energyData.prefs).gas;
-    const gasDisplayPrecisions = gasSources
-      ?.filter(
-        (source) =>
-          this.hass.states[source.stat_energy_from]?.attributes
-            .unit_of_measurement === result.unit
-      )
-      .map(
-        (source) =>
-          this.hass.entities[source.stat_energy_from]?.display_precision
-      )
-      .filter((precision): precision is number => precision !== undefined);
-
-    this._displayPrecision = gasDisplayPrecisions?.length
-      ? Math.max(...gasDisplayPrecisions)
-      : undefined;
 
     this._start = result.start;
     this._end = result.end;
