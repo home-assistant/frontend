@@ -100,7 +100,10 @@ export class VoiceAssistantsExpose extends LitElement {
   @state() private _selectedEntities: string[] = [];
 
   @state() private _supportedEntities?: Record<
-    "cloud.google_assistant" | "cloud.alexa" | "conversation",
+    | "cloud.google_assistant"
+    | "cloud.alexa"
+    | "conversation"
+    | "google_assistant",
     string[] | undefined
   >;
 
@@ -152,7 +155,10 @@ export class VoiceAssistantsExpose extends LitElement {
       availableAssistants: string[],
       supportedEntities:
         | Record<
-            "cloud.google_assistant" | "cloud.alexa" | "conversation",
+            | "cloud.google_assistant"
+            | "cloud.alexa"
+            | "conversation"
+            | "google_assistant",
             string[] | undefined
           >
         | undefined,
@@ -456,6 +462,8 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       // TODO add supported entity for assist
       conversation: undefined,
+      // TODO add supported entity for manual Google Assistant
+      google_assistant: undefined,
     };
   }
 

@@ -18,7 +18,10 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
   @property({ type: Boolean }) public manual = false;
 
   @property() public assistant?:
-    "conversation" | "cloud.alexa" | "cloud.google_assistant";
+    | "conversation"
+    | "cloud.alexa"
+    | "cloud.google_assistant"
+    | "google_assistant";
 
   render() {
     if (!this.assistant || !voiceAssistants[this.assistant]) return nothing;

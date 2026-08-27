@@ -20,6 +20,13 @@ export const getAvailableAssistants = memoizeOne(
       }
     }
 
+    if (
+      !showAssistants.includes("cloud.google_assistant") &&
+      isComponentLoaded(hass.config, "google_assistant")
+    ) {
+      showAssistants.push("google_assistant");
+    }
+
     return showAssistants;
   }
 );

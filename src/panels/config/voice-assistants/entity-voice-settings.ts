@@ -58,7 +58,13 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   @state() private _googleEntity?: GoogleEntity;
 
   @state() private _unsupported: Partial<
-    Record<"cloud.google_assistant" | "cloud.alexa" | "conversation", boolean>
+    Record<
+      | "cloud.google_assistant"
+      | "cloud.alexa"
+      | "conversation"
+      | "google_assistant",
+      boolean
+    >
   > = {};
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -145,7 +151,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         showAssistants.indexOf("cloud.google_assistant"),
         1
       );
-      uiAssistants.splice(showAssistants.indexOf("cloud.google_assistant"), 1);
+      uiAssistants.splice(uiAssistants.indexOf("cloud.google_assistant"), 1);
     } else if (googleManual) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.google_assistant"), 1);
     }
@@ -155,6 +161,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.alexa"), 1);
     } else if (alexaManual) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.alexa"), 1);
+    }
+
+    // The local Google Assistant integration is an alternative to cloud's
+    // Google Assistant support, so only show one of the two.
+    if (
+      googleEnabled ||
+      !isComponentLoaded(this.hass.config, "google_assistant")
+    ) {
+      showAssistants.splice(showAssistants.indexOf("google_assistant"), 1);
+      uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
     }
 
     const uiExposed = uiAssistants.some((key) => this.exposed[key]);
