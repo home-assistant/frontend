@@ -230,13 +230,13 @@ export class DialogForm
   ): Promise<void> {
     await this._afterFormRender();
 
-    if (!this._open || this._params !== expectedParams) {
+    if (!this.isConnected || !this._open || this._params !== expectedParams) {
       return;
     }
 
     await this._waitForSelectorElements();
 
-    if (!this._open || this._params !== expectedParams) {
+    if (!this.isConnected || !this._open || this._params !== expectedParams) {
       return;
     }
 
@@ -250,7 +250,12 @@ export class DialogForm
   ): Promise<void> {
     await this._afterFormRender();
 
-    if (!this._open || this._params !== expectedParams || !this._dialog) {
+    if (
+      !this.isConnected ||
+      !this._open ||
+      this._params !== expectedParams ||
+      !this._dialog
+    ) {
       return;
     }
 
