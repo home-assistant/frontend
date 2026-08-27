@@ -3,15 +3,11 @@ import type { Map as LeafletMap } from "leaflet";
 import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 
-// Only the raster fallback needs this: a Leaflet tile layer reads it, while
-// the vector layer takes its attribution from the source in the style, which
-// the TileJSON fills in. That is deliberately the better way around - the
-// credit follows whoever serves the tiles, and once that TileJSON is ours it
-// can be corrected remotely instead of in a release. Do not override it here:
-// upstream's currently omits "contributors", and that is theirs to fix or ours
-// to serve, not something to hardcode past.
-const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+// The vector layer sets no attribution of its own: it takes the credit from the
+// source in the style, which the TileJSON fills in. That is deliberately the
+// better way around - the credit follows whoever serves the tiles, and once that
+// TileJSON is ours it can be corrected remotely instead of in a release. Do not
+// hardcode one past it.
 
 // Shortbread vector tiles, served by the OpenStreetMap Foundation under
 // https://operations.osmfoundation.org/policies/vector/. Only their tile
@@ -22,12 +18,19 @@ const VECTOR_STYLES = {
   dark: "/static/map/dark.json",
 } as const;
 
-// Raster tiles for browsers that cannot run MapLibre. MapLibre draws raster
-// sources through WebGL too, so the fallback has to stay a Leaflet tile layer.
-const RASTER_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-// The raster tiles stop at 19, the vector tiles at 14 and are overzoomed. Both
-// keep rendering up to MAP_MAX_ZOOM.
-const RASTER_MAX_NATIVE_ZOOM = 19;
+// Raster tiles for browsers that cannot run MapLibre - it draws raster sources
+// through WebGL as well, so the fallback has to stay a Leaflet tile layer.
+//
+// This is temporary and it is CARTO, the basemap this change replaces, overlay
+// and all. OSM's raster tiles block a browser that sends no Referer, and the
+// only referrer a browser can send is its origin - which for a Nabu Casa
+// instance is a per-installation identifier. Rather than leak that, the devices
+// on this path keep exactly what they see today. A proxy of our own could send
+// an application User-Agent instead, and then this moves to OSM raster.
+const RASTER_TILE_URL = "https://basemaps.cartocdn.com/rastertiles/voyager";
+const CARTO_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, ' +
+  '&copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 // Browsers keep a limited number of live WebGL contexts - around 16 in Chrome -
 // and drop the oldest when a new one is created. A dashboard with more map
@@ -104,10 +107,11 @@ const createVectorLayer = async (
       // Renders CJK, kana and hangul with a font from the device, which is why
       // we only have to ship a tenth of the glyph set.
       localIdeographFontFamily: "sans-serif",
-      // The page sets a same-origin referrer policy, but the OSMF asks for a
-      // referrer to see which application their tiles are serving. Sending it
-      // for the tiles alone keeps it to the origin, never the page URL.
-      transformRequest: (url) => ({ url, referrerPolicy: "origin" }),
+      // No referrer is set for these: the vector endpoint serves them without
+      // one (measured), and the only referrer a browser can send is its origin,
+      // which identifies a Nabu Casa installation. Identifying Home Assistant
+      // properly needs a server to do it, with a real application User-Agent -
+      // a browser cannot set one at all.
     });
     // The plugin builds the MapLibre map in `onAdd`, so this is where a
     // missing WebGL context, a blocked worker or a rejected blob URL throws.
@@ -220,20 +224,17 @@ const createRasterLayer = (
   map: LeafletMap
 ): MapBaseLayer => {
   leaflet
-    .tileLayer(RASTER_TILE_URL, {
-      attribution: OSM_ATTRIBUTION,
-      maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
-      maxZoom: MAP_MAX_ZOOM,
-      // The tile images inherit the page's same-origin referrer policy, which
-      // sends nothing at all cross-origin. OSM's raster tile policy asks for a
-      // referrer, and being blocked would take out the fallback on exactly the
-      // devices that depend on it.
-      referrerPolicy: "origin",
-      // The devices that end up here are the old retina tablets, and OSM
-      // serves no @2x raster tiles, so sharp tiles have to come from loading a
-      // zoom level deeper at half the tile size.
-      detectRetina: true,
-    })
+    .tileLayer(
+      // The devices on this path are the old retina tablets. CARTO serves @2x,
+      // so they get sharp tiles for the same number of requests - Leaflet's
+      // `detectRetina` would instead fetch a zoom level deeper at four times
+      // the requests, which is only worth it against a source without @2x.
+      `${RASTER_TILE_URL}/{z}/{x}/{y}${leaflet.Browser.retina ? "@2x" : ""}.png`,
+      {
+        attribution: CARTO_ATTRIBUTION,
+        maxZoom: MAP_MAX_ZOOM,
+      }
+    )
     .addTo(map);
 
   return { setDarkMode: () => undefined };

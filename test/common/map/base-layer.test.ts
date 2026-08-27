@@ -26,8 +26,11 @@ const STYLE = {
 };
 
 const rasterLayer = { addTo: vi.fn() };
+// Kept as a local so tests can flip it: @types/leaflet has it readonly.
+const browser = { retina: false };
 const leaflet = {
   tileLayer: vi.fn(() => rasterLayer),
+  Browser: browser,
 } as unknown as LeafletModuleType;
 
 // `createVectorLayer` listens on both the MapLibre map and the Leaflet map.
@@ -81,18 +84,29 @@ describe("createBaseLayer", () => {
     expect(isRaster()).toBe(true);
     expect(maplibreGL).not.toHaveBeenCalled();
     expect(rasterLayer.addTo).toHaveBeenCalledWith(map);
-    // The page sends no referrer cross-origin, and OSM's raster tile policy
-    // asks for one. Being blocked would take out the fallback on exactly the
-    // devices that depend on it.
-    expect(vi.mocked(leaflet.tileLayer).mock.calls[0][1]).toMatchObject({
-      referrerPolicy: "origin",
-      // OSM serves no @2x raster tiles, and the devices that end up on the
-      // fallback are the old retina tablets.
-      detectRetina: true,
-      // The vector layer gets this from the style's source instead, so the
-      // raster layer is the only one that has to carry it itself.
-      attribution: expect.stringContaining("openstreetmap.org/copyright"),
-    });
+    const [url, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
+    // No referrer: the only one a browser can send is its origin, which
+    // identifies a Nabu Casa installation. The fallback source is chosen so it
+    // does not need one.
+    expect(options).not.toHaveProperty("referrerPolicy");
+    // The vector layer takes its credit from the style's source instead, so the
+    // raster layer is the only one carrying attribution itself - and it credits
+    // both the data and whoever rendered it.
+    expect(options.attribution).toContain("openstreetmap.org/copyright");
+    expect(options.attribution).toContain("carto.com/attributions");
+    expect(url).toMatch(/\{z\}\/\{x\}\/\{y\}/);
+  });
+
+  // The devices on the fallback are the old retina tablets, and the source
+  // serves @2x, so they get sharp tiles without quadrupling the requests.
+  it("asks for @2x raster tiles on a retina screen", async () => {
+    const createBaseLayer = await setWebGL2(false);
+    browser.retina = true;
+
+    await createBaseLayer(leaflet, map, false);
+
+    expect(vi.mocked(leaflet.tileLayer).mock.calls[0][0]).toContain("@2x.png");
+    browser.retina = false;
   });
 
   it("uses vector tiles when WebGL2 is available", async () => {
