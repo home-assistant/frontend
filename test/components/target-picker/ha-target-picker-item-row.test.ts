@@ -173,4 +173,31 @@ describe("ha-target-picker-item-row target extraction", () => {
     expect(entries!.referenced_devices).toEqual(["dev_1"]);
     expect(entries!.referenced_entities).toEqual(["light.on_dev1"]);
   });
+
+  it("does not mutate the extracted target result", async () => {
+    const result = extractResult({
+      referenced_areas: ["area_missing"],
+      referenced_devices: ["dev_missing"],
+      referenced_entities: ["light.missing"],
+    });
+
+    const entries = await extractedBy(
+      result,
+      {
+        areas: {},
+        devices: {},
+        entities: {},
+      },
+      { type: "floor", itemId: "floor_1" }
+    );
+
+    expect(entries).toBeDefined();
+    expect(entries).not.toBe(result);
+    expect(entries!.referenced_areas).toEqual([]);
+    expect(entries!.referenced_devices).toEqual([]);
+    expect(entries!.referenced_entities).toEqual([]);
+    expect(result.referenced_areas).toEqual(["area_missing"]);
+    expect(result.referenced_devices).toEqual(["dev_missing"]);
+    expect(result.referenced_entities).toEqual(["light.missing"]);
+  });
 });

@@ -16,10 +16,10 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import {
-  getStatisticIds,
   getStatisticLabel,
   type StatisticsMetaData,
 } from "../../data/recorder";
+import { getStatisticIds } from "../../data/recorder_statistic_ids";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box-item";
