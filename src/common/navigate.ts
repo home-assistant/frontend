@@ -103,6 +103,13 @@ export const unregisterUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
 let pendingUnsavedPrompt: Promise<boolean> | undefined;
 
 /**
+ * Counts navigations that changed the history entry, so a navigation held up
+ * by an unsaved-changes prompt can tell whether a newer one has moved the app
+ * on in the meantime.
+ */
+let committedNavigations = 0;
+
+/**
  * Asks each dirty guard whether navigation may proceed. Returns true when
  * nothing is dirty or every prompt was confirmed. Concurrent navigations
  * share one pending prompt instead of stacking dialogs; the dirty check runs
@@ -181,14 +188,24 @@ const performNavigation = async (path: string, options?: NavigateOptions) => {
   fireEvent(mainWindow, "location-changed", {
     replace,
   });
+  committedNavigations += 1;
   return true;
 };
 
 export const navigate = async (path: string, options?: NavigateOptions) => {
   // Only guard actual departures: navigating to the current path keeps the
   // page, and any unsaved state on it, mounted.
-  if (path !== currentPath() && !(await ensureUnsavedChangesConfirmed())) {
-    return false;
+  if (path !== currentPath()) {
+    const navigationsBeforePrompt = committedNavigations;
+    if (!(await ensureUnsavedChangesConfirmed())) {
+      return false;
+    }
+    if (committedNavigations !== navigationsBeforePrompt) {
+      // Another navigation landed while the prompt was waiting for an answer,
+      // so this destination is stale. Dropping it keeps a late answer from
+      // pulling the user back off the page they are on now.
+      return false;
+    }
   }
   return performNavigation(path, options);
 };

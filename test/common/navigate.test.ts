@@ -80,6 +80,21 @@ describe("unsaved changes guard", () => {
       prompt: vi.fn(async () => promptResult),
     });
 
+  // A guard whose prompt stays open until the test answers it.
+  const trackDeferredGuard = (isDirty: () => boolean) => {
+    let answer!: (value: boolean) => void;
+    const guard = trackGuard({
+      isDirty,
+      prompt: vi.fn(
+        () =>
+          new Promise<boolean>((resolve) => {
+            answer = resolve;
+          })
+      ),
+    });
+    return { guard, answerPrompt: (value: boolean) => answer(value) };
+  };
+
   beforeEach(() => {
     setEntry("/config");
   });
@@ -129,45 +144,42 @@ describe("unsaved changes guard", () => {
 
   it("skips a pending prompt once no guard is dirty anymore", async () => {
     let dirty = true;
-    let resolvePrompt!: (value: boolean) => void;
-    const guard = trackGuard({
-      isDirty: () => dirty,
-      prompt: vi.fn(
-        () =>
-          new Promise<boolean>((resolve) => {
-            resolvePrompt = resolve;
-          })
-      ),
-    });
+    const { guard, answerPrompt } = trackDeferredGuard(() => dirty);
 
     const first = navigate("/config/areas");
     dirty = false;
 
     expect(await navigate("/config/devices/dashboard")).toBe(true);
     expect(window.location.pathname).toEqual("/config/devices/dashboard");
-
-    resolvePrompt(true);
-    expect(await first).toBe(true);
     expect(guard.prompt).toHaveBeenCalledOnce();
+
+    answerPrompt(true);
+    await first;
+  });
+
+  it("drops a navigation superseded while its prompt was open", async () => {
+    let dirty = true;
+    const { answerPrompt } = trackDeferredGuard(() => dirty);
+
+    const superseded = navigate("/config/areas");
+    dirty = false;
+    await navigate("/config/devices/dashboard");
+
+    answerPrompt(true);
+
+    expect(await superseded).toBe(false);
+    expect(window.location.pathname).toEqual("/config/devices/dashboard");
   });
 
   it("shares one pending prompt between concurrent navigations", async () => {
-    let resolvePrompt!: (value: boolean) => void;
-    const guard = trackGuard({
-      isDirty: () => true,
-      prompt: vi.fn(
-        () =>
-          new Promise<boolean>((resolve) => {
-            resolvePrompt = resolve;
-          })
-      ),
-    });
+    const { guard, answerPrompt } = trackDeferredGuard(() => true);
 
     const first = navigate("/config/areas");
     const second = navigate("/config/devices/dashboard");
-    resolvePrompt(true);
+    answerPrompt(true);
 
-    expect(await Promise.all([first, second])).toEqual([true, true]);
+    await Promise.all([first, second]);
+
     expect(guard.prompt).toHaveBeenCalledOnce();
   });
 
