@@ -153,7 +153,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected override resetEditorState() {
     super.resetEditorState();
     this._undoRedoController.reset();
-    this._newAutomationId = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -763,15 +762,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
-    const generation = this.loadGeneration;
     const validation = await validateConfig(this.hass, {
       triggers: this.config.triggers,
       conditions: this.config.conditions,
       actions: this.config.actions,
     });
-    if (generation !== this.loadGeneration) {
-      return;
-    }
     this.validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
@@ -964,9 +959,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.readOnly = true;
       this.errors = undefined;
     } catch (err: any) {
-      if (generation !== this.loadGeneration) {
-        return;
-      }
       this.errors = err.message;
     }
   }
@@ -1084,7 +1076,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this.validationErrors = undefined;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
-    if (this.entityRegistryUpdate !== undefined && !this.currentEntityId) {
+    const entityRegistryUpdate = this.entityRegistryUpdate;
+    if (entityRegistryUpdate !== undefined && !this.currentEntityId) {
       this._newAutomationId = id;
       entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
         this.entityRegCreated = resolve;
@@ -1094,7 +1087,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     try {
       await saveAutomationConfig(this.hass, id, this.config!);
 
-      if (this.entityRegistryUpdate !== undefined) {
+      if (entityRegistryUpdate !== undefined) {
         let entityId = this.currentEntityId;
 
         // wait for automation to appear in entity registry when creating a new automation
@@ -1129,10 +1122,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
             categories: {
-              automation: this.entityRegistryUpdate.category || null,
+              automation: entityRegistryUpdate.category || null,
             },
-            labels: this.entityRegistryUpdate.labels || [],
-            area_id: this.entityRegistryUpdate.area || null,
+            labels: entityRegistryUpdate.labels || [],
+            area_id: entityRegistryUpdate.area || null,
           });
         }
       }

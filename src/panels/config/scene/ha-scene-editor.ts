@@ -32,7 +32,6 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
-import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -41,7 +40,6 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
-import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import {
   fireRelatedContext,
@@ -176,8 +174,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   /** Bumped when the edited scene changes so stale scene loads are ignored. */
   private _loadGeneration = 0;
 
-  private _subscribeGeneration = 0;
-
   private _entityRegCreated?: (
     value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
   ) => void;
@@ -245,13 +241,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (!this.hass) {
       return nothing;
     }
-    if (!this._config) {
-      return html`
-        <ha-fade-in .delay=${500}>
-          <ha-spinner size="large"></ha-spinner>
-        </ha-fade-in>
-      `;
-    }
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -309,7 +298,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
             <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
           </ha-dropdown-item>
 
-          <ha-dropdown-item value="toggle-yaml">
+          <ha-dropdown-item value="toggle-yaml" .disabled=${!this._config}>
             ${this.hass.localize(
               `ui.panel.config.automation.editor.edit_${this._mode !== "yaml" ? "yaml" : "ui"}`
             )}
@@ -941,16 +930,11 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    const generation = ++this._subscribeGeneration;
     const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
       (event) => this._stateChanged(event),
       "state_changed"
     );
-    if (
-      generation !== this._subscribeGeneration ||
-      this._mode !== "live" ||
-      !this.isConnected
-    ) {
+    if (this._mode !== "live") {
       unsubscribe();
       return;
     }
@@ -1022,9 +1006,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     this._storedStates = {};
     this._activateContextId = undefined;
     this._entityRegistryUpdate = undefined;
-    this._entityRegCreated = undefined;
-    this._newSceneId = undefined;
-    this._saving = false;
     this._sceneRevision = 0;
     this._initDirtyTracking({ type: "shallow" }, 0);
   }
@@ -1326,7 +1307,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     this._saving = true;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
-    if (this._entityRegistryUpdate !== undefined && !this.sceneId) {
+    const entityRegistryUpdate = this._entityRegistryUpdate;
+    if (entityRegistryUpdate !== undefined && !this.sceneId) {
       this._newSceneId = id;
       entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
         this._entityRegCreated = resolve;
@@ -1337,7 +1319,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       await saveScene(this.hass, id, this._config!);
       this._errors = undefined;
 
-      if (this._entityRegistryUpdate !== undefined) {
+      if (entityRegistryUpdate !== undefined) {
         let entityId = this._scene?.entity_id;
 
         // wait for scene to appear in entity registry when creating a new scene
@@ -1371,10 +1353,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
-            area_id: this._entityRegistryUpdate.area || null,
-            labels: this._entityRegistryUpdate.labels || [],
+            area_id: entityRegistryUpdate.area || null,
+            labels: entityRegistryUpdate.labels || [],
             categories: {
-              scene: this._entityRegistryUpdate.category || null,
+              scene: entityRegistryUpdate.category || null,
             },
           });
         }
@@ -1472,12 +1454,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     return [
       haStyle,
       css`
-        ha-fade-in {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-        }
         ha-card {
           overflow: hidden;
           margin-top: 8px;

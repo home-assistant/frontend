@@ -286,7 +286,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     /**
      * Reset per-item state when the edited item changes while this element is
      * reused (same route page, different id), emulating a freshly opened
-     * editor.
+     * editor. `saving` and `entityRegCreated` are deliberately absent: they
+     * are owned by an in-flight save.
      */
     protected resetEditorState() {
       this.loadGeneration++;
@@ -299,9 +300,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       this.blueprintConfig = undefined;
       this.deprecatedConfigMigrated = false;
       this.entityRegistryUpdate = undefined;
-      this.entityRegCreated = undefined;
       this.currentEntityId = undefined;
-      this.saving = false;
       this._initDirtyTracking({ type: "deep" });
     }
 

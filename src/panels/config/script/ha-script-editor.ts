@@ -114,7 +114,6 @@ export class HaScriptEditor extends SubscribeMixin(
   protected override resetEditorState() {
     super.resetEditorState();
     this._undoRedoController.reset();
-    this._newScriptId = undefined;
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -656,13 +655,9 @@ export class HaScriptEditor extends SubscribeMixin(
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
-    const generation = this.loadGeneration;
     const validation = await validateConfig(this.hass, {
       actions: this.config.sequence,
     });
-    if (generation !== this.loadGeneration) {
-      return;
-    }
     this.validationErrors = (
       Object.entries(validation) as Entries<typeof validation>
     ).map(([key, value]) =>
@@ -874,9 +869,6 @@ export class HaScriptEditor extends SubscribeMixin(
       this.readOnly = true;
       this.errors = undefined;
     } catch (err: any) {
-      if (generation !== this.loadGeneration) {
-        return;
-      }
       this.errors = err.message;
     }
   }
@@ -1000,7 +992,8 @@ export class HaScriptEditor extends SubscribeMixin(
     this.saving = true;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
-    if (this.entityRegistryUpdate !== undefined && !this.scriptId) {
+    const entityRegistryUpdate = this.entityRegistryUpdate;
+    if (entityRegistryUpdate !== undefined && !this.scriptId) {
       this._newScriptId = id.toString();
       entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
         this.entityRegCreated = resolve;
@@ -1014,7 +1007,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this.config
       );
 
-      if (this.entityRegistryUpdate !== undefined) {
+      if (entityRegistryUpdate !== undefined) {
         let entityId = this.currentEntityId;
 
         // wait for new script to appear in entity registry
@@ -1050,10 +1043,10 @@ export class HaScriptEditor extends SubscribeMixin(
         if (entityId) {
           await updateEntityRegistryEntry(this.hass, entityId, {
             categories: {
-              script: this.entityRegistryUpdate.category || null,
+              script: entityRegistryUpdate.category || null,
             },
-            labels: this.entityRegistryUpdate.labels || [],
-            area_id: this.entityRegistryUpdate.area || null,
+            labels: entityRegistryUpdate.labels || [],
+            area_id: entityRegistryUpdate.area || null,
           });
         }
       }
