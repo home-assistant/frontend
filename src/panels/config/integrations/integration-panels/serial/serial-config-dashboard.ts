@@ -192,6 +192,16 @@ export class SerialConfigDashboard extends LitElement {
         });
   }
 
+  private _renderConsumerIcon(src: string, alt: string): TemplateResult {
+    return html`<img
+      slot="start"
+      .src=${src}
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      alt=${alt}
+    />`;
+  }
+
   private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
     const href =
       consumer.kind === "config_entry"
@@ -202,21 +212,26 @@ export class SerialConfigDashboard extends LitElement {
       <ha-md-list-item type="link" href=${href} class="consumer">
         ${
           consumer.kind === "config_entry"
-            ? html`<img
-                slot="start"
-                .src=${brandsUrl(
+            ? this._renderConsumerIcon(
+                brandsUrl(
                   {
                     domain: consumer.domain!,
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   },
                   this.hass.auth.data.hassUrl
-                )}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                alt=${consumer.domain!}
-              />`
-            : html`<ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>`
+                ),
+                consumer.domain!
+              )
+            : consumer.kind === "app"
+              ? this._renderConsumerIcon(
+                  `/api/hassio/addons/${consumer.slug}/icon`,
+                  consumer.slug!
+                )
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiPuzzle}
+                ></ha-svg-icon>`
         }
         <div slot="headline">${this._consumerName(consumer)}</div>
         <ha-icon-next slot="end"></ha-icon-next>
