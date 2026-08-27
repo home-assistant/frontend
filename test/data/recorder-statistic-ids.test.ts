@@ -1,9 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { HomeAssistant } from "../../src/types";
-import {
-  getStatisticIds,
-  type StatisticsMetaData,
-} from "../../src/data/recorder";
+import { getStatisticIds } from "../../src/data/recorder_statistic_ids";
+import type { StatisticsMetaData } from "../../src/data/recorder";
 
 const createHass = (callWS = vi.fn()) =>
   ({

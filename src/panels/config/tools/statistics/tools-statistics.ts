@@ -52,11 +52,11 @@ import type {
 } from "../../../../data/recorder";
 import {
   clearStatistics,
-  getStatisticIds,
   StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import {
   apiContext,
   internationalizationContext,

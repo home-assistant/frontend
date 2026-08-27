@@ -1,6 +1,25 @@
-import deepFreeze from "deep-freeze";
-
 const inFlightRequests = new WeakMap<object, Map<string, Promise<unknown>>>();
+
+const deepFreeze = <T>(value: T): T => {
+  if (value === null || typeof value !== "object") {
+    return value;
+  }
+
+  Object.freeze(value);
+
+  for (const key of Object.getOwnPropertyNames(value)) {
+    const property = (value as Record<string, unknown>)[key];
+    if (
+      property !== null &&
+      typeof property === "object" &&
+      !Object.isFrozen(property)
+    ) {
+      deepFreeze(property);
+    }
+  }
+
+  return value;
+};
 
 export const shareInFlightRequest = <T>(
   owner: object,
@@ -20,7 +39,7 @@ export const shareInFlightRequest = <T>(
   }
 
   const request = fetcher()
-    .then((result) => deepFreeze(result) as T)
+    .then((result) => deepFreeze(result))
     .finally(() => {
       if (ownerRequests.get(key) !== request) {
         return;
