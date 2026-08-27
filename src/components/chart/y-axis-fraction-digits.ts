@@ -18,6 +18,11 @@ const SPLIT_NUMBER = 5;
 // headroom out to a full tick, and leaves the rest where they are.
 const GAP_FRACTION_OF_SPAN = 0.02;
 
+// A percentage has a real ceiling the way zero is a real floor, so the gap must
+// not push the axis past it. Not every `%` sensor is bounded — power factor is
+// signed and can read over 100 — so this only applies while the data stays under.
+const PERCENT_MAX = 100;
+
 // Derive the number of decimal digits to use for Y-axis labels from the
 // observed data range, by asking ECharts for the same tick interval it will
 // render. This matches the precision it actually draws, so labels are neither
@@ -81,6 +86,9 @@ export function createYAxisPrecisionBounds(options: {
   // Such an axis also gets no gap: pushing it below zero would defeat the zero
   // anchoring and leave the bars floating above the axis.
   includeZero?: boolean;
+  // Used to recognise a bounded quantity, so the gap cannot widen the axis past
+  // a limit the data itself never crosses.
+  unit?: string;
   onFractionDigits: (digits: number) => void;
 }): {
   min: (values: YAxisExtentValues) => number | undefined;
@@ -88,7 +96,8 @@ export function createYAxisPrecisionBounds(options: {
   boundaryGap: [number, number];
   splitNumber: number;
 } {
-  const { min, max, includeZero, onFractionDigits } = options;
+  const { min, max, includeZero, unit, onFractionDigits } = options;
+  const naturalMax = unit === "%" ? PERCENT_MAX : undefined;
 
   const resolveBounds = (values: YAxisExtentValues) => {
     const resolvedMin = resolveYAxisBound(min, values);
@@ -105,18 +114,36 @@ export function createYAxisPrecisionBounds(options: {
         resolvedMin !== undefined,
         resolvedMax !== undefined,
       ]);
+      // The expansion is a fraction of the magnitude, so a constant series near
+      // the ceiling would otherwise overshoot it too.
+      const flatMax =
+        naturalMax !== undefined && values.max <= naturalMax
+          ? Math.min(flat.max, naturalMax)
+          : flat.max;
       return {
         min: resolvedMin ?? flat.min,
-        max: resolvedMax ?? flat.max,
+        max: resolvedMax ?? flatMax,
         gap: 0,
       };
     }
     const gap = (values.max - values.min) * GAP_FRACTION_OF_SPAN;
-    // Never let the gap carry a single-signed series across zero.
+    // Never let the gap carry a series past a boundary it does not itself cross.
+    const floor = values.min >= 0 ? 0 : undefined;
+    const ceiling =
+      naturalMax !== undefined && values.max <= naturalMax
+        ? naturalMax
+        : values.max <= 0
+          ? 0
+          : undefined;
     return {
-      min: resolvedMin ?? (values.min >= 0 && values.min < gap ? 0 : undefined),
+      min:
+        resolvedMin ??
+        (floor !== undefined && values.min - floor < gap ? floor : undefined),
       max:
-        resolvedMax ?? (values.max <= 0 && -values.max < gap ? 0 : undefined),
+        resolvedMax ??
+        (ceiling !== undefined && ceiling - values.max < gap
+          ? ceiling
+          : undefined),
       gap,
     };
   };

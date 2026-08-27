@@ -446,6 +446,7 @@ export class StatisticsChart extends LitElement {
         ...createYAxisPrecisionBounds({
           min: this._clampYAxis(minYAxis),
           max: this._clampYAxis(maxYAxis),
+          unit: this.unit,
           // Bar charts stay anchored at 0, so precision must reflect the
           // 0-based range that is actually rendered.
           includeZero: !yAxisScale,
