@@ -25,6 +25,7 @@ import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
+import type { MapBaseLayer } from "../../common/map/base-layer";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
@@ -160,6 +161,8 @@ export class HaMap extends ReactiveElement {
 
   private Leaflet?: LeafletModuleType;
 
+  private _baseLayer?: MapBaseLayer;
+
   private _resizeObserver?: ResizeObserver;
 
   private _mapItems: (Marker | Circle)[] = [];
@@ -211,6 +214,7 @@ export class HaMap extends ReactiveElement {
       this.leafletMap.remove();
       this.leafletMap = undefined;
       this.Leaflet = undefined;
+      this._baseLayer = undefined;
     }
 
     // the control went away with the map, so don't hold on to it
@@ -308,6 +312,7 @@ export class HaMap extends ReactiveElement {
     map.classList.toggle("dark", this._darkMode);
     map.classList.toggle("forced-dark", this.themeMode === "dark");
     map.classList.toggle("forced-light", this.themeMode === "light");
+    this._baseLayer?.setDarkMode(this._darkMode);
   }
 
   private _loading = false;
@@ -322,11 +327,23 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
-      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
+      const setup = await setupLeafletMap(map, {
         latitude: this._config?.latitude ?? 52.3731339,
         longitude: this._config?.longitude ?? 4.8903147,
         zoom: this.zoom,
+        darkMode: this._darkMode,
       });
+      // Setting up fetches a style, so the element can be gone by now.
+      // `disconnectedCallback` had no map to tear down, and keeping this one
+      // would leave a live map - and its WebGL context - on a detached host,
+      // and its container too initialized to set up again on reconnect.
+      if (!this.isConnected) {
+        setup.map.remove();
+        return;
+      }
+      this.leafletMap = setup.map;
+      this.Leaflet = setup.leaflet;
+      this._baseLayer = setup.baseLayer;
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
@@ -891,8 +908,21 @@ export class HaMap extends ReactiveElement {
       cursor: -moz-grabbing;
       cursor: -webkit-grabbing;
     }
-    .leaflet-tile-pane {
+    /* Only the raster fallback is inverted for dark mode, the vector style
+       ships its own dark cartography. */
+    .leaflet-tile-pane .leaflet-tile {
       filter: var(--map-filter);
+    }
+    /* The only two rules the MapLibre canvas needs from its stylesheet, the
+       rest of it styles controls and popups we do not render. */
+    .maplibregl-map {
+      position: relative;
+      overflow: hidden;
+    }
+    .maplibregl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
     .dark .leaflet-bar a {
       background-color: #1c1c1c;
