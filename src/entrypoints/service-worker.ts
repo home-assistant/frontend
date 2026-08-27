@@ -117,6 +117,36 @@ const initRouting = () => {
     })
   );
 
+  // Map tiles, glyphs and sprites are proxied by core behind a token that
+  // rotates every half hour. Strip it from the cache key, or every rotation
+  // would refetch every tile a dashboard has ever shown. The TileJSON is
+  // deliberately not matched here: it is the switching point for the tile
+  // source, so it stays on the network.
+  registerRoute(
+    ({ url }) =>
+      /^\/api\/map_tiles\/(vector|raster|fonts|sprites)\//.test(url.pathname),
+    new CacheFirst({
+      cacheName: "map-tiles",
+      plugins: [
+        {
+          cacheKeyWillBeUsed: async ({ request }) => {
+            const url = new URL(request.url);
+            url.searchParams.delete("token");
+            return url.href;
+          },
+        },
+        // A tile fetched with a stale token comes back 403; caching that would
+        // pin the failure in place.
+        new CacheableResponsePlugin({ statuses: [0, 200] }),
+        new ExpirationPlugin({
+          maxEntries: 500,
+          maxAgeSeconds: 60 * 60 * 24 * 7,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
+  );
+
   // Short-circuit camera/image proxy requests with an expired signature or a
   // missing/undefined token so they don't hit core and get logged as invalid
   // login attempts. Registered before the generic /api route below so it wins.

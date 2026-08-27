@@ -64,8 +64,35 @@ const supportsWebGL2 = (): boolean => {
 // Asset URLs are stored origin relative so they follow the instance's host, but
 // MapLibre rejects a relative sprite URL. The glyph URL is left alone: URL
 // encoding would mangle its {fontstack} and {range} placeholders.
+// The demo has no core to proxy through, so it talks to the upstreams directly.
+// The tiles come from OSM, which sets CORS on that endpoint; the glyphs and
+// sprites do not, so they come from VersaTiles, which sets CORS on everything.
+// Same Shortbread style either way, so the demo looks like the product does.
+const DEMO_UPSTREAM = {
+  tilejson: "https://vector.openstreetmap.org/shortbread_v1/tilejson.json",
+  assets: "https://tiles.versatiles.org/assets",
+};
+
+const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
+  style.glyphs = `${DEMO_UPSTREAM.assets}/glyphs/{fontstack}/{range}.pbf`;
+  style.sprite = [
+    { id: "basics", url: `${DEMO_UPSTREAM.assets}/sprites/basics/sprites` },
+  ];
+  Object.values(style.sources).forEach((source) => {
+    if ("url" in source) {
+      source.url = DEMO_UPSTREAM.tilejson;
+    }
+  });
+  return style;
+};
+
 const loadStyle = async (url: string): Promise<StyleSpecification> => {
   const style: StyleSpecification = await (await fetch(url)).json();
+
+  if (__DEMO__) {
+    return useDemoUpstream(style);
+  }
+
   if (typeof style.sprite === "string") {
     style.sprite = new URL(style.sprite, location.href).href;
   } else if (Array.isArray(style.sprite)) {
@@ -91,7 +118,12 @@ const createVectorLayer = async (
       style: await loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"]),
       // Every request goes to the token gated proxy, and tiles are fetched from
       // a worker that has no document to resolve a relative URL against.
-      transformRequest: (url) => ({ url: withMapTilesToken(url) }),
+      transformRequest: (url) => ({
+        url: withMapTilesToken(url),
+        // The demo reaches OSM directly, and OSM asks a website to identify
+        // itself by referrer. One public site has no instance hostname to leak.
+        referrerPolicy: __DEMO__ ? "origin" : undefined,
+      }),
     });
     // The plugin builds the MapLibre map in `onAdd`, so a refused context, a
     // blocked worker or a rejected blob URL throws here. Keep it inside the
