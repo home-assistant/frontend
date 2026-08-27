@@ -10246,7 +10246,7 @@ __metadata:
     luxon: "npm:3.7.2"
     map-stream: "npm:0.0.7"
     maplibre-gl: "npm:5.24.0"
-    marked: "npm:18.0.10"
+    marked: "npm:18.0.11"
     memoize-one: "npm:6.0.0"
     minify-literals: "npm:2.2.0"
     node-vibrant: "npm:4.0.4"
@@ -11944,12 +11944,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:18.0.10":
-  version: 18.0.10
-  resolution: "marked@npm:18.0.10"
+"marked@npm:18.0.11":
+  version: 18.0.11
+  resolution: "marked@npm:18.0.11"
   bin:
     marked: bin/marked.js
-  checksum: 10/0d4b560e0773fd6ba30a4e7560ba7ae1f05d47b23926ad8337d9f80c598dfdbffdf2f81e773a1789e8bc9d9c2c2d3d0c9143a54d32581c336a3bbb1bad80461c
+  checksum: 10/6da69f17820c7442358d751e902d3e0e06fef957e1178d634db938cf339c4504399c9f11a953b0a116b1e5bebc1c7fb52726777cc6c351f2c9f39e4a8276e21a
   languageName: node
   linkType: hard
 
