@@ -35,13 +35,14 @@ export const searchPlaces = (
   addressdetails?: boolean,
   limit?: number
 ): Promise<OpenStreetMapPlace[]> =>
+  // A browser cannot set the User-Agent header, so identification towards
+  // Nominatim is done with the `email` query parameter.
   fetch(
     `https://nominatim.openstreetmap.org/search.php?q=${address}&format=jsonv2${
       limit ? `&limit=${limit}` : ""
     }${addressdetails ? "&addressdetails=1" : ""}&accept-language=${
       hass.locale.language
-    }&email=abuse@home-assistant.io`,
-    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
+    }&email=abuse@home-assistant.io`
   ).then((res) => {
     if (res.ok) {
       return res.json();
@@ -54,13 +55,14 @@ export const reverseGeocode = (
   hass: HomeAssistant,
   zoom?: number
 ): Promise<OpenStreetMapPlace> =>
+  // A browser cannot set the User-Agent header, so identification towards
+  // Nominatim is done with the `email` query parameter.
   fetch(
     `https://nominatim.openstreetmap.org/reverse.php?lat=${location[0]}&lon=${
       location[1]
     }&accept-language=${hass.locale.language}&zoom=${
       zoom ?? 18
-    }&format=jsonv2&email=abuse@home-assistant.io`,
-    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
+    }&format=jsonv2&email=abuse@home-assistant.io`
   ).then((res) => {
     if (res.ok) {
       return res.json();
