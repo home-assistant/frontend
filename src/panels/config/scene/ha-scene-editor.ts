@@ -221,7 +221,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsubscribeEvents) {
+    if (this._mode === "live" && this.hass && !document.hidden) {
+      this._exitLiveMode();
+    } else if (this._unsubscribeEvents) {
       this._unsubscribeEvents();
       this._unsubscribeEvents = undefined;
     }
