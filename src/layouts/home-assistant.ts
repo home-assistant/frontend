@@ -318,10 +318,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (!searchParams["more-info-entity-id"]) {
       return;
     }
-    const { entityId, view, hash } = decodeMoreInfoUrl(
-      window.location.search,
-      window.location.hash
-    );
+    const { entityId, view } = decodeMoreInfoUrl(window.location.search);
     if (!entityId) {
       return;
     }
@@ -331,7 +328,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       showMoreInfoDialog(this, {
         entityId,
         view,
-        hash,
         fromUrl: true,
       });
     });

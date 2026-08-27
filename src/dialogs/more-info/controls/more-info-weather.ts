@@ -33,7 +33,6 @@ import type {
   WeatherEntity,
 } from "../../../data/weather";
 import {
-  getDefaultForecastType,
   getForecast,
   getSecondaryWeatherAttribute,
   getSupportedForecastTypes,
@@ -49,15 +48,10 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import { moreInfoContext, type MoreInfoContext } from "../context";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
   @property({ attribute: false }) public stateObj?: WeatherEntity;
-
-  @state()
-  @consume({ context: moreInfoContext, subscribe: true })
-  private _moreInfoContext?: MoreInfoContext;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -82,7 +76,9 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _forecastType?: ModernForecastType;
 
-  @state() private _subscribed?: Promise<() => void>;
+  private _subscribed?: Promise<() => void>;
+
+  private _subscribedTo?: string;
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".forecast",
@@ -94,24 +90,30 @@ class MoreInfoWeather extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._subscribedTo = undefined;
     this._forecastEvent = undefined;
   }
 
-  private async _subscribeForecastEvents() {
-    this._unsubscribeForecastEvents();
-    if (
-      !this.isConnected ||
-      !this._connection ||
-      !this.stateObj ||
-      !this._forecastType
-    ) {
+  private _updateForecastSubscription() {
+    const stateObj = this.stateObj;
+    const forecastType = this._forecastType;
+
+    if (!this.isConnected || !this._connection || !stateObj || !forecastType) {
+      this._unsubscribeForecastEvents();
       return;
     }
 
+    const target = `${stateObj.entity_id}-${forecastType}`;
+    if (target === this._subscribedTo) {
+      return;
+    }
+
+    this._unsubscribeForecastEvents();
+    this._subscribedTo = target;
     this._subscribed = subscribeForecast(
       this._connection.connection,
-      this.stateObj.entity_id,
-      this._forecastType,
+      stateObj.entity_id,
+      forecastType,
       (event) => {
         this._forecastEvent = event;
       }
@@ -121,7 +123,7 @@ class MoreInfoWeather extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._subscribeForecastEvents();
+      this._updateForecastSubscription();
     }
   }
 
@@ -133,37 +135,9 @@ class MoreInfoWeather extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if (
-      (changedProps.has("stateObj") ||
-        changedProps.has("_moreInfoContext") ||
-        !this._subscribed) &&
-      this.stateObj
-    ) {
-      const oldState = changedProps.get("stateObj") as
-        WeatherEntity | undefined;
-      if (
-        oldState?.entity_id !== this.stateObj?.entity_id ||
-        changedProps.has("_moreInfoContext") ||
-        !this._subscribed
-      ) {
-        const supportedForecastTypes = getSupportedForecastTypes(this.stateObj);
-        const requestedForecastType =
-          this._moreInfoContext?.hash.get("forecast");
-        const selectedForecastType =
-          supportedForecastTypes.find(
-            (forecastType) => forecastType === requestedForecastType
-          ) ?? getDefaultForecastType(this.stateObj);
-        if (selectedForecastType !== requestedForecastType) {
-          this._moreInfoContext?.setHashParam("forecast", selectedForecastType);
-        }
-        if (this._forecastType !== selectedForecastType || !this._subscribed) {
-          this._forecastType = selectedForecastType;
-          this._subscribeForecastEvents();
-        }
-      }
-    } else if (changedProps.has("_forecastType")) {
-      this._subscribeForecastEvents();
-    }
+    this._forecastType = this._selectedForecastType();
+
+    this._updateForecastSubscription();
   }
 
   protected updated(_changedProps: PropertyValues<this>): void {
@@ -183,6 +157,16 @@ class MoreInfoWeather extends LitElement {
   private _supportedForecasts = memoizeOne((stateObj: WeatherEntity) =>
     getSupportedForecastTypes(stateObj)
   );
+
+  private _selectedForecastType(): ModernForecastType | undefined {
+    if (!this.stateObj) {
+      return undefined;
+    }
+    const supported = this._supportedForecasts(this.stateObj);
+    return (
+      supported.find((type) => type === this._forecastType) ?? supported[0]
+    );
+  }
 
   private _groupForecastByDay = memoizeOne((forecast: ForecastAttribute[]) => {
     if (!forecast) return [];
@@ -536,14 +520,7 @@ class MoreInfoWeather extends LitElement {
   private _handleForecastTypeChanged(
     ev: HASSDomEvent<{ name: ModernForecastType }>
   ): void {
-    if (
-      !this.stateObj ||
-      !getSupportedForecastTypes(this.stateObj).includes(ev.detail.name)
-    ) {
-      return;
-    }
     this._forecastType = ev.detail.name;
-    this._moreInfoContext?.setHashParam("forecast", this._forecastType);
   }
 
   static get styles(): CSSResultGroup {
