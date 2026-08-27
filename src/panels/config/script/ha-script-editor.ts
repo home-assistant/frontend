@@ -804,10 +804,15 @@ export class HaScriptEditor extends SubscribeMixin(
             return;
           }
 
+          this.yamlErrors = undefined;
           resolve(true);
         },
         onClose: () => resolve(false),
-        onDiscard: () => resolve(true),
+        onDiscard: () => {
+          this.yamlErrors = undefined;
+          this._markDirtyStateClean();
+          resolve(true);
+        },
         entityRegistryUpdate: this.entityRegistryUpdate,
         entityRegistryEntry: this.registryEntry,
         title: this.hass.localize(
