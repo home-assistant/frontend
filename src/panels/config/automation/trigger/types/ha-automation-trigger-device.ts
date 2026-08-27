@@ -266,9 +266,6 @@ export class HaDeviceTrigger extends LitElement {
     ) {
       trigger = this._origTrigger;
     }
-    if (this.trigger.id) {
-      trigger.id = this.trigger.id;
-    }
     fireEvent(this, "value-changed", { value: trigger });
   }
 
