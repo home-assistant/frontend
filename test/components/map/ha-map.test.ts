@@ -1,7 +1,19 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type * as LeafletModule from "leaflet";
 import "../../../src/components/map/ha-map";
 import type { HaMap } from "../../../src/components/map/ha-map";
+
+vi.mock("maplibre-gl", () => ({ setWorkerUrl: vi.fn() }));
+
+vi.mock("@maplibre/maplibre-gl-leaflet", async () => {
+  const leafletModule = (await vi.importActual(
+    "leaflet"
+  )) as typeof LeafletModule & {
+    default: typeof LeafletModule;
+  };
+  return { maplibreGL: () => leafletModule.default.layerGroup() };
+});
 
 type ROCallback = (
   entries: ResizeObserverEntry[],

@@ -103,6 +103,18 @@ function copyMapPanel(staticDir) {
     npmPath("leaflet/dist/images"),
     staticPath("images/leaflet/images/")
   );
+  copyFileDir(
+    npmPath("maplibre-gl/dist/maplibre-gl.css"),
+    staticPath("images/maplibre/")
+  );
+  copyFileDir(
+    npmPath("maplibre-gl/dist/maplibre-gl-worker.mjs"),
+    staticPath("js/maplibre/")
+  );
+  copyFileDir(
+    npmPath("maplibre-gl/dist/maplibre-gl-shared.mjs"),
+    staticPath("js/maplibre/")
+  );
 }
 
 function copyZXingWasm(staticDir) {

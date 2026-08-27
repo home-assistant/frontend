@@ -1,4 +1,4 @@
-import type { Map, TileLayer } from "leaflet";
+import type { Layer, Map } from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -7,7 +7,7 @@ export type LeafletModuleType = typeof import("leaflet");
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
   initialView?: { latitude: number; longitude: number; zoom?: number }
-): Promise<[Map, LeafletModuleType, TileLayer]> => {
+): Promise<[Map, LeafletModuleType, Layer]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
@@ -17,7 +17,11 @@ export const setupLeafletMap = async (
 
   await import("leaflet.markercluster");
 
-  const map = Leaflet.map(mapElement);
+  const mapLibre = await import("maplibre-gl");
+  mapLibre.setWorkerUrl("/static/js/maplibre/maplibre-gl-worker.mjs");
+  const { maplibreGL } = await import("@maplibre/maplibre-gl-leaflet");
+
+  const map = Leaflet.map(mapElement, { minZoom: 1 });
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");
@@ -31,6 +35,11 @@ export const setupLeafletMap = async (
   markerClusterStyle.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(markerClusterStyle);
 
+  const mapLibreStyle = document.createElement("link");
+  mapLibreStyle.setAttribute("href", "/static/images/maplibre/maplibre-gl.css");
+  mapLibreStyle.setAttribute("rel", "stylesheet");
+  mapElement.parentNode.appendChild(mapLibreStyle);
+
   if (initialView) {
     map.setView(
       [initialView.latitude, initialView.longitude],
@@ -38,21 +47,9 @@ export const setupLeafletMap = async (
     );
   }
 
-  const tileLayer = createTileLayer(Leaflet).addTo(map);
+  const mapLibreLayer = maplibreGL({
+    style: "https://tiles.openfreemap.org/styles/liberty",
+  }).addTo(map);
 
-  return [map, Leaflet, tileLayer];
+  return [map, Leaflet, mapLibreLayer];
 };
-
-const createTileLayer = (leaflet: LeafletModuleType): TileLayer =>
-  leaflet.tileLayer(
-    `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}${
-      leaflet.Browser.retina ? "@2x.png" : ".png"
-    }`,
-    {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: "abcd",
-      minZoom: 0,
-      maxZoom: 20,
-    }
-  );

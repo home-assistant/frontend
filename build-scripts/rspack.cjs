@@ -265,6 +265,7 @@ const createRspackConfig = ({
           // Only use ignore to intercept imports that we don't control
           // inside node_module dependencies.
           if (
+            !ignorePackages.length ||
             !context.includes("/node_modules/") ||
             // calling define.amd will call require("!!webpack amd options")
             resource.startsWith("!!webpack") ||
