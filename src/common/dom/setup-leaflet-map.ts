@@ -21,7 +21,7 @@ export const setupLeafletMap = async (
   mapLibre.setWorkerUrl("/static/js/maplibre/maplibre-gl-worker.mjs");
   const { maplibreGL } = await import("@maplibre/maplibre-gl-leaflet");
 
-  const map = Leaflet.map(mapElement, { minZoom: 1 });
+  const map = Leaflet.map(mapElement, { minZoom: 1, maxZoom: 20 });
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");

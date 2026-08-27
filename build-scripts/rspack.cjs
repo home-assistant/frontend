@@ -110,10 +110,22 @@ const createRspackConfig = ({
     __dirname,
     "lit-disable-dev-mode-loader.cjs"
   );
+  const mapLibreGlModule = path.resolve(
+    __dirname,
+    "../node_modules/maplibre-gl/dist/maplibre-gl.mjs"
+  );
   return {
     name,
     mode: isProdBuild ? "production" : "development",
     target: `browserslist:${latestBuild ? "modern" : "legacy"}`,
+    // MapLibre's automatic import.meta.url worker fallback cannot be statically
+    // analyzed. It is unused because setupLeafletMap sets a copied worker URL.
+    ignoreWarnings: [
+      (warning) =>
+        warning.message.includes(
+          "Critical dependency: the request of a dependency is an expression"
+        ) && warning.module?.resource === mapLibreGlModule,
+    ],
     // For tests/CI, source maps are skipped to gain build speed
     // For production, generate source maps for accurate stack traces without source code
     // For development, generate "cheap" versions that can map to original line numbers

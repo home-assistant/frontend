@@ -117,6 +117,7 @@ describe("ha-map", () => {
     await el.updateComplete;
 
     const map = el.leafletMap!;
+    expect(map.getMaxZoom()).toBe(20);
     // The map should be fitted to the markers, not zoomed out to the world.
     expect(map.getZoom()).toBeGreaterThanOrEqual(10);
     expect(map.getCenter().lat).toBeCloseTo(52.3745, 2);
