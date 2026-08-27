@@ -88,4 +88,19 @@ describe("shareInFlightRequest", () => {
 
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
+
+  it("deep-freezes resolved results", async () => {
+    const owner = {};
+    const result = { items: ["a"] };
+    const fetcher = vi.fn(async () => result);
+
+    const shared = await shareInFlightRequest(owner, "resource:a", fetcher);
+
+    expect(shared).toBe(result);
+    expect(Object.isFrozen(shared)).toBe(true);
+    expect(Object.isFrozen((shared as typeof result).items)).toBe(true);
+    expect(() => {
+      (shared as typeof result).items.push("b");
+    }).toThrow();
+  });
 });

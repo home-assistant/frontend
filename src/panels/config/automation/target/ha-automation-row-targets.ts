@@ -167,9 +167,7 @@ export class HaAutomationRowTargets extends LitElement {
     this._rerenderCount = false;
   }
 
-  private _countMatchingEntities(
-    referencedEntities: readonly string[]
-  ): number {
+  private _countMatchingEntities(referencedEntities: string[]): number {
     const targetSelector = this.selector;
     const hasEntityFilter = !!targetSelector?.target?.entity;
     const hasDeviceFilter = !!targetSelector?.target?.device;

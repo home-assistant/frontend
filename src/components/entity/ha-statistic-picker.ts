@@ -98,7 +98,7 @@ export class HaStatisticPicker extends LitElement {
   public allowCustomEntity;
 
   @property({ attribute: false })
-  public statisticIds?: readonly Readonly<StatisticsMetaData>[];
+  public statisticIds?: StatisticsMetaData[];
 
   @property({ attribute: false }) public helpMissingEntityUrl =
     "/more-info/statistics/";
@@ -191,7 +191,7 @@ export class HaStatisticPicker extends LitElement {
   private _getStatisticsItems = memoizeOne(
     (
       hass: HomeAssistant,
-      statisticIds?: readonly Readonly<StatisticsMetaData>[],
+      statisticIds?: StatisticsMetaData[],
       includeStatisticsUnitOfMeasurement?: string | string[],
       includeUnitClass?: string | string[],
       includeDeviceClass?: string | string[],
@@ -329,10 +329,7 @@ export class HaStatisticPicker extends LitElement {
   );
 
   private _statisticMetaData = memoizeOne(
-    (
-      statisticId: string,
-      statisticIds: readonly Readonly<StatisticsMetaData>[]
-    ) => {
+    (statisticId: string, statisticIds: StatisticsMetaData[]) => {
       if (!statisticIds) {
         return undefined;
       }

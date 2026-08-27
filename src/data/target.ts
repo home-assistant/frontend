@@ -35,19 +35,19 @@ export interface SingleHassServiceTarget {
 }
 
 export interface ExtractFromTargetResult {
-  readonly missing_areas: readonly string[];
-  readonly missing_devices: readonly string[];
-  readonly missing_floors: readonly string[];
-  readonly missing_labels: readonly string[];
-  readonly referenced_areas: readonly string[];
-  readonly referenced_devices: readonly string[];
-  readonly referenced_entities: readonly string[];
+  missing_areas: string[];
+  missing_devices: string[];
+  missing_floors: string[];
+  missing_labels: string[];
+  referenced_areas: string[];
+  referenced_devices: string[];
+  referenced_entities: string[];
 }
 
 export interface ExtractFromTargetResultReferenced {
-  readonly referenced_areas: readonly string[];
-  readonly referenced_devices: readonly string[];
-  readonly referenced_entities: readonly string[];
+  referenced_areas: string[];
+  referenced_devices: string[];
+  referenced_entities: string[];
 }
 
 export const extractFromTarget = async (
