@@ -24,6 +24,8 @@ export interface RouteOptions {
   // Function to load the page.
   load?: () => Promise<unknown>;
   cache?: boolean;
+  // Recreate the page when the remaining path (the item id) changes.
+  itemId?: boolean;
   waitForReady?: boolean;
 }
 
@@ -138,10 +140,23 @@ export class HassRouterPage extends ReactiveElement {
     }
 
     if (this._currentPage === newPage) {
-      if (this.lastChild) {
-        this.updatePageEl(this.lastChild, changedProps);
+      const oldRoute = changedProps.get("route");
+      const oldTail = oldRoute ? computeRouteTail(oldRoute).path : undefined;
+      const newTail = route ? this._computeTail(route).path : undefined;
+      if (
+        typeof routeOptions === "object" &&
+        routeOptions.itemId &&
+        oldTail !== newTail
+      ) {
+        // Fall through to the normal create path so `load` / loading screen
+        // still run. itemId pages are not cached, so this is a new element.
+        this._currentPage = "";
+      } else {
+        if (this.lastChild) {
+          this.updatePageEl(this.lastChild, changedProps);
+        }
+        return;
       }
-      return;
     }
 
     if (!routeOptions) {
@@ -365,7 +380,10 @@ export class HassRouterPage extends ReactiveElement {
     this.updatePageEl(panelEl);
     this.appendChild(panelEl);
 
-    if (routerOptions.cacheAll || routeOptions.cache) {
+    if (
+      (routerOptions.cacheAll || routeOptions.cache) &&
+      !routeOptions.itemId
+    ) {
       this._cache[page] = panelEl;
     }
   }
