@@ -52,9 +52,7 @@ const setEntry = (path: string) => {
 };
 
 const mountClean = async () => {
-  const element = document.createElement(
-    "test-prevent-unsaved"
-  ) as TestPreventUnsaved;
+  const element = document.createElement("test-prevent-unsaved");
   document.body.append(element);
   element.initialize({ name: "Kitchen" });
   await element.updateComplete;
@@ -77,7 +75,6 @@ describe("PreventUnsavedMixin", () => {
     document.querySelectorAll("test-prevent-unsaved").forEach((element) => {
       element.remove();
     });
-    window.isDirtyState = false;
   });
 
   it("blocks navigation while dirty when the prompt is declined", async () => {

@@ -66,15 +66,19 @@ describe("navigate", () => {
 describe("unsaved changes guard", () => {
   const registeredGuards: UnsavedChangesGuard[] = [];
 
-  const registerGuard = (isDirty: boolean, promptResult = true) => {
-    const guard = {
-      isDirty: vi.fn(() => isDirty),
-      prompt: vi.fn(async () => promptResult),
-    };
+  // Registering through this keeps afterEach able to clean up the module-level
+  // registry, which outlives the test that filled it.
+  const trackGuard = <T extends UnsavedChangesGuard>(guard: T): T => {
     registerUnsavedChangesGuard(guard);
     registeredGuards.push(guard);
     return guard;
   };
+
+  const registerGuard = (isDirty: boolean, promptResult = true) =>
+    trackGuard({
+      isDirty: vi.fn(() => isDirty),
+      prompt: vi.fn(async () => promptResult),
+    });
 
   beforeEach(() => {
     setEntry("/config");
@@ -126,7 +130,7 @@ describe("unsaved changes guard", () => {
   it("skips a pending prompt once no guard is dirty anymore", async () => {
     let dirty = true;
     let resolvePrompt!: (value: boolean) => void;
-    const guard: UnsavedChangesGuard = {
+    const guard = trackGuard({
       isDirty: () => dirty,
       prompt: vi.fn(
         () =>
@@ -134,9 +138,7 @@ describe("unsaved changes guard", () => {
             resolvePrompt = resolve;
           })
       ),
-    };
-    registerUnsavedChangesGuard(guard);
-    registeredGuards.push(guard);
+    });
 
     const first = navigate("/config/areas");
     dirty = false;
@@ -151,7 +153,7 @@ describe("unsaved changes guard", () => {
 
   it("shares one pending prompt between concurrent navigations", async () => {
     let resolvePrompt!: (value: boolean) => void;
-    const guard: UnsavedChangesGuard = {
+    const guard = trackGuard({
       isDirty: () => true,
       prompt: vi.fn(
         () =>
@@ -159,9 +161,7 @@ describe("unsaved changes guard", () => {
             resolvePrompt = resolve;
           })
       ),
-    };
-    registerUnsavedChangesGuard(guard);
-    registeredGuards.push(guard);
+    });
 
     const first = navigate("/config/areas");
     const second = navigate("/config/devices/dashboard");
