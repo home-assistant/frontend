@@ -911,11 +911,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    this._unsubscribeEvents =
-      await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => this._stateChanged(event),
-        "state_changed"
-      );
+    const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
+    if (!this.isConnected || this._mode !== "live") {
+      unsubscribe();
+      return;
+    }
+    this._unsubscribeEvents = unsubscribe;
   }
 
   private _showMoreInfo(ev: Event) {
@@ -928,6 +932,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -940,6 +947,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
               ),
       });
       goBack("/config/scene/dashboard");
+      return;
+    }
+
+    if (!this.isConnected) {
       return;
     }
 
