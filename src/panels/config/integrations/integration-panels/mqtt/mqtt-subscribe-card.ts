@@ -259,7 +259,8 @@ class MqttSubscribeCard extends LitElement {
       gap: var(--ha-space-2);
     }
     ha-button {
-      align-self: center;
+      align-self: flex-start;
+      margin-top: var(--ha-space-3);
     }
     ha-select {
       width: 96px;
