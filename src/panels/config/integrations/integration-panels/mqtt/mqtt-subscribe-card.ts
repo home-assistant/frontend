@@ -254,10 +254,12 @@ class MqttSubscribeCard extends LitElement {
     }
     .panel-dev-mqtt-subscribe-fields {
       display: flex;
-      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: var(--ha-space-2);
+    }
+    ha-button {
+      align-self: center;
     }
     ha-select {
       width: 96px;
