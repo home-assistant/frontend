@@ -113,6 +113,9 @@ class HuiEnergyDistrubutionCard
       return true;
     }
     const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
     const oldStates = oldHass.states;
     if (
       this._data?.co2SignalEntity &&
