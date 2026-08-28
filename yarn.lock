@@ -3502,6 +3502,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mapbox/mapbox-gl-rtl-text@npm:0.4.0":
+  version: 0.4.0
+  resolution: "@mapbox/mapbox-gl-rtl-text@npm:0.4.0"
+  checksum: 10/a678240e4cc6f589726ef2f35fac64a7eb073451a8686c09db58041d3fb351d2e72100bb12607591efc298d8ac5e19691c593b3c213d121b2a0e84978254e1a8
+  languageName: node
+  linkType: hard
+
 "@mapbox/point-geometry@npm:^1.1.0, @mapbox/point-geometry@npm:~1.1.0":
   version: 1.1.0
   resolution: "@mapbox/point-geometry@npm:1.1.0"
@@ -10148,6 +10155,7 @@ __metadata:
     "@lit/reactive-element": "npm:2.1.2"
     "@lit/task": "npm:1.0.3"
     "@lokalise/node-api": "npm:16.3.0"
+    "@mapbox/mapbox-gl-rtl-text": "npm:0.4.0"
     "@maplibre/maplibre-gl-leaflet": "npm:0.1.4"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"

@@ -18,6 +18,10 @@ const maplibreGL = vi.hoisted(() => vi.fn(() => maplibreLayer));
 
 vi.mock("@maplibre/maplibre-gl-leaflet", () => ({ maplibreGL }));
 
+const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
+
+vi.mock("maplibre-gl", () => ({ setRTLTextPlugin }));
+
 const STYLE = {
   version: 8,
   sources: {},
@@ -107,6 +111,18 @@ describe("createBaseLayer", () => {
 
     expect(vi.mocked(leaflet.tileLayer).mock.calls[0][0]).toContain("@2x.png");
     browser.retina = false;
+  });
+
+  it("registers the RTL text plugin once, lazily, from our own host", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false);
+
+    expect(setRTLTextPlugin).toHaveBeenCalledOnce();
+    expect(setRTLTextPlugin).toHaveBeenCalledWith(
+      `${location.origin}/static/map/mapbox-gl-rtl-text.js`,
+      true
+    );
   });
 
   it("uses vector tiles when WebGL2 is available", async () => {

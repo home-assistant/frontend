@@ -13,6 +13,7 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import { extract } from "tar";
 import paths from "../paths.cjs";
+import { addLatinLabels } from "./map-labels.js";
 
 // The tile URL is deliberately never named here: the OSMF asks consumers to
 // resolve it through the TileJSON so they can move the tiles without every
@@ -195,7 +196,7 @@ const buildMapAssets = async () => {
       ["light", colorful],
       ["dark", eclipse],
     ].map(([name, builder]) => {
-      const style = useTileJson(name, builder(styleOptions));
+      const style = addLatinLabels(useTileJson(name, builder(styleOptions)));
       assertBoldStaysOnRefs(name, style);
       return writeFile(
         path.join(outputDir, `${name}.json`),
