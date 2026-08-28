@@ -322,6 +322,15 @@ export const getMyRedirects = (): Redirects => ({
   profile_security: {
     redirect: "/profile/security",
   },
+  profile_preferences: {
+    redirect: "/profile/preferences",
+  },
+  profile_localization: {
+    redirect: "/profile/localization",
+  },
+  profile_browser: {
+    redirect: "/profile/browser",
+  },
   profile: {
     redirect: "/profile",
   },
