@@ -87,10 +87,12 @@ export class HaMediaItemPicker extends LitElement {
         ></ha-picture-upload>`;
     }
 
+    const hideEntityPicker =
+      this._hasAccept ||
+      (this._contextEntities && this._contextEntities.length <= 1);
     return html`
       ${
-        this._hasAccept ||
-        (this._contextEntities && this._contextEntities.length <= 1)
+        hideEntityPicker
           ? nothing
           : html`
               <ha-entity-picker
@@ -235,6 +237,13 @@ export class HaMediaItemPicker extends LitElement {
                   : nothing
               }`
       }
+      ${
+        hideEntityPicker && this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 
@@ -364,6 +373,7 @@ export class HaMediaItemPicker extends LitElement {
       cursor: pointer;
       transition: background-color 180ms ease-in-out;
       min-height: 56px;
+      margin-bottom: var(--ha-space-1);
     }
     ha-card:hover:not(.disabled),
     ha-card:focus:not(.disabled) {

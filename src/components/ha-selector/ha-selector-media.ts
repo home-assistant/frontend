@@ -28,6 +28,7 @@ export class HaMediaSelector extends LitElement {
   };
 
   private _renderPicker(
+    helper?: string,
     value?: MediaSelectorValue,
     index?: number,
     changeCallback?
@@ -38,7 +39,7 @@ export class HaMediaSelector extends LitElement {
       .selector=${this.selector}
       .value=${value}
       .label=${index == null ? this.label : undefined}
-      .helper=${this.helper}
+      .helper=${helper}
       .disabled=${this.disabled}
       .required=${this.required}
       .multiple=${index != null}
@@ -83,12 +84,13 @@ export class HaMediaSelector extends LitElement {
       if (value) {
         result.push(
           ...value.map((v, i) =>
-            this._renderPicker(v, i, this._multiValueChanged)
+            this._renderPicker(undefined, v, i, this._multiValueChanged)
           )
         );
       }
       result.push(
         this._renderPicker(
+          this.helper,
           undefined,
           value?.length || 0,
           this._multiValueChanged
@@ -98,6 +100,7 @@ export class HaMediaSelector extends LitElement {
     }
 
     return this._renderPicker(
+      this.helper,
       Array.isArray(this.value) ? this.value[0] : this.value
     );
   }
