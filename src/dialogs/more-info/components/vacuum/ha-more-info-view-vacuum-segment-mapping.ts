@@ -116,10 +116,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         ></ha-vacuum-segment-area-mapper>
 
         <div class="footer">
-          <ha-button
-            @click=${this._save}
-            .disabled=${!this._dirtyState?.isDirty || this._submitting}
-          >
+          <ha-button @click=${this._save} .disabled=${this._submitting}>
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </div>
