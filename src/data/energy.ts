@@ -1553,7 +1553,8 @@ export const formatConsumptionShort = (
   hass: HomeAssistant,
   consumption: number | null,
   unit: string,
-  targetUnit?: string
+  targetUnit?: string,
+  displayPrecision?: number
 ): string => {
   const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
@@ -1583,10 +1584,19 @@ export const formatConsumptionShort = (
     pickedUnit = units[unitIndex];
   }
   return (
-    formatNumber(val, hass.locale, {
-      maximumFractionDigits:
-        Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-    }) +
+    formatNumber(
+      val,
+      hass.locale,
+      displayPrecision !== undefined && pickedUnit === unit
+        ? {
+            minimumFractionDigits: displayPrecision,
+            maximumFractionDigits: displayPrecision,
+          }
+        : {
+            maximumFractionDigits:
+              Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
+          }
+    ) +
     " " +
     pickedUnit
   );
