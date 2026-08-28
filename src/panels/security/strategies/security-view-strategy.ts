@@ -18,11 +18,9 @@ import type {
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
-import type {
-  LogbookCardConfig,
-  TileCardConfig,
-} from "../../lovelace/cards/types";
+import type { LogbookCardConfig } from "../../lovelace/cards/types";
 import { computeAreaTileCardConfig } from "../../lovelace/strategies/areas/helpers/areas-strategy-helper";
+import { computeFavoriteCardConfig } from "../../lovelace/strategies/helpers/favorite-cards";
 import { computeSecurityAlertCardConfig } from "./security-alerts";
 
 export interface SecurityViewStrategyConfig {
@@ -186,15 +184,7 @@ export class SecurityViewStrategy extends ReactiveElement {
             ),
             heading_style: "title",
           },
-          ...favoriteEntities.map(
-            (entityId) =>
-              ({
-                type: "tile",
-                entity: entityId,
-                state_content: ["state", "area_name"],
-                show_entity_picture: true,
-              }) satisfies TileCardConfig
-          ),
+          ...favoriteEntities.map(computeFavoriteCardConfig),
         ],
       });
     }
