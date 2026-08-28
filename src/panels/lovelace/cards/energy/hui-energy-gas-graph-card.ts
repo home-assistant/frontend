@@ -100,6 +100,9 @@ export class HuiEnergyGasGraphCard
     }
 
     const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
 
     if (
       this._energyData &&
