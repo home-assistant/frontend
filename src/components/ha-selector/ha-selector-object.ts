@@ -298,7 +298,7 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     if (!this.selector.object!.multiple) {
-      fireEvent(this, "value-changed", { value: undefined });
+      fireEvent(this, "value-changed", { value: "" });
       return;
     }
 

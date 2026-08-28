@@ -56,6 +56,33 @@ describe("computeInitialHaFormData", () => {
     });
   });
 
+  it("leaves a required single device class selector unset", () => {
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          device_class: {
+            domain: "sensor",
+          },
+        }),
+      ])
+    ).toEqual({});
+  });
+
+  it("initializes a required multiple device class selector with an empty array", () => {
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          device_class: {
+            domain: "sensor",
+            multiple: true,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: [],
+    });
+  });
+
   it("does not initialize optional text selectors", () => {
     expect(
       computeInitialHaFormData([
@@ -86,6 +113,32 @@ describe("computeInitialHaFormData", () => {
         },
       ])
     ).toEqual({});
+  });
+
+  it("initializes a required constant selector without losing falsy values", () => {
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          constant: {
+            value: false,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: false,
+    });
+
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          constant: {
+            value: 0,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: 0,
+    });
   });
 
   it("initializes a required choose selector from a constant first choice", () => {

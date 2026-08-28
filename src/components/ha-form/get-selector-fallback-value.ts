@@ -29,6 +29,7 @@ const SELECTOR_FALLBACK_VALUES = {
   date: undefined,
   datetime: undefined,
   device: undefined,
+  device_class: undefined,
   duration: undefined,
   entity: undefined,
   entity_name: undefined,

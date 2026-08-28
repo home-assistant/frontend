@@ -55,8 +55,16 @@ const selectorConfig = {
 const getInternals = (selector: HaObjectSelector) =>
   selector as unknown as Record<string, unknown>;
 
+interface ItemActionEvent {
+  stopPropagation: () => void;
+  currentTarget: {
+    item?: FormDialogData;
+    index?: number;
+  };
+}
+
 const mountSelector = async (
-  value: FormDialogData[],
+  value: FormDialogData | FormDialogData[] | "",
   config: ObjectSelector = selectorConfig
 ) => {
   const selector = document.createElement(
@@ -93,14 +101,6 @@ const resolveFormDialog = async (
       { once: true }
     );
   });
-
-  interface ItemActionEvent {
-    stopPropagation: () => void;
-    currentTarget: {
-      item?: FormDialogData;
-      index?: number;
-    };
-  }
 
   const event: ItemActionEvent = {
     stopPropagation: vi.fn(),
@@ -182,6 +182,40 @@ describe("ha-selector-object form dialog flow", () => {
     expect(params.data).toEqual({
       name: "",
     });
+  });
+
+  it("restores the initialized empty value after an add-delete round trip", async () => {
+    const selector = await mountSelector("", {
+      object: {
+        fields: {
+          name: {
+            selector: { text: {} },
+          },
+        },
+      },
+    });
+    const valueChanged = vi.fn();
+    selector.addEventListener("value-changed", valueChanged);
+
+    await resolveFormDialog(selector, "_addItem", { name: "A" });
+
+    expect(valueChanged.mock.calls[0][0].detail.value).toEqual({ name: "A" });
+
+    selector.value = valueChanged.mock.calls[0][0].detail.value;
+    await selector.updateComplete;
+
+    const event: ItemActionEvent = {
+      stopPropagation: vi.fn(),
+      currentTarget: {
+        index: 0,
+      },
+    };
+
+    (getInternals(selector)._deleteItem as (event: ItemActionEvent) => void)(
+      event
+    );
+
+    expect(valueChanged.mock.calls[1][0].detail.value).toBe("");
   });
 
   it("appends an item through the real Add flow", async () => {

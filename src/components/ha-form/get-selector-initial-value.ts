@@ -42,6 +42,8 @@ const SELECTOR_INITIAL_VALUES = {
   date: () => `${new Date().toISOString().slice(0, 10)}T00:00:00`,
   datetime: () => `${new Date().toISOString().slice(0, 10)}T00:00:00`,
   device: (selector) => (selector.device?.multiple ? [] : ""),
+  device_class: (selector) =>
+    selector.device_class?.multiple ? [] : undefined,
   duration: () => ({
     hours: 0,
     minutes: 0,
