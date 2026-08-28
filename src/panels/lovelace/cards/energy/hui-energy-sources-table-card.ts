@@ -189,7 +189,11 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formatNumber(compareEnergy, this.hass.locale, formatOptions)} ${energyUnit}
+                ${formatNumber(
+                  compareEnergy,
+                  this.hass.locale,
+                  formatOptions
+                )} ${energyUnit}
               </td>
               ${
                 showCosts
@@ -267,7 +271,11 @@ export class HuiEnergySourcesTableCard
                 ${
                   compareEnergy === null
                     ? ""
-                    : `${formatNumber(compareEnergy, this.hass.locale, formatOptions)} ${energyUnit}`
+                    : `${formatNumber(
+                      compareEnergy,
+                      this.hass.locale,
+                      formatOptions
+                    )} ${energyUnit}`
                 }
               </td>
               ${
@@ -292,7 +300,11 @@ export class HuiEnergySourcesTableCard
         ${
           energy === null
             ? ""
-            : `${formatNumber(energy, this.hass.locale, formatOptions)} ${energyUnit}`
+            : `${formatNumber(
+              energy,
+              this.hass.locale,
+              formatOptions
+            )} ${energyUnit}`
         }
       </td>
       ${
