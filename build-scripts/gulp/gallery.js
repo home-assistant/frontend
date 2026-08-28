@@ -4,6 +4,7 @@ import gulp from "gulp";
 import { load as loadYaml } from "js-yaml";
 import { marked } from "marked";
 import path from "path";
+import { pathToFileURL } from "node:url";
 import { createWorkflowLockTask } from "../output-lock.mjs";
 import paths from "../paths.cjs";
 import "./clean.js";
@@ -87,7 +88,10 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
   // Generate sidebar
   const sidebarPath = path.resolve(paths.gallery_dir, "sidebar.js");
-  const sidebar = (await import(sidebarPath)).default;
+  // Node's ESM loader rejects a raw absolute path here on Windows
+  // (ERR_UNSUPPORTED_ESM_URL_SCHEME on the "d:" scheme); a file:// URL
+  // works on every platform.
+  const sidebar = (await import(pathToFileURL(sidebarPath).href)).default;
 
   const pagesToProcess = {};
   for (const key of processed) {
