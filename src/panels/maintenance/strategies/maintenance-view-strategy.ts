@@ -15,9 +15,7 @@ import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  getDeviceEntityDisplayLookup,
-} from "../../../data/device/device_registry";
+import { getDeviceEntityDisplayLookup } from "../../../data/device/device_registry";
 import { findBatteryChargingEntity } from "../../../data/entity/entity_registry";
 
 export interface MaintenanceViewStrategyConfig {
@@ -45,7 +43,6 @@ export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
 ): string[] => {
-
   return entityIds.filter((entityId) => {
     const state = hass.states[entityId]?.state ?? "";
 
@@ -62,7 +59,6 @@ export const filterLowBatteryEntities = (
     if (!deviceId) {
       return true;
     }
-
 
     const batteryChargingEntity = findBatteryChargingEntity(
       hass.states,
