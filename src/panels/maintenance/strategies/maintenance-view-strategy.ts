@@ -16,7 +16,6 @@ import type { TileCardConfig } from "../../lovelace/cards/types";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
-  type DeviceEntityDisplayLookup,
   getDeviceEntityDisplayLookup,
 } from "../../../data/device/device_registry";
 import { findBatteryChargingEntity } from "../../../data/entity/entity_registry";
@@ -46,7 +45,6 @@ export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
 ): string[] => {
-  let deviceEntityLookup: DeviceEntityDisplayLookup | undefined;
 
   return entityIds.filter((entityId) => {
     const state = hass.states[entityId]?.state ?? "";
@@ -65,13 +63,10 @@ export const filterLowBatteryEntities = (
       return true;
     }
 
-    if (!deviceEntityLookup) {
-      deviceEntityLookup = _deviceEntityLookup(hass.entities);
-    }
 
     const batteryChargingEntity = findBatteryChargingEntity(
       hass.states,
-      deviceEntityLookup[deviceId] ?? []
+      _deviceEntityLookup(hass.entities)[deviceId] ?? []
     );
     const batteryCharging = batteryChargingEntity
       ? hass.states[batteryChargingEntity.entity_id]
