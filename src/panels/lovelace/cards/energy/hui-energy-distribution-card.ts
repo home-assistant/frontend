@@ -180,11 +180,12 @@ class HuiEnergyDistrubutionCard
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
+    const gasUnit = this._data.gasUnit;
     const gasDisplayPrecisions = types.gas
       ?.filter(
         (source) =>
           this.hass.states[source.stat_energy_from]?.attributes
-            .unit_of_measurement === this._data.gasUnit
+            .unit_of_measurement === gasUnit
       )
       .map(
         (source) =>
