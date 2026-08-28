@@ -88,6 +88,20 @@ export type Selector =
   | UiTimeFormatSelector
   | BackupLocationSelector;
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type SelectorType = KeysOfUnion<Selector>;
+
+type UnionMemberWithKey<U, K extends PropertyKey> = U extends unknown
+  ? K extends keyof U
+    ? U
+    : never
+  : never;
+
+export type SelectorForType<T extends SelectorType> = UnionMemberWithKey<
+  Selector,
+  T
+>;
+
 export interface ActionSelector {
   action: {
     optionsInSidebar?: boolean;
