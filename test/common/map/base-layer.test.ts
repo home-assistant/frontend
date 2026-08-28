@@ -18,6 +18,22 @@ const maplibreGL = vi.hoisted(() => vi.fn(() => maplibreLayer));
 
 vi.mock("@maplibre/maplibre-gl-leaflet", () => ({ maplibreGL }));
 
+// The token module is driven directly here, so a stale token and the one that
+// replaces it can be played out without a WebSocket.
+const tokenListeners = vi.hoisted(() => new Set<(token: string) => void>());
+const refreshMapTilesToken = vi.hoisted(() => vi.fn());
+vi.mock("../../../src/data/map_tiles", () => ({
+  MAP_TILES_PATH: "/api/map_tiles",
+  refreshMapTilesToken,
+  subscribeMapTilesToken: (listener: (token: string) => void) => {
+    tokenListeners.add(listener);
+    return () => tokenListeners.delete(listener);
+  },
+  withMapTilesToken: (url: string) => new URL(url, location.href).href,
+}));
+const emitToken = (token: string) =>
+  tokenListeners.forEach((listener) => listener(token));
+
 const STYLE = {
   version: 8,
   sources: {},
@@ -25,7 +41,12 @@ const STYLE = {
   sprite: [{ id: "basics", url: "/static/map/sprites/basics/sprites" }],
 };
 
-const rasterLayer = { addTo: vi.fn(), options: {} as Record<string, unknown> };
+const rasterLayer = {
+  // Leaflet returns the layer from addTo, and the source chains off it.
+  addTo: vi.fn(() => rasterLayer),
+  redraw: vi.fn(),
+  options: {} as Record<string, unknown>,
+};
 const leaflet = {
   tileLayer: vi.fn(() => rasterLayer),
 } as unknown as LeafletModuleType;
@@ -33,10 +54,10 @@ const leaflet = {
 const TOKEN = "test-token";
 
 // `createVectorLayer` listens on both the MapLibre map and the Leaflet map.
-const glHandlers: Record<string, () => void> = {};
+const glHandlers: Record<string, (event?: unknown) => void> = {};
 const glMap = {
   setStyle: vi.fn(),
-  on: vi.fn((event: string, handler: () => void) => {
+  on: vi.fn((event: string, handler: (event?: unknown) => void) => {
     glHandlers[event] = handler;
   }),
 };
@@ -56,6 +77,7 @@ const isRaster = () => vi.mocked(leaflet.tileLayer).mock.calls.length === 1;
 beforeEach(() => {
   vi.resetModules();
   vi.clearAllMocks();
+  tokenListeners.clear();
   maplibreLayer.options = {};
   maplibreGL.mockReturnValue(maplibreLayer);
   maplibreLayer.addTo.mockImplementation(() => maplibreLayer);
@@ -332,5 +354,65 @@ describe("WebGL context loss", () => {
     baseLayer.setDarkMode(true);
 
     expect(glMap.setStyle).not.toHaveBeenCalled();
+  });
+});
+
+// A refused request leaves the source dead: the TileJSON is fetched once and
+// MapLibre never retries it, so the map stays blank until the style is
+// applied again.
+describe("recovering from a refused token", () => {
+  it("asks for a new token and re-applies the style once it arrives", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+    glMap.setStyle.mockClear();
+
+    glHandlers.error({ error: { status: 403 } });
+    expect(refreshMapTilesToken).toHaveBeenCalled();
+
+    emitToken("fresh-token");
+    await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
+  });
+
+  it("does not keep asking while the proxy refuses for another reason", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+
+    for (let i = 0; i < 5; i++) {
+      glHandlers.error({ error: { status: 403 } });
+    }
+
+    expect(refreshMapTilesToken).toHaveBeenCalledOnce();
+  });
+
+  it("ignores errors that are not a refusal", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+
+    glHandlers.error({ error: { status: 500 } });
+
+    expect(refreshMapTilesToken).not.toHaveBeenCalled();
+  });
+
+  it("leaves a working map alone when the token is merely refreshed", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+    glMap.setStyle.mockClear();
+
+    emitToken("fresh-token");
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(glMap.setStyle).not.toHaveBeenCalled();
+  });
+
+  it("redraws the raster layer so refused tiles are asked for again", async () => {
+    const createBaseLayer = await setWebGL2(false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+
+    emitToken("fresh-token");
+
+    expect(rasterLayer.options.token).toBe("fresh-token");
+    expect(rasterLayer.redraw).toHaveBeenCalled();
   });
 });

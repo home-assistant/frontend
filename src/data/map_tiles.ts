@@ -15,6 +15,9 @@ const BACKGROUND_DELAYS_MS = [2000, 5000, 10000, 15000];
 
 let token: string | undefined;
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
+let watchingConnection = false;
+let activeConnection: Connection | undefined;
+let refreshing: Promise<void> | undefined;
 const listeners = new Set<(token: string) => void>();
 
 const fetchToken = async (connection: Connection): Promise<void> => {
@@ -49,6 +52,8 @@ const attempt = async (connection: Connection, delays: number[]) => {
 export const ensureMapTilesToken = async (
   connection: Connection
 ): Promise<string | undefined> => {
+  activeConnection = connection;
+
   if (!token) {
     await attempt(connection, BLOCKING_DELAYS_MS);
   }
@@ -72,6 +77,35 @@ const scheduleRefresh = (connection: Connection) => {
       });
     }, TOKEN_REFRESH_MS);
   }
+
+  if (!watchingConnection) {
+    watchingConnection = true;
+    // The interval does not fire while the process is suspended, so the token
+    // can be stale before it comes round; reconnecting is the reliable signal.
+    connection.addEventListener("ready", () => {
+      fetchToken(connection).catch(() => {
+        // Nothing to do; the interval keeps trying.
+      });
+    });
+  }
+};
+
+/**
+ * Forces a new token, for when the current one is refused. Deduplicated: a
+ * refused map produces one of these per tile.
+ */
+export const refreshMapTilesToken = (): Promise<void> => {
+  if (!activeConnection) {
+    return Promise.resolve();
+  }
+  refreshing ??= fetchToken(activeConnection)
+    .catch(() => {
+      // Leave the old token in place; a reconnect or the interval retries.
+    })
+    .finally(() => {
+      refreshing = undefined;
+    });
+  return refreshing;
 };
 
 /** Leaflet bakes its URL template at layer creation, so it needs telling. */

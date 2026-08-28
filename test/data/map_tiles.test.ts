@@ -6,10 +6,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // not the TileJSON, not the glyphs, not a tile - and MapLibre reports no error,
 // so this is worth pinning down.
 
-const connectionWith = (token: string) =>
-  ({
-    sendMessagePromise: vi.fn(async () => ({ token })),
-  }) as unknown as Connection;
+const connectionWith = (...tokens: string[]) => {
+  let call = 0;
+  const listeners: Record<string, () => void> = {};
+  return {
+    sendMessagePromise: vi.fn(async () => ({
+      token: tokens[Math.min(call++, tokens.length - 1)],
+    })),
+    addEventListener: vi.fn((event: string, cb: () => void) => {
+      listeners[event] = cb;
+    }),
+    listeners,
+  } as unknown as Connection & { listeners: Record<string, () => void> };
+};
 
 const load = async () => {
   vi.resetModules();
@@ -98,5 +107,59 @@ describe("ensureMapTilesToken", () => {
     await ensureMapTilesToken(connectionWith("abc123"));
 
     expect(listener).toHaveBeenCalledWith("abc123");
+  });
+});
+
+// A token can expire before the refresh interval comes round, so recovery
+// hangs on the reconnect and on retrying a refused request.
+describe("recovering a stale token", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  it("fetches a new token when the connection comes back", async () => {
+    const { ensureMapTilesToken, subscribeMapTilesToken } = await load();
+    const connection = connectionWith("first", "second") as Connection & {
+      listeners: Record<string, () => void>;
+    };
+    await ensureMapTilesToken(connection);
+
+    const listener = vi.fn();
+    subscribeMapTilesToken(listener);
+    connection.listeners.ready();
+    await vi.waitFor(() => expect(listener).toHaveBeenCalledWith("second"));
+  });
+
+  it("asks once for a refresh however many tiles were refused", async () => {
+    const { ensureMapTilesToken, refreshMapTilesToken } = await load();
+    const connection = connectionWith("first", "second");
+    await ensureMapTilesToken(connection);
+    expect(connection.sendMessagePromise).toHaveBeenCalledTimes(1);
+
+    await Promise.all([
+      refreshMapTilesToken(),
+      refreshMapTilesToken(),
+      refreshMapTilesToken(),
+    ]);
+
+    expect(connection.sendMessagePromise).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps the old token when the refresh fails", async () => {
+    const { ensureMapTilesToken, refreshMapTilesToken, withMapTilesToken } =
+      await load();
+    const connection = connectionWith("first");
+    await ensureMapTilesToken(connection);
+
+    vi.mocked(connection.sendMessagePromise).mockRejectedValueOnce(
+      new Error("disconnected")
+    );
+    await refreshMapTilesToken();
+
+    expect(
+      new URL(
+        withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt")
+      ).searchParams.get("token")
+    ).toBe("first");
   });
 });

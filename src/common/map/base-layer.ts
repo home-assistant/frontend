@@ -4,6 +4,7 @@ import type { StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import {
   MAP_TILES_PATH,
+  refreshMapTilesToken,
   subscribeMapTilesToken,
   withMapTilesToken,
 } from "../../data/map_tiles";
@@ -24,6 +25,7 @@ const OSM_ATTRIBUTION =
 // Browsers keep about 16 live WebGL contexts and drop the oldest, which a
 // dashboard full of map cards hits. A transient loss is restored, hence a grace.
 const CONTEXT_RESTORE_GRACE = 2000;
+const RECOVERY_THROTTLE = 30000;
 
 // On the map, not the layer: marker clustering throws without a maximum. The
 // floor is 1 because at Leaflet zoom 0 the adapter drives MapLibre to -1.
@@ -136,6 +138,7 @@ const createVectorLayer = async (
   // Styles are fetched, so only the newest request may touch the map.
   let latestRequest = 0;
   let vector = true;
+  let refused = false;
 
   const glMap = layer.getMaplibreMap();
   let fallbackTimeout: number | undefined;
@@ -184,26 +187,54 @@ const createVectorLayer = async (
     document.removeEventListener("visibilitychange", handleVisibilityChange);
   });
 
+  const applyStyle = (newDarkMode: boolean) => {
+    const request = ++latestRequest;
+
+    loadStyle(VECTOR_STYLES[newDarkMode ? "dark" : "light"])
+      .then((style) => {
+        if (request === latestRequest) {
+          appliedDarkMode = newDarkMode;
+          refused = false;
+          layer.getMaplibreMap()?.setStyle(style);
+        }
+      })
+      .catch(() => {
+        if (request === latestRequest) {
+          requestedDarkMode = appliedDarkMode;
+        }
+      });
+  };
+
+  // A refused request leaves the source dead: the TileJSON is fetched once and
+  // is never retried, so the style has to be applied again once there is a new
+  // token. Throttled, or a proxy refusing for another reason loops.
+  let lastRecovery = 0;
+  glMap.on("error", (event) => {
+    if ((event.error as { status?: number } | undefined)?.status !== 403) {
+      return;
+    }
+    if (Date.now() - lastRecovery < RECOVERY_THROTTLE) {
+      return;
+    }
+    lastRecovery = Date.now();
+    refused = true;
+    refreshMapTilesToken();
+  });
+
+  const unsubscribeToken = subscribeMapTilesToken(() => {
+    if (vector && refused) {
+      applyStyle(requestedDarkMode);
+    }
+  });
+  map.on("unload", unsubscribeToken);
+
   return {
     setDarkMode: (newDarkMode: boolean) => {
       if (!vector || newDarkMode === requestedDarkMode) {
         return;
       }
       requestedDarkMode = newDarkMode;
-      const request = ++latestRequest;
-
-      loadStyle(VECTOR_STYLES[newDarkMode ? "dark" : "light"])
-        .then((style) => {
-          if (request === latestRequest) {
-            appliedDarkMode = newDarkMode;
-            layer.getMaplibreMap()?.setStyle(style);
-          }
-        })
-        .catch(() => {
-          if (request === latestRequest) {
-            requestedDarkMode = appliedDarkMode;
-          }
-        });
+      applyStyle(newDarkMode);
     },
   };
 };
@@ -226,6 +257,8 @@ const createRasterLayer = (
   // Substituted per request, so a refreshed token needs no new layer.
   const unsubscribe = subscribeMapTilesToken((newToken) => {
     (layer.options as TokenTileLayerOptions).token = newToken;
+    // Tiles that 403'd are cached as failures; only a redraw asks again.
+    layer.redraw();
   });
   map.on("unload", unsubscribe);
 
