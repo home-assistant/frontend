@@ -111,6 +111,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
+  // Skip the "unknown value" highlight and note for a value that is not in the
+  // list but that the value renderer presents on its own.
+  @property({ type: Boolean, attribute: "no-unknown-state" })
+  public noUnknownState = false;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -148,7 +153,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("value")) {
+    if (
+      changedProperties.has("value") ||
+      changedProperties.has("noUnknownState")
+    ) {
       this._setUnknownValue();
     }
   }
@@ -287,6 +295,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _setUnknownValue = () => {
     const items = this.getItems();
     if (
+      this.noUnknownState ||
       this.allowCustomValue ||
       this.value === undefined ||
       this.value === null ||

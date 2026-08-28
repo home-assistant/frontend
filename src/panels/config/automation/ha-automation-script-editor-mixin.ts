@@ -278,6 +278,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       const domain = hooks.domain;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
+        if (!this.isConnected) {
+          return;
+        }
         this.readOnly = false;
         const report: AutomationMigrationReport = { deprecated: false };
         this.config = hooks.normalizeConfig(config, report);
@@ -294,6 +297,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         );
         hooks.checkValidation();
       } catch (err: any) {
+        if (!this.isConnected) {
+          return;
+        }
         if (err.status_code !== 404) {
           const alertText =
             err.body?.message || err.body || err.error || "Unknown error";
