@@ -96,7 +96,7 @@ class HaProfileSectionPreferences extends LitElement {
                 <ha-button
                   slot="end"
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._customizeSidebar}
                 >
                   ${this.hass.localize(
