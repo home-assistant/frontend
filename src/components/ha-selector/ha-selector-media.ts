@@ -34,6 +34,7 @@ export class HaMediaSelector extends LitElement {
   ): TemplateResult {
     return html`<ha-media-item-picker
       .hass=${this.hass}
+      .context=${this.context}
       .selector=${this.selector}
       .value=${value}
       .label=${index == null ? this.label : undefined}
