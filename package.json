@@ -150,7 +150,7 @@
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
     "@html-eslint/eslint-plugin": "0.65.0",
-    "@lokalise/node-api": "16.3.0",
+    "@lokalise/node-api": "16.4.0",
     "@octokit/auth-oauth-device": "8.0.4",
     "@octokit/plugin-retry": "8.1.1",
     "@octokit/rest": "22.0.1",
