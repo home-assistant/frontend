@@ -96,6 +96,9 @@ export class HuiEnergySourcesTableCard
     }
 
     const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
 
     if (
       this._data &&
@@ -542,8 +545,8 @@ export class HuiEnergySourcesTableCard
                     ),
                   }
                 : undefined,
-            false,
-            type === "gas" ? gasFormatOptions : undefined
+              false,
+              type === "gas" ? gasFormatOptions : undefined
             )
           : ""
       }`;
