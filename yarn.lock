@@ -7757,10 +7757,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cli-spinners@npm:^2.5.0, cli-spinners@npm:^2.6.0":
+"cli-spinners@npm:^2.5.0":
   version: 2.9.2
   resolution: "cli-spinners@npm:2.9.2"
   checksum: 10/a0a863f442df35ed7294424f5491fa1756bd8d2e4ff0c8736531d886cec0ece4d85e8663b77a5afaf1d296e3cbbebff92e2e99f52bbea89b667cbe789b994794
+  languageName: node
+  linkType: hard
+
+"cli-spinners@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "cli-spinners@npm:3.4.0"
+  checksum: 10/6a4021c1999011fc34ae714f055dcdafb56309abc1f8fb021ea7d9370dfc524485fe8684226015e5fe6053dd30544e74270184ff7edc3fa4d37043b8efd0a054
   languageName: node
   linkType: hard
 
@@ -8695,7 +8702,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enquirer@npm:^2.3.6":
+"enquirer@npm:^2.4.1":
   version: 2.4.1
   resolution: "enquirer@npm:2.4.1"
   dependencies:
@@ -9682,24 +9689,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"generate-license-file@npm:4.2.1":
-  version: 4.2.1
-  resolution: "generate-license-file@npm:4.2.1"
+"generate-license-file@npm:4.2.3":
+  version: 4.2.3
+  resolution: "generate-license-file@npm:4.2.3"
   dependencies:
     "@commander-js/extra-typings": "npm:^14.0.0"
     "@npmcli/arborist": "npm:^9.0.0"
-    cli-spinners: "npm:^2.6.0"
+    cli-spinners: "npm:^3.4.0"
     commander: "npm:^14.0.2"
     cosmiconfig: "npm:^9.0.0"
-    enquirer: "npm:^2.3.6"
+    enquirer: "npm:^2.4.1"
     glob: "npm:^13.0.0"
     json5: "npm:^2.2.3"
     ora: "npm:^5.4.1"
-    tslib: "npm:^2.3.0"
     zod: "npm:^4.0.0"
   bin:
     generate-license-file: bin/generate-license-file
-  checksum: 10/03876abeba28efea39a0fbd4d048e2c0fe1f59477c14e3a5e9f7022235f9197a3f451b7f26124dc09da5cc63140376f53b4ee9167f238eee58241ab954e62efd
+  checksum: 10/bdfd899c04b247f75115d9710b53124b6f202d85d4cacf3e9d2d46260cc7d75e9f93ebf2204105ecb49b051c5acfac6c05d1a9711763b7daed073bffd986ac69
   languageName: node
   linkType: hard
 
@@ -10225,7 +10231,7 @@ __metadata:
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.4.0"
     fuse.js: "npm:7.5.0"
-    generate-license-file: "npm:4.2.1"
+    generate-license-file: "npm:4.2.3"
     glob: "npm:13.0.6"
     globals: "npm:17.11.0"
     gulp: "npm:5.0.1"
