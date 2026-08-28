@@ -127,7 +127,9 @@ export class HuiEnergyGasGraphCard
       return undefined;
     }
 
-    const gasDisplayPrecisions = energySourcesByType(this._energyData.prefs).gas
+    const gasDisplayPrecisions = energySourcesByType(
+      this._energyData.prefs
+    ).gas
       ?.filter(
         (source) =>
           this.hass.states[source.stat_energy_from]?.attributes
