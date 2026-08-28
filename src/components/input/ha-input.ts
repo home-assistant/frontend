@@ -127,6 +127,9 @@ export class HaInput extends WaInputMixin(LitElement) {
   @query("wa-input")
   private _input?: WaInput;
 
+  @query("slot[name='start']")
+  private _startSlot!: HTMLSlotElement;
+
   private _startSlotResizeObserver?: ResizeObserver;
 
   @state()
@@ -165,17 +168,32 @@ export class HaInput extends WaInputMixin(LitElement) {
   ): Promise<void> {
     super.firstUpdated(changedProperties);
 
-    if (!this.insetLabel) {
-      // Wait for wa-input to finish its first render
-      await this._input?.updateComplete;
-      this._syncStartSlotWidth();
-      this._observeStartSlot();
+    await this._updateStartSlot();
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+
+    if (
+      changedProperties.has("insetLabel") &&
+      changedProperties.get("insetLabel") !== undefined
+    ) {
+      void this._updateStartSlot();
+    }
+  }
+
+  public override connectedCallback(): void {
+    super.connectedCallback();
+
+    // Restore tracking only after the start slot has been rendered.
+    if (this.hasUpdated) {
+      void this._updateStartSlot();
     }
   }
 
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._startSlotResizeObserver?.disconnect();
+    this._unobserveStartSlot();
   }
 
   protected render() {
@@ -247,7 +265,7 @@ export class HaInput extends WaInputMixin(LitElement) {
               >`
             : nothing
         }
-        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
+        <slot name="start" slot="start" @slotchange=${this._startSlotChanged}>
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
@@ -299,6 +317,53 @@ export class HaInput extends WaInputMixin(LitElement) {
     return nothing;
   }
 
+  private _startSlotChanged = (): void => {
+    void this._updateStartSlot();
+  };
+
+  private _hasStartContent(): boolean {
+    // Flattened assigned nodes include fallback content, such as
+    // ha-input-search's default icon.
+    return this._startSlot
+      .assignedNodes({ flatten: true })
+      .some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE ||
+          (node.nodeType === Node.TEXT_NODE &&
+            (node as Text).textContent?.trim() !== "")
+      );
+  }
+
+  private _shouldTrackStartSlot(): boolean {
+    return this.isConnected && !this.insetLabel && this._hasStartContent();
+  }
+
+  private async _updateStartSlot(): Promise<void> {
+    if (this._shouldTrackStartSlot()) {
+      // Wait for wa-input to finish rendering its internal start wrapper.
+      await this._input?.updateComplete;
+    }
+
+    if (!this._shouldTrackStartSlot()) {
+      this._unobserveStartSlot();
+      this._clearStartSlotWidth();
+      return;
+    }
+
+    this._syncStartSlotWidth();
+    this._observeStartSlot();
+  }
+
+  private _unobserveStartSlot(): void {
+    this._startSlotResizeObserver?.disconnect();
+    this._startSlotResizeObserver = undefined;
+  }
+
+  private _clearStartSlotWidth(): void {
+    this.style.removeProperty("--start-slot-width");
+    this.style.removeProperty("--input-padding-inline-start");
+  }
+
   // Safari can report the start-slot width as 0 during the first render, which
   // leaves the floating label overlapping the start icon (e.g. the magnify icon
   // in ha-input-search). Re-sync whenever the wrapper's size changes
@@ -333,8 +398,7 @@ export class HaInput extends WaInputMixin(LitElement) {
         `var(--ha-space-1)`
       );
     } else {
-      this.style.removeProperty("--start-slot-width");
-      this.style.removeProperty("--input-padding-inline-start");
+      this._clearStartSlotWidth();
     }
   };
 
