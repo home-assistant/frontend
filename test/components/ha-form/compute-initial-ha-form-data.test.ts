@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_MIN_KELVIN } from "../../../src/common/color/convert-light-color";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
 import type { Selector } from "../../../src/data/selector";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
@@ -206,6 +207,85 @@ describe("computeInitialHaFormData", () => {
         active_choice: "First",
         First: [],
       },
+    });
+  });
+
+  it("initializes a required date selector with a date-only value", () => {
+    const result = computeInitialHaFormData([requiredField({ date: {} })]);
+
+    expect(result.value).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("initializes a required datetime selector with its canonical format", () => {
+    const result = computeInitialHaFormData([requiredField({ datetime: {} })]);
+
+    expect(result.value).toMatch(/^\d{4}-\d{2}-\d{2} 00:00:00$/);
+  });
+
+  it("initializes a required kelvin color temperature from its minimum", () => {
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          color_temp: {
+            unit: "kelvin",
+            min: 2000,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: 2000,
+    });
+
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          color_temp: {
+            unit: "kelvin",
+          },
+        }),
+      ])
+    ).toEqual({
+      value: DEFAULT_MIN_KELVIN,
+    });
+  });
+
+  it("initializes a required mired color temperature from its minimum", () => {
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          color_temp: {
+            unit: "mired",
+            min: 160,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: 160,
+    });
+
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          color_temp: {
+            unit: "mired",
+            min_mireds: 170,
+          },
+        }),
+      ])
+    ).toEqual({
+      value: 170,
+    });
+
+    expect(
+      computeInitialHaFormData([
+        requiredField({
+          color_temp: {
+            unit: "mired",
+          },
+        }),
+      ])
+    ).toEqual({
+      value: 153,
     });
   });
 

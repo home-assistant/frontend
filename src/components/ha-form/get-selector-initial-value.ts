@@ -1,3 +1,4 @@
+import { DEFAULT_MIN_KELVIN } from "../../common/color/convert-light-color";
 import type {
   Selector,
   SelectorForType,
@@ -39,8 +40,8 @@ const SELECTOR_INITIAL_VALUES = {
   conversation_agent: undefined,
   constant: (selector) => selector.constant?.value,
   country: (selector) => selector.country?.countries?.[0],
-  date: () => `${new Date().toISOString().slice(0, 10)}T00:00:00`,
-  datetime: () => `${new Date().toISOString().slice(0, 10)}T00:00:00`,
+  date: () => new Date().toISOString().slice(0, 10),
+  datetime: () => `${new Date().toISOString().slice(0, 10)} 00:00:00`,
   device: (selector) => (selector.device?.multiple ? [] : ""),
   device_class: (selector) =>
     selector.device_class?.multiple ? [] : undefined,
@@ -106,7 +107,13 @@ const SELECTOR_INITIAL_VALUES = {
   tts: undefined,
   tts_voice: undefined,
   location: undefined,
-  color_temp: (selector) => selector.color_temp?.min_mireds ?? 153,
+  color_temp: (selector) => {
+    if (selector.color_temp?.unit === "kelvin") {
+      return selector.color_temp.min ?? DEFAULT_MIN_KELVIN;
+    }
+
+    return selector.color_temp?.min ?? selector.color_temp?.min_mireds ?? 153;
+  },
   ui_action: undefined,
   ui_clock_date_format: undefined,
   ui_color: undefined,
