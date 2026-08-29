@@ -14,6 +14,7 @@ import type { StatisticsMetaData } from "../../../../data/recorder";
 export interface EnergySettingsGridDialogParams {
   source?: GridSourceTypeEnergyPreference;
   grid_sources: GridSourceTypeEnergyPreference[];
+  has_battery: boolean;
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: GridSourceTypeEnergyPreference) => Promise<void>;
 }

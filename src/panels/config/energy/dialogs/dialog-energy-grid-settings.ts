@@ -280,6 +280,41 @@ export class DialogEnergyGridSettings
         >
         </ha-input>
 
+        ${
+          this._params.has_battery && this._source.stat_energy_from
+            ? html`
+                <p class="section-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.battery_charging"
+                  )}
+                </p>
+                <p class="section-description">
+                  ${this.hass.localize(
+                    "ui.panel.config.energy.grid.dialog.battery_charging_para"
+                  )}
+                </p>
+                <ha-radio-group
+                  .value=${
+                    this._source.can_charge_battery === false ? "false" : "true"
+                  }
+                  name="canChargeBattery"
+                  @change=${this._handleCanChargeBatteryChanged}
+                >
+                  <ha-radio-option value="true">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.can_charge_battery"
+                    )}
+                  </ha-radio-option>
+                  <ha-radio-option value="false">
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.dialog.cannot_charge_battery"
+                    )}
+                  </ha-radio-option>
+                </ha-radio-group>
+              `
+            : nothing
+        }
+
         <p class="section-label">
           ${this.hass.localize(
             "ui.panel.config.energy.grid.dialog.import_cost"
@@ -597,6 +632,17 @@ export class DialogEnergyGridSettings
     this._updateFormDirtyState();
   }
 
+  private _handleCanChargeBatteryChanged(ev: Event) {
+    const source = { ...this._source! };
+    if ((ev.currentTarget as HaRadioGroup).value === "false") {
+      source.can_charge_battery = false;
+    } else {
+      delete source.can_charge_battery;
+    }
+    this._source = source;
+    this._updateFormDirtyState();
+  }
+
   private _handleImportCostTypeChanged(
     ev: HASSDomCurrentTargetEvent<HaRadioGroup>
   ) {
@@ -704,6 +750,9 @@ export class DialogEnergyGridSettings
       };
       if (this._source?.name) {
         source.name = this._source.name;
+      }
+      if (this._source?.can_charge_battery === false) {
+        source.can_charge_battery = false;
       }
 
       // Only include power_config if a power type is selected

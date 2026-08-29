@@ -154,6 +154,10 @@ export interface GridSourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
 
+  // Whether this grid connection can charge a configured battery.
+  // Undefined preserves the legacy behavior and is treated as true.
+  can_charge_battery?: boolean;
+
   cost_adjustment_day: number;
   name?: string;
 }

@@ -275,10 +275,17 @@ export class EnergyGridSettings extends LitElement {
     );
   }
 
+  private _hasBattery(): boolean {
+    return this.preferences.energy_sources.some(
+      (source) => source.type === "battery"
+    );
+  }
+
   private _addSource() {
     showEnergySettingsGridDialog(this, {
       statsMetadata: this.statsMetadata,
       grid_sources: this._getGridSources(),
+      has_battery: this._hasBattery(),
       saveCallback: async (source) => {
         const preferences: EnergyPreferences = {
           ...this.preferences,
@@ -298,6 +305,7 @@ export class EnergyGridSettings extends LitElement {
       statsMetadata: this.statsMetadata,
       source: { ...origSource },
       grid_sources: this._getGridSources(),
+      has_battery: this._hasBattery(),
       saveCallback: async (newSource) => {
         const nonGridSources = this.preferences.energy_sources.filter(
           (src) => src.type !== "grid"

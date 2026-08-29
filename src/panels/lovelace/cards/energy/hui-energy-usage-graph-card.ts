@@ -44,7 +44,10 @@ import {
 } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
-import { buildCombinedUsedGrid } from "./energy-usage-graph-used-grid";
+import {
+  buildCombinedUsedGrid,
+  getNonBatteryChargingGridStats,
+} from "./energy-usage-graph-used-grid";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
@@ -311,6 +314,9 @@ export class HuiEnergyUsageGraphCard
       colorIndices[key] = {};
     });
     let gridIdx = 0;
+    const nonBatteryChargingGridStats = getNonBatteryChargingGridStats(
+      energyData.prefs.energy_sources
+    );
 
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
@@ -436,6 +442,7 @@ export class HuiEnergyUsageGraphCard
           computedStyles,
           typeLabels,
           statLabels,
+          nonBatteryChargingGridStats,
           trackY,
           true
         )
@@ -464,6 +471,7 @@ export class HuiEnergyUsageGraphCard
         computedStyles,
         typeLabels,
         statLabels,
+        nonBatteryChargingGridStats,
         trackY,
         false
       )
@@ -544,6 +552,7 @@ export class HuiEnergyUsageGraphCard
       from_grid: Record<string, string>;
       to_battery: Record<string, string>;
     },
+    nonBatteryChargingGridStats: ReadonlySet<string>,
     trackY: (v: number) => void,
     compare = false
   ) {
@@ -601,7 +610,8 @@ export class HuiEnergyUsageGraphCard
       const used_grid = buildCombinedUsedGrid(
         combinedData.from_grid,
         consumptionData.grid_to_battery,
-        consumptionData.used_grid
+        consumptionData.used_grid,
+        nonBatteryChargingGridStats
       );
       if (used_grid) {
         combinedData.used_grid = { used_grid };
