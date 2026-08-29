@@ -1,7 +1,6 @@
 import {
   mdiCog,
   mdiContentCopy,
-  mdiDelete,
   mdiDotsVertical,
   mdiHelpCircleOutline,
 } from "@mdi/js";
@@ -71,36 +70,38 @@ export class MCPPref extends LitElement {
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.mcp.header")}
+          <div class="header-actions">
+            <ha-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
+              )}
+              .path=${mdiHelpCircleOutline}
+              href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
+              target="_blank"
+              rel="noreferrer"
+              class="icon-link"
+            ></ha-icon-button>
+            ${
+              this._entry
+                ? html`
+                    <ha-dropdown>
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this.hass.localize("ui.common.menu")}
+                        .path=${mdiDotsVertical}
+                      ></ha-icon-button>
+                      <ha-dropdown-item
+                        variant="danger"
+                        @click=${this._disable}
+                      >
+                        ${this.hass.localize("ui.panel.config.mcp.disable")}
+                      </ha-dropdown-item>
+                    </ha-dropdown>
+                  `
+                : nothing
+            }
+          </div>
         </h1>
-        <div class="header-actions">
-          <ha-icon-button
-            .label=${this.hass.localize(
-              "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
-            )}
-            .path=${mdiHelpCircleOutline}
-            href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
-            target="_blank"
-            rel="noreferrer"
-            class="icon-link"
-          ></ha-icon-button>
-          ${
-            this._entry
-              ? html`
-                  <ha-dropdown>
-                    <ha-icon-button
-                      slot="trigger"
-                      .label=${this.hass.localize("ui.common.menu")}
-                      .path=${mdiDotsVertical}
-                    ></ha-icon-button>
-                    <ha-dropdown-item variant="danger" @click=${this._disable}>
-                      <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-                      ${this.hass.localize("ui.panel.config.mcp.disable")}
-                    </ha-dropdown-item>
-                  </ha-dropdown>
-                `
-              : nothing
-          }
-        </div>
         <div class="card-content">
           <p>${this.hass.localize("ui.panel.config.mcp.description")}</p>
           ${this._entry ? this._renderEnabled(this._entry) : nothing}
@@ -252,20 +253,12 @@ export class MCPPref extends LitElement {
       margin-inline-start: initial;
     }
     .header-actions {
-      position: absolute;
-      right: 0px;
-      inset-inline-end: 0px;
-      inset-inline-start: initial;
-      top: 24px;
       display: flex;
       flex-direction: row;
+      align-items: center;
+      margin-inline-start: auto;
     }
     .header-actions .icon-link {
-      margin-top: -16px;
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-      direction: var(--direction);
       color: var(--secondary-text-color);
     }
     ha-settings-row {
