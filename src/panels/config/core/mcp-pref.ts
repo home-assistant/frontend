@@ -1,10 +1,18 @@
-import { mdiCog, mdiContentCopy, mdiHelpCircleOutline } from "@mdi/js";
+import {
+  mdiCog,
+  mdiContentCopy,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiHelpCircleOutline,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
@@ -75,6 +83,23 @@ export class MCPPref extends LitElement {
             rel="noreferrer"
             class="icon-link"
           ></ha-icon-button>
+          ${
+            this._entry
+              ? html`
+                  <ha-dropdown>
+                    <ha-icon-button
+                      slot="trigger"
+                      .label=${this.hass.localize("ui.common.menu")}
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
+                    <ha-dropdown-item variant="danger" @click=${this._disable}>
+                      <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                      ${this.hass.localize("ui.panel.config.mcp.disable")}
+                    </ha-dropdown-item>
+                  </ha-dropdown>
+                `
+              : nothing
+          }
         </div>
         <div class="card-content">
           <p>${this.hass.localize("ui.panel.config.mcp.description")}</p>
@@ -86,21 +111,6 @@ export class MCPPref extends LitElement {
                 <div class="card-actions centered">
                   <ha-button appearance="filled" @click=${this._enable}>
                     ${this.hass.localize("ui.panel.config.mcp.enable")}
-                  </ha-button>
-                </div>
-              `
-            : nothing
-        }
-        ${
-          this._entry
-            ? html`
-                <div class="card-actions">
-                  <ha-button
-                    appearance="plain"
-                    variant="danger"
-                    @click=${this._disable}
-                  >
-                    ${this.hass.localize("ui.panel.config.mcp.disable")}
                   </ha-button>
                 </div>
               `
@@ -270,11 +280,8 @@ export class MCPPref extends LitElement {
     h3 {
       margin-bottom: 0;
     }
-    .card-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
     .card-actions.centered {
+      display: flex;
       justify-content: center;
       border-top: none;
       padding-top: 0;
