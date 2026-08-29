@@ -176,11 +176,7 @@ export interface DateSetCardFeatureConfig {
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
-}
-
-export interface SelectSliderCardFeatureConfig {
-  type: "select-slider";
-  options?: string[];
+  style?: "dropdown" | "icons";
 }
 
 export interface NumericInputCardFeatureConfig {
@@ -361,7 +357,6 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | SelectSliderCardFeatureConfig
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig

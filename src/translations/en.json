@@ -10923,11 +10923,11 @@
               },
               "select-options": {
                 "label": "Select options",
-                "options": "Options",
-                "customize_options": "Customize options"
-              },
-              "select-slider": {
-                "label": "Select slider",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "icons": "Icons"
+                },
                 "options": "Options",
                 "customize_options": "Customize options"
               },

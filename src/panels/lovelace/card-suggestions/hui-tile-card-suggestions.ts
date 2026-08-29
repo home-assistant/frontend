@@ -13,11 +13,7 @@ type TileVariant = UiFeatureType[];
 const TILE_VARIANT: TileVariant = [];
 const TILE_TOGGLE_VARIANT: TileVariant = ["toggle"];
 
-const SELECT_VARIANTS: TileVariant[] = [
-  TILE_VARIANT,
-  ["select-options"],
-  ["select-slider"],
-];
+const SELECT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["select-options"]];
 
 const NUMERIC_INPUT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["numeric-input"]];
 
@@ -202,6 +198,26 @@ export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
         config: buildTileConfig(entityId, features),
       });
     }
+
+    const domain = computeDomain(entityId);
+    if (
+      (domain === "select" || domain === "input_select") &&
+      allFeaturesSupported(hass, entityId, ["select-options"])
+    ) {
+      suggestions.push({
+        label: hass.localize(
+          "ui.panel.lovelace.editor.features.types.select-options.style_list.slider"
+        ),
+        config: {
+          type: "tile",
+          entity: entityId,
+          features: [
+            { type: "select-options", style: "icons" },
+          ] as LovelaceCardFeatureConfig[],
+        },
+      });
+    }
+
     return suggestions.length ? suggestions : null;
   },
 };

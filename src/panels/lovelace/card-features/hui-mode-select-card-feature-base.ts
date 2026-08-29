@@ -30,7 +30,7 @@ type AttributeModeChangeEvent = CustomEvent<{
 }>;
 
 type AttributeModeCardFeatureConfig = LovelaceCardFeatureConfig & {
-  style?: "dropdown" | "icons" | "slider";
+  style?: "dropdown" | "icons";
 };
 
 export interface HuiModeSelectOption {
@@ -96,10 +96,11 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   protected readonly _allowIconsStyle: boolean = true;
 
-  protected readonly _allowSliderStyle: boolean = false;
+  protected readonly _hideOptionLabelInIconsStyle: boolean = true;
 
-  protected readonly _defaultStyle: "dropdown" | "icons" | "slider" =
-    "dropdown";
+  protected readonly _showControlSelectOptionIcons: boolean = true;
+
+  protected readonly _defaultStyle: "dropdown" | "icons" = "dropdown";
 
   protected get _controlSelectStyle():
     Record<string, string | undefined> | undefined {
@@ -145,19 +146,19 @@ export abstract class HuiModeSelectCardFeatureBase<
     const label = this._label;
     const style = this._config.style ?? this._defaultStyle;
     const renderIcons = this._allowIconsStyle && style === "icons";
-    const renderSlider = this._allowSliderStyle && style === "slider";
 
-    if (renderIcons || renderSlider) {
+    if (renderIcons) {
       return html`
         <ha-control-select
-          .options=${options.map((option) =>
-            renderIcons
-              ? { ...option, icon: this._renderOptionIcon(option) }
-              : option
-          )}
+          .options=${options.map((option) => ({
+            ...option,
+            icon: this._showControlSelectOptionIcons
+              ? this._renderOptionIcon(option)
+              : undefined,
+          }))}
           .value=${this._currentValue}
           @value-changed=${this._valueChanged}
-          ?hide-option-label=${renderIcons}
+          ?hide-option-label=${this._hideOptionLabelInIconsStyle}
           .label=${label}
           style=${styleMap(this._controlSelectStyle ?? {})}
           .disabled=${stateObj.state === UNAVAILABLE}
