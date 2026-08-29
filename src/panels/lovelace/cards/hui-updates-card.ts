@@ -29,6 +29,8 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: UpdatesCardConfig;
 
+  private _updateCount = 0;
+
   public setConfig(config: UpdatesCardConfig): void {
     this._config = config;
   }
@@ -88,12 +90,12 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const updateEntities = this._getUpdateEntities();
+    this._updateCount = this._getUpdateEntities().length;
 
     // Update visibility based on admin status and updates count
     const shouldBeHidden = Boolean(
       !this.hass.user?.is_admin ||
-      (this._config.hide_empty && updateEntities.length === 0)
+      (this._config.hide_empty && this._updateCount === 0)
     );
 
     if (shouldBeHidden !== this.hidden) {
@@ -108,8 +110,7 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const updateEntities = this._getUpdateEntities();
-    const count = updateEntities.length;
+    const count = this._updateCount;
 
     const label = this.hass.localize("ui.card.updates.title");
     const secondary =
