@@ -2907,6 +2907,20 @@
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
         },
+        "mcp": {
+          "header": "Model Context Protocol",
+          "description": "Allow AI applications to interact with Home Assistant using the Model Context Protocol server.",
+          "enable": "[%key:ui::common::enable%]",
+          "disable": "[%key:ui::common::disable%]",
+          "disable_confirm_title": "Disable the Model Context Protocol server?",
+          "disable_confirm_text": "AI applications connected to the server will lose access to Home Assistant.",
+          "server_url_header": "Server URL",
+          "server_url_description": "Serves the APIs selected in the configuration.",
+          "apis_header": "APIs",
+          "copy_url": "Copy URL",
+          "configure": "Configure",
+          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+        },
         "apps": {
           "caption": "Apps",
           "description": "Install and manage apps",
@@ -8818,8 +8832,8 @@
           "download_device_info": "Preview device analytics"
         },
         "ai_tasks": {
-          "caption": "AI tasks",
-          "description": "Configure AI suggestions and task preferences"
+          "caption": "AI",
+          "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
         "entity_id_format": {
           "caption": "Entity ID format",
