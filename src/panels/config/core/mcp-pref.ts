@@ -125,7 +125,7 @@ export class MCPPref extends LitElement {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          ${this.hass.localize("ui.panel.config.mcp.your_url_header")}
+          ${this.hass.localize("ui.panel.config.mcp.your_api_header")}
         </span>
         <span slot="description">${entry.title}</span>
         <div class="row-actions">
