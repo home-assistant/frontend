@@ -13,7 +13,11 @@ type TileVariant = UiFeatureType[];
 const TILE_VARIANT: TileVariant = [];
 const TILE_TOGGLE_VARIANT: TileVariant = ["toggle"];
 
-const SELECT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["select-options"]];
+const SELECT_VARIANTS: TileVariant[] = [
+  TILE_VARIANT,
+  ["select-options"],
+  ["select-slider"],
+];
 
 const NUMERIC_INPUT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["numeric-input"]];
 

@@ -37,6 +37,7 @@ import { supportsMediaPlayerVolumeSliderCardFeature } from "./hui-media-player-v
 import { supportsNumericInputCardFeature } from "./hui-numeric-input-card-feature";
 import { supportsPrecipitationForecastCardFeature } from "./hui-precipitation-forecast-card-feature";
 import { supportsSelectOptionsCardFeature } from "./hui-select-options-card-feature";
+import { supportsSelectSliderCardFeature } from "./hui-select-slider-card-feature";
 import { supportsTemperatureForecastCardFeature } from "./hui-temperature-forecast-card-feature";
 import { supportsTargetHumidityCardFeature } from "./hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "./hui-target-temperature-card-feature";
@@ -100,6 +101,7 @@ export const UI_FEATURE_TYPES = [
   "numeric-input",
   "precipitation-forecast",
   "select-options",
+  "select-slider",
   "temperature-forecast",
   "trend-graph",
   "target-humidity",
@@ -156,6 +158,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "numeric-input": supportsNumericInputCardFeature,
   "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "select-slider": supportsSelectSliderCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,

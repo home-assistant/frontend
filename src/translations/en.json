@@ -10926,6 +10926,11 @@
                 "options": "Options",
                 "customize_options": "Customize options"
               },
+              "select-slider": {
+                "label": "Select slider",
+                "options": "Options",
+                "customize_options": "Customize options"
+              },
               "toggle": {
                 "label": "Toggle"
               },

@@ -1,0 +1,117 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import { customElement } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import type { InputSelectEntity } from "../../../data/input_select";
+import type { SelectEntity } from "../../../data/select";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { filterModes } from "./common/filter-modes";
+import {
+  HuiModeSelectCardFeatureBase,
+  type HuiModeSelectOption,
+} from "./hui-mode-select-card-feature-base";
+import type {
+  LovelaceCardFeatureContext,
+  SelectSliderCardFeatureConfig,
+} from "./types";
+
+type SelectSliderEntity = SelectEntity | InputSelectEntity;
+
+const supportsSelectSliderCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "select" || domain === "input_select";
+};
+
+export const supportsSelectSliderCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
+  return supportsSelectSliderCardFeatureFromState(stateObj);
+};
+
+@customElement("hui-select-slider-card-feature")
+class HuiSelectSliderCardFeature
+  extends HuiModeSelectCardFeatureBase<
+    SelectSliderEntity,
+    SelectSliderCardFeatureConfig
+  >
+  implements LovelaceCardFeature
+{
+  protected readonly _attribute = "option";
+
+  protected readonly _modesAttribute = "options";
+
+  protected get _configuredModes() {
+    return this._config?.options;
+  }
+
+  protected readonly _serviceDomain = "select";
+
+  protected readonly _serviceAction = "select_option";
+
+  protected get _label(): string {
+    return this._localize("ui.card.select.option");
+  }
+
+  protected readonly _allowIconsStyle = false;
+
+  protected readonly _allowSliderStyle = true;
+
+  protected readonly _defaultStyle = "slider" as const;
+
+  static getStubConfig(): SelectSliderCardFeatureConfig {
+    return {
+      type: "select-slider",
+    };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-select-slider-card-feature-editor");
+    return document.createElement("hui-select-slider-card-feature-editor");
+  }
+
+  protected _getValue(stateObj: SelectSliderEntity): string | undefined {
+    return stateObj.state;
+  }
+
+  protected _getOptions(): HuiModeSelectOption[] {
+    if (!this._stateObj) {
+      return [];
+    }
+
+    return filterModes(
+      this._stateObj.attributes.options,
+      this._config?.options
+    ).map((option) => ({
+      value: option,
+      label: this._formatters.formatEntityState(this._stateObj!, option),
+    }));
+  }
+
+  protected _getServiceDomain(stateObj: SelectSliderEntity): string {
+    return computeDomain(stateObj.entity_id);
+  }
+
+  protected _isValueValid(
+    value: string,
+    stateObj: SelectSliderEntity
+  ): boolean {
+    return stateObj.attributes.options.includes(value);
+  }
+
+  protected _isSupported(): boolean {
+    return !!(
+      this._stateObj && supportsSelectSliderCardFeatureFromState(this._stateObj)
+    );
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-select-slider-card-feature": HuiSelectSliderCardFeature;
+  }
+}

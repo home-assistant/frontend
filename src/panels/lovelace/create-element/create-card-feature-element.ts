@@ -33,6 +33,7 @@ import "../card-features/hui-media-player-volume-buttons-card-feature";
 import "../card-features/hui-media-player-volume-slider-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
+import "../card-features/hui-select-slider-card-feature";
 import "../card-features/hui-target-humidity-card-feature";
 import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-toggle-card-feature";
@@ -94,6 +95,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "numeric-input",
   "precipitation-forecast",
   "select-options",
+  "select-slider",
   "trend-graph",
   "target-humidity",
   "target-temperature",

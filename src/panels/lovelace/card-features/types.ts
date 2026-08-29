@@ -178,6 +178,11 @@ export interface SelectOptionsCardFeatureConfig {
   options?: string[];
 }
 
+export interface SelectSliderCardFeatureConfig {
+  type: "select-slider";
+  options?: string[];
+}
+
 export interface NumericInputCardFeatureConfig {
   type: "numeric-input";
   style?: "buttons" | "slider";
@@ -356,6 +361,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | SelectSliderCardFeatureConfig
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
