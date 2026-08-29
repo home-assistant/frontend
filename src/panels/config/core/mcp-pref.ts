@@ -7,6 +7,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -110,23 +111,14 @@ export class MCPPref extends LitElement {
   }
 
   private _renderEnabled(entry: ConfigEntry) {
-    const serverUrl = this.hass.hassUrl("/api/mcp");
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
           ${this.hass.localize("ui.panel.config.mcp.your_url_header")}
         </span>
-        <span slot="description">
-          ${serverUrl}
-          <span class="entry-title">${entry.title}</span>
-        </span>
+        <span slot="description">${entry.title}</span>
         <div class="row-actions">
-          <ha-icon-button
-            .label=${this.hass.localize("ui.panel.config.mcp.copy_url")}
-            .path=${mdiContentCopy}
-            data-url=${serverUrl}
-            @click=${this._copyUrl}
-          ></ha-icon-button>
+          ${this._renderCopyButton(this._mcpUrl())}
           ${
             entry.supports_options
               ? html`
@@ -145,30 +137,39 @@ export class MCPPref extends LitElement {
           ? html`
               <h3>${this.hass.localize("ui.panel.config.mcp.apis_header")}</h3>
               ${this._sortedApis(this._apis, this.hass.locale.language).map(
-                (api) => {
-                  const url = this.hass.hassUrl(`/api/mcp/${api.id}`);
-                  return html`
-                    <ha-settings-row .narrow=${this.narrow}>
-                      <span slot="heading">${api.name}</span>
-                      <span slot="description">${url}</span>
-                      <div class="row-actions">
-                        <ha-icon-button
-                          .label=${this.hass.localize(
-                            "ui.panel.config.mcp.copy_url"
-                          )}
-                          .path=${mdiContentCopy}
-                          data-url=${url}
-                          @click=${this._copyUrl}
-                        ></ha-icon-button>
-                      </div>
-                    </ha-settings-row>
-                  `;
-                }
+                (api) => html`
+                  <ha-settings-row .narrow=${this.narrow}>
+                    <span slot="heading">${api.name}</span>
+                    <div class="row-actions">
+                      ${this._renderCopyButton(this._mcpUrl(api.id))}
+                    </div>
+                  </ha-settings-row>
+                `
               )}
             `
           : nothing
       }
     `;
+  }
+
+  private _renderCopyButton(url: string) {
+    return html`
+      <ha-button
+        appearance="plain"
+        size="s"
+        data-url=${url}
+        @click=${this._copyUrl}
+      >
+        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+        ${this.hass.localize("ui.panel.config.mcp.copy_url")}
+      </ha-button>
+    `;
+  }
+
+  // Serve the URL for the host Home Assistant is being browsed on, which is
+  // the one reachable for whoever copies it.
+  private _mcpUrl(apiId?: string) {
+    return `${location.origin}/api/mcp${apiId ? `/${apiId}` : ""}`;
   }
 
   private async _load() {
@@ -260,13 +261,7 @@ export class MCPPref extends LitElement {
     ha-settings-row {
       padding: 0;
     }
-    ha-settings-row span[slot="description"] {
-      word-break: break-all;
-    }
-    .entry-title {
-      display: block;
-      color: var(--secondary-text-color);
-    }
+
     .row-actions {
       display: flex;
       flex-direction: row;

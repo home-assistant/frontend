@@ -2915,7 +2915,7 @@
           "disable_confirm_title": "Disable the Model Context Protocol server?",
           "disable_confirm_text": "AI applications connected to the server will lose access to Home Assistant.",
           "your_url_header": "Your MCP URL",
-          "apis_header": "APIs",
+          "apis_header": "Individual MCP APIs",
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_delete_entry": "Failed to disable the Model Context Protocol server"
