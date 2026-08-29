@@ -1452,6 +1452,12 @@
         "test_on": "Turn on testing",
         "test_off": "Turn off testing"
       },
+      "state-class-picker": {
+        "state_class": "State class",
+        "add": "Add state class",
+        "no_state_classes": "No state classes available",
+        "no_match": "No state classes found for {term}"
+      },
       "state-content-picker": {
         "state": "State",
         "name": "Name",

@@ -25,7 +25,7 @@ gulp.task("gen-sensor-entity-constants", async () => {
   const numericDeviceClasses = [...(data.numeric_device_classes ?? [])].sort();
   const deviceClassUnits = data.device_class_units ?? {};
   const convertibleClassUnits = data.convertible_units ?? {};
-  const stateClasses = [...(data.state_classes ?? [])].sort();
+  const stateClasses = [...(data.state_classes_filter ?? [])].sort();
   const stateClassUnits = data.state_class_units ?? {};
   if (
     !numericDeviceClasses.length ||
