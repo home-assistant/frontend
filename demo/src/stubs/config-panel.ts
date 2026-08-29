@@ -47,7 +47,6 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
     apis: [
       { id: "assist", name: "Assist" },
       { id: "music_assistant", name: "Music Assistant" },
-      { id: "calendar", name: "Calendar" },
     ],
   }));
 };

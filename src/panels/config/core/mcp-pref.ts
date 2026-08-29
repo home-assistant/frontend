@@ -129,7 +129,6 @@ export class MCPPref extends LitElement {
         </span>
         <span slot="description">${entry.title}</span>
         <div class="row-actions">
-          ${this._renderCopyButton(this._mcpUrl())}
           ${
             entry.supports_options
               ? html`
@@ -141,6 +140,7 @@ export class MCPPref extends LitElement {
                 `
               : nothing
           }
+          ${this._renderCopyButton(this._mcpUrl())}
         </div>
       </ha-settings-row>
       ${
