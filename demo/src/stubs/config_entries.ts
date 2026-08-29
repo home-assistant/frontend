@@ -86,7 +86,7 @@ export const demoConfigEntries: {
       ...baseEntry,
       entry_id: "mock-mcp-server",
       domain: "mcp_server",
-      title: "Assist",
+      title: "Assist, Calendar",
       supports_options: true,
     },
   },

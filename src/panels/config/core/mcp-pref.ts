@@ -77,7 +77,7 @@ export class MCPPref extends LitElement {
         </div>
         <div class="card-content">
           <p>${this.hass.localize("ui.panel.config.mcp.description")}</p>
-          ${this._entry ? this._renderEnabled() : nothing}
+          ${this._entry ? this._renderEnabled(this._entry) : nothing}
         </div>
         ${
           this._entry === null
@@ -109,14 +109,17 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  private _renderEnabled() {
+  private _renderEnabled(entry: ConfigEntry) {
     const serverUrl = this.hass.hassUrl("/api/mcp");
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          ${this.hass.localize("ui.panel.config.mcp.server_url_header")}
+          ${this.hass.localize("ui.panel.config.mcp.your_url_header")}
         </span>
-        <span slot="description">${serverUrl}</span>
+        <span slot="description">
+          ${serverUrl}
+          <span class="entry-title">${entry.title}</span>
+        </span>
         <div class="row-actions">
           <ha-icon-button
             .label=${this.hass.localize("ui.panel.config.mcp.copy_url")}
@@ -125,7 +128,7 @@ export class MCPPref extends LitElement {
             @click=${this._copyUrl}
           ></ha-icon-button>
           ${
-            this._entry?.supports_options
+            entry.supports_options
               ? html`
                   <ha-icon-button
                     .label=${this.hass.localize("ui.panel.config.mcp.configure")}
@@ -151,8 +154,8 @@ export class MCPPref extends LitElement {
                       <div class="row-actions">
                         <ha-icon-button
                           .label=${this.hass.localize(
-                          "ui.panel.config.mcp.copy_url"
-                        )}
+                            "ui.panel.config.mcp.copy_url"
+                          )}
                           .path=${mdiContentCopy}
                           data-url=${url}
                           @click=${this._copyUrl}
@@ -259,6 +262,10 @@ export class MCPPref extends LitElement {
     }
     ha-settings-row span[slot="description"] {
       word-break: break-all;
+    }
+    .entry-title {
+      display: block;
+      color: var(--secondary-text-color);
     }
     .row-actions {
       display: flex;
