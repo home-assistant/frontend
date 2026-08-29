@@ -150,13 +150,13 @@
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
     "@html-eslint/eslint-plugin": "0.65.0",
-    "@lokalise/node-api": "16.3.0",
+    "@lokalise/node-api": "16.4.0",
     "@octokit/auth-oauth-device": "8.0.4",
     "@octokit/plugin-retry": "8.1.1",
     "@octokit/rest": "22.0.1",
     "@playwright/test": "1.62.1",
     "@rsdoctor/rspack-plugin": "1.6.3",
-    "@rspack/core": "2.1.10",
+    "@rspack/core": "2.2.0",
     "@rspack/dev-server": "2.2.1",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.26",
@@ -190,7 +190,7 @@
     "eslint-plugin-wc": "3.1.0",
     "fancy-log": "2.0.0",
     "fs-extra": "11.4.0",
-    "generate-license-file": "4.2.1",
+    "generate-license-file": "4.2.4",
     "glob": "13.0.6",
     "globals": "17.11.0",
     "gulp": "5.0.1",
@@ -235,6 +235,6 @@
   },
   "packageManager": "yarn@4.18.0",
   "volta": {
-    "node": "24.19.0"
+    "node": "24.20.0"
   }
 }
