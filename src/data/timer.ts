@@ -8,9 +8,11 @@ import durationToSeconds, {
   durationDataToSeconds,
 } from "../common/datetime/duration_to_seconds";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { formatNumericDuration } from "../common/datetime/format_duration";
 import type { FormatEntityStateFunc } from "../common/translations/entity-state";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
+import type { FrontendLocaleData } from "./translation";
 
 export type TimerEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -149,3 +151,18 @@ export const timerDurationData = (
   stateObj: HassEntity
 ): HaDurationData | undefined =>
   createDurationData(stateObj.attributes.duration);
+
+export const normalizeTimerPresets = (presets?: number[]): number[] => [
+  ...new Set(
+    (presets ?? [])
+      .map((preset) => Math.floor(Number(preset)))
+      .filter((seconds) => Number.isFinite(seconds) && seconds > 0)
+  ),
+];
+
+// Presets are at least one second, so the formatter never returns null here.
+export const timerPresetLabel = (
+  locale: FrontendLocaleData,
+  seconds: number
+): string =>
+  formatNumericDuration(locale, normalizeTimerDuration({ seconds })) ?? "";

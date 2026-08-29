@@ -1,12 +1,13 @@
 import { consume } from "@lit/context";
 import { mdiTimerOutline } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { createDurationData } from "../../../common/datetime/create_duration_data";
-import { durationDataToSeconds } from "../../../common/datetime/duration_to_seconds";
-import { formatNumericDuration } from "../../../common/datetime/format_duration";
 import {
   consumeEntityState,
   consumeLocalize,
@@ -20,13 +21,20 @@ import type { HaControlButton } from "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-svg-icon";
-import { apiContext, internationalizationContext } from "../../../data/context";
+import {
+  apiContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import { normalizeTimerDuration } from "../../../data/timer";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import { normalizeTimerPresets, timerPresetLabel } from "../../../data/timer";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantApi,
+  HomeAssistantConnection,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -52,34 +60,6 @@ export const supportsTimerPresetsCardFeature = (
   return supportsTimerPresetsCardFeatureFromState(stateObj);
 };
 
-interface TimerPreset {
-  duration: number;
-  label: string;
-}
-
-// Presets with an unparseable or zero duration are dropped. Durations are
-// normalized to seconds so what is shown and what is sent to timer.start
-// always match, and numeric presets ("90") render the same as their string
-// form ("0:01:30").
-export const computeTimerPresets = (
-  presets: (string | number)[],
-  locale: FrontendLocaleData
-): TimerPreset[] =>
-  presets.reduce<TimerPreset[]>((result, preset) => {
-    const durationData = createDurationData(preset);
-    const seconds = durationData ? durationDataToSeconds(durationData) : 0;
-    if (durationData && seconds > 0) {
-      const label = formatNumericDuration(
-        locale,
-        normalizeTimerDuration(durationData)
-      );
-      if (label) {
-        result.push({ duration: seconds, label });
-      }
-    }
-    return result;
-  }, []);
-
 @customElement("hui-timer-presets-card-feature")
 class HuiTimerPresetsCardFeature
   extends LitElement
@@ -100,6 +80,13 @@ class HuiTimerPresetsCardFeature
   private _api!: HomeAssistantApi;
 
   @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   @transform<HomeAssistantInternationalization, FrontendLocaleData>({
     transformer: ({ locale }) => locale,
@@ -108,10 +95,57 @@ class HuiTimerPresetsCardFeature
 
   @state() private _config?: TimerPresetsCardFeatureConfig;
 
-  private _presets = memoizeOne(
-    (presets: (string | number)[] | undefined, locale: FrontendLocaleData) =>
-      computeTimerPresets(presets ?? [], locale)
-  );
+  @state() private _entry?: EntityRegistryEntry | null;
+
+  @state() private _presets: number[] = [];
+
+  private _unsubEntityRegistry?: UnsubscribeFunc;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._subscribeEntityEntry();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeEntityRegistry();
+  }
+
+  private _unsubscribeEntityRegistry() {
+    if (this._unsubEntityRegistry) {
+      this._unsubEntityRegistry();
+      this._unsubEntityRegistry = undefined;
+    }
+  }
+
+  private _subscribeEntityEntry() {
+    if (this._connection && this.context?.entity_id) {
+      const id = this.context.entity_id;
+      try {
+        this._unsubEntityRegistry = subscribeEntityRegistry(
+          this._connection,
+          (entries) => {
+            this._entry = entries.find((e) => e.entity_id === id) ?? null;
+          }
+        );
+      } catch (_e) {
+        this._entry = null;
+      }
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("context") || changedProps.has("_connection")) {
+      this._unsubscribeEntityRegistry();
+      this._subscribeEntityEntry();
+    }
+
+    if (changedProps.has("_entry")) {
+      this._presets = normalizeTimerPresets(
+        this._entry?.options?.timer?.presets
+      );
+    }
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import("../editor/config-elements/hui-timer-presets-card-feature-editor");
@@ -121,7 +155,6 @@ class HuiTimerPresetsCardFeature
   static getStubConfig(): TimerPresetsCardFeatureConfig {
     return {
       type: "timer-presets",
-      presets: ["0:01:00", "0:05:00", "0:10:00"],
     };
   }
 
@@ -143,7 +176,7 @@ class HuiTimerPresetsCardFeature
       return nothing;
     }
 
-    const presets = this._presets(this._config.presets, this._locale);
+    const presets = this._presets;
 
     if (!presets.length) {
       return nothing;
@@ -155,8 +188,8 @@ class HuiTimerPresetsCardFeature
           show-arrow
           .label=${this._localize("ui.card.timer.presets")}
           .options=${presets.map((preset) => ({
-            value: String(preset.duration),
-            label: preset.label,
+            value: String(preset),
+            label: timerPresetLabel(this._locale!, preset),
           }))}
           .disabled=${this._stateObj.state === UNAVAILABLE}
           @wa-select=${this._onPresetSelect}
@@ -168,27 +201,29 @@ class HuiTimerPresetsCardFeature
 
     return html`
       <ha-control-button-group>
-        ${presets.map(
-          (preset) => html`
+        ${presets.map((preset) => {
+          const label = timerPresetLabel(this._locale!, preset);
+          return html`
             <ha-control-button
               .preset=${preset}
-              .label=${this._localize("ui.card.timer.start_preset", {
-                duration: preset.label,
-              })}
+              .label=${this._localize(
+                "ui.dialogs.more_info_control.timer.preset.set",
+                { value: label }
+              )}
               .disabled=${this._stateObj!.state === UNAVAILABLE}
               @click=${this._onPresetTap}
             >
-              ${preset.label}
+              ${label}
             </ha-control-button>
-          `
-        )}
+          `;
+        })}
       </ha-control-button-group>
     `;
   }
 
   private _onPresetTap(
     ev: MouseEvent &
-      HASSDomCurrentTargetEvent<HaControlButton & { preset: TimerPreset }>
+      HASSDomCurrentTargetEvent<HaControlButton & { preset: number }>
   ): void {
     ev.stopPropagation();
     this._startPreset(ev.currentTarget.preset);
@@ -197,20 +232,19 @@ class HuiTimerPresetsCardFeature
   private _onPresetSelect(ev: CustomEvent<{ item?: { value: string } }>): void {
     ev.stopPropagation();
     const value = ev.detail.item?.value;
-    if (value === undefined || !this._config || !this._locale) {
+    if (value === undefined) {
       return;
     }
-    const presets = this._presets(this._config.presets, this._locale);
-    const preset = presets.find((p) => String(p.duration) === value);
-    if (preset) {
+    const preset = this._presets.find((p) => String(p) === value);
+    if (preset !== undefined) {
       this._startPreset(preset);
     }
   }
 
-  private _startPreset(preset: TimerPreset): void {
+  private _startPreset(preset: number): void {
     this._api.callService("timer", "start", {
       entity_id: this._stateObj!.entity_id,
-      duration: preset.duration,
+      duration: preset,
     });
   }
 

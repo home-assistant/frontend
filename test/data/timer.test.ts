@@ -5,6 +5,7 @@ import {
   computeDisplayTimer,
   durationDataToTimerString,
   normalizeTimerDuration,
+  normalizeTimerPresets,
   timerDurationData,
   timerJustFinished,
 } from "../../src/data/timer";
@@ -203,6 +204,29 @@ describe("computeDisplayTimer", () => {
         90
       ),
       "1:30 (Paused)"
+    );
+  });
+});
+
+describe("normalizeTimerPresets", () => {
+  it("returns an empty list when nothing is stored", () => {
+    assert.deepEqual(normalizeTimerPresets(undefined), []);
+    assert.deepEqual(normalizeTimerPresets([]), []);
+  });
+
+  it("keeps the stored order and drops duplicates", () => {
+    assert.deepEqual(normalizeTimerPresets([600, 60, 300, 60]), [600, 60, 300]);
+  });
+
+  it("truncates fractional seconds", () => {
+    // Timers only accept whole seconds, and 90.4 and 90.9 are the same preset.
+    assert.deepEqual(normalizeTimerPresets([90.4, 90.9]), [90]);
+  });
+
+  it("drops values that cannot start a timer", () => {
+    assert.deepEqual(
+      normalizeTimerPresets([0, -60, NaN, Infinity, 300] as number[]),
+      [300]
     );
   });
 });

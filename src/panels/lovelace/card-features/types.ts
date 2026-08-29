@@ -213,7 +213,6 @@ export interface TimerActionsCardFeatureConfig {
 export interface TimerPresetsCardFeatureConfig {
   type: "timer-presets";
   style?: "buttons" | "dropdown";
-  presets?: (string | number)[];
 }
 
 export interface WaterHeaterOperationModesCardFeatureConfig {

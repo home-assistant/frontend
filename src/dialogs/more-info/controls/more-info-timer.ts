@@ -12,6 +12,8 @@ import type { HaButton } from "../../../components/ha-button";
 import "../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import { apiContext, formattersContext } from "../../../data/context";
+import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import { shouldShowFavoriteOptions } from "../../../data/entity/entity_registry";
 import type { TimerEntity } from "../../../data/timer";
 import {
   computeDisplayTimer,
@@ -24,11 +26,16 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 import "../components/ha-more-info-state-header";
+import "../components/timers/ha-more-info-timer-presets";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-timer")
 class MoreInfoTimer extends LitElement {
   @property({ attribute: false }) public stateObj?: TimerEntity;
+
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
+
+  @property({ attribute: false }) public editMode?: boolean;
 
   @state()
   @consumeLocalize()
@@ -76,6 +83,12 @@ class MoreInfoTimer extends LitElement {
     }
 
     const timerState = this.stateObj.state;
+
+    const showPresets = Boolean(
+      this.entry &&
+      (this.editMode ||
+        shouldShowFavoriteOptions(this.entry.options?.timer?.presets))
+    );
 
     return html`
       <ha-more-info-state-header
@@ -166,6 +179,17 @@ class MoreInfoTimer extends LitElement {
               : nothing
           }
         </div>
+        ${
+          showPresets
+            ? html`
+                <ha-more-info-timer-presets
+                  .stateObj=${this.stateObj}
+                  .entry=${this.entry}
+                  .editMode=${this.editMode}
+                ></ha-more-info-timer-presets>
+              `
+            : nothing
+        }
       </div>
     `;
   }
