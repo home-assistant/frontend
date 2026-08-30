@@ -2909,7 +2909,7 @@
         },
         "mcp": {
           "header": "Model Context Protocol",
-          "description": "Allow AI applications to interact with Home Assistant using the Model Context Protocol.",
+          "description": "Allow AI applications to interact with Home Assistant using the Model Context Protocol. Add one of the URLs below to an AI application that supports MCP.",
           "enable": "[%key:ui::common::enable%]",
           "disable": "[%key:ui::common::disable%]",
           "disable_confirm_title": "Disable the Model Context Protocol server?",
