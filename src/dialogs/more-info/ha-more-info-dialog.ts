@@ -17,7 +17,6 @@ import {
   mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { provide } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -92,7 +91,6 @@ import {
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   type MoreInfoView,
 } from "./const";
-import { moreInfoContext, type MoreInfoContext } from "./context";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
@@ -110,7 +108,6 @@ export interface MoreInfoDialogParams {
   tab?: MoreInfoView;
   large?: boolean;
   data?: Record<string, any>;
-  hash?: URLSearchParams;
   fromUrl?: boolean;
   returnUrl?: string;
   parentElement?: LitElement;
@@ -158,10 +155,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _data?: Record<string, any>;
 
-  @provide({ context: moreInfoContext })
-  @state()
-  private _moreInfoContext: MoreInfoContext = this._createMoreInfoContext();
-
   private _returnUrl?: string;
 
   @state() private _currView: MoreInfoView = DEFAULT_VIEW;
@@ -198,7 +191,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const view = params.view || params.tab || DEFAULT_VIEW;
 
     this._data = params.data;
-    this._moreInfoContext = this._createMoreInfoContext(params.hash);
     this._returnUrl = params.returnUrl;
     this._currView = view;
     this._initialView = view;
@@ -252,7 +244,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._initialView = DEFAULT_VIEW;
     this._currView = DEFAULT_VIEW;
     this._childViewStack = [];
-    this._moreInfoContext = this._createMoreInfoContext();
     this._returnUrl = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
@@ -301,10 +292,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return entity?.device_id ?? null;
   }
 
-  private _setView(view: MoreInfoView, preserveHash = false) {
-    if (view !== this._currView && !preserveHash) {
-      this._moreInfoContext = this._createMoreInfoContext();
-    }
+  private _setView(view: MoreInfoView) {
     updateHistoryState({
       dialogParams: {
         ...getHistoryState()?.dialogParams,
@@ -323,27 +311,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       createMoreInfoUrl(this._returnUrl, {
         entityId: this._entityId,
         view: this._currView,
-        hash: this._moreInfoContext.hash,
       })
     );
-  }
-
-  private _createMoreInfoContext(hash?: URLSearchParams): MoreInfoContext {
-    return {
-      hash: new URLSearchParams(hash),
-      setHashParam: (key, value) => this._setHashParam(key, value),
-    };
-  }
-
-  private _setHashParam(key: string, value?: string) {
-    const hash = new URLSearchParams(this._moreInfoContext.hash);
-    if (value) {
-      hash.set(key, value);
-    } else {
-      hash.delete(key);
-    }
-    this._moreInfoContext = this._createMoreInfoContext(hash);
-    this._syncUrl();
   }
 
   private _goBack() {
@@ -371,7 +340,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (this._parentEntityIds.length > 0) {
       this._entityId = this._parentEntityIds.pop();
       this._currView = DEFAULT_VIEW;
-      this._moreInfoContext = this._createMoreInfoContext();
       this._loadEntityRegistryEntry();
       this._syncUrl();
     }
@@ -1078,15 +1046,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
     const view = ev.detail.view || ev.detail.tab || DEFAULT_VIEW;
     if (entityId === this._entityId) {
-      this._moreInfoContext = this._createMoreInfoContext(ev.detail.hash);
       this._infoEditMode = false;
       this._detailsYamlMode = false;
-      this._setView(view, true);
+      this._setView(view);
       return;
     }
     this._parentEntityIds = [...this._parentEntityIds, this._entityId!];
     this._entityId = entityId;
-    this._moreInfoContext = this._createMoreInfoContext(ev.detail.hash);
     this._currView = view === "details" ? view : DEFAULT_VIEW;
     this._initialView = view;
     this._infoEditMode = false;

@@ -389,8 +389,10 @@ test.describe("Light more-info dialog", () => {
   }
 });
 
-test.describe("Weather more-info deep link", () => {
-  test("opens and synchronizes the selected forecast", async ({ page }) => {
+test.describe("Weather more-info forecast", () => {
+  test("switches the rendered forecast when a tab is selected", async ({
+    page,
+  }) => {
     await goToPanel(
       page,
       "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
@@ -406,40 +408,25 @@ test.describe("Weather more-info deep link", () => {
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
     ).toBeAttached();
 
-    await page.locator("ha-test").evaluate((el) => {
-      el.dispatchEvent(
-        new CustomEvent("hass-more-info", {
-          detail: {
-            entityId: "weather.test_weather",
-            hash: new URLSearchParams({ forecast: "hourly" }),
-          },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    // Only the hourly and twice daily forecasts group their items under a day
+    // header, so it tells the rendered forecast apart from the daily one.
+    await expect(weather.locator(".forecast-day-header")).toHaveCount(0);
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Hourly" })
+      .click();
 
     await expect(
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
     ).toBeAttached();
+    await expect(weather.locator(".forecast-day-header").first()).toBeVisible();
 
     await dialog.getByRole("button", { name: "History" }).click();
     await expect(page).toHaveURL(/more-info-view=history/);
 
     await dialog.getByRole("button", { name: "Back" }).click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
-
-    await weather
-      .locator("ha-tab-group-tab")
-      .filter({ hasText: "Daily" })
-      .click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
+    await expect(page).toHaveURL(/more-info-view=info/);
 
     await dialog.getByRole("button", { name: "Close" }).click();
     await expect(dialog).toBeHidden();
