@@ -47,7 +47,7 @@ export class HuiSelectOptionsCardFeatureEditor
             select: {
               multiple: false,
               mode: "list",
-              options: ["dropdown", "icons"].map((value) => ({
+              options: ["dropdown", "segmented"].map((value) => ({
                 value,
                 label: this.hass!.localize(
                   `ui.panel.lovelace.editor.features.types.select-options.style_list.${value}`

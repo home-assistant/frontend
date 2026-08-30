@@ -199,25 +199,6 @@ export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
       });
     }
 
-    const domain = computeDomain(entityId);
-    if (
-      (domain === "select" || domain === "input_select") &&
-      allFeaturesSupported(hass, entityId, ["select-options"])
-    ) {
-      suggestions.push({
-        label: hass.localize(
-          "ui.panel.lovelace.editor.features.types.select-options.style_list.slider"
-        ),
-        config: {
-          type: "tile",
-          entity: entityId,
-          features: [
-            { type: "select-options", style: "icons" },
-          ] as LovelaceCardFeatureConfig[],
-        },
-      });
-    }
-
     return suggestions.length ? suggestions : null;
   },
 };

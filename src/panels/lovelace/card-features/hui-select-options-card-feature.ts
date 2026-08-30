@@ -57,11 +57,9 @@ class HuiSelectOptionsCardFeature
     return this._localize("ui.card.select.option");
   }
 
-  protected readonly _allowIconsStyle = true;
+  protected readonly _allowIconsStyle = false;
 
-  protected readonly _hideOptionLabelInIconsStyle = false;
-
-  protected readonly _showControlSelectOptionIcons = false;
+  protected readonly _allowSegmentedStyle = true;
 
   protected readonly _showDropdownOptionIcons = false;
 
