@@ -103,7 +103,10 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
       (oldConfig?.time_zone !== this._config?.time_zone ||
         !shallowEqual(oldConfig?.date_format, this._config?.date_format));
 
-    if (localeChanged || relevantConfigChanged) {
+    // hass/_config can arrive in separate update cycles; force one init.
+    const neverScheduled = !this._midnightTimer;
+
+    if (localeChanged || relevantConfigChanged || neverScheduled) {
       this._scheduleMidnightRefresh();
     }
   }
