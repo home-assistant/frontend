@@ -619,12 +619,52 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       : undefined;
   }
 
+  /**
+   * Order items so each subtask directly follows its parent. Subtasks whose
+   * parent is not in this list, because it is filtered out or completed, stay
+   * where they are and are rendered as top-level items.
+   */
+  private _groupSubtasks(items: TodoItem[], uids: Set<string>): TodoItem[] {
+    const children = new Map<string, TodoItem[]>();
+    for (const item of items) {
+      if (item.parent_uid && uids.has(item.parent_uid)) {
+        const siblings = children.get(item.parent_uid);
+        if (siblings) {
+          siblings.push(item);
+        } else {
+          children.set(item.parent_uid, [item]);
+        }
+      }
+    }
+    if (!children.size) {
+      return items;
+    }
+    const ordered: TodoItem[] = [];
+    for (const item of items) {
+      if (item.parent_uid && uids.has(item.parent_uid)) {
+        continue;
+      }
+      ordered.push(item, ...(children.get(item.uid) ?? []));
+    }
+    return ordered;
+  }
+
   private _renderItems(items: TodoItem[], unavailable = false) {
+    // Reordering uses the flat move API, so the hierarchy is not shown there.
+    const uids = this._reordering
+      ? new Set<string>()
+      : new Set(items.map((item) => item.uid));
+    const orderedItems = this._reordering
+      ? items
+      : this._groupSubtasks(items, uids);
     return html`
       ${repeat(
-        items,
+        orderedItems,
         (item) => item.uid,
         (item) => {
+          const isSubtask = Boolean(
+            item.parent_uid && uids.has(item.parent_uid)
+          );
           const showDelete =
             this._todoListSupportsFeature(
               TodoListEntityFeature.DELETE_TODO_ITEM
@@ -645,6 +685,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 draggable: item.status !== TodoItemStatus.Completed,
                 completed: item.status === TodoItemStatus.Completed,
                 multiline: Boolean(item.description || item.due),
+                subtask: isSubtask,
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
               .disabled=${unavailable}
@@ -1013,6 +1054,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       min-height: 40px;
       height: auto;
       --mdc-list-side-padding: var(--ha-space-5);
+    }
+
+    ha-check-list-item.subtask {
+      --mdc-list-side-padding: var(--ha-space-10);
     }
 
     .row {

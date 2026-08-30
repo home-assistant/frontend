@@ -29,6 +29,8 @@ export interface TodoItem {
   description?: string | null;
   due?: string | null;
   completed?: string | null;
+  /** UID of the item this item is a subtask of. Subtasks are one level deep. */
+  parent_uid?: string | null;
 }
 
 export enum TodoListEntityFeature {
@@ -39,6 +41,7 @@ export enum TodoListEntityFeature {
   SET_DUE_DATE_ON_ITEM = 16,
   SET_DUE_DATETIME_ON_ITEM = 32,
   SET_DESCRIPTION_ON_ITEM = 64,
+  SET_PARENT_ON_ITEM = 128,
 }
 
 export const getTodoLists = (
@@ -102,6 +105,7 @@ export const updateItem = (
         item.due === undefined || item.due?.includes("T")
           ? undefined
           : item.due,
+      parent: item.parent_uid,
     },
     { entity_id }
   );
@@ -122,6 +126,7 @@ export const createItem = (
         item.due === undefined || item.due?.includes("T")
           ? undefined
           : item.due,
+      parent: item.parent_uid || undefined,
     },
     { entity_id }
   );

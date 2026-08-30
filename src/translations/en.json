@@ -1302,6 +1302,8 @@
           "edit": "Edit item",
           "save": "Save item",
           "due": "Due date",
+          "parent": "Subtask of",
+          "parent_helper": "Group this item under another item on the list",
           "completed_time": "Completed { datetime }",
           "not_all_required_fields": "Not all required fields are filled in",
           "confirm_delete": {

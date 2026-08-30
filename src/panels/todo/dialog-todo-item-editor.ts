@@ -17,6 +17,7 @@ import type { HaCheckbox } from "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-select";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/ha-time-input";
@@ -28,6 +29,7 @@ import {
   TodoListEntityFeature,
   createItem,
   deleteItems,
+  fetchItems,
   updateItem,
 } from "../../data/todo";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
@@ -42,6 +44,7 @@ interface TodoItemFormState {
   due?: Date;
   checked: boolean;
   hasTime: boolean;
+  parentUid?: string;
 }
 
 @customElement("dialog-todo-item-editor")
@@ -70,6 +73,10 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
   @state() private _open = false;
 
+  @state() private _parentUid?: string;
+
+  @state() private _parentCandidates?: TodoItem[];
+
   // Dates are manipulated and displayed in the browser timezone
   // which may be different from the Home Assistant timezone. When
   // events are persisted, they are relative to the Home Assistant
@@ -96,12 +103,46 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       this._due = entry.due
         ? new Date(this._hasTime ? entry.due : `${entry.due}T00:00:00`)
         : undefined;
+      this._parentUid = entry.parent_uid || undefined;
     } else {
       this._hasTime = false;
       this._checked = false;
       this._due = undefined;
+      this._parentUid = undefined;
     }
     this._initDirtyTracking({ type: "deep" }, this._currentState());
+    if (
+      this._todoListSupportsFeature(TodoListEntityFeature.SET_PARENT_ON_ITEM)
+    ) {
+      this._loadParentCandidates();
+    }
+  }
+
+  /**
+   * Load the items that this item can be made a subtask of. Subtasks are one
+   * level deep, so an item that already has subtasks cannot become one itself.
+   */
+  private async _loadParentCandidates(): Promise<void> {
+    const entity = this._params!.entity;
+    let items: TodoItem[];
+    try {
+      items = await fetchItems(this.hass!, entity);
+    } catch (_err: any) {
+      this._parentCandidates = [];
+      return;
+    }
+    if (this._params?.entity !== entity) {
+      return;
+    }
+    const uid =
+      this._params.item && "uid" in this._params.item
+        ? this._params.item.uid
+        : undefined;
+    const hasSubtasks =
+      uid !== undefined && items.some((item) => item.parent_uid === uid);
+    this._parentCandidates = hasSubtasks
+      ? []
+      : items.filter((item) => !item.parent_uid && item.uid !== uid);
   }
 
   private _currentState(): TodoItemFormState {
@@ -111,6 +152,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       due: this._due,
       checked: this._checked,
       hasTime: this._hasTime,
+      parentUid: this._parentUid,
     };
   }
 
@@ -129,6 +171,8 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     this._summary = "";
     this._description = "";
     this._hasTime = false;
+    this._parentUid = undefined;
+    this._parentCandidates = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -255,6 +299,26 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
                 </div>`
               : nothing
           }
+          ${
+            this._todoListSupportsFeature(
+              TodoListEntityFeature.SET_PARENT_ON_ITEM
+            ) && this._parentCandidates?.length
+              ? html`<ha-select
+                  .label=${this.hass.localize("ui.components.todo.item.parent")}
+                  .helper=${this.hass.localize(
+                    "ui.components.todo.item.parent_helper"
+                  )}
+                  .value=${this._parentUid ?? ""}
+                  .options=${this._parentCandidates.map((item) => ({
+                    value: item.uid,
+                    label: item.summary,
+                  }))}
+                  .disabled=${!canUpdate}
+                  clearable
+                  @selected=${this._parentChanged}
+                ></ha-select>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           ${
@@ -375,6 +439,11 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
+  private _parentChanged(ev: ValueChangedEvent<string | undefined>) {
+    this._parentUid = ev.detail.value || undefined;
+    this._updateDirtyState(this._currentState());
+  }
+
   private async _createItem() {
     if (!this._summary) {
       this._error = this.hass.localize(
@@ -393,6 +462,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
             ? this._due.toISOString()
             : this._formatDate(this._due)
           : undefined,
+        parent_uid: this._parentUid,
       });
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
@@ -440,6 +510,11 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
         status: this._checked
           ? TodoItemStatus.Completed
           : TodoItemStatus.NeedsAction,
+        parent_uid: this._todoListSupportsFeature(
+          TodoListEntityFeature.SET_PARENT_ON_ITEM
+        )
+          ? (this._parentUid ?? null)
+          : undefined,
       });
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
