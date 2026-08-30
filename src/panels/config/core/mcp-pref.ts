@@ -1,9 +1,4 @@
-import {
-  mdiCog,
-  mdiContentCopy,
-  mdiDotsVertical,
-  mdiHelpCircleOutline,
-} from "@mdi/js";
+import { mdiCog, mdiContentCopy, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -70,20 +65,10 @@ export class MCPPref extends LitElement {
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.mcp.header")}
-          <div class="header-actions">
-            <ha-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.cloud.account.alexa.link_learn_how_it_works"
-              )}
-              .path=${mdiHelpCircleOutline}
-              href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
-              target="_blank"
-              rel="noreferrer"
-              class="icon-link"
-            ></ha-icon-button>
-            ${
-              this._entry
-                ? html`
+          ${
+            this._entry
+              ? html`
+                  <div class="header-actions">
                     <ha-dropdown>
                       <ha-icon-button
                         slot="trigger"
@@ -97,10 +82,10 @@ export class MCPPref extends LitElement {
                         ${this.hass.localize("ui.panel.config.mcp.disable")}
                       </ha-dropdown-item>
                     </ha-dropdown>
-                  `
-                : nothing
-            }
-          </div>
+                  </div>
+                `
+              : nothing
+          }
         </h1>
         <div class="card-content">
           <p>
@@ -257,12 +242,8 @@ export class MCPPref extends LitElement {
     }
     .header-actions {
       display: flex;
-      flex-direction: row;
       align-items: center;
       margin-inline-start: auto;
-    }
-    .header-actions .icon-link {
-      color: var(--secondary-text-color);
     }
     a {
       color: var(--primary-color);
