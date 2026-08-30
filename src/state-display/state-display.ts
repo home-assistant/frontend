@@ -259,19 +259,25 @@ class StateDisplay extends LitElement {
   protected render() {
     const stateObj = this.stateObj;
     const contents = ensureArray(this._content);
-
-    const values = contents
-      .map((content) => this._computeContent(content))
-      .filter(Boolean);
-
-    const display = values.length
-      ? join(values, STRINGS_SEPARATOR_DOT)
-      : html`${this.hass!.formatEntityState(stateObj)}`;
     const valueColor = stateValueColorCss(
       stateObj,
       this.colorNegativeNumericStates
     );
 
+    const values = contents
+      .map((content) => {
+        const value = this._computeContent(content);
+        return value && content === "state" && valueColor
+          ? html`<span style="color: ${valueColor}">${value}</span>`
+          : value;
+      })
+      .filter(Boolean);
+
+    if (values.length) {
+      return join(values, STRINGS_SEPARATOR_DOT);
+    }
+
+    const display = html`${this.hass!.formatEntityState(stateObj)}`;
     return valueColor
       ? html`<span style="color: ${valueColor}">${display}</span>`
       : display;

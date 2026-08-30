@@ -1,8 +1,10 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-switch";
+import type { HaSwitch } from "../../components/ha-switch";
 import "../../components/item/ha-row-item";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { saveFrontendUserData } from "../../data/frontend";
@@ -38,6 +40,9 @@ class NegativeNumericStateColorRow extends LitElement {
         <ha-switch
           slot="end"
           haptic
+          .title=${this.hass.localize(
+            "ui.panel.profile.negative_numeric_state_color.header"
+          )}
           .checked=${this.coreUserData?.colorNegativeNumericStates === true}
           .disabled=${this.coreUserData === undefined}
           @change=${this._toggled}
@@ -46,10 +51,9 @@ class NegativeNumericStateColorRow extends LitElement {
     `;
   }
 
-  private async _toggled(ev: Event) {
+  private async _toggled(ev: HASSDomTargetEvent<HaSwitch>) {
     try {
-      const checked = (ev.currentTarget as HTMLElement & { checked: boolean })
-        .checked;
+      const checked = ev.target.checked;
       await saveFrontendUserData(this.hass.connection, "core", {
         ...this.coreUserData,
         colorNegativeNumericStates: checked,

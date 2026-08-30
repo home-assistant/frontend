@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -27,7 +27,7 @@ import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { uiContext } from "../../../data/context";
+import { configContext, uiContext } from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { Themes } from "../../../data/ws-themes";
@@ -90,7 +90,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
 
   @state() private _config?: ButtonCardConfig;
 
@@ -228,7 +232,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 style=${styleMap({
                   color: stateValueColorCss(
                     stateObj,
-                    this.hass.userData?.colorNegativeNumericStates === true
+                    this._hassConfig?.userData?.colorNegativeNumericStates ===
+                      true
                   ),
                 })}
               >

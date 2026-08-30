@@ -146,10 +146,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = this._getStateColor(stateObj, this._config);
-    const valueColor = stateValueColorCss(
-      stateObj,
-      this.hass.userData?.colorNegativeNumericStates === true
-    );
+    const valueColor =
+      "attribute" in this._config
+        ? undefined
+        : stateValueColorCss(
+            stateObj,
+            this.hass.userData?.colorNegativeNumericStates === true
+          );
 
     const fixedFooter =
       this.layout === "grid" && this._footerElement !== undefined;
