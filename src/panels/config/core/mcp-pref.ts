@@ -103,7 +103,16 @@ export class MCPPref extends LitElement {
           </div>
         </h1>
         <div class="card-content">
-          <p>${this.hass.localize("ui.panel.config.mcp.description")}</p>
+          <p>
+            ${this.hass.localize("ui.panel.config.mcp.description", {
+              documentation_link: html`<a
+                href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize("ui.panel.config.mcp.documentation")}</a
+              >`,
+            })}
+          </p>
           ${this._entry ? this._renderEnabled(this._entry) : nothing}
         </div>
         ${
@@ -254,6 +263,9 @@ export class MCPPref extends LitElement {
     }
     .header-actions .icon-link {
       color: var(--secondary-text-color);
+    }
+    a {
+      color: var(--primary-color);
     }
     ha-settings-row {
       padding: 0;
