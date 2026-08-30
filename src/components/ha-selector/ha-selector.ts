@@ -3,7 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import type { Selector } from "../../data/selector";
+import type { Selector, SelectorType } from "../../data/selector";
 import {
   handleLegacyDeviceSelector,
   handleLegacyEntitySelector,
@@ -70,7 +70,7 @@ const LOAD_ELEMENTS = {
   ui_date_format_parts: () => import("./ha-selector-ui-date-format-parts"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
   ui_time_format: () => import("./ha-selector-ui-time-format"),
-};
+} satisfies Record<SelectorType, () => Promise<unknown>>;
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 

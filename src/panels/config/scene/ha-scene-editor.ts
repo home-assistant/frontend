@@ -911,11 +911,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    this._unsubscribeEvents =
-      await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => this._stateChanged(event),
-        "state_changed"
-      );
+    const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
+    if (!this.isConnected || this._mode !== "live") {
+      unsubscribe();
+      return;
+    }
+    this._unsubscribeEvents = unsubscribe;
   }
 
   private _showMoreInfo(ev: Event) {
@@ -928,6 +932,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -940,6 +947,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
               ),
       });
       goBack("/config/scene/dashboard");
+      return;
+    }
+
+    if (!this.isConnected) {
       return;
     }
 
@@ -1115,20 +1126,24 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this.isDirtyState) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this.isDirtyState) {
+      return true;
     }
-    return true;
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.leave"),
+      dismissText: this.hass!.localize("ui.common.stay"),
+      destructive: true,
+    });
+    if (confirmed) {
+      this._markDirtyStateClean();
+    }
+    return confirmed;
   }
 
   private async _duplicate() {

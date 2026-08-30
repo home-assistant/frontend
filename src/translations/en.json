@@ -802,8 +802,10 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
+        "device_replaced_headline": "Replaced device",
         "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
-        "replace_device": "Replace",
+        "device_replaced_by_one": "Replaced by {device}",
+        "replace_update": "Update",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
@@ -924,10 +926,12 @@
         "no_area": "No area",
         "placeholder": "Select a device",
         "unknown": "Unknown device selected",
-        "device_replaced_count": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
-        "device_replaced_by_one": "This device was replaced by {device}.",
-        "device_replaced_by_multiple": "This device was replaced by {count} devices.",
-        "replace_device": "Replace",
+        "device_replaced": "Replaced device",
+        "device_replaced_by_one": "This device no longer exists. It was replaced by {device}.",
+        "device_replaced_by_one_integration": "This device no longer exists. It was replaced by {device} from {integration}.",
+        "device_replaced_by_multiple": "This device no longer exists. It was replaced by {count} devices, pick the one to use here.",
+        "replace_update": "Update",
+        "replace_choose": "Choose",
         "replaced_dialog": {
           "title": "Replace device",
           "description": "This device was replaced by multiple devices. Choose which one to use.",
@@ -1680,10 +1684,9 @@
           "person": "Edit person"
         },
         "details": "Details",
-        "context": "Context",
-        "entity": "Entity",
         "floor": "Floor",
         "entity_id": "Entity ID",
+        "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
         "translated": "Translated",
@@ -6441,17 +6444,17 @@
             "trial_note": "Try free for a month. No payment information required up front.",
             "partner_note": "This service is run by our partner {nabu_casa_link}, a company founded by the founders of Home Assistant.",
             "feature_remote_title": "Access from anywhere",
-            "feature_remote_body": "Securely reach your Home Assistant from any device, with no port forwarding or VPN.",
+            "feature_remote_body": "Securely and privately reach your Home Assistant when you're away from home. Zero router configuration, port forwarding, or complex VPNs.",
             "feature_backup_title": "Backups kept safe",
-            "feature_backup_body": "Your latest Home Assistant backup, stored off-site and encrypted, ready to restore your full system on first boot.",
-            "feature_voice_control_title": "Native Alexa and Google support",
-            "feature_voice_control_body": "Control every Home Assistant device through Amazon Alexa and Google Assistant, so the devices and routines you already rely on keep working. Set up in minutes, not hours.",
-            "feature_voice_quality_title": "Faster speech for your own assistant",
-            "feature_voice_quality_body": "More languages and higher accuracy for Home Assistant's privacy-first voice assistant.",
-            "feature_companion_title": "Companion app",
-            "feature_companion_body": "Reach your home from your phone anywhere, with location and sensor updates flowing back securely and no ports to open.",
+            "feature_backup_body": "Your latest Home Assistant backup, automatically stored somewhere safe and only accessible with your private key, ready to restore your full system with one click.",
+            "feature_voice_control_title": "Alexa and Google Home made simple",
+            "feature_voice_control_body": "Ease your transition to Home Assistant, use your Google and Alexa speakers to control every device. Set up in minutes, not hours.",
+            "feature_voice_quality_title": "Fast, accurate voice control",
+            "feature_voice_quality_body": "More languages and higher accuracy for your own private voice assistant powered by Home Assistant.",
+            "feature_companion_title": "Secure app connectivity",
+            "feature_companion_body": "The Home Assistant app on your mobile device forms a secure connection home, encrypting your location and sensor data.",
             "feature_support_title": "Support Home Assistant",
-            "feature_support_body": "Your subscription funds the Open Home Foundation, keeping Home Assistant independent with no ads or data harvesting.",
+            "feature_support_body": "Your subscription directly funds the Open Home Foundation, keeping Home Assistant independent and free from ads or data harvesting.",
             "sign_in": "Sign in",
             "sign_in_lead": "Sign in to your Nabu Casa account.",
             "email": "Email",
@@ -8400,7 +8403,10 @@
             "status": "Status",
             "version": "Version",
             "data_rate": "Data rate",
-            "area": "Area"
+            "area": "Area",
+            "neighbor": "In range of each other",
+            "toggle_neighbors": "Toggle neighbor connections. Loading neighbor data temporarily turns off the Z-Wave adapter.",
+            "neighbors_error": "Failed to load neighbor connections"
           },
           "node_status": {
             "0": "Unknown",
@@ -9947,6 +9953,21 @@
                 "dayGridWeek": "Week",
                 "dayGridDay": "Day",
                 "listWeek": "List (7 days)"
+              },
+              "show_add_event": "Show add event button",
+              "add_event_style": "Add event button style",
+              "add_event_size": "Add event button size",
+              "add_event": {
+                "style": {
+                  "header": "Header",
+                  "below": "Below",
+                  "on_top": "On top"
+                },
+                "size": {
+                  "s": "Small",
+                  "m": "Medium",
+                  "l": "Large"
+                }
               }
             },
             "conditional": {
@@ -11192,17 +11213,19 @@
       },
       "profile": {
         "tabs": {
-          "general": "General",
           "security": "Security"
         },
-        "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
-        "user_preferences_header": "User preferences",
+        "user_preferences_header": "Appearance",
+        "user_preferences_description": "Default dashboard and sidebar",
         "user_preferences_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
         "localization_header": "Localization",
+        "localization_description": "Language, time zone, date, time, and number formats",
         "localization_detail": "These settings are tied to your account and control how dates, times, and numbers are displayed.",
-        "mobile_app_settings": "Mobile app settings",
-        "browser_settings": "Browser settings",
+        "mobile_app_settings": "This mobile app",
+        "browser_settings": "This browser",
+        "browser_description": "Notifications, display, and shortcuts",
+        "security_description": "Password, multi-factor authentication, and access tokens",
         "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",
         "logout": "Log out",
         "logout_title": "Log out?",
@@ -11317,6 +11340,7 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
+          "colors": "Custom colors",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
@@ -11324,7 +11348,7 @@
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
-          "reset": "Reset",
+          "reset": "Reset colors",
           "use_default": "Use default theme"
         },
         "dashboard": {

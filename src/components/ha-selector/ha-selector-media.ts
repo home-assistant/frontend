@@ -204,7 +204,7 @@ export class HaMediaSelector extends LitElement {
                 </div>
               </ha-card>
               ${
-                this.selector.media?.clearable
+                this.selector.media?.image_upload
                   ? html`<div>
                       <ha-button
                         appearance="plain"

@@ -43,7 +43,6 @@ export class HuiViewBackgroundEditor extends LitElement {
           selector: {
             media: {
               accept: ["image/*"] as string[],
-              clearable: true,
               image_upload: true,
               hide_content_type: true,
               content_id_helper: this.hass.localize(

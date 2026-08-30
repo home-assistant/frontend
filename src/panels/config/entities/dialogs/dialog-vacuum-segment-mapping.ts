@@ -201,7 +201,7 @@ export class DialogVacuumSegmentMapping
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting || !this.isDirtyState}
+            .disabled=${this._submitting}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>

@@ -14,7 +14,7 @@ import {
   type RegisterChildPanelReady,
 } from "../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../types";
-import "../components/ha-config-navigation-list";
+import "../../../components/ha-config-navigation-list";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
