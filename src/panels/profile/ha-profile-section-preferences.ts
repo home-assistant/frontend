@@ -13,6 +13,7 @@ import "../../layouts/hass-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-entity-id-picker-row";
+import "./ha-negative-numeric-state-color-row";
 import "./ha-pick-dashboard-row";
 
 @customElement("ha-profile-section-preferences")
@@ -82,6 +83,10 @@ class HaProfileSectionPreferences extends LitElement {
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
             <ha-md-list>
+              <ha-negative-numeric-state-color-row
+                .hass=${this.hass}
+                .coreUserData=${this._coreUserData}
+              ></ha-negative-numeric-state-color-row>
               <ha-md-list-item>
                 <span slot="headline"
                   >${this.hass.localize(
@@ -109,7 +114,7 @@ class HaProfileSectionPreferences extends LitElement {
                   ? html`
                       <ha-entity-id-picker-row
                         .hass=${this.hass}
-                        .coreUserData=${this._coreUserData}
+                        .coreUserData=${this._coreUserData || undefined}
                       ></ha-entity-id-picker-row>
                     `
                   : ""

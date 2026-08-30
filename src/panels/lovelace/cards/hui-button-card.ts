@@ -2,7 +2,7 @@ import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -20,6 +20,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
+  stateValueColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
@@ -89,7 +90,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: ButtonCardConfig;
 
@@ -222,7 +223,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         }
         ${
           this._config.show_state && stateObj
-            ? html`<span class="state">
+            ? html`<span
+                class="state"
+                style=${styleMap({
+                  color: stateValueColorCss(
+                    stateObj,
+                    this.hass.userData?.colorNegativeNumericStates === true
+                  ),
+                })}
+              >
                 ${this.hass.formatEntityState(stateObj)}
               </span>`
             : nothing

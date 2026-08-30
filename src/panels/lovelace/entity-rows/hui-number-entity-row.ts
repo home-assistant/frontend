@@ -135,6 +135,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     .state {
       min-width: 45px;
       text-align: end;
+      color: var(--state-value-color, inherit);
     }
     .box {
       flex-grow: 0;

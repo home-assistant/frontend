@@ -3,9 +3,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateValueColorCss } from "../../../common/entity/state_color";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -338,7 +340,16 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                               capitalize
                             ></ha-relative-time>
                           `
-                        : this.hass!.formatEntityState(stateObj)
+                        : html`<span
+                            style=${styleMap({
+                              color: stateValueColorCss(
+                                stateObj,
+                                this.hass!.userData
+                                  ?.colorNegativeNumericStates === true
+                              ),
+                            })}
+                            >${this.hass!.formatEntityState(stateObj)}</span
+                          >`
                   }
                 </div>
               `

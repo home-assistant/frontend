@@ -31,7 +31,9 @@ export function hasConfigChanged(
       element.hass.formatEntityAttributeName ||
     oldHass.formatEntityAttributeValue !==
       element.hass.formatEntityAttributeValue ||
-    oldHass.config.state !== element.hass.config.state
+    oldHass.config.state !== element.hass.config.state ||
+    oldHass.userData?.colorNegativeNumericStates !==
+      element.hass.userData?.colorNegativeNumericStates
   ) {
     return true;
   }
