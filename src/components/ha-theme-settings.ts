@@ -9,7 +9,8 @@ import {
 } from "../resources/theme/color/color.globals";
 import type { HomeAssistant, ThemeSettings, ValueChangedEvent } from "../types";
 import "./ha-button";
-import "./ha-settings-row";
+import "./item/ha-list-item-base";
+import "./list/ha-list-base";
 import "./ha-theme-picker";
 import "./input/ha-input";
 import "./radio/ha-radio-group";
@@ -25,6 +26,7 @@ export interface ThemeSettingsLabels {
   autoMode?: string;
   lightMode?: string;
   darkMode?: string;
+  colors?: string;
   primaryColor?: string;
   accentColor?: string;
   reset?: string;
@@ -42,7 +44,7 @@ export class HaThemeSettings extends LitElement {
 
   @property() public heading?: string;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "include-default", type: Boolean })
   public includeDefault = false;
@@ -62,98 +64,121 @@ export class HaThemeSettings extends LitElement {
         ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
         : this.hass.themes.default_theme;
 
+    const showDarkMode =
+      curTheme === HOME_ASSISTANT_THEME ||
+      (curThemeIsUseDefault &&
+        this.hass.themes.default_dark_theme &&
+        this.hass.themes.default_theme) ||
+      this._supportsModeSelection(curTheme);
+
     return html`
-      <ha-settings-row .narrow=${this.narrow} ?empty=${!this.showThemePicker}>
-        ${
-          this.heading
-            ? html`<span slot="heading">${this.heading}</span>`
-            : nothing
-        }
-        ${
-          this.description
-            ? html`<span slot="description">${this.description}</span>`
-            : nothing
-        }
+      <ha-list-base>
         ${
           this.showThemePicker
             ? html`
-                <ha-theme-picker
-                  .label=${this.labels?.theme}
-                  .noThemeLabel=${this.labels?.noTheme}
-                  .value=${themeSettings?.theme || undefined}
-                  .disabled=${this.themePickerDisabled}
-                  ?include-default=${this.includeDefault}
-                  @value-changed=${this._handleThemeSelection}
-                ></ha-theme-picker>
+                <ha-list-item-base>
+                  ${
+                    this.heading
+                      ? html`<span slot="headline">${this.heading}</span>`
+                      : nothing
+                  }
+                  ${
+                    this.description
+                      ? html`<span slot="supporting-text"
+                          >${this.description}</span
+                        >`
+                      : nothing
+                  }
+                  <ha-theme-picker
+                    slot="end"
+                    .label=${this.labels?.theme}
+                    .noThemeLabel=${this.labels?.noTheme}
+                    .value=${themeSettings?.theme || undefined}
+                    .disabled=${this.themePickerDisabled}
+                    ?include-default=${this.includeDefault}
+                    @value-changed=${this._handleThemeSelection}
+                  ></ha-theme-picker>
+                </ha-list-item-base>
               `
             : nothing
         }
-      </ha-settings-row>
-      ${
-        curTheme === HOME_ASSISTANT_THEME ||
-        (curThemeIsUseDefault &&
-          this.hass.themes.default_dark_theme &&
-          this.hass.themes.default_theme) ||
-        this._supportsModeSelection(curTheme)
-          ? html`<div class="inputs">
-              <ha-radio-group
-                @change=${this._handleDarkMode}
-                name="dark_mode"
-                .ariaLabel=${this.labels?.mode ?? "Theme mode"}
-                .value=${
-                  themeSettings?.dark === undefined
-                    ? "auto"
-                    : themeSettings.dark
-                      ? "dark"
-                      : "light"
+        ${
+          showDarkMode
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline"
+                    >${this.labels?.mode ?? "Theme mode"}</span
+                  >
+                  <ha-radio-group
+                    slot="end"
+                    @change=${this._handleDarkMode}
+                    name="dark_mode"
+                    .value=${
+                      themeSettings?.dark === undefined
+                        ? "auto"
+                        : themeSettings.dark
+                          ? "dark"
+                          : "light"
+                    }
+                    orientation="horizontal"
+                  >
+                    <ha-radio-option value="auto">
+                      ${this.labels?.autoMode ?? "Auto"}
+                    </ha-radio-option>
+                    <ha-radio-option value="light">
+                      ${this.labels?.lightMode ?? "Light"}
+                    </ha-radio-option>
+                    <ha-radio-option value="dark">
+                      ${this.labels?.darkMode ?? "Dark"}
+                    </ha-radio-option>
+                  </ha-radio-group>
+                </ha-list-item-base>
+              `
+            : nothing
+        }
+        ${
+          curTheme === HOME_ASSISTANT_THEME
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline"
+                    >${this.labels?.colors ?? "Custom colors"}</span
+                  >
+                  <div slot="end" class="color-pickers">
+                    <ha-input
+                      .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
+                      type="color"
+                      .label=${this.labels?.primaryColor ?? "Primary color"}
+                      .name=${"primaryColor"}
+                      @change=${this._handleColorChange}
+                    ></ha-input>
+                    <ha-input
+                      .value=${themeSettings?.accentColor || DefaultAccentColor}
+                      type="color"
+                      .label=${this.labels?.accentColor ?? "Accent color"}
+                      .name=${"accentColor"}
+                      @change=${this._handleColorChange}
+                    ></ha-input>
+                  </div>
+                </ha-list-item-base>
+                ${
+                  themeSettings?.primaryColor || themeSettings?.accentColor
+                    ? html`
+                        <div class="reset-row">
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            @click=${this._resetColors}
+                          >
+                            ${this.labels?.reset ?? "Reset"}
+                          </ha-button>
+                        </div>
+                      `
+                    : nothing
                 }
-                orientation="horizontal"
-              >
-                <ha-radio-option value="auto">
-                  ${this.labels?.autoMode ?? "Auto"}
-                </ha-radio-option>
-                <ha-radio-option value="light">
-                  ${this.labels?.lightMode ?? "Light"}
-                </ha-radio-option>
-                <ha-radio-option value="dark">
-                  ${this.labels?.darkMode ?? "Dark"}
-                </ha-radio-option>
-              </ha-radio-group>
-              ${
-                curTheme === HOME_ASSISTANT_THEME
-                  ? html`<div class="color-pickers">
-                      <ha-input
-                        .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
-                        type="color"
-                        .label=${this.labels?.primaryColor ?? "Primary color"}
-                        .name=${"primaryColor"}
-                        @change=${this._handleColorChange}
-                      ></ha-input>
-                      <ha-input
-                        .value=${themeSettings?.accentColor || DefaultAccentColor}
-                        type="color"
-                        .label=${this.labels?.accentColor ?? "Accent color"}
-                        .name=${"accentColor"}
-                        @change=${this._handleColorChange}
-                      ></ha-input>
-                      ${
-                        themeSettings?.primaryColor ||
-                        themeSettings?.accentColor
-                          ? html` <ha-button
-                              appearance="plain"
-                              size="s"
-                              @click=${this._resetColors}
-                            >
-                              ${this.labels?.reset ?? "Reset"}
-                            </ha-button>`
-                          : nothing
-                      }
-                    </div>`
-                  : nothing
-              }
-            </div>`
-          : nothing
-      }
+              `
+            : nothing
+        }
+      </ha-list-base>
     `;
   }
 
@@ -231,32 +256,35 @@ export class HaThemeSettings extends LitElement {
     a {
       color: var(--primary-color);
     }
-    .inputs {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin: 0 var(--ha-space-3);
+    ha-list-base {
+      --ha-row-item-padding-block: var(--ha-space-2);
     }
-    ha-radio-group {
-      display: flex;
-      justify-content: center;
-      margin-inline-end: var(--ha-space-3);
+    ha-theme-picker {
+      min-width: 150px;
     }
     .color-pickers {
       display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      flex-grow: 1;
+      gap: var(--ha-space-2);
     }
-    ha-input {
-      min-width: 75px;
-      flex-grow: 1;
-      margin: 0 var(--ha-space-1);
+    .color-pickers ha-input {
+      min-width: 150px;
+      flex: 1;
     }
-
-    ha-theme-picker {
-      display: block;
+    :host([narrow]) ha-list-item-base::part(base) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    :host([narrow]) ha-list-item-base::part(end) {
       width: 100%;
+    }
+    :host([narrow]) .color-pickers {
+      width: 100%;
+    }
+    .reset-row {
+      display: flex;
+      justify-content: flex-end;
+      padding-inline-end: var(--ha-space-4);
+      padding-bottom: var(--ha-space-4);
     }
   `;
 }

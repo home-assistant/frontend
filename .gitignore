@@ -74,3 +74,6 @@ test/e2e/app/dist/
 .serena
 
 test/benchmarks/results/
+
+# Downloaded map glyph and sprite archives
+.map-assets/

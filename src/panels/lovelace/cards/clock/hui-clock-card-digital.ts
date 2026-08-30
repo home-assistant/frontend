@@ -217,22 +217,34 @@ export class HuiClockCardDigital extends LitElement {
         "hour minute second"
         "hour minute am-pm";
 
-      font-size: 1.5rem;
+      font-size: var(
+        --ha-clock-card-digital-font-size-small,
+        var(--ha-font-size-2xl)
+      );
       font-weight: var(--ha-font-weight-medium);
       line-height: 0.8;
       direction: ltr;
     }
 
     .time-title + .time-parts {
-      font-size: 1.5rem;
+      font-size: var(
+        --ha-clock-card-digital-font-size-small,
+        var(--ha-font-size-2xl)
+      );
     }
 
     .time-parts.size-medium {
-      font-size: 3rem;
+      font-size: var(
+        --ha-clock-card-digital-font-size-medium,
+        calc(48px * var(--ha-font-size-scale))
+      );
     }
 
     .time-parts.size-large {
-      font-size: 4rem;
+      font-size: var(
+        --ha-clock-card-digital-font-size-large,
+        calc(64px * var(--ha-font-size-scale))
+      );
     }
 
     .time-parts.size-medium .time-part.second,

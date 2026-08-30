@@ -28,6 +28,7 @@ import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { mainWindow } from "../../common/dom/get_main_window";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
@@ -47,7 +48,10 @@ import {
   replaceCurrentUrl,
   updateHistoryState,
 } from "../../common/navigate";
-import { createMoreInfoUrl } from "../../common/url/more-info-query-params";
+import {
+  createMoreInfoUrl,
+  decodeMoreInfoUrl,
+} from "../../common/url/more-info-query-params";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { withViewTransition } from "../../common/util/view-transition";
@@ -231,7 +235,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _dialogClosed() {
-    if (this._returnUrl) {
+    // Restore the pre-dialog URL only while the URL still carries this
+    // dialog's deep-link params: navigate() waits for the close only up to
+    // DIALOG_WAIT_TIMEOUT and may have committed a new URL already.
+    if (
+      this._returnUrl &&
+      decodeMoreInfoUrl(mainWindow.location.search).entityId === this._entityId
+    ) {
       replaceCurrentUrl(this._returnUrl);
     }
     this._entityId = undefined;
