@@ -129,17 +129,11 @@ export class MCPPref extends LitElement {
         </span>
         <span slot="description">${entry.title}</span>
         <div class="row-actions">
-          ${
-            entry.supports_options
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass.localize("ui.panel.config.mcp.configure")}
-                    .path=${mdiCog}
-                    @click=${this._configure}
-                  ></ha-icon-button>
-                `
-              : nothing
-          }
+          <ha-icon-button
+            .label=${this.hass.localize("ui.panel.config.mcp.configure")}
+            .path=${mdiCog}
+            @click=${this._configure}
+          ></ha-icon-button>
           ${this._renderCopyButton(this._mcpUrl())}
         </div>
       </ha-settings-row>
