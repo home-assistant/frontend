@@ -323,8 +323,6 @@ export class HaControlSelect extends LitElement {
     .option .content span {
       display: block;
       width: 100%;
-      -webkit-hyphens: auto;
-      -moz-hyphens: auto;
       hyphens: auto;
     }
     :host([vertical]) {

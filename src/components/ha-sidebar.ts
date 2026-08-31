@@ -664,9 +664,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           flex-direction: column;
           overflow: hidden;
           overscroll-behavior: contain;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
@@ -896,7 +894,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         }
 
         .menu ha-icon-button {
-          -webkit-transform: scaleX(var(--scale-direction));
           transform: scaleX(var(--scale-direction));
         }
 

@@ -33,7 +33,6 @@ export const filterPanelStyles = css`
     --ha-card-border-radius: var(--ha-border-radius-square);
   }
   ha-expansion-panel::part(summary) {
-    -webkit-user-select: none;
     user-select: none;
   }
   .content {
