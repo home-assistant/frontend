@@ -382,6 +382,7 @@ export interface MediaSelector {
     image_upload?: boolean;
     hide_content_type?: boolean;
     content_id_helper?: string;
+    multiple?: boolean;
   } | null;
 }
 
