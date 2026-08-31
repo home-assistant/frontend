@@ -215,7 +215,6 @@ const createVectorLayer = async (
       .then((style) => {
         if (request === latestRequest) {
           appliedDarkMode = newDarkMode;
-          refused = false;
           layer.getMaplibreMap()?.setStyle(style);
         }
       })
@@ -242,8 +241,11 @@ const createVectorLayer = async (
     refreshMapTilesToken();
   });
 
+  // Only a new token clears the refusal. A theme change in between applies a
+  // style that is refused just as the last one was, so it proves nothing.
   const unsubscribeToken = subscribeMapTilesToken(() => {
     if (vector && refused) {
+      refused = false;
       applyStyle(requestedDarkMode);
     }
   });

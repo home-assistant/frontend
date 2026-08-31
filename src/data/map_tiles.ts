@@ -16,6 +16,8 @@ const BLOCKING_DELAYS_MS = [0, 400, 1000];
 const BACKGROUND_DELAYS_MS = [2000, 5000, 10000, 15000];
 
 let token: string | undefined;
+let acquiring: Promise<void> | undefined;
+let background: Promise<void> | undefined;
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
 let watchingConnection = false;
 let activeConnection: Connection | undefined;
@@ -54,16 +56,28 @@ const attempt = async (connection: Connection, delays: number[]) => {
 export const ensureMapTilesToken = async (
   connection: Connection
 ): Promise<string | undefined> => {
+  // The demo has no proxy to ask, and its tiles come straight from upstream.
+  if (__DEMO__) {
+    return undefined;
+  }
+
   activeConnection = connection;
 
+  // Shared, or a dashboard full of maps asks once per map - and a backend
+  // without the proxy turns that into every retry, per map.
   if (!token) {
-    await attempt(connection, BLOCKING_DELAYS_MS);
+    acquiring ??= attempt(connection, BLOCKING_DELAYS_MS).finally(() => {
+      acquiring = undefined;
+    });
+    await acquiring;
   }
 
   if (!token) {
-    attempt(connection, BACKGROUND_DELAYS_MS).then(() =>
-      scheduleRefresh(connection)
-    );
+    background ??= attempt(connection, BACKGROUND_DELAYS_MS)
+      .then(() => scheduleRefresh(connection))
+      .finally(() => {
+        background = undefined;
+      });
     return undefined;
   }
 

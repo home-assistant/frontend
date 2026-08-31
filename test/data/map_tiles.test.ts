@@ -1,5 +1,5 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // MapLibre hands tile URLs to a worker, which has no document to resolve a
 // relative URL against. Measured: without absolute URLs nothing loads at all -
@@ -19,6 +19,9 @@ const connectionWith = (...tokens: string[]) => {
     listeners,
   } as unknown as Connection & { listeners: Record<string, () => void> };
 };
+
+// Mirrors BLOCKING_DELAYS_MS, which is not exported.
+const BLOCKING_ATTEMPTS = 3;
 
 const load = async () => {
   vi.resetModules();
@@ -161,5 +164,59 @@ describe("recovering a stale token", () => {
         withMapTilesToken("/api/map_tiles/vector/1/0/0.mvt")
       ).searchParams.get("token")
     ).toBe("first");
+  });
+});
+
+describe("asking for a token once", () => {
+  beforeEach(() => {
+    vi.resetModules();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("shares one attempt across every map on the dashboard", async () => {
+    const { ensureMapTilesToken } = await load();
+    const connection = connectionWith("abc123");
+
+    await Promise.all([
+      ensureMapTilesToken(connection),
+      ensureMapTilesToken(connection),
+      ensureMapTilesToken(connection),
+    ]);
+
+    expect(connection.sendMessagePromise).toHaveBeenCalledTimes(1);
+  });
+
+  // Without sharing, a backend that has no proxy yet gets every retry of every
+  // map: three blocking and four background attempts each.
+  it("shares the retries too when the backend does not answer", async () => {
+    const { ensureMapTilesToken } = await load();
+    const connection = {
+      sendMessagePromise: vi.fn(async () => {
+        throw new Error("unknown command");
+      }),
+      addEventListener: vi.fn(),
+    } as unknown as Connection;
+
+    await Promise.all([
+      ensureMapTilesToken(connection),
+      ensureMapTilesToken(connection),
+      ensureMapTilesToken(connection),
+    ]);
+
+    expect(connection.sendMessagePromise).toHaveBeenCalledTimes(
+      BLOCKING_ATTEMPTS
+    );
+  });
+
+  it("does not ask at all in the demo, which has no proxy", async () => {
+    vi.stubGlobal("__DEMO__", true);
+    const { ensureMapTilesToken } = await load();
+    const connection = connectionWith("abc123");
+
+    expect(await ensureMapTilesToken(connection)).toBeUndefined();
+    expect(connection.sendMessagePromise).not.toHaveBeenCalled();
   });
 });

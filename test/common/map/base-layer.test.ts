@@ -403,6 +403,21 @@ describe("recovering from a refused token", () => {
     expect(refreshMapTilesToken).toHaveBeenCalledOnce();
   });
 
+  // The style itself always loads - it is a local file - so applying one while
+  // the token is still stale says nothing about whether requests get through.
+  it("still recovers when the theme changes before the token arrives", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    const baseLayer = await createBaseLayer(leaflet, map, false, TOKEN);
+    glMap.setStyle.mockClear();
+
+    glHandlers.error({ error: { status: 403 } });
+    baseLayer.setDarkMode(true);
+    await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
+
+    emitToken("fresh-token");
+    await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledTimes(2));
+  });
+
   it("ignores errors that are not a refusal", async () => {
     const createBaseLayer = await setWebGL2(true);
     await createBaseLayer(leaflet, map, false, TOKEN);
