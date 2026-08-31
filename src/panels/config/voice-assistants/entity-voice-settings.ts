@@ -49,6 +49,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public exposed!: ExposeEntitySettings;
 
+  @property({ attribute: false }) public locked?: ExposeEntitySettings;
+
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
 
   @state() private _cloudStatus?: CloudStatus;
@@ -173,6 +175,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
     }
 
+    for (const key of uiAssistants.filter(
+      (assistant) => this.locked?.[assistant]
+    )) {
+      uiAssistants.splice(uiAssistants.indexOf(key), 1);
+    }
+
     const uiExposed = uiAssistants.some((key) => this.exposed[key]);
 
     let manFilterFuncs:
@@ -231,7 +239,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
               const manualConfig =
                 (alexaManual && key === "cloud.alexa") ||
-                (googleManual && key === "cloud.google_assistant");
+                (googleManual && key === "cloud.google_assistant") ||
+                Boolean(this.locked?.[key]);
 
               const support2fa =
                 key === "cloud.google_assistant" &&

@@ -56,7 +56,10 @@ export const exposeEntities = (
   });
 
 export const listExposedEntities = (hass: HomeAssistant) =>
-  hass.callWS<{ exposed_entities: Record<string, ExposeEntitySettings> }>({
+  hass.callWS<{
+    exposed_entities: Record<string, ExposeEntitySettings>;
+    locked_entities: Record<string, ExposeEntitySettings>;
+  }>({
     type: "homeassistant/expose_entity/list",
   });
 
