@@ -50,7 +50,8 @@ type PresetLocalizeKey =
   | "add"
   | "edit_title"
   | "add_title"
-  | "duration";
+  | "duration"
+  | "duration_error";
 
 @customElement("ha-more-info-timer-presets")
 export class HaMoreInfoTimerPresets extends LitElement {
@@ -171,6 +172,11 @@ export class HaMoreInfoTimerPresets extends LitElement {
         duration: normalizeTimerDuration({ seconds: seconds ?? 0 }),
       },
       computeLabel: () => this._localizePreset("duration"),
+      validate: (data) =>
+        data.duration &&
+        Math.floor(durationDataToSeconds(data.duration as HaDurationData)) > 0
+          ? undefined
+          : { duration: this._localizePreset("duration_error") },
     });
 
     if (!response?.duration) {

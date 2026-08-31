@@ -1918,7 +1918,8 @@
             "add": "Add new preset",
             "edit_title": "Edit preset",
             "add_title": "Add preset",
-            "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]"
+            "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+            "duration_error": "The duration must be at least one second."
           }
         }
       },
