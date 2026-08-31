@@ -117,6 +117,9 @@ describe("createBaseLayer", () => {
     // the token can be refreshed without recreating the layer.
     expect(url).toContain("token={token}");
     expect(options).toMatchObject({ token: TOKEN });
+    // OSM serves no raster past 19, so the last level is scaled up instead.
+    expect(options.maxNativeZoom).toBe(19);
+    expect(options.maxZoom).toBeGreaterThan(19);
     // The vector layer takes its credit from the style's source instead, so the
     // raster layer is the only one carrying attribution itself.
     expect(options.attribution).toContain("openstreetmap.org/copyright");

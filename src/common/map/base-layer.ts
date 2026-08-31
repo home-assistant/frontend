@@ -35,6 +35,9 @@ const RECOVERY_THROTTLE = 30000;
 // floor is 1 because at Leaflet zoom 0 the adapter drives MapLibre to -1.
 export const MAP_MIN_ZOOM = 1;
 export const MAP_MAX_ZOOM = 20;
+// OSM's raster stops at 19 and the proxy refuses higher, so Leaflet scales the
+// last level up rather than asking for tiles that are not there.
+const RASTER_MAX_NATIVE_ZOOM = 19;
 
 // Leaflet substitutes any option into the URL template; its types do not.
 type TokenTileLayerOptions = TileLayerOptions & { token?: string };
@@ -266,6 +269,7 @@ const createRasterLayer = (
     .tileLayer(RASTER_TILE_URL, {
       attribution: OSM_ATTRIBUTION,
       maxZoom: MAP_MAX_ZOOM,
+      maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
       // Leaflet throws on an undefined template variable, so no token means an
       // empty one: the tiles 403 and the markers still draw.
       token: token ?? "",

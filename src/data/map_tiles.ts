@@ -3,8 +3,10 @@ import { waitForMs } from "../common/util/wait";
 
 export const MAP_TILES_PATH = "/api/map_tiles";
 
-// Well inside the token's lifetime, as util/brands-url.ts does.
-const TOKEN_REFRESH_MS = 30 * 60 * 1000;
+// Core rotates every 30 minutes and keeps two tokens live, so one handed out
+// now is good for at least 30 more. Refreshing sooner leaves room for a slow
+// or missed round trip.
+const TOKEN_REFRESH_MS = 20 * 60 * 1000;
 
 // Nothing loads without a token, so the first attempts are awaited - briefly,
 // or a backend without the proxy would hold the map hostage. The rest retry in
