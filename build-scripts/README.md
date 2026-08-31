@@ -34,6 +34,6 @@ In production, the following responsibilities are added:
 
 - Minify HTML
 - Bundle multiple imports so that the browser can fetch less files
-- Generate a second version that is ES5 compatible
+- Generate a second version that is compatible with older browsers (legacy build)
 
 Configuration for all these steps are specified in [bundle.js](bundle.js).

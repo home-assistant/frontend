@@ -89,7 +89,7 @@ const minifyHtml = (content, ext) => {
     ...htmlMinifierOptions,
     conservativeCollapse: false,
     minifyJS: terserOptions({
-      latestBuild: false, // Shared scripts should be ES5
+      latestBuild: false, // Shared scripts must satisfy the legacy targets
       isTestBuild: true, // Don't need source maps
     }),
   }).then((wrapped) =>
