@@ -37,3 +37,11 @@ In production, the following responsibilities are added:
 - Generate a second version that is compatible with older browsers (legacy build)
 
 Configuration for all these steps are specified in [bundle.js](bundle.js).
+
+## Auditing browser support changes
+
+`node build-scripts/list-plugins-and-polyfills.js` prints, per browserslist
+environment (modern/legacy), the Babel transforms preset-env enables and the
+Core-JS polyfills that may be injected — as collapsible markdown ready to
+paste into a PR. Use it to show the bundle impact when changing
+`.browserslistrc` or the Babel configuration.
