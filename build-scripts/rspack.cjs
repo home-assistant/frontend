@@ -348,7 +348,6 @@ const createRspackConfig = ({
         "lit/directives/keyed$": latestBuild
           ? "lit/directives/keyed.js"
           : path.resolve(__dirname, "../src/common/lit/keyed-es5.ts"),
-        "lit/polyfill-support$": "lit/polyfill-support.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
         "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":

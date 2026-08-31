@@ -6909,13 +6909,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webcomponents/webcomponentsjs@npm:2.8.0":
-  version: 2.8.0
-  resolution: "@webcomponents/webcomponentsjs@npm:2.8.0"
-  checksum: 10/acba7dce2cb60f0505369247ce54eeca3efbd386b98c6cc50d7d318090f551d753b20477038983d7ead9376669b4d702effca21a24c0a1b511d42b1ea53ee9a9
-  languageName: node
-  linkType: hard
-
 "@zeit/schemas@npm:2.36.0":
   version: 2.36.0
   resolution: "@zeit/schemas@npm:2.36.0"
@@ -8645,13 +8638,6 @@ __metadata:
   version: 2.1.2
   resolution: "detect-libc@npm:2.1.2"
   checksum: 10/b736c8d97d5d46164c0d1bed53eb4e6a3b1d8530d460211e2d52f1c552875e706c58a5376854e4e54f8b828c9cada58c855288c968522eb93ac7696d65970766
-  languageName: node
-  linkType: hard
-
-"dialog-polyfill@npm:0.5.6":
-  version: 0.5.6
-  resolution: "dialog-polyfill@npm:0.5.6"
-  checksum: 10/42428793b04fd2e0a67dfb75838703488d7d05f73663c3251441ad6ed154b8dc71d65ed03d5a0ba4a83c6167c2e6f791cbe1574d0dca37dac1405ce3816033ca
   languageName: node
   linkType: hard
 
@@ -10418,7 +10404,6 @@ __metadata:
     "@vitest/coverage-v8": "npm:4.1.11"
     "@vvo/tzdb": "npm:6.198.0"
     "@webcomponents/scoped-custom-element-registry": "npm:0.0.10"
-    "@webcomponents/webcomponentsjs": "npm:2.8.0"
     babel-loader: "npm:10.1.1"
     babel-plugin-polyfill-corejs3: "npm:1.0.0"
     barcode-detector: "npm:3.2.2"
@@ -10434,7 +10419,6 @@ __metadata:
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:8.0.1"
-    dialog-polyfill: "npm:0.5.6"
     echarts: "npm:6.1.0"
     echarts-extension-chart2music: "npm:0.1.1"
     element-internals-polyfill: "npm:3.0.2"
