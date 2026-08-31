@@ -26,6 +26,7 @@ import {
 import {
   appRouteSmokeGroups,
   configLinks,
+  connectivityLinks,
   moreInfoViewElements,
 } from "./app/src/smoke";
 
@@ -590,5 +591,21 @@ test.describe("Config panel", () => {
     "config links point to expected pages",
     configLinks,
     getDashboard
+  );
+
+  // Reached by clicking through from the dashboard: the e2e harness only
+  // resolves config panel translations once the dashboard has mounted.
+  const getConnectivity = async (page) => {
+    const dashboard = await getDashboard(page);
+    await dashboard.getByRole("link", { name: /^Connectivity\b/ }).click();
+    const connectivity = page.locator("ha-config-connectivity");
+    await expect(connectivity).toBeAttached({ timeout: PANEL_TIMEOUT });
+    return connectivity;
+  };
+
+  defineLinkSmokeTests(
+    "connectivity links point to expected pages",
+    connectivityLinks,
+    getConnectivity
   );
 });
