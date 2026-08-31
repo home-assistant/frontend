@@ -10941,7 +10941,13 @@
                 "label": "Target temperature"
               },
               "target-humidity": {
-                "label": "Target humidity"
+                "label": "Target humidity",
+                "style": "Style",
+                "style_list": {
+                  "buttons": "Buttons",
+                  "slider": "Slider"
+                },
+                "step": "Step"
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
