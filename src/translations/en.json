@@ -325,8 +325,10 @@
           "pause": "Pause",
           "cancel": "Cancel",
           "finish": "Finish",
+          "restart": "Restart",
           "set": "Set"
-        }
+        },
+        "presets": "Presets"
       },
       "vacuum": {
         "actions": {
@@ -1898,6 +1900,27 @@
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+        },
+        "timer": {
+          "edit_mode": "Edit presets",
+          "reset_favorites": "Remove all presets",
+          "reset_favorites_text": "Do you want to remove all presets for this timer?",
+          "copy_favorites": "Copy presets to...",
+          "copy_favorites_helper": "Select one or more timers to receive the copied presets from this timer.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
+          "preset": {
+            "set": "Start timer for {value}",
+            "edit": "Edit preset {value}",
+            "delete": "Delete preset {number}",
+            "delete_confirm_title": "Delete preset?",
+            "delete_confirm_text": "This preset will be permanently deleted.",
+            "delete_confirm_action": "[%key:ui::common::delete%]",
+            "add": "Add new preset",
+            "edit_title": "Edit preset",
+            "add_title": "Add preset",
+            "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+            "duration_error": "The duration must be at least one second."
+          }
         }
       },
       "entity_registry": {
@@ -10896,6 +10919,26 @@
                   "increment": "Increment",
                   "decrement": "Decrement",
                   "reset": "Reset"
+                }
+              },
+              "timer-actions": {
+                "label": "Timer actions",
+                "customize": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::customize%]",
+                "actions": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::actions%]",
+                "actions_list": {
+                  "start": "[%key:ui::card::timer::actions::start%]",
+                  "pause": "[%key:ui::card::timer::actions::pause%]",
+                  "cancel": "[%key:ui::card::timer::actions::cancel%]",
+                  "finish": "[%key:ui::card::timer::actions::finish%]"
+                }
+              },
+              "timer-presets": {
+                "label": "Timer presets",
+                "description": "This feature uses the timer's presets. To manage them, open the timer's more info dialog and select 'Edit presets' in the overflow menu.",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
                 }
               },
               "fan-preset-modes": {
