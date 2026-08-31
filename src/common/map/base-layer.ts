@@ -23,6 +23,10 @@ const RTL_TEXT_PLUGIN_URL = "/static/map/mapbox-gl-rtl-text.js";
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
 // OSM serves no @2x variant.
 const RASTER_TILE_URL = `${MAP_TILES_PATH}/raster/{z}/{x}/{y}.png?token={token}`;
+// The demo has no proxy to go through. Upstream serves raster to a browser that
+// identifies itself with a referrer, which the demo page's `same-origin` meta
+// policy strips again unless the tiles ask for it back.
+const DEMO_RASTER_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
@@ -268,10 +272,11 @@ const createRasterLayer = (
   token: string | undefined
 ): MapBaseLayer => {
   const layer = leaflet
-    .tileLayer(RASTER_TILE_URL, {
+    .tileLayer(__DEMO__ ? DEMO_RASTER_TILE_URL : RASTER_TILE_URL, {
       attribution: OSM_ATTRIBUTION,
       maxZoom: MAP_MAX_ZOOM,
       maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,
+      referrerPolicy: __DEMO__ ? "origin" : undefined,
       // Leaflet throws on an undefined template variable, so no token means an
       // empty one: the tiles 403 and the markers still draw.
       token: token ?? "",

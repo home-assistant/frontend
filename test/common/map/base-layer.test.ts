@@ -125,6 +125,19 @@ describe("createBaseLayer", () => {
     expect(options.attribution).toContain("openstreetmap.org/copyright");
   });
 
+  // The demo ships without a backend, so there is no proxy to fall back to.
+  it("falls back to upstream raster in the demo, with a referrer", async () => {
+    vi.stubGlobal("__DEMO__", true);
+    const createBaseLayer = await setWebGL2(false);
+    await createBaseLayer(leaflet, map, false, undefined);
+
+    const [url, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
+    expect(url).toBe("https://tile.openstreetmap.org/{z}/{x}/{y}.png");
+    // OSM refuses a browser that sends neither, and the demo page's meta
+    // policy strips the referrer unless the tiles ask for it back.
+    expect(options.referrerPolicy).toBe("origin");
+  });
+
   it("registers the RTL text plugin once, lazily, from our own host", async () => {
     const createBaseLayer = await setWebGL2(true);
     await createBaseLayer(leaflet, map, false, TOKEN);
