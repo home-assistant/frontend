@@ -11,6 +11,7 @@ import { colorful, eclipse } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
+import { addLatinLabels } from "./map-labels.js";
 
 const PROXY_PATH = "/api/map_tiles";
 const TILEJSON_URL = `${PROXY_PATH}/tilejson.json`;
@@ -67,7 +68,7 @@ const buildMapAssets = async () => {
     ].map(([name, builder]) =>
       writeFile(
         path.join(outputDir, `${name}.json`),
-        JSON.stringify(useTileJson(name, builder(styleOptions)))
+        JSON.stringify(addLatinLabels(useTileJson(name, builder(styleOptions))))
       )
     )
   );

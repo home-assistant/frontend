@@ -83,6 +83,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   ],
   alarm_control_panel: [TILE_VARIANT, ["alarm-modes"]],
   counter: [TILE_VARIANT, ["counter-actions"]],
+  timer: [TILE_VARIANT, ["timer-actions"]],
   input_select: SELECT_VARIANTS,
   select: SELECT_VARIANTS,
   input_number: NUMERIC_INPUT_VARIANTS,

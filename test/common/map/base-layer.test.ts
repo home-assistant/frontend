@@ -34,6 +34,10 @@ vi.mock("../../../src/data/map_tiles", () => ({
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
 
+const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
+
+vi.mock("maplibre-gl", () => ({ setRTLTextPlugin }));
+
 const STYLE = {
   version: 8,
   sources: {},
@@ -116,6 +120,18 @@ describe("createBaseLayer", () => {
     // The vector layer takes its credit from the style's source instead, so the
     // raster layer is the only one carrying attribution itself.
     expect(options.attribution).toContain("openstreetmap.org/copyright");
+  });
+
+  it("registers the RTL text plugin once, lazily, from our own host", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false);
+
+    expect(setRTLTextPlugin).toHaveBeenCalledOnce();
+    expect(setRTLTextPlugin).toHaveBeenCalledWith(
+      `${location.origin}/static/map/mapbox-gl-rtl-text.js`,
+      true
+    );
   });
 
   it("uses vector tiles when WebGL2 is available", async () => {
