@@ -1,8 +1,15 @@
 import type { LovelacePanelConfig } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import { fetchConfig, saveConfig } from "../../../data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../../data/lovelace/config/types";
+import {
+  fetchConfig,
+  isStrategyDashboard,
+  saveConfig,
+} from "../../../data/lovelace/config/types";
 import { fetchDashboards } from "../../../data/lovelace/dashboard";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -37,7 +44,15 @@ export const addEntitiesToLovelaceView = async (
     return;
   }
 
-  let lovelaceConfig;
+  // A strategy dashboard has no views of its own until the user takes control.
+  const hasViewList = (
+    config: LovelaceRawConfig | undefined
+  ): config is LovelaceConfig => !!config && !isStrategyDashboard(config);
+
+  const hasViews = (config: LovelaceRawConfig | undefined) =>
+    hasViewList(config) && !!config.views?.length;
+
+  let lovelaceConfig: LovelaceRawConfig | undefined;
   let urlPath: string | null = null;
   if (mainLovelaceMode === "storage") {
     try {
@@ -47,25 +62,36 @@ export const addEntitiesToLovelaceView = async (
     }
   }
 
-  if (!lovelaceConfig && storageDashs.length) {
-    // find first dashoard not in generated mode
+  if (!hasViews(lovelaceConfig)) {
+    // Prefer a dashboard that has views to add the card to, but keep the first
+    // usable one as a fallback so the user still gets the dashboard picker.
     for (const storageDash of storageDashs) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        lovelaceConfig = await fetchConfig(
+        const dashConfig = await fetchConfig(
           hass.connection,
           storageDash.url_path,
           false
         );
-        urlPath = storageDash.url_path;
-        break;
+        if (!hasViewList(dashConfig)) {
+          continue;
+        }
+        if (!hasViewList(lovelaceConfig)) {
+          lovelaceConfig = dashConfig;
+          urlPath = storageDash.url_path;
+        }
+        if (hasViews(dashConfig)) {
+          lovelaceConfig = dashConfig;
+          urlPath = storageDash.url_path;
+          break;
+        }
       } catch (_err: any) {
         // dashboard is in generated mode
       }
     }
   }
 
-  if (!lovelaceConfig) {
+  if (!hasViewList(lovelaceConfig)) {
     if (dashboards.length > storageDashs.length) {
       // all storage dashboards are generated, but we have YAML dashboards just show the YAML config
       showSuggestCardDialog(element, {
@@ -94,7 +120,7 @@ export const addEntitiesToLovelaceView = async (
     showSuggestCardDialog(element, {
       cardConfig,
       sectionConfig,
-      lovelaceConfig: lovelaceConfig!,
+      lovelaceConfig,
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
           await saveConfig(hass!, null, newConfig);

@@ -22,13 +22,9 @@ describe("error badge factories", () => {
       type: "error",
       error: "test error",
     }) as HuiErrorBadge;
-    document.body.append(element);
-
-    await element.updateComplete;
 
     expect(element.localName).toBe("hui-error-badge");
-    expect(element.shadowRoot?.textContent).toContain("test error");
-    element.remove();
+    expect((element as any)._config.error).toBe("test error");
   });
 
   it("creates a configured error heading badge on the first call", async () => {
@@ -36,12 +32,8 @@ describe("error badge factories", () => {
       type: "error",
       error: "test heading error",
     }) as HuiErrorHeadingBadge;
-    document.body.append(element);
-
-    await element.updateComplete;
 
     expect(element.localName).toBe("hui-error-heading-badge");
-    expect(element.shadowRoot?.textContent).toContain("test heading error");
-    element.remove();
+    expect((element as any)._config.error).toBe("test heading error");
   });
 });

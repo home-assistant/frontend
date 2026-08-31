@@ -267,6 +267,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           pref_disable_polling: false,
           disabled_by: null,
           reason: null,
+          error_reason_translation_domain: null,
           error_reason_translation_key: null,
           error_reason_translation_placeholders: null,
         })

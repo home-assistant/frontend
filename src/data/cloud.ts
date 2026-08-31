@@ -3,10 +3,16 @@ import type { HomeAssistant } from "../types";
 
 type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
 
+export interface CloudAutoLogin {
+  email: string;
+  failed: string | null;
+}
+
 interface CloudStatusNotLoggedIn {
   logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
   http_use_ssl: boolean;
+  auto_login: CloudAutoLogin | null;
 }
 
 export interface CertificateInformation {
@@ -102,15 +108,15 @@ export interface CloudLoginMFA extends CloudLoginBase {
   code: string;
 }
 
+export type CloudEvent =
+  | { type: "login" | "logout" | "auto_login_cancelled" }
+  | { type: "auto_login_failed"; translation_key: string };
+
 export const cloudLogin = ({
   hass,
   ...rest
 }: CloudLoginPassword | CloudLoginMFA) =>
-  hass.callApi<{ success: boolean; cloud_pipeline?: string }>(
-    "POST",
-    "cloud/login",
-    rest
-  );
+  hass.callApi<{ success: boolean }>("POST", "cloud/login", rest);
 
 export const cloudLogout = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/logout");
@@ -128,6 +134,33 @@ export const cloudRegister = (
   hass.callApi("POST", "cloud/register", {
     email,
     password,
+  });
+
+export const cloudRegisterAutoLogin = (
+  hass: HomeAssistant,
+  email: string,
+  password: string
+) =>
+  hass.callApi("POST", "cloud/register_auto_login", {
+    email,
+    password,
+  });
+
+export const attemptCloudAutoLoginNow = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/attempt_auto_login_now" });
+
+export const resendCloudAutoLoginConfirm = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/resend_auto_login_confirm" });
+
+export const cancelCloudAutoLogin = (hass: HomeAssistant) =>
+  hass.callWS({ type: "cloud/cancel_auto_login" });
+
+export const subscribeCloudEvents = (
+  hass: HomeAssistant,
+  callback: (event: CloudEvent) => void
+) =>
+  hass.connection.subscribeMessage<CloudEvent>(callback, {
+    type: "cloud/subscribe_events",
   });
 
 export const cloudResendVerification = (hass: HomeAssistant, email: string) =>

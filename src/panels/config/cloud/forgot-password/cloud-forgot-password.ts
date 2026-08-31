@@ -21,7 +21,7 @@ export class CloudForgotPassword extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        back-path="/config/cloud/login"
         .header=${this.hass.localize(
           "ui.panel.config.cloud.forgot_password.title"
         )}

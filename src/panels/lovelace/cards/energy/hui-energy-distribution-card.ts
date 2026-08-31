@@ -112,11 +112,29 @@ class HuiEnergyDistrubutionCard
     ) {
       return true;
     }
-    const oldStates = changedProps.get("hass").states;
+    const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
+    const oldStates = oldHass.states;
     if (
       this._data?.co2SignalEntity &&
       this.hass.states[this._data.co2SignalEntity] !==
         oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
     ) {
       return true;
     }
@@ -162,6 +180,21 @@ class HuiEnergyDistrubutionCard
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
+    const gasUnit = this._data.gasUnit;
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === gasUnit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
     const hasReturnToGrid =
       types.grid?.some((source) => source.stat_energy_to) ?? false;
 
@@ -437,7 +470,9 @@ class HuiEnergyDistrubutionCard
                             ${formatConsumptionShort(
                               this.hass,
                               gasUsage,
-                              this._data.gasUnit
+                              this._data.gasUnit,
+                              undefined,
+                              gasDisplayPrecision
                             )}
                           </div>
                           <svg width="80" height="30">

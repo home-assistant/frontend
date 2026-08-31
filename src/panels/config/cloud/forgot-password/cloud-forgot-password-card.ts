@@ -169,4 +169,8 @@ declare global {
   interface HTMLElementTagNameMap {
     "cloud-forgot-password-card": CloudForgotPasswordCard;
   }
+
+  interface HASSDomEvents {
+    "cloud-done": { flashMessage: string };
+  }
 }

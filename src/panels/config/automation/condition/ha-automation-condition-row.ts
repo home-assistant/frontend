@@ -226,9 +226,7 @@ export default class HaAutomationConditionRow extends LitElement {
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg, {
-            hideEntities: true,
-          })
+          describeCondition(this.condition, this.hass, this._entityReg)
         )}
         ${
           target !== undefined || targetRequired

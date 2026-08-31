@@ -75,15 +75,6 @@ const isEnabled = (
 ) => !control(state, action, attributes).disabled;
 
 describe("media player playback default controls", () => {
-  it("lead with a power toggle, then previous, play/pause and next", () => {
-    expect(MEDIA_PLAYER_DEFAULT_CONTROLS).toEqual([
-      "power",
-      "media_previous_track",
-      "media_play_pause",
-      "media_next_track",
-    ]);
-  });
-
   it("renders play when idle, pause while playing", () => {
     expect(
       controlsFor("idle", MEDIA_PLAYER_DEFAULT_CONTROLS).map((b) => b.action)

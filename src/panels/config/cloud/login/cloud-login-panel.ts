@@ -1,28 +1,14 @@
-import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-card";
-import "../../../../components/ha-dropdown";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
-import "../../../../components/ha-dropdown-item";
-import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list";
-import "../../../../components/ha-list-item";
-import "../../../../components/ha-svg-icon";
-import { removeCloudData } from "../../../../data/cloud";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../ha-config-section";
-import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
+import { cloudSignedOutStyle } from "../cloud-signed-out-style";
+import { cloudSubpageStyle } from "../account/cloud-subpage-style";
 import "./cloud-login";
 import type { CloudLogin } from "./cloud-login";
 
@@ -30,212 +16,88 @@ import type { CloudLogin } from "./cloud-login";
 export class CloudLoginPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property() public email?: string;
 
   @property({ attribute: false }) public flashMessage?: string;
 
-  @query("cloud-login") private _cloudLoginElement!: CloudLogin;
+  @query("cloud-login") private _cloudLoginElement?: CloudLogin;
+
+  protected firstUpdated(): void {
+    this._focusEmail();
+  }
 
   protected render(): TemplateResult {
     return html`
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
-        header="Home Assistant Cloud"
+        back-path="/config/cloud/start"
+        .header=${this.hass.localize("ui.panel.config.cloud.login.sign_in")}
       >
-        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-
-          <ha-dropdown-item value="reset">
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.reset_cloud_data"
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiDeleteForever}></ha-svg-icon>
-          </ha-dropdown-item>
-          <ha-dropdown-item value="download">
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.download_support_package"
-            )}
-            <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-          </ha-dropdown-item>
-        </ha-dropdown>
         <div class="content">
-          <ha-config-section .isWide=${this.isWide}>
-            <span slot="header">Home Assistant Cloud</span>
-            <div slot="introduction">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.login.introduction"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.login.introduction2"
-                )}
-                <a
-                  href="https://www.nabucasa.com"
-                  target="_blank"
-                  rel="noreferrer"
+          ${
+            this.flashMessage
+              ? html`<ha-alert
+                  dismissable
+                  @alert-dismissed-clicked=${this._dismissFlash}
                 >
-                  Nabu&nbsp;Casa,&nbsp;Inc</a
-                >${this.hass.localize(
-                  "ui.panel.config.cloud.login.introduction2a"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.login.introduction3"
-                )}
-              </p>
-              <p>
-                <a
-                  href="https://www.nabucasa.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.login.learn_more_link"
-                  )}
-                </a>
-              </p>
-            </div>
-
-            ${
-              this.flashMessage
-                ? html`<ha-alert
-                    dismissable
-                    @alert-dismissed-clicked=${this._dismissFlash}
-                  >
-                    ${this.flashMessage}
-                  </ha-alert>`
-                : ""
-            }
-
-            <cloud-login
-              .hass=${this.hass}
-              .email=${this.email}
-              .localize=${this.hass.localize}
-              @cloud-forgot-password=${this._handleForgotPassword}
-              check-connection
-            ></cloud-login>
-
-            <ha-card outlined>
-              <ha-list>
-                <ha-list-item @click=${this._handleRegister} twoline hasMeta>
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.login.start_trial"
-                  )}
-                  <span slot="secondary">
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.login.trial_info"
-                    )}
-                  </span>
-                  <ha-icon-next slot="meta"></ha-icon-next>
-                </ha-list-item>
-              </ha-list>
-            </ha-card>
-          </ha-config-section>
+                  ${this.flashMessage}
+                </ha-alert>`
+              : nothing
+          }
+          <cloud-login
+            .hass=${this.hass}
+            .email=${this.email}
+            .localize=${this.hass.localize}
+            .lead=${this.hass.localize(
+              "ui.panel.config.cloud.login.sign_in_lead"
+            )}
+            check-connection
+            @cloud-forgot-password=${this._handleForgotPassword}
+          ></cloud-login>
         </div>
       </hass-subpage>
     `;
   }
 
+  private async _focusEmail() {
+    const cloudLogin = this._cloudLoginElement;
+    if (!cloudLogin) {
+      return;
+    }
+    await cloudLogin.updateComplete;
+    cloudLogin.emailField?.focus();
+  }
+
   private _handleForgotPassword() {
     this._dismissFlash();
     fireEvent(this, "cloud-email-changed", {
-      value: this._cloudLoginElement.emailField.value ?? "",
+      value: this._cloudLoginElement?.emailField?.value ?? this.email ?? "",
     });
     navigate("/config/cloud/forgot-password");
-  }
-
-  private _handleRegister() {
-    this._dismissFlash();
-
-    fireEvent(this, "cloud-email-changed", {
-      value: this._cloudLoginElement.emailField.value ?? "",
-    });
-    navigate("/config/cloud/register");
   }
 
   private _dismissFlash() {
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
-  private _handleMenuAction(ev: HaDropdownSelectEvent) {
-    const value = ev.detail.item.value;
-    switch (value) {
-      case "reset":
-        this._deleteCloudData();
-        break;
-      case "download":
-        this._downloadSupportPackage();
-        break;
-    }
-  }
-
-  private async _deleteCloudData() {
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.cloud.account.reset_data_confirm_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.cloud.account.reset_data_confirm_text"
-      ),
-      confirmText: this.hass.localize("ui.panel.config.cloud.account.reset"),
-      destructive: true,
-    });
-    if (!confirm) {
-      return;
-    }
-    try {
-      await removeCloudData(this.hass);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.cloud.account.reset_data_failed"
-        ),
-        text: err?.message,
-      });
-      return;
-    } finally {
-      fireEvent(this, "ha-refresh-cloud-status");
-    }
-  }
-
-  private async _downloadSupportPackage() {
-    showSupportPackageDialog(this);
-  }
-
   static get styles() {
     return [
       haStyle,
+      cloudSubpageStyle,
+      cloudSignedOutStyle,
       css`
         .content {
-          padding-bottom: 24px;
+          gap: var(--ha-space-4);
         }
-        [slot="introduction"] {
-          margin: -1em 0;
-        }
-        [slot="introduction"] a {
-          color: var(--primary-color);
-        }
-        ha-card {
-          overflow: hidden;
-        }
-        ha-card .card-header {
-          margin-bottom: -8px;
-        }
-        h1 {
-          margin: 0;
+        ha-alert,
+        cloud-login {
+          display: block;
+          width: 100%;
+          max-width: 600px;
+          margin-inline: auto;
         }
       `,
     ];
