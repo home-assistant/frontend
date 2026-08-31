@@ -124,8 +124,8 @@ describe("createBaseLayer", () => {
 
   it("registers the RTL text plugin once, lazily, from our own host", async () => {
     const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, false);
-    await createBaseLayer(leaflet, map, false);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, false, TOKEN);
 
     expect(setRTLTextPlugin).toHaveBeenCalledOnce();
     expect(setRTLTextPlugin).toHaveBeenCalledWith(
