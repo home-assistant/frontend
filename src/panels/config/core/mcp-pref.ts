@@ -1,4 +1,5 @@
 import { mdiCog, mdiContentCopy, mdiDotsVertical } from "@mdi/js";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,8 +9,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -98,7 +97,7 @@ export class MCPPref extends LitElement {
               >`,
             })}
           </p>
-          ${this._entry ? this._renderEnabled(this._entry) : nothing}
+          ${this._entry ? this._renderEnabled() : nothing}
         </div>
         ${
           this._entry === null
@@ -115,35 +114,25 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  private _renderEnabled(entry: ConfigEntry) {
+  private _renderEnabled() {
     return html`
-      <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading">
-          ${this.hass.localize("ui.panel.config.mcp.your_api_header")}
-        </span>
-        <span slot="description">${entry.title}</span>
-        <div class="row-actions">
-          <ha-icon-button
-            .label=${this.hass.localize("ui.panel.config.mcp.configure")}
-            .path=${mdiCog}
-            @click=${this._configure}
-          ></ha-icon-button>
-          ${this._renderCopyButton(this._mcpUrl())}
-        </div>
-      </ha-settings-row>
+      ${this._renderUrlRow(
+        this.hass.localize("ui.panel.config.mcp.your_api_header"),
+        this._mcpUrl(),
+        html`<ha-icon-button
+          .label=${this.hass.localize("ui.panel.config.mcp.configure")}
+          .path=${mdiCog}
+          @click=${this._configure}
+        ></ha-icon-button>`
+      )}
       ${
         this._apis?.length
           ? html`
-              <h3>${this.hass.localize("ui.panel.config.mcp.apis_header")}</h3>
+              <p class="section">
+                ${this.hass.localize("ui.panel.config.mcp.apis_header")}
+              </p>
               ${this._sortedApis(this._apis, this.hass.locale.language).map(
-                (api) => html`
-                  <ha-settings-row .narrow=${this.narrow}>
-                    <span slot="heading">${api.name}</span>
-                    <div class="row-actions">
-                      ${this._renderCopyButton(this._mcpUrl(api.id))}
-                    </div>
-                  </ha-settings-row>
-                `
+                (api) => this._renderUrlRow(api.name, this._mcpUrl(api.id))
               )}
             `
           : nothing
@@ -151,17 +140,21 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  private _renderCopyButton(url: string) {
+  private _renderUrlRow(name: string, url: string, action?: TemplateResult) {
     return html`
-      <ha-button
-        appearance="plain"
-        size="s"
-        data-url=${url}
-        @click=${this._copyUrl}
-      >
-        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
-        ${this.hass.localize("ui.panel.config.mcp.copy_url")}
-      </ha-button>
+      <div class="url-row">
+        <div class="url-info">
+          <span class="name">${name}</span>
+          <span class="url">${url}</span>
+        </div>
+        ${action}
+        <ha-icon-button
+          .label=${this.hass.localize("ui.panel.config.mcp.copy_url")}
+          .path=${mdiContentCopy}
+          data-url=${url}
+          @click=${this._copyUrl}
+        ></ha-icon-button>
+      </div>
     `;
   }
 
@@ -248,17 +241,31 @@ export class MCPPref extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-settings-row {
-      padding: 0;
-    }
-
-    .row-actions {
+    .url-row {
       display: flex;
-      flex-direction: row;
       align-items: center;
+      gap: var(--ha-space-2);
+      border: 1px solid var(--divider-color);
+      border-radius: var(--ha-border-radius-lg);
+      padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-2)
+        var(--ha-space-4);
     }
-    h3 {
-      margin-bottom: 0;
+    .url-row + .url-row {
+      margin-top: var(--ha-space-2);
+    }
+    .url-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .url {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      word-break: break-all;
+    }
+    .section {
+      margin: var(--ha-space-4) 0 var(--ha-space-2);
     }
     .card-actions.centered {
       display: flex;
