@@ -1635,6 +1635,7 @@
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
             "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
@@ -2738,6 +2739,10 @@
           "dashboards": {
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
+          },
+          "connectivity": {
+            "main": "Connectivity",
+            "secondary": "Communication protocols and radios for your devices"
           },
           "voice_assistants": {
             "main": "Voice assistants",

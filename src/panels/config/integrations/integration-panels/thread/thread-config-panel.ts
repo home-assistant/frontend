@@ -79,7 +79,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .hass=${this.hass}
         header="Thread"
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <ha-dropdown slot="toolbar-icon">
           <ha-icon-button
