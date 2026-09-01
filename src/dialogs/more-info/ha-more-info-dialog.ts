@@ -8,8 +8,8 @@ import {
   mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
-  mdiFormatListBulletedSquare,
   mdiInformationOutline,
+  mdiLinkVariant,
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
@@ -60,7 +60,7 @@ import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
-import "../../components/ha-related-items";
+import "./ha-more-info-related";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -69,8 +69,6 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import type { ItemType } from "../../data/search";
-import { SearchableDomains } from "../../data/search";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
@@ -598,20 +596,22 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
-    const defaultTitle = breadcrumb.pop() || entityId;
-    const addToTitle = this.hass.localize(
-      "ui.dialogs.more_info_control.add_to.title",
-      { target: defaultTitle }
-    );
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const title =
+    const viewTitle =
       this._currView === "details"
         ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "add_to"
-          ? addToTitle
-          : this._childView?.viewTitle || defaultTitle;
+        : this._currView === "related"
+          ? this.hass.localize("ui.dialogs.more_info_control.related")
+          : this._currView === "add_to"
+            ? addToMenuItem
+            : this._childView?.viewTitle;
+    const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
+    if (!viewTitle) {
+      breadcrumb.pop();
+    }
+    const title = viewTitle || defaultTitle;
 
     const favoritesContext =
       this._entry && stateObj
@@ -856,7 +856,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           <ha-dropdown-item value="related">
                             <ha-svg-icon
                               slot="icon"
-                              .path=${mdiInformationOutline}
+                              .path=${mdiLinkVariant}
                             ></ha-svg-icon>
                             ${this.hass.localize(
                               "ui.dialogs.more_info_control.related"
@@ -865,7 +865,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           <ha-dropdown-item value="details">
                             <ha-svg-icon
                               slot="icon"
-                              .path=${mdiFormatListBulletedSquare}
+                              .path=${mdiInformationOutline}
                             ></ha-svg-icon>
                             ${this.hass.localize(
                               "ui.dialogs.more_info_control.details"
@@ -954,15 +954,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                 `
                               : this._currView === "related"
                                 ? html`
-                                    <ha-related-items
+                                    <ha-more-info-related
                                       .hass=${this.hass}
-                                      .itemId=${entityId}
-                                      .itemType=${
-                                        SearchableDomains.has(domain)
-                                          ? (domain as ItemType)
-                                          : "entity"
-                                      }
-                                    ></ha-related-items>
+                                      .entry=${this._entry}
+                                      .params=${{ entityId }}
+                                    ></ha-more-info-related>
                                   `
                                 : this._currView === "add_to"
                                   ? html`
