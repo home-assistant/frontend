@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
@@ -38,6 +39,8 @@ export class MCPPref extends LitElement {
   @state() private _entry?: ConfigEntry | null;
 
   @state() private _apis?: LLMApi[];
+
+  @state() private _error?: string;
 
   private _sortedApis = memoizeOne((apis: LLMApi[], language: string) =>
     [...apis].sort((a, b) => a.name.localeCompare(b.name, language))
@@ -97,6 +100,18 @@ export class MCPPref extends LitElement {
               >`,
             })}
           </p>
+          ${
+            this._error !== undefined
+              ? html`
+                  <ha-alert
+                    alert-type="error"
+                    .title=${this.hass.localize("ui.panel.config.mcp.error_load")}
+                  >
+                    ${this._error}
+                  </ha-alert>
+                `
+              : nothing
+          }
           ${this._entry ? this._renderEnabled() : nothing}
         </div>
         ${
@@ -158,19 +173,22 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  // Serve the URL for the host Home Assistant is being browsed on, which is
-  // the one reachable for whoever copies it.
   private _mcpUrl(apiId?: string) {
-    return `${location.origin}/api/mcp${apiId ? `/${apiId}` : ""}`;
+    return this.hass.hassUrl(`/api/mcp${apiId ? `/${apiId}` : ""}`);
   }
 
   private async _load() {
-    const entries = await getConfigEntries(this.hass, {
-      domain: MCP_SERVER_DOMAIN,
-    });
-    this._entry = entries.length ? entries[0] : null;
-    if (this._entry) {
-      this._apis = await fetchLLMApis(this.hass);
+    this._error = undefined;
+    try {
+      const entries = await getConfigEntries(this.hass, {
+        domain: MCP_SERVER_DOMAIN,
+      });
+      this._entry = entries.length ? entries[0] : null;
+      if (this._entry) {
+        this._apis = await fetchLLMApis(this.hass);
+      }
+    } catch (err: any) {
+      this._error = err?.message || "";
     }
   }
 

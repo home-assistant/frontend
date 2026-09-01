@@ -2919,6 +2919,7 @@
           "apis_header": "Individual MCP APIs",
           "copy_url": "Copy URL",
           "configure": "Configure",
+          "error_load": "Failed to load the Model Context Protocol configuration",
           "error_delete_entry": "Failed to disable the Model Context Protocol server"
         },
         "apps": {
