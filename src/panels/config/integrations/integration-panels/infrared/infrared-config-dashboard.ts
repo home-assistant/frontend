@@ -52,7 +52,7 @@ export class InfraredConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.infrared.title")}
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <div class="container">
           <ha-card class="content network-status">
