@@ -144,6 +144,11 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "click-label-for-more-info", type: Boolean })
   public clickLabelForMoreInfo = false;
 
+  // Whether a sankey series may be panned by dragging. When false, roam is
+  // never enabled so ECharts does not capture drag gestures at all, letting
+  // touch drags fall through to the page for scrolling instead.
+  @property({ attribute: false }) public sankeyPannable = true;
+
   @state() private _isZoomed = false;
 
   @state() private _zoomRatio = 1;
@@ -365,6 +370,9 @@ export class HaChartBase extends LitElement {
       if (chartOptions.series) {
         this._updateSankeyRoam();
       }
+    }
+    if (changedProps.has("sankeyPannable")) {
+      this._updateSankeyRoam();
     }
   }
 
@@ -1279,7 +1287,11 @@ export class HaChartBase extends LitElement {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
           id: s.id,
-          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+          roam: !this.sankeyPannable
+            ? false
+            : this._modifierPressed || this._isTouchDevice
+              ? true
+              : "move",
         })),
       });
     }

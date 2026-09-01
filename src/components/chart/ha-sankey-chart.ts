@@ -55,6 +55,8 @@ export class HaSankeyChart extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
+  @property({ type: Boolean }) public pannable = true;
+
   @property({ attribute: false }) public valueFormatter?: (
     value: number
   ) => string;
@@ -88,6 +90,7 @@ export class HaSankeyChart extends LitElement {
       .options=${options}
       height="100%"
       .extraComponents=${[SankeyChart]}
+      .sankeyPannable=${this.pannable}
       @chart-click=${this._handleChartClick}
       @chart-sankeyroam=${this._handleChartSankeyRoam}
     ></ha-chart-base>`;

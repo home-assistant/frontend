@@ -348,6 +348,7 @@ class HuiEnergySankeyCard
                   .hass=${this.hass}
                   .data=${{ nodes, links }}
                   .vertical=${vertical}
+                  .pannable=${this._config.pannable !== false}
                   .valueFormatter=${this._valueFormatter}
                   @node-click=${this._handleNodeClick}
                 ></ha-sankey-chart>`
