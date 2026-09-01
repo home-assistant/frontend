@@ -64,6 +64,11 @@ export interface CloudStatusLoggedIn {
 
 export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
 
+export const cloudStatusAutoLogin = (
+  status: CloudStatus | undefined
+): CloudAutoLogin | null =>
+  !status || status.logged_in ? null : (status.auto_login ?? null);
+
 // Onboarding items the backend tracks. Mirrors ONBOARDING_ITEMS in the cloud
 // integration; onboarding is complete once every item has been onboarded.
 export const ONBOARDING_ITEMS = [
@@ -126,16 +131,6 @@ export const cloudForgotPassword = (hass: HomeAssistant, email: string) =>
     email,
   });
 
-export const cloudRegister = (
-  hass: HomeAssistant,
-  email: string,
-  password: string
-) =>
-  hass.callApi("POST", "cloud/register", {
-    email,
-    password,
-  });
-
 export const cloudRegisterAutoLogin = (
   hass: HomeAssistant,
   email: string,
@@ -161,11 +156,6 @@ export const subscribeCloudEvents = (
 ) =>
   hass.connection.subscribeMessage<CloudEvent>(callback, {
     type: "cloud/subscribe_events",
-  });
-
-export const cloudResendVerification = (hass: HomeAssistant, email: string) =>
-  hass.callApi("POST", "cloud/resend_confirm", {
-    email,
   });
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>
