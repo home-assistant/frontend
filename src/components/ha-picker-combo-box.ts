@@ -158,8 +158,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property({ reflect: true }) public mode: "popover" | "dialog" = "popover";
 
-  /** Set once the surface holding the list is done animating in. */
-  @property({ type: Boolean }) public shown = false;
+  /**
+   * Whether the surface holding the list is done animating in. Defaults to
+   * true so direct embedders render immediately; ha-generic-picker sets it
+   * once its popover has opened, so the virtualizer never measures rows
+   * through the opening animation's scale.
+   */
+  @property({ type: Boolean }) public shown = true;
 
   /** Section filter buttons for the list, section headers needs to be defined in getItems as strings */
   @property({ attribute: false }) public sections?: (
