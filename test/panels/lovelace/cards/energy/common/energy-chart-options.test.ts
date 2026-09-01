@@ -6,6 +6,7 @@ import {
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   generateFillBuckets,
+  getCommonOptions,
   getCompareTransform,
   getPeriodMidpointOffset,
   getSuggestedMax,
@@ -1062,5 +1063,66 @@ describe("splitUntrackedConsumption", () => {
     splitUntrackedConsumption(usedTotal, deviceTotal);
     assert.deepEqual(usedTotal, usedCopy);
     assert.deepEqual(deviceTotal, deviceCopy);
+  });
+});
+
+describe("getCommonOptions secondaryUnit", () => {
+  const dummyLocale: any = {
+    language: "en",
+    number_format: "language",
+    time_format: "language",
+    date_format: "language",
+    first_weekday: "language",
+    time_zone: "local",
+  };
+  const dummyConfig: any = {
+    currency: "USD",
+    unit_system: {
+      temperature: "°F",
+      length: "mi",
+      mass: "lb",
+      pressure: "psi",
+      volume: "gal",
+      wind_speed: "mph",
+      accumulated_precipitation: "in",
+    },
+  };
+  const start = new Date("2026-08-30T00:00:00.000Z");
+  const end = new Date("2026-08-30T23:59:59.000Z");
+
+  it("returns single primary yAxis when secondaryUnit is omitted", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh"
+    );
+    assert.isObject(options.yAxis);
+    assert.isFalse(Array.isArray(options.yAxis));
+    assert.equal((options.yAxis as any).name, "kWh");
+  });
+
+  it("returns dual yAxes array when secondaryUnit is provided", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°F"
+    );
+    assert.isArray(options.yAxis);
+    const axes = options.yAxis as any[];
+    assert.equal(axes.length, 2);
+    assert.equal(axes[0].name, "kWh");
+    assert.equal(axes[1].name, "°F");
+    assert.equal(axes[1].position, "right");
+    assert.isFalse(axes[1].splitLine.show);
   });
 });
