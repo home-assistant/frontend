@@ -3081,7 +3081,8 @@
             },
             "uninstall_dialog": {
               "title": "Uninstall {name}?",
-              "remove_data": "Also remove app data",
+              "text": "This permanently deletes the app and the data it stored, including its databases and any other files it created.",
+              "remove_config": "Also remove the app's configuration folder",
               "uninstall": "Uninstall"
             },
             "restart_dialog": {
