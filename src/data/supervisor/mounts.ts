@@ -53,8 +53,7 @@ export interface SupervisorCIFSMount extends SupervisorNetworkMount {
   version?: CIFSVersion;
 }
 
-// A disk mount is identified by device on the way in, but Supervisor resolves
-// that to a UUID and only ever reports uuid and filesystem back.
+// Supervisor resolves device to uuid; responses report uuid and filesystem.
 export interface SupervisorDiskMount extends SupervisorMountResponse {
   type: SupervisorMountType.DISK;
   uuid: string;
@@ -79,8 +78,7 @@ interface SupervisorDiskMountRequestParamsBase {
   read_only?: boolean;
 }
 
-// Supervisor accepts exactly one identifier: device when creating from a
-// candidate, uuid when round-tripping a mount it already resolved.
+// Create from a candidate with device; round-trip a resolved mount with uuid.
 export type SupervisorDiskMountRequestParams =
   | (SupervisorDiskMountRequestParamsBase & { device: string; uuid?: never })
   | (SupervisorDiskMountRequestParamsBase & { uuid: string; device?: never });
@@ -95,8 +93,7 @@ export interface SupervisorMounts {
   mounts: SupervisorMount[];
 }
 
-// Null when UDisks2 cannot attribute the device to a drive, which also happens
-// when the drive is unplugged between enumeration and lookup.
+// Null when UDisks2 cannot attribute the device to a drive.
 export interface SupervisorMountCandidateDrive {
   vendor: string;
   model: string;
@@ -123,8 +120,7 @@ export interface SupervisorMountCandidates {
   candidates: SupervisorMountCandidate[];
 }
 
-// Identifies a mount in a list row. A disk mount has no server, share or path,
-// so it is described by what Supervisor does report for it.
+// Disk mounts have no server/share/path, so describe them by filesystem and uuid.
 export const supervisorMountDescription = (mount: SupervisorMount): string => {
   if (mount.type === SupervisorMountType.DISK) {
     return [mount.filesystem, mount.uuid].filter(Boolean).join(" • ");
@@ -144,8 +140,7 @@ export const fetchSupervisorMounts = async (
     timeout: null,
   });
 
-// Returns an empty list on a host without UDisks2. A Supervisor predating disk
-// mounts answers 404, which callers use to hide the feature.
+// Empty list without UDisks2. Older Supervisors return 404; hide the feature.
 export const fetchSupervisorMountCandidates = async (
   hass: HomeAssistant
 ): Promise<SupervisorMountCandidates> =>

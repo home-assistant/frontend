@@ -80,8 +80,7 @@ describe("supervisorMountDescription", () => {
   });
 
   it("never describes a disk mount using network fields", () => {
-    // A disk mount has no server, share or path, which previously rendered as
-    // "undefined" in the storage panel and the mount picker.
+    // A disk mount has no server, share, or path.
     expect(supervisorMountDescription(diskMount())).not.toContain("undefined");
   });
 });

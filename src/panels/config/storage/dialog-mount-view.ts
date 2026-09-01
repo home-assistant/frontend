@@ -33,9 +33,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { MountViewDialogParams } from "./show-dialog-view-mount";
 
-// Describes a device by the drive it belongs to, falling back to what UDisks2
-// did report: an unattributed device has no drive, and an unformatted-label
-// partition has no label.
+// Drive vendor/model, then label or device path, then size.
 const mountCandidateLabel = (candidate: SupervisorMountCandidate): string => {
   const drive = [candidate.drive?.vendor, candidate.drive?.model]
     .filter(Boolean)
@@ -57,8 +55,7 @@ const mountSchema = memoizeOne(
     readOnlyForced?: boolean,
     allowBackupUsage = true
   ) => {
-    // Supervisor rejects a read-only mount used for backups, so a device that
-    // can only be mounted read-only is not offered for one.
+    // Supervisor rejects read-only backup mounts.
     const usageOptions: [string, string][] = allowBackupUsage
       ? [
           [
@@ -90,8 +87,7 @@ const mountSchema = memoizeOne(
         localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
       ],
     ];
-    // Hidden on a Supervisor that does not support disk mounts, but always
-    // offered when editing one that already exists.
+    // Hide on Supervisors without disk mounts; always show when editing one.
     if (showDisk || mountType === SupervisorMountType.DISK) {
       typeOptions.push([
         SupervisorMountType.DISK,
@@ -191,8 +187,7 @@ const mountSchema = memoizeOne(
             ] as const)
           : mountType === SupervisorMountType.DISK
             ? existing
-              ? // Supervisor excludes a mounted device from the candidates, so
-                // an existing mount can only show what it resolved to.
+              ? // Mounted devices are not candidates; show what was resolved.
                 ([
                   {
                     name: "device_identity",
@@ -295,9 +290,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       this._candidates = candidates;
       this._diskSupported = true;
     } catch (_err: any) {
-      // A Supervisor predating disk mounts answers 404. Any other failure
-      // leaves us unable to offer a device either, so in both cases the option
-      // is hidden rather than shown as broken.
+      // Older Supervisors return 404. Hide the option rather than show it broken.
       this._candidates = [];
       this._diskSupported = false;
     }
@@ -431,8 +424,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     `;
   }
 
-  // The device the mount already uses is excluded from candidates, so an empty
-  // list is only worth mentioning while creating one.
+  // Empty candidate list is only relevant while creating a mount.
   private get _showNoCandidates(): boolean {
     return (
       !this._existing &&
@@ -450,8 +442,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       ?.read_only;
   }
 
-  // Backup usage is impossible for a read-only mount, whether the device forced
-  // that or the user chose it.
+  // Backup usage is impossible for a read-only mount.
   private get _allowBackupUsage(): boolean {
     return !(
       this._data?.type === SupervisorMountType.DISK && this._data.read_only
@@ -503,12 +494,11 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     ) {
       this._validationWarning.version = "not_recomeded_cifs_version";
     }
-    // A device the host reports as read-only cannot be mounted writable.
+    // Host reports this device as read-only.
     if (this._readOnlyForced) {
       this._data!.read_only = true;
     }
-    // Picking such a device while backup was selected leaves a combination
-    // Supervisor refuses, so drop the usage and make the user choose again.
+    // Read-only plus backup is invalid; drop usage so the user picks again.
     if (!this._allowBackupUsage && this._data?.usage === "backup") {
       delete (this._data as Partial<SupervisorMountRequestParams>).usage;
     }
