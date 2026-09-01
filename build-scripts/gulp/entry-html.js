@@ -25,7 +25,7 @@ const SAFARI_TO_MACOS = {
   16: [11, 0, 0],
   17: [12, 0, 0],
   18: [13, 0, 0],
-  26: [14, 0, 0],
+  26: [14, 6, 0],
 };
 
 const getCommonTemplateVars = () => {
