@@ -16,10 +16,11 @@ const BLOCKING_DELAYS_MS = [0, 400, 1000];
 const BACKGROUND_DELAYS_MS = [2000, 5000, 10000, 15000];
 
 let token: string | undefined;
+let instanceUrl: string | undefined;
 let acquiring: Promise<void> | undefined;
 let background: Promise<void> | undefined;
 let refreshInterval: ReturnType<typeof setInterval> | undefined;
-let watchingConnection = false;
+let watchedConnection: Connection | undefined;
 let activeConnection: Connection | undefined;
 let refreshing: Promise<void> | undefined;
 const listeners = new Set<(token: string) => void>();
@@ -62,6 +63,8 @@ export const ensureMapTilesToken = async (
   }
 
   activeConnection = connection;
+  // Cast serves this page from its own host, so the proxy is not on this origin.
+  instanceUrl = connection.options.auth?.data.hassUrl;
 
   // Shared, or a dashboard full of maps asks once per map - and a backend
   // without the proxy turns that into every retry, per map.
@@ -85,24 +88,36 @@ export const ensureMapTilesToken = async (
   return token;
 };
 
+// Always the current connection: Cast builds a fresh one per connect while this
+// module lives on, and refreshing over the closed one stops the rotation.
+const handleReady = () => {
+  if (!activeConnection) {
+    return;
+  }
+  const connection = activeConnection;
+  fetchToken(connection)
+    // A token first acquired here would otherwise never get an interval.
+    .then(() => scheduleRefresh(connection))
+    .catch(() => {
+      // Nothing to do; the next reconnect tries again.
+    });
+};
+
 const scheduleRefresh = (connection: Connection) => {
   if (token && !refreshInterval) {
     refreshInterval = setInterval(() => {
-      fetchToken(connection).catch(() => {
+      fetchToken(activeConnection ?? connection).catch(() => {
         // Keep the current token; the next interval retries.
       });
     }, TOKEN_REFRESH_MS);
   }
 
-  if (!watchingConnection) {
-    watchingConnection = true;
+  if (watchedConnection !== connection) {
     // The interval does not fire while the process is suspended, so the token
     // can be stale before it comes round; reconnecting is the reliable signal.
-    connection.addEventListener("ready", () => {
-      fetchToken(connection).catch(() => {
-        // Nothing to do; the interval keeps trying.
-      });
-    });
+    watchedConnection?.removeEventListener("ready", handleReady);
+    watchedConnection = connection;
+    connection.addEventListener("ready", handleReady);
   }
 };
 
@@ -132,6 +147,16 @@ export const subscribeMapTilesToken = (
   return () => listeners.delete(listener);
 };
 
+const instanceOrigin = () =>
+  (instanceUrl ?? location.origin).replace(/\/+$/, "");
+
+/**
+ * Prefixes a proxy path with the instance that serves it. Concatenated rather
+ * than resolved, so `{z}` and `{fontstack}` survive instead of being encoded.
+ */
+export const mapTilesUrl = (path: string): string =>
+  path.startsWith("/") ? `${instanceOrigin()}${path}` : path;
+
 /**
  * MapLibre hands tile URLs to a worker, which has no document to resolve a
  * relative URL against, so the result has to be absolute.
@@ -139,14 +164,22 @@ export const subscribeMapTilesToken = (
 export const withMapTilesToken = (url: string): string => {
   let parsed: URL;
   try {
-    parsed = new URL(url, location.href);
+    parsed = new URL(url, instanceOrigin());
   } catch {
     return url;
   }
 
-  if (token && parsed.pathname.startsWith(`${MAP_TILES_PATH}/`)) {
-    parsed.searchParams.set("token", token);
+  if (!parsed.pathname.startsWith(`${MAP_TILES_PATH}/`)) {
+    return parsed.href;
   }
 
-  return parsed.href;
+  // Rebuilt against the instance: MapLibre resolves the style's paths against
+  // this page first, and on Cast that is not the host serving the proxy.
+  const onInstance = new URL(
+    `${instanceOrigin()}${parsed.pathname}${parsed.search}`
+  );
+  if (token) {
+    onInstance.searchParams.set("token", token);
+  }
+  return onInstance.href;
 };

@@ -4,6 +4,7 @@ import type { setRTLTextPlugin, StyleSpecification } from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import {
   MAP_TILES_PATH,
+  mapTilesUrl,
   refreshMapTilesToken,
   subscribeMapTilesToken,
   withMapTilesToken,
@@ -98,11 +99,11 @@ const loadStyle = async (url: string): Promise<StyleSpecification> => {
   }
 
   if (typeof style.sprite === "string") {
-    style.sprite = new URL(style.sprite, location.href).href;
+    style.sprite = mapTilesUrl(style.sprite);
   } else if (Array.isArray(style.sprite)) {
     style.sprite = style.sprite.map((sprite) => ({
       ...sprite,
-      url: new URL(sprite.url, location.href).href,
+      url: mapTilesUrl(sprite.url),
     }));
   }
   return style;
@@ -234,7 +235,11 @@ const createVectorLayer = async (
   // token. Throttled, or a proxy refusing for another reason loops.
   let lastRecovery = 0;
   glMap.on("error", (event) => {
-    if ((event.error as { status?: number } | undefined)?.status !== 403) {
+    const status = (event.error as { status?: number } | undefined)?.status;
+    // 403 is a stale token, 404 the proxy not registered yet during a restart,
+    // and no status at all a network failure. All three recover the same way,
+    // and a token that comes back unchanged costs nothing.
+    if (status !== undefined && status !== 403 && status !== 404) {
       return;
     }
     if (Date.now() - lastRecovery < RECOVERY_THROTTLE) {
@@ -272,7 +277,7 @@ const createRasterLayer = (
   token: string | undefined
 ): MapBaseLayer => {
   const layer = leaflet
-    .tileLayer(__DEMO__ ? DEMO_RASTER_TILE_URL : RASTER_TILE_URL, {
+    .tileLayer(__DEMO__ ? DEMO_RASTER_TILE_URL : mapTilesUrl(RASTER_TILE_URL), {
       attribution: OSM_ATTRIBUTION,
       maxZoom: MAP_MAX_ZOOM,
       maxNativeZoom: RASTER_MAX_NATIVE_ZOOM,

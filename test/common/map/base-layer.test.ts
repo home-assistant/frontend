@@ -20,10 +20,14 @@ vi.mock("@maplibre/maplibre-gl-leaflet", () => ({ maplibreGL }));
 
 // The token module is driven directly here, so a stale token and the one that
 // replaces it can be played out without a WebSocket.
+// Stands in for the instance the proxy runs on, which on Cast is not the host
+// serving the page.
+const INSTANCE_URL = vi.hoisted(() => "https://instance.local");
 const tokenListeners = vi.hoisted(() => new Set<(token: string) => void>());
 const refreshMapTilesToken = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/data/map_tiles", () => ({
   MAP_TILES_PATH: "/api/map_tiles",
+  mapTilesUrl: (path: string) => `${INSTANCE_URL}${path}`,
   refreshMapTilesToken,
   subscribeMapTilesToken: (listener: (token: string) => void) => {
     tokenListeners.add(listener);
@@ -112,7 +116,10 @@ describe("createBaseLayer", () => {
     const [url, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
     // Through core's proxy, which is what identifies Home Assistant upstream -
     // a browser can set neither a User-Agent nor a Referer.
-    expect(url).toContain("/api/map_tiles/raster/{z}/{x}/{y}.png");
+    // Absolute, because on Cast this page is not served by the instance.
+    expect(url).toBe(
+      `${INSTANCE_URL}/api/map_tiles/raster/{z}/{x}/{y}.png?token={token}`
+    );
     // Leaflet substitutes options into the template on every tile request, so
     // the token can be refreshed without recreating the layer.
     expect(url).toContain("token={token}");
@@ -430,6 +437,23 @@ describe("recovering from a refused token", () => {
     emitToken("fresh-token");
     await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledTimes(2));
   });
+
+  // During a restart the proxy can be unregistered rather than refusing, and a
+  // dropped connection reports no status at all. Both leave the source dead.
+  it.each([[404], [undefined]])(
+    "also recovers from status %s",
+    async (status) => {
+      const createBaseLayer = await setWebGL2(true);
+      await createBaseLayer(leaflet, map, false, TOKEN);
+      glMap.setStyle.mockClear();
+
+      glHandlers.error({ error: { status } });
+      expect(refreshMapTilesToken).toHaveBeenCalled();
+
+      emitToken("fresh-token");
+      await vi.waitFor(() => expect(glMap.setStyle).toHaveBeenCalledOnce());
+    }
+  );
 
   it("ignores errors that are not a refusal", async () => {
     const createBaseLayer = await setWebGL2(true);
