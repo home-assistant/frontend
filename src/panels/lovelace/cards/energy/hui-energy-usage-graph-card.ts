@@ -631,6 +631,16 @@ export class HuiEnergyUsageGraphCard
 
           if (weatherData.length > 0) {
             weatherUnit = tempUnit;
+            const weatherColor =
+              computedStyles
+                .getPropertyValue("--energy-temperature-color")
+                .trim() ||
+              computedStyles
+                .getPropertyValue("--state-climate-heat-color")
+                .trim() ||
+              computedStyles.getPropertyValue("--warning-color").trim() ||
+              "#ff7b00";
+
             weatherSeries = {
               id: "primary-weather-temperature",
               name:
@@ -643,10 +653,10 @@ export class HuiEnergyUsageGraphCard
               showSymbol: false,
               lineStyle: {
                 width: 2.5,
-                color: "#ff7b00",
+                color: weatherColor,
               },
               itemStyle: {
-                color: "#ff7b00",
+                color: weatherColor,
               },
               data: weatherData,
             };
