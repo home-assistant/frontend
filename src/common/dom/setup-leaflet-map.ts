@@ -19,6 +19,7 @@ export const setupLeafletMap = async (
     longitude: number;
     zoom?: number;
     darkMode?: boolean;
+    token?: string;
   }
 ): Promise<LeafletMapSetup> => {
   if (!mapElement.parentNode) {
@@ -60,7 +61,8 @@ export const setupLeafletMap = async (
   const baseLayer = await createBaseLayer(
     Leaflet,
     map,
-    initialView?.darkMode ?? false
+    initialView?.darkMode ?? false,
+    initialView?.token
   );
 
   return { map, leaflet: Leaflet, baseLayer };

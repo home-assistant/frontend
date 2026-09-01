@@ -409,7 +409,7 @@ export class SerialConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.serial.title")}
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <ha-icon-button
           slot="toolbar-icon"
