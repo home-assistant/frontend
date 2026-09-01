@@ -5058,10 +5058,7 @@
               }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud",
-              "register": {
-                "confirm_email": "Confirm email"
-              }
+              "title": "The power of Home Assistant Cloud"
             },
             "local": {
               "title": "Installing apps",
@@ -6501,9 +6498,7 @@
             "auto_login_failed": "We couldn't sign you in automatically. Confirm your email, then sign in.",
             "nothing_arrived": "Nothing arrived? Check your spam folder, or {resend_link}.",
             "resend_link": "resend the confirmation email",
-            "resend_confirm_email": "Resend confirmation email",
             "clicked_confirm": "I opened the confirmation link",
-            "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
             "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
