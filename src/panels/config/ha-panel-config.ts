@@ -70,6 +70,10 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-cloud",
         load: () => import("./cloud/ha-config-cloud"),
       },
+      connectivity: {
+        tag: "ha-config-connectivity",
+        load: () => import("./connectivity/ha-config-connectivity"),
+      },
       devices: {
         tag: "ha-config-devices",
         load: () => import("./devices/ha-config-devices"),
