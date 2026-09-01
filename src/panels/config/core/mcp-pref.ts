@@ -10,6 +10,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-spinner";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -100,6 +101,15 @@ export class MCPPref extends LitElement {
               >`,
             })}
           </p>
+          ${
+            this._entry === undefined && this._error === undefined
+              ? html`
+                  <div class="loading">
+                    <ha-spinner></ha-spinner>
+                  </div>
+                `
+              : nothing
+          }
           ${
             this._error !== undefined
               ? html`
@@ -284,6 +294,11 @@ export class MCPPref extends LitElement {
     }
     .section {
       margin: var(--ha-space-4) 0 var(--ha-space-2);
+    }
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: var(--ha-space-6) 0;
     }
     .card-actions.centered {
       display: flex;
