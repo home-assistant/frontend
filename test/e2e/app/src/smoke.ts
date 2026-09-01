@@ -67,10 +67,10 @@ export const moreInfoViewElements: ViewElementSmokeCase<MoreInfoView>[] = [
   },
   {
     view: "related",
-    element: "ha-related-items",
-    // search/related is mocked to return no relations, so the empty list
-    // renders.
-    content: [{ selector: "ha-related-items >> ha-list" }],
+    element: "ha-more-info-related",
+    // search/related is mocked to return no relations, so only the context
+    // group renders.
+    content: [{ selector: "ha-more-info-related >> ha-grouped-list" }],
   },
   {
     view: "add_to",
