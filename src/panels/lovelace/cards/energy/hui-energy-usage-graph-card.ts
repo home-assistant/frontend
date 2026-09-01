@@ -538,12 +538,20 @@ export class HuiEnergyUsageGraphCard
               energyData.info.cost_sensors[gridSource.stat_energy_from] || null;
           }
           if (costStatId && energyData.stats[costStatId]) {
-            const costGrowth = calculateStatisticSumGrowth(
-              energyData.stats[costStatId]
-            );
+            const costStats = energyData.stats[costStatId];
+            const costGrowth = calculateStatisticSumGrowth(costStats);
             if (costGrowth !== null && !isNaN(costGrowth)) {
               totalCost += costGrowth;
               hasCost = true;
+            } else {
+              const sumChange = costStats.reduce(
+                (acc, curr) => acc + (curr.change ?? 0),
+                0
+              );
+              if (sumChange > 0) {
+                totalCost += sumChange;
+                hasCost = true;
+              }
             }
           } else if (
             gridSource.number_energy_price !== null &&
@@ -554,6 +562,15 @@ export class HuiEnergyUsageGraphCard
             if (energyGrowth !== null && !isNaN(energyGrowth)) {
               totalCost += energyGrowth * gridSource.number_energy_price;
               hasCost = true;
+            } else if (energyStats) {
+              const sumChange = energyStats.reduce(
+                (acc, curr) => acc + (curr.change ?? 0),
+                0
+              );
+              if (sumChange > 0) {
+                totalCost += sumChange * gridSource.number_energy_price;
+                hasCost = true;
+              }
             }
           }
         }
@@ -578,17 +595,27 @@ export class HuiEnergyUsageGraphCard
 
       try {
         const period = getSuggestedPeriod(this._start, this._end);
+        const weatherName = primaryWeatherEntityId.split(".")[1];
+        const candidateStatIds = [
+          primaryWeatherEntityId,
+          `sensor.${weatherName}_temperature`,
+          `sensor.${weatherName}_outdoor_temperature`,
+        ];
         const weatherStats = await fetchStatistics(
           this.hass,
           this._start,
           this._end,
-          [primaryWeatherEntityId],
+          candidateStatIds,
           period
         );
 
-        if (weatherStats && weatherStats[primaryWeatherEntityId]?.length) {
+        const matchingStatId = candidateStatIds.find(
+          (id) => weatherStats?.[id]?.length
+        );
+
+        if (matchingStatId && weatherStats[matchingStatId]?.length) {
           const weatherData: LineDataItemOption[] = [];
-          weatherStats[primaryWeatherEntityId].forEach((stat) => {
+          weatherStats[matchingStatId].forEach((stat) => {
             const temp = stat.mean ?? stat.state;
             if (temp !== null && temp !== undefined) {
               const displayX = computeStatMidpoint(
