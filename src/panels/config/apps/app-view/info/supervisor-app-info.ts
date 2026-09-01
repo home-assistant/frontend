@@ -60,6 +60,7 @@ import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-row-item";
 import {
   apiContext,
+  authContext,
   internationalizationContext,
   registriesContext,
 } from "../../../../../data/context";
@@ -70,6 +71,7 @@ import type {
   HassioAddonSetSecurityParams,
 } from "../../../../../data/hassio/addon";
 import {
+  addonImageUrl,
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
   installHassioAddon,
@@ -146,6 +148,10 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @consume({ context: apiContext, subscribe: true })
   private api!: ContextType<typeof apiContext>;
 
+  @state()
+  @consume({ context: authContext, subscribe: true })
+  private _auth?: ContextType<typeof authContext>;
+
   @state() private _metrics?: HassioStats;
 
   @state() private _error?: string;
@@ -205,7 +211,11 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     <img
                       class="logo"
                       alt=""
-                      src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                      src=${addonImageUrl(
+                        this._currentAddon.slug,
+                        this._auth?.data.hassUrl,
+                        "logo"
+                      )}
                     />
                   `
                 : nothing

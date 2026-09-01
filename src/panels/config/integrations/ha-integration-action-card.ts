@@ -6,7 +6,6 @@ import {
   type IntegrationManifest,
 } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
-import "./ha-integration-header";
 import "../../../components/ha-card";
 import { brandsUrl } from "../../../util/brands-url";
 import { haStyle } from "../../../resources/styles";
@@ -39,7 +38,6 @@ export class HaIntegrationActionCard extends LitElement {
               },
               this.hass.auth.data.hassUrl
             )}
-            crossorigin="anonymous"
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}

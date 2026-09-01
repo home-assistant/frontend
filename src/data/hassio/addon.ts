@@ -35,6 +35,19 @@ interface AddonTranslations {
   configuration?: Record<string, AddonFieldTranslation>;
 }
 
+// Addon images are served by core, which is a different origin whenever the
+// frontend is served separately (script/develop_and_serve). Resolve them
+// against the core URL, the same way brand images are.
+export const addonImageUrl = (
+  slug: string,
+  hassUrl?: string,
+  image: "icon" | "logo" = "icon"
+): string =>
+  new URL(
+    `/api/hassio/addons/${slug}/${image}`,
+    hassUrl || location.origin
+  ).toString();
+
 export interface HassioAddonInfo {
   advanced: boolean;
   available: boolean;

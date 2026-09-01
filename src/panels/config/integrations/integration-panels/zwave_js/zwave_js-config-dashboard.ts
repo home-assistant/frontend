@@ -263,7 +263,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
             <img
               class="logo"
               alt="Z-Wave"
-              crossorigin="anonymous"
               referrerpolicy="no-referrer"
               src=${brandsUrl(
                 {

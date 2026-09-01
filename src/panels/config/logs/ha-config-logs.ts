@@ -23,7 +23,10 @@ import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { LogProvider } from "../../../data/error_log";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import {
+  addonImageUrl,
+  fetchHassioAddonsInfo,
+} from "../../../data/hassio/addon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
@@ -270,7 +273,7 @@ export class HaConfigLogs extends LitElement {
       icon: provider.addon
         ? atLeastVersion(this.hass.config.version, 0, 105) &&
           provider.addon.icon
-          ? `/api/hassio/addons/${provider.addon.slug}/icon`
+          ? addonImageUrl(provider.addon.slug, this.hass.auth.data.hassUrl)
           : undefined
         : undefined,
       icon_path: provider.addon
@@ -310,7 +313,7 @@ export class HaConfigLogs extends LitElement {
         icon: provider.addon
           ? atLeastVersion(this.hass.config.version, 0, 105) &&
             provider.addon.icon
-            ? `/api/hassio/addons/${provider.addon.slug}/icon`
+            ? addonImageUrl(provider.addon.slug, this.hass.auth.data.hassUrl)
             : undefined
           : undefined,
         icon_path: provider.addon

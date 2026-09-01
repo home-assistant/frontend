@@ -187,7 +187,6 @@ class ZHAConfigDashboard extends LitElement {
             <img
               class="logo"
               alt="Zigbee"
-              crossorigin="anonymous"
               referrerpolicy="no-referrer"
               src=${brandsUrl(
                 {

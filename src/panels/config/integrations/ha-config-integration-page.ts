@@ -499,7 +499,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     },
                     this.hass.auth.data.hassUrl
                   )}
-                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   @load=${this._onImageLoad}
                   @error=${this._onImageError}

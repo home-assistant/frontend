@@ -123,7 +123,6 @@ export class MatterConfigDashboard extends LitElement {
             <img
               class="logo"
               alt="Matter"
-              crossorigin="anonymous"
               referrerpolicy="no-referrer"
               src=${brandsUrl(
                 {

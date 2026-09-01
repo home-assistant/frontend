@@ -259,7 +259,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                       this.hass.auth.data.hassUrl
                     )}
                     alt=${router.brand}
-                    crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                     @error=${this._onImageError}
                     @load=${this._onImageLoad}

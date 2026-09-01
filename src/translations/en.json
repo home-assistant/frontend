@@ -7276,6 +7276,9 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
+            "failed": "Failed",
+            "failed_retrying": "Failed, retrying",
+            "update_available": "Update available",
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",

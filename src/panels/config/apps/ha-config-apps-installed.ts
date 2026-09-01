@@ -1,7 +1,6 @@
 import {
   mdiAlertDecagramOutline,
   mdiArrowUpBoldCircle,
-  mdiArrowUpBoldCircleOutline,
   mdiFlask,
   mdiPuzzle,
   mdiRefresh,
@@ -10,6 +9,7 @@ import {
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
@@ -23,6 +23,7 @@ import type {
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
 import {
+  addonImageUrl,
   fetchHassioAddonsInfo,
   reloadHassioAddons,
 } from "../../../data/hassio/addon";
@@ -120,6 +121,13 @@ export class HaConfigAppsInstalled extends LitElement {
                       role="button"
                       tabindex="0"
                       outlined
+                      class=${classMap({
+                        "state-error": addon.state === "error",
+                        "state-warning":
+                          addon.state !== "error" &&
+                          addon.state !== "stopped" &&
+                          addon.state !== "started",
+                      })}
                       .addon=${addon}
                       @click=${this._addonTapped}
                       aria-label=${getAppDisplayName(addon.name, addon.stage)}
@@ -133,6 +141,7 @@ export class HaConfigAppsInstalled extends LitElement {
                           available
                           .tags=${this._getAppTags(addon)}
                           .state=${addon.state}
+                          .updateAvailable=${addon.update_available}
                           .icon=${
                             addon.update_available
                               ? mdiArrowUpBoldCircle
@@ -153,7 +162,10 @@ export class HaConfigAppsInstalled extends LitElement {
                           }
                           .iconImage=${
                             addon.icon
-                              ? `/api/hassio/addons/${addon.slug}/icon`
+                              ? addonImageUrl(
+                                  addon.slug,
+                                  this.hass.auth.data.hassUrl
+                                )
                               : undefined
                           }
                         ></supervisor-apps-card-content>
@@ -227,15 +239,6 @@ export class HaConfigAppsInstalled extends LitElement {
   private _getAppTags(addon: HassioAddonInfo): AppTag[] {
     const labels: AppTag[] = [];
 
-    if (addon.update_available) {
-      labels.push({
-        label: this.hass.localize(
-          `ui.panel.config.apps.state.update_available`
-        ),
-        variant: "brand",
-        iconPath: mdiArrowUpBoldCircleOutline,
-      });
-    }
     if (addon.stage !== "stable") {
       labels.push({
         label: this.hass.localize(
@@ -256,7 +259,7 @@ export class HaConfigAppsInstalled extends LitElement {
       :host {
         display: block;
         height: 100%;
-        background-color: var(--primary-background-color);
+        background-color: var(--ha-color-surface-low);
       }
 
       ha-card {
@@ -268,6 +271,14 @@ export class HaConfigAppsInstalled extends LitElement {
         background-color: var(--ha-color-fill-neutral-quiet-resting);
       }
 
+      ha-card.state-error {
+        --ha-card-border-color: var(--error-color);
+      }
+
+      ha-card.state-warning {
+        --ha-card-border-color: var(--warning-color);
+      }
+
       .search {
         display: flex;
         align-items: center;
@@ -276,7 +287,7 @@ export class HaConfigAppsInstalled extends LitElement {
         position: sticky;
         top: 0;
         z-index: 2;
-        background-color: var(--primary-background-color);
+        background-color: var(--ha-color-surface-low);
         padding: 0 var(--ha-space-4);
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
@@ -293,10 +304,6 @@ export class HaConfigAppsInstalled extends LitElement {
         gap: var(--ha-space-4);
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(336px, 100%), 1fr));
-      }
-
-      .card-content {
-        padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
       }
 
       button.link {

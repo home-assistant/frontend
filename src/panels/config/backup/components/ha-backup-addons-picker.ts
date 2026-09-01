@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import { addonImageUrl } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
@@ -53,7 +54,7 @@ export class HaBackupAddonsPicker extends LitElement {
                 .iconPath=${item.iconPath || mdiPuzzle}
                 .imageUrl=${
                   this.addons?.find((a) => a.slug === item.slug)?.icon
-                    ? `/api/hassio/addons/${item.slug}/icon`
+                    ? addonImageUrl(item.slug, this.hass?.auth.data.hassUrl)
                     : undefined
                 }
               >

@@ -1,14 +1,36 @@
-import "@home-assistant/webawesome/dist/components/tag/tag";
-import { mdiCheckCircle, mdiHelpCircleOutline } from "@mdi/js";
+import {
+  mdiArrowUpBoldCircle,
+  mdiCheckCircle,
+  mdiExclamationThick,
+  mdiHelpCircleOutline,
+  mdiStop,
+} from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../../components/automation/ha-automation-row-event-chip";
+import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type { AddonStage, AddonState } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
 import { getAppDisplayName } from "../common/app";
-import "./supervisor-apps-state";
-import "./supervisor-apps-tag";
+
+type BadgeVariant = "brand" | "success" | "warning" | "danger" | "neutral";
+
+// A running app is the healthy case and gets no badge, matching the
+// integration card where a loaded integration shows nothing.
+// A started app is the healthy case and gets no badge, matching the integration
+// card where a loaded integration shows nothing.
+const STATE_BADGES: Record<
+  string,
+  { variant: "danger" | "warning" | "neutral"; icon: string }
+> = {
+  error: { variant: "danger", icon: mdiExclamationThick },
+  startup: { variant: "warning", icon: mdiExclamationThick },
+  unknown: { variant: "warning", icon: mdiExclamationThick },
+  stopped: { variant: "neutral", icon: mdiStop },
+};
 
 export interface AppTag {
   label: string;
@@ -29,6 +51,9 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ type: Boolean }) public installed = false;
 
+  @property({ type: Boolean, attribute: "update-available" })
+  public updateAvailable = false;
+
   @property() public description?: string;
 
   @property({ type: Boolean }) public available = true;
@@ -37,158 +62,257 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property({ attribute: false }) public iconTitle?: string;
 
-  @property({ attribute: false }) public iconClass?: string;
-
   @property() public icon = mdiHelpCircleOutline;
 
   @property({ attribute: false }) public iconImage?: string;
 
   protected render(): TemplateResult {
+    const stateBadge = this._stateBadge();
+
+    const updateLabel = this.hass.localize(
+      "ui.panel.config.apps.state.update_available"
+    );
+
     return html`
       <div class="app">
         <div class="icon-wrapper">
+          <div class="thumbnail">
+            ${
+              this.iconImage
+                ? html`
+                    <img
+                      class="icon-image"
+                      src=${this.iconImage}
+                      .title=${this.iconTitle}
+                      alt=${this.iconTitle ?? ""}
+                    />
+                  `
+                : html`
+                    <ha-svg-icon
+                      class="app-icon"
+                      .path=${this.icon}
+                      .title=${this.iconTitle}
+                    ></ha-svg-icon>
+                  `
+            }
+          </div>
           ${
-            this.iconImage
-              ? html`
-                  <img
-                    class="icon-image"
-                    src=${this.iconImage}
-                    .title=${this.iconTitle}
-                    alt=${this.iconTitle ?? ""}
-                  />
-                `
-              : html`
-                  <ha-svg-icon
-                    class="app-icon"
-                    .path=${this.icon}
-                    .title=${this.iconTitle}
-                  ></ha-svg-icon>
-                `
+            stateBadge
+              ? html`<div id="state-badge" class="badge ${stateBadge.variant}">
+                    <ha-svg-icon .path=${stateBadge.icon}></ha-svg-icon>
+                  </div>
+                  <ha-tooltip for="state-badge" placement="top">
+                    ${stateBadge.label}
+                  </ha-tooltip>`
+              : nothing
           }
         </div>
-        <div>
-          <div class="title-row">
-            <div class="title">
-              ${getAppDisplayName(this.title, this.stage)}
-            </div>
-          </div>
+        <div class="info">
+          <div class="title">${getAppDisplayName(this.title, this.stage)}</div>
+          ${
+            stateBadge
+              ? html`<div class="addition status ${stateBadge.variant}">
+                  ${stateBadge.label}
+                </div>`
+              : nothing
+          }
           <div class="addition">
-            ${this.description}
-            ${
+            ${this.description}${
               /* treat as available when undefined */
               this.available === false ? " (Not available)" : ""
             }
           </div>
         </div>
+        <div class="indicators">
+          ${
+            this.installed
+              ? this._renderBadge(
+                  "badge-installed",
+                  mdiCheckCircle,
+                  "success",
+                  this.hass.localize("ui.panel.config.apps.state.installed")
+                )
+              : nothing
+          }
+          ${this.tags?.map((tag, index) =>
+            tag.iconPath
+              ? this._renderBadge(
+                  `badge-tag-${index}`,
+                  tag.iconPath,
+                  tag.variant,
+                  tag.label
+                )
+              : nothing
+          )}
+          ${
+            this.updateAvailable
+              ? html`<ha-automation-row-event-chip
+                    id="chip-update"
+                    show
+                    aria-label=${updateLabel}
+                  >
+                    <ha-svg-icon .path=${mdiArrowUpBoldCircle}></ha-svg-icon>
+                  </ha-automation-row-event-chip>
+                  <ha-tooltip for="chip-update" placement="left">
+                    ${updateLabel}
+                  </ha-tooltip>`
+              : nothing
+          }
+        </div>
       </div>
-      ${
-        this.tags?.length || this.state !== undefined || this.installed
-          ? html`
-              <div class="footer">
-                ${
-                  this.state !== undefined
-                    ? html`<supervisor-apps-state
-                        .state=${this.state || "unknown"}
-                      ></supervisor-apps-state>`
-                    : this.installed
-                      ? html`<div class="installed">
-                          <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
-                          <span
-                            >${this.hass.localize(
-                              "ui.panel.config.apps.state.installed"
-                            )}</span
-                          >
-                        </div>`
-                      : html`<span></span>`
-                }
-                ${
-                  this.tags?.length
-                    ? html`<div class="tags">
-                        ${this.tags.map(
-                          (tag) =>
-                            html`<supervisor-apps-tag
-                              .variant=${tag.variant}
-                              .iconPath=${tag.iconPath}
-                              .label=${tag.label}
-                            ></supervisor-apps-tag>`
-                        )}
-                      </div>`
-                    : nothing
-                }
-              </div>
-            `
-          : nothing
-      }
+    `;
+  }
+
+  private _stateBadge() {
+    // AddonState includes null; treat that as "no state reported"
+    const state = this.state || undefined;
+    const badge = state && STATE_BADGES[state];
+    if (!state || !badge) {
+      return undefined;
+    }
+    return {
+      ...badge,
+      label: this.hass.localize(
+        `ui.panel.config.apps.dashboard.capability.state.${state}`
+      ),
+    };
+  }
+
+  private _renderBadge(
+    id: string,
+    iconPath: string,
+    variant: BadgeVariant,
+    label: string
+  ): TemplateResult {
+    return html`
+      <ha-badge id=${id} icon-only class=${variant}>
+        <ha-svg-icon slot="icon" .path=${iconPath}></ha-svg-icon>
+      </ha-badge>
+      <ha-tooltip for=${id} placement="left">${label}</ha-tooltip>
     `;
   }
 
   static styles = css`
     .app {
-      margin-bottom: var(--ha-space-2);
-      gap: var(--ha-space-4);
       display: flex;
+      align-items: center;
+      gap: var(--ha-space-4);
+      min-width: 0;
     }
     .icon-wrapper {
       position: relative;
-      margin-top: var(--ha-space-1);
       width: 40px;
       height: 40px;
       flex-shrink: 0;
     }
+    .thumbnail {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--ha-border-radius-lg);
+      border: 1px solid var(--ha-color-border-neutral-quiet);
+      box-sizing: border-box;
+      /* inset the artwork so it does not touch the border */
+      padding: 3px;
+      overflow: hidden;
+    }
+    /* Same treatment as the automation picker rows */
+    .badge {
+      position: absolute;
+      top: -4px;
+      inset-inline-end: -4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: var(--ha-border-radius-circle);
+      box-shadow: 0 0 0 2px
+        var(--ha-card-background, var(--card-background-color));
+      color: var(--ha-card-background, var(--card-background-color));
+      --mdc-icon-size: 12px;
+    }
+    .badge.danger {
+      background-color: var(--error-color);
+    }
+    .badge.warning {
+      background-color: var(--warning-color);
+    }
+    .badge.neutral {
+      background-color: var(--disabled-color);
+    }
     .app-icon {
-      margin-left: var(--ha-space-2);
-      margin-top: var(--ha-space-2);
       color: var(--secondary-text-color);
     }
     .icon-image {
-      max-height: 40px;
-      max-width: 40px;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
-    .title {
+    .info {
       flex: 1;
       min-width: 0;
+    }
+    .title {
       color: var(--primary-text-color);
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
     }
-    .title-row {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
-      min-width: 0;
+    .status.danger {
+      color: var(--error-color);
+    }
+    .status.warning {
+      color: var(--warning-color);
+    }
+    .status.neutral {
+      color: var(--secondary-text-color);
     }
     .addition {
       color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
       margin-top: var(--ha-space-1);
-      overflow: hidden;
-      position: relative;
-      height: 2.4em;
       line-height: var(--ha-line-height-condensed);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
-    .footer {
-      border-top: var(--ha-border-width-sm) solid
-        var(--ha-color-border-neutral-quiet);
-      padding-top: var(--ha-space-2);
+    .indicators {
       display: flex;
-      gap: var(--ha-space-2);
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-    .tags {
-      display: flex;
-      gap: var(--ha-space-2);
-    }
-    .installed {
-      display: inline-flex;
       align-items: center;
       gap: var(--ha-space-2);
-      color: var(--ha-color-text-secondary);
-      font-size: var(--ha-font-size-m);
+      flex-shrink: 0;
     }
-    .installed ha-svg-icon {
-      --mdc-icon-size: 16px;
-      color: var(--ha-color-on-success-normal);
+    /* the host is inline by default, whose line box adds a stray pixel of
+       leading and pushes the chip above the badges */
+    ha-automation-row-event-chip {
+      display: flex;
+    }
+    .indicators ha-automation-row-event-chip ha-svg-icon {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+    ha-badge {
+      --ha-badge-size: 32px;
+      --ha-badge-icon-size: 20px;
+    }
+    ha-badge.danger {
+      --badge-color: var(--error-color);
+    }
+    ha-badge.warning {
+      --badge-color: var(--warning-color);
+    }
+    ha-badge.success {
+      --badge-color: var(--success-color);
+    }
+    ha-badge.brand {
+      --badge-color: var(--primary-color);
+    }
+    ha-badge.neutral {
+      --badge-color: var(--secondary-text-color);
     }
   `;
 }

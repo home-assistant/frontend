@@ -58,6 +58,49 @@ const createManifest = (
   iot_class: isCloud ? "cloud_polling" : "local_polling",
 });
 
+// Worst case for the card row: a custom integration that replaces a core one,
+// relies on the cloud, and was not set up from the UI, so all three metadata
+// icons render at once alongside the status and update chips.
+const worstCaseManifest: IntegrationManifest = {
+  name: "ESPHome",
+  domain: "esphome",
+  is_built_in: false,
+  overwrites_built_in: true,
+  config_flow: false,
+  documentation: "https://www.home-assistant.io/integrations/esphome/",
+  iot_class: "cloud_polling",
+};
+
+const UPDATE_ENTITY_ID = "update.worst_case_firmware";
+
+const worstCaseEntries: { label: string; items: ConfigEntryExtended[] }[] = [
+  {
+    label: "setup_error",
+    items: [createConfigEntry("Worst case", { state: "setup_error" })],
+  },
+  {
+    label: "setup_retry",
+    items: [createConfigEntry("Worst case", { state: "setup_retry" })],
+  },
+  {
+    label: "not_loaded",
+    items: [createConfigEntry("Worst case", { state: "not_loaded" })],
+  },
+  {
+    label: "loaded",
+    items: [createConfigEntry("Worst case", { state: "loaded" })],
+  },
+  {
+    label: "long name",
+    items: [
+      createConfigEntry("Worst case", {
+        state: "setup_error",
+        localized_domain_name: "Some very long integration name",
+      }),
+    ],
+  },
+];
+
 const loadedEntry = createConfigEntry("Loaded");
 const nameAsDomainEntry = createConfigEntry("ESPHome");
 const longNameEntry = createConfigEntry(
@@ -188,9 +231,10 @@ const configEntries: {
 ];
 
 const createEntityRegistryEntries = (
-  item: ConfigEntryExtended
-): EntityRegistryEntry[] => [
-  {
+  item: ConfigEntryExtended,
+  count = 1
+): EntityRegistryEntry[] =>
+  Array.from({ length: count }, (_, index) => ({
     config_entry_id: item.entry_id,
     config_subentry_id: null,
     device_id: "mock-device-id",
@@ -198,20 +242,19 @@ const createEntityRegistryEntries = (
     disabled_by: null,
     hidden_by: null,
     entity_category: null,
-    entity_id: "binary_sensor.updater",
-    id: "binary_sensor.updater",
+    entity_id: `binary_sensor.updater_${index}`,
+    id: `binary_sensor.updater_${index}`,
     name: null,
     icon: null,
     platform: "updater",
     has_entity_name: false,
-    unique_id: "updater",
+    unique_id: `updater_${index}`,
     options: null,
     labels: [],
     categories: {},
     created_at: 0,
     modified_at: 0,
-  },
-];
+  }));
 
 const createDeviceRegistryEntries = (
   item: ConfigEntryExtended
@@ -312,6 +355,24 @@ export class DemoIntegrationCard extends LitElement {
           `
         )}
       </div>
+      <h2>Worst case at the dashboard's 300px minimum column width</h2>
+      <div class="container narrow">
+        ${worstCaseEntries.map(
+          (info) => html`
+            <ha-integration-card
+              .hass=${this.hass}
+              domain="esphome"
+              .items=${info.items}
+              .manifest=${worstCaseManifest}
+              .entityRegistryEntries=${createEntityRegistryEntries(
+                info.items[0],
+                12
+              )}
+              .domainEntities=${[UPDATE_ENTITY_ID]}
+            ></ha-integration-card>
+          `
+        )}
+      </div>
       <div class="container">
         <!-- One that is standalone to see how it increases height if height
            not defined by other cards. -->
@@ -338,6 +399,18 @@ export class DemoIntegrationCard extends LitElement {
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     hass.updateTranslations("config", "en");
+    // Drives the "Update available" chip on the worst-case cards
+    hass.addEntities({
+      entity_id: UPDATE_ENTITY_ID,
+      state: "on",
+      attributes: {
+        friendly_name: "Worst case firmware",
+        title: "ESPHome",
+        installed_version: "2024.1.0",
+        latest_version: "2024.2.0",
+        supported_features: 1,
+      },
+    });
     // Normally this string is loaded from backend
     hass.addTranslations(
       {
@@ -372,6 +445,22 @@ export class DemoIntegrationCard extends LitElement {
     ha-formfield {
       margin: 8px 0;
       display: block;
+    }
+
+    h2 {
+      padding: 0 16px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+    }
+
+    /* The integrations dashboard grid bottoms out at 300px columns, so pin
+       these to that width instead of the gallery's roomier 500px. */
+    .container.narrow {
+      grid-template-columns: repeat(auto-fill, 300px);
+    }
+
+    .container.narrow > * {
+      max-width: 300px;
     }
   `;
 }

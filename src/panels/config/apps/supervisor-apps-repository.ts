@@ -1,19 +1,18 @@
 import {
   mdiAlertDecagramOutline,
   mdiArrowUpBoldCircle,
-  mdiArrowUpBoldCircleOutline,
   mdiFlask,
   mdiPuzzle,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import type { HassioAddonRepository } from "../../../data/hassio/addon";
+import { addonImageUrl } from "../../../data/hassio/addon";
 import type { StoreAddon } from "../../../data/supervisor/store";
 import type { HomeAssistant } from "../../../types";
 import "./components/supervisor-apps-card-content";
@@ -71,12 +70,7 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                 class=${addon.available ? "" : "not_available"}
                 @click=${this._addonTapped}
               >
-                <div
-                  class=${classMap({
-                    "card-content": true,
-                    "has-footer": tags.length > 0 || addon.installed,
-                  })}
-                >
+                <div class="card-content">
                   <supervisor-apps-card-content
                     .hass=${this.hass}
                     .title=${addon.name}
@@ -84,6 +78,9 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                     .description=${addon.description}
                     .available=${addon.available}
                     .installed=${addon.installed}
+                    .updateAvailable=${
+                      addon.installed && addon.update_available
+                    }
                     .tags=${tags}
                     .icon=${
                       addon.installed && addon.update_available
@@ -107,29 +104,10 @@ export class SupervisorAppsRepositoryEl extends LitElement {
                               "ui.panel.config.apps.state.not_available"
                             )
                     }
-                    .iconClass=${
-                      addon.installed
-                        ? addon.update_available
-                          ? "update"
-                          : "installed"
-                        : !addon.available
-                          ? "not_available"
-                          : ""
-                    }
                     .iconImage=${
                       addon.icon
-                        ? `/api/hassio/addons/${addon.slug}/icon`
+                        ? addonImageUrl(addon.slug, this.hass.auth.data.hassUrl)
                         : undefined
-                    }
-                    .showTopbar=${addon.installed || !addon.available}
-                    .topbarClass=${
-                      addon.installed
-                        ? addon.update_available
-                          ? "update"
-                          : "installed"
-                        : !addon.available
-                          ? "unavailable"
-                          : ""
                     }
                   ></supervisor-apps-card-content>
                 </div>
@@ -148,15 +126,6 @@ export class SupervisorAppsRepositoryEl extends LitElement {
   private _getAppTags(addon: StoreAddon): AppTag[] {
     const labels: AppTag[] = [];
 
-    if (addon.installed && addon.update_available) {
-      labels.push({
-        label: this.hass.localize(
-          `ui.panel.config.apps.state.update_available`
-        ),
-        variant: "brand",
-        iconPath: mdiArrowUpBoldCircleOutline,
-      });
-    }
     if (addon.stage !== "stable") {
       labels.push({
         label: this.hass.localize(
@@ -181,9 +150,6 @@ export class SupervisorAppsRepositoryEl extends LitElement {
         }
         ha-card:hover {
           background-color: var(--ha-color-fill-neutral-quiet-resting);
-        }
-        .card-content.has-footer {
-          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }
         .not_available {
           opacity: 0.6;

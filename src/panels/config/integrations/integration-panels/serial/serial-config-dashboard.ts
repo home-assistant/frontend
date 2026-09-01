@@ -15,6 +15,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
+import { addonImageUrl } from "../../../../../data/hassio/addon";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
@@ -196,7 +197,6 @@ export class SerialConfigDashboard extends LitElement {
     return html`<img
       slot="start"
       .src=${src}
-      crossorigin="anonymous"
       referrerpolicy="no-referrer"
       alt=${alt}
     />`;
@@ -225,7 +225,7 @@ export class SerialConfigDashboard extends LitElement {
               )
             : consumer.kind === "app"
               ? this._renderConsumerIcon(
-                  `/api/hassio/addons/${consumer.slug}/icon`,
+                  addonImageUrl(consumer.slug!, this.hass.auth.data.hassUrl),
                   consumer.slug!
                 )
               : html`<ha-svg-icon
@@ -257,7 +257,6 @@ export class SerialConfigDashboard extends LitElement {
             },
             this.hass.auth.data.hassUrl
           )}
-          crossorigin="anonymous"
           referrerpolicy="no-referrer"
           alt=${flow.domain}
         />

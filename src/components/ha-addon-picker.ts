@@ -3,7 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { fetchHassioAddonsInfo } from "../data/hassio/addon";
+import { addonImageUrl, fetchHassioAddonsInfo } from "../data/hassio/addon";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-alert";
 import "./ha-combo-box-item";
@@ -105,7 +105,7 @@ class HaAddonPicker extends LitElement {
             primary: addon.name,
             secondary: addon.slug,
             icon: addon.icon
-              ? `/api/hassio/addons/${addon.slug}/icon`
+              ? addonImageUrl(addon.slug, this.hass.auth.data.hassUrl)
               : undefined,
             search_labels: {
               description: addon.description || null,

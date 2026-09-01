@@ -64,7 +64,6 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
                 <div class="sharing-code-container">
                   <div class="sharing-code">
                     <img
-                      crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                       alt=${domainToName(this.hass.localize, "matter")}
                       src=${brandsUrl(

@@ -86,7 +86,7 @@ class HassSubpage extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--primary-background-color);
+          background-color: var(--ha-color-surface-low);
           overflow: hidden;
           position: relative;
         }

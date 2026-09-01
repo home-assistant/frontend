@@ -17,6 +17,7 @@ import { configSections } from "../panels/config/config-sections";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
+import { addonImageUrl } from "./hassio/addon";
 import { domainToName } from "./integration";
 import {
   getPanelIcon,
@@ -52,6 +53,7 @@ export interface NavigationInfo extends PageNavigation {
 const generateNavigationPanelCommands = (
   localize: HomeAssistant["localize"],
   panels: HomeAssistant["panels"],
+  hassUrl?: string,
   apps?: HassioAddonInfo[]
 ): BaseNavigationCommand[] =>
   Object.entries(panels)
@@ -67,7 +69,7 @@ const generateNavigationPanelCommands = (
       if (apps) {
         const app = apps.find(({ slug }) => slug === panel.url_path);
         if (app) {
-          image = app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined;
+          image = app.icon ? addonImageUrl(app.slug, hassUrl) : undefined;
         }
       }
 
@@ -150,6 +152,7 @@ export const generateNavigationCommands = (
   const panelItems = generateNavigationPanelCommands(
     hass.localize,
     hass.panels,
+    hass.auth.data.hassUrl,
     apps
   );
 
@@ -171,7 +174,9 @@ export const generateNavigationCommands = (
       for (const app of apps.filter((a) => a.version)) {
         appItems.push({
           path: `/config/app/${app.slug}`,
-          image: app.icon ? `/api/hassio/addons/${app.slug}/icon` : undefined,
+          image: app.icon
+            ? addonImageUrl(app.slug, hass.auth.data.hassUrl)
+            : undefined,
           primary: hass.localize(
             "ui.dialogs.quick-bar.commands.navigation.app_info",
             { app: app.name }

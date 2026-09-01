@@ -166,7 +166,6 @@ class MatterAddDeviceDeviceAdded extends LitElement {
                 },
                 this.hass.auth.data.hassUrl
               )}
-              crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
             <div class="device-name">

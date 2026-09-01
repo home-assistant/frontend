@@ -183,7 +183,6 @@ export class BluetoothConfigDashboard extends LitElement {
                 <img
                   class="logo"
                   alt="Bluetooth"
-                  crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                   src=${brandsUrl(
                     {

@@ -70,7 +70,6 @@ class HaDomainIntegrations extends LitElement {
                         },
                         this.hass.auth.data.hassUrl
                       )}
-                      crossorigin="anonymous"
                       referrerpolicy="no-referrer"
                     />
                     <span slot="headline"
@@ -123,7 +122,6 @@ class HaDomainIntegrations extends LitElement {
                       },
                       this.hass.auth.data.hassUrl
                     )}
-                    crossorigin="anonymous"
                     referrerpolicy="no-referrer"
                   />
                   <span slot="headline"
@@ -190,7 +188,6 @@ class HaDomainIntegrations extends LitElement {
                   },
                   this.hass.auth.data.hassUrl
                 )}
-                crossorigin="anonymous"
                 referrerpolicy="no-referrer"
               />
               <span slot="headline"

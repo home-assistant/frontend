@@ -162,7 +162,6 @@ export class MQTTConfigPanel extends LitElement {
             <img
               class="logo"
               alt="MQTT"
-              crossorigin="anonymous"
               referrerpolicy="no-referrer"
               src=${brandsUrl(
                 {
