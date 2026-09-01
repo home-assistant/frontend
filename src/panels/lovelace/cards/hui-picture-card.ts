@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -21,6 +21,7 @@ import type { PersonEntity } from "../../../data/person";
 import {
   isMediaSourceContentId,
   resolveMediaSource,
+  isStreamingMedia,
 } from "../../../data/media_source";
 
 @customElement("hui-picture-card")
@@ -42,6 +43,26 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   @state() private _config?: PictureCardConfig;
 
   @state() private _resolvedImage?: string;
+
+  private _reconnectImg = false;
+
+  @query("img") private _img?: HTMLImageElement;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._resolvedImage && isStreamingMedia(this._resolvedImage)) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._reconnectImg && this._resolvedImage) {
+      this._reconnectImg = false;
+      this._img?.setAttribute("src", this._resolvedImage);
+    }
+  }
 
   public getCardSize(): number {
     return 5;
