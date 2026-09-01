@@ -432,12 +432,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
           }
         }
         wa-drawer::part(dialog)::backdrop {
-            --ha-bottom-sheet-scrim-backdrop-filter,
-            var(
-              --ha-dialog-scrim-backdrop-filter,
-              var(--dialog-backdrop-filter, none)
-            )
-          );
           backdrop-filter: var(
             --ha-bottom-sheet-scrim-backdrop-filter,
             var(
@@ -468,9 +462,6 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
               --ha-dialog-surface-background,
               var(--card-background-color, var(--ha-color-surface-default))
             )
-          );
-            --ha-bottom-sheet-surface-backdrop-filter,
-            var(--ha-dialog-surface-backdrop-filter, none)
           );
           backdrop-filter: var(
             --ha-bottom-sheet-surface-backdrop-filter,
