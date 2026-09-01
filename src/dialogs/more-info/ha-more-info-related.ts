@@ -4,10 +4,13 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeFloorName } from "../../common/entity/compute_floor_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-floor-icon";
@@ -15,6 +18,7 @@ import "../../components/ha-icon";
 import "../../components/ha-icon-next";
 import "../../components/ha-label";
 import "../../components/ha-related-items";
+import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-value";
@@ -35,7 +39,10 @@ interface ContextEntry {
   translationKey: LocalizeKeys;
   value: string;
   displayValue?: TemplateResult;
+  /** Navigates out of the dialog. */
   href?: string;
+  /** Switches to another view inside the dialog. */
+  action?: () => void;
   icon?: TemplateResult;
 }
 
@@ -104,14 +111,29 @@ class HaMoreInfoRelated extends LitElement {
         entry: this._labels?.find((label) => label.label_id === labelId),
       })) ?? [];
 
-    const contextEntries: ContextEntry[] = [];
+    const contextEntries: ContextEntry[] = [
+      {
+        translationKey: "ui.dialogs.more_info_control.entity",
+        value:
+          computeEntityName(
+            this._stateObj,
+            this.hass.entities,
+            this.hass.devices
+          ) || computeStateName(this._stateObj),
+        action: this._goToDetails,
+        icon: html`<ha-state-icon
+          slot="end"
+          .stateObj=${this._stateObj}
+        ></ha-state-icon>`,
+      },
+    ];
 
-    if (floor && floorName) {
+    if (device && deviceName) {
       contextEntries.push({
-        translationKey: "ui.dialogs.more_info_control.floor",
-        value: floorName,
-        href: "/config/areas/dashboard",
-        icon: html`<ha-floor-icon slot="end" .floor=${floor}></ha-floor-icon>`,
+        translationKey: "ui.components.related-items.device",
+        value: deviceName,
+        href: `/config/devices/device/${device.id}`,
+        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
       });
     }
     if (area && areaName) {
@@ -124,12 +146,12 @@ class HaMoreInfoRelated extends LitElement {
           : html`<ha-svg-icon slot="end" .path=${mdiTextureBox}></ha-svg-icon>`,
       });
     }
-    if (device && deviceName) {
+    if (floor && floorName) {
       contextEntries.push({
-        translationKey: "ui.components.related-items.device",
-        value: deviceName,
-        href: `/config/devices/device/${device.id}`,
-        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
+        translationKey: "ui.dialogs.more_info_control.floor",
+        value: floorName,
+        href: "/config/areas/dashboard",
+        icon: html`<ha-floor-icon slot="end" .floor=${floor}></ha-floor-icon>`,
       });
     }
     if (this.entry?.platform && integrationName) {
@@ -187,9 +209,7 @@ class HaMoreInfoRelated extends LitElement {
 
     return html`
       <div class="content">
-        <ha-grouped-list
-          .header=${this.hass.localize("ui.dialogs.more_info_control.context")}
-        >
+        <ha-grouped-list>
           ${this._renderEntries(contextEntries)}
         </ha-grouped-list>
         <ha-related-items
@@ -202,11 +222,18 @@ class HaMoreInfoRelated extends LitElement {
     `;
   }
 
+  private _goToDetails = () => {
+    fireEvent(this, "hass-more-info", {
+      entityId: this.params!.entityId,
+      view: "details",
+    });
+  };
+
   private _renderEntries(entries: ContextEntry[]) {
     return entries.map((entry) => {
       const label = this.hass.localize(entry.translationKey);
 
-      if (!entry.href) {
+      if (!entry.href && !entry.action) {
         return html`
           <ha-list-item-value .label=${label}
             >${entry.displayValue ?? entry.value}</ha-list-item-value
@@ -215,7 +242,10 @@ class HaMoreInfoRelated extends LitElement {
       }
 
       return html`
-        <ha-list-item-button .href=${entry.href}>
+        <ha-list-item-button
+          .href=${entry.href}
+          @click=${entry.action ?? nothing}
+        >
           <div class="link-row" slot="content">
             <div class="label">${label}</div>
             <div class="value">${entry.value}</div>

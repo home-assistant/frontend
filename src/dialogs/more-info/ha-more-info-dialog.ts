@@ -6,15 +6,12 @@ import {
   mdiCodeBraces,
   mdiCogOutline,
   mdiContentDuplicate,
-  mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiLinkVariant,
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
   mdiPlusBoxMultipleOutline,
-  mdiTransitConnectionVariant,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -61,10 +58,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "./ha-more-info-related";
-import type {
-  EntityRegistryEntry,
-  ExtEntityRegistryEntry,
-} from "../../data/entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
@@ -159,6 +153,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _initialView: MoreInfoView = DEFAULT_VIEW;
 
+  /** View to step back to, when one view opens another. Not rendered. */
+  private _previousView?: MoreInfoView;
+
   @state() private _childViewStack: ChildView[] = [];
 
   private get _childView(): ChildView | undefined {
@@ -192,6 +189,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._returnUrl = params.returnUrl;
     this._currView = view;
     this._initialView = view;
+    this._previousView = undefined;
     this._childViewStack = [];
     this._infoEditMode = false;
     this._detailsYamlMode = false;
@@ -284,12 +282,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     );
   }
 
-  private _getDeviceId(): string | null {
-    const entity = this.hass.entities[this._entityId!] as
-      EntityRegistryEntry | undefined;
-    return entity?.device_id ?? null;
-  }
-
   private _setView(view: MoreInfoView) {
     updateHistoryState({
       dialogParams: {
@@ -297,6 +289,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         view,
       },
     });
+    if (view !== this._currView) {
+      this._previousView = this._currView;
+    }
     this._currView = view;
     this._syncUrl();
   }
@@ -322,6 +317,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       }
       this._childViewStack = this._childViewStack.slice(0, -1);
       this._detailsYamlMode = false;
+      return;
+    }
+    // The info view opens details from its entity row, so back returns there
+    // rather than jumping straight out to the view the dialog was opened on.
+    if (
+      this._currView !== DEFAULT_VIEW &&
+      this._previousView &&
+      this._previousView !== this._currView
+    ) {
+      const previousView = this._previousView;
+      this._setView(previousView);
+      this._previousView = undefined;
       return;
     }
     if (
@@ -368,13 +375,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       view.viewHeaderImport();
     }
     this._childViewStack = [...this._childViewStack, view];
-  }
-
-  private _goToDevice(): void {
-    const deviceId = this._getDeviceId();
-    if (!deviceId) return;
-    navigate(`/config/devices/device/${deviceId}`);
-    this.closeDialog();
   }
 
   private _goToEdit() {
@@ -439,9 +439,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     switch (action) {
-      case "device":
-        this._goToDevice();
-        break;
       case "edit":
         this._goToEdit();
         break;
@@ -462,9 +459,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         break;
       case "info":
         this._resetInitialView();
-        break;
-      case "details":
-        this._setView("details");
         break;
       default:
         break;
@@ -556,10 +550,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
     const isAdmin = this.hass.user!.is_admin;
 
-    const deviceId = this._getDeviceId();
-    const deviceType =
-      (deviceId && this.hass.devices[deviceId].entry_type) || "device";
-
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const showCloseIcon =
       isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
@@ -603,7 +593,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this._currView === "details"
         ? this.hass.localize("ui.dialogs.more_info_control.details")
         : this._currView === "related"
-          ? this.hass.localize("ui.dialogs.more_info_control.related")
+          ? this.hass.localize("ui.dialogs.more_info_control.info")
           : this._currView === "add_to"
             ? addToMenuItem
             : this._childView?.viewTitle;
@@ -687,7 +677,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                   slot="headerNavigationIcon"
                   @click=${this._goBack}
                   .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.back_to_info"
+                    "ui.dialogs.more_info_control.back_to_entity"
                   )}
                 ></ha-icon-button-prev>
               `
@@ -810,30 +800,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                               : nothing
                           }
                           ${
-                            deviceId
-                              ? html`
-                                  <ha-dropdown-item value="device">
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${
-                                        deviceType === "service"
-                                          ? mdiTransitConnectionVariant
-                                          : mdiDevices
-                                      }
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(
-                                      "ui.dialogs.more_info_control.device_or_service_info",
-                                      {
-                                        type: this.hass.localize(
-                                          `ui.dialogs.more_info_control.device_type.${deviceType}`
-                                        ),
-                                      }
-                                    )}
-                                  </ha-dropdown-item>
-                                `
-                              : nothing
-                          }
-                          ${
                             this._shouldShowEditIcon(domain, stateObj)
                               ? html`
                                   <ha-dropdown-item value="edit">
@@ -856,19 +822,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           <ha-dropdown-item value="related">
                             <ha-svg-icon
                               slot="icon"
-                              .path=${mdiLinkVariant}
-                            ></ha-svg-icon>
-                            ${this.hass.localize(
-                              "ui.dialogs.more_info_control.related"
-                            )}
-                          </ha-dropdown-item>
-                          <ha-dropdown-item value="details">
-                            <ha-svg-icon
-                              slot="icon"
                               .path=${mdiInformationOutline}
                             ></ha-svg-icon>
                             ${this.hass.localize(
-                              "ui.dialogs.more_info_control.details"
+                              "ui.dialogs.more_info_control.info"
                             )}
                           </ha-dropdown-item>
                         </ha-dropdown>
@@ -1059,6 +1016,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._entityId = entityId;
     this._currView = view === "details" ? view : DEFAULT_VIEW;
     this._initialView = view;
+    this._previousView = undefined;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
     this._childViewStack = [];

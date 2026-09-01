@@ -156,13 +156,21 @@ export class HaRelatedItems extends LitElement {
       this._entries
     );
 
+    // A plain entity is only ever referenced *by* the items below, so those
+    // sections can name the relationship. An automation, script, scene, or
+    // group both references items and is referenced by them, so its sections
+    // stay neutral rather than claiming a direction that may not hold.
+    const referencedByRelations = this.itemType === "entity";
+
     return html`
       ${
         this._related.entity && !this._isExcluded("entity")
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.entity"
+                  referencedByRelations
+                    ? "ui.components.related-items.related_entities"
+                    : "ui.components.related-items.entity"
                 )}
               >
                 ${this._relatedEntities(this._related.entity).map((entity) =>
@@ -177,7 +185,7 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.device"
+                  "ui.components.related-items.devices"
                 )}
               >
                 ${this._related.device.map((relatedDeviceId) => {
@@ -212,7 +220,7 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.integration"
+                  "ui.components.related-items.integrations"
                 )}
               >
                 ${configEntries?.map((entry) => {
@@ -256,7 +264,9 @@ export class HaRelatedItems extends LitElement {
         this._related.area && !this._isExcluded("area")
           ? html`
               <ha-grouped-list
-                .header=${this.hass.localize("ui.components.related-items.area")}
+                .header=${this.hass.localize(
+                  "ui.components.related-items.areas"
+                )}
               >
                 ${this._related.area.map((relatedAreaId) => {
                   const area = this.hass.areas[relatedAreaId];
@@ -305,7 +315,11 @@ export class HaRelatedItems extends LitElement {
         this._related.group && !this._isExcluded("group")
           ? html`
               <ha-grouped-list
-                .header=${this.hass.localize("ui.components.related-items.group")}
+                .header=${this.hass.localize(
+                  referencedByRelations
+                    ? "ui.components.related-items.part_of_groups"
+                    : "ui.components.related-items.group"
+                )}
               >
                 ${this._relatedGroups(this._related.group).map((group) =>
                   this._renderEntityRow(group)
@@ -318,7 +332,11 @@ export class HaRelatedItems extends LitElement {
         this._related.scene && !this._isExcluded("scene")
           ? html`
               <ha-grouped-list
-                .header=${this.hass.localize("ui.components.related-items.scene")}
+                .header=${this.hass.localize(
+                  referencedByRelations
+                    ? "ui.components.related-items.used_in_scenes"
+                    : "ui.components.related-items.scene"
+                )}
               >
                 ${this._relatedScenes(this._related.scene).map((scene) =>
                   this._renderEntityRow(scene)
@@ -333,7 +351,7 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.blueprint"
+                  "ui.components.related-items.based_on_blueprint"
                 )}
               >
                 ${this._related.automation_blueprint.map((path) =>
@@ -348,7 +366,9 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.automation"
+                  referencedByRelations
+                    ? "ui.components.related-items.used_in_automations"
+                    : "ui.components.related-items.automation"
                 )}
               >
                 ${this._relatedAutomations(this._related.automation).map(
@@ -363,7 +383,7 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.blueprint"
+                  "ui.components.related-items.based_on_blueprint"
                 )}
               >
                 ${this._related.script_blueprint.map((path) =>
@@ -378,7 +398,9 @@ export class HaRelatedItems extends LitElement {
           ? html`
               <ha-grouped-list
                 .header=${this.hass.localize(
-                  "ui.components.related-items.script"
+                  referencedByRelations
+                    ? "ui.components.related-items.used_in_scripts"
+                    : "ui.components.related-items.script"
                 )}
               >
                 ${this._relatedScripts(this._related.script).map((script) =>
