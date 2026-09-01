@@ -9907,9 +9907,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"generate-license-file@npm:4.2.4":
-  version: 4.2.4
-  resolution: "generate-license-file@npm:4.2.4"
+"generate-license-file@npm:4.2.5":
+  version: 4.2.5
+  resolution: "generate-license-file@npm:4.2.5"
   dependencies:
     "@commander-js/extra-typings": "npm:^15.0.0"
     "@npmcli/arborist": "npm:^10.0.0"
@@ -9923,7 +9923,7 @@ __metadata:
     zod: "npm:^4.0.0"
   bin:
     generate-license-file: bin/generate-license-file
-  checksum: 10/99ef67940c2235240d27ef638f87e11171cc90100d2bd8d7e2110d68c18dd964461d619288c94a74f6c52385e3528eb142966e944f51dd2405e5496cc60638dd
+  checksum: 10/ccdcf3fb460c35974cbf7cfd2241e15b5e97da5f6d3eeeedebc75ba59520f59e72eb2921c5b39db56d296669363c9ed9997f78e0a84a2bc4ac8b17007f691d3e
   languageName: node
   linkType: hard
 
@@ -10449,7 +10449,7 @@ __metadata:
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.4.0"
     fuse.js: "npm:7.5.0"
-    generate-license-file: "npm:4.2.4"
+    generate-license-file: "npm:4.2.5"
     glob: "npm:13.0.6"
     globals: "npm:17.11.0"
     gulp: "npm:5.0.1"
