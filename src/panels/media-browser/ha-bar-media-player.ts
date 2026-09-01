@@ -549,7 +549,9 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
     const currentProgress = getCurrentProgress(stateObj);
     this._progressBar.max = stateObj.attributes.media_duration;
-    this._progressBar.value = currentProgress;
+    if (!this._progressBar.matches(":state(dragging)")) {
+      this._progressBar.value = currentProgress;
+    }
 
     if (this._currentProgress) {
       this._currentProgress.innerHTML = formatMediaTime(currentProgress);

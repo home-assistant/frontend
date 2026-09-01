@@ -442,7 +442,6 @@ class MoreInfoMediaPlayer extends LitElement {
                   min="0"
                   max=${duration}
                   step="1"
-                  .value=${position}
                   aria-label=${this._localize(
                     "ui.card.media_player.track_position"
                   )}
@@ -787,6 +786,22 @@ class MoreInfoMediaPlayer extends LitElement {
     if (changedProps.has("stateObj")) {
       this._syncProgressInterval();
     }
+    this._updatePositionSlider();
+  }
+
+  private _updatePositionSlider(): void {
+    if (
+      !this._positionSlider ||
+      !this.stateObj ||
+      this._positionSlider.matches(":state(dragging)")
+    ) {
+      return;
+    }
+    const playerObj = new HassMediaPlayerEntity(this._api, this.stateObj);
+    this._positionSlider.value = Math.max(
+      Math.floor(playerObj.currentProgress || 0),
+      0
+    );
   }
 
   private _syncProgressInterval(): void {

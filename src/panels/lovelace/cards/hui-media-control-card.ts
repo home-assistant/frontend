@@ -576,7 +576,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _updateProgressBar(): void {
-    if (this._progressBar && this._stateObj?.attributes.media_duration) {
+    if (
+      this._progressBar &&
+      this._stateObj?.attributes.media_duration &&
+      !this._progressBar.matches(":state(dragging)")
+    ) {
       this._progressBar.value =
         (getCurrentProgress(this._stateObj) /
           this._stateObj!.attributes.media_duration) *
