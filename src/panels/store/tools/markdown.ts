@@ -8,7 +8,7 @@ export const markdownWithRepositoryContext = (
   input: string,
   repository?: RepositoryInfo
 ) => {
-  // Handle convertion to raw GitHub URL
+  // Handle conversion to raw GitHub URL
   input = input.replace(
     /https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^\s]+)/g,
     (x, owner, repo, path) => {
@@ -32,7 +32,7 @@ export const markdownWithRepositoryContext = (
         );
     });
 
-    // Handle anchor refrences
+    // Handle anchor references
     input = input.replace(/\[.*\]\(#.*\)/g, (x) => {
       return x.replace("(#", `(/store/repository/${repository.id}#`);
     });

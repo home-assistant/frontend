@@ -48,8 +48,6 @@ export class HaStoreRepositoryDashboard extends LitElement {
 
   @property({ attribute: false }) public narrow!: boolean;
 
-  @property({ attribute: false }) public isWide!: boolean;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() public _repository?: RepositoryInfo;
@@ -243,29 +241,25 @@ export class HaStoreRepositoryDashboard extends LitElement {
                     `
                   : ""
               }
-              ${
-                authors
-                  ? authors.map(
-                      (author) =>
-                        html`<a
-                          href="https://github.com/${author}"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          <ha-assist-chip
-                            .label=${author}
-                            title=${this.hass.localize("ui.panel.store.dialog_info.author")}
-                          >
-                            <ha-svg-icon
-                              slot="icon"
-                              .path=${mdiAccount}
-                            ></ha-svg-icon>
-                            @${author}
-                          </ha-assist-chip>
-                        </a>`
-                    )
-                  : ""
-              }
+              ${authors.map(
+                (author) =>
+                  html`<a
+                    href="https://github.com/${author}"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <ha-assist-chip
+                      .label=${author}
+                      title=${this.hass.localize("ui.panel.store.dialog_info.author")}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiAccount}
+                      ></ha-svg-icon>
+                      @${author}
+                    </ha-assist-chip>
+                  </a>`
+              )}
               ${
                 this._repository.downloads
                   ? html` <ha-assist-chip
@@ -338,7 +332,6 @@ export class HaStoreRepositoryDashboard extends LitElement {
               ? html`<wa-divider></wa-divider>`
               : html`
                   <ha-dropdown-item
-                    class=${entry.warning ? "warning" : ""}
                     variant=${entry.error ? "danger" : "default"}
                     @click=${entry.action}
                   >

@@ -6,7 +6,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
-import { mainWindow } from "../../../common/dom/get_main_window";
 import { navigate } from "../../../common/navigate";
 import type {
   DataTableColumnContainer,
@@ -35,7 +34,7 @@ import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
 import { repositoriesClearNew } from "../data/websocket";
 import { storeStyles } from "../styles/store-common-style";
-import { documentationUrl } from "../tools/documentation";
+import { storeDocumentationUrl } from "../tools/documentation";
 import { typeIcon } from "../tools/type-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
@@ -232,7 +231,6 @@ export class HaStoreDashboard extends LitElement {
                   ? html`<wa-divider></wa-divider>`
                   : html`
                       <ha-dropdown-item
-                        class=${entry.warning ? "warning" : ""}
                         variant=${entry.error ? "danger" : "default"}
                         @click=${entry.action}
                       >
@@ -461,7 +459,7 @@ export class HaStoreDashboard extends LitElement {
   };
 
   private _openDocumentation() {
-    mainWindow.open(documentationUrl({}), "_blank", "noreferrer=true");
+    window.open(storeDocumentationUrl(), "_blank", "noreferrer=true");
   }
 
   private _showCustomRepositories() {

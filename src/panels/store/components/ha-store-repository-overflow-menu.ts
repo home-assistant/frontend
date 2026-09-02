@@ -1,5 +1,4 @@
 import {
-  mdiAlert,
   mdiAlertCircleOutline,
   mdiArrowDownCircle,
   mdiClose,
@@ -10,7 +9,6 @@ import {
   mdiMoonNew,
   mdiReload,
 } from "@mdi/js";
-import { mainWindow } from "../../../common/dom/get_main_window";
 import { navigate } from "../../../common/navigate";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
@@ -30,6 +28,7 @@ import {
   showStoreFormDialog,
 } from "../dialogs/show-dialog-store";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { generateFrontendResourceURL } from "../tools/frontend-resource";
 
 const showError = (
   element: HaStoreRepositoryDashboard | HaStoreDashboard,
@@ -59,7 +58,7 @@ export const repositoryMenuItems = (
     path: mdiGithub,
     label: localize("ui.panel.store.common.repository"),
     action: () =>
-      mainWindow.open(
+      window.open(
         `https://github.com/${repository.full_name}`,
         "_blank",
         "noreferrer=true"
@@ -88,7 +87,6 @@ export const repositoryMenuItems = (
         store: element.store,
         repositoryId: repository.id,
       }),
-    hideForUninstalled: true,
   },
   ...(repository.new
     ? [
@@ -111,8 +109,8 @@ export const repositoryMenuItems = (
           path: mdiLanguageJavascript,
           label: localize("ui.panel.store.repository_card.open_source"),
           action: () =>
-            mainWindow.open(
-              `/hacsfiles/${repository.local_path.split("/").pop()}/${repository.file_name}?cachebuster=${Date.now()}`,
+            window.open(
+              `${generateFrontendResourceURL({ repository })}?cachebuster=${Date.now()}`,
               "_blank",
               "noreferrer=true"
             ),
@@ -124,25 +122,14 @@ export const repositoryMenuItems = (
     path: mdiAlertCircleOutline,
     label: localize("ui.panel.store.repository_card.open_issue"),
     action: () =>
-      mainWindow.open(
+      window.open(
         `https://github.com/${repository.full_name}/issues`,
         "_blank",
         "noreferrer=true"
       ),
   },
-  ...(repository.id !== "172733314" && repository.installed_version
+  ...(repository.installed_version
     ? [
-        {
-          path: mdiAlert,
-          label: localize("ui.panel.store.repository_card.report"),
-          action: () =>
-            mainWindow.open(
-              `https://github.com/hacs/integration/issues/new?assignees=ludeeus&labels=flag&template=removal.yml&repo=${repository.full_name}&title=Request for removal of ${repository.full_name}`,
-              "_blank",
-              "noreferrer=true"
-            ),
-          warning: true,
-        },
         {
           path: mdiClose,
           label: localize("ui.panel.store.common.remove"),

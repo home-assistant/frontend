@@ -17,7 +17,6 @@ import {
 } from "./data/websocket";
 import "./ha-store-router";
 import { storeStyles } from "./styles/store-common-style";
-import { storeStyleVariables } from "./styles/variables";
 
 @customElement("ha-panel-store")
 class HaPanelStore extends SubscribeMixin(LitElement) {
@@ -162,7 +161,7 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
   };
 
   static get styles() {
-    return [storeStyles, storeStyleVariables];
+    return storeStyles;
   }
 }
 

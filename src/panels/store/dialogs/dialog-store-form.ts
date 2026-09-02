@@ -165,12 +165,6 @@ class DialogStoreForm extends LitElement {
       : error || "";
 
   static styles: CSSResultGroup = css`
-    .root > * {
-      display: block;
-    }
-    .root > *:not([own-margin]):not(:last-child) {
-      margin-bottom: 24px;
-    }
     ha-progress-bar {
       margin-bottom: -8px;
       margin-top: 4px;

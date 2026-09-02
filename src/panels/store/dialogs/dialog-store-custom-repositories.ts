@@ -21,6 +21,7 @@ import {
   repositoryDelete,
   websocketSubscription,
 } from "../data/websocket";
+import { storeStyleVariables } from "../styles/variables";
 import type { StoreCustomRepositoriesDialogParams } from "./show-dialog-store";
 
 @customElement("dialog-store-custom-repositories")
@@ -251,37 +252,17 @@ export class DialogStoreCustomRepositories extends LitElement {
 
   static get styles() {
     return [
+      storeStyleVariables,
       css`
-        .list {
-          position: relative;
-          max-height: calc(100vh - 500px);
-          overflow: auto;
-        }
-        a {
-          all: unset;
-        }
         ha-progress-bar {
           margin-bottom: -8px;
           margin-top: 4px;
         }
-        ha-svg-icon {
-          --mdc-icon-size: 36px;
-        }
-        ha-svg-icon:not(.delete) {
-          margin-right: 4px;
-        }
         ha-settings-row {
-          cursor: pointer;
           padding: 0;
         }
         .delete {
-          color: var(--hcv-color-error);
-        }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .list {
-            max-height: calc(100vh - 162px);
-          }
+          color: var(--store-color-error);
         }
       `,
     ];
