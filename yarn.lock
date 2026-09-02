@@ -2802,13 +2802,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.6.0":
-  version: 7.6.0
-  resolution: "@formatjs/intl-datetimeformat@npm:7.6.0"
+"@formatjs/intl-datetimeformat@npm:7.6.1":
+  version: 7.6.1
+  resolution: "@formatjs/intl-datetimeformat@npm:7.6.1"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.7"
     "@formatjs/intl-localematcher": "npm:0.8.13"
-  checksum: 10/8d172390d12c0d771721e5737d4af37ed3dd3bdbb59dfbc7ac2280ee17ff0ed56a737d0b8a3ca507e40c556140b4297a28d72b33b5b3b3e9becca55d8ef26549
+  checksum: 10/d4505153375d74d26ff88c056360b663d0a2a95538907910ecc0ab83aab7f4046a3e63385c08d2699296d73be21afeba8956a45c4771fda39b0a783562a2d7a3
   languageName: node
   linkType: hard
 
@@ -10339,7 +10339,7 @@ __metadata:
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
-    "@formatjs/intl-datetimeformat": "npm:7.6.0"
+    "@formatjs/intl-datetimeformat": "npm:7.6.1"
     "@formatjs/intl-displaynames": "npm:7.3.13"
     "@formatjs/intl-durationformat": "npm:0.10.18"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.11"
