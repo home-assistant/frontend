@@ -73,6 +73,7 @@ class HaPanelConfig extends HassRouterPage {
       connectivity: {
         tag: "ha-config-connectivity",
         load: () => import("./connectivity/ha-config-connectivity"),
+        waitForReady: true,
       },
       devices: {
         tag: "ha-config-devices",
