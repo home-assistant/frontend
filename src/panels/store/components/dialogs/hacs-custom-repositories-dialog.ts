@@ -1,15 +1,13 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDelete } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../homeassistant-frontend/src/common/dom/fire_event";
-import { createCloseHeading } from "../../../homeassistant-frontend/src/components/ha-dialog";
-import "../../../homeassistant-frontend/src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../homeassistant-frontend/src/components/ha-form/types";
-import "../../../homeassistant-frontend/src/components/ha-settings-row";
-import "../../../homeassistant-frontend/src/components/ha-svg-icon";
-import type { HomeAssistant } from "../../../homeassistant-frontend/src/types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import "../../../../components/ha-settings-row";
+import "../../../../components/ha-svg-icon";
+import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
 import {
   getRepositories,
@@ -33,7 +31,9 @@ export class HacsCustomRepositoriesDialog extends LitElement {
 
   _errorSubscription: any;
 
-  public async showDialog(dialogParams: HacsCustomRepositoriesDialogParams): Promise<void> {
+  public async showDialog(
+    dialogParams: HacsCustomRepositoriesDialogParams
+  ): Promise<void> {
     this._dialogParams = dialogParams;
     this._errorSubscription = await websocketSubscription(
       this.hass,
@@ -41,7 +41,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
         console.log(data);
         this._errors = { base: data?.message || data };
       },
-      HacsDispatchEvent.ERROR,
+      HacsDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -67,7 +67,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this._dialogParams.hacs.localize("dialog_custom_repositories.title"),
+          this._dialogParams.hacs.localize("dialog_custom_repositories.title")
         )}
         @closed=${this.closeDialog}
       >
@@ -76,13 +76,17 @@ export class HacsCustomRepositoriesDialog extends LitElement {
             ${this._dialogParams.hacs.repositories
               .filter((repository) => repository.custom)
               ?.filter((repository) =>
-                this._dialogParams!.hacs.info.categories.includes(repository.category),
+                this._dialogParams!.hacs.info.categories.includes(
+                  repository.category
+                )
               )
               .map(
                 (repository) =>
                   html` <ha-settings-row>
                     <span slot="heading">${repository.name}</span>
-                    <span slot="description">${repository.full_name} (${repository.category})</span>
+                    <span slot="description"
+                      >${repository.full_name} (${repository.category})</span
+                    >
 
                     <mwc-icon-button
                       @click=${(ev: Event) => {
@@ -92,13 +96,16 @@ export class HacsCustomRepositoriesDialog extends LitElement {
                           new CustomEvent("closed", {
                             bubbles: true,
                             composed: true,
-                          }),
+                          })
                         );
                       }}
                     >
-                      <ha-svg-icon class="delete" .path=${mdiDelete}></ha-svg-icon>
+                      <ha-svg-icon
+                        class="delete"
+                        .path=${mdiDelete}
+                      ></ha-svg-icon>
                     </mwc-icon-button>
-                  </ha-settings-row>`,
+                  </ha-settings-row>`
               )}
           </div>
           <ha-form
@@ -114,10 +121,14 @@ export class HacsCustomRepositoriesDialog extends LitElement {
                 selector: {
                   select: {
                     mode: "dropdown",
-                    options: this._dialogParams.hacs.info.categories.map((category) => ({
-                      value: category,
-                      label: this._dialogParams!.hacs.localize(`common.type.${category}`),
-                    })),
+                    options: this._dialogParams.hacs.info.categories.map(
+                      (category) => ({
+                        value: category,
+                        label: this._dialogParams!.hacs.localize(
+                          `common.type.${category}`
+                        ),
+                      })
+                    ),
                   },
                 },
               },
@@ -125,23 +136,33 @@ export class HacsCustomRepositoriesDialog extends LitElement {
             .error=${this._errors}
             .computeLabel=${(schema: HaFormSchema) =>
               schema.name === "category"
-                ? this._dialogParams!.hacs.localize("dialog_custom_repositories.type")
+                ? this._dialogParams!.hacs.localize(
+                    "dialog_custom_repositories.type"
+                  )
                 : this._dialogParams!.hacs.localize("common.repository")}
             @value-changed=${this._valueChanged}
             dialogInitialFocus
           ></ha-form>
-          ${this._waiting
-            ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-            : nothing}
+          ${
+            this._waiting
+              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              : nothing
+          }
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog} dialogInitialFocus>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this._dialogParams.hacs.localize("common.cancel")}
         </mwc-button>
         <mwc-button
-          .disabled=${this._waiting ||
-          !this._data ||
-          !this._data.repository ||
-          !this._data.category}
+          .disabled=${
+            this._waiting ||
+            !this._data ||
+            !this._data.repository ||
+            !this._data.category
+          }
           slot="primaryAction"
           @click=${this._addRepository}
         >
@@ -160,13 +181,17 @@ export class HacsCustomRepositoriesDialog extends LitElement {
 
     if (!this._data?.category) {
       this._errors = {
-        base: this._dialogParams!.hacs.localize("dialog_custom_repositories.no_type"),
+        base: this._dialogParams!.hacs.localize(
+          "dialog_custom_repositories.no_type"
+        ),
       };
       return;
     }
     if (!this._data?.repository) {
       this._errors = {
-        base: this._dialogParams!.hacs.localize("dialog_custom_repositories.no_repository"),
+        base: this._dialogParams!.hacs.localize(
+          "dialog_custom_repositories.no_repository"
+        ),
       };
       return;
     }
@@ -188,7 +213,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
         detail: { repositories },
         bubbles: true,
         composed: true,
-      }),
+      })
     );
     this._dialogParams = {
       ...this._dialogParams,

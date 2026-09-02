@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../../homeassistant-frontend/src/types";
+import type { HomeAssistant } from "../../../types";
 
 export type RepositoryType =
   | "appdaemon"
@@ -34,7 +34,8 @@ export interface RepositoryBase {
   pending_upgrade: boolean;
   stars: number;
   state: string;
-  status: "pending-restart" | "pending-upgrade" | "new" | "installed" | "default";
+  status:
+    "pending-restart" | "pending-upgrade" | "new" | "installed" | "default";
   topics: string[];
 }
 
@@ -51,7 +52,7 @@ export interface RepositoryInfo extends RepositoryBase {
 
 export const fetchRepositoryInformation = async (
   hass: HomeAssistant,
-  repositoryId: string,
+  repositoryId: string
 ): Promise<RepositoryInfo | undefined> =>
   hass.connection.sendMessagePromise({
     type: "hacs/repository/info",
@@ -61,7 +62,7 @@ export const fetchRepositoryInformation = async (
 export const repositoryDownloadVersion = async (
   hass: HomeAssistant,
   repository: string,
-  version?: string,
+  version?: string
 ) =>
   hass.connection.sendMessagePromise<void>({
     type: "hacs/repository/download",
@@ -69,7 +70,10 @@ export const repositoryDownloadVersion = async (
     version,
   });
 
-export const repositoryReleases = async (hass: HomeAssistant, repositoryId: string) =>
+export const repositoryReleases = async (
+  hass: HomeAssistant,
+  repositoryId: string
+) =>
   hass.connection.sendMessagePromise<
     { tag: string; name: string; published_at: string; prerelease: boolean }[]
   >({

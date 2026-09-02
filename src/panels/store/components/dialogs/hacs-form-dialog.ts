@@ -1,17 +1,15 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../homeassistant-frontend/src/common/dom/fire_event";
-import "../../../homeassistant-frontend/src/components/ha-dialog";
-import { createCloseHeading } from "../../../homeassistant-frontend/src/components/ha-dialog";
-import "../../../homeassistant-frontend/src/components/ha-form/ha-form";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-dialog";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-form/ha-form";
 import type {
   HaFormDataContainer,
   HaFormSchema,
-} from "../../../homeassistant-frontend/src/components/ha-form/types";
-import "../../../homeassistant-frontend/src/components/ha-settings-row";
-import type { HomeAssistant } from "../../../homeassistant-frontend/src/types";
+} from "../../../../components/ha-form/types";
+import "../../../../components/ha-settings-row";
+import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
 import { websocketSubscription } from "../../data/websocket";
 import type { HacsFormDialogParams } from "./show-hacs-dialog";
@@ -36,7 +34,7 @@ class HacsFromDialog extends LitElement {
         console.log(data);
         this._errors = { base: data?.message || data };
       },
-      HacsDispatchEvent.ERROR,
+      HacsDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -60,51 +58,70 @@ class HacsFromDialog extends LitElement {
         open
         .scrimClickAction=${this._dialogParams.saveAction !== undefined}
         .escapeKeyAction=${this._dialogParams.saveAction !== undefined}
-        .heading=${this._dialogParams.saveAction === undefined
-          ? createCloseHeading(this.hass, this._dialogParams.title)
-          : this._dialogParams.title}
+        .heading=${
+          this._dialogParams.saveAction === undefined
+            ? createCloseHeading(this.hass, this._dialogParams.title)
+            : this._dialogParams.title
+        }
         @closed=${this.closeDialog}
       >
         <div>
           ${this._dialogParams.description || nothing}
-          ${this._dialogParams.schema && this._dialogParams.saveAction
-            ? html`<ha-form
-                .hass=${this.hass}
-                .data=${this._dialogParams.data || {}}
-                .schema=${this._dialogParams.schema || []}
-                .error=${this._errors}
-                .computeLabel=${this._computeLabel}
-                .computeHelper=${this._computeHelper}
-                .computeError=${this._computeError}
-                @value-changed=${this._valueChanged}
-                dialogInitialFocus
-              ></ha-form>`
-            : nothing}
-          ${this._waiting
-            ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-            : nothing}
+          ${
+            this._dialogParams.schema && this._dialogParams.saveAction
+              ? html`<ha-form
+                  .hass=${this.hass}
+                  .data=${this._dialogParams.data || {}}
+                  .schema=${this._dialogParams.schema || []}
+                  .error=${this._errors}
+                  .computeLabel=${this._computeLabel}
+                  .computeHelper=${this._computeHelper}
+                  .computeError=${this._computeError}
+                  @value-changed=${this._valueChanged}
+                  dialogInitialFocus
+                ></ha-form>`
+              : nothing
+          }
+          ${
+            this._waiting
+              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              : nothing
+          }
         </div>
-        ${this._dialogParams.saveAction
-          ? html`<mwc-button slot="secondaryAction" @click=${this.closeDialog} dialogInitialFocus>
-                ${this._dialogParams.hacs.localize("common.cancel")}
-              </mwc-button>
-              <mwc-button
-                class="${this._dialogParams.destructive ? "destructive" : ""}"
-                .disabled=${this._waiting ||
-                (this._dialogParams.schema?.some((entry) => entry.required) &&
-                  !this._dialogParams.data)}
-                slot="primaryAction"
-                @click=${this._saveClicked}
-              >
-                ${this._dialogParams.saveLabel || this._dialogParams.hacs.localize("common.save")}
-              </mwc-button>`
-          : nothing}
+        ${
+          this._dialogParams.saveAction
+            ? html`<mwc-button
+                  slot="secondaryAction"
+                  @click=${this.closeDialog}
+                  dialogInitialFocus
+                >
+                  ${this._dialogParams.hacs.localize("common.cancel")}
+                </mwc-button>
+                <mwc-button
+                  class="${this._dialogParams.destructive ? "destructive" : ""}"
+                  .disabled=${
+                    this._waiting ||
+                    (this._dialogParams.schema?.some(
+                      (entry) => entry.required
+                    ) &&
+                      !this._dialogParams.data)
+                  }
+                  slot="primaryAction"
+                  @click=${this._saveClicked}
+                >
+                  ${this._dialogParams.saveLabel || this._dialogParams.hacs.localize("common.save")}
+                </mwc-button>`
+            : nothing
+        }
       </ha-dialog>
     `;
   }
 
   private _valueChanged(ev: CustomEvent) {
-    this._dialogParams!.data = { ...this._dialogParams!.data, ...ev.detail.value };
+    this._dialogParams!.data = {
+      ...this._dialogParams!.data,
+      ...ev.detail.value,
+    };
   }
 
   public async _saveClicked(): Promise<void> {
@@ -116,7 +133,9 @@ class HacsFromDialog extends LitElement {
     try {
       await this._dialogParams.saveAction(this._dialogParams.data);
     } catch (err: any) {
-      this._errors = { base: err?.message || "Unkown error, check Home Assistant logs" };
+      this._errors = {
+        base: err?.message || "Unkown error, check Home Assistant logs",
+      };
     }
     this._waiting = false;
 
@@ -131,10 +150,17 @@ class HacsFromDialog extends LitElement {
       : schema.name || "";
 
   private _computeHelper = (schema: HaFormSchema) =>
-    this._dialogParams?.computeHelper ? this._dialogParams.computeHelper(schema) : "";
+    this._dialogParams?.computeHelper
+      ? this._dialogParams.computeHelper(schema)
+      : "";
 
-  private _computeError = (error, schema: HaFormSchema | readonly HaFormSchema[]) =>
-    this._dialogParams?.computeError ? this._dialogParams.computeError(error, schema) : error || "";
+  private _computeError = (
+    error,
+    schema: HaFormSchema | readonly HaFormSchema[]
+  ) =>
+    this._dialogParams?.computeError
+      ? this._dialogParams.computeError(error, schema)
+      : error || "";
 
   static get styles(): CSSResultGroup {
     return css`

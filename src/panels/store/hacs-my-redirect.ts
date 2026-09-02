@@ -1,18 +1,14 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { navigate } from "../homeassistant-frontend/src/common/navigate";
+import { navigate } from "../../common/navigate";
 import {
   createSearchParam,
   extractSearchParamsObject,
-} from "../homeassistant-frontend/src/common/url/search-params";
-import "../homeassistant-frontend/src/layouts/hass-error-screen";
-import type {
-  ParamType,
-  Redirect,
-  Redirects,
-} from "../homeassistant-frontend/src/panels/my/ha-panel-my";
-import type { HomeAssistant, Route } from "../homeassistant-frontend/src/types";
+} from "../../common/url/search-params";
+import "../../layouts/hass-error-screen";
+import type { ParamType, Redirect, Redirects } from "../my/ha-panel-my";
+import type { HomeAssistant, Route } from "../../types";
 import type { Hacs } from "./data/hacs";
 
 export const REDIRECTS: Redirects = {
@@ -67,7 +63,9 @@ class HacsMyRedirect extends LitElement {
 
   protected render() {
     if (this._error) {
-      return html`<hass-error-screen .error=${this._error}></hass-error-screen>`;
+      return html`<hass-error-screen
+        .error=${this._error}
+      ></hass-error-screen>`;
     }
     return nothing;
   }

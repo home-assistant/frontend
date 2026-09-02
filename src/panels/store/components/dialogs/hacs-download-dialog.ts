@@ -1,22 +1,20 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../homeassistant-frontend/src/common/dom/fire_event";
-import { mainWindow } from "../../../homeassistant-frontend/src/common/dom/get_main_window";
-import { computeRTL } from "../../../homeassistant-frontend/src/common/util/compute_rtl";
-import "../../../homeassistant-frontend/src/components/ha-alert";
-import "../../../homeassistant-frontend/src/components/ha-button";
-import "../../../homeassistant-frontend/src/components/ha-circular-progress";
-import "../../../homeassistant-frontend/src/components/ha-dialog";
-import "../../../homeassistant-frontend/src/components/ha-expansion-panel";
-import "../../../homeassistant-frontend/src/components/ha-form/ha-form";
-import "../../../homeassistant-frontend/src/components/ha-list-item";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { mainWindow } from "../../../../common/dom/get_main_window";
+import { computeRTL } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-list-item";
 
-import { relativeTime } from "../../../homeassistant-frontend/src/common/datetime/relative_time";
-import { showConfirmationDialog } from "../../../homeassistant-frontend/src/dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../homeassistant-frontend/src/types";
+import { relativeTime } from "../../../../common/datetime/relative_time";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
 import {
   fetchRepositoryInformation,
@@ -48,9 +46,11 @@ export class ReleaseItem extends LitElement {
       </span>
       <span class="secondary">
         ${relativeTime(new Date(this.release.published_at), this.locale)}
-        ${this.release.name && this.release.name !== this.release.tag
-          ? html` - ${this.release.name}`
-          : nothing}
+        ${
+          this.release.name && this.release.name !== this.release.tag
+            ? html` - ${this.release.name}`
+            : nothing
+        }
       </span>
     `;
   }
@@ -101,7 +101,9 @@ export class HacsDonwloadDialog extends LitElement {
 
   @state() _selectedVersion?: string;
 
-  public async showDialog(dialogParams: HacsDownloadDialogParams): Promise<void> {
+  public async showDialog(
+    dialogParams: HacsDownloadDialogParams
+  ): Promise<void> {
     this._dialogParams = dialogParams;
     this._waiting = false;
     if (dialogParams.repository) {
@@ -121,7 +123,7 @@ export class HacsDonwloadDialog extends LitElement {
         this._error = data;
         this._installing = false;
       },
-      HacsDispatchEvent.ERROR,
+      HacsDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -149,7 +151,7 @@ export class HacsDonwloadDialog extends LitElement {
     try {
       this._repository = await fetchRepositoryInformation(
         this.hass,
-        this._dialogParams!.repositoryId,
+        this._dialogParams!.repositoryId
       );
     } catch (err: any) {
       this._error = err;
@@ -165,11 +167,16 @@ export class HacsDonwloadDialog extends LitElement {
         <ha-dialog open scrimClickAction escapeKeyAction heading="Loading...">
           <div class="loading">
             <ha-circular-progress indeterminate></ha-circular-progress>
-            ${this._error
-              ? html`<ha-alert alert-type="error" .rtl=${computeRTL(this.hass)}>
-                  ${this._error.message || this._error}
-                </ha-alert>`
-              : nothing}
+            ${
+              this._error
+                ? html`<ha-alert
+                    alert-type="error"
+                    .rtl=${computeRTL(this.hass)}
+                  >
+                    ${this._error.message || this._error}
+                  </ha-alert>`
+                : nothing
+            }
           </div>
         </ha-dialog>
       `;
@@ -192,75 +199,105 @@ export class HacsDonwloadDialog extends LitElement {
                 : "dialog_download.will_download_version",
               {
                 ref: html`
-                  <code>${this._selectedVersion || this._repository.available_version}</code>
+                  <code
+                    >${this._selectedVersion || this._repository.available_version}</code
+                  >
                 `,
-              },
+              }
             )}
           </p>
           <div class="note">
-            ${this._dialogParams.hacs.localize("dialog_download.note_downloaded", {
-              location: html`<code>'${installPath}'</code>`,
-            })}
-            ${this._repository.category === "plugin" &&
-            this._dialogParams.hacs.info.lovelace_mode !== "storage"
-              ? html`
-                  <p>${this._dialogParams.hacs.localize(`dialog_download.lovelace_instruction`)}</p>
-                  <pre class="frontend-resource">
+            ${this._dialogParams.hacs.localize(
+              "dialog_download.note_downloaded",
+              {
+                location: html`<code>'${installPath}'</code>`,
+              }
+            )}
+            ${
+              this._repository.category === "plugin" &&
+              this._dialogParams.hacs.info.lovelace_mode !== "storage"
+                ? html`
+                    <p>
+                      ${this._dialogParams.hacs.localize(`dialog_download.lovelace_instruction`)}
+                    </p>
+                    <pre class="frontend-resource">
                 url: ${generateFrontendResourceURL({ repository: this._repository })}
                 type: module
-                </pre
-                  >
-                `
-              : nothing}
-            ${this._repository.category === "integration"
-              ? html`<p>${this._dialogParams.hacs.localize("dialog_download.restart")}</p>`
-              : nothing}
+                </pre>
+                  `
+                : nothing
+            }
+            ${
+              this._repository.category === "integration"
+                ? html`<p>
+                    ${this._dialogParams.hacs.localize("dialog_download.restart")}
+                  </p>`
+                : nothing
+            }
           </div>
-          ${this._selectedVersion
-            ? html`<ha-expansion-panel
-                @expanded-changed=${this._fetchReleases}
-                .header=${this._dialogParams.hacs.localize(`dialog_download.different_version`)}
-              >
-                <p>${this._dialogParams!.hacs.localize("dialog_download.release_warning")}</p>
-                ${this._releases === undefined
-                  ? this._dialogParams.hacs.localize("dialog_download.fetching_releases")
-                  : this._releases.length === 0
-                    ? this._dialogParams.hacs.localize("dialog_download.no_releases")
-                    : html`<ha-form
-                        @value-changed=${this._versionChanged}
-                        .computeLabel=${this._computeLabel}
-                        .schema=${[
-                          {
-                            name: "release",
-                            selector: {
-                              select: {
-                                mode: "dropdown",
-                                options: this._releases?.map((release) => ({
-                                  value: release.tag,
-                                  label: html`<release-item
-                                    .locale=${this.hass.locale}
-                                    .release=${release}
-                                  >
-                                    ${release.tag}
-                                  </release-item>`,
-                                })),
+          ${
+            this._selectedVersion
+              ? html`<ha-expansion-panel
+                  @expanded-changed=${this._fetchReleases}
+                  .header=${this._dialogParams.hacs.localize(`dialog_download.different_version`)}
+                >
+                  <p>
+                    ${this._dialogParams!.hacs.localize("dialog_download.release_warning")}
+                  </p>
+                  ${
+                    this._releases === undefined
+                      ? this._dialogParams.hacs.localize(
+                          "dialog_download.fetching_releases"
+                        )
+                      : this._releases.length === 0
+                        ? this._dialogParams.hacs.localize(
+                            "dialog_download.no_releases"
+                          )
+                        : html`<ha-form
+                            @value-changed=${this._versionChanged}
+                            .computeLabel=${this._computeLabel}
+                            .schema=${[
+                              {
+                                name: "release",
+                                selector: {
+                                  select: {
+                                    mode: "dropdown",
+                                    options: this._releases?.map((release) => ({
+                                      value: release.tag,
+                                      label: html`<release-item
+                                        .locale=${this.hass.locale}
+                                        .release=${release}
+                                      >
+                                        ${release.tag}
+                                      </release-item>`,
+                                    })),
+                                  },
+                                },
                               },
-                            },
-                          },
-                        ]}
-                      ></ha-form>`}
-              </ha-expansion-panel>`
-            : nothing}
-          ${this._error
-            ? html`<ha-alert alert-type="error" .rtl=${computeRTL(this.hass)}>
-                ${this._error.message || this._error}
-              </ha-alert>`
-            : nothing}
-          ${this._installing
-            ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
-            : nothing}
+                            ]}
+                          ></ha-form>`
+                  }
+                </ha-expansion-panel>`
+              : nothing
+          }
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error" .rtl=${computeRTL(this.hass)}>
+                  ${this._error.message || this._error}
+                </ha-alert>`
+              : nothing
+          }
+          ${
+            this._installing
+              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              : nothing
+          }
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog} dialogInitialFocus>
+        <mwc-button
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+          dialogInitialFocus
+        >
           ${this._dialogParams.hacs.localize("common.cancel")}
         </mwc-button>
         <mwc-button
@@ -301,20 +338,24 @@ export class HacsDonwloadDialog extends LitElement {
       await repositoryDownloadVersion(
         this.hass,
         String(this._repository.id),
-        this._selectedVersion || this._repository.available_version,
+        this._selectedVersion || this._repository.available_version
       );
     } catch (err: any) {
       this._error = err || {
-        message: "Could not download repository, check core logs for more information.",
+        message:
+          "Could not download repository, check core logs for more information.",
       };
       this._installing = false;
       return;
     }
 
-    this._dialogParams!.hacs.log.debug(this._repository.category, "_installRepository");
+    this._dialogParams!.hacs.log.debug(
+      this._repository.category,
+      "_installRepository"
+    );
     this._dialogParams!.hacs.log.debug(
       this._dialogParams!.hacs.info.lovelace_mode,
-      "_installRepository",
+      "_installRepository"
     );
     this._installing = false;
 
@@ -341,7 +382,10 @@ export class HacsDonwloadDialog extends LitElement {
       return;
     }
     try {
-      this._releases = await repositoryReleases(this.hass, this._repository!.id);
+      this._releases = await repositoryReleases(
+        this.hass,
+        this._repository!.id
+      );
     } catch (error) {
       this._error = error;
     }

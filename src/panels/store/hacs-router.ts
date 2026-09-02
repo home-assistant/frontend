@@ -1,10 +1,7 @@
 import { customElement, property, state } from "lit/decorators";
-import { listenMediaQuery } from "../homeassistant-frontend/src/common/dom/media_query";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../homeassistant-frontend/src/layouts/hass-router-page";
-import type { HomeAssistant, Route } from "../homeassistant-frontend/src/types";
+import { listenMediaQuery } from "../../common/dom/media_query";
+import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
+import type { HomeAssistant, Route } from "../../types";
 
 import type { Hacs } from "./data/hacs";
 
@@ -29,18 +26,30 @@ class HacsRouter extends HassRouterPage {
     this._listeners.push(
       listenMediaQuery("(min-width: 1040px)", (matches) => {
         this._wide = matches;
-      }),
+      })
     );
     this._listeners.push(
       listenMediaQuery("(min-width: 1296px)", (matches) => {
         this._wideSidebar = matches;
-      }),
+      })
     );
 
-    this.style.setProperty("--app-header-background-color", "var(--sidebar-background-color)");
-    this.style.setProperty("--app-header-text-color", "var(--sidebar-text-color)");
-    this.style.setProperty("--app-header-border-bottom", "1px solid var(--divider-color)");
-    this.style.setProperty("--ha-card-border-radius", "var(--ha-config-card-border-radius, 12px)");
+    this.style.setProperty(
+      "--app-header-background-color",
+      "var(--sidebar-background-color)"
+    );
+    this.style.setProperty(
+      "--app-header-text-color",
+      "var(--sidebar-text-color)"
+    );
+    this.style.setProperty(
+      "--app-header-border-bottom",
+      "1px solid var(--divider-color)"
+    );
+    this.style.setProperty(
+      "--ha-card-border-radius",
+      "var(--ha-config-card-border-radius, 12px)"
+    );
   }
 
   public disconnectedCallback() {
@@ -51,7 +60,8 @@ class HacsRouter extends HassRouterPage {
   }
 
   protected updatePageEl(el) {
-    const isWide = this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
+    const isWide =
+      this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
     el.hass = this.hass;
     el.hacs = this.hacs;
     el.route = this.route;

@@ -1,4 +1,4 @@
-import type { FlattenObjectKeys } from "../../homeassistant-frontend/src/common/translations/localize";
+import type { FlattenObjectKeys } from "../../../common/translations/localize";
 
 type TranslationDict = typeof import("../localize/languages/en.json");
 

@@ -1,9 +1,9 @@
 import type { HTMLTemplateResult } from "lit";
-import { fireEvent } from "../../../homeassistant-frontend/src/common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   HaFormDataContainer,
   HaFormSchema,
-} from "../../../homeassistant-frontend/src/components/ha-form/types";
+} from "../../../../components/ha-form/types";
 import type { Hacs } from "../../data/hacs";
 import type { RepositoryInfo } from "../../data/repository";
 

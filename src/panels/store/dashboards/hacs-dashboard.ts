@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import {
@@ -14,32 +13,31 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
-import { relativeTime } from "../../homeassistant-frontend/src/common/datetime/relative_time";
-import { storage } from "../../homeassistant-frontend/src/common/decorators/storage";
-import { mainWindow } from "../../homeassistant-frontend/src/common/dom/get_main_window";
-import { navigate } from "../../homeassistant-frontend/src/common/navigate";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { storage } from "../../../common/decorators/storage";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { navigate } from "../../../common/navigate";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
   SortingDirection,
-} from "../../homeassistant-frontend/src/components/data-table/ha-data-table";
-import "../../homeassistant-frontend/src/layouts/hass-tabs-subpage-data-table";
+} from "../../../components/data-table/ha-data-table";
+import "../../../layouts/hass-tabs-subpage-data-table";
 
-import "../../homeassistant-frontend/src/components/ha-button-menu";
-import "../../homeassistant-frontend/src/components/ha-fab";
-import "../../homeassistant-frontend/src/components/ha-form/ha-form";
-import "../../homeassistant-frontend/src/components/ha-markdown";
-import "../../homeassistant-frontend/src/components/ha-menu";
-import "../../homeassistant-frontend/src/components/ha-md-menu-item";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-button";
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-markdown";
+import "../../../components/ha-dropdown-item";
 
-import { LocalizeFunc } from "../../homeassistant-frontend/src/common/translations/localize";
-import { HaFormSchema } from "../../homeassistant-frontend/src/components/ha-form/types";
-import { HaMenu } from "../../homeassistant-frontend/src/components/ha-menu";
-import "../../homeassistant-frontend/src/components/ha-svg-icon";
-import { PageNavigation } from "../../homeassistant-frontend/src/layouts/hass-tabs-subpage";
-import { haStyle } from "../../homeassistant-frontend/src/resources/styles";
-import type { HomeAssistant, Route } from "../../homeassistant-frontend/src/types";
-import { brandsUrl } from "../../homeassistant-frontend/src/util/brands-url";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import { HaFormSchema } from "../../../components/ha-form/types";
+import { HaMenu } from "../../../components/ha-dropdown";
+import "../../../components/ha-svg-icon";
+import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import {
   showHacsCustomRepositoriesDialog,
   showHacsFormDialog,
@@ -54,7 +52,7 @@ import { repositoriesClearNew } from "../data/websocket";
 import { HacsStyles } from "../styles/hacs-common-style";
 import { documentationUrl } from "../tools/documentation";
 import { typeIcon } from "../tools/type-icon";
-import { showAlertDialog } from "../../homeassistant-frontend/src/dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const defaultKeyData = {
   title: "",
@@ -62,7 +60,13 @@ const defaultKeyData = {
   hidden: true,
 };
 
-const STATUS_ORDER = ["pending-restart", "pending-upgrade", "installed", "new", "default"];
+const STATUS_ORDER = [
+  "pending-restart",
+  "pending-upgrade",
+  "installed",
+  "new",
+  "default",
+];
 
 const TABS: PageNavigation[] = [
   {
@@ -84,25 +88,53 @@ export class HacsDashboard extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  @storage({ key: "hacs-dashboard-table-filtering", state: true, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-filtering",
+    state: true,
+    subscribe: false,
+  })
   private _activeFilters?: string[] = [];
 
-  @storage({ key: "hacs-dashboard-table-sorting", state: false, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-sorting",
+    state: false,
+    subscribe: false,
+  })
   private _activeSorting?: { column: string; direction: SortingDirection };
 
-  @storage({ key: "hacs-dashboard-table-grouping", state: true, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-grouping",
+    state: true,
+    subscribe: false,
+  })
   private _activeGrouping?: string;
 
-  @storage({ key: "hacs-dashboard-table-collapsed", state: false, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
   private _activeCollapsed?: string[];
 
-  @storage({ key: "hacs-dashboard-active-search", state: true, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-active-search",
+    state: true,
+    subscribe: false,
+  })
   private _activeSearch?: string;
 
-  @storage({ key: "hacs-dashboard-table-hidden-columns", state: true, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-hidden-columns",
+    state: true,
+    subscribe: false,
+  })
   private _hiddenTableColumns?: string[];
 
-  @storage({ key: "hacs-dashboard-table-columns-ordering", state: true, subscribe: false })
+  @storage({
+    key: "hacs-dashboard-table-columns-ordering",
+    state: true,
+    subscribe: false,
+  })
   private _orderTableColumns?: string[];
 
   @query("#overflow-menu")
@@ -118,9 +150,11 @@ export class HacsDashboard extends LitElement {
     const repositories = this._filterRepositories(
       this.hacs.repositories,
       this.hacs.localize,
-      this._activeFilters,
+      this._activeFilters
     );
-    const repositoriesContainsNew = repositories.some((repository) => repository.new);
+    const repositoriesContainsNew = repositories.some(
+      (repository) => repository.new
+    );
 
     return html`<hass-tabs-subpage-data-table
         .tabs=${TABS}
@@ -164,8 +198,14 @@ export class HacsDashboard extends LitElement {
           class="filters"
           .hass=${this.hass}
           .data=${{
-            status: this._activeFilters?.find((filter) => filter.startsWith("status_")) || "",
-            type: this._activeFilters?.find((filter) => filter.startsWith("type_")) || "",
+            status:
+              this._activeFilters?.find((filter) =>
+                filter.startsWith("status_")
+              ) || "",
+            type:
+              this._activeFilters?.find((filter) =>
+                filter.startsWith("type_")
+              ) || "",
           }}
           .schema=${this._filterSchema(this.hacs.localize, this.hacs.info.categories)}
           .computeLabel=${this._computeFilterFormLabel}
@@ -173,9 +213,13 @@ export class HacsDashboard extends LitElement {
         ></ha-form>
       </hass-tabs-subpage-data-table>
       <ha-menu id="repository-overflow-menu" positioning="fixed">
-        ${this._overflowMenuRepository
-          ? repositoryMenuItems(this, this._overflowMenuRepository, this.hacs.localize).map(
-              (entry) =>
+        ${
+          this._overflowMenuRepository
+            ? repositoryMenuItems(
+                this,
+                this._overflowMenuRepository,
+                this.hacs.localize
+              ).map((entry) =>
                 entry.divider
                   ? html`<li divider role="separator"></li>`
                   : html`
@@ -185,12 +229,16 @@ export class HacsDashboard extends LitElement {
                           entry?.action && entry.action();
                         }}
                       >
-                        <ha-svg-icon .path=${entry.path} slot="start"></ha-svg-icon>
+                        <ha-svg-icon
+                          .path=${entry.path}
+                          slot="start"
+                        ></ha-svg-icon>
                         <div slot="headline">${entry.label}</div>
                       </ha-md-menu-item>
-                    `,
-            )
-          : nothing}
+                    `
+              )
+            : nothing
+        }
       </ha-menu>
       <ha-menu id="overflow-menu" positioning="fixed">
         <ha-md-menu-item
@@ -203,7 +251,11 @@ export class HacsDashboard extends LitElement {
         </ha-md-menu-item>
         <ha-md-menu-item
           .clickAction=${() => {
-            mainWindow.open("https://github.com/hacs", "_blank", "noreferrer=true");
+            mainWindow.open(
+              "https://github.com/hacs",
+              "_blank",
+              "noreferrer=true"
+            );
           }}
         >
           <ha-svg-icon .path=${mdiGithub} slot="start"></ha-svg-icon>
@@ -216,11 +268,14 @@ export class HacsDashboard extends LitElement {
                 path: "/docs/help/issues",
               }),
               "_blank",
-              "noreferrer=true",
+              "noreferrer=true"
             );
           }}
         >
-          <ha-svg-icon .path=${mdiAlertCircleOutline} slot="start"></ha-svg-icon>
+          <ha-svg-icon
+            .path=${mdiAlertCircleOutline}
+            slot="start"
+          ></ha-svg-icon>
           <div slot="headline">${this.hacs.localize("menu.open_issue")}</div>
         </ha-md-menu-item>
         <ha-md-menu-item
@@ -238,18 +293,22 @@ export class HacsDashboard extends LitElement {
           }}
         >
           <ha-svg-icon .path=${mdiGit} slot="start"></ha-svg-icon>
-          <div slot="headline">${this.hacs.localize("menu.custom_repositories")}</div>
+          <div slot="headline">
+            ${this.hacs.localize("menu.custom_repositories")}
+          </div>
         </ha-md-menu-item>
-        ${repositoriesContainsNew
-          ? html`<ha-md-menu-item
-              .clickAction=${() => {
-                repositoriesClearNew(this.hass, this.hacs);
-              }}
-            >
-              <ha-svg-icon .path=${mdiNewBox} slot="start"></ha-svg-icon>
-              <div slot="headline">${this.hacs.localize("menu.dismiss")}</div>
-            </ha-md-menu-item>`
-          : nothing}
+        ${
+          repositoriesContainsNew
+            ? html`<ha-md-menu-item
+                .clickAction=${() => {
+                  repositoriesClearNew(this.hass, this.hacs);
+                }}
+              >
+                <ha-svg-icon .path=${mdiNewBox} slot="start"></ha-svg-icon>
+                <div slot="headline">${this.hacs.localize("menu.dismiss")}</div>
+              </ha-md-menu-item>`
+            : nothing
+        }
         <ha-md-menu-item
           .clickAction=${() => {
             showHacsFormDialog(this, {
@@ -271,18 +330,20 @@ export class HacsDashboard extends LitElement {
     (
       repositories: RepositoryBase[],
       localizeFunc: LocalizeFunc<HacsLocalizeKeys>,
-      activeFilters?: string[],
+      activeFilters?: string[]
     ): DataTableRowData[] =>
       repositories
         .filter((repository) => {
           if (
-            activeFilters?.filter((filter) => filter.startsWith("status_")).length &&
+            activeFilters?.filter((filter) => filter.startsWith("status_"))
+              .length &&
             !activeFilters.includes(`status_${repository.status}`)
           ) {
             return false;
           }
           if (
-            activeFilters?.filter((filter) => filter.startsWith("type_")).length &&
+            activeFilters?.filter((filter) => filter.startsWith("type_"))
+              .length &&
             !activeFilters.includes(`type_${repository.category}`)
           ) {
             return false;
@@ -304,15 +365,18 @@ export class HacsDashboard extends LitElement {
         .map((repository) => ({
           ...repository,
           translated_status:
-            localizeFunc(`repository_status.${repository.status}`) || repository.status,
-          translated_category: localizeFunc(`common.type.${repository.category}`),
-        })),
+            localizeFunc(`repository_status.${repository.status}`) ||
+            repository.status,
+          translated_category: localizeFunc(
+            `common.type.${repository.category}`
+          ),
+        }))
   );
 
   private _columns = memoize(
     (
       localizeFunc: LocalizeFunc<HacsLocalizeKeys>,
-      narrow: boolean,
+      narrow: boolean
     ): DataTableColumnContainer<RepositoryBase> => ({
       icon: {
         title: "",
@@ -352,14 +416,17 @@ export class HacsDashboard extends LitElement {
         sortable: true,
         flex: 3,
         extraTemplate: (repository: RepositoryBase) =>
-          !narrow ? html`<div class="secondary">${repository.description}</div>` : nothing,
+          !narrow
+            ? html`<div class="secondary">${repository.description}</div>`
+            : nothing,
       },
       downloads: {
         ...defaultKeyData,
         title: localizeFunc("column.downloads"),
         sortable: true,
         hidden: false,
-        template: (repository: RepositoryBase) => html`${repository.downloads || "-"}`,
+        template: (repository: RepositoryBase) =>
+          html`${repository.downloads || "-"}`,
       },
       stars: {
         ...defaultKeyData,
@@ -377,7 +444,10 @@ export class HacsDashboard extends LitElement {
             return "-";
           }
           try {
-            return relativeTime(new Date(repository.last_updated), this.hass.locale);
+            return relativeTime(
+              new Date(repository.last_updated),
+              this.hass.locale
+            );
           } catch (e) {
             return "-";
           }
@@ -438,7 +508,7 @@ export class HacsDashboard extends LitElement {
           ></ha-icon-button>
         `,
       },
-    }),
+    })
   );
 
   private _showOverflowRepositoryMenu = (ev: any) => {
@@ -464,15 +534,18 @@ export class HacsDashboard extends LitElement {
   };
 
   private _groupOrder = memoize(
-    (localize: LocalizeFunc<HacsLocalizeKeys>, activeGrouping: string | undefined) =>
+    (
+      localize: LocalizeFunc<HacsLocalizeKeys>,
+      activeGrouping: string | undefined
+    ) =>
       activeGrouping === "translated_status"
         ? STATUS_ORDER.map((filter) =>
             localize(
               // @ts-ignore
-              `repository_status.${filter}`,
-            ),
+              `repository_status.${filter}`
+            )
           )
-        : undefined,
+        : undefined
   );
 
   private _filterSchema = memoize(
@@ -491,7 +564,7 @@ export class HacsDashboard extends LitElement {
                 value: `status_${filter}`,
                 label: localizeFunc(
                   // @ts-ignore
-                  `repository_status.${filter}`,
+                  `repository_status.${filter}`
                 ),
               })),
               mode: "dropdown",
@@ -512,7 +585,7 @@ export class HacsDashboard extends LitElement {
             },
           },
         },
-      ] as const satisfies readonly HaFormSchema[],
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   get _scrollerTarget() {
@@ -532,11 +605,11 @@ export class HacsDashboard extends LitElement {
   private _computeFilterFormLabel = (schema, _) =>
     this.hacs.localize(
       // @ts-ignore
-      `dialog_overview.${schema.name}`,
+      `dialog_overview.${schema.name}`
     ) ||
     this.hacs.localize(
       // @ts-ignore
-      `dialog_overview.sections.${schema.name}`,
+      `dialog_overview.sections.${schema.name}`
     ) ||
     schema.name;
 
@@ -550,7 +623,8 @@ export class HacsDashboard extends LitElement {
     const updatedFilters: string[] = Object.entries<any>(data)
       .filter(
         ([key, value]) =>
-          ["status", "type"].includes(key) && ![undefined, null, ""].includes(value),
+          ["status", "type"].includes(key) &&
+          ![undefined, null, ""].includes(value)
       )
       .map(([_, value]) => value);
     this._activeFilters = updatedFilters.length ? updatedFilters : undefined;

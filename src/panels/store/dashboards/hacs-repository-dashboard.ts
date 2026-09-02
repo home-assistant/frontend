@@ -11,22 +11,22 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { mainWindow } from "../../homeassistant-frontend/src/common/dom/get_main_window";
-import { extractSearchParamsObject } from "../../homeassistant-frontend/src/common/url/search-params";
-import "../../homeassistant-frontend/src/components/chips/ha-assist-chip";
-import "../../homeassistant-frontend/src/components/chips/ha-chip-set";
-import "../../homeassistant-frontend/src/components/ha-alert";
-import "../../homeassistant-frontend/src/components/ha-card";
-import "../../homeassistant-frontend/src/components/ha-fab";
-import "../../homeassistant-frontend/src/components/ha-markdown";
-import "../../homeassistant-frontend/src/components/ha-menu";
-import type { HaMenu } from "../../homeassistant-frontend/src/components/ha-menu";
-import "../../homeassistant-frontend/src/components/ha-md-menu-item";
-import { showConfirmationDialog } from "../../homeassistant-frontend/src/dialogs/generic/show-dialog-box";
-import "../../homeassistant-frontend/src/layouts/hass-error-screen";
-import "../../homeassistant-frontend/src/layouts/hass-loading-screen";
-import "../../homeassistant-frontend/src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../homeassistant-frontend/src/types";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { extractSearchParamsObject } from "../../../common/url/search-params";
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-button";
+import "../../../components/ha-markdown";
+import "../../../components/ha-dropdown";
+import type { HaMenu } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-subpage";
+import type { HomeAssistant, Route } from "../../../types";
 import { showHacsDownloadDialog } from "../components/dialogs/show-hacs-dialog";
 import { repositoryMenuItems } from "../components/hacs-repository-owerflow-menu";
 import type { Hacs } from "../data/hacs";
@@ -70,7 +70,10 @@ export class HacsRepositoryDashboard extends LitElement {
       // Ignore if modifier keys are pressed
       return;
     }
-    if (ev.key === "m" && mainWindow.location.pathname.startsWith("/hacs/repository/")) {
+    if (
+      ev.key === "m" &&
+      mainWindow.location.pathname.startsWith("/hacs/repository/")
+    ) {
       if (!this._repository) {
         return;
       }
@@ -80,11 +83,16 @@ export class HacsRepositoryDashboard extends LitElement {
         repository: this._repository!.full_name.split("/")[1],
         category: this._repository!.category,
       });
-      window.open(`https://my.home-assistant.io/create-link/?${myParams.toString()}`, "_blank");
+      window.open(
+        `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+        "_blank"
+      );
     }
   };
 
-  protected async firstUpdated(changedProperties: PropertyValues): Promise<void> {
+  protected async firstUpdated(
+    changedProperties: PropertyValues
+  ): Promise<void> {
     super.firstUpdated(changedProperties);
 
     const params = extractSearchParamsObject();
@@ -93,7 +101,8 @@ export class HacsRepositoryDashboard extends LitElement {
       const requestedRepository = `${params.owner}/${params.repository}`;
       existing = this.hacs.repositories.find(
         (repository) =>
-          repository.full_name.toLocaleLowerCase() === requestedRepository.toLocaleLowerCase(),
+          repository.full_name.toLocaleLowerCase() ===
+          requestedRepository.toLocaleLowerCase()
       );
       if (!existing && params.category) {
         if (
@@ -116,7 +125,8 @@ export class HacsRepositoryDashboard extends LitElement {
           this.hacs.repositories = await getRepositories(this.hass);
           existing = this.hacs.repositories.find(
             (repository) =>
-              repository.full_name.toLocaleLowerCase() === requestedRepository.toLocaleLowerCase(),
+              repository.full_name.toLocaleLowerCase() ===
+              requestedRepository.toLocaleLowerCase()
           );
         } catch (err: any) {
           this._error = err;
@@ -152,7 +162,7 @@ export class HacsRepositoryDashboard extends LitElement {
     try {
       this._repository = await fetchRepositoryInformation(
         this.hass,
-        repositoryId || String(this._repository!.id),
+        repositoryId || String(this._repository!.id)
       );
     } catch (err: any) {
       this._error = err?.message;
@@ -162,11 +172,17 @@ export class HacsRepositoryDashboard extends LitElement {
   private _getAuthors = memoizeOne((repository: RepositoryInfo) => {
     const authors: string[] = [];
     if (!repository.authors) return authors;
-    repository.authors.forEach((author) => authors.push(author.replace("@", "")));
+    repository.authors.forEach((author) =>
+      authors.push(author.replace("@", ""))
+    );
     if (authors.length === 0) {
       const author = repository.full_name.split("/")[0];
       if (
-        ["custom-cards", "custom-components", "home-assistant-community-themes"].includes(author)
+        [
+          "custom-cards",
+          "custom-components",
+          "home-assistant-community-themes",
+        ].includes(author)
       ) {
         return authors;
       }
@@ -177,7 +193,9 @@ export class HacsRepositoryDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (this._error) {
-      return html`<hass-error-screen .error=${this._error}></hass-error-screen>`;
+      return html`<hass-error-screen
+        .error=${this._error}
+      ></hass-error-screen>`;
     }
 
     if (!this._repository) {
@@ -203,42 +221,54 @@ export class HacsRepositoryDashboard extends LitElement {
         <div class="content">
           <ha-card>
             <ha-chip-set>
-              ${this._repository.installed
-                ? html`
-                    <ha-assist-chip
-                      .label=${this._repository.installed_version}
-                      title="${this.hacs.localize("dialog_info.version_installed")}"
-                    >
-                      <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
-                    </ha-assist-chip>
-                  `
-                : ""}
-              ${authors
-                ? authors.map(
-                    (author) =>
-                      html`<a
-                        href="https://github.com/${author}"
-                        target="_blank"
-                        rel="noreferrer noopener"
+              ${
+                this._repository.installed
+                  ? html`
+                      <ha-assist-chip
+                        .label=${this._repository.installed_version}
+                        title="${this.hacs.localize("dialog_info.version_installed")}"
                       >
-                        <ha-assist-chip
-                          .label=${author}
-                          title="${this.hacs.localize("dialog_info.author")}"
+                        <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
+                      </ha-assist-chip>
+                    `
+                  : ""
+              }
+              ${
+                authors
+                  ? authors.map(
+                      (author) =>
+                        html`<a
+                          href="https://github.com/${author}"
+                          target="_blank"
+                          rel="noreferrer noopener"
                         >
-                          <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
-                          @${author}
-                        </ha-assist-chip>
-                      </a>`,
-                  )
-                : ""}
-              ${this._repository.downloads
-                ? html` <ha-assist-chip
-                    title="${this.hacs.localize("dialog_info.downloads")}"
-                    .label=${String(this._repository.downloads)}
-                  >
-                    <ha-svg-icon slot="icon" .path=${mdiArrowDownBold}></ha-svg-icon>
-                  </ha-assist-chip>`
-                : ""}
+                          <ha-assist-chip
+                            .label=${author}
+                            title="${this.hacs.localize("dialog_info.author")}"
+                          >
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiAccount}
+                            ></ha-svg-icon>
+                            @${author}
+                          </ha-assist-chip>
+                        </a>`
+                    )
+                  : ""
+              }
+              ${
+                this._repository.downloads
+                  ? html` <ha-assist-chip
+                      title="${this.hacs.localize("dialog_info.downloads")}"
+                      .label=${String(this._repository.downloads)}
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiArrowDownBold}
+                      ></ha-svg-icon>
+                    </ha-assist-chip>`
+                  : ""
+              }
               <ha-assist-chip
                 .label=${String(this._repository.stars)}
                 title="${this.hacs.localize("dialog_info.stars")}"
@@ -255,45 +285,53 @@ export class HacsRepositoryDashboard extends LitElement {
                   .label=${String(this._repository.issues)}
                   title="${this.hacs.localize("dialog_info.open_issues")}"
                 >
-                  <ha-svg-icon slot="icon" .path=${mdiExclamationThick}></ha-svg-icon>
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiExclamationThick}
+                  ></ha-svg-icon>
                   ${this._repository.issues}
                 </ha-assist-chip>
               </a>
             </ha-chip-set>
             <ha-markdown
-              .content=${markdownWithRepositoryContext(
-                this._repository.additional_info,
-                this._repository,
-              ) || this.hacs.localize("dialog_info.no_info")}
+              .content=${
+                markdownWithRepositoryContext(
+                  this._repository.additional_info,
+                  this._repository
+                ) || this.hacs.localize("dialog_info.no_info")
+              }
             ></ha-markdown>
           </ha-card>
         </div>
 
-        ${!this._repository.installed_version
-          ? html`<ha-fab
-              .label=${this.hacs.localize("common.download")}
-              .extended=${!this.narrow}
-              @click=${this._downloadRepositoryDialog}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-            </ha-fab>`
-          : ""}
+        ${
+          !this._repository.installed_version
+            ? html`<ha-fab
+                .label=${this.hacs.localize("common.download")}
+                .extended=${!this.narrow}
+                @click=${this._downloadRepositoryDialog}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+              </ha-fab>`
+            : ""
+        }
       </hass-subpage>
       <ha-menu id="overflow-menu" positioning="fixed">
-        ${repositoryMenuItems(this, this._repository, this.hacs.localize).map((entry) =>
-          entry.divider
-            ? html`<li divider role="separator"></li>`
-            : html`
-                <ha-md-menu-item
-                  class="${entry.error ? "error" : entry.warning ? "warning" : ""}"
-                  .clickAction=${() => {
-                    entry?.action && entry.action();
-                  }}
-                >
-                  <ha-svg-icon .path=${entry.path} slot="start"></ha-svg-icon>
-                  <div slot="headline">${entry.label}</div>
-                </ha-md-menu-item>
-              `,
+        ${repositoryMenuItems(this, this._repository, this.hacs.localize).map(
+          (entry) =>
+            entry.divider
+              ? html`<li divider role="separator"></li>`
+              : html`
+                  <ha-md-menu-item
+                    class="${entry.error ? "error" : entry.warning ? "warning" : ""}"
+                    .clickAction=${() => {
+                      entry?.action && entry.action();
+                    }}
+                  >
+                    <ha-svg-icon .path=${entry.path} slot="start"></ha-svg-icon>
+                    <div slot="headline">${entry.label}</div>
+                  </ha-md-menu-item>
+                `
         )}
       </ha-menu>
     `;

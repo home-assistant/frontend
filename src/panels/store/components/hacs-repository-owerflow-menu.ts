@@ -11,10 +11,10 @@ import {
   mdiReload,
 } from "@mdi/js";
 import memoizeOne from "memoize-one";
-import { mainWindow } from "../../homeassistant-frontend/src/common/dom/get_main_window";
-import { navigate } from "../../homeassistant-frontend/src/common/navigate";
-import { getConfigEntries } from "../../homeassistant-frontend/src/data/config_entries";
-import { showConfirmationDialog } from "../../homeassistant-frontend/src/dialogs/generic/show-dialog-box";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { navigate } from "../../../common/navigate";
+import { getConfigEntries } from "../../../data/config_entries";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { RepositoryBase } from "../data/repository";
 import {
   repositoriesClearNewRepository,
@@ -23,15 +23,18 @@ import {
 } from "../data/websocket";
 import type { HacsDashboard } from "../dashboards/hacs-dashboard";
 import type { HacsRepositoryDashboard } from "../dashboards/hacs-repository-dashboard";
-import { showHacsDownloadDialog, showHacsFormDialog } from "./dialogs/show-hacs-dialog";
-import { LocalizeFunc } from "../../homeassistant-frontend/src/common/translations/localize";
+import {
+  showHacsDownloadDialog,
+  showHacsFormDialog,
+} from "./dialogs/show-hacs-dialog";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import { HacsLocalizeKeys } from "../data/localize";
 
 export const repositoryMenuItems = memoizeOne(
   (
     element: HacsRepositoryDashboard | HacsDashboard,
     repository: RepositoryBase,
-    localize: LocalizeFunc<HacsLocalizeKeys>,
+    localize: LocalizeFunc<HacsLocalizeKeys>
   ) => [
     ...(element.nodeName === "HACS-DASHBOARD"
       ? [
@@ -46,7 +49,11 @@ export const repositoryMenuItems = memoizeOne(
       path: mdiGithub,
       label: localize("common.repository"),
       action: () =>
-        mainWindow.open(`https://github.com/${repository.full_name}`, "_blank", "noreferrer=true"),
+        mainWindow.open(
+          `https://github.com/${repository.full_name}`,
+          "_blank",
+          "noreferrer=true"
+        ),
     },
     {
       path: mdiArrowDownCircle,
@@ -58,10 +65,15 @@ export const repositoryMenuItems = memoizeOne(
     {
       path: repository.installed_version ? mdiReload : mdiDownload,
       label: localize(
-        repository.installed_version ? "repository_card.redownload" : "common.download",
+        repository.installed_version
+          ? "repository_card.redownload"
+          : "common.download"
       ),
       action: () =>
-        showHacsDownloadDialog(element, { hacs: element.hacs, repositoryId: repository.id }),
+        showHacsDownloadDialog(element, {
+          hacs: element.hacs,
+          repositoryId: repository.id,
+        }),
       hideForUninstalled: true,
     },
     ...(repository.new
@@ -69,7 +81,8 @@ export const repositoryMenuItems = memoizeOne(
           {
             path: mdiMoonNew,
             label: localize("repository_card.dismiss_new"),
-            action: () => repositoriesClearNewRepository(element.hass, repository.id),
+            action: () =>
+              repositoriesClearNewRepository(element.hass, repository.id),
           },
         ]
       : []),
@@ -82,7 +95,7 @@ export const repositoryMenuItems = memoizeOne(
               mainWindow.open(
                 `/hacsfiles/${repository.local_path.split("/").pop()}/${repository.file_name}?cachebuster=${Date.now()}`,
                 "_blank",
-                "noreferrer=true",
+                "noreferrer=true"
               ),
           },
         ]
@@ -95,7 +108,7 @@ export const repositoryMenuItems = memoizeOne(
         mainWindow.open(
           `https://github.com/${repository.full_name}/issues`,
           "_blank",
-          "noreferrer=true",
+          "noreferrer=true"
         ),
     },
     ...(repository.id !== "172733314" && repository.installed_version
@@ -107,7 +120,7 @@ export const repositoryMenuItems = memoizeOne(
               mainWindow.open(
                 `https://github.com/hacs/integration/issues/new?assignees=ludeeus&labels=flag&template=removal.yml&repo=${repository.full_name}&title=Request for removal of ${repository.full_name}`,
                 "_blank",
-                "noreferrer=true",
+                "noreferrer=true"
               ),
             warning: true,
           },
@@ -115,9 +128,12 @@ export const repositoryMenuItems = memoizeOne(
             path: mdiClose,
             label: localize("common.remove"),
             action: async () => {
-              if (repository.category === "integration" && repository.config_flow) {
+              if (
+                repository.category === "integration" &&
+                repository.config_flow
+              ) {
                 const configFlows = (await getConfigEntries(element.hass)).some(
-                  (entry) => entry.domain === repository.domain,
+                  (entry) => entry.domain === repository.domain
                 );
                 if (configFlows) {
                   const ignore = await showConfirmationDialog(element, {
@@ -153,12 +169,12 @@ export const repositoryMenuItems = memoizeOne(
           },
         ]
       : []),
-  ],
+  ]
 );
 
 const _repositoryRemove = async (
   element: HacsRepositoryDashboard | HacsDashboard,
-  repository: RepositoryBase,
+  repository: RepositoryBase
 ) => {
   await repositoryUninstall(element.hass, String(repository.id));
   if (element.nodeName === "HACS-REPOSITORY-PANEL") {
