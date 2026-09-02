@@ -21,6 +21,12 @@ const manifests: IntegrationManifest[] = [
   manifest("sonos", "Sonos"),
   manifest("met", "Met.no", { iot_class: "cloud_polling" }),
   manifest("bluetooth", "Bluetooth"),
+  manifest("matter", "Matter"),
+  manifest("zha", "Zigbee Home Automation"),
+  manifest("zwave_js", "Z-Wave"),
+  manifest("mqtt", "MQTT"),
+  manifest("thread", "Thread", { config_flow: false }),
+  manifest("broadlink", "Broadlink"),
   // Helpers
   manifest("template", "Template", { integration_type: "helper" }),
   manifest("input_boolean", "Toggle", {

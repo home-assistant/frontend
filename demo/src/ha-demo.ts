@@ -1,7 +1,6 @@
 import { customElement } from "lit/decorators";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
-import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
@@ -12,7 +11,7 @@ import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
-import { energyEntities } from "./stubs/entities";
+import { connectivityEntities, energyEntities } from "./stubs/entities";
 import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry, setDemoFloors } from "./stubs/floor_registry";
@@ -61,46 +60,19 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  "bluetooth/",
+  "radio_frequency/",
+  "thread/",
   "usb/",
+  "zha/",
+  "zwave_js/",
 ];
-
-// Connectivity integrations, so the connectivity settings page shows every
-// protocol page instead of an empty card.
-const CONNECTIVITY_COMPONENTS = [
-  "bluetooth",
-  "insteon",
-  "knx",
-  "matter",
-  "mqtt",
-  "radio_frequency",
-  "tag",
-  "thread",
-  "usb",
-  "zha",
-  "zwave_js",
-];
-
-// The infrared and radio frequency pages are only shown when the registry
-// holds an entity of that domain.
-const CONNECTIVITY_ENTITIES: Record<string, EntityRegistryDisplayEntry> = {
-  "infrared.remote": {
-    entity_id: "infrared.remote",
-    labels: [],
-    platform: "demo",
-  },
-  "radio_frequency.remote": {
-    entity_id: "radio_frequency.remote",
-    labels: [],
-    platform: "demo",
-  },
-};
 
 @customElement("ha-demo")
 export class HaDemo extends HomeAssistantAppEl {
   protected async _initializeHass() {
     const initial: Partial<MockHomeAssistant> = {
       panelUrl: (this as any)._panelUrl,
-      entities: CONNECTIVITY_ENTITIES,
       // Override updateHass so that the correct hass lifecycle methods are called
       updateHass: (hassUpdate: Partial<HomeAssistant>) =>
         this._updateHass(hassUpdate),
@@ -121,7 +93,17 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
-          ...CONNECTIVITY_COMPONENTS,
+          // Connectivity integrations, so the connectivity settings page
+          // shows every protocol page instead of an empty card.
+          "bluetooth",
+          "matter",
+          "mqtt",
+          "radio_frequency",
+          "tag",
+          "thread",
+          "usb",
+          "zha",
+          "zwave_js",
         ],
       },
     });
@@ -209,7 +191,7 @@ export class HaDemo extends HomeAssistantAppEl {
       },
     ]);
 
-    hass.addEntities(energyEntities());
+    hass.addEntities([...energyEntities(), ...connectivityEntities()]);
 
     // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(

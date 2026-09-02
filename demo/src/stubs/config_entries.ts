@@ -90,6 +90,63 @@ export const demoConfigEntries: {
     },
   },
   {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-matter",
+      domain: "matter",
+      title: "Matter",
+    },
+  },
+  {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-zha",
+      domain: "zha",
+      title: "Zigbee Home Automation",
+      supports_options: true,
+    },
+  },
+  {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-zwave-js",
+      domain: "zwave_js",
+      title: "Z-Wave",
+      supports_options: true,
+    },
+  },
+  {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-mqtt",
+      domain: "mqtt",
+      title: "core-mosquitto",
+      supports_options: true,
+    },
+  },
+  {
+    type: "service",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-thread",
+      domain: "thread",
+      title: "Thread",
+    },
+  },
+  {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-broadlink",
+      domain: "broadlink",
+      title: "Living room IR blaster",
+    },
+  },
+  {
     type: "service",
     entry: {
       ...baseEntry,

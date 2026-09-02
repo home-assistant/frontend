@@ -87,14 +87,14 @@ export enum Protocols {
   ZWaveLongRange = 1,
 }
 
-enum NodeType {
+export enum NodeType {
   Controller,
   /** @deprecated Use `NodeType["End Node"]` instead */
   "Routing End Node",
   "End Node" = 1,
 }
 
-enum RFRegion {
+export enum RFRegion {
   Europe = 0x00,
   USA = 0x01,
   "Australia/New Zealand" = 0x02,

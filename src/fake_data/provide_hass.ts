@@ -297,9 +297,10 @@ export const provideHass = (
         entity_id: ent.entityId,
         name: ent.attributes.friendly_name || undefined,
         icon: undefined,
-        platform: "demo",
+        platform: ent.platform ?? "demo",
         labels: [],
         area_id: ent.areaId,
+        device_id: ent.deviceId,
       } satisfies EntityRegistryDisplayEntry;
     });
     if (replace) {

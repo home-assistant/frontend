@@ -319,3 +319,95 @@ export const energyEntities = () =>
       },
     },
   });
+
+// Entities behind the connectivity settings pages. The infrared and radio
+// frequency pages are built from these entities alone; the Matter and Zigbee
+// pages count them per config entry.
+export const connectivityEntities = () =>
+  Object.values({
+    "light.office_bulb": {
+      entity_id: "light.office_bulb",
+      device_id: "matter-bulb",
+      platform: "matter",
+      state: "on",
+      attributes: {
+        friendly_name: "Office bulb",
+        supported_color_modes: ["color_temp"],
+        color_mode: "color_temp",
+        color_temp_kelvin: 3000,
+        brightness: 180,
+      },
+    },
+    "switch.office_plug": {
+      entity_id: "switch.office_plug",
+      device_id: "matter-plug",
+      platform: "matter",
+      state: "on",
+      attributes: {
+        friendly_name: "Office plug",
+        device_class: "outlet",
+      },
+    },
+    "binary_sensor.hallway_motion": {
+      entity_id: "binary_sensor.hallway_motion",
+      device_id: "zha-motion",
+      platform: "zha",
+      state: "off",
+      attributes: {
+        friendly_name: "Hallway motion",
+        device_class: "motion",
+      },
+    },
+    "sensor.bedroom_remote_battery": {
+      entity_id: "sensor.bedroom_remote_battery",
+      device_id: "zha-remote",
+      platform: "zha",
+      state: "87",
+      attributes: {
+        friendly_name: "Bedroom remote battery",
+        device_class: "battery",
+        state_class: "measurement",
+        unit_of_measurement: "%",
+      },
+    },
+    "light.dining_room_dimmer": {
+      entity_id: "light.dining_room_dimmer",
+      device_id: "zwave-dimmer",
+      platform: "zwave_js",
+      state: "off",
+      attributes: {
+        friendly_name: "Dining room dimmer",
+        supported_color_modes: ["brightness"],
+        color_mode: null,
+      },
+    },
+    "infrared.living_room_emitter": {
+      entity_id: "infrared.living_room_emitter",
+      device_id: "ir-blaster",
+      platform: "broadlink",
+      state: "2026-08-31T19:12:00+00:00",
+      attributes: {
+        friendly_name: "Living room IR blaster emitter",
+        device_class: "emitter",
+      },
+    },
+    "infrared.living_room_receiver": {
+      entity_id: "infrared.living_room_receiver",
+      device_id: "ir-blaster",
+      platform: "broadlink",
+      state: "2026-08-30T08:41:00+00:00",
+      attributes: {
+        friendly_name: "Living room IR blaster receiver",
+        device_class: "receiver",
+      },
+    },
+    "radio_frequency.rf_bridge": {
+      entity_id: "radio_frequency.rf_bridge",
+      device_id: "rf-bridge",
+      platform: "mqtt",
+      state: "2026-09-01T06:25:00+00:00",
+      attributes: {
+        friendly_name: "RF bridge transmitter",
+      },
+    },
+  });
