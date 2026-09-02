@@ -2,6 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../layouts/hass-subpage";
 import "./ai-task-pref";
+import "./mcp-pref";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-section-ai-tasks")
@@ -23,6 +24,7 @@ class HaConfigSectionAITasks extends LitElement {
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></ai-task-pref>
+          <mcp-pref .hass=${this.hass} .narrow=${this.narrow}></mcp-pref>
         </div>
       </hass-subpage>
     `;
@@ -34,10 +36,14 @@ class HaConfigSectionAITasks extends LitElement {
       max-width: 1040px;
       margin: 0 auto;
     }
-    ai-task-pref {
+    ai-task-pref,
+    mcp-pref {
       max-width: 600px;
       margin: 0 auto;
       display: block;
+    }
+    mcp-pref {
+      margin-top: var(--ha-space-6);
     }
   `;
 }

@@ -80,6 +80,16 @@ export const demoConfigEntries: {
       title: "Comfort level",
     },
   },
+  {
+    type: "service",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-mcp-server",
+      domain: "mcp_server",
+      title: "Assist, Music Assistant",
+      supports_options: true,
+    },
+  },
 ];
 
 const filterEntries = (filters?: {
