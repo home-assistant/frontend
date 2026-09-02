@@ -12167,11 +12167,6 @@
           "add_repository_title": "Add custom repository",
           "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Community store. Do you want to add it?"
         },
-        "dialog_about": {
-          "integration_version": "Integration version",
-          "downloaded_repositories": "Downloaded repositories",
-          "useful_links": "Useful links"
-        },
         "dialog_overview": {
           "title": "Manage overview table",
           "description": "Change what is shown in the overview table to match your needs.",
@@ -12237,9 +12232,7 @@
           "default": "Available for download"
         },
         "menu": {
-          "about": "About the Community store",
           "custom_repositories": "Custom repositories",
-          "open_issue": "Open issue",
           "dismiss": "Dismiss new repositories",
           "documentation": "Documentation"
         },

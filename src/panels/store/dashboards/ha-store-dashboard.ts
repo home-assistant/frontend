@@ -1,13 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import {
-  mdiAlertCircleOutline,
-  mdiDotsVertical,
-  mdiFileDocument,
-  mdiGit,
-  mdiGithub,
-  mdiInformation,
-  mdiNewBox,
-} from "@mdi/js";
+import { mdiDotsVertical, mdiFileDocument, mdiGit, mdiNewBox } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -29,7 +21,6 @@ import type { HaDropdown } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-markdown";
 
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { HaFormSchema } from "../../../components/ha-form/types";
@@ -38,12 +29,8 @@ import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import {
-  showStoreCustomRepositoriesDialog,
-  showStoreFormDialog,
-} from "../dialogs/show-dialog-store";
+import { showStoreCustomRepositoriesDialog } from "../dialogs/show-dialog-store";
 import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
-import { aboutStoreMarkdownContent } from "../data/about";
 import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
 import { repositoriesClearNew } from "../data/websocket";
@@ -192,17 +179,6 @@ export class HaStoreDashboard extends LitElement {
             <ha-svg-icon .path=${mdiFileDocument} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.store.menu.documentation")}
           </ha-dropdown-item>
-          <ha-dropdown-item @click=${this._openGitHub}>
-            <ha-svg-icon .path=${mdiGithub} slot="icon"></ha-svg-icon>
-            GitHub
-          </ha-dropdown-item>
-          <ha-dropdown-item @click=${this._openIssueTracker}>
-            <ha-svg-icon
-              .path=${mdiAlertCircleOutline}
-              slot="icon"
-            ></ha-svg-icon>
-            ${this.hass.localize("ui.panel.store.menu.open_issue")}
-          </ha-dropdown-item>
           <ha-dropdown-item @click=${this._showCustomRepositories}>
             <ha-svg-icon .path=${mdiGit} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
@@ -215,10 +191,6 @@ export class HaStoreDashboard extends LitElement {
                 </ha-dropdown-item>`
               : nothing
           }
-          <ha-dropdown-item @click=${this._showAbout}>
-            <ha-svg-icon .path=${mdiInformation} slot="icon"></ha-svg-icon>
-            ${this.hass.localize("ui.panel.store.menu.about")}
-          </ha-dropdown-item>
         </ha-dropdown>
 
         <ha-form
@@ -487,18 +459,6 @@ export class HaStoreDashboard extends LitElement {
     mainWindow.open(documentationUrl({}), "_blank", "noreferrer=true");
   }
 
-  private _openGitHub() {
-    mainWindow.open("https://github.com/hacs", "_blank", "noreferrer=true");
-  }
-
-  private _openIssueTracker() {
-    mainWindow.open(
-      documentationUrl({ path: "/docs/help/issues" }),
-      "_blank",
-      "noreferrer=true"
-    );
-  }
-
   private _showCustomRepositories() {
     if (this.store.info.disabled_reason) {
       showAlertDialog(this, {
@@ -513,16 +473,6 @@ export class HaStoreDashboard extends LitElement {
 
   private _dismissNew() {
     repositoriesClearNew(this.hass, this.store);
-  }
-
-  private _showAbout() {
-    showStoreFormDialog(this, {
-      store: this.store,
-      title: this.hass.localize("ui.panel.store.menu.about"),
-      description: html`<ha-markdown
-        .content=${aboutStoreMarkdownContent(this.hass, this.store)}
-      ></ha-markdown>`,
-    });
   }
 
   private _groupOrder = memoize(
