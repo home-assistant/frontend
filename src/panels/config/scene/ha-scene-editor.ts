@@ -215,15 +215,19 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     super.connectedCallback();
     if (!this.sceneId) {
       this._mode = "live";
-    }
-    if (this._mode === "live") {
       this._subscribeEvents();
     }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._mode === "live" && this.hass && !document.hidden) {
+    // Hidden-tab panel suspend reattaches this same instance. Leave the
+    // live subscription in place so the websocket library can restore it
+    // after reconnect; a fresh subscribe here races the closed socket.
+    if (document.hidden) {
+      return;
+    }
+    if (this._mode === "live" && this.hass) {
       this._exitLiveMode();
     } else if (this._unsubscribeEvents) {
       this._unsubscribeEvents();
