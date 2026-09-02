@@ -249,9 +249,7 @@ class PanelSecurity extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         hui-view-container {
           position: relative;

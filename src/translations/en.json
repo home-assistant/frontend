@@ -1180,12 +1180,12 @@
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
-        "entity": "Related entities",
-        "group": "Part of the following groups",
-        "scene": "Part of the following scenes",
-        "script": "Part of the following scripts",
-        "automation": "Part of the following automations",
-        "blueprint": "Using blueprint"
+        "entity": "Entities",
+        "group": "Groups",
+        "scene": "Scenes",
+        "script": "Scripts",
+        "automation": "Automations",
+        "blueprint": "Blueprint"
       },
       "data-table": {
         "search": "Search",
@@ -1635,6 +1635,7 @@
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
             "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
@@ -1686,13 +1687,15 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "entity": "Entity",
+        "state": "State",
+        "context": "Context",
         "floor": "Floor",
-        "entity_id": "Entity ID",
+        "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
+        "no_labels": "None",
         "toggle_yaml_mode": "Toggle YAML mode",
-        "translated": "Translated",
-        "raw": "Raw",
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
@@ -2739,6 +2742,10 @@
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
           },
+          "connectivity": {
+            "main": "Connectivity",
+            "secondary": "Communication protocols and radios for your devices"
+          },
           "voice_assistants": {
             "main": "Voice assistants",
             "secondary": "Manage your voice assistants"
@@ -2929,6 +2936,21 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "mcp": {
+          "header": "Model Context Protocol",
+          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "documentation": "documentation",
+          "enable": "[%key:ui::common::enable%]",
+          "disable": "[%key:ui::common::disable%]",
+          "disable_confirm_title": "Disable the Model Context Protocol server?",
+          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "your_api_header": "Your MCP API",
+          "apis_header": "Individual MCP APIs",
+          "copy_url": "Copy URL",
+          "configure": "Configure",
+          "error_load": "Failed to load the Model Context Protocol configuration",
+          "error_delete_entry": "Failed to disable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -5081,10 +5103,7 @@
               }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud",
-              "register": {
-                "confirm_email": "Confirm email"
-              }
+              "title": "The power of Home Assistant Cloud"
             },
             "local": {
               "title": "Installing apps",
@@ -6524,9 +6543,7 @@
             "auto_login_failed": "We couldn't sign you in automatically. Confirm your email, then sign in.",
             "nothing_arrived": "Nothing arrived? Check your spam folder, or {resend_link}.",
             "resend_link": "resend the confirmation email",
-            "resend_confirm_email": "Resend confirmation email",
             "clicked_confirm": "I opened the confirmation link",
-            "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
             "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
@@ -8841,8 +8858,8 @@
           "download_device_info": "Preview device analytics"
         },
         "ai_tasks": {
-          "caption": "AI tasks",
-          "description": "Configure AI suggestions and task preferences"
+          "caption": "AI",
+          "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
         "entity_id_format": {
           "caption": "Entity ID format",

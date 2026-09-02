@@ -1235,10 +1235,8 @@ export class HaDataTable extends LitElement {
           display: none;
         }
 
-        /* Hide scrollbar for IE, Edge and Firefox */
         .mdc-data-table__header-row {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
+          scrollbar-width: none;
         }
 
         .mdc-data-table__cell,

@@ -15,7 +15,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { fullEntitiesContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
@@ -870,7 +869,7 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        toggleAttribute(el, "selected", this.selectedPath === el.dataset.path);
+        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
         if (!this.allowPick || el.tabIndex === 0) {
           return;
         }

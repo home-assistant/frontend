@@ -434,8 +434,6 @@ class HaScheduleForm extends LitElement {
           margin: var(--ha-space-2) 0;
           height: 450px;
           width: 100%;
-          -webkit-user-select: none;
-          -ms-user-select: none;
           user-select: none;
           --fc-border-color: var(--divider-color);
           --fc-event-border-color: var(--divider-color);

@@ -83,7 +83,7 @@ export class MatterConfigDashboard extends LitElement {
         .narrow=${this.narrow}
         .hass=${this.hass}
         header="Matter"
-        back-path="/config"
+        back-path="/config/connectivity"
         has-fab
       >
         <div class="container">

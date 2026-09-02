@@ -865,7 +865,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           gap: var(--ha-space-4);
           padding: 0 var(--ha-space-4);
           overflow-x: scroll;
-          -ms-overflow-style: none;
           scrollbar-width: none;
         }
 
