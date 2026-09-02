@@ -474,7 +474,6 @@ export class HaRelatedItems extends LitElement {
         slot="start"
         alt=""
         loading="lazy"
-        crossorigin="anonymous"
         referrerpolicy="no-referrer"
         src=${brandsUrl(
           {

@@ -44,6 +44,12 @@ interface ContextEntry {
   /** Switches to another view inside the dialog. */
   action?: () => void;
   icon?: TemplateResult;
+  /**
+   * Draws the row like the logbook detail subject row: icon at the start, the
+   * label as the headline and the value below it. Set on the rows that name a
+   * thing (entity, device, area, floor) rather than carry a plain value.
+   */
+  subject?: boolean;
 }
 
 const CONTEXT_SECTIONS: (keyof RelatedResult)[] = [
@@ -121,10 +127,8 @@ class HaMoreInfoRelated extends LitElement {
             this.hass.devices
           ) || computeStateName(this._stateObj),
         action: this._goToDetails,
-        icon: html`<ha-state-icon
-          slot="end"
-          .stateObj=${this._stateObj}
-        ></ha-state-icon>`,
+        icon: html`<ha-state-icon .stateObj=${this._stateObj}></ha-state-icon>`,
+        subject: true,
       },
     ];
 
@@ -133,7 +137,8 @@ class HaMoreInfoRelated extends LitElement {
         translationKey: "ui.components.related-items.device",
         value: deviceName,
         href: `/config/devices/device/${device.id}`,
-        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
+        icon: html`<ha-svg-icon .path=${mdiDevices}></ha-svg-icon>`,
+        subject: true,
       });
     }
     if (area && areaName) {
@@ -142,8 +147,9 @@ class HaMoreInfoRelated extends LitElement {
         value: areaName,
         href: `/config/areas/area/${area.area_id}`,
         icon: area.icon
-          ? html`<ha-icon slot="end" .icon=${area.icon}></ha-icon>`
-          : html`<ha-svg-icon slot="end" .path=${mdiTextureBox}></ha-svg-icon>`,
+          ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+          : html`<ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>`,
+        subject: true,
       });
     }
     if (floor && floorName) {
@@ -151,7 +157,8 @@ class HaMoreInfoRelated extends LitElement {
         translationKey: "ui.dialogs.more_info_control.floor",
         value: floorName,
         href: "/config/areas/dashboard",
-        icon: html`<ha-floor-icon slot="end" .floor=${floor}></ha-floor-icon>`,
+        icon: html`<ha-floor-icon .floor=${floor}></ha-floor-icon>`,
+        subject: true,
       });
     }
     if (this.entry?.platform && integrationName) {
@@ -162,9 +169,7 @@ class HaMoreInfoRelated extends LitElement {
           ? `/config/integrations/integration/${this.entry.platform}#config_entry=${this.entry.config_entry_id}`
           : undefined,
         icon: html`<img
-          slot="end"
           alt=""
-          crossorigin="anonymous"
           referrerpolicy="no-referrer"
           src=${brandsUrl(
             {
@@ -175,6 +180,7 @@ class HaMoreInfoRelated extends LitElement {
             this.hass.auth.data.hassUrl
           )}
         />`,
+        subject: true,
       });
     }
     contextEntries.push({
@@ -241,6 +247,21 @@ class HaMoreInfoRelated extends LitElement {
         `;
       }
 
+      if (entry.subject) {
+        return html`
+          <ha-list-item-button
+            class="subject"
+            .href=${entry.href}
+            @click=${entry.action ?? nothing}
+            .headline=${label}
+            .supportingText=${entry.value}
+          >
+            <span class="subject-icon" slot="start">${entry.icon}</span>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
+        `;
+      }
+
       return html`
         <ha-list-item-button
           .href=${entry.href}
@@ -284,10 +305,44 @@ class HaMoreInfoRelated extends LitElement {
       gap: var(--ha-space-2);
     }
 
+    /* Matches the logbook activity detail subject row. */
+    ha-list-item-button.subject {
+      --ha-row-item-min-height: 56px;
+      --mdc-icon-size: 24px;
+    }
+
+    /* The two lines trade places: the type reads as the quiet label on top,
+       the name carries the row below it. */
+    ha-list-item-button.subject::part(headline) {
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+
+    ha-list-item-button.subject::part(supporting-text) {
+      color: var(--primary-text-color);
+      font-size: inherit;
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    .subject-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      color: var(--secondary-text-color);
+      --state-icon-color: var(--secondary-text-color);
+    }
+
     ha-list-item-button img {
       width: 20px;
       height: 20px;
       object-fit: contain;
+    }
+
+    /* the brand logo matches the glyphs the other subject rows draw */
+    ha-list-item-button.subject img {
+      width: 24px;
+      height: 24px;
     }
 
     .link-row {
