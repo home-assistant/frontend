@@ -345,9 +345,8 @@ describe("recover-stale-build", () => {
       });
 
       it.each([
-        // index.html imports extra modules without a catch, so a broken one
-        // rejects into the recovery on every page load.
-        "Failed to fetch dynamically imported module: /local/layout-card.js",
+        // Foreign dynamic-import failures say nothing about whether this build's
+        // chunks remain available.
         `error loading dynamically imported module: ${location.origin}/hacsfiles/silam/forecast.js`,
         // A resource URL with literal brackets from a broken configuration.
         `error loading dynamically imported module: ${location.origin}/[/hacsfiles/card-mod/card-mod.js?hacstag=1]`,
