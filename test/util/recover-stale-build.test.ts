@@ -398,6 +398,17 @@ describe("recover-stale-build", () => {
       });
     });
 
+    it("replaces a cooldown marker it cannot read", async () => {
+      sessionStorage.setItem(RELOAD_KEY, "not json");
+
+      // An unreadable marker must not read as "no storage", which would fail
+      // closed and leave recovery disabled for the rest of the session.
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
+      expect(JSON.parse(reloadMarker()!)).toMatchObject({ n: 1 });
+    });
+
     it("does not reload again while the cooldown marker is set (loop guard)", async () => {
       await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
         true

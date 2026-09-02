@@ -342,6 +342,20 @@ describe("index.html boot recovery guard", () => {
     expect(location.replace).toHaveBeenCalledOnce();
   });
 
+  it("replaces a marker it cannot read", async () => {
+    storage.setItem("haStaleBuildReload", "not json");
+    const win = runGuard();
+
+    await failImport(win, importFailure(CHUNK));
+
+    // Recovered once, and left a marker that bounds the next boot — an
+    // unreadable one must not hand out a reload on every page load.
+    expect(location.replace).toHaveBeenCalledOnce();
+    expect(JSON.parse(storage.getItem("haStaleBuildReload"))).toMatchObject({
+      n: 1,
+    });
+  });
+
   it("still recovers when session storage is unavailable", async () => {
     // Private mode / blocked storage: fall back to the bust param alone rather
     // than losing the stale-index recovery altogether.

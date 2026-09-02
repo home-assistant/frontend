@@ -210,15 +210,22 @@ export const reloadFresh = (): boolean => {
   let attempts = 0;
   let last = 0;
   let storageOk = true;
+  let stored: string | null = null;
   try {
-    const stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
-    if (stored) {
+    stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
+  } catch (_err) {
+    storageOk = false;
+  }
+  if (stored) {
+    try {
       const parsed = JSON.parse(stored);
       attempts = Number(parsed.n) || 0;
       last = Number(parsed.t) || 0;
+    } catch (_err) {
+      // A marker we cannot read is one to replace below, not to trust: kept in
+      // the same try as the storage access it would count as no storage at all,
+      // and the bad value would survive to block every later recovery.
     }
-  } catch (_err) {
-    storageOk = false;
   }
   if (now - last > RELOAD_COOLDOWN) {
     attempts = 0;
