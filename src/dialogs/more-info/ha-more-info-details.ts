@@ -106,11 +106,7 @@ class HaMoreInfoDetails extends LitElement {
                 in-dialog
               ></ha-yaml-editor>`
             : html`
-                <ha-grouped-list
-                  .header=${this.hass.localize(
-                    "ui.dialogs.more_info_control.entity"
-                  )}
-                >
+                <ha-grouped-list>
                   ${this._renderEntries(entityEntries)}
                   ${this._renderEntries(stateEntries)}
                 </ha-grouped-list>

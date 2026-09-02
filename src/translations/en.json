@@ -1693,7 +1693,7 @@
           "scene": "Edit scene",
           "person": "Edit person"
         },
-        "details": "Details",
+        "details": "Entity details",
         "entity": "Entity",
         "state": "State",
         "floor": "Floor",
