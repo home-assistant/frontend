@@ -30,7 +30,8 @@ import type { StoreDownloadDialogParams } from "./show-dialog-store";
 
 @customElement("ha-store-release-item")
 export class HaStoreReleaseItem extends LitElement {
-  @property({ attribute: false }) public locale!: HomeAssistant["locale"];
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ attribute: false }) public release!: {
     tag: string;
     published_at: string;
@@ -42,10 +43,18 @@ export class HaStoreReleaseItem extends LitElement {
     return html`
       <span>
         ${this.release.tag}
-        ${this.release.prerelease ? html`<span class="pre-release">pre-release</span>` : nothing}
+        ${
+          this.release.prerelease
+            ? html`<span class="pre-release">
+                ${this.hass.localize(
+                  "ui.panel.store.dialog_download.pre_release"
+                )}
+              </span>`
+            : nothing
+        }
       </span>
       <span class="secondary">
-        ${relativeTime(new Date(this.release.published_at), this.locale)}
+        ${relativeTime(new Date(this.release.published_at), this.hass.locale)}
         ${
           this.release.name && this.release.name !== this.release.tag
             ? html` - ${this.release.name}`
@@ -279,7 +288,7 @@ export class DialogStoreDownload extends LitElement {
                                     options: this._releases?.map((release) => ({
                                       value: release.tag,
                                       label: html`<ha-store-release-item
-                                        .locale=${this.hass.locale}
+                                        .hass=${this.hass}
                                         .release=${release}
                                       ></ha-store-release-item>`,
                                     })),
@@ -336,12 +345,16 @@ export class DialogStoreDownload extends LitElement {
     }
 
     if (this._waiting) {
-      this._error = "Waiting to update repository information, try later.";
+      this._error = this.hass.localize(
+        "ui.panel.store.dialog_download.waiting_for_information"
+      );
       return;
     }
 
     if (this._installing) {
-      this._error = "Already installing, please wait.";
+      this._error = this.hass.localize(
+        "ui.panel.store.dialog_download.already_downloading"
+      );
       return;
     }
 
@@ -357,7 +370,7 @@ export class DialogStoreDownload extends LitElement {
     } catch (err) {
       this._error =
         errorMessage(err) ||
-        "Could not download repository, check core logs for more information.";
+        this.hass.localize("ui.panel.store.dialog_download.download_failed");
       this._installing = false;
       return;
     }

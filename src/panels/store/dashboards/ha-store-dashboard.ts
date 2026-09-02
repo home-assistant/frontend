@@ -56,6 +56,22 @@ const STATUS_ORDER = [
   "default",
 ] as const satisfies readonly RepositoryBase["status"][];
 
+// The backend reports why the store is disabled, mapped so it can be shown
+// as a translated sentence.
+const DISABLED_REASONS = [
+  "constrains",
+  "invalid_token",
+  "load_hacs",
+  "rate_limit",
+  "removed",
+  "restore",
+] as const;
+
+type DisabledReason = (typeof DISABLED_REASONS)[number];
+
+const isKnownDisabledReason = (reason: string): reason is DisabledReason =>
+  DISABLED_REASONS.includes(reason as DisabledReason);
+
 const TABS: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.dashboard.store.main",
@@ -493,10 +509,15 @@ export class HaStoreDashboard extends LitElement {
   }
 
   private _showCustomRepositories() {
-    if (this.store.info.disabled_reason) {
+    const disabledReason = this.store.info.disabled_reason;
+    if (disabledReason) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.store.dialog.disabled.title"),
-        text: this.store.info.disabled_reason,
+        text: isKnownDisabledReason(disabledReason)
+          ? this.hass.localize(
+              `ui.panel.store.dialog.disabled.reason.${disabledReason}`
+            )
+          : this.hass.localize("ui.panel.store.dialog.disabled.reason.unknown"),
       });
       return;
     }

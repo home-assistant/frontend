@@ -16,7 +16,7 @@ export interface StoreInfo {
   categories: RepositoryType[];
   country: string;
   debug: boolean;
-  disabled_reason: string;
+  disabled_reason: string | null;
   lovelace_mode: "yaml" | "storage";
   stage: "startup" | "waiting" | "running" | "setup";
   startup: boolean;

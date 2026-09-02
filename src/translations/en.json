@@ -12119,15 +12119,13 @@
       "store": {
         "not_loaded": "The Community store has not been set up yet. Add it from the integrations page in Settings.",
         "common": {
-          "add": "add",
+          "add": "Add",
           "cancel": "Cancel",
           "download": "Download",
           "ignore": "Ignore",
-          "learn_more": "Learn more",
           "navigate": "Navigate",
           "reload": "Reload",
           "remove": "Remove",
-          "repositories": "Repositories",
           "repository": "Repository",
           "save": "Save",
           "show": "Show details",
@@ -12136,7 +12134,7 @@
             "integration": "Integration",
             "plugin": "Dashboard",
             "theme": "Theme",
-            "python_script": "Python Script",
+            "python_script": "Python script",
             "appdaemon": "AppDaemon",
             "netdaemon": "NetDaemon",
             "template": "Template"
@@ -12158,9 +12156,6 @@
           "type": "Type",
           "last_updated": "Activity"
         },
-        "confirm": {
-          "home_assistant_version_not_correct": "You are running Home Assistant version '{haversion}', but this repository requires minimum version '{minversion}' to be installed."
-        },
         "my": {
           "not_supported": "This redirect is not supported. Check the {link} for the supported redirects and the version they were introduced.",
           "faq_link": "My Home Assistant FAQ",
@@ -12170,27 +12165,24 @@
           "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Community store. Do you want to add it?"
         },
         "dialog_overview": {
-          "title": "Manage overview table",
-          "description": "Change what is shown in the overview table to match your needs.",
           "sections": {
-            "filters": "Change active filters",
-            "behaviour": "Change the behavior of the overview"
+            "filters": "Change active filters"
           },
           "status": "Status",
-          "type": "Type",
-          "columns": "Columns"
+          "type": "Type"
         },
         "dialog_custom_repositories": {
           "title": "Custom repositories",
-          "url_placeholder": "Add custom repository URL",
           "type": "Type",
           "no_repository": "Missing repository",
           "no_type": "Missing type"
         },
         "dialog_download": {
           "loading": "Loading repository",
-          "type": "Type",
-          "url": "URL",
+          "already_downloading": "Already downloading, hold on",
+          "download_failed": "Could not download the repository, check the Home Assistant logs for more information",
+          "pre_release": "Pre-release",
+          "waiting_for_information": "Still updating the repository information, try again in a moment",
           "will_download_version": "Version {ref} will be downloaded",
           "will_download_commit": "Commit {ref} will be downloaded",
           "different_version": "Need a different version?",
@@ -12199,7 +12191,6 @@
           "release": "Release",
           "release_warning": "It is not advised to use this section to do a rollback, restore a backup instead.",
           "restart": "Remember that you need to restart Home Assistant before changes to integrations (custom_components) are applied.",
-          "selector_note": "The version selector will be removed in a future release. If you need to install a specific version, you can do so by using the service call for update entities.",
           "note_downloaded": "When downloaded, this will be located in {location}",
           "lovelace_instruction": "After the download completes, since you are not using Lovelace in storage mode, you need to add the resource with these settings manually:"
         },
@@ -12209,22 +12200,13 @@
           "stars": "Stars",
           "downloads": "Downloads",
           "author": "Author",
-          "no_info": "The developer has not provided any more information for this repository",
-          "open_repo": "Open repository",
-          "download": "Download this repository with the Community store"
+          "no_info": "The developer has not provided any more information for this repository"
         },
         "repository_card": {
-          "dismiss": "dismiss",
           "dismiss_new": "Dismiss new",
-          "information": "Information",
-          "new_repository": "New repository",
-          "not_loaded": "Not loaded",
           "open_issue": "Open issue",
           "open_source": "Open source",
-          "pending_restart": "Pending restart",
-          "pending_update": "Pending update",
           "redownload": "Redownload",
-          "report": "Request for removal",
           "update_information": "Update information"
         },
         "repository_status": {
@@ -12252,12 +12234,20 @@
             "message": "Do you really want to remove {name}?"
           },
           "disabled": {
-            "title": "The Community store is disabled"
+            "title": "The Community store is disabled",
+            "reason": {
+              "constrains": "The Community store could not start because its requirements are not met.",
+              "invalid_token": "The GitHub token is not valid. Reconfigure the Community store integration to set a working token.",
+              "load_hacs": "The Community store could not load its data.",
+              "rate_limit": "The GitHub API rate limit has been reached. The Community store works again once the limit resets.",
+              "removed": "The Community store integration has been removed.",
+              "restore": "The Community store could not restore its stored data.",
+              "unknown": "The Community store is unavailable, check the Home Assistant logs for more information."
+            }
           },
           "configured": {
             "title": "Integration is configured",
-            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Community store.",
-            "confirm": "Go to integrations"
+            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Community store."
           }
         }
       },

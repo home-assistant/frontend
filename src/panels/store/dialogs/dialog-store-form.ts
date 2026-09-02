@@ -137,7 +137,9 @@ class DialogStoreForm extends LitElement {
       await this._dialogParams.saveAction(this._dialogParams.data);
     } catch (err: any) {
       this._errors = {
-        base: err?.message || "Unkown error, check Home Assistant logs",
+        base:
+          err?.message ||
+          this.hass.localize("ui.panel.store.common.unknown_error"),
       };
     }
     this._waiting = false;
