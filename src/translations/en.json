@@ -8545,6 +8545,7 @@
             "add_device": "Add device",
             "status_online": "Online",
             "status_offline": "Offline",
+            "devices_offline": "{count} offline",
             "my_network_title": "My network",
             "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
