@@ -117,24 +117,21 @@ const referenceUrl = (): string | undefined => {
  * away the cache that could have served the chunk.
  *
  * HEAD is never intercepted by the service worker (workbox routes GET only), so
- * the answer reflects what the server actually has.
+ * the answer reflects what the server actually has. A server that refuses HEAD
+ * outright leaves us with no answer, and no answer means no recovery: a GET
+ * cannot substitute, because the frontend_latest route is CacheFirst with
+ * `ignoreSearch`, so a controlling worker can answer it from its own cache.
  */
 const askServer = async (
   url: string,
   signal?: AbortSignal
 ): Promise<ChunkVerdict> => {
-  const options: RequestInit = { method: "HEAD", cache: "no-store", signal };
   try {
-    let response = await fetch(url, options);
-    if (response.status === 405 || response.status === 501) {
-      // A proxy that refuses HEAD. Retry with a GET whose query param dodges
-      // both the HTTP cache and the service worker's precache route.
-      const separator = url.includes("?") ? "&" : "?";
-      response = await fetch(`${url}${separator}ha_probe=${Date.now()}`, {
-        ...options,
-        method: "GET",
-      });
-    }
+    const response = await fetch(url, {
+      method: "HEAD",
+      cache: "no-store",
+      signal,
+    });
     if (response.status === 404 || response.status === 410) {
       return "gone";
     }

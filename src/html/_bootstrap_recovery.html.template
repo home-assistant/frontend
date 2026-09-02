@@ -192,31 +192,23 @@
      * A failed load looks identical whether the file was deleted by an upgrade
      * or the request never reached the server, and only the first is fixed by
      * reloading. HEAD is never intercepted by the service worker (workbox
-     * routes GET only), so the answer comes from the server itself.
+     * routes GET only), so the answer comes from the server itself. A server
+     * that refuses HEAD outright leaves us with no answer, and no answer means
+     * no recovery: a GET cannot substitute, because the frontend_latest route
+     * is CacheFirst with `ignoreSearch`, so a controlling worker can answer it
+     * from its own cache.
      */
     function probeGone(url) {
       // Status 0 stands for "no usable answer": unreachable, or too slow.
-      const status = (target, method) =>
-        Promise.race([
-          fetch(target, { method: method, cache: "no-store" }).then(
-            (response) => response.status,
-            () => 0
-          ),
-          new Promise((resolve) => {
-            setTimeout(() => resolve(0), PROBE_TIMEOUT);
-          }),
-        ]);
-      return status(url, "HEAD").then((head) => {
-        if (head !== 405 && head !== 501) {
-          return head === 404 || head === 410;
-        }
-        // A proxy that refuses HEAD. Retry with a GET whose query param dodges
-        // both the HTTP cache and the service worker's precache route.
-        const separator = url.indexOf("?") === -1 ? "?" : "&";
-        return status(url + separator + "ha_probe=" + Date.now(), "GET").then(
-          (get) => get === 404 || get === 410
-        );
-      });
+      return Promise.race([
+        fetch(url, { method: "HEAD", cache: "no-store" }).then(
+          (response) => response.status,
+          () => 0
+        ),
+        new Promise((resolve) => {
+          setTimeout(() => resolve(0), PROBE_TIMEOUT);
+        }),
+      ]).then((status) => status === 404 || status === 410);
     }
 
     function maybeRecover(text) {

@@ -344,22 +344,6 @@ describe("recover-stale-build", () => {
         }
       });
 
-      it("retries with GET when the server refuses HEAD", async () => {
-        fetchMock
-          .mockResolvedValueOnce(httpResponse(405))
-          .mockResolvedValueOnce(httpResponse(404));
-
-        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
-          true
-        );
-
-        expect(fetchMock).toHaveBeenCalledTimes(2);
-        // Cache-busted so neither the HTTP cache nor the precache route answers.
-        expect(fetchMock.mock.calls[1][0]).toContain("ha_probe=");
-        expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "GET" });
-        expect(reloadMarker()).not.toBeNull();
-      });
-
       it.each([
         // index.html imports extra modules without a catch, so a broken one
         // rejects into the recovery on every page load.

@@ -180,18 +180,6 @@ describe("index.html boot recovery guard", () => {
     expect(location.replace).not.toHaveBeenCalled();
   });
 
-  it("retries with a cache-busted GET when the server refuses HEAD", async () => {
-    statusFor = (url) => (url.includes("ha_probe=") ? 404 : 405);
-    const win = runGuard();
-
-    await failImport(win, importFailure(CHUNK));
-
-    expect(probes).toHaveLength(2);
-    expect(probes[1].method).toBe("GET");
-    expect(probes[1].url).toContain("ha_probe=");
-    expect(location.replace).toHaveBeenCalledOnce();
-  });
-
   it.each([
     "Failed to fetch dynamically imported module: /local/layout-card.js",
     `error loading dynamically imported module: ${ORIGIN}/hacsfiles/silam/forecast.js`,
