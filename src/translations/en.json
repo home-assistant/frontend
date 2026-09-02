@@ -1636,7 +1636,7 @@
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
             "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
-            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
+            "ai": "[%key:ui::panel::config::ai::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -8857,7 +8857,7 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
-        "ai_tasks": {
+        "ai": {
           "caption": "AI",
           "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
