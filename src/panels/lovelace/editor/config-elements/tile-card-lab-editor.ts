@@ -34,6 +34,17 @@ export class TileCardLabEditor extends LitElement {
 
   private _headerContainer?: HTMLElement;
 
+  // Everything below is something we mutate OUTSIDE our own shadow root. Keep a
+  // reference to each one, because by the time disconnectedCallback runs this
+  // element is already detached — walking back up to the dialog no longer works,
+  // so anything we tried to re-find at that point would silently leak (HA's
+  // tabs staying hidden, the dialog stuck at our height, and so on).
+  private _hideTabsStyle?: HTMLStyleElement;
+
+  private _stickyPreviewStyle?: HTMLStyleElement;
+
+  private _sizedDialog?: HTMLElement;
+
   // Reused stock tile editor instance for the "Control" option.
   private _controlEl?: HTMLElement & {
     hass?: HomeAssistant;
@@ -100,7 +111,8 @@ export class TileCardLabEditor extends LitElement {
     if (!root) {
       return;
     }
-    const existing = root.getElementById("tcl-sticky-preview");
+    const existing =
+      this._stickyPreviewStyle ?? root.getElementById("tcl-sticky-preview");
     if (this._concept === "c") {
       if (!existing) {
         const style = document.createElement("style");
@@ -108,22 +120,35 @@ export class TileCardLabEditor extends LitElement {
         style.textContent =
           ".element-preview{position:sticky;top:0;align-self:flex-start;}";
         root.appendChild(style);
+        this._stickyPreviewStyle = style;
       }
     } else {
       existing?.remove();
+      this._stickyPreviewStyle = undefined;
     }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    // Undo every outside-our-shadow change through its stored reference. We
+    // cannot look any of it up again here: this element is already detached, so
+    // _findDialog() can no longer walk up to the dialog. If the editor is
+    // unloaded while the dialog stays open (switching card type, or Control's
+    // own tabs remounting it), re-finding would fail and leave HA's tabs hidden
+    // and the dialog pinned to our height.
     this._headerContainer?.remove();
     this._headerContainer = undefined;
     this._headerReady = false;
-    const root = this._findDialog()?.shadowRoot;
-    root?.getElementById("tcl-sticky-preview")?.remove();
-    const haDialog = root?.querySelector("ha-dialog") as HTMLElement | null;
-    haDialog?.style.removeProperty("--ha-dialog-min-height");
-    haDialog?.style.removeProperty("--ha-dialog-max-height");
+
+    this._hideTabsStyle?.remove();
+    this._hideTabsStyle = undefined;
+
+    this._stickyPreviewStyle?.remove();
+    this._stickyPreviewStyle = undefined;
+
+    this._sizedDialog?.style.removeProperty("--ha-dialog-min-height");
+    this._sizedDialog?.style.removeProperty("--ha-dialog-max-height");
+    this._sizedDialog = undefined;
   }
 
   // Match the "Add card" dialog's fixed size + position: it pins ha-dialog to
@@ -139,6 +164,7 @@ export class TileCardLabEditor extends LitElement {
     }
     haDialog.style.setProperty("--ha-dialog-min-height", "min(900px, 80vh)");
     haDialog.style.setProperty("--ha-dialog-max-height", "min(900px, 80vh)");
+    this._sizedDialog = haDialog;
   }
 
   // We render inside hui-card-element-editor's shadow root, alongside HA's
@@ -149,14 +175,17 @@ export class TileCardLabEditor extends LitElement {
     if (!(root instanceof ShadowRoot)) {
       return;
     }
-    const existing = root.querySelector("#tcl-hide-tabs");
+    const existing =
+      this._hideTabsStyle ?? root.querySelector("#tcl-hide-tabs");
     if (this._concept === "control") {
       existing?.remove();
+      this._hideTabsStyle = undefined;
     } else if (!existing) {
       const style = document.createElement("style");
       style.id = "tcl-hide-tabs";
       style.textContent = "ha-tab-group{display:none!important;}";
       root.appendChild(style);
+      this._hideTabsStyle = style;
     }
   }
 
