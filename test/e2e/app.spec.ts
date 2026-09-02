@@ -174,6 +174,7 @@ test("keeps the launch screen until initial panel content renders", async ({
     resolvers: (
       | "rejectMediaBrowse"
       | "resolveCalendarRegistry"
+      | "resolveConnectivityConfigEntries"
       | "resolveConfigEntries"
       | "resolveConfigEntriesInProgress"
       | "resolveGeneratedDashboard"
@@ -203,6 +204,13 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
       readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
       resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "connectivity",
+      path: "/?scenario=delayed-connectivity#/config/connectivity",
+      loadingSelector: "ha-config-connectivity ha-card",
+      readySelector: "ha-config-connectivity ha-list-item-button",
+      resolvers: ["resolveConnectivityConfigEntries"],
     },
     {
       name: "serial",

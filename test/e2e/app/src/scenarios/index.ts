@@ -1,4 +1,5 @@
 import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
+import type { ConfigEntry } from "../../../../../src/data/config_entries";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -259,6 +260,15 @@ const delayedIntegrationsScenario: Scenario = (hass) => {
   );
 };
 
+const delayedConnectivityScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const { promise, resolve } = Promise.withResolvers<ConfigEntry[]>();
+
+  window.resolveConnectivityConfigEntries = () => resolve([]);
+  hass.mockWS("config_entries/get", () => promise);
+};
+
 const delayedSerialScenario: Scenario = (hass) => {
   addLaunchScreen();
 
@@ -360,6 +370,7 @@ export const scenarios: Record<string, Scenario> = {
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
   "delayed-calendar": delayedCalendarScenario,
+  "delayed-connectivity": delayedConnectivityScenario,
   "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
   "delayed-integrations": delayedIntegrationsScenario,
   "delayed-media-browse": delayedMediaBrowseScenario,
