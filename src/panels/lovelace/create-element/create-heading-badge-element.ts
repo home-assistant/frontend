@@ -1,5 +1,6 @@
 import "../heading-badges/hui-button-heading-badge";
 import "../heading-badges/hui-entity-heading-badge";
+import "../heading-badges/hui-error-heading-badge";
 
 import {
   createLovelaceElement,

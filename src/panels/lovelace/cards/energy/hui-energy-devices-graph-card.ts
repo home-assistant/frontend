@@ -194,6 +194,7 @@ export class HuiEnergyDevicesGraphCard
               this._legendData
             )}
             .height=${`${Math.max(modes.includes("pie") ? 300 : 100, (this._legendData?.length || 0) * 28 + 50)}px`}
+            .sonificationLabelFormatter=${this._sonificationLabel}
             .extraComponents=${[PieChart]}
             .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
@@ -292,6 +293,14 @@ export class HuiEnergyDevicesGraphCard
       return options;
     }
   );
+
+  // The chart data is keyed on statistic ids, which is what Chart2Music would
+  // otherwise announce. Names that aren't statistics — the untracked slice —
+  // are already display text, so those stay as they are.
+  private _sonificationLabel = (label: string): string | undefined =>
+    this._deviceLabels[label] || this._data?.statsMetadata[label]
+      ? this._getDeviceName(label)
+      : undefined;
 
   private _getDeviceName(statisticId: string): string {
     const suffix = this._compoundStats.includes(statisticId)

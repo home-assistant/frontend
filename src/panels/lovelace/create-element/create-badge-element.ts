@@ -1,5 +1,6 @@
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import "../badges/hui-entity-badge";
+import "../badges/hui-error-badge";
 import {
   createLovelaceElement,
   getLovelaceElementClass,

@@ -4,6 +4,7 @@ import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
 import paths from "../paths.cjs";
+import { ensureMapAssets, mapAssetsDir } from "./map-assets.js";
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);
@@ -41,37 +42,6 @@ function copyMdiIcons(staticDir) {
   fs.copySync(polyPath("build/mdi"), staticPath("mdi"));
 }
 
-function copyPolyfills(staticDir) {
-  const staticPath = genStaticPath(staticDir);
-
-  // For custom panels using ES5 builds that don't use Babel 7+
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"),
-    staticPath("polyfills/")
-  );
-
-  // Web Component polyfills and adapters
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js"),
-    staticPath("polyfills/")
-  );
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
-    staticPath("polyfills/")
-  );
-  // Lit polyfill support
-  fs.copySync(
-    npmPath("lit/polyfill-support.js"),
-    path.join(staticPath("polyfills/"), "lit-polyfill-support.js")
-  );
-
-  // dialog-polyfill css
-  copyFileDir(
-    npmPath("dialog-polyfill/dialog-polyfill.css"),
-    staticPath("polyfills/")
-  );
-}
-
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
@@ -89,7 +59,7 @@ function copyQrScannerWorker(staticDir) {
   copyFileDir(npmPath("qr-scanner/qr-scanner-worker.min.js"), staticPath("js"));
 }
 
-function copyMapPanel(staticDir) {
+async function copyMapPanel(staticDir) {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
     npmPath("leaflet/dist/leaflet.css"),
@@ -102,6 +72,14 @@ function copyMapPanel(staticDir) {
   fs.copySync(
     npmPath("leaflet/dist/images"),
     staticPath("images/leaflet/images/")
+  );
+
+  // Style, glyphs and sprites for the vector base map
+  await ensureMapAssets();
+  fs.copySync(mapAssetsDir, staticPath("map/"));
+  copyFileDir(
+    npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
+    staticPath("map/")
   );
 }
 
@@ -132,14 +110,13 @@ gulp.task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
-  copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
   copyLocaleData(staticDir);
   copyMdiIcons(staticDir);
 
   // Panel assets
-  copyMapPanel(staticDir);
+  await copyMapPanel(staticDir);
 
   // Qr Scanner assets
   copyZXingWasm(staticDir);
@@ -154,8 +131,7 @@ gulp.task("copy-static-demo", async () => {
   );
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
-  copyPolyfills(paths.demo_output_static);
-  copyMapPanel(paths.demo_output_static);
+  await copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
   copyTranslations(paths.demo_output_static);
   copyLocaleData(paths.demo_output_static);
@@ -167,8 +143,7 @@ gulp.task("copy-static-cast", async () => {
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
   fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
-  copyPolyfills(paths.cast_output_static);
-  copyMapPanel(paths.cast_output_static);
+  await copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
   copyTranslations(paths.cast_output_static);
   copyLocaleData(paths.cast_output_static);
@@ -184,7 +159,7 @@ gulp.task("copy-static-gallery", async () => {
     paths.gallery_output_root
   );
 
-  copyMapPanel(paths.gallery_output_static);
+  await copyMapPanel(paths.gallery_output_static);
   copyFonts(paths.gallery_output_static);
   copyTranslations(paths.gallery_output_static);
   copyLocaleData(paths.gallery_output_static);
@@ -214,8 +189,7 @@ gulp.task("copy-static-e2e-test-app", async () => {
     fs.copySync(e2ePublic, paths.e2eTestApp_output_root);
   }
 
-  copyPolyfills(paths.e2eTestApp_output_static);
-  copyMapPanel(paths.e2eTestApp_output_static);
+  await copyMapPanel(paths.e2eTestApp_output_static);
   copyFonts(paths.e2eTestApp_output_static);
   copyTranslations(paths.e2eTestApp_output_static);
   copyLocaleData(paths.e2eTestApp_output_static);

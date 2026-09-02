@@ -56,7 +56,7 @@ export class HaControlSelect extends LitElement {
     this.updateComplete.then(() => {
       // eslint-disable-next-line lit/prefer-query-decorators
       const option = this.shadowRoot?.querySelector(
-        `#option-${this.options![index].value}`
+        `[data-index="${index}"]`
       ) as HTMLElement;
       option?.focus();
     });
@@ -101,7 +101,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionClick(ev: MouseEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this.value = value;
     fireEvent(this, "value-changed", { value });
   }
@@ -109,7 +109,7 @@ export class HaControlSelect extends LitElement {
   private _handleOptionMouseDown(ev: MouseEvent) {
     if (this.disabled) return;
     ev.preventDefault();
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
@@ -121,7 +121,7 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionFocus(ev: FocusEvent) {
     if (this.disabled) return;
-    const value = (ev.target as any).value;
+    const value = (ev.currentTarget as any).value;
     this._activeIndex = this.options?.findIndex(
       (option) => option.value === value
     );
@@ -144,7 +144,11 @@ export class HaControlSelect extends LitElement {
                 this.options,
                 (option) => option.value,
                 (option, index) =>
-                  this._renderOption(option, index === this._tabbableIndex)
+                  this._renderOption(
+                    option,
+                    index,
+                    index === this._tabbableIndex
+                  )
               )
             : nothing
         }
@@ -159,12 +163,17 @@ export class HaControlSelect extends LitElement {
     return selectedIndex === -1 ? 0 : selectedIndex;
   }
 
-  private _renderOption(option: ControlSelectOption, tabbable: boolean) {
+  private _renderOption(
+    option: ControlSelectOption,
+    index: number,
+    tabbable: boolean
+  ) {
     const isSelected = this.value === option.value;
 
     return html`
       <div
         id=${`option-${option.value}`}
+        data-index=${index}
         class=${classMap({
           option: true,
           selected: isSelected,
@@ -323,8 +332,6 @@ export class HaControlSelect extends LitElement {
     .option .content span {
       display: block;
       width: 100%;
-      -webkit-hyphens: auto;
-      -moz-hyphens: auto;
       hyphens: auto;
     }
     :host([vertical]) {

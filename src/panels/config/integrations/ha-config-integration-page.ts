@@ -101,12 +101,16 @@ export const renderConfigEntryError = (
 ): TemplateResult => {
   if (entry.reason) {
     if (entry.error_reason_translation_key) {
+      // The error may be translated by another integration, e.g. one raised by
+      // a shared helper and owned by the homeassistant integration.
+      const translationDomain =
+        entry.error_reason_translation_domain || entry.domain;
       const lokalisePromExc = hass
-        .loadBackendTranslation("exceptions", entry.domain)
+        .loadBackendTranslation("exceptions", translationDomain)
         .then(
           (localize) =>
             localize(
-              `component.${entry.domain}.exceptions.${entry.error_reason_translation_key}.message`,
+              `component.${translationDomain}.exceptions.${entry.error_reason_translation_key}.message`,
               entry.error_reason_translation_placeholders ?? undefined
             ) || entry.reason
         );

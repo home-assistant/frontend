@@ -52,6 +52,9 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
   initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
+  show_add_event?: boolean;
+  add_event_style?: "below" | "on_top" | "header";
+  add_event_size?: "small" | "medium" | "large";
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
@@ -716,6 +719,13 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface AlertCardConfig extends LovelaceCardConfig {
+  type: "alert";
+  entity: string;
+  color?: string;
+  pulse?: boolean;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

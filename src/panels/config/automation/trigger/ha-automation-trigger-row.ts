@@ -251,9 +251,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeTrigger(this.trigger, this.hass, this._entityReg, {
-            hideEntities: true,
-          })
+          describeTrigger(this.trigger, this.hass, this._entityReg)
         )}
         ${
           target !== undefined || targetRequired

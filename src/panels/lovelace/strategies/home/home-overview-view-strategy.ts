@@ -21,6 +21,7 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { ShortcutItem } from "../../../../data/home_shortcuts";
 import { resolveShortcutItems } from "../../../../data/home_shortcuts";
 import type { HomeAssistant } from "../../../../types";
+import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
   AreaCardConfig,
   DiscoveredDevicesCardConfig,
@@ -33,6 +34,7 @@ import type {
   TileCardConfig,
   UpdatesCardConfig,
 } from "../../cards/types";
+import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -270,15 +272,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         column_span: maxColumns,
         cards: [
           favoritesHeadingCard,
-          ...favoriteEntities.map(
-            (entityId) =>
-              ({
-                type: "tile",
-                entity: entityId,
-                state_content: ["state", "area_name"],
-                show_entity_picture: true,
-              }) satisfies TileCardConfig
-          ),
+          ...favoriteEntities.map(computeFavoriteCardConfig),
         ],
       };
     }
@@ -288,10 +282,6 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     );
 
     const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
-    const climateFilters = HOME_SUMMARIES_FILTERS.climate.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 
@@ -307,9 +297,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
-    const hasClimate =
-      hass.panels.climate &&
-      findEntities(allEntities, climateFilters).length > 0;
+    const hasClimate = hass.panels.climate && hasClimateEntities(hass);
     const hasSecurity =
       hass.panels.security &&
       findEntities(allEntities, securityFilters).length > 0;

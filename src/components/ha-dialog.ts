@@ -393,10 +393,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog) {
-          -webkit-backdrop-filter: var(
-            --ha-dialog-surface-backdrop-filter,
-            none
-          );
           backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
           box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
           color: var(--primary-text-color);
@@ -429,10 +425,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
         }
 
         wa-dialog::part(dialog)::backdrop {
-          -webkit-backdrop-filter: var(
-            --ha-dialog-scrim-backdrop-filter,
-            var(--dialog-backdrop-filter, none)
-          );
           backdrop-filter: var(
             --ha-dialog-scrim-backdrop-filter,
             var(--dialog-backdrop-filter, none)

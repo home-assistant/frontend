@@ -325,8 +325,10 @@
           "pause": "Pause",
           "cancel": "Cancel",
           "finish": "Finish",
+          "restart": "Restart",
           "set": "Set"
-        }
+        },
+        "presets": "Presets"
       },
       "vacuum": {
         "actions": {
@@ -802,10 +804,13 @@
         "device_not_found": "Device not found",
         "entity_not_found": "Entity not found",
         "label_not_found": "Label not found",
+        "device_replaced_headline": "Replaced device",
         "device_replaced": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
-        "replace_device": "Replace",
+        "device_replaced_by_one": "Replaced by {device}",
+        "replace_update": "Update",
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
@@ -835,8 +840,11 @@
         },
         "style": "Time format style"
       },
-      "filter-device-classes": {
-        "caption": "Device class"
+      "filter-entity-types": {
+        "caption": "Type",
+        "no_device_class": "No type",
+        "expand": "Expand",
+        "collapse": "Collapse"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -920,15 +928,23 @@
         "no_area": "No area",
         "placeholder": "Select a device",
         "unknown": "Unknown device selected",
-        "device_replaced_count": "Replaced by {count} {count, plural,\n one {device}\n other {devices}\n}",
-        "device_replaced_by_one": "This device was replaced by {device}.",
-        "device_replaced_by_multiple": "This device was replaced by {count} devices.",
-        "replace_device": "Replace",
+        "device_replaced": "Replaced device",
+        "device_replaced_by_one": "This device no longer exists. It was replaced by {device}.",
+        "device_replaced_by_one_integration": "This device no longer exists. It was replaced by {device} from {integration}.",
+        "device_replaced_by_multiple": "This device no longer exists. It was replaced by {count} devices, pick the one to use here.",
+        "replace_update": "Update",
+        "replace_choose": "Choose",
         "replaced_dialog": {
           "title": "Replace device",
           "description": "This device was replaced by multiple devices. Choose which one to use.",
           "recommended": "Recommended"
         }
+      },
+      "device-class-picker": {
+        "device_class": "Device class",
+        "add": "Add device class",
+        "no_device_classes": "No device classes available",
+        "no_match": "No device classes found for {term}"
       },
       "category-picker": {
         "clear": "Clear",
@@ -1164,12 +1180,12 @@
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
-        "entity": "Related entities",
-        "group": "Part of the following groups",
-        "scene": "Part of the following scenes",
-        "script": "Part of the following scripts",
-        "automation": "Part of the following automations",
-        "blueprint": "Using blueprint"
+        "entity": "Entities",
+        "group": "Groups",
+        "scene": "Scenes",
+        "script": "Scripts",
+        "automation": "Automations",
+        "blueprint": "Blueprint"
       },
       "data-table": {
         "search": "Search",
@@ -1615,9 +1631,11 @@
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
             "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
+            "serial": "[%key:ui::panel::config::dashboard::serial::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
+            "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
             "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
           }
         },
@@ -1669,14 +1687,15 @@
           "person": "Edit person"
         },
         "details": "Details",
-        "context": "Context",
         "entity": "Entity",
+        "state": "State",
+        "context": "Context",
         "floor": "Floor",
-        "entity_id": "Entity ID",
+        "entity_id": "ID",
+        "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
+        "no_labels": "None",
         "toggle_yaml_mode": "Toggle YAML mode",
-        "translated": "Translated",
-        "raw": "Raw",
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
@@ -1884,6 +1903,27 @@
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+        },
+        "timer": {
+          "edit_mode": "Edit presets",
+          "reset_favorites": "Remove all presets",
+          "reset_favorites_text": "Do you want to remove all presets for this timer?",
+          "copy_favorites": "Copy presets to...",
+          "copy_favorites_helper": "Select one or more timers to receive the copied presets from this timer.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
+          "preset": {
+            "set": "Start timer for {value}",
+            "edit": "Edit preset {value}",
+            "delete": "Delete preset {number}",
+            "delete_confirm_title": "Delete preset?",
+            "delete_confirm_text": "This preset will be permanently deleted.",
+            "delete_confirm_action": "[%key:ui::common::delete%]",
+            "add": "Add new preset",
+            "edit_title": "Edit preset",
+            "add_title": "Add preset",
+            "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+            "duration_error": "The duration must be at least one second."
+          }
         }
       },
       "entity_registry": {
@@ -2635,6 +2675,25 @@
           "learn_more": "Learn more"
         }
       },
+      "security": {
+        "editor": {
+          "title": "Edit security and safety page",
+          "description": "Configure your security and safety display preferences.",
+          "favorite_entities": "[%key:ui::panel::lovelace::editor::strategy::home::favorite_entities%]",
+          "favorite_entities_description": "Pin entities to the top of the page.",
+          "add_favorite_entity": "[%key:ui::panel::lovelace::editor::strategy::home::add_favorite_entity%]",
+          "active_alert_entities": "Active alert entities",
+          "active_alert_entities_description": "Display any entities that require attention.",
+          "add_alert_entity": "Add entity",
+          "severity": {
+            "label": "Severity",
+            "alert": "Alert",
+            "warning": "Warning"
+          },
+          "load_failed": "Failed to load security and safety page configuration",
+          "save_failed": "Failed to save security and safety page configuration"
+        }
+      },
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
@@ -2682,6 +2741,10 @@
           "dashboards": {
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
+          },
+          "connectivity": {
+            "main": "Connectivity",
+            "secondary": "Communication protocols and radios for your devices"
           },
           "voice_assistants": {
             "main": "Voice assistants",
@@ -2753,6 +2816,10 @@
           "radio_frequency": {
             "main": "Radio frequency",
             "secondary": "Control radio-based devices."
+          },
+          "serial": {
+            "main": "Serial",
+            "secondary": "Serial ports and the integrations and apps using them"
           },
           "knx": {
             "main": "KNX",
@@ -2869,6 +2936,21 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "mcp": {
+          "header": "Model Context Protocol",
+          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "documentation": "documentation",
+          "enable": "[%key:ui::common::enable%]",
+          "disable": "[%key:ui::common::disable%]",
+          "disable_confirm_title": "Disable the Model Context Protocol server?",
+          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "your_api_header": "Your MCP API",
+          "apis_header": "Individual MCP APIs",
+          "copy_url": "Copy URL",
+          "configure": "Configure",
+          "error_load": "Failed to load the Model Context Protocol configuration",
+          "error_delete_entry": "Failed to disable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -5021,10 +5103,7 @@
               }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud",
-              "register": {
-                "confirm_email": "Confirm email"
-              }
+              "title": "The power of Home Assistant Cloud"
             },
             "local": {
               "title": "Installing apps",
@@ -5377,7 +5456,6 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}",
                     "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   },
                   "for_type": {
@@ -5418,9 +5496,6 @@
                   "type_input": "Value of an entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "crossed_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above}{duration, select, \n undefined {} \n other { for {duration}}\n}",
                     "crossed_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}",
                     "crossed_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} crossed above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n}"
@@ -5675,9 +5750,6 @@
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
                     "picker": "Tests if the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
-                    "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
-                    "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
-                    "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}",
                     "is_above": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above}",
                     "is_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is below {below}",
                     "is_above_below": "{attribute, select, \n undefined {Numeric state} \n other {{attribute}}\n} is above {above} and below {below}"
@@ -5696,8 +5768,6 @@
                   "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
-                    "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }",
                     "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
                   }
                 },
@@ -6027,7 +6097,7 @@
                 },
                 "check_condition": {
                   "description": {
-                    "full": "Test {condition}"
+                    "full": "Test: {condition}"
                   }
                 },
                 "set_conversation_response": {
@@ -6410,12 +6480,25 @@
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
             "title": "Cloud login",
-            "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
-            "introduction2": "This service is run by our partner ",
-            "introduction2a": ", a company founded by the founders of Home Assistant.",
-            "introduction3": "Home Assistant Cloud is a subscription service with a free one-month trial. No payment information necessary.",
-            "learn_more_link": "Learn more about Home Assistant Cloud",
+            "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
+            "hero_title": "Tools for your home, support for the Open Home",
+            "hero_lead": "The easy, secure, and private way to get more out of Home Assistant, and the simplest way to fund its development.",
+            "trial_note": "Try free for a month. No payment information required up front.",
+            "partner_note": "This service is run by our partner {nabu_casa_link}, a company founded by the founders of Home Assistant.",
+            "feature_remote_title": "Access from anywhere",
+            "feature_remote_body": "Securely and privately reach your Home Assistant when you're away from home. Zero router configuration, port forwarding, or complex VPNs.",
+            "feature_backup_title": "Backups kept safe",
+            "feature_backup_body": "Your latest Home Assistant backup, automatically stored somewhere safe and only accessible with your private key, ready to restore your full system with one click.",
+            "feature_voice_control_title": "Alexa and Google Home made simple",
+            "feature_voice_control_body": "Ease your transition to Home Assistant, use your Google and Alexa speakers to control every device. Set up in minutes, not hours.",
+            "feature_voice_quality_title": "Fast, accurate voice control",
+            "feature_voice_quality_body": "More languages and higher accuracy for your own private voice assistant powered by Home Assistant.",
+            "feature_companion_title": "Secure app connectivity",
+            "feature_companion_body": "The Home Assistant app on your mobile device forms a secure connection home, encrypting your location and sensor data.",
+            "feature_support_title": "Support Home Assistant",
+            "feature_support_body": "Your subscription directly funds the Open Home Foundation, keeping Home Assistant independent and free from ads or data harvesting.",
             "sign_in": "Sign in",
+            "sign_in_lead": "Sign in to your Nabu Casa account.",
             "email": "Email",
             "email_error_msg": "Invalid email",
             "password": "Password",
@@ -6425,15 +6508,11 @@
             "cancel": "Cancel",
             "submit": "Submit",
             "forgot_password": "Forgot password?",
-            "start_trial": "Start your free 1-month trial",
-            "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
             "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
             "alert_mfa_code_required": "You need to enter your two-factor authentication code.",
             "alert_mfa_expired_or_not_started": "Multi-factor authentication expired, or not started. Please try again.",
-            "alert_totp_code_invalid": "Invalid two-factor authentication code.",
-            "cloud_pipeline_title": "Want to use Home Assistant Cloud for your voice assistant?",
-            "cloud_pipeline_text": "We created a new assistant for you, using the superior text-to-speech and speech-to-text engines from Home Assistant Cloud. Would you like to set this assistant as the preferred assistant?"
+            "alert_totp_code_invalid": "Invalid two-factor authentication code."
           },
           "forgot_password": {
             "title": "Forgot password",
@@ -6445,17 +6524,9 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "title": "Register account",
-            "headline": "Start your free trial",
+            "headline": "Start free trial",
             "information": "Create an account to start your free one-month trial with Home Assistant Cloud. No payment information necessary.",
-            "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
-            "feature_remote_control": "Control of Home Assistant away from home",
-            "feature_google_home": "Integration with Google Assistant",
-            "feature_amazon_alexa": "Integration with Amazon Alexa",
-            "feature_webhook_apps": "Easy integration with webhook-based apps like OwnTracks",
-            "information3": "This service is run by our partner ",
-            "information3a": ", a company founded by the founders of Home Assistant.",
-            "information4": "By registering an account, you agree to the following terms and conditions.",
+            "terms_notice": "By creating an account, you agree to our {terms} and {privacy_policy}.",
             "link_terms_conditions": "Terms and conditions",
             "link_privacy_policy": "Privacy policy",
             "create_account": "Create account",
@@ -6464,10 +6535,15 @@
             "password": "Password",
             "password_error_msg": "Passwords are at least 8 characters",
             "start_trial": "Start trial",
-            "resend_confirm_email": "Resend confirmation email",
+            "sign_in_instead": "Sign in instead",
+            "check_your_email": "Check your email",
+            "confirm_email_body": "Open the confirmation link in the email we just sent to {email}.",
+            "waiting_for_confirmation": "Waiting for confirmation. We'll sign you in automatically.",
+            "checking_confirmation": "Checking for your confirmation…",
+            "auto_login_failed": "We couldn't sign you in automatically. Confirm your email, then sign in.",
+            "nothing_arrived": "Nothing arrived? Check your spam folder, or {resend_link}.",
+            "resend_link": "resend the confirmation email",
             "clicked_confirm": "I opened the confirmation link",
-            "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
-            "account_created": "Account created! Check your email for instructions on how to activate your account.",
             "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
@@ -7520,6 +7596,38 @@
           "last_used": "Last used",
           "devices_navigation": "Devices"
         },
+        "serial": {
+          "title": "Serial",
+          "status_ok": "All ports connected",
+          "status_disconnected": "Ports disconnected",
+          "status_summary": "{in_use}/{total} connected ports in use",
+          "status_summary_disconnected": "{count} disconnected",
+          "connected": "Connected",
+          "connected_description": "These ports are used by at least one integration or app.",
+          "available": "Available",
+          "available_description": "These ports are connected but not used by any integration or app.",
+          "disconnected": "Disconnected",
+          "disconnected_description": "These ports are used by an integration or app but are currently not connected.",
+          "no_ports": "No serial ports found",
+          "loading_error": "Failed to load serial ports",
+          "serial_number": "S/N: {serial_number}",
+          "consumer_not_running": "{name} (not running)",
+          "can_be_used_with": "Can be used with {integrations}",
+          "discovered_by": "Discovered by {integration}, set it up",
+          "port_information": "Port information",
+          "fields": {
+            "device": "Device",
+            "resolved_device": "Resolved device",
+            "description": "Description",
+            "manufacturer": "Manufacturer",
+            "interface_description": "Interface description",
+            "interface_number": "Interface number",
+            "serial_number": "Serial number",
+            "vid": "Vendor ID",
+            "pid": "Product ID",
+            "bcd_device": "Device revision"
+          }
+        },
         "dhcp": {
           "title": "DHCP discovery",
           "mac_address": "MAC address",
@@ -8342,7 +8450,10 @@
             "status": "Status",
             "version": "Version",
             "data_rate": "Data rate",
-            "area": "Area"
+            "area": "Area",
+            "neighbor": "In range of each other",
+            "toggle_neighbors": "Toggle neighbor connections. Loading neighbor data temporarily turns off the Z-Wave adapter.",
+            "neighbors_error": "Failed to load neighbor connections"
           },
           "node_status": {
             "0": "Unknown",
@@ -8754,8 +8865,8 @@
           "download_device_info": "Preview device analytics"
         },
         "ai_tasks": {
-          "caption": "AI tasks",
-          "description": "Configure AI suggestions and task preferences"
+          "caption": "AI",
+          "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
         "entity_id_format": {
           "caption": "Entity ID format",
@@ -9127,6 +9238,8 @@
           "security": {
             "devices": "Devices",
             "other_devices": "Other devices",
+            "active_alerts": "Active alerts",
+            "favorites": "[%key:ui::panel::lovelace::strategy::home::favorites%]",
             "activity": "Activity"
           },
           "climate": {
@@ -9858,6 +9971,21 @@
                 "dayGridWeek": "Week",
                 "dayGridDay": "Day",
                 "listWeek": "List (7 days)"
+              },
+              "show_add_event": "Show add event button",
+              "add_event_style": "Add event button style",
+              "add_event_size": "Add event button size",
+              "add_event": {
+                "style": {
+                  "header": "Header",
+                  "below": "Below",
+                  "on_top": "On top"
+                },
+                "size": {
+                  "s": "Small",
+                  "m": "Medium",
+                  "l": "Large"
+                }
               }
             },
             "conditional": {
@@ -10817,6 +10945,26 @@
                   "reset": "Reset"
                 }
               },
+              "timer-actions": {
+                "label": "Timer actions",
+                "customize": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::customize%]",
+                "actions": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::actions%]",
+                "actions_list": {
+                  "start": "[%key:ui::card::timer::actions::start%]",
+                  "pause": "[%key:ui::card::timer::actions::pause%]",
+                  "cancel": "[%key:ui::card::timer::actions::cancel%]",
+                  "finish": "[%key:ui::card::timer::actions::finish%]"
+                }
+              },
+              "timer-presets": {
+                "label": "Timer presets",
+                "description": "This feature uses the timer's presets. To manage them, open the timer's more info dialog and select 'Edit presets' in the overflow menu.",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -10842,6 +10990,11 @@
               },
               "select-options": {
                 "label": "Select options",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "buttons": "Buttons"
+                },
                 "options": "Options",
                 "customize_options": "Customize options"
               },
@@ -11114,17 +11267,19 @@
       },
       "profile": {
         "tabs": {
-          "general": "General",
           "security": "Security"
         },
-        "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
-        "user_preferences_header": "User preferences",
+        "user_preferences_header": "Appearance",
+        "user_preferences_description": "Default dashboard and sidebar",
         "user_preferences_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
         "localization_header": "Localization",
+        "localization_description": "Language, time zone, date, time, and number formats",
         "localization_detail": "These settings are tied to your account and control how dates, times, and numbers are displayed.",
-        "mobile_app_settings": "Mobile app settings",
-        "browser_settings": "Browser settings",
+        "mobile_app_settings": "This mobile app",
+        "browser_settings": "This browser",
+        "browser_description": "Notifications, display, and shortcuts",
+        "security_description": "Password, multi-factor authentication, and access tokens",
         "client_settings_detail": "The following settings are local to this client only, and may reset to defaults on logout or when local data is cleared.",
         "logout": "Log out",
         "logout_title": "Log out?",
@@ -11239,6 +11394,7 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
+          "colors": "Custom colors",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
@@ -11246,7 +11402,7 @@
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
-          "reset": "Reset",
+          "reset": "Reset colors",
           "use_default": "Use default theme"
         },
         "dashboard": {
@@ -11707,8 +11863,6 @@
               "cancel": "[%key:ui::panel::config::cloud::login::cancel%]",
               "submit": "[%key:ui::panel::config::cloud::login::submit%]",
               "forgot_password": "[%key:ui::panel::config::cloud::login::forgot_password%]",
-              "start_trial": "[%key:ui::panel::config::cloud::login::start_trial%]",
-              "trial_info": "[%key:ui::panel::config::cloud::login::trial_info%]",
               "alert_password_change_required": "[%key:ui::panel::config::cloud::login::alert_password_change_required%]",
               "alert_email_confirm_necessary": "[%key:ui::panel::config::cloud::login::alert_email_confirm_necessary%]",
               "alert_mfa_code_required": "[%key:ui::panel::config::cloud::login::alert_mfa_code_required%]",

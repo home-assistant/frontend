@@ -160,15 +160,6 @@ export const getRecorderEntityOptions = (
     entity_id,
   });
 
-export const getStatisticIds = (
-  hass: Pick<HomeAssistant, "callWS">,
-  statistic_type?: "mean" | "sum"
-) =>
-  hass.callWS<StatisticsMetaData[]>({
-    type: "recorder/list_statistic_ids",
-    statistic_type,
-  });
-
 export const getStatisticMetadata = (
   hass: HomeAssistant,
   statistic_ids?: string[]

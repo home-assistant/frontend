@@ -90,7 +90,7 @@ class HaAlert extends LitElement {
   static styles = css`
     .issue-type {
       position: relative;
-      padding: 8px;
+      padding: var(--ha-alert-padding, 8px);
       display: flex;
     }
     .icon {

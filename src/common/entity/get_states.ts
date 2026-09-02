@@ -304,6 +304,9 @@ export const DOMAIN_OPTIONS_ATTRIBUTES: Record<
     swing_mode: "swing_modes",
     swing_horizontal_mode: "swing_horizontal_modes",
   },
+  cover: {
+    speed: "supported_speeds",
+  },
   event: {
     event_type: "event_types",
   },

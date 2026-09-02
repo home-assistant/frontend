@@ -19,6 +19,7 @@ const baseEntry = {
   pref_disable_polling: false,
   disabled_by: null,
   reason: null,
+  error_reason_translation_domain: null,
   error_reason_translation_key: null,
   error_reason_translation_placeholders: null,
 };
@@ -77,6 +78,16 @@ export const demoConfigEntries: {
       entry_id: "mock-template-helper",
       domain: "template",
       title: "Comfort level",
+    },
+  },
+  {
+    type: "service",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-mcp-server",
+      domain: "mcp_server",
+      title: "Assist, Music Assistant",
+      supports_options: true,
     },
   },
 ];

@@ -52,11 +52,11 @@ import type {
 } from "../../../../data/recorder";
 import {
   clearStatistics,
-  getStatisticIds,
   StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import {
   apiContext,
   internationalizationContext,
@@ -865,7 +865,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           gap: var(--ha-space-4);
           padding: 0 var(--ha-space-4);
           overflow-x: scroll;
-          -ms-overflow-style: none;
           scrollbar-width: none;
         }
 

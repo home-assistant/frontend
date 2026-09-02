@@ -214,7 +214,6 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     ha-card {
       background: none;
       backdrop-filter: none;
-      -webkit-backdrop-filter: none;
       border: none;
       box-shadow: none;
       padding: 0;

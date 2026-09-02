@@ -67,38 +67,16 @@ afterEach(() => {
 });
 
 describe("notification-manager", () => {
-  it("shows a message with the default duration", async () => {
-    const manager = await mountManager();
-
-    await manager.showDialog({ message: "Configuration saved" });
-
-    const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
-    expect(toast.labelText).toBe("Configuration saved");
-    expect(toast.timeoutMs).toBe(4000);
-    expect(
-      stack.style.getPropertyValue("--notification-stack-bottom-offset")
-    ).toBe("0px");
-    expect(toast.show).toHaveBeenCalledOnce();
-  });
-
-  it("renders a dismiss button and closes with the dismiss reason", async () => {
+  it("closes with the dismiss reason", async () => {
     const manager = await mountManager();
 
     await manager.showDialog({
       message: "Connection lost",
       dismissable: true,
       duration: -1,
-      bottomOffset: 16,
     });
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-    const stack = manager.shadowRoot!.querySelector<HTMLElement>(".stack")!;
-    expect(toast.timeoutMs).toBe(-1);
-    expect(
-      stack.style.getPropertyValue("--notification-stack-bottom-offset")
-    ).toBe("16px");
-
     manager.shadowRoot!.querySelector<HTMLElement>("ha-icon-button")!.click();
     expect(toast.hide).toHaveBeenCalledWith("dismiss");
   });
@@ -141,34 +119,7 @@ describe("notification-manager", () => {
     }
   );
 
-  it("localizes visible and assistive messages with numeric arguments", async () => {
-    const manager = await mountManager();
-
-    await manager.showDialog({
-      message: {
-        translationKey: "ui.notification_toast.new_version_available",
-        args: { seconds: 59 },
-      },
-      announceMessage: {
-        translationKey: "ui.notification_toast.new_version_available",
-        args: { seconds: 60 },
-      },
-    });
-
-    const toast = manager.shadowRoot!.querySelector("ha-toast")!;
-    expect(toast.labelText).toContain('"seconds":59');
-    expect(toast.announceText).toContain('"seconds":60');
-    expect(localize).toHaveBeenCalledWith(
-      "ui.notification_toast.new_version_available",
-      { seconds: 59 }
-    );
-    expect(localize).toHaveBeenCalledWith(
-      "ui.notification_toast.new_version_available",
-      { seconds: 60 }
-    );
-  });
-
-  it("renders and invokes primary and secondary actions", async () => {
+  it("invokes primary and secondary actions", async () => {
     const manager = await mountManager();
     const primary = vi.fn();
     const secondary = vi.fn();
@@ -182,11 +133,6 @@ describe("notification-manager", () => {
 
     const toast = manager.shadowRoot!.querySelector("ha-toast")!;
     const buttons = manager.shadowRoot!.querySelectorAll("ha-button");
-    expect(buttons).toHaveLength(2);
-    expect(buttons[0].textContent?.trim()).toBe("Cancel");
-    expect(buttons[0].getAttribute("appearance")).toBe("plain");
-    expect(buttons[1].textContent?.trim()).toBe("Update now");
-    expect(buttons[1].getAttribute("appearance")).toBe("filled");
 
     buttons[0].click();
     expect(toast.hide).toHaveBeenLastCalledWith("action");

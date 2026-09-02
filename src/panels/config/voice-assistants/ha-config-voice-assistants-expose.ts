@@ -395,9 +395,11 @@ export class VoiceAssistantsExpose extends LitElement {
               aliases: entry?.aliases || [],
             };
           }
-          result[entityId].assistants_sortable_key = getAssistantsSortableKey(
-            result[entityId].assistants
-          );
+          if (result[entityId]) {
+            result[entityId].assistants_sortable_key = getAssistantsSortableKey(
+              result[entityId].assistants
+            );
+          }
         });
       }
       return Object.values(result);

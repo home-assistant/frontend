@@ -480,6 +480,40 @@ export const migrateAutomationConfig = <
   return config;
 };
 
+// The fields of the row holding a trigger, condition or action, as opposed to
+// the configuration of its type. The UI editors of some types build their value
+// from scratch, so these have to be carried over explicitly.
+export const TRIGGER_ROW_CONFIG_KEYS = [
+  "alias",
+  "note",
+  "id",
+  "enabled",
+  "variables",
+] as const;
+
+export const CONDITION_ROW_CONFIG_KEYS = ["alias", "note", "enabled"] as const;
+
+export const ACTION_ROW_CONFIG_KEYS = [
+  "alias",
+  "note",
+  "enabled",
+  "continue_on_error",
+] as const;
+
+export const pickRowConfig = <T extends object>(
+  row: T,
+  keys: readonly string[]
+): Partial<T> => {
+  const source = row as Record<string, unknown>;
+  const config: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (key in source) {
+      config[key] = source[key];
+    }
+  }
+  return config as Partial<T>;
+};
+
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport

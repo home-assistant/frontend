@@ -470,15 +470,19 @@ export class HaMediaPlayerBrowse extends LitElement {
       ? MediaClassBrowserSettings[currentItem.children_media_class]
       : MediaClassBrowserSettings.directory;
 
+    const canPickCurrent =
+      currentItem?.can_play ||
+      (currentItem && this.accept?.includes("directory"));
+
     return html`
               ${
-                currentItem.can_play || showSearch
+                canPickCurrent || showSearch
                   ? html`
                       <div
                         class="header ${classMap({
                           "no-img": !currentItem.thumbnail,
                           "no-dialog": !this.dialog,
-                          "search-only": !currentItem.can_play,
+                          "search-only": !canPickCurrent,
                         })}"
                         @transitionend=${this._setHeaderHeight}
                       >
@@ -491,7 +495,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             : nothing
                         }
                         ${
-                          currentItem.can_play
+                          canPickCurrent
                             ? html`<div class="header-content">
                                 ${
                                   currentItem.thumbnail
@@ -503,7 +507,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                           ></ha-media-browser-thumbnail>
                                           ${
                                             this.narrow &&
-                                            currentItem?.can_play &&
+                                            canPickCurrent &&
                                             (!this.accept ||
                                               canPlayChildren.has(
                                                 currentItem.media_content_id
@@ -546,7 +550,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     }
                                   </div>
                                   ${
-                                    currentItem.can_play &&
+                                    canPickCurrent &&
                                     (!currentItem.thumbnail || !this.narrow)
                                       ? html`
                                           <ha-button

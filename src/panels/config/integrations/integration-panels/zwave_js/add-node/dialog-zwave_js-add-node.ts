@@ -306,6 +306,7 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._step === "choose_security_strategy") {
       return html`<zwave-js-add-node-select-security-strategy
         .hass=${this.hass}
+        .inclusionStrategy=${this._inclusionStrategy}
         @z-wave-strategy-selected=${this._setSecurityStrategy}
       ></zwave-js-add-node-select-security-strategy>`;
     }

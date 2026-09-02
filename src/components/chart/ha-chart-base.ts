@@ -117,6 +117,11 @@ export class HaChartBase extends LitElement {
 
   @property({ type: String }) public height?: string;
 
+  // Lets cards that key their data on ids have display names announced
+  // instead when the chart is navigated with Chart2Music.
+  @property({ attribute: false })
+  public sonificationLabelFormatter?: (label: string) => string | undefined;
+
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
@@ -357,7 +362,7 @@ export class HaChartBase extends LitElement {
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
-      if (chartOptions.series) {
+      if (chartOptions.series || changedProps.has("_isZoomed")) {
         this._updateSankeyRoam();
       }
     }
@@ -583,6 +588,7 @@ export class HaChartBase extends LitElement {
         localize: this.hass.localize,
         locale: this.hass.locale,
         config: this.hass.config,
+        formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
           // dropping an error on someone who only pressed Tab.
@@ -648,6 +654,11 @@ export class HaChartBase extends LitElement {
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(this._chartContainer!, "custom");
+      if (this._isZoomed) {
+        this._isZoomed = false;
+        this._zoomRatio = 1;
+        fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+      }
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
@@ -658,7 +669,7 @@ export class HaChartBase extends LitElement {
         const option = this.chart!.getOption();
         const series = option.series as any[];
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
-        const zoomed = sankeySeries.zoom !== 1;
+        const zoomed = Math.abs(sankeySeries.zoom - 1) > 1e-6;
         this._isZoomed = zoomed;
         if (!zoomed) {
           // Reset center when fully zoomed out
@@ -1273,10 +1284,22 @@ export class HaChartBase extends LitElement {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
           id: s.id,
-          roam: this._modifierPressed || this._isTouchDevice ? true : "move",
+          roam: this._getSankeyRoam(),
         })),
       });
     }
+  }
+
+  // On touch devices a drag pans only once zoomed, so an unzoomed chart
+  // does not swallow page scrolling. Pinch still zooms via "scale".
+  private _getSankeyRoam(): boolean | "move" | "scale" {
+    if (this._modifierPressed) {
+      return true;
+    }
+    if (this._isTouchDevice) {
+      return this._isZoomed ? true : "scale";
+    }
+    return "move";
   }
 
   private _handleDataZoomEvent(e: any) {

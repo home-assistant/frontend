@@ -14,6 +14,7 @@ import {
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
 import type { EntityComboBoxItem } from "./entity/entity_picker";
 import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
+import { shareInFlightRequest } from "../common/util/share-in-flight-request";
 
 export const TARGET_SEPARATOR = "________";
 
@@ -54,13 +55,18 @@ export const extractFromTarget = async (
   target: HassServiceTarget,
   expandGroup = false,
   primaryEntitiesOnly = true
-) =>
-  callWS<ExtractFromTargetResult>({
-    type: "extract_from_target",
+) => {
+  const request = {
+    type: "extract_from_target" as const,
     target,
     expand_group: expandGroup,
     primary_entities_only: primaryEntitiesOnly,
-  });
+  };
+
+  return shareInFlightRequest(callWS, JSON.stringify(request), () =>
+    callWS<ExtractFromTargetResult>(request)
+  );
+};
 
 export const getTargetEntityCount = (target?: HassServiceTarget): number => {
   const tempTarget = {

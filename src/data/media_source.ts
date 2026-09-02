@@ -1,3 +1,4 @@
+import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import type { HomeAssistant } from "../types";
 import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
 
@@ -7,13 +8,30 @@ export interface ResolvedMediaSource {
 }
 
 export const resolveMediaSource = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   media_content_id: string
 ) =>
   hass.callWS<ResolvedMediaSource>({
     type: "media_source/resolve_media",
     media_content_id,
   });
+
+// Resolved URLs are signed and valid for 24 hours (CONTENT_AUTH_EXPIRY_TIME in
+// core). Resolving again returns a different signature, which would defeat the
+// browser cache, so reuse the resolved URL for just under its validity.
+export const RESOLVE_CACHE_TIME = 23 * 60 * 60 * 1000; // 23 hours
+
+export const resolveMediaSourceWithCache = (
+  hass: Pick<HomeAssistant, "callWS" | "hassUrl">,
+  media_content_id: string
+): Promise<ResolvedMediaSource> =>
+  timeCacheEntityPromiseFunc(
+    "_resolvedMediaSource",
+    RESOLVE_CACHE_TIME,
+    resolveMediaSource,
+    hass,
+    media_content_id
+  );
 
 export const browseLocalMediaPlayer = (
   hass: HomeAssistant,

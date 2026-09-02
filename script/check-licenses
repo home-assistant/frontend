@@ -27,6 +27,7 @@ const ALLOWED_LICENSES = new Set([
   "0BSD",
   "CC0-1.0",
   "(MIT OR CC0-1.0)",
+  "(MIT OR Apache-2.0)",
   "(MIT AND Zlib)",
   "Python-2.0", // argparse - Python Software Foundation License (permissive)
   "Public Domain",

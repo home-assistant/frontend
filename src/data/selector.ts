@@ -48,6 +48,7 @@ export type Selector =
   | DeviceSelector
   | FloorSelector
   | LegacyDeviceSelector
+  | DeviceClassSelector
   | DurationSelector
   | EntitySelector
   | EntityNameSelector
@@ -86,6 +87,20 @@ export type Selector =
   | UiStateContentSelector
   | UiTimeFormatSelector
   | BackupLocationSelector;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type SelectorType = KeysOfUnion<Selector>;
+
+type UnionMemberWithKey<U, K extends PropertyKey> = U extends unknown
+  ? K extends keyof U
+    ? U
+    : never
+  : never;
+
+export type SelectorForType<T extends SelectorType> = UnionMemberWithKey<
+  Selector,
+  T
+>;
 
 export interface ActionSelector {
   action: {
@@ -365,9 +380,9 @@ export interface MediaSelector {
   media: {
     accept?: string[];
     image_upload?: boolean;
-    clearable?: boolean;
     hide_content_type?: boolean;
     content_id_helper?: string;
+    multiple?: boolean;
   } | null;
 }
 
@@ -481,6 +496,13 @@ export interface SelectSelector {
     sort?: boolean;
     reorder?: boolean;
     box_max_columns?: number;
+  } | null;
+}
+
+export interface DeviceClassSelector {
+  device_class: {
+    domain: string;
+    multiple?: boolean;
   } | null;
 }
 

@@ -1,8 +1,10 @@
 import {
+  mdiAccessPointNetwork,
   mdiAccount,
   mdiBackupRestore,
   mdiBadgeAccountHorizontal,
   mdiBluetooth,
+  mdiCableData,
   mdiCellphoneCog,
   mdiCog,
   mdiDatabase,
@@ -91,13 +93,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "lovelace",
       adminOnly: true,
     },
-    {
-      path: "/config/voice-assistants",
-      translationKey: "voice_assistants",
-      iconPath: mdiMicrophone,
-      iconColor: "#3263C3",
-      adminOnly: true,
-    },
   ],
   dashboard_external_settings: [
     {
@@ -108,6 +103,23 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
   ],
   dashboard_2: [
+    {
+      path: "/config/connectivity",
+      translationKey: "connectivity",
+      iconPath: mdiAccessPointNetwork,
+      iconColor: "#00838F",
+      core: true,
+      adminOnly: true,
+    },
+    {
+      path: "/config/voice-assistants",
+      translationKey: "voice_assistants",
+      iconPath: mdiMicrophone,
+      iconColor: "#3263C3",
+      adminOnly: true,
+    },
+  ],
+  connectivity: [
     {
       path: "/config/matter",
       iconPath:
@@ -166,6 +178,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#0082FC",
       component: "bluetooth",
       translationKey: "bluetooth",
+      adminOnly: true,
+    },
+    {
+      path: "/config/serial",
+      iconPath: mdiCableData,
+      iconColor: "#607D8B",
+      component: "usb",
+      translationKey: "serial",
       adminOnly: true,
     },
     {
