@@ -4,11 +4,11 @@ import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
 
-import type { Hacs } from "./data/hacs";
+import type { StoreData } from "./data/store";
 
-@customElement("hacs-router")
-class HacsRouter extends HassRouterPage {
-  @property({ attribute: false }) public hacs!: Hacs;
+@customElement("ha-store-router")
+class HaStoreRouter extends HassRouterPage {
+  @property({ attribute: false }) public store!: StoreData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -64,7 +64,7 @@ class HacsRouter extends HassRouterPage {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
     el.hass = this.hass;
-    el.hacs = this.hacs;
+    el.store = this.store;
     el.route = this.route;
     el.narrow = this.narrow;
     el.isWide = isWide;
@@ -77,17 +77,17 @@ class HacsRouter extends HassRouterPage {
       !["_my_redirect", "repository"].includes(page) ? "dashboard" : undefined,
     routes: {
       _my_redirect: {
-        tag: "hacs-my-redirect",
-        load: () => import("./hacs-my-redirect"),
+        tag: "ha-store-my-redirect",
+        load: () => import("./ha-store-my-redirect"),
       },
       dashboard: {
-        tag: "hacs-dashboard",
-        load: () => import("./dashboards/hacs-dashboard"),
+        tag: "ha-store-dashboard",
+        load: () => import("./dashboards/ha-store-dashboard"),
         cache: true,
       },
       repository: {
-        tag: "hacs-repository-dashboard",
-        load: () => import("./dashboards/hacs-repository-dashboard"),
+        tag: "ha-store-repository-dashboard",
+        load: () => import("./dashboards/ha-store-repository-dashboard"),
       },
     },
   };
@@ -95,6 +95,6 @@ class HacsRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-router": HacsRouter;
+    "ha-store-router": HaStoreRouter;
   }
 }

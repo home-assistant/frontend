@@ -1,27 +1,27 @@
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-form/ha-form";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-form/ha-form";
 import type {
   HaFormDataContainer,
   HaFormSchema,
-} from "../../../../components/ha-form/types";
-import "../../../../components/ha-settings-row";
-import "../../../../components/progress/ha-progress-bar";
-import type { HomeAssistant } from "../../../../types";
-import { HacsDispatchEvent } from "../../data/common";
-import { websocketSubscription } from "../../data/websocket";
-import type { HacsFormDialogParams } from "./show-hacs-dialog";
+} from "../../../components/ha-form/types";
+import "../../../components/ha-settings-row";
+import "../../../components/progress/ha-progress-bar";
+import type { HomeAssistant } from "../../../types";
+import { StoreDispatchEvent } from "../data/common";
+import { websocketSubscription } from "../data/websocket";
+import type { StoreFormDialogParams } from "./show-dialog-store";
 
-@customElement("hacs-form-dialog")
-class HacsFromDialog extends LitElement {
+@customElement("dialog-store-form")
+class DialogStoreForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() _dialogParams?: HacsFormDialogParams;
+  @state() _dialogParams?: StoreFormDialogParams;
 
   @state() _waiting?: boolean;
 
@@ -29,14 +29,14 @@ class HacsFromDialog extends LitElement {
 
   _errorSubscription: any;
 
-  public async showDialog(dialogParams: HacsFormDialogParams): Promise<void> {
+  public async showDialog(dialogParams: StoreFormDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
     this._errorSubscription = await websocketSubscription(
       this.hass,
       (data) => {
         this._errors = { base: data?.message || data };
       },
-      HacsDispatchEvent.ERROR
+      StoreDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -180,6 +180,6 @@ class HacsFromDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-form-dialog": HacsFromDialog;
+    "dialog-store-form": DialogStoreForm;
   }
 }

@@ -9,7 +9,7 @@ import {
 import "../../layouts/hass-error-screen";
 import type { ParamType, Redirect, Redirects } from "../my/ha-panel-my";
 import type { HomeAssistant, Route } from "../../types";
-import type { Hacs } from "./data/hacs";
+import type { StoreData } from "./data/store";
 
 export const REDIRECTS: Redirects = {
   hacs_repository: {
@@ -22,11 +22,11 @@ export const REDIRECTS: Redirects = {
   },
 };
 
-@customElement("hacs-my-redirect")
-class HacsMyRedirect extends LitElement {
+@customElement("ha-store-my-redirect")
+class HaStoreMyRedirect extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public hacs!: Hacs;
+  @property({ attribute: false }) public store!: StoreData;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -100,6 +100,6 @@ class HacsMyRedirect extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-my-redirect": HacsMyRedirect;
+    "ha-store-my-redirect": HaStoreMyRedirect;
   }
 }

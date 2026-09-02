@@ -12161,7 +12161,7 @@
           "error": "An unknown error occurred",
           "repository_not_found": "Repository {repository} not found",
           "add_repository_title": "Add custom repository",
-          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by HACS. Do you want to add it?"
+          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by the Community store. Do you want to add it?"
         },
         "dialog_about": {
           "integration_version": "Integration version",
@@ -12209,7 +12209,7 @@
           "author": "Author",
           "no_info": "The developer has not provided any more information for this repository",
           "open_repo": "Open repository",
-          "download": "Download this repository with HACS"
+          "download": "Download this repository with the Community store"
         },
         "repository_card": {
           "dismiss": "dismiss",
@@ -12233,7 +12233,7 @@
           "default": "Available for download"
         },
         "menu": {
-          "about": "About HACS",
+          "about": "About the Community store",
           "custom_repositories": "Custom repositories",
           "open_issue": "Open issue",
           "dismiss": "Dismiss new repositories",
@@ -12248,9 +12248,12 @@
             "title": "Remove",
             "message": "Do you really want to remove {name}?"
           },
+          "disabled": {
+            "title": "The Community store is disabled"
+          },
           "configured": {
             "title": "Integration is configured",
-            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from HACS.",
+            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from the Community store.",
             "confirm": "Go to integrations"
           }
         }

@@ -31,18 +31,18 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import { showHacsDownloadDialog } from "../components/dialogs/show-hacs-dialog";
-import { repositoryMenuItems } from "../components/hacs-repository-owerflow-menu";
-import type { Hacs } from "../data/hacs";
+import { showStoreDownloadDialog } from "../dialogs/show-dialog-store";
+import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
+import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryInfo } from "../data/repository";
 import { fetchRepositoryInformation } from "../data/repository";
 import { getRepositories, repositoryAdd } from "../data/websocket";
-import { HacsStyles } from "../styles/hacs-common-style";
+import { storeStyles } from "../styles/store-common-style";
 import { markdownWithRepositoryContext } from "../tools/markdown";
 
-@customElement("hacs-repository-dashboard")
-export class HacsRepositoryDashboard extends LitElement {
-  @property({ attribute: false }) public hacs!: Hacs;
+@customElement("ha-store-repository-dashboard")
+export class HaStoreRepositoryDashboard extends LitElement {
+  @property({ attribute: false }) public store!: StoreData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -105,7 +105,7 @@ export class HacsRepositoryDashboard extends LitElement {
     if (Object.entries(params).length) {
       let existing: RepositoryBase | undefined;
       const requestedRepository = `${params.owner}/${params.repository}`;
-      existing = this.hacs.repositories.find(
+      existing = this.store.repositories.find(
         (repository) =>
           repository.full_name.toLocaleLowerCase() ===
           requestedRepository.toLocaleLowerCase()
@@ -380,8 +380,8 @@ export class HacsRepositoryDashboard extends LitElement {
   };
 
   private _downloadRepositoryDialog() {
-    showHacsDownloadDialog(this, {
-      hacs: this.hacs,
+    showStoreDownloadDialog(this, {
+      store: this.store,
       repositoryId: this._repository!.id,
       repository: this._repository!,
     });
@@ -389,7 +389,7 @@ export class HacsRepositoryDashboard extends LitElement {
 
   static get styles() {
     return [
-      HacsStyles,
+      storeStyles,
       css`
         hass-loading-screen {
           --app-header-background-color: var(--sidebar-background-color);
@@ -429,6 +429,6 @@ export class HacsRepositoryDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-repository-dashboard": HacsRepositoryDashboard;
+    "ha-store-repository-dashboard": HaStoreRepositoryDashboard;
   }
 }

@@ -1,4 +1,4 @@
-export enum HacsDispatchEvent {
+export enum StoreDispatchEvent {
   CONFIG = "hacs_dispatch_config",
   ERROR = "hacs_dispatch_error",
   RELOAD = "hacs_dispatch_reload",

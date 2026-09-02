@@ -6,17 +6,17 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
-import { HacsDispatchEvent } from "./data/common";
-import type { Hacs, HacsInfo } from "./data/hacs";
+import { StoreDispatchEvent } from "./data/common";
+import type { StoreData, StoreInfo } from "./data/store";
 import type { RepositoryBase } from "./data/repository";
 import {
-  fetchHacsInfo,
+  fetchStoreInfo,
   getRepositories,
   websocketSubscription,
 } from "./data/websocket";
-import "./hacs-router";
-import { HacsStyles } from "./styles/hacs-common-style";
-import { hacsStyleVariables } from "./styles/variables";
+import "./ha-store-router";
+import { storeStyles } from "./styles/store-common-style";
+import { storeStyleVariables } from "./styles/variables";
 
 @customElement("ha-panel-store")
 class HaPanelStore extends SubscribeMixin(LitElement) {
@@ -30,10 +30,10 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   @state() private _repositories?: RepositoryBase[];
 
-  @state() private _info?: HacsInfo;
+  @state() private _info?: StoreInfo;
 
-  private _hacs = memoizeOne(
-    (repositories: RepositoryBase[], info: HacsInfo): Hacs => ({
+  private _store = memoizeOne(
+    (repositories: RepositoryBase[], info: StoreInfo): StoreData => ({
       repositories,
       info,
     })
@@ -56,22 +56,22 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        HacsDispatchEvent.CONFIG
+        StoreDispatchEvent.CONFIG
       ),
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        HacsDispatchEvent.STATUS
+        StoreDispatchEvent.STATUS
       ),
       websocketSubscription(
         this.hass,
         this._refreshInfo,
-        HacsDispatchEvent.STAGE
+        StoreDispatchEvent.STAGE
       ),
       websocketSubscription(
         this.hass,
         this._refreshRepositories,
-        HacsDispatchEvent.REPOSITORY
+        StoreDispatchEvent.REPOSITORY
       ),
       this.hass.connection.subscribeEvents(
         this._refreshInfo,
@@ -99,12 +99,12 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <hacs-router
+      <ha-store-router
         .hass=${this.hass}
-        .hacs=${this._hacs(this._repositories, this._info)}
+        .store=${this._store(this._repositories, this._info)}
         .route=${this.route}
         .narrow=${this.narrow}
-      ></hacs-router>
+      ></ha-store-router>
     `;
   }
 
@@ -120,7 +120,7 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
   };
 
   private _refreshInfo = async (): Promise<void> => {
-    this._info = await fetchHacsInfo(this.hass);
+    this._info = await fetchStoreInfo(this.hass);
   };
 
   private _refreshRepositories = async (): Promise<void> => {
@@ -129,8 +129,8 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   static get styles() {
     return [
-      HacsStyles,
-      hacsStyleVariables,
+      storeStyles,
+      storeStyleVariables,
       css`
         hass-loading-screen {
           height: 100vh;

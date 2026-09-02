@@ -1,33 +1,33 @@
 import { mdiDelete } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
-import "../../../../components/ha-icon-button";
-import type { HaIconButton } from "../../../../components/ha-icon-button";
-import "../../../../components/ha-settings-row";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/progress/ha-progress-bar";
-import type { HomeAssistant } from "../../../../types";
-import { HacsDispatchEvent } from "../../data/common";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../components/ha-form/types";
+import "../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../components/ha-icon-button";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-svg-icon";
+import "../../../components/progress/ha-progress-bar";
+import type { HomeAssistant } from "../../../types";
+import { StoreDispatchEvent } from "../data/common";
 import {
   getRepositories,
   repositoryAdd,
   repositoryDelete,
   websocketSubscription,
-} from "../../data/websocket";
-import type { HacsCustomRepositoriesDialogParams } from "./show-hacs-dialog";
+} from "../data/websocket";
+import type { StoreCustomRepositoriesDialogParams } from "./show-dialog-store";
 
-@customElement("hacs-custom-repositories-dialog")
-export class HacsCustomRepositoriesDialog extends LitElement {
+@customElement("dialog-store-custom-repositories")
+export class DialogStoreCustomRepositories extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() _dialogParams?: HacsCustomRepositoriesDialogParams;
+  @state() _dialogParams?: StoreCustomRepositoriesDialogParams;
 
   @state() _waiting?: boolean;
 
@@ -38,7 +38,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
   _errorSubscription: any;
 
   public async showDialog(
-    dialogParams: HacsCustomRepositoriesDialogParams
+    dialogParams: StoreCustomRepositoriesDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
     this._errorSubscription = await websocketSubscription(
@@ -46,7 +46,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
       (data) => {
         this._errors = { base: data?.message || data };
       },
-      HacsDispatchEvent.ERROR
+      StoreDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -75,10 +75,10 @@ export class HacsCustomRepositoriesDialog extends LitElement {
       >
         <div>
           <div class="list">
-            ${this._dialogParams.hacs.repositories
+            ${this._dialogParams.store.repositories
               .filter((repository) => repository.custom)
               ?.filter((repository) =>
-                this._dialogParams!.hacs.info.categories.includes(
+                this._dialogParams!.store.info.categories.includes(
                   repository.category
                 )
               )
@@ -118,7 +118,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
                 selector: {
                   select: {
                     mode: "dropdown",
-                    options: this._dialogParams.hacs.info.categories.map(
+                    options: this._dialogParams.store.info.categories.map(
                       (category) => ({
                         value: category,
                         label: this.hass.localize(
@@ -219,7 +219,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
     fireEvent(this, "store-refresh", { target: "repositories" });
     this._dialogParams = {
       ...this._dialogParams,
-      hacs: { ...this._dialogParams!.hacs, repositories },
+      store: { ...this._dialogParams!.store, repositories },
     };
   }
 
@@ -264,6 +264,6 @@ export class HacsCustomRepositoriesDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-custom-repositories-dialog": HacsCustomRepositoriesDialog;
+    "dialog-store-custom-repositories": DialogStoreCustomRepositories;
   }
 }

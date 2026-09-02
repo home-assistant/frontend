@@ -21,21 +21,21 @@ import {
   repositoryUninstall,
   repositoryUpdate,
 } from "../data/websocket";
-import type { HacsDashboard } from "../dashboards/hacs-dashboard";
-import type { HacsRepositoryDashboard } from "../dashboards/hacs-repository-dashboard";
+import type { HaStoreDashboard } from "../dashboards/ha-store-dashboard";
+import type { HaStoreRepositoryDashboard } from "../dashboards/ha-store-repository-dashboard";
 import {
-  showHacsDownloadDialog,
-  showHacsFormDialog,
-} from "./dialogs/show-hacs-dialog";
+  showStoreDownloadDialog,
+  showStoreFormDialog,
+} from "../dialogs/show-dialog-store";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 
 export const repositoryMenuItems = memoizeOne(
   (
-    element: HacsRepositoryDashboard | HacsDashboard,
+    element: HaStoreRepositoryDashboard | HaStoreDashboard,
     repository: RepositoryBase,
     localize: LocalizeFunc
   ) => [
-    ...(element.nodeName === "HACS-DASHBOARD"
+    ...(element.nodeName === "HA-STORE-DASHBOARD"
       ? [
           {
             path: mdiInformation,
@@ -69,8 +69,8 @@ export const repositoryMenuItems = memoizeOne(
           : "ui.panel.store.common.download"
       ),
       action: () =>
-        showHacsDownloadDialog(element, {
-          hacs: element.hacs,
+        showStoreDownloadDialog(element, {
+          store: element.store,
           repositoryId: repository.id,
         }),
       hideForUninstalled: true,
@@ -151,8 +151,8 @@ export const repositoryMenuItems = memoizeOne(
                   }
                 }
               }
-              showHacsFormDialog(element, {
-                hacs: element.hacs,
+              showStoreFormDialog(element, {
+                store: element.store,
                 title: localize("ui.panel.store.dialog.remove.title"),
                 saveLabel: localize("ui.panel.store.dialog.remove.title"),
                 description: localize("ui.panel.store.dialog.remove.message", {
@@ -172,11 +172,11 @@ export const repositoryMenuItems = memoizeOne(
 );
 
 const _repositoryRemove = async (
-  element: HacsRepositoryDashboard | HacsDashboard,
+  element: HaStoreRepositoryDashboard | HaStoreDashboard,
   repository: RepositoryBase
 ) => {
   await repositoryUninstall(element.hass, String(repository.id));
-  if (element.nodeName === "HACS-REPOSITORY-PANEL") {
+  if (element.nodeName === "HA-STORE-REPOSITORY-DASHBOARD") {
     history.back();
   }
 };

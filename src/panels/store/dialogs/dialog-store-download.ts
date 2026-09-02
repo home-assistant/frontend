@@ -2,31 +2,31 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { mainWindow } from "../../../../common/dom/get_main_window";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-spinner";
-import "../../../../components/progress/ha-progress-bar";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-spinner";
+import "../../../components/progress/ha-progress-bar";
 
-import { relativeTime } from "../../../../common/datetime/relative_time";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../types";
-import { HacsDispatchEvent } from "../../data/common";
-import type { RepositoryBase, RepositoryInfo } from "../../data/repository";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../types";
+import { StoreDispatchEvent } from "../data/common";
+import type { RepositoryBase, RepositoryInfo } from "../data/repository";
 import {
   fetchRepositoryInformation,
   repositoryDownloadVersion,
   repositoryReleases,
-} from "../../data/repository";
-import { websocketSubscription } from "../../data/websocket";
-import { HacsStyles } from "../../styles/hacs-common-style";
-import { generateFrontendResourceURL } from "../../tools/frontend-resource";
-import type { HacsDownloadDialogParams } from "./show-hacs-dialog";
+} from "../data/repository";
+import { websocketSubscription } from "../data/websocket";
+import { storeStyles } from "../styles/store-common-style";
+import { generateFrontendResourceURL } from "../tools/frontend-resource";
+import type { StoreDownloadDialogParams } from "./show-dialog-store";
 
 @customElement("release-item")
 export class ReleaseItem extends LitElement {
@@ -76,8 +76,8 @@ export class ReleaseItem extends LitElement {
     }
   `;
 }
-@customElement("hacs-download-dialog")
-export class HacsDonwloadDialog extends LitElement {
+@customElement("dialog-store-download")
+export class DialogStoreDownload extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _waiting = true;
@@ -95,12 +95,12 @@ export class HacsDonwloadDialog extends LitElement {
 
   @state() public _repository?: RepositoryInfo;
 
-  @state() _dialogParams?: HacsDownloadDialogParams;
+  @state() _dialogParams?: StoreDownloadDialogParams;
 
   @state() _selectedVersion?: string;
 
   public async showDialog(
-    dialogParams: HacsDownloadDialogParams
+    dialogParams: StoreDownloadDialogParams
   ): Promise<void> {
     this._dialogParams = dialogParams;
     this._waiting = false;
@@ -121,7 +121,7 @@ export class HacsDonwloadDialog extends LitElement {
         this._error = data;
         this._installing = false;
       },
-      HacsDispatchEvent.ERROR
+      StoreDispatchEvent.ERROR
     );
     await this.updateComplete;
   }
@@ -208,7 +208,7 @@ export class HacsDonwloadDialog extends LitElement {
             )}
             ${
               this._repository.category === "plugin" &&
-              this._dialogParams.hacs.info.lovelace_mode !== "storage"
+              this._dialogParams.store.info.lovelace_mode !== "storage"
                 ? html`
                     <p>
                       ${this.hass.localize(`ui.panel.store.dialog_download.lovelace_instruction`)}
@@ -386,7 +386,7 @@ export class HacsDonwloadDialog extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      HacsStyles,
+      storeStyles,
       css`
         .note {
           margin-top: 12px;
@@ -415,7 +415,7 @@ export class HacsDonwloadDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-download-dialog": HacsDonwloadDialog;
+    "dialog-store-download": DialogStoreDownload;
     "release-item": ReleaseItem;
   }
 }

@@ -39,16 +39,15 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import {
-  showHacsCustomRepositoriesDialog,
-  showHacsFormDialog,
-} from "../components/dialogs/show-hacs-dialog";
-import { repositoryMenuItems } from "../components/hacs-repository-owerflow-menu";
-import { aboutHacsmarkdownContent } from "../data/about";
-import type { Hacs } from "../data/hacs";
-import { APP_FULL_NAME } from "../data/hacs";
+  showStoreCustomRepositoriesDialog,
+  showStoreFormDialog,
+} from "../dialogs/show-dialog-store";
+import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
+import { aboutStoreMarkdownContent } from "../data/about";
+import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
 import { repositoriesClearNew } from "../data/websocket";
-import { HacsStyles } from "../styles/hacs-common-style";
+import { storeStyles } from "../styles/store-common-style";
 import { documentationUrl } from "../tools/documentation";
 import { typeIcon } from "../tools/type-icon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -69,14 +68,14 @@ const STATUS_ORDER = [
 
 const TABS: PageNavigation[] = [
   {
-    name: APP_FULL_NAME,
+    translationKey: "panel.store",
     path: "",
   },
 ];
 
-@customElement("hacs-dashboard")
-export class HacsDashboard extends LitElement {
-  @property({ attribute: false }) public hacs!: Hacs;
+@customElement("ha-store-dashboard")
+export class HaStoreDashboard extends LitElement {
+  @property({ attribute: false }) public store!: StoreData;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -88,49 +87,49 @@ export class HacsDashboard extends LitElement {
   @property({ attribute: false }) public isWide!: boolean;
 
   @storage({
-    key: "hacs-dashboard-table-filtering",
+    key: "store-dashboard-table-filtering",
     state: true,
     subscribe: false,
   })
   private _activeFilters?: string[] = [];
 
   @storage({
-    key: "hacs-dashboard-table-sorting",
+    key: "store-dashboard-table-sorting",
     state: false,
     subscribe: false,
   })
   private _activeSorting?: { column: string; direction: SortingDirection };
 
   @storage({
-    key: "hacs-dashboard-table-grouping",
+    key: "store-dashboard-table-grouping",
     state: true,
     subscribe: false,
   })
   private _activeGrouping?: string;
 
   @storage({
-    key: "hacs-dashboard-table-collapsed",
+    key: "store-dashboard-table-collapsed",
     state: false,
     subscribe: false,
   })
   private _activeCollapsed?: string[];
 
   @storage({
-    key: "hacs-dashboard-active-search",
+    key: "store-dashboard-active-search",
     state: true,
     subscribe: false,
   })
   private _activeSearch?: string;
 
   @storage({
-    key: "hacs-dashboard-table-hidden-columns",
+    key: "store-dashboard-table-hidden-columns",
     state: true,
     subscribe: false,
   })
   private _hiddenTableColumns?: string[];
 
   @storage({
-    key: "hacs-dashboard-table-columns-ordering",
+    key: "store-dashboard-table-columns-ordering",
     state: true,
     subscribe: false,
   })
@@ -146,7 +145,7 @@ export class HacsDashboard extends LitElement {
 
   protected render(): TemplateResult {
     const repositories = this._filterRepositories(
-      this.hacs.repositories,
+      this.store.repositories,
       this.hass.localize,
       this._activeFilters
     );
@@ -236,7 +235,7 @@ export class HacsDashboard extends LitElement {
                 filter.startsWith("type_")
               ) || "",
           }}
-          .schema=${this._filterSchema(this.hass.localize, this.hacs.info.categories)}
+          .schema=${this._filterSchema(this.hass.localize, this.store.info.categories)}
           .computeLabel=${this._computeFilterFormLabel}
           @value-changed=${this._handleFilterChanged}
         ></ha-form>
@@ -501,27 +500,27 @@ export class HacsDashboard extends LitElement {
   }
 
   private _showCustomRepositories() {
-    if (this.hacs.info.disabled_reason) {
+    if (this.store.info.disabled_reason) {
       showAlertDialog(this, {
-        title: "HACS is disabled",
-        text: this.hacs.info.disabled_reason,
+        title: this.hass.localize("ui.panel.store.dialog.disabled.title"),
+        text: this.store.info.disabled_reason,
       });
       return;
     }
 
-    showHacsCustomRepositoriesDialog(this, { hacs: this.hacs });
+    showStoreCustomRepositoriesDialog(this, { store: this.store });
   }
 
   private _dismissNew() {
-    repositoriesClearNew(this.hass, this.hacs);
+    repositoriesClearNew(this.hass, this.store);
   }
 
   private _showAbout() {
-    showHacsFormDialog(this, {
-      hacs: this.hacs,
-      title: APP_FULL_NAME,
+    showStoreFormDialog(this, {
+      store: this.store,
+      title: this.hass.localize("ui.panel.store.menu.about"),
       description: html`<ha-markdown
-        .content=${aboutHacsmarkdownContent(this.hass, this.hacs)}
+        .content=${aboutStoreMarkdownContent(this.hass, this.store)}
       ></ha-markdown>`,
     });
   }
@@ -634,12 +633,12 @@ export class HacsDashboard extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, HacsStyles];
+    return [haStyle, storeStyles];
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hacs-dashboard": HacsDashboard;
+    "ha-store-dashboard": HaStoreDashboard;
   }
 }

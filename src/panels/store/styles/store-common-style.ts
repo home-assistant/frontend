@@ -1,9 +1,9 @@
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
-import { hacsIconStyle, hacsLinkStyle } from "./element-styles";
+import { storeIconStyle, storeLinkStyle } from "./element-styles";
 import { haStyle } from "../../../resources/styles";
 
-export const hacsCommonClasses = css`
+export const storeCommonClasses = css`
   .warning {
     color: var(--hcv-color-warning);
   }
@@ -31,17 +31,17 @@ export const hacsCommonClasses = css`
   }
 `;
 
-const hacsOverflowMenuStyle = css`
+const storeOverflowMenuStyle = css`
   ha-dropdown-item.warning {
     color: var(--warning-color);
     --hcv-color-icon: var(--warning-color);
   }
 `;
 
-export const HacsStyles: CSSResultGroup = [
+export const storeStyles: CSSResultGroup = [
   haStyle,
-  hacsIconStyle,
-  hacsCommonClasses,
-  hacsLinkStyle,
-  hacsOverflowMenuStyle,
+  storeIconStyle,
+  storeCommonClasses,
+  storeLinkStyle,
+  storeOverflowMenuStyle,
 ];

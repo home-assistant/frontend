@@ -11,9 +11,7 @@ declare global {
   }
 }
 
-export const APP_FULL_NAME = "Home Assistant Community Store";
-
-export interface HacsInfo {
+export interface StoreInfo {
   categories: RepositoryType[];
   country: string;
   debug: boolean;
@@ -24,7 +22,7 @@ export interface HacsInfo {
   version: string;
 }
 
-export interface Hacs {
+export interface StoreData {
   repositories: RepositoryBase[];
-  info: HacsInfo;
+  info: StoreInfo;
 }

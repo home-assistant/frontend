@@ -1,10 +1,10 @@
 import type { HomeAssistant } from "../../../types";
-import type { Hacs, HacsInfo } from "./hacs";
-import type { HacsDispatchEvent } from "./common";
+import type { StoreData, StoreInfo } from "./store";
+import type { StoreDispatchEvent } from "./common";
 import type { RepositoryBase } from "./repository";
 
-export const fetchHacsInfo = async (hass: HomeAssistant) =>
-  hass.connection.sendMessagePromise<HacsInfo>({
+export const fetchStoreInfo = async (hass: HomeAssistant) =>
+  hass.connection.sendMessagePromise<StoreInfo>({
     type: "store/info",
   });
 
@@ -51,10 +51,13 @@ export const repositoryDelete = async (
     repository,
   });
 
-export const repositoriesClearNew = async (hass: HomeAssistant, hacs: Hacs) =>
+export const repositoriesClearNew = async (
+  hass: HomeAssistant,
+  store: StoreData
+) =>
   hass.connection.sendMessagePromise<unknown>({
     type: "store/repositories/clear_new",
-    categories: hacs.info.categories,
+    categories: store.info.categories,
   });
 
 export const repositoriesClearNewRepository = async (
@@ -69,7 +72,7 @@ export const repositoriesClearNewRepository = async (
 export const websocketSubscription = (
   hass: HomeAssistant,
   onChange: (result: Record<any, any> | null) => void,
-  event: HacsDispatchEvent
+  event: StoreDispatchEvent
 ) =>
   hass.connection.subscribeMessage(onChange, {
     type: "store/subscribe",
