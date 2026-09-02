@@ -51,7 +51,8 @@ export class HaComboBoxItem extends HaMdListItem {
         white-space: normal;
       }
       ::slotted(state-badge),
-      ::slotted(img) {
+      ::slotted(img),
+      ::slotted(ha-app-icon) {
         width: 32px;
         height: 32px;
       }
