@@ -1,4 +1,4 @@
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
@@ -35,7 +35,9 @@ class HaStoreMyRedirect extends LitElement {
 
   @state() private _error?: TemplateResult | string;
 
-  protected firstUpdated(_changedProperties): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
+    super.firstUpdated(changedProperties);
+
     const dividerPos = this.route.path.indexOf("/", 1);
     const path = this.route.path.substr(dividerPos + 1);
     const redirect = REDIRECTS[path];

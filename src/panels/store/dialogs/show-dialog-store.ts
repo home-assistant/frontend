@@ -18,10 +18,16 @@ export interface StoreFormDialogParams extends BaseStoreDialogParams {
   saveLabel?: string;
   destructive?: boolean;
   description?: HTMLTemplateResult | string;
-  computeLabelCallback?: (schema: any, data: HaFormDataContainer) => string;
-  computeHelper?: (schema: any) => string | undefined;
-  computeError?: (error, schema: any) => string;
-  saveAction?: (data: any) => Promise<void>;
+  computeLabelCallback?: (
+    schema: HaFormSchema,
+    data: HaFormDataContainer
+  ) => string;
+  computeHelper?: (schema: HaFormSchema) => string | undefined;
+  computeError?: (
+    error: string,
+    schema: HaFormSchema | readonly HaFormSchema[]
+  ) => string;
+  saveAction?: (data?: HaFormDataContainer) => Promise<void>;
 }
 
 export interface StoreDownloadDialogParams extends BaseStoreDialogParams {
@@ -29,7 +35,7 @@ export interface StoreDownloadDialogParams extends BaseStoreDialogParams {
   repository?: RepositoryInfo;
 }
 
-export interface StoreCustomRepositoriesDialogParams extends BaseStoreDialogParams {}
+export type StoreCustomRepositoriesDialogParams = BaseStoreDialogParams;
 
 export const showStoreFormDialog = (
   element: HTMLElement,

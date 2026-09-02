@@ -6,6 +6,14 @@ import type { HomeAssistant, Route } from "../../types";
 
 import type { StoreData } from "./data/store";
 
+interface StorePageElement extends HTMLElement {
+  hass: HomeAssistant;
+  store: StoreData;
+  route: Route;
+  narrow: boolean;
+  isWide?: boolean;
+}
+
 @customElement("ha-store-router")
 class HaStoreRouter extends HassRouterPage {
   @property({ attribute: false }) public store!: StoreData;
@@ -43,7 +51,7 @@ class HaStoreRouter extends HassRouterPage {
     }
   }
 
-  protected updatePageEl(el) {
+  protected updatePageEl(el: StorePageElement) {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
     el.hass = this.hass;

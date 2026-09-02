@@ -28,8 +28,8 @@ import { storeStyles } from "../styles/store-common-style";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import type { StoreDownloadDialogParams } from "./show-dialog-store";
 
-@customElement("release-item")
-export class ReleaseItem extends LitElement {
+@customElement("ha-store-release-item")
+export class HaStoreReleaseItem extends LitElement {
   @property({ attribute: false }) public locale!: HomeAssistant["locale"];
   @property({ attribute: false }) public release!: {
     tag: string;
@@ -104,11 +104,11 @@ export class DialogStoreDownload extends LitElement {
     prerelease: boolean;
   }[];
 
-  @state() public _repository?: RepositoryInfo;
+  @state() private _repository?: RepositoryInfo;
 
-  @state() _dialogParams?: StoreDownloadDialogParams;
+  @state() private _dialogParams?: StoreDownloadDialogParams;
 
-  @state() _selectedVersion?: string;
+  @state() private _selectedVersion?: string;
 
   private _errorSubscription?: UnsubscribeFunc;
 
@@ -278,12 +278,10 @@ export class DialogStoreDownload extends LitElement {
                                     mode: "dropdown",
                                     options: this._releases?.map((release) => ({
                                       value: release.tag,
-                                      label: html`<release-item
+                                      label: html`<ha-store-release-item
                                         .locale=${this.hass.locale}
                                         .release=${release}
-                                      >
-                                        ${release.tag}
-                                      </release-item>`,
+                                      ></ha-store-release-item>`,
                                     })),
                                   },
                                 },
@@ -439,6 +437,6 @@ export class DialogStoreDownload extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "dialog-store-download": DialogStoreDownload;
-    "release-item": ReleaseItem;
+    "ha-store-release-item": HaStoreReleaseItem;
   }
 }

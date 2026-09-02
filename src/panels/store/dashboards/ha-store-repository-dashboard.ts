@@ -22,7 +22,10 @@ import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
-import type { HaDropdown } from "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -32,6 +35,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { showStoreDownloadDialog } from "../dialogs/show-dialog-store";
+import type { StoreRepositoryMenuItem } from "../components/ha-store-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
 import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryInfo } from "../data/repository";
@@ -50,7 +54,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() public _repository?: RepositoryInfo;
+  @state() private _repository?: RepositoryInfo;
 
   @state() private _error?: string;
 
@@ -60,7 +64,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
   private _openingOverflowMenu = false;
 
   protected async firstUpdated(
-    changedProperties: PropertyValues
+    changedProperties: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProperties);
 
@@ -222,7 +226,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
       >
         <ha-icon-button
           slot="toolbar-icon"
-          .label=${this.hass.localize("ui.common.overflow_menu") || "overflow_menu"}
+          .label=${this.hass.localize("ui.common.overflow_menu")}
           .path=${mdiDotsVertical}
           @click=${this._showOverflowRepositoryMenu}
         ></ha-icon-button>
@@ -243,22 +247,14 @@ export class HaStoreRepositoryDashboard extends LitElement {
               }
               ${authors.map(
                 (author) =>
-                  html`<a
+                  html`<ha-assist-chip
                     href="https://github.com/${author}"
                     target="_blank"
-                    rel="noreferrer noopener"
+                    .label=${`@${author}`}
+                    title=${this.hass.localize("ui.panel.store.dialog_info.author")}
                   >
-                    <ha-assist-chip
-                      .label=${author}
-                      title=${this.hass.localize("ui.panel.store.dialog_info.author")}
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiAccount}
-                      ></ha-svg-icon>
-                      @${author}
-                    </ha-assist-chip>
-                  </a>`
+                    <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
+                  </ha-assist-chip>`
               )}
               ${
                 this._repository.downloads
@@ -278,24 +274,18 @@ export class HaStoreRepositoryDashboard extends LitElement {
                 title=${this.hass.localize("ui.panel.store.dialog_info.stars")}
               >
                 <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
-                ${this._repository.stars}
               </ha-assist-chip>
-              <a
+              <ha-assist-chip
                 href="https://github.com/${this._repository.full_name}/issues"
                 target="_blank"
-                rel="noreferrer noopener"
+                .label=${String(this._repository.issues)}
+                title=${this.hass.localize("ui.panel.store.dialog_info.open_issues")}
               >
-                <ha-assist-chip
-                  .label=${String(this._repository.issues)}
-                  title=${this.hass.localize("ui.panel.store.dialog_info.open_issues")}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiExclamationThick}
-                  ></ha-svg-icon>
-                  ${this._repository.issues}
-                </ha-assist-chip>
-              </a>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiExclamationThick}
+                ></ha-svg-icon>
+              </ha-assist-chip>
             </ha-chip-set>
             <ha-markdown
               .content=${
@@ -323,17 +313,18 @@ export class HaStoreRepositoryDashboard extends LitElement {
       </hass-subpage>
       <ha-dropdown
         id="overflow-menu"
+        @wa-select=${this._handleOverflowAction}
         @wa-after-show=${this._overflowMenuOpened}
         @wa-after-hide=${this._overflowMenuClosed}
       >
         ${repositoryMenuItems(this, this._repository, this.hass.localize).map(
           (entry) =>
-            entry.divider
+            "divider" in entry
               ? html`<wa-divider></wa-divider>`
               : html`
                   <ha-dropdown-item
-                    variant=${entry.error ? "danger" : "default"}
-                    @click=${entry.action}
+                    .value=${entry.value}
+                    variant=${entry.variant || "default"}
                   >
                     <ha-svg-icon .path=${entry.path} slot="icon"></ha-svg-icon>
                     ${entry.label}
@@ -352,6 +343,17 @@ export class HaStoreRepositoryDashboard extends LitElement {
     this._openingOverflowMenu = true;
     this._repositoryOverflowMenu.anchorElement = ev.target;
     this._repositoryOverflowMenu.open = true;
+  };
+
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    if (!this._repository) {
+      return;
+    }
+
+    repositoryMenuItems(this, this._repository, this.hass.localize)
+      .filter((entry): entry is StoreRepositoryMenuItem => "value" in entry)
+      .find((entry) => entry.value === ev.detail.item.value)
+      ?.action();
   };
 
   private _overflowMenuOpened = () => {

@@ -1,3 +1,4 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -21,13 +22,13 @@ import type { StoreFormDialogParams } from "./show-dialog-store";
 class DialogStoreForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() _dialogParams?: StoreFormDialogParams;
+  @state() private _dialogParams?: StoreFormDialogParams;
 
-  @state() _waiting?: boolean;
+  @state() private _waiting?: boolean;
 
-  @state() _errors?: Record<string, string>;
+  @state() private _errors?: Record<string, string>;
 
-  _errorSubscription: any;
+  private _errorSubscription?: UnsubscribeFunc;
 
   public async showDialog(dialogParams: StoreFormDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
@@ -146,20 +147,23 @@ class DialogStoreForm extends LitElement {
     }
   }
 
-  private _computeLabel = (schema: HaFormSchema, data: HaFormDataContainer) =>
+  private _computeLabel = (
+    schema: HaFormSchema,
+    data: HaFormDataContainer
+  ): string =>
     this._dialogParams?.computeLabelCallback
       ? this._dialogParams.computeLabelCallback(schema, data)
       : schema.name || "";
 
-  private _computeHelper = (schema: HaFormSchema) =>
+  private _computeHelper = (schema: HaFormSchema): string | undefined =>
     this._dialogParams?.computeHelper
       ? this._dialogParams.computeHelper(schema)
       : "";
 
   private _computeError = (
-    error,
+    error: string,
     schema: HaFormSchema | readonly HaFormSchema[]
-  ) =>
+  ): string =>
     this._dialogParams?.computeError
       ? this._dialogParams.computeError(error, schema)
       : error || "";

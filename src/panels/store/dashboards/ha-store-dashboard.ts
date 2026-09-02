@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical, mdiFileDocument, mdiGit, mdiNewBox } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
@@ -16,7 +16,10 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
-import type { HaDropdown } from "../../../components/ha-dropdown";
+import type {
+  HaDropdown,
+  HaDropdownSelectEvent,
+} from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
@@ -29,6 +32,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showStoreCustomRepositoriesDialog } from "../dialogs/show-dialog-store";
+import type { StoreRepositoryMenuItem } from "../components/ha-store-repository-overflow-menu";
 import { repositoryMenuItems } from "../components/ha-store-repository-overflow-menu";
 import type { StoreData } from "../data/store";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
@@ -50,12 +54,12 @@ const STATUS_ORDER = [
   "installed",
   "new",
   "default",
-];
+] as const satisfies readonly RepositoryBase["status"][];
 
 const TABS: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.dashboard.store.main",
-    path: "",
+    path: "/store",
   },
 ];
 
@@ -172,23 +176,23 @@ export class HaStoreDashboard extends LitElement {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
       >
-        <ha-dropdown slot="toolbar-icon">
+        <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
-            .label=${this.hass.localize("ui.common.overflow_menu") || "overflow_menu"}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-dropdown-item @click=${this._openDocumentation}>
+          <ha-dropdown-item value="documentation">
             <ha-svg-icon .path=${mdiFileDocument} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.store.menu.documentation")}
           </ha-dropdown-item>
-          <ha-dropdown-item @click=${this._showCustomRepositories}>
+          <ha-dropdown-item value="custom_repositories">
             <ha-svg-icon .path=${mdiGit} slot="icon"></ha-svg-icon>
             ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
           </ha-dropdown-item>
           ${
             repositoriesContainsNew
-              ? html`<ha-dropdown-item @click=${this._dismissNew}>
+              ? html`<ha-dropdown-item value="dismiss_new">
                   <ha-svg-icon .path=${mdiNewBox} slot="icon"></ha-svg-icon>
                   ${this.hass.localize("ui.panel.store.menu.dismiss")}
                 </ha-dropdown-item>`
@@ -217,6 +221,7 @@ export class HaStoreDashboard extends LitElement {
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="repository-overflow-menu"
+        @wa-select=${this._handleOverflowAction}
         @wa-after-show=${this._overflowMenuOpened}
         @wa-after-hide=${this._overflowMenuClosed}
       >
@@ -227,12 +232,12 @@ export class HaStoreDashboard extends LitElement {
                 this._overflowMenuRepository,
                 this.hass.localize
               ).map((entry) =>
-                entry.divider
+                "divider" in entry
                   ? html`<wa-divider></wa-divider>`
                   : html`
                       <ha-dropdown-item
-                        variant=${entry.error ? "danger" : "default"}
-                        @click=${entry.action}
+                        .value=${entry.value}
+                        variant=${entry.variant || "default"}
                       >
                         <ha-svg-icon
                           .path=${entry.path}
@@ -312,7 +317,7 @@ export class HaStoreDashboard extends LitElement {
           repository.category === "integration"
             ? html`
                 <img
-                  style="height: 32px; width: 32px"
+                  class="repository-icon"
                   slot="item-icon"
                   alt=""
                   src=${brandsUrl({
@@ -325,7 +330,7 @@ export class HaStoreDashboard extends LitElement {
               `
             : html`
                 <ha-svg-icon
-                  style="height: 32px; width: 32px; fill: var(--secondary-text-color);"
+                  class="repository-icon"
                   slot="item-icon"
                   .path=${typeIcon(repository.category)}
                 ></ha-svg-icon>
@@ -425,7 +430,7 @@ export class HaStoreDashboard extends LitElement {
         template: (repository: RepositoryBase) => html`
           <ha-icon-button
             .repository=${repository}
-            .label=${this.hass.localize("ui.common.overflow_menu") || "overflow_menu"}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
             .path=${mdiDotsVertical}
             @click=${this._showOverflowRepositoryMenu}
           ></ha-icon-button>
@@ -443,6 +448,31 @@ export class HaStoreDashboard extends LitElement {
     this._repositoryOverflowMenu.anchorElement = ev.target;
     this._overflowMenuRepository = ev.target.repository;
     this._repositoryOverflowMenu.open = true;
+  };
+
+  private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
+    switch (ev.detail.item.value) {
+      case "documentation":
+        this._openDocumentation();
+        break;
+      case "custom_repositories":
+        this._showCustomRepositories();
+        break;
+      case "dismiss_new":
+        this._dismissNew();
+        break;
+    }
+  };
+
+  private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
+    if (!this._overflowMenuRepository) {
+      return;
+    }
+
+    repositoryMenuItems(this, this._overflowMenuRepository, this.hass.localize)
+      .filter((entry): entry is StoreRepositoryMenuItem => "value" in entry)
+      .find((entry) => entry.value === ev.detail.item.value)
+      ?.action();
   };
 
   private _overflowMenuOpened = () => {
@@ -491,10 +521,7 @@ export class HaStoreDashboard extends LitElement {
     (localize: LocalizeFunc, activeGrouping: string | undefined) =>
       activeGrouping === "translated_status"
         ? STATUS_ORDER.map((filter) =>
-            localize(
-              // @ts-ignore
-              `ui.panel.store.repository_status.${filter}`
-            )
+            localize(`ui.panel.store.repository_status.${filter}`)
           )
         : undefined
   );
@@ -514,7 +541,6 @@ export class HaStoreDashboard extends LitElement {
               options: STATUS_ORDER.map((filter) => ({
                 value: `status_${filter}`,
                 label: localizeFunc(
-                  // @ts-ignore
                   `ui.panel.store.repository_status.${filter}`
                 ),
               })),
@@ -541,16 +567,12 @@ export class HaStoreDashboard extends LitElement {
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _computeFilterFormLabel = (schema, _) =>
-    this.hass.localize(
-      // @ts-ignore
-      `ui.panel.store.dialog_overview.${schema.name}`
-    ) ||
-    this.hass.localize(
-      // @ts-ignore
-      `ui.panel.store.dialog_overview.sections.${schema.name}`
-    ) ||
-    schema.name;
+  private _computeFilterFormLabel = (schema: {
+    name: "filters" | "status" | "type";
+  }): string =>
+    schema.name === "filters"
+      ? this.hass.localize("ui.panel.store.dialog_overview.sections.filters")
+      : this.hass.localize(`ui.panel.store.dialog_overview.${schema.name}`);
 
   private _handleRowClicked(ev: CustomEvent) {
     navigate(`/store/repository/${ev.detail.id}`);
@@ -595,7 +617,19 @@ export class HaStoreDashboard extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, storeStyles];
+    return [
+      haStyle,
+      storeStyles,
+      css`
+        .repository-icon {
+          height: 32px;
+          width: 32px;
+        }
+        ha-svg-icon.repository-icon {
+          fill: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

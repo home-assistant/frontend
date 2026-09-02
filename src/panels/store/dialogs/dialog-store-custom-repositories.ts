@@ -1,4 +1,5 @@
 import { mdiDelete } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
@@ -28,15 +29,15 @@ import type { StoreCustomRepositoriesDialogParams } from "./show-dialog-store";
 export class DialogStoreCustomRepositories extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() _dialogParams?: StoreCustomRepositoriesDialogParams;
+  @state() private _dialogParams?: StoreCustomRepositoriesDialogParams;
 
-  @state() _waiting?: boolean;
+  @state() private _waiting?: boolean;
 
-  @state() _errors?: Record<string, string>;
+  @state() private _errors?: Record<string, string>;
 
-  @state() _data?: { repository: string; category: string };
+  @state() private _data?: { repository: string; category: string };
 
-  _errorSubscription: any;
+  private _errorSubscription?: UnsubscribeFunc;
 
   public async showDialog(
     dialogParams: StoreCustomRepositoriesDialogParams
