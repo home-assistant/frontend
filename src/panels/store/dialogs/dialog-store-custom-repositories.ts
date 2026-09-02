@@ -202,21 +202,47 @@ export class DialogStoreCustomRepositories extends LitElement {
       };
       return;
     }
-    this._waiting = false;
-    await repositoryAdd(this.hass, this._data.repository, this._data.category);
-    await this._updateRepositories();
+    this._waiting = true;
+    try {
+      const errors = await repositoryAdd(
+        this.hass,
+        this._data.repository,
+        this._data.category
+      );
+      if (errors) {
+        this._errors = errors;
+        return;
+      }
+
+      await this._updateRepositories();
+    } catch (err: any) {
+      this._errors = { base: this._errorMessage(err) };
+    } finally {
+      this._waiting = false;
+    }
   }
 
   private async _removeRepository(repository: string) {
     this._waiting = true;
-    await repositoryDelete(this.hass, repository);
-    await this._updateRepositories();
-    this._waiting = false;
+    try {
+      await repositoryDelete(this.hass, repository);
+      await this._updateRepositories();
+    } catch (err: any) {
+      this._errors = { base: this._errorMessage(err) };
+    } finally {
+      this._waiting = false;
+    }
+  }
+
+  private _errorMessage(err: { message?: string }): string {
+    return (
+      err?.message || this.hass.localize("ui.panel.store.common.unknown_error")
+    );
   }
 
   private async _updateRepositories() {
     const repositories = await getRepositories(this.hass);
-    fireEvent(this, "store-refresh", { target: "repositories" });
+    fireEvent(this, "store-refresh");
     this._dialogParams = {
       ...this._dialogParams,
       store: { ...this._dialogParams!.store, repositories },

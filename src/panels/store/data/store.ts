@@ -3,7 +3,8 @@ import type { RepositoryBase, RepositoryType } from "./repository";
 
 declare global {
   interface HASSDomEvents {
-    "store-refresh": { target: "info" | "repositories" };
+    // Fired when the repository list changed and has to be refetched.
+    "store-refresh": undefined;
   }
 
   interface GlobalEventHandlersEventMap {

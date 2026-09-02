@@ -120,9 +120,9 @@ class DialogStoreForm extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent) {
-    this._dialogParams!.data = {
-      ...this._dialogParams!.data,
-      ...ev.detail.value,
+    this._dialogParams = {
+      ...this._dialogParams!,
+      data: { ...this._dialogParams!.data, ...ev.detail.value },
     };
   }
 

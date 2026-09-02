@@ -1,3 +1,4 @@
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -75,6 +76,17 @@ export class ReleaseItem extends LitElement {
     }
   `;
 }
+
+// The backend reports errors both as plain strings and as objects with a
+// message, the dialog only ever shows a single line of text.
+const errorMessage = (error: unknown): string => {
+  if (typeof error === "string") {
+    return error;
+  }
+  const message = (error as { message?: unknown } | null)?.message;
+  return typeof message === "string" ? message : String(error);
+};
+
 @customElement("dialog-store-download")
 export class DialogStoreDownload extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -83,7 +95,7 @@ export class DialogStoreDownload extends LitElement {
 
   @state() private _installing = false;
 
-  @state() private _error?: any;
+  @state() private _error?: string;
 
   @state() private _releases?: {
     tag: string;
@@ -97,6 +109,8 @@ export class DialogStoreDownload extends LitElement {
   @state() _dialogParams?: StoreDownloadDialogParams;
 
   @state() _selectedVersion?: string;
+
+  private _errorSubscription?: UnsubscribeFunc;
 
   public async showDialog(
     dialogParams: StoreDownloadDialogParams
@@ -114,10 +128,10 @@ export class DialogStoreDownload extends LitElement {
     }
     this._releases = undefined;
 
-    websocketSubscription(
+    this._errorSubscription = await websocketSubscription(
       this.hass,
       (data) => {
-        this._error = data;
+        this._error = errorMessage(data);
         this._installing = false;
       },
       StoreDispatchEvent.ERROR
@@ -133,6 +147,10 @@ export class DialogStoreDownload extends LitElement {
     this._waiting = false;
     this._releases = undefined;
     this._selectedVersion = undefined;
+    if (this._errorSubscription) {
+      this._errorSubscription();
+      this._errorSubscription = undefined;
+    }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -150,8 +168,8 @@ export class DialogStoreDownload extends LitElement {
         this.hass,
         this._dialogParams!.repositoryId
       );
-    } catch (err: any) {
-      this._error = err;
+    } catch (err) {
+      this._error = errorMessage(err);
     }
   }
 
@@ -161,14 +179,18 @@ export class DialogStoreDownload extends LitElement {
     }
     if (!this._repository) {
       return html`
-        <ha-dialog open header-title="Loading...">
+        <ha-dialog
+          open
+          .headerTitle=${this.hass.localize(
+            "ui.panel.store.dialog_download.loading"
+          )}
+          @closed=${this.closeDialog}
+        >
           <div class="loading">
             <ha-spinner></ha-spinner>
             ${
               this._error
-                ? html`<ha-alert alert-type="error">
-                    ${this._error.message || this._error}
-                  </ha-alert>`
+                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                 : nothing
             }
           </div>
@@ -274,9 +296,7 @@ export class DialogStoreDownload extends LitElement {
           }
           ${
             this._error
-              ? html`<ha-alert alert-type="error">
-                  ${this._error.message || this._error}
-                </ha-alert>`
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
               : nothing
           }
           ${
@@ -312,7 +332,8 @@ export class DialogStoreDownload extends LitElement {
       : entry.name;
 
   private async _installRepository(): Promise<void> {
-    if (!this._repository) {
+    const repository = this._repository;
+    if (!repository) {
       return;
     }
 
@@ -332,22 +353,27 @@ export class DialogStoreDownload extends LitElement {
     try {
       await repositoryDownloadVersion(
         this.hass,
-        String(this._repository.id),
-        this._selectedVersion || this._repository.available_version
+        String(repository.id),
+        this._selectedVersion || repository.available_version
       );
-    } catch (err: any) {
-      this._error = err || {
-        message:
-          "Could not download repository, check core logs for more information.",
-      };
+    } catch (err) {
+      this._error =
+        errorMessage(err) ||
+        "Could not download repository, check core logs for more information.";
       this._installing = false;
       return;
     }
 
     this._installing = false;
 
-    if (this._repository.category === "plugin") {
-      showConfirmationDialog(this, {
+    if (this._error !== undefined) {
+      return;
+    }
+
+    // Dialogs are appended outside of this element, so the reload prompt has
+    // to be resolved before this dialog tears itself down.
+    if (repository.category === "plugin") {
+      await showConfirmationDialog(this, {
         title: this.hass.localize("ui.panel.store.common.reload"),
         text: html`${this.hass.localize(
             "ui.panel.store.dialog.reload.description"
@@ -359,9 +385,8 @@ export class DialogStoreDownload extends LitElement {
         },
       });
     }
-    if (this._error === undefined) {
-      this.closeDialog();
-    }
+
+    this.closeDialog();
   }
 
   private async _fetchReleases() {
@@ -373,8 +398,8 @@ export class DialogStoreDownload extends LitElement {
         this.hass,
         this._repository!.id
       );
-    } catch (error) {
-      this._error = error;
+    } catch (err) {
+      this._error = errorMessage(err);
     }
   }
 

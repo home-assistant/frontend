@@ -20,7 +20,7 @@ export interface StoreFormDialogParams extends BaseStoreDialogParams {
   description?: HTMLTemplateResult | string;
   computeLabelCallback?: (schema: any, data: HaFormDataContainer) => string;
   computeHelper?: (schema: any) => string | undefined;
-  computeError?: (schema: any, error) => string;
+  computeError?: (error, schema: any) => string;
   saveAction?: (data: any) => Promise<void>;
 }
 

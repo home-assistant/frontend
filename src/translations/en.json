@@ -12131,6 +12131,7 @@
           "repository": "Repository",
           "save": "Save",
           "show": "Show details",
+          "unknown_error": "Unknown error, check the Home Assistant logs",
           "type": {
             "integration": "Integration",
             "plugin": "Dashboard",
@@ -12142,7 +12143,8 @@
           }
         },
         "dashboard": {
-          "no_data": "No repositories matching search and filters"
+          "no_data": "No repositories matching search and filters",
+          "repository_not_found": "Repository not found"
         },
         "column": {
           "actions": "Quick actions",
@@ -12186,6 +12188,7 @@
           "no_type": "Missing type"
         },
         "dialog_download": {
+          "loading": "Loading repository",
           "type": "Type",
           "url": "URL",
           "will_download_version": "Version {ref} will be downloaded",
@@ -12237,6 +12240,9 @@
           "documentation": "Documentation"
         },
         "dialog": {
+          "error": {
+            "title": "Error"
+          },
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",
             "confirm": "Do you want to do that now?"

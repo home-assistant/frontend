@@ -53,7 +53,7 @@ export interface RepositoryInfo extends RepositoryBase {
 export const fetchRepositoryInformation = async (
   hass: HomeAssistant,
   repositoryId: string
-): Promise<RepositoryInfo | undefined> =>
+): Promise<RepositoryInfo> =>
   hass.connection.sendMessagePromise({
     type: "store/repository/info",
     repository_id: repositoryId,

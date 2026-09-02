@@ -142,10 +142,14 @@ export class HaStoreDashboard extends LitElement {
 
     return html`<hass-tabs-subpage-data-table
         .tabs=${TABS}
-        .columns=${this._columns(this.hass.localize, this.narrow)}
+        .columns=${this._columns(
+          this.hass.localize,
+          this.narrow,
+          this.hass.themes?.darkMode
+        )}
         .data=${repositories}
         .hass=${this.hass}
-        ?iswide=${this.isWide}
+        .isWide=${this.isWide}
         .localizeFunc=${this.hass.localize}
         .narrow=${this.narrow}
         .route=${this.route}
@@ -296,7 +300,8 @@ export class HaStoreDashboard extends LitElement {
   private _columns = memoize(
     (
       localizeFunc: LocalizeFunc,
-      narrow: boolean
+      narrow: boolean,
+      darkMode?: boolean
     ): DataTableColumnContainer<RepositoryBase> => ({
       icon: {
         title: "",
@@ -315,7 +320,7 @@ export class HaStoreDashboard extends LitElement {
                   src=${brandsUrl({
                     domain: repository.domain || "invalid",
                     type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
+                    darkOptimized: darkMode,
                   })}
                   referrerpolicy="no-referrer"
                 />
@@ -471,8 +476,17 @@ export class HaStoreDashboard extends LitElement {
     showStoreCustomRepositoriesDialog(this, { store: this.store });
   }
 
-  private _dismissNew() {
-    repositoriesClearNew(this.hass, this.store);
+  private async _dismissNew() {
+    try {
+      await repositoriesClearNew(this.hass, this.store);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.store.dialog.error.title"),
+        text:
+          err?.message ||
+          this.hass.localize("ui.panel.store.common.unknown_error"),
+      });
+    }
   }
 
   private _groupOrder = memoize(

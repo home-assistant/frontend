@@ -7,19 +7,22 @@ import {
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import "../../layouts/hass-error-screen";
-import type { ParamType, Redirect, Redirects } from "../my/ha-panel-my";
+import type { Redirect, Redirects } from "../my/ha-panel-my";
 import type { HomeAssistant, Route } from "../../types";
 import type { StoreData } from "./data/store";
 
-export const REDIRECTS: Redirects = {
-  hacs_repository: {
-    redirect: "/store/repository",
-    params: {
-      owner: "string",
-      repository: "string",
-      category: "string?",
-    },
+const repositoryRedirect: Redirect = {
+  redirect: "/store/repository",
+  params: {
+    owner: "string",
+    repository: "string",
+    category: "string?",
   },
+};
+
+export const REDIRECTS: Redirects = {
+  hacs_repository: repositoryRedirect,
+  store_repository: repositoryRedirect,
 };
 
 @customElement("ha-store-my-redirect")
@@ -85,16 +88,12 @@ class HaStoreMyRedirect extends LitElement {
       if (!params[key] && type.endsWith("?")) {
         continue;
       }
-      if (!params[key] || !this._checkParamType(type, params[key])) {
+      if (!params[key]) {
         throw Error();
       }
       resultParams[key] = params[key];
     }
     return `?${createSearchParam(resultParams)}`;
-  }
-
-  private _checkParamType(type: ParamType, _value: string) {
-    return type === "string" || type === "string?";
   }
 }
 

@@ -3,11 +3,10 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import type { HomeAssistant, Route } from "../../types";
 import { StoreDispatchEvent } from "./data/common";
 import type { StoreData, StoreInfo } from "./data/store";
 import type { RepositoryBase } from "./data/repository";
@@ -28,11 +27,15 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public panel?: PanelInfo;
-
   @state() private _repositories?: RepositoryBase[];
 
   @state() private _info?: StoreInfo;
+
+  // The panel is registered on every install, the integration is not. Gate
+  // the subscriptions on this so SubscribeMixin retries once it shows up.
+  @state() private _integrationLoaded?: true;
+
+  protected hassSubscribeRequiredHostProps = ["_integrationLoaded"];
 
   private _store = memoizeOne(
     (repositories: RepositoryBase[], info: StoreInfo): StoreData => ({
@@ -54,9 +57,6 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
   }
 
   public hassSubscribe() {
-    if (!this._isLoaded) {
-      return [];
-    }
     return [
       websocketSubscription(
         this.hass,
@@ -87,10 +87,22 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
-    if (!this.hasUpdated && this._isLoaded) {
-      this._refreshInfo();
-      this._refreshRepositories();
+
+    if (this._integrationLoaded || !this.hass) {
+      return;
     }
+
+    const previousHass = changedProperties.get("hass");
+    const componentsChanged =
+      previousHass?.config.components !== this.hass.config.components;
+
+    if ((this.hasUpdated && !componentsChanged) || !this._isLoaded) {
+      return;
+    }
+
+    this._integrationLoaded = true;
+    this._refreshInfo();
+    this._refreshRepositories();
   }
 
   protected render() {
@@ -123,28 +135,30 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
     `;
   }
 
-  // The panel is registered on every install, the integration is not.
   private get _isLoaded(): boolean {
     return isComponentLoaded(this.hass.config, "store");
   }
 
-  private _handleRefresh = (
-    ev: HASSDomEvent<HASSDomEvents["store-refresh"]>
-  ): void => {
-    if (ev.detail.target === "info") {
-      this._refreshInfo();
-      return;
-    }
-
+  private _handleRefresh = (): void => {
     this._refreshRepositories();
   };
 
   private _refreshInfo = async (): Promise<void> => {
-    this._info = await fetchStoreInfo(this.hass);
+    try {
+      this._info = await fetchStoreInfo(this.hass);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch Community store information", err);
+    }
   };
 
   private _refreshRepositories = async (): Promise<void> => {
-    this._repositories = await getRepositories(this.hass);
+    try {
+      this._repositories = await getRepositories(this.hass);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Failed to fetch Community store repositories", err);
+    }
   };
 
   static get styles() {

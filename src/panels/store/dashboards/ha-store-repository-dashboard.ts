@@ -13,6 +13,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
+import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/chips/ha-chip-set";
 import "../../../components/ha-alert";
@@ -98,7 +99,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
         }
         try {
           await repositoryAdd(this.hass, requestedRepository, params.category);
-          fireEvent(this, "store-refresh", { target: "repositories" });
+          fireEvent(this, "store-refresh");
           const repositories = await getRepositories(this.hass);
           existing = repositories.find(
             (repository) =>
@@ -106,7 +107,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
               requestedRepository.toLocaleLowerCase()
           );
         } catch (err: any) {
-          this._error = err;
+          this._error = err?.message;
           return;
         }
       }
@@ -124,27 +125,51 @@ export class HaStoreRepositoryDashboard extends LitElement {
       const dividerPos = this.route.path.indexOf("/", 1);
       const repositoryId = this.route.path.substr(dividerPos + 1);
       if (!repositoryId) {
-        this._error = "Missing repositoryId from route";
+        this._error = this.hass.localize(
+          "ui.panel.store.dashboard.repository_not_found"
+        );
         return;
       }
       this._fetchRepository(repositoryId);
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
-    if (changedProps.has("repositories") && this._repository) {
+
+    if (!changedProps.has("store") || !this._repository) {
+      return;
+    }
+
+    // The store data is refetched as a whole, so only pick up changes that
+    // affect the repository shown here.
+    const repositoryId = this._repository.id;
+    const listed = this.store.repositories.find(
+      (repository) => repository.id === repositoryId
+    );
+    const previouslyListed = changedProps
+      .get("store")
+      ?.repositories.find((repository) => repository.id === repositoryId);
+
+    if (previouslyListed && !deepEqual(previouslyListed, listed)) {
       this._fetchRepository();
     }
   }
 
   private async _fetchRepository(repositoryId?: string) {
     try {
-      this._repository = await fetchRepositoryInformation(
+      const repository = await fetchRepositoryInformation(
         this.hass,
         repositoryId || String(this._repository!.id)
       );
+      if (!this.isConnected) {
+        return;
+      }
+      this._repository = repository;
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       this._error = err?.message;
     }
   }
@@ -174,12 +199,17 @@ export class HaStoreRepositoryDashboard extends LitElement {
   protected render(): TemplateResult {
     if (this._error) {
       return html`<hass-error-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
         .error=${this._error}
       ></hass-error-screen>`;
     }
 
     if (!this._repository) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+      return html`<hass-loading-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+      ></hass-loading-screen>`;
     }
 
     const authors = this._getAuthors(this._repository);

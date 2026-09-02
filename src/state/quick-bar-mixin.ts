@@ -235,11 +235,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         // Store repository pages are addressed by id, the My link by name
         const { fetchRepositoryInformation } =
           await import("../panels/store/data/repository");
-        const repository = await fetchRepositoryInformation(
-          this.hass!,
-          targetPath.split("/")[3]
-        );
-        if (repository) {
+        try {
+          const repository = await fetchRepositoryInformation(
+            this.hass,
+            targetPath.split("/")[3]
+          );
           const [owner, name] = repository.full_name.split("/");
           myParams.append("redirect", "hacs_repository");
           myParams.append("owner", owner);
@@ -247,6 +247,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           myParams.append("category", repository.category);
           openCreateLink();
           return;
+        } catch {
+          // Fall through to the toast below when the repository is unknown.
         }
       }
 
