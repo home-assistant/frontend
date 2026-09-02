@@ -1,10 +1,17 @@
 import type { AssistPipeline } from "../../../../../src/data/assist_pipeline";
+import type { ConfigEntry } from "../../../../../src/data/config_entries";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../../../../src/data/entity/entity_registry";
 import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
+import type {
+  HassioHostInfo,
+  HostDisksUsage,
+} from "../../../../../src/data/hassio/host";
 import type { MediaPlayerItem } from "../../../../../src/data/media-player";
+import type { SupervisorMounts } from "../../../../../src/data/supervisor/mounts";
+import type { SerialPortUsage } from "../../../../../src/data/usb";
 import {
   WeatherEntityFeature,
   type ForecastEvent,
@@ -253,6 +260,72 @@ const delayedIntegrationsScenario: Scenario = (hass) => {
   );
 };
 
+const delayedConnectivityScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const { promise, resolve } = Promise.withResolvers<ConfigEntry[]>();
+
+  window.resolveConnectivityConfigEntries = () => resolve([]);
+  hass.mockWS("config_entries/get", () => promise);
+};
+
+const delayedSerialScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const { promise, resolve } = Promise.withResolvers<SerialPortUsage[]>();
+
+  window.resolveSerialPorts = () => resolve([]);
+  hass.mockWS("usb/list_serial_ports", () => promise);
+};
+
+const delayedStorageScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  const hostInfo: HassioHostInfo = {
+    agent_version: "1.8.0",
+    chassis: "embedded",
+    cpe: "cpe:2.3:o:home-assistant:haos:18.2:*:production:*:*:*:aarch64:*",
+    deployment: "production",
+    disk_life_time: 6,
+    disk_free: 22.3,
+    disk_total: 31.2,
+    disk_used: 8.9,
+    features: ["mount"],
+    hostname: "homeassistant",
+    kernel: "6.12.48-haos",
+    operating_system: "Home Assistant OS 18.2",
+    boot_timestamp: 1751932800000000,
+    startup_time: 12.4,
+  };
+  let resolveHostInfo: ((info: HassioHostInfo) => void) | undefined;
+  const hostInfoPromise = new Promise<HassioHostInfo>((resolve) => {
+    resolveHostInfo = resolve;
+  });
+
+  window.resolveStorageHostInfo = () => resolveHostInfo?.(hostInfo);
+  hass.mockWS("supervisor/api", (msg) => {
+    if (msg.endpoint === "/host/info") {
+      return hostInfoPromise;
+    }
+    if (msg.endpoint === "/host/disks/default/usage") {
+      return {
+        id: "root",
+        label: "Total",
+        total_bytes: 31200000000,
+        used_bytes: 8900000000,
+        children: [],
+      } satisfies HostDisksUsage;
+    }
+    if (msg.endpoint === "/mounts") {
+      return {
+        default_backup_mount: null,
+        mounts: [],
+      } satisfies SupervisorMounts;
+    }
+    return Promise.reject(`${msg.method} ${msg.endpoint} is not implemented`);
+  });
+};
+
 const delayedMediaBrowseScenario: Scenario = (hass) => {
   addLaunchScreen();
 
@@ -297,10 +370,13 @@ export const scenarios: Record<string, Scenario> = {
   "dark-theme": darkThemeScenario,
   "custom-theme": customThemeScenario,
   "delayed-calendar": delayedCalendarScenario,
+  "delayed-connectivity": delayedConnectivityScenario,
   "delayed-generated-dashboard": delayedGeneratedDashboardScenario,
   "delayed-integrations": delayedIntegrationsScenario,
   "delayed-media-browse": delayedMediaBrowseScenario,
   "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
+  "delayed-serial": delayedSerialScenario,
+  "delayed-storage": delayedStorageScenario,
   "light-more-info": lightMoreInfoScenario,
   "weather-more-info": weatherMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,

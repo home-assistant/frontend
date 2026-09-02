@@ -94,11 +94,14 @@ declare global {
     __mockHass: MockHomeAssistant;
     rejectMediaBrowse?: () => void;
     resolveCalendarRegistry?: () => void;
+    resolveConnectivityConfigEntries?: () => void;
     resolveConfigEntries?: () => void;
     resolveConfigEntriesInProgress?: () => void;
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
+    resolveSerialPorts?: () => void;
+    resolveStorageHostInfo?: () => void;
   }
 }
 
