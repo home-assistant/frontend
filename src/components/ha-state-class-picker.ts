@@ -49,13 +49,13 @@ export class HaStateClassPicker extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
-  private _loadedDomain?: string;
-
+  private _translationsLoaded = false;
+  
   protected willUpdate() {
-    if (!this._i18n || this._loadedDomain === "sensor") {
+    if (this._translationsLoaded || !this._i18n) {
       return;
     }
-    this._loadedDomain = "sensor";
+    this._translationsLoaded = true;
     this._i18n.loadBackendTranslation("entity_component", "sensor");
   }
 
