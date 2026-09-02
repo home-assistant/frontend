@@ -72,6 +72,9 @@ describe("recover-stale-build", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    // spyOn is not covered by unstubAllGlobals, and a leaked
+    // performance.getEntriesByType would silently steer later tests.
+    vi.restoreAllMocks();
     root.remove();
     if (serviceWorkerDescriptor) {
       Object.defineProperty(

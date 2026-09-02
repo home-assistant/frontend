@@ -46,15 +46,15 @@ export const isStaleBuildError = (
 
 type ChunkVerdict = "gone" | "present" | "unknown";
 
-// How long a "this one is still there" verdict stands, so a burst of failures
-// for the same chunk asks the server once.
+// How long a verdict other than "gone" stands, so a burst of failures for the
+// same chunk asks the server once.
 const PROBE_SUPPRESS = 10_000;
 const PROBE_TIMEOUT = 5_000;
 
 // Both keyed by chunk URL: during a deploy some chunks can be gone while others
 // are still served, so one chunk's verdict must not answer for another.
 const pendingProbes = new Map<string, Promise<boolean>>();
-const probedPresent = new Map<string, number>();
+const probedNotGone = new Map<string, number>();
 
 /**
  * The file a failure is about: its absolute URL when this build ships it,
@@ -77,15 +77,16 @@ const failedFile = (urlOrMessage: string): string | "foreign" | undefined => {
   return "foreign";
 };
 
-// Remember a chunk the server still has, dropping verdicts that have expired.
-const rememberPresent = (url: string): void => {
+// Remember a chunk that was not confirmed gone — still served, or no usable
+// answer at all — dropping verdicts that have expired.
+const rememberNotGone = (url: string): void => {
   const now = Date.now();
-  probedPresent.forEach((until, key) => {
+  probedNotGone.forEach((until, key) => {
     if (until <= now) {
-      probedPresent.delete(key);
+      probedNotGone.delete(key);
     }
   });
-  probedPresent.set(url, now + PROBE_SUPPRESS);
+  probedNotGone.set(url, now + PROBE_SUPPRESS);
 };
 
 /**
@@ -323,10 +324,11 @@ export const reloadForUpdate = (rootEl?: HTMLElement): boolean => {
  *   auto-reload once the user saves/discards, so unsaved work is never lost.
  *
  * Returns `false` when the error is not a chunk-load failure, names a file this
- * build does not ship, or a recent probe already found the build intact.
+ * build does not ship, or a recent probe did not find the chunk gone.
  * Otherwise a promise — shared across a burst — resolving `true` when recovery
- * started (the caller can skip its own error UI / logging) and `false` when the
- * chunk was reachable or the loop guard blocked the reload.
+ * started (the caller can skip its own error UI / logging) and `false` for
+ * everything else: the chunk was still served, the probe was inconclusive (a
+ * network error, a timeout, a 5xx), or the loop guard blocked the reload.
  */
 export const recoverFromStaleBuild = (
   urlOrMessage: string | undefined,
@@ -353,7 +355,7 @@ export const recoverFromStaleBuild = (
     return false;
   }
   const now = Date.now();
-  const suppressed = probedPresent.get(url);
+  const suppressed = probedNotGone.get(url);
   if (suppressed !== undefined && suppressed > now) {
     return false;
   }
@@ -364,7 +366,7 @@ export const recoverFromStaleBuild = (
   const probe = probeChunk(url)
     .then((verdict) => {
       if (verdict !== "gone") {
-        rememberPresent(url);
+        rememberNotGone(url);
         return false;
       }
       return reloadForUpdate(rootEl);
