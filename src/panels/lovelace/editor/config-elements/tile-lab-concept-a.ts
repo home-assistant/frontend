@@ -13,13 +13,13 @@ import "./hui-card-features-editor";
 import "../card-editor/hui-card-visibility-editor";
 import "../card-editor/hui-card-layout-editor";
 
-type Tab = "essentials" | "appearance" | "layout" | "optional";
+type Tab = "essentials" | "appearance" | "layout" | "extras";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "essentials", label: "Essentials" },
   { id: "appearance", label: "Appearance" },
   { id: "layout", label: "Layout" },
-  { id: "optional", label: "Optional" },
+  { id: "extras", label: "Extras" },
 ];
 
 // Stable schema references (module-level) so ha-form does not rebuild — and
@@ -405,7 +405,7 @@ export class TileLabConceptA extends LitElement {
     `;
   }
 
-  private _renderOptional() {
+  private _renderExtras() {
     return html`
       <div class="info-band">
         Options below vary by entity and feature setup
@@ -460,7 +460,7 @@ export class TileLabConceptA extends LitElement {
         ${this._tab === "essentials" ? this._renderEssentials() : nothing}
         ${this._tab === "appearance" ? this._renderAppearance() : nothing}
         ${this._tab === "layout" ? this._renderLayout() : nothing}
-        ${this._tab === "optional" ? this._renderOptional() : nothing}
+        ${this._tab === "extras" ? this._renderExtras() : nothing}
       </div>
     `;
   }
