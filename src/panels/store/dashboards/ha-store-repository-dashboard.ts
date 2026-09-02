@@ -225,6 +225,7 @@ export class HaStoreRepositoryDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/store"
         .header=${this._repository.name}
       >
         <ha-icon-button

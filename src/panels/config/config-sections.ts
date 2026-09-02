@@ -31,6 +31,7 @@ import {
   mdiShape,
   mdiSofa,
   mdiStarFourPoints,
+  mdiStore,
   mdiTextBoxOutline,
   mdiTools,
   mdiTransitConnectionVariant,
@@ -84,6 +85,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiPuzzle,
       iconColor: "#F1C447",
       core: true,
+      adminOnly: true,
+    },
+    {
+      path: "/store",
+      translationKey: "store",
+      iconPath: mdiStore,
+      iconColor: "#7C4DFF",
+      component: "store",
       adminOnly: true,
     },
     {

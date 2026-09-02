@@ -68,7 +68,7 @@ const STATUS_ORDER = [
 
 const TABS: PageNavigation[] = [
   {
-    translationKey: "panel.store",
+    translationKey: "ui.panel.config.dashboard.store.main",
     path: "",
   },
 ];
@@ -160,9 +160,9 @@ export class HaStoreDashboard extends LitElement {
         .hass=${this.hass}
         ?iswide=${this.isWide}
         .localizeFunc=${this.hass.localize}
-        main-page
         .narrow=${this.narrow}
         .route=${this.route}
+        back-path="/config"
         clickable
         .filter=${this._activeSearch || ""}
         has-filters

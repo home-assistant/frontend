@@ -17,8 +17,7 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
-    "notfound": "Page not found",
-    "store": "Community store"
+    "notfound": "Page not found"
   },
   "state": {
     "default": {
@@ -2766,6 +2765,10 @@
           "apps": {
             "main": "Apps",
             "secondary": "Run extra applications next to Home Assistant"
+          },
+          "store": {
+            "main": "Community store",
+            "secondary": "Download integrations, dashboard resources and themes shared by the community"
           },
           "dashboards": {
             "main": "Dashboards",
