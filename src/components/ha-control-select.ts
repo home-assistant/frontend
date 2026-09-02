@@ -56,7 +56,7 @@ export class HaControlSelect extends LitElement {
     this.updateComplete.then(() => {
       // eslint-disable-next-line lit/prefer-query-decorators
       const option = this.shadowRoot?.querySelector(
-        `#option-${this.options![index].value}`
+        `[data-index="${index}"]`
       ) as HTMLElement;
       option?.focus();
     });
@@ -144,7 +144,11 @@ export class HaControlSelect extends LitElement {
                 this.options,
                 (option) => option.value,
                 (option, index) =>
-                  this._renderOption(option, index === this._tabbableIndex)
+                  this._renderOption(
+                    option,
+                    index,
+                    index === this._tabbableIndex
+                  )
               )
             : nothing
         }
@@ -159,12 +163,17 @@ export class HaControlSelect extends LitElement {
     return selectedIndex === -1 ? 0 : selectedIndex;
   }
 
-  private _renderOption(option: ControlSelectOption, tabbable: boolean) {
+  private _renderOption(
+    option: ControlSelectOption,
+    index: number,
+    tabbable: boolean
+  ) {
     const isSelected = this.value === option.value;
 
     return html`
       <div
         id=${`option-${option.value}`}
+        data-index=${index}
         class=${classMap({
           option: true,
           selected: isSelected,
