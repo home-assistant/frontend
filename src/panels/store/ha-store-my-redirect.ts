@@ -33,6 +33,8 @@ class HaStoreMyRedirect extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @state() private _error?: TemplateResult | string;
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -69,6 +71,8 @@ class HaStoreMyRedirect extends LitElement {
   protected render() {
     if (this._error) {
       return html`<hass-error-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
         .error=${this._error}
       ></hass-error-screen>`;
     }
