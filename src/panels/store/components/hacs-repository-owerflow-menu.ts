@@ -40,7 +40,7 @@ export const repositoryMenuItems = memoizeOne(
           {
             path: mdiInformation,
             label: localize("ui.panel.store.common.show"),
-            action: () => navigate(`/hacs/repository/${repository.id}`),
+            action: () => navigate(`/store/repository/${repository.id}`),
           },
         ]
       : []),

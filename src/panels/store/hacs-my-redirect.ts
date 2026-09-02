@@ -13,7 +13,7 @@ import type { Hacs } from "./data/hacs";
 
 export const REDIRECTS: Redirects = {
   hacs_repository: {
-    redirect: "/hacs/repository",
+    redirect: "/store/repository",
     params: {
       owner: "string",
       repository: "string",

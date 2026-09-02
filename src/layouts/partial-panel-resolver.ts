@@ -44,6 +44,7 @@ const COMPONENTS = {
   map: { load: () => import("../panels/map/ha-panel-map") },
   my: { load: () => import("../panels/my/ha-panel-my") },
   profile: { load: () => import("../panels/profile/ha-panel-profile") },
+  store: { load: () => import("../panels/store/ha-panel-store") },
   todo: { load: () => import("../panels/todo/ha-panel-todo") },
   "media-browser": {
     load: () => import("../panels/media-browser/ha-panel-media-browser"),

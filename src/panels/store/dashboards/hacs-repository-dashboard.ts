@@ -78,7 +78,7 @@ export class HacsRepositoryDashboard extends LitElement {
     }
     if (
       ev.key === "m" &&
-      mainWindow.location.pathname.startsWith("/hacs/repository/")
+      mainWindow.location.pathname.startsWith("/store/repository/")
     ) {
       if (!this._repository) {
         return;
