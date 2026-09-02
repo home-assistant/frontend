@@ -225,6 +225,31 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         targetPath.startsWith(redirect.redirect)
       );
 
+      const openCreateLink = () =>
+        window.open(
+          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+          "_blank"
+        );
+
+      if (!redirectEntry && targetPath.startsWith("/store/repository/")) {
+        // Store repository pages are addressed by id, the My link by name
+        const { fetchRepositoryInformation } =
+          await import("../panels/store/data/repository");
+        const repository = await fetchRepositoryInformation(
+          this.hass!,
+          targetPath.split("/")[3]
+        );
+        if (repository) {
+          const [owner, name] = repository.full_name.split("/");
+          myParams.append("redirect", "hacs_repository");
+          myParams.append("owner", owner);
+          myParams.append("repository", name);
+          myParams.append("category", repository.category);
+          openCreateLink();
+          return;
+        }
+      }
+
       if (!redirectEntry) {
         showToast(this, {
           message: this.hass.localize(
@@ -268,10 +293,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           myParams.append("repository_url", repo.source);
         }
       }
-      window.open(
-        `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-        "_blank"
-      );
+      openCreateLink();
     }
 
     private _canShowQuickBar(e: KeyboardEvent) {

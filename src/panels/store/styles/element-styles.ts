@@ -12,26 +12,3 @@ export const storeIconStyle = css`
     color: var(--hcv-color-icon);
   }
 `;
-
-export const scrollBarStyle = css`
-  *::-webkit-scrollbar {
-    width: 0.4rem;
-    height: 0.4rem;
-  }
-
-  *::-webkit-scrollbar-track {
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    background: var(--scrollbar-thumb-color);
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 0.3em;
-  }
-  .scroll {
-    overflow-y: auto;
-    scrollbar-color: var(--scrollbar-thumb-color) transparent;
-    scrollbar-width: thin;
-  }
-`;

@@ -12,7 +12,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { mainWindow } from "../../../common/dom/get_main_window";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/chips/ha-chip-set";
@@ -60,41 +59,6 @@ export class HaStoreRepositoryDashboard extends LitElement {
   private _repositoryOverflowMenu!: HaDropdown;
 
   private _openingOverflowMenu = false;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    document.body.addEventListener("keydown", this._generateMyLink);
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    document.body.removeEventListener("keydown", this._generateMyLink);
-  }
-
-  private _generateMyLink = (ev: KeyboardEvent) => {
-    if (ev.ctrlKey || ev.shiftKey || ev.metaKey || ev.altKey) {
-      // Ignore if modifier keys are pressed
-      return;
-    }
-    if (
-      ev.key === "m" &&
-      mainWindow.location.pathname.startsWith("/store/repository/")
-    ) {
-      if (!this._repository) {
-        return;
-      }
-      const myParams = new URLSearchParams({
-        redirect: "hacs_repository",
-        owner: this._repository!.full_name.split("/")[0],
-        repository: this._repository!.full_name.split("/")[1],
-        category: this._repository!.category,
-      });
-      window.open(
-        `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-        "_blank"
-      );
-    }
-  };
 
   protected async firstUpdated(
     changedProperties: PropertyValues

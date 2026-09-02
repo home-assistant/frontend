@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { mainWindow } from "../../../common/dom/get_main_window";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -356,8 +355,7 @@ export class DialogStoreDownload extends LitElement {
         dismissText: this.hass.localize("ui.panel.store.common.cancel"),
         confirmText: this.hass.localize("ui.panel.store.common.reload"),
         confirm: () => {
-          // eslint-disable-next-line
-          mainWindow.location.href = mainWindow.location.href;
+          location.reload();
         },
       });
     }
