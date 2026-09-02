@@ -242,7 +242,7 @@ class HaMoreInfoRelated extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
-    ha-related-items {
+    ha-grouped-list + ha-related-items {
       margin-top: var(--ha-space-6);
     }
 
