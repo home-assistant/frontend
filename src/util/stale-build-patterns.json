@@ -1,4 +1,6 @@
 {
   "hashedEntry": "/frontend_(?:latest|es5)/[^/?#]+\\.[0-9a-f]{8,}\\.js",
-  "moduleError": "dynamically imported module|Importing a module script failed|error loading dynamically imported|ChunkLoadError"
+  "moduleError": "dynamically imported module|Importing a module script failed|error loading dynamically imported|ChunkLoadError",
+  "chunkUrl": "(?:[a-z]+://[^\\s\"'()]+)?/frontend_(?:latest|es5)/[^\\s\"'()/?#]+\\.[0-9a-f]{8,}\\.js",
+  "anyUrl": "[a-z]+://[^\\s\"'()]+|/[^\\s\"'()]+\\.(?:m?js|css)\\b"
 }

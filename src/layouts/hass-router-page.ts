@@ -202,7 +202,8 @@ export class HassRouterPage extends ReactiveElement {
       // the app stayed open) is recoverable: reload onto the current build
       // (or prompt when there are unsaved edits) instead of dead-ending.
       const message = err instanceof Error ? err.message : String(err ?? "");
-      const stale = recoverFromStaleBuild(message, this);
+      // Truthy for any chunk-load failure; worth offering a reload either way.
+      const stale = !!recoverFromStaleBuild(message, this);
 
       // Show error screen, offering a reload action for a stale build. Set
       // `showReload` on the returned element rather than through

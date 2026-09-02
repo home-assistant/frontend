@@ -9,12 +9,12 @@
    * recover this, because the bundle itself failed to load, so this guard has
    * to live inline in the HTML document.
    *
-   * On a failed entry load we navigate once to the same URL with a
-   * cache-busting query param (and, on https, after dropping the service
-   * worker + its caches) so the browser fetches a fresh index.html that points
-   * at the current hashes. The param doubles as a one-shot loop guard: if the
-   * freshly fetched index still fails we stop and show a message instead of
-   * reloading forever. core.ts strips the param again after a successful boot.
+   * Only a file the server no longer has means a stale index (see probeGone).
+   * On a 404 we navigate once to the same URL with a cache-busting query param
+   * (and, on https, after dropping the service worker + its caches) so the
+   * browser fetches a fresh index.html that points at the current hashes. One
+   * reload per minute, tracked in sessionStorage: if it did not help, stop and
+   * show a message instead of reloading forever.
    */
   (function () {
     var BUST_PARAM = "ha_cache_bust";
@@ -26,6 +26,16 @@
     // the bundled util/recover-stale-build.ts) so the two never drift.
     var HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
     var MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
+    // The same pattern with the origin, so the failing chunk can be probed.
+    var CHUNK_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.chunkUrl) %>, "i");
+    // Any file reference, to tell "a file we do not ship failed" apart from
+    // "the browser did not say which file failed".
+    var ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
+    var PROBE_TIMEOUT = 5000;
+    // Shared with the bundled recovery: one reload per minute between them.
+    var RELOAD_STORAGE_KEY = "haStaleBuildReload";
+    var RELOAD_COOLDOWN = 60000;
+    var probing = false;
 
     function booted() {
       // The launch screen is only removed once the app has taken over the
@@ -43,10 +53,54 @@
       }
     }
 
+    /*
+     * Claim this session's one recovery reload. The bust param alone is not a
+     * durable marker: core.ts strips it on every successful connect, so a page
+     * that boots and then fails on the next load would reload again and again.
+     * When storage is unavailable we keep the old param-only behaviour rather
+     * than lose the recovery entirely.
+     */
+    function claimReload() {
+      var now = Date.now();
+      var attempts = 0;
+      var last = 0;
+      try {
+        var stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
+        if (stored) {
+          var parsed = JSON.parse(stored);
+          attempts = Number(parsed.n) || 0;
+          last = Number(parsed.t) || 0;
+        }
+      } catch (_err) {
+        return true;
+      }
+      if (now - last > RELOAD_COOLDOWN) {
+        attempts = 0;
+      }
+      if (attempts >= 1) {
+        return false;
+      }
+      try {
+        sessionStorage.setItem(
+          RELOAD_STORAGE_KEY,
+          JSON.stringify({ n: attempts + 1, t: now })
+        );
+      } catch (_err) {
+        // ignore
+      }
+      return true;
+    }
+
     function recover() {
       if (location.search.indexOf(BUST_PARAM + "=") !== -1) {
         // We already reloaded once with a fresh index and it still failed;
         // stop to avoid a reload loop.
+        showFatal();
+        return;
+      }
+      if (!claimReload()) {
+        // Reloaded recently (possibly on the previous page load, before the
+        // param was stripped) and it did not help: stop asking.
         showFatal();
         return;
       }
@@ -95,16 +149,70 @@
       }
     }
 
+    function chunkUrl(text) {
+      var match = text && CHUNK_URL.exec(text);
+      return match ? match[0] : null;
+    }
+
+    /*
+     * A failed load looks identical whether the file was deleted by an upgrade
+     * or the request never reached the server, and only the first is fixed by
+     * reloading. HEAD is never intercepted by the service worker (workbox
+     * routes GET only), so the answer comes from the server itself.
+     */
+    function probeGone(url, cb) {
+      try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("HEAD", url, true);
+        xhr.timeout = PROBE_TIMEOUT;
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.onload = function () {
+          cb(xhr.status === 404 || xhr.status === 410);
+        };
+        // Unreachable or too slow to answer: not stale as far as we know.
+        xhr.onerror = function () {
+          cb(false);
+        };
+        xhr.ontimeout = function () {
+          cb(false);
+        };
+        xhr.send();
+      } catch (_err) {
+        cb(false);
+      }
+    }
+
     function maybeRecover(url, message) {
-      if (booted()) {
+      if (booted() || probing) {
         return;
       }
       if (
-        (url && HASHED_ENTRY.test(url)) ||
-        (message && (HASHED_ENTRY.test(message) || MODULE_ERROR.test(message)))
+        !(url && HASHED_ENTRY.test(url)) &&
+        !(message && (HASHED_ENTRY.test(message) || MODULE_ERROR.test(message)))
       ) {
-        recover();
+        return;
       }
+      var target = chunkUrl(url) || chunkUrl(message);
+      if (!target) {
+        if (ANY_URL.test(url || "") || ANY_URL.test(message || "")) {
+          // A file this build does not ship: a dashboard resource, an
+          // extra_module_url, a custom panel. Those say nothing about the
+          // index being stale, and reloading over them never ends.
+          return;
+        }
+        // Nothing identifiable (Safari's message names no file) and the launch
+        // screen is stuck either way, so try once; claimReload() bounds it.
+        recover();
+        return;
+      }
+      // One probe answers for the whole burst; both entries fail together.
+      probing = true;
+      probeGone(target, function (gone) {
+        probing = false;
+        if (gone) {
+          recover();
+        }
+      });
     }
 
     // Resource-load errors (<script>, modulepreload <link>) do not bubble, so

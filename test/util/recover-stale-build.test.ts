@@ -22,6 +22,12 @@ describe("recover-stale-build", () => {
   let notifications: ShowToastParams[];
   let serviceWorkerDescriptor: PropertyDescriptor | undefined;
   let cachesDescriptor: PropertyDescriptor | undefined;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  const httpResponse = (status: number) => ({
+    status,
+    ok: status >= 200 && status < 300,
+  });
 
   const latestNotification = () => notifications[notifications.length - 1];
   const reloadMarker = () => sessionStorage.getItem(RELOAD_KEY);
@@ -44,6 +50,10 @@ describe("recover-stale-build", () => {
       value: { controller: null },
     });
 
+    // The staleness probe; by default the chunk really is gone.
+    fetchMock = vi.fn().mockResolvedValue(httpResponse(404));
+    vi.stubGlobal("fetch", fetchMock);
+
     // Capture toasts fired via showToast (a "hass-notification" event).
     notifications = [];
     root = document.createElement("home-assistant");
@@ -58,6 +68,7 @@ describe("recover-stale-build", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     root.remove();
     if (serviceWorkerDescriptor) {
       Object.defineProperty(
@@ -123,12 +134,20 @@ describe("recover-stale-build", () => {
       expect(mod.recoverFromStaleBuild("TypeError: boom", root)).toBe(false);
       expect(reloadMarker()).toBeNull();
       expect(notifications).toHaveLength(0);
+      expect(fetchMock).not.toHaveBeenCalled();
     });
 
-    it("reloads onto the current build when clean", () => {
-      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+    it("reloads onto the current build when the chunk is gone", async () => {
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
 
-      // reloadFresh() ran (marker written before navigating) and did not toast.
+      // Asked the server about the chunk, bypassing every cache…
+      expect(fetchMock).toHaveBeenCalledWith(
+        STALE_URL,
+        expect.objectContaining({ method: "HEAD", cache: "no-store" })
+      );
+      // …then reloadFresh() ran (marker written before navigating), no toast.
       expect(reloadMarker()).not.toBeNull();
       expect(notifications).toHaveLength(0);
     });
@@ -151,13 +170,15 @@ describe("recover-stale-build", () => {
         },
       });
 
-      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
 
       await vi.waitFor(() => expect(unregister).toHaveBeenCalledOnce());
       expect(cacheDelete).toHaveBeenCalledTimes(2);
     });
 
-    it("uses the companion-app command when the WebKit bridge is present", () => {
+    it("uses the companion-app command when the WebKit bridge is present", async () => {
       const postMessage = vi.fn();
       (
         window as unknown as {
@@ -169,7 +190,9 @@ describe("recover-stale-build", () => {
         }
       ).webkit = { messageHandlers: { externalBus: { postMessage } } };
 
-      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
 
       // Asks the native app to purge its cache and reload instead of the
       // browser path.
@@ -180,10 +203,12 @@ describe("recover-stale-build", () => {
       expect(notifications).toHaveLength(0);
     });
 
-    it("defers with a toast instead of reloading when dirty", () => {
+    it("defers with a toast instead of reloading when dirty", async () => {
       window.isDirtyState = true;
 
-      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
 
       // Took the toast branch, not the reload branch, and the toast has no
       // immediate-reload action that could discard unsaved work.
@@ -199,8 +224,146 @@ describe("recover-stale-build", () => {
       expect(latestNotification().action).toBeUndefined();
     });
 
+    describe("staleness probe", () => {
+      const IMPORT_FAILURE =
+        "error loading dynamically imported module: " +
+        "http://192.168.1.134:8123/frontend_latest/23792.c1214a5d0ae33023.js";
+
+      it("does not reload when the chunk is still on the server", async () => {
+        fetchMock.mockResolvedValue(httpResponse(200));
+
+        // Dropping the caches cannot fix a transport failure.
+        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+          false
+        );
+        expect(reloadMarker()).toBeNull();
+        expect(notifications).toHaveLength(0);
+      });
+
+      it("does not reload when the server is unreachable", async () => {
+        fetchMock.mockRejectedValue(
+          new TypeError("NetworkError when attempting to fetch resource.")
+        );
+
+        await expect(
+          mod.recoverFromStaleBuild(IMPORT_FAILURE, root)
+        ).resolves.toBe(false);
+        expect(reloadMarker()).toBeNull();
+      });
+
+      it("does not reload on a server error other than 404/410", async () => {
+        fetchMock.mockResolvedValue(httpResponse(502));
+
+        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+          false
+        );
+        expect(reloadMarker()).toBeNull();
+      });
+
+      it("probes the URL taken from the import failure message", async () => {
+        await expect(
+          mod.recoverFromStaleBuild(IMPORT_FAILURE, root)
+        ).resolves.toBe(true);
+
+        expect(fetchMock).toHaveBeenCalledWith(
+          "http://192.168.1.134:8123/frontend_latest/23792.c1214a5d0ae33023.js",
+          expect.objectContaining({ method: "HEAD" })
+        );
+      });
+
+      it("probes once for a burst of failures", async () => {
+        fetchMock.mockResolvedValue(httpResponse(200));
+
+        const verdicts = await Promise.all(
+          Array.from({ length: 5 }, (_, i) =>
+            mod.recoverFromStaleBuild(`/frontend_latest/${i}.abc12345.js`, root)
+          )
+        );
+
+        expect(verdicts).toEqual([false, false, false, false, false]);
+        expect(fetchMock).toHaveBeenCalledOnce();
+      });
+
+      it("suppresses further probes after finding the build intact", async () => {
+        fetchMock.mockResolvedValue(httpResponse(200));
+        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+          false
+        );
+
+        // Answered synchronously from the previous verdict: no second probe.
+        expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(false);
+        expect(fetchMock).toHaveBeenCalledOnce();
+      });
+
+      it("retries with GET when the server refuses HEAD", async () => {
+        fetchMock
+          .mockResolvedValueOnce(httpResponse(405))
+          .mockResolvedValueOnce(httpResponse(404));
+
+        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+          true
+        );
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        // Cache-busted so neither the HTTP cache nor the precache route answers.
+        expect(fetchMock.mock.calls[1][0]).toContain("ha_probe=");
+        expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "GET" });
+        expect(reloadMarker()).not.toBeNull();
+      });
+
+      it.each([
+        // index.html imports extra modules without a catch, so a broken one
+        // rejects into the recovery on every page load.
+        "Failed to fetch dynamically imported module: /local/layout-card.js",
+        "error loading dynamically imported module: " +
+          "http://192.168.1.134:8123/hacsfiles/silam_pollen/forecast-card.js",
+        // A resource URL with literal brackets from a broken configuration.
+        "error loading dynamically imported module: " +
+          "http://192.168.1.134:8123/[/hacsfiles/card-mod/card-mod.js?hacstag=1]",
+      ])(
+        "ignores a failure of a file this build does not ship: %s",
+        (message) => {
+          expect(mod.recoverFromStaleBuild(message, root)).toBe(false);
+          expect(fetchMock).not.toHaveBeenCalled();
+          expect(reloadMarker()).toBeNull();
+        }
+      );
+
+      it("probes the running build when the message names no file", async () => {
+        // Safari's message names nothing, so a hashed file of this build
+        // stands in for the question.
+        performance.clearResourceTimings?.();
+        vi.spyOn(performance, "getEntriesByType").mockReturnValue([
+          { name: "https://ha.local/static/translations/en-abc12345.json" },
+          { name: "https://ha.local/frontend_latest/app.abc12345.js" },
+        ] as unknown as PerformanceEntryList);
+
+        await expect(
+          mod.recoverFromStaleBuild("Importing a module script failed.", root)
+        ).resolves.toBe(true);
+
+        expect(fetchMock).toHaveBeenCalledWith(
+          "https://ha.local/frontend_latest/app.abc12345.js",
+          expect.objectContaining({ method: "HEAD" })
+        );
+        expect(reloadMarker()).not.toBeNull();
+      });
+
+      it("does nothing when there is no evidence to go on", async () => {
+        vi.spyOn(performance, "getEntriesByType").mockReturnValue([]);
+
+        expect(
+          mod.recoverFromStaleBuild("Importing a module script failed.", root)
+        ).toBe(false);
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(reloadMarker()).toBeNull();
+      });
+    });
+
     it("does not reload again while the cooldown marker is set (loop guard)", async () => {
-      expect(mod.recoverFromStaleBuild(STALE_URL, root)).toBe(true);
+      await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+        true
+      );
       const firstMarker = reloadMarker();
       expect(firstMarker).not.toBeNull();
 
@@ -211,9 +374,9 @@ describe("recover-stale-build", () => {
         await import("../../src/util/recover-stale-build");
 
       // Blocked by the cooldown → returns false so the caller still surfaces it.
-      expect(
+      await expect(
         reloaded.recoverFromStaleBuild("/frontend_latest/app.def67890.js", root)
-      ).toBe(false);
+      ).resolves.toBe(false);
       expect(reloadMarker()).toBe(firstMarker);
     });
   });
