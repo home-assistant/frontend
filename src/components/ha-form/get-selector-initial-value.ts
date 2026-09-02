@@ -91,6 +91,7 @@ const SELECTOR_INITIAL_VALUES = {
   selector: undefined,
   serial_port: () => "",
   state: (selector) => (selector.state?.multiple ? [] : ""),
+  state_class: (selector) => (selector.state_class?.multiple ? [] : undefined),
   backup_location: undefined,
   stt: undefined,
   target: () => ({}),
