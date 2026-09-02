@@ -61,6 +61,10 @@ class DialogThreadEphemeralKey extends DialogMixin<DialogThreadEphemeralKeyParam
     if (this._key && this._secondsRemaining !== 0) {
       this._revoke(this._key.ephemeral_key);
     }
+    // The dialog manager may reuse this element, so leave no state behind
+    this._key = undefined;
+    this._error = undefined;
+    this._secondsRemaining = undefined;
   }
 
   protected render() {
