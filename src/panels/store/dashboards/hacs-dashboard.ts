@@ -30,7 +30,7 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-markdown";
 import "../../../components/ha-dropdown-item";
 
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { HaFormSchema } from "../../../components/ha-form/types";
 import { HaMenu } from "../../../components/ha-dropdown";
 import "../../../components/ha-svg-icon";
@@ -46,7 +46,6 @@ import { repositoryMenuItems } from "../components/hacs-repository-owerflow-menu
 import { aboutHacsmarkdownContent } from "../data/about";
 import type { Hacs } from "../data/hacs";
 import { APP_FULL_NAME } from "../data/hacs";
-import { HacsLocalizeKeys } from "../data/localize";
 import type { RepositoryBase, RepositoryType } from "../data/repository";
 import { repositoriesClearNew } from "../data/websocket";
 import { HacsStyles } from "../styles/hacs-common-style";
@@ -149,7 +148,7 @@ export class HacsDashboard extends LitElement {
   protected render = (): TemplateResult | void => {
     const repositories = this._filterRepositories(
       this.hacs.repositories,
-      this.hacs.localize,
+      this.hass.localize,
       this._activeFilters
     );
     const repositoriesContainsNew = repositories.some(
@@ -158,11 +157,11 @@ export class HacsDashboard extends LitElement {
 
     return html`<hass-tabs-subpage-data-table
         .tabs=${TABS}
-        .columns=${this._columns(this.hacs.localize, this.narrow)}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${repositories}
         .hass=${this.hass}
         ?iswide=${this.isWide}
-        .localizeFunc=${this.hacs.localize as LocalizeFunc}
+        .localizeFunc=${this.hass.localize}
         main-page
         .narrow=${this.narrow}
         .route=${this.route}
@@ -171,10 +170,10 @@ export class HacsDashboard extends LitElement {
         has-filters
         hasFab
         .filters=${this._activeFilters?.length}
-        .noDataText=${this.hacs.localize("dashboard.no_data")}
+        .noDataText=${this.hass.localize("ui.panel.store.dashboard.no_data")}
         .initialGroupColumn=${this._activeGrouping || "translated_status"}
         .initialCollapsedGroups=${this._activeCollapsed || []}
-        .groupOrder=${this._groupOrder(this.hacs.localize, this._activeGrouping)}
+        .groupOrder=${this._groupOrder(this.hass.localize, this._activeGrouping)}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._orderTableColumns}
         .hiddenColumns=${this._hiddenTableColumns}
@@ -207,7 +206,7 @@ export class HacsDashboard extends LitElement {
                 filter.startsWith("type_")
               ) || "",
           }}
-          .schema=${this._filterSchema(this.hacs.localize, this.hacs.info.categories)}
+          .schema=${this._filterSchema(this.hass.localize, this.hacs.info.categories)}
           .computeLabel=${this._computeFilterFormLabel}
           @value-changed=${this._handleFilterChanged}
         ></ha-form>
@@ -218,7 +217,7 @@ export class HacsDashboard extends LitElement {
             ? repositoryMenuItems(
                 this,
                 this._overflowMenuRepository,
-                this.hacs.localize
+                this.hass.localize
               ).map((entry) =>
                 entry.divider
                   ? html`<li divider role="separator"></li>`
@@ -247,7 +246,9 @@ export class HacsDashboard extends LitElement {
           }}
         >
           <ha-svg-icon .path=${mdiFileDocument} slot="start"></ha-svg-icon>
-          <div slot="headline">${this.hacs.localize("menu.documentation")}</div>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.store.menu.documentation")}
+          </div>
         </ha-md-menu-item>
         <ha-md-menu-item
           .clickAction=${() => {
@@ -276,7 +277,9 @@ export class HacsDashboard extends LitElement {
             .path=${mdiAlertCircleOutline}
             slot="start"
           ></ha-svg-icon>
-          <div slot="headline">${this.hacs.localize("menu.open_issue")}</div>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.store.menu.open_issue")}
+          </div>
         </ha-md-menu-item>
         <ha-md-menu-item
           .clickAction=${() => {
@@ -294,7 +297,7 @@ export class HacsDashboard extends LitElement {
         >
           <ha-svg-icon .path=${mdiGit} slot="start"></ha-svg-icon>
           <div slot="headline">
-            ${this.hacs.localize("menu.custom_repositories")}
+            ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
           </div>
         </ha-md-menu-item>
         ${
@@ -305,7 +308,9 @@ export class HacsDashboard extends LitElement {
                 }}
               >
                 <ha-svg-icon .path=${mdiNewBox} slot="start"></ha-svg-icon>
-                <div slot="headline">${this.hacs.localize("menu.dismiss")}</div>
+                <div slot="headline">
+                  ${this.hass.localize("ui.panel.store.menu.dismiss")}
+                </div>
               </ha-md-menu-item>`
             : nothing
         }
@@ -315,13 +320,15 @@ export class HacsDashboard extends LitElement {
               hacs: this.hacs,
               title: APP_FULL_NAME,
               description: html`<ha-markdown
-                .content=${aboutHacsmarkdownContent(this.hacs)}
+                .content=${aboutHacsmarkdownContent(this.hass, this.hacs)}
               ></ha-markdown>`,
             });
           }}
         >
           <ha-svg-icon .path=${mdiInformation} slot="start"></ha-svg-icon>
-          <div slot="headline">${this.hacs.localize("menu.about")}</div>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.store.menu.about")}
+          </div>
         </ha-md-menu-item>
       </ha-menu>`;
   };
@@ -329,7 +336,7 @@ export class HacsDashboard extends LitElement {
   private _filterRepositories = memoize(
     (
       repositories: RepositoryBase[],
-      localizeFunc: LocalizeFunc<HacsLocalizeKeys>,
+      localizeFunc: LocalizeFunc,
       activeFilters?: string[]
     ): DataTableRowData[] =>
       repositories
@@ -365,22 +372,23 @@ export class HacsDashboard extends LitElement {
         .map((repository) => ({
           ...repository,
           translated_status:
-            localizeFunc(`repository_status.${repository.status}`) ||
-            repository.status,
+            localizeFunc(
+              `ui.panel.store.repository_status.${repository.status}`
+            ) || repository.status,
           translated_category: localizeFunc(
-            `common.type.${repository.category}`
+            `ui.panel.store.common.type.${repository.category}`
           ),
         }))
   );
 
   private _columns = memoize(
     (
-      localizeFunc: LocalizeFunc<HacsLocalizeKeys>,
+      localizeFunc: LocalizeFunc,
       narrow: boolean
     ): DataTableColumnContainer<RepositoryBase> => ({
       icon: {
         title: "",
-        label: localizeFunc("column.icon"),
+        label: localizeFunc("ui.panel.store.column.icon"),
         type: "icon",
         hidden: false,
         moveable: false,
@@ -410,7 +418,7 @@ export class HacsDashboard extends LitElement {
       },
       name: {
         ...defaultKeyData,
-        title: localizeFunc("column.name"),
+        title: localizeFunc("ui.panel.store.column.name"),
         main: true,
         hidden: false,
         sortable: true,
@@ -422,7 +430,7 @@ export class HacsDashboard extends LitElement {
       },
       downloads: {
         ...defaultKeyData,
-        title: localizeFunc("column.downloads"),
+        title: localizeFunc("ui.panel.store.column.downloads"),
         sortable: true,
         hidden: false,
         template: (repository: RepositoryBase) =>
@@ -430,13 +438,13 @@ export class HacsDashboard extends LitElement {
       },
       stars: {
         ...defaultKeyData,
-        title: localizeFunc("column.stars"),
+        title: localizeFunc("ui.panel.store.column.stars"),
         sortable: true,
         hidden: false,
       },
       last_updated: {
         ...defaultKeyData,
-        title: localizeFunc("column.last_updated"),
+        title: localizeFunc("ui.panel.store.column.last_updated"),
         sortable: true,
         hidden: false,
         template: (repository: RepositoryBase) => {
@@ -455,7 +463,7 @@ export class HacsDashboard extends LitElement {
       },
       installed_version: {
         ...defaultKeyData,
-        title: localizeFunc("column.installed_version"),
+        title: localizeFunc("ui.panel.store.column.installed_version"),
         sortable: true,
         defaultHidden: true,
         hidden: false,
@@ -464,7 +472,7 @@ export class HacsDashboard extends LitElement {
       },
       available_version: {
         ...defaultKeyData,
-        title: localizeFunc("column.available_version"),
+        title: localizeFunc("ui.panel.store.column.available_version"),
         sortable: true,
         defaultHidden: true,
         hidden: false,
@@ -473,7 +481,7 @@ export class HacsDashboard extends LitElement {
       },
       translated_status: {
         ...defaultKeyData,
-        title: localizeFunc("column.status"),
+        title: localizeFunc("ui.panel.store.column.status"),
         sortable: true,
         groupable: true,
         hidden: false,
@@ -481,7 +489,7 @@ export class HacsDashboard extends LitElement {
       },
       translated_category: {
         ...defaultKeyData,
-        title: localizeFunc("column.type"),
+        title: localizeFunc("ui.panel.store.column.type"),
         sortable: true,
         groupable: true,
         hidden: false,
@@ -494,7 +502,7 @@ export class HacsDashboard extends LitElement {
       topics: defaultKeyData,
       actions: {
         title: "",
-        label: localizeFunc("column.actions"),
+        label: localizeFunc("ui.panel.store.column.actions"),
         moveable: false,
         hideable: false,
         showNarrow: true,
@@ -534,22 +542,19 @@ export class HacsDashboard extends LitElement {
   };
 
   private _groupOrder = memoize(
-    (
-      localize: LocalizeFunc<HacsLocalizeKeys>,
-      activeGrouping: string | undefined
-    ) =>
+    (localize: LocalizeFunc, activeGrouping: string | undefined) =>
       activeGrouping === "translated_status"
         ? STATUS_ORDER.map((filter) =>
             localize(
               // @ts-ignore
-              `repository_status.${filter}`
+              `ui.panel.store.repository_status.${filter}`
             )
           )
         : undefined
   );
 
   private _filterSchema = memoize(
-    (localizeFunc: LocalizeFunc<HacsLocalizeKeys>, types: string[]) =>
+    (localizeFunc: LocalizeFunc, types: string[]) =>
       [
         {
           name: "filters",
@@ -564,7 +569,7 @@ export class HacsDashboard extends LitElement {
                 value: `status_${filter}`,
                 label: localizeFunc(
                   // @ts-ignore
-                  `repository_status.${filter}`
+                  `ui.panel.store.repository_status.${filter}`
                 ),
               })),
               mode: "dropdown",
@@ -577,7 +582,9 @@ export class HacsDashboard extends LitElement {
           selector: {
             select: {
               options: types.map((type: string) => ({
-                label: localizeFunc(`common.type.${type as RepositoryType}`),
+                label: localizeFunc(
+                  `ui.panel.store.common.type.${type as RepositoryType}`
+                ),
                 value: `type_${type}`,
               })),
               mode: "dropdown",
@@ -603,13 +610,13 @@ export class HacsDashboard extends LitElement {
   }
 
   private _computeFilterFormLabel = (schema, _) =>
-    this.hacs.localize(
+    this.hass.localize(
       // @ts-ignore
-      `dialog_overview.${schema.name}`
+      `ui.panel.store.dialog_overview.${schema.name}`
     ) ||
-    this.hacs.localize(
+    this.hass.localize(
       // @ts-ignore
-      `dialog_overview.sections.${schema.name}`
+      `ui.panel.store.dialog_overview.sections.${schema.name}`
     ) ||
     schema.name;
 

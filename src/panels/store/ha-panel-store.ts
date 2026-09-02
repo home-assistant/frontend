@@ -20,11 +20,7 @@ class HaPanelStore extends HacsElement {
   @property({ attribute: false }) public panel?: PanelInfo;
 
   protected render() {
-    if (
-      !this.hass ||
-      !this.hacs?.info?.categories?.length ||
-      this.hacs?.localize === undefined
-    ) {
+    if (!this.hass || !this.hacs?.info?.categories?.length) {
       return nothing;
     }
 

@@ -38,13 +38,13 @@ class HacsMyRedirect extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hacs.localize("my.not_supported", {
+      this._error = this.hass.localize("ui.panel.store.my.not_supported", {
         link: html`<a
           target="_blank"
           rel="noreferrer noopener"
           href="https://my.home-assistant.io/faq.html#supported-pages"
         >
-          ${this.hacs.localize("my.faq_link")}
+          ${this.hass.localize("ui.panel.store.my.faq_link")}
         </a>`,
       });
       return;
@@ -54,7 +54,7 @@ class HacsMyRedirect extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err: any) {
-      this._error = this.hacs.localize("my.error");
+      this._error = this.hass.localize("ui.panel.store.my.error");
       return;
     }
 

@@ -27,27 +27,26 @@ import {
   showHacsDownloadDialog,
   showHacsFormDialog,
 } from "./dialogs/show-hacs-dialog";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import { HacsLocalizeKeys } from "../data/localize";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 export const repositoryMenuItems = memoizeOne(
   (
     element: HacsRepositoryDashboard | HacsDashboard,
     repository: RepositoryBase,
-    localize: LocalizeFunc<HacsLocalizeKeys>
+    localize: LocalizeFunc
   ) => [
     ...(element.nodeName === "HACS-DASHBOARD"
       ? [
           {
             path: mdiInformation,
-            label: localize("common.show"),
+            label: localize("ui.panel.store.common.show"),
             action: () => navigate(`/hacs/repository/${repository.id}`),
           },
         ]
       : []),
     {
       path: mdiGithub,
-      label: localize("common.repository"),
+      label: localize("ui.panel.store.common.repository"),
       action: () =>
         mainWindow.open(
           `https://github.com/${repository.full_name}`,
@@ -57,7 +56,7 @@ export const repositoryMenuItems = memoizeOne(
     },
     {
       path: mdiArrowDownCircle,
-      label: localize("repository_card.update_information"),
+      label: localize("ui.panel.store.repository_card.update_information"),
       action: async () => {
         await repositoryUpdate(element.hass, String(repository.id));
       },
@@ -66,8 +65,8 @@ export const repositoryMenuItems = memoizeOne(
       path: repository.installed_version ? mdiReload : mdiDownload,
       label: localize(
         repository.installed_version
-          ? "repository_card.redownload"
-          : "common.download"
+          ? "ui.panel.store.repository_card.redownload"
+          : "ui.panel.store.common.download"
       ),
       action: () =>
         showHacsDownloadDialog(element, {
@@ -80,7 +79,7 @@ export const repositoryMenuItems = memoizeOne(
       ? [
           {
             path: mdiMoonNew,
-            label: localize("repository_card.dismiss_new"),
+            label: localize("ui.panel.store.repository_card.dismiss_new"),
             action: () =>
               repositoriesClearNewRepository(element.hass, repository.id),
           },
@@ -90,7 +89,7 @@ export const repositoryMenuItems = memoizeOne(
       ? [
           {
             path: mdiLanguageJavascript,
-            label: localize("repository_card.open_source"),
+            label: localize("ui.panel.store.repository_card.open_source"),
             action: () =>
               mainWindow.open(
                 `/hacsfiles/${repository.local_path.split("/").pop()}/${repository.file_name}?cachebuster=${Date.now()}`,
@@ -103,7 +102,7 @@ export const repositoryMenuItems = memoizeOne(
     { divider: true },
     {
       path: mdiAlertCircleOutline,
-      label: localize("repository_card.open_issue"),
+      label: localize("ui.panel.store.repository_card.open_issue"),
       action: () =>
         mainWindow.open(
           `https://github.com/${repository.full_name}/issues`,
@@ -115,7 +114,7 @@ export const repositoryMenuItems = memoizeOne(
       ? [
           {
             path: mdiAlert,
-            label: localize("repository_card.report"),
+            label: localize("ui.panel.store.repository_card.report"),
             action: () =>
               mainWindow.open(
                 `https://github.com/hacs/integration/issues/new?assignees=ludeeus&labels=flag&template=removal.yml&repo=${repository.full_name}&title=Request for removal of ${repository.full_name}`,
@@ -126,7 +125,7 @@ export const repositoryMenuItems = memoizeOne(
           },
           {
             path: mdiClose,
-            label: localize("common.remove"),
+            label: localize("ui.panel.store.common.remove"),
             action: async () => {
               if (
                 repository.category === "integration" &&
@@ -137,12 +136,12 @@ export const repositoryMenuItems = memoizeOne(
                 );
                 if (configFlows) {
                   const ignore = await showConfirmationDialog(element, {
-                    title: localize("dialog.configured.title"),
-                    text: localize("dialog.configured.message", {
+                    title: localize("ui.panel.store.dialog.configured.title"),
+                    text: localize("ui.panel.store.dialog.configured.message", {
                       name: repository.name,
                     }),
-                    dismissText: localize("common.ignore"),
-                    confirmText: localize("common.navigate"),
+                    dismissText: localize("ui.panel.store.common.ignore"),
+                    confirmText: localize("ui.panel.store.common.navigate"),
                     confirm: () => {
                       navigate("/config/integrations", { replace: true });
                     },
@@ -154,9 +153,9 @@ export const repositoryMenuItems = memoizeOne(
               }
               showHacsFormDialog(element, {
                 hacs: element.hacs,
-                title: localize("dialog.remove.title"),
-                saveLabel: localize("dialog.remove.title"),
-                description: localize("dialog.remove.message", {
+                title: localize("ui.panel.store.dialog.remove.title"),
+                saveLabel: localize("ui.panel.store.dialog.remove.title"),
+                description: localize("ui.panel.store.dialog.remove.message", {
                   name: repository.name,
                 }),
                 saveAction: async () => {

@@ -95,7 +95,7 @@ class HacsFromDialog extends LitElement {
                   @click=${this.closeDialog}
                   dialogInitialFocus
                 >
-                  ${this._dialogParams.hacs.localize("common.cancel")}
+                  ${this.hass.localize("ui.panel.store.common.cancel")}
                 </mwc-button>
                 <mwc-button
                   class="${this._dialogParams.destructive ? "destructive" : ""}"
@@ -109,7 +109,7 @@ class HacsFromDialog extends LitElement {
                   slot="primaryAction"
                   @click=${this._saveClicked}
                 >
-                  ${this._dialogParams.saveLabel || this._dialogParams.hacs.localize("common.save")}
+                  ${this._dialogParams.saveLabel || this.hass.localize("ui.panel.store.common.save")}
                 </mwc-button>`
             : nothing
         }

@@ -1,15 +1,16 @@
-import type { Hacs } from "./hacs";
+import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../tools/documentation";
+import type { Hacs } from "./hacs";
 
-export const aboutHacsmarkdownContent = (hacs: Hacs) => `
-**${hacs.localize("dialog_about.integration_version")}:** | ${hacs.info.version}
+export const aboutHacsmarkdownContent = (hass: HomeAssistant, hacs: Hacs) => `
+**${hass.localize("ui.panel.store.dialog_about.integration_version")}:** | ${hacs.info.version}
 :--|--
-**${hacs.localize("common.repositories")}:** | ${hacs.repositories.length}
-**${hacs.localize("dialog_about.downloaded_repositories")}:** | ${
+**${hass.localize("ui.panel.store.common.repositories")}:** | ${hacs.repositories.length}
+**${hass.localize("ui.panel.store.dialog_about.downloaded_repositories")}:** | ${
   hacs.repositories.filter((repo) => repo.installed).length
 }
 
-**${hacs.localize("dialog_about.useful_links")}:**
+**${hass.localize("ui.panel.store.dialog_about.useful_links")}:**
 
 - [General documentation](${documentationUrl({})})
 - [Configuration](${documentationUrl({

@@ -1,12 +1,8 @@
-import { LitElement, PropertyValues } from "lit";
-import { property, state } from "lit/decorators";
+import { LitElement } from "lit";
+import { property } from "lit/decorators";
 import type { Hacs } from "./data/hacs";
 import { HacsLogger } from "./tools/hacs-logger";
-import type { HacsLocalizeKeys } from "./data/localize";
 import { ProvideHassLitMixin } from "../../mixins/provide-hass-lit-mixin";
-import type { HomeAssistant } from "../../types";
-import { computeLocalize } from "../../common/translations/localize";
-import { getTranslation } from "../../util/common-translation";
 import {
   fetchHacsInfo,
   getRepositories,
@@ -15,11 +11,7 @@ import {
 import { HacsDispatchEvent } from "./data/common";
 
 export class HacsElement extends ProvideHassLitMixin(LitElement) {
-  @property({ attribute: false }) public hacs: Partial<Hacs> = {
-    localize: () => "",
-  };
-
-  @state() private _language = "en";
+  @property({ attribute: false }) public hacs: Partial<Hacs> = {};
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -29,20 +21,9 @@ export class HacsElement extends ProvideHassLitMixin(LitElement) {
     this._initHacs();
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate() {
     if (!this.hasUpdated) {
       this._initHacs();
-    }
-    if (changedProperties.has("hass")) {
-      const oldHass = changedProperties.get("hass") as
-        HomeAssistant | undefined;
-      if (oldHass?.language !== this.hass.language) {
-        this._language = this.hass.language;
-      }
-    }
-
-    if (changedProperties.has("_language") || !this.hasUpdated) {
-      this._initializeLocalize();
     }
   }
 
@@ -85,19 +66,6 @@ export class HacsElement extends ProvideHassLitMixin(LitElement) {
     this.addEventListener("update-hacs", (e) =>
       this._updateHacs((e as any).detail as Partial<Hacs>)
     );
-  }
-
-  private async _initializeLocalize() {
-    const { language, data } = await getTranslation(null, this._language);
-    this._updateHacs({
-      localize: await computeLocalize<HacsLocalizeKeys>(
-        this.constructor.prototype,
-        language,
-        {
-          [language]: data,
-        }
-      ),
-    });
   }
 
   private async _updateProperties(prop = "all") {

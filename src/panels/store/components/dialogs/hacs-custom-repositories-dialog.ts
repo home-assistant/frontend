@@ -67,7 +67,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this._dialogParams.hacs.localize("dialog_custom_repositories.title")
+          this.hass.localize("ui.panel.store.dialog_custom_repositories.title")
         )}
         @closed=${this.closeDialog}
       >
@@ -124,8 +124,8 @@ export class HacsCustomRepositoriesDialog extends LitElement {
                     options: this._dialogParams.hacs.info.categories.map(
                       (category) => ({
                         value: category,
-                        label: this._dialogParams!.hacs.localize(
-                          `common.type.${category}`
+                        label: this.hass.localize(
+                          `ui.panel.store.common.type.${category}`
                         ),
                       })
                     ),
@@ -136,10 +136,10 @@ export class HacsCustomRepositoriesDialog extends LitElement {
             .error=${this._errors}
             .computeLabel=${(schema: HaFormSchema) =>
               schema.name === "category"
-                ? this._dialogParams!.hacs.localize(
-                    "dialog_custom_repositories.type"
+                ? this.hass.localize(
+                    "ui.panel.store.dialog_custom_repositories.type"
                   )
-                : this._dialogParams!.hacs.localize("common.repository")}
+                : this.hass.localize("ui.panel.store.common.repository")}
             @value-changed=${this._valueChanged}
             dialogInitialFocus
           ></ha-form>
@@ -154,7 +154,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
           @click=${this.closeDialog}
           dialogInitialFocus
         >
-          ${this._dialogParams.hacs.localize("common.cancel")}
+          ${this.hass.localize("ui.panel.store.common.cancel")}
         </mwc-button>
         <mwc-button
           .disabled=${
@@ -166,7 +166,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
           slot="primaryAction"
           @click=${this._addRepository}
         >
-          ${this._dialogParams.hacs.localize("common.add")}
+          ${this.hass.localize("ui.panel.store.common.add")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -181,16 +181,16 @@ export class HacsCustomRepositoriesDialog extends LitElement {
 
     if (!this._data?.category) {
       this._errors = {
-        base: this._dialogParams!.hacs.localize(
-          "dialog_custom_repositories.no_type"
+        base: this.hass.localize(
+          "ui.panel.store.dialog_custom_repositories.no_type"
         ),
       };
       return;
     }
     if (!this._data?.repository) {
       this._errors = {
-        base: this._dialogParams!.hacs.localize(
-          "dialog_custom_repositories.no_repository"
+        base: this.hass.localize(
+          "ui.panel.store.dialog_custom_repositories.no_repository"
         ),
       };
       return;

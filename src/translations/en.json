@@ -17,7 +17,8 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
-    "notfound": "Page not found"
+    "notfound": "Page not found",
+    "store": "Community store"
   },
   "state": {
     "default": {
@@ -12111,6 +12112,148 @@
         "add_card": "Add current view as card",
         "add_card_error": "Unable to add card",
         "error_no_data": "You need to select some data sources first."
+      },
+      "store": {
+        "common": {
+          "add": "add",
+          "cancel": "Cancel",
+          "download": "Download",
+          "ignore": "Ignore",
+          "learn_more": "Learn more",
+          "navigate": "Navigate",
+          "reload": "Reload",
+          "remove": "Remove",
+          "repositories": "Repositories",
+          "repository": "Repository",
+          "save": "Save",
+          "show": "Show details",
+          "type": {
+            "integration": "Integration",
+            "plugin": "Dashboard",
+            "theme": "Theme",
+            "python_script": "Python Script",
+            "appdaemon": "AppDaemon",
+            "netdaemon": "NetDaemon",
+            "template": "Template"
+          }
+        },
+        "dashboard": {
+          "no_data": "No repositories matching search and filters"
+        },
+        "column": {
+          "actions": "Quick actions",
+          "name": "Repository name",
+          "downloads": "Downloads",
+          "stars": "Stars",
+          "icon": "Icon",
+          "installed_version": "Downloaded version",
+          "available_version": "Available version",
+          "status": "Status",
+          "type": "Type",
+          "last_updated": "Activity"
+        },
+        "confirm": {
+          "home_assistant_version_not_correct": "You are running Home Assistant version '{haversion}', but this repository requires minimum version '{minversion}' to be installed."
+        },
+        "my": {
+          "not_supported": "This redirect is not supported. Check the {link} for the supported redirects and the version they were introduced.",
+          "faq_link": "My Home Assistant FAQ",
+          "error": "An unknown error occurred",
+          "repository_not_found": "Repository {repository} not found",
+          "add_repository_title": "Add custom repository",
+          "add_repository_description": "This will add the custom repository '{repository}' to be tracked by HACS. Do you want to add it?"
+        },
+        "dialog_about": {
+          "integration_version": "Integration version",
+          "downloaded_repositories": "Downloaded repositories",
+          "useful_links": "Useful links"
+        },
+        "dialog_overview": {
+          "title": "Manage overview table",
+          "description": "Change what is shown in the overview table to match your needs.",
+          "sections": {
+            "filters": "Change active filters",
+            "behaviour": "Change the behavior of the overview"
+          },
+          "status": "Status",
+          "type": "Type",
+          "columns": "Columns"
+        },
+        "dialog_custom_repositories": {
+          "title": "Custom repositories",
+          "url_placeholder": "Add custom repository URL",
+          "type": "Type",
+          "no_repository": "Missing repository",
+          "no_type": "Missing type"
+        },
+        "dialog_download": {
+          "type": "Type",
+          "url": "URL",
+          "will_download_version": "Version {ref} will be downloaded",
+          "will_download_commit": "Commit {ref} will be downloaded",
+          "different_version": "Need a different version?",
+          "fetching_releases": "Fetching releases...",
+          "no_releases": "No releases found",
+          "release": "Release",
+          "release_warning": "It is not advised to use this section to do a rollback, restore a backup instead.",
+          "restart": "Remember that you need to restart Home Assistant before changes to integrations (custom_components) are applied.",
+          "selector_note": "The version selector will be removed in a future release. If you need to install a specific version, you can do so by using the service call for update entities.",
+          "note_downloaded": "When downloaded, this will be located in {location}",
+          "lovelace_instruction": "After the download completes, since you are not using Lovelace in storage mode, you need to add the resource with these settings manually:"
+        },
+        "dialog_info": {
+          "version_installed": "Version downloaded",
+          "open_issues": "Open issues",
+          "stars": "Stars",
+          "downloads": "Downloads",
+          "author": "Author",
+          "no_info": "The developer has not provided any more information for this repository",
+          "open_repo": "Open repository",
+          "download": "Download this repository with HACS"
+        },
+        "repository_card": {
+          "dismiss": "dismiss",
+          "dismiss_new": "Dismiss new",
+          "information": "Information",
+          "new_repository": "New repository",
+          "not_loaded": "Not loaded",
+          "open_issue": "Open issue",
+          "open_source": "Open source",
+          "pending_restart": "Pending restart",
+          "pending_update": "Pending update",
+          "redownload": "Redownload",
+          "report": "Request for removal",
+          "update_information": "Update information"
+        },
+        "repository_status": {
+          "pending-restart": "Pending restart",
+          "pending-upgrade": "Pending update",
+          "installed": "Downloaded",
+          "new": "New",
+          "default": "Available for download"
+        },
+        "menu": {
+          "about": "About HACS",
+          "custom_repositories": "Custom repositories",
+          "open_issue": "Open issue",
+          "dismiss": "Dismiss new repositories",
+          "documentation": "Documentation"
+        },
+        "dialog": {
+          "reload": {
+            "description": "You need to reload your browser for the updated resources to be used.",
+            "confirm": "Do you want to do that now?"
+          },
+          "remove": {
+            "title": "Remove",
+            "message": "Do you really want to remove {name}?"
+          },
+          "configured": {
+            "title": "Integration is configured",
+            "message": "The {name} integration is configured or ignored. You need to delete the configuration for it before removing it from HACS.",
+            "confirm": "Go to integrations"
+          }
+        }
       },
       "logbook": {
         "sources": "[%key:ui::panel::history::sources%]",

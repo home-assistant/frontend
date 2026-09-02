@@ -107,17 +107,23 @@ export class HacsRepositoryDashboard extends LitElement {
       if (!existing && params.category) {
         if (
           !(await showConfirmationDialog(this, {
-            title: this.hacs.localize("my.add_repository_title"),
-            text: this.hacs.localize("my.add_repository_description", {
-              repository: requestedRepository,
-            }),
-            confirmText: this.hacs.localize("common.add"),
-            dismissText: this.hacs.localize("common.cancel"),
+            title: this.hass.localize("ui.panel.store.my.add_repository_title"),
+            text: this.hass.localize(
+              "ui.panel.store.my.add_repository_description",
+              {
+                repository: requestedRepository,
+              }
+            ),
+            confirmText: this.hass.localize("ui.panel.store.common.add"),
+            dismissText: this.hass.localize("ui.panel.store.common.cancel"),
           }))
         ) {
-          this._error = this.hacs.localize("my.repository_not_found", {
-            repository: requestedRepository,
-          });
+          this._error = this.hass.localize(
+            "ui.panel.store.my.repository_not_found",
+            {
+              repository: requestedRepository,
+            }
+          );
           return;
         }
         try {
@@ -136,9 +142,12 @@ export class HacsRepositoryDashboard extends LitElement {
       if (existing) {
         this._fetchRepository(String(existing.id));
       } else {
-        this._error = this.hacs.localize("my.repository_not_found", {
-          repository: requestedRepository,
-        });
+        this._error = this.hass.localize(
+          "ui.panel.store.my.repository_not_found",
+          {
+            repository: requestedRepository,
+          }
+        );
       }
     } else {
       const dividerPos = this.route.path.indexOf("/", 1);
@@ -226,7 +235,7 @@ export class HacsRepositoryDashboard extends LitElement {
                   ? html`
                       <ha-assist-chip
                         .label=${this._repository.installed_version}
-                        title="${this.hacs.localize("dialog_info.version_installed")}"
+                        title="${this.hass.localize("ui.panel.store.dialog_info.version_installed")}"
                       >
                         <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
                       </ha-assist-chip>
@@ -244,7 +253,7 @@ export class HacsRepositoryDashboard extends LitElement {
                         >
                           <ha-assist-chip
                             .label=${author}
-                            title="${this.hacs.localize("dialog_info.author")}"
+                            title="${this.hass.localize("ui.panel.store.dialog_info.author")}"
                           >
                             <ha-svg-icon
                               slot="icon"
@@ -259,7 +268,7 @@ export class HacsRepositoryDashboard extends LitElement {
               ${
                 this._repository.downloads
                   ? html` <ha-assist-chip
-                      title="${this.hacs.localize("dialog_info.downloads")}"
+                      title="${this.hass.localize("ui.panel.store.dialog_info.downloads")}"
                       .label=${String(this._repository.downloads)}
                     >
                       <ha-svg-icon
@@ -271,7 +280,7 @@ export class HacsRepositoryDashboard extends LitElement {
               }
               <ha-assist-chip
                 .label=${String(this._repository.stars)}
-                title="${this.hacs.localize("dialog_info.stars")}"
+                title="${this.hass.localize("ui.panel.store.dialog_info.stars")}"
               >
                 <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
                 ${this._repository.stars}
@@ -283,7 +292,7 @@ export class HacsRepositoryDashboard extends LitElement {
               >
                 <ha-assist-chip
                   .label=${String(this._repository.issues)}
-                  title="${this.hacs.localize("dialog_info.open_issues")}"
+                  title="${this.hass.localize("ui.panel.store.dialog_info.open_issues")}"
                 >
                   <ha-svg-icon
                     slot="icon"
@@ -298,7 +307,7 @@ export class HacsRepositoryDashboard extends LitElement {
                 markdownWithRepositoryContext(
                   this._repository.additional_info,
                   this._repository
-                ) || this.hacs.localize("dialog_info.no_info")
+                ) || this.hass.localize("ui.panel.store.dialog_info.no_info")
               }
             ></ha-markdown>
           </ha-card>
@@ -307,7 +316,7 @@ export class HacsRepositoryDashboard extends LitElement {
         ${
           !this._repository.installed_version
             ? html`<ha-fab
-                .label=${this.hacs.localize("common.download")}
+                .label=${this.hass.localize("ui.panel.store.common.download")}
                 .extended=${!this.narrow}
                 @click=${this._downloadRepositoryDialog}
               >
@@ -317,7 +326,7 @@ export class HacsRepositoryDashboard extends LitElement {
         }
       </hass-subpage>
       <ha-menu id="overflow-menu" positioning="fixed">
-        ${repositoryMenuItems(this, this._repository, this.hacs.localize).map(
+        ${repositoryMenuItems(this, this._repository, this.hass.localize).map(
           (entry) =>
             entry.divider
               ? html`<li divider role="separator"></li>`

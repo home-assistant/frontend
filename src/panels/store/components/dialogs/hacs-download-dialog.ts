@@ -193,10 +193,10 @@ export class HacsDonwloadDialog extends LitElement {
       >
         <div class="content">
           <p>
-            ${this._dialogParams.hacs.localize(
+            ${this.hass.localize(
               this._repository.version_or_commit === "commit"
-                ? "dialog_download.will_download_commit"
-                : "dialog_download.will_download_version",
+                ? "ui.panel.store.dialog_download.will_download_commit"
+                : "ui.panel.store.dialog_download.will_download_version",
               {
                 ref: html`
                   <code
@@ -207,8 +207,8 @@ export class HacsDonwloadDialog extends LitElement {
             )}
           </p>
           <div class="note">
-            ${this._dialogParams.hacs.localize(
-              "dialog_download.note_downloaded",
+            ${this.hass.localize(
+              "ui.panel.store.dialog_download.note_downloaded",
               {
                 location: html`<code>'${installPath}'</code>`,
               }
@@ -218,7 +218,7 @@ export class HacsDonwloadDialog extends LitElement {
               this._dialogParams.hacs.info.lovelace_mode !== "storage"
                 ? html`
                     <p>
-                      ${this._dialogParams.hacs.localize(`dialog_download.lovelace_instruction`)}
+                      ${this.hass.localize(`ui.panel.store.dialog_download.lovelace_instruction`)}
                     </p>
                     <pre class="frontend-resource">
                 url: ${generateFrontendResourceURL({ repository: this._repository })}
@@ -230,7 +230,7 @@ export class HacsDonwloadDialog extends LitElement {
             ${
               this._repository.category === "integration"
                 ? html`<p>
-                    ${this._dialogParams.hacs.localize("dialog_download.restart")}
+                    ${this.hass.localize("ui.panel.store.dialog_download.restart")}
                   </p>`
                 : nothing
             }
@@ -239,19 +239,19 @@ export class HacsDonwloadDialog extends LitElement {
             this._selectedVersion
               ? html`<ha-expansion-panel
                   @expanded-changed=${this._fetchReleases}
-                  .header=${this._dialogParams.hacs.localize(`dialog_download.different_version`)}
+                  .header=${this.hass.localize(`ui.panel.store.dialog_download.different_version`)}
                 >
                   <p>
-                    ${this._dialogParams!.hacs.localize("dialog_download.release_warning")}
+                    ${this.hass.localize("ui.panel.store.dialog_download.release_warning")}
                   </p>
                   ${
                     this._releases === undefined
-                      ? this._dialogParams.hacs.localize(
-                          "dialog_download.fetching_releases"
+                      ? this.hass.localize(
+                          "ui.panel.store.dialog_download.fetching_releases"
                         )
                       : this._releases.length === 0
-                        ? this._dialogParams.hacs.localize(
-                            "dialog_download.no_releases"
+                        ? this.hass.localize(
+                            "ui.panel.store.dialog_download.no_releases"
                           )
                         : html`<ha-form
                             @value-changed=${this._versionChanged}
@@ -298,14 +298,14 @@ export class HacsDonwloadDialog extends LitElement {
           @click=${this.closeDialog}
           dialogInitialFocus
         >
-          ${this._dialogParams.hacs.localize("common.cancel")}
+          ${this.hass.localize("ui.panel.store.common.cancel")}
         </mwc-button>
         <mwc-button
           slot="primaryAction"
           ?disabled=${this._waiting || this._installing}
           @click=${this._installRepository}
         >
-          ${this._dialogParams.hacs.localize("common.download")}
+          ${this.hass.localize("ui.panel.store.common.download")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -313,7 +313,7 @@ export class HacsDonwloadDialog extends LitElement {
 
   private _computeLabel = (entry: any): string =>
     entry.name === "release"
-      ? this._dialogParams!.hacs.localize("dialog_download.release")
+      ? this.hass.localize("ui.panel.store.dialog_download.release")
       : entry.name;
 
   private async _installRepository(): Promise<void> {
@@ -361,11 +361,12 @@ export class HacsDonwloadDialog extends LitElement {
 
     if (this._repository.category === "plugin") {
       showConfirmationDialog(this, {
-        title: this._dialogParams!.hacs.localize!("common.reload"),
-        text: html`${this._dialogParams!.hacs.localize!("dialog.reload.description")}<br />${this
-            ._dialogParams!.hacs.localize!("dialog.reload.confirm")}`,
-        dismissText: this._dialogParams!.hacs.localize!("common.cancel"),
-        confirmText: this._dialogParams!.hacs.localize!("common.reload"),
+        title: this.hass.localize("ui.panel.store.common.reload"),
+        text: html`${this.hass.localize(
+            "ui.panel.store.dialog.reload.description"
+          )}<br />${this.hass.localize("ui.panel.store.dialog.reload.confirm")}`,
+        dismissText: this.hass.localize("ui.panel.store.common.cancel"),
+        confirmText: this.hass.localize("ui.panel.store.common.reload"),
         confirm: () => {
           // eslint-disable-next-line
           mainWindow.location.href = mainWindow.location.href;
