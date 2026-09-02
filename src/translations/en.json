@@ -1694,7 +1694,6 @@
         "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
-        "no_labels": "None",
         "toggle_yaml_mode": "Toggle YAML mode",
         "back_to_info": "Back to info",
         "info": "Information",
