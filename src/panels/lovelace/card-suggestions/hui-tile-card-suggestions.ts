@@ -198,7 +198,6 @@ export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
         config: buildTileConfig(entityId, features),
       });
     }
-
     return suggestions.length ? suggestions : null;
   },
 };

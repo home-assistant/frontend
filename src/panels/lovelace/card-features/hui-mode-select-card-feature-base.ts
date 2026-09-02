@@ -30,7 +30,7 @@ type AttributeModeChangeEvent = CustomEvent<{
 }>;
 
 type AttributeModeCardFeatureConfig = LovelaceCardFeatureConfig & {
-  style?: "dropdown" | "icons" | "segmented";
+  style?: "dropdown" | "icons" | "buttons";
 };
 
 export interface HuiModeSelectOption {
@@ -96,9 +96,9 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   protected readonly _allowIconsStyle: boolean = true;
 
-  protected readonly _allowSegmentedStyle: boolean = false;
+  protected readonly _allowButtonsStyle: boolean = false;
 
-  protected readonly _defaultStyle: "dropdown" | "icons" | "segmented" =
+  protected readonly _defaultStyle: "dropdown" | "icons" | "buttons" =
     "dropdown";
 
   protected get _controlSelectStyle():
@@ -145,9 +145,9 @@ export abstract class HuiModeSelectCardFeatureBase<
     const label = this._label;
     const style = this._config.style ?? this._defaultStyle;
     const renderIcons = this._allowIconsStyle && style === "icons";
-    const renderSegmented = this._allowSegmentedStyle && style === "segmented";
+    const renderButtons = this._allowButtonsStyle && style === "buttons";
 
-    if (renderIcons || renderSegmented) {
+    if (renderIcons || renderButtons) {
       return html`
         <ha-control-select
           .options=${options.map((option) =>

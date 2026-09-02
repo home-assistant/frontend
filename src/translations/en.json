@@ -10926,7 +10926,7 @@
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
                 "style_list": {
                   "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
-                  "segmented": "Segmented"
+                  "buttons": "Buttons"
                 },
                 "options": "Options",
                 "customize_options": "Customize options"
