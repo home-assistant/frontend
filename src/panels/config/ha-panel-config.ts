@@ -229,6 +229,7 @@ class HaPanelConfig extends HassRouterPage {
         tag: "serial-config-dashboard",
         load: () =>
           import("./integrations/integration-panels/serial/serial-config-dashboard"),
+        waitForReady: true,
       },
       dhcp: {
         tag: "dhcp-config-panel",

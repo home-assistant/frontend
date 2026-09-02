@@ -5,6 +5,7 @@ import type {
 } from "../../../../../src/data/entity/entity_registry";
 import type { LovelaceRawConfig } from "../../../../../src/data/lovelace/config/types";
 import type { MediaPlayerItem } from "../../../../../src/data/media-player";
+import type { SerialPortUsage } from "../../../../../src/data/usb";
 import {
   WeatherEntityFeature,
   type ForecastEvent,
@@ -253,6 +254,18 @@ const delayedIntegrationsScenario: Scenario = (hass) => {
   );
 };
 
+const delayedSerialScenario: Scenario = (hass) => {
+  addLaunchScreen();
+
+  let resolvePorts: ((ports: SerialPortUsage[]) => void) | undefined;
+  const portsPromise = new Promise<SerialPortUsage[]>((resolve) => {
+    resolvePorts = resolve;
+  });
+
+  window.resolveSerialPorts = () => resolvePorts?.([]);
+  hass.mockWS("usb/list_serial_ports", () => portsPromise);
+};
+
 const delayedMediaBrowseScenario: Scenario = (hass) => {
   addLaunchScreen();
 
@@ -301,6 +314,7 @@ export const scenarios: Record<string, Scenario> = {
   "delayed-integrations": delayedIntegrationsScenario,
   "delayed-media-browse": delayedMediaBrowseScenario,
   "delayed-media-browse-error": delayedMediaBrowseErrorScenario,
+  "delayed-serial": delayedSerialScenario,
   "light-more-info": lightMoreInfoScenario,
   "weather-more-info": weatherMoreInfoScenario,
   "quick-search-assist": quickSearchAssistScenario,

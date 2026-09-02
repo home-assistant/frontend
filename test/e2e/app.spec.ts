@@ -179,6 +179,7 @@ test("keeps the launch screen until initial panel content renders", async ({
       | "resolveGeneratedDashboard"
       | "resolveLovelaceConfig"
       | "resolveMediaBrowse"
+      | "resolveSerialPorts"
     )[];
   }[] = [
     {
@@ -201,6 +202,13 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
       readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
       resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "serial",
+      path: "/?scenario=delayed-serial#/config/serial",
+      loadingSelector: "serial-config-dashboard ha-spinner",
+      readySelector: "serial-config-dashboard .empty",
+      resolvers: ["resolveSerialPorts"],
     },
     {
       name: "media browser error",

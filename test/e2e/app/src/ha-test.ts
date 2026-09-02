@@ -99,6 +99,7 @@ declare global {
     resolveGeneratedDashboard?: () => void;
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
+    resolveSerialPorts?: () => void;
   }
 }
 
