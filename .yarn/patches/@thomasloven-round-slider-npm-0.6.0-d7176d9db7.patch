@@ -1,0 +1,87 @@
+diff --git a/round-slider.cjs b/round-slider.cjs
+index f5abedb900513f18ab914f94900d0cb15b87b73b..0a8fdc22d2362ef67d0d25e72a69119001f06096 100644
+--- a/round-slider.cjs
++++ b/round-slider.cjs
+@@ -78,6 +78,7 @@ var nt;null===(nt=window.HTMLSlotElement)||void 0===nt||nt.prototype.assignedEle
+         viewBox="${-t.left} ${-t.up} ${t.width} ${t.height}"
+         style="margin: ${this.handleSize*this.handleZoom}px;"
+         ?disabled=${this.disabled}
++        ?readonly=${!this._showHandle}
+         focusable="false"
+       >
+         <g class="slider">
+@@ -160,6 +161,16 @@ var nt;null===(nt=window.HTMLSlotElement)||void 0===nt||nt.prototype.assignedEle
+         stroke-linecap: round;
+         cursor: var(--round-slider-handle-cursor, pointer);
+       }
++      .shadowpath {
++        cursor: var(
++          --round-slider-path-cursor,
++          var(--round-slider-handle-cursor, pointer)
++        );
++      }
++      svg[disabled] .shadowpath,
++      svg[readonly] .shadowpath {
++        cursor: default;
++      }
+       g.low.handle {
+         stroke: var(--round-slider-low-handle-color);
+       }
+diff --git a/round-slider.iife.js b/round-slider.iife.js
+index 8d9e578c5891ebfbdf6cff6bd9f7ea965bb6ab0b..d4b6c33d8620c4316b8890dfa4eb74cd7fb0933c 100644
+--- a/round-slider.iife.js
++++ b/round-slider.iife.js
+@@ -78,6 +78,7 @@ var ht;null===(ht=window.HTMLSlotElement)||void 0===ht||ht.prototype.assignedEle
+         viewBox="${-t.left} ${-t.up} ${t.width} ${t.height}"
+         style="margin: ${this.handleSize*this.handleZoom}px;"
+         ?disabled=${this.disabled}
++        ?readonly=${!this._showHandle}
+         focusable="false"
+       >
+         <g class="slider">
+@@ -160,6 +161,16 @@ var ht;null===(ht=window.HTMLSlotElement)||void 0===ht||ht.prototype.assignedEle
+         stroke-linecap: round;
+         cursor: var(--round-slider-handle-cursor, pointer);
+       }
++      .shadowpath {
++        cursor: var(
++          --round-slider-path-cursor,
++          var(--round-slider-handle-cursor, pointer)
++        );
++      }
++      svg[disabled] .shadowpath,
++      svg[readonly] .shadowpath {
++        cursor: default;
++      }
+       g.low.handle {
+         stroke: var(--round-slider-low-handle-color);
+       }
+diff --git a/round-slider.js b/round-slider.js
+index 9bfdf73cc3913e10133255b2d346ba36c11d8dc9..6c4b14674d52d28a6ab8a0c38b1cb1768eeabbba 100644
+--- a/round-slider.js
++++ b/round-slider.js
+@@ -363,6 +363,7 @@ export class RoundSlider extends LitElement {
+         viewBox="${-view.left} ${-view.up} ${view.width} ${view.height}"
+         style="margin: ${this.handleSize * this.handleZoom}px;"
+         ?disabled=${this.disabled}
++        ?readonly=${!this._showHandle}
+         focusable="false"
+       >
+         <g class="slider">
+@@ -456,6 +457,16 @@ export class RoundSlider extends LitElement {
+         stroke-linecap: round;
+         cursor: var(--round-slider-handle-cursor, pointer);
+       }
++      .shadowpath {
++        cursor: var(
++          --round-slider-path-cursor,
++          var(--round-slider-handle-cursor, pointer)
++        );
++      }
++      svg[disabled] .shadowpath,
++      svg[readonly] .shadowpath {
++        cursor: default;
++      }
+       g.low.handle {
+         stroke: var(--round-slider-low-handle-color);
+       }
