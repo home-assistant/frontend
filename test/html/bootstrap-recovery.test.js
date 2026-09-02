@@ -193,8 +193,7 @@ describe("index.html boot recovery guard", () => {
     async (message) => {
       const win = runGuard();
 
-      // index.html imports extra modules without a catch, so a broken one
-      // rejects into this guard on every page load.
+      // A foreign module failure must not be mistaken for a stale build.
       await failImport(win, message);
 
       expect(probes).toHaveLength(0);
