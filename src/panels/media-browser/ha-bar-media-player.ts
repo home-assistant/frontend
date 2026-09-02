@@ -58,10 +58,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-marquee";
-import {
-  BrowserMediaPlayer,
-  ERR_UNSUPPORTED_MEDIA,
-} from "./browser-media-player";
+import { BrowserMediaPlayer } from "./browser-media-player";
 
 declare global {
   interface HASSDomEvents {
@@ -158,25 +155,21 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       throw Error("Only browser supported");
     }
     this._tearDownBrowserPlayer();
-    try {
-      this._browserPlayer = new BrowserMediaPlayer(
-        this.hass,
-        item,
-        resolved,
-        this._browserPlayerVolume,
-        () => this.requestUpdate("_browserPlayer")
-      );
-    } catch (err: any) {
-      if (err.message === ERR_UNSUPPORTED_MEDIA) {
+    this._browserPlayer = new BrowserMediaPlayer(
+      this.hass,
+      item,
+      resolved,
+      this._browserPlayerVolume,
+      () => this.requestUpdate("_browserPlayer"),
+      () => {
+        this._tearDownBrowserPlayer();
         showAlertDialog(this, {
           text: this.hass.localize(
             "ui.components.media-browser.media_not_supported"
           ),
         });
-      } else {
-        throw err;
       }
-    }
+    );
     this._newMediaExpected = false;
   }
 
@@ -313,13 +306,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           aria-label=${this.hass.localize(
                             "ui.card.media_player.track_position"
                           )}
-                          ?disabled=${
-                            isBrowser ||
-                            !supportsFeature(
-                              stateObj,
-                              MediaPlayerEntityFeature.SEEK
-                            )
-                          }
+                          ?disabled=${!supportsFeature(
+                            stateObj,
+                            MediaPlayerEntityFeature.SEEK
+                          )}
                           @change=${this._handleMediaSeekChanged}
                         ></ha-slider>`
                       : html`
@@ -336,13 +326,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                               aria-label=${this.hass.localize(
                                 "ui.card.media_player.track_position"
                               )}
-                              ?disabled=${
-                                isBrowser ||
-                                !supportsFeature(
-                                  stateObj,
-                                  MediaPlayerEntityFeature.SEEK
-                                )
-                              }
+                              ?disabled=${!supportsFeature(
+                                stateObj,
+                                MediaPlayerEntityFeature.SEEK
+                              )}
                               @change=${this._handleMediaSeekChanged}
                             ></ha-slider>
                             <div>${mediaDuration}</div>
@@ -607,11 +594,17 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
   }
 
   private _handleMediaSeekChanged(e: HASSDomTargetEvent<HaSlider>): void {
-    if (this.entityId === BROWSER_PLAYER || !this._stateObj) {
+    if (!this._stateObj) {
       return;
     }
 
     const newValue = e.target.value;
+
+    if (this.entityId === BROWSER_PLAYER) {
+      this._browserPlayer?.seek(newValue);
+      return;
+    }
+
     this.hass.callService("media_player", "media_seek", {
       entity_id: this._stateObj.entity_id,
       seek_position: newValue,
