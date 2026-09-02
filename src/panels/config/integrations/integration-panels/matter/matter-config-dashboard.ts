@@ -290,7 +290,7 @@ export class MatterConfigDashboard extends LitElement {
         (node) =>
           node.ha_device_id &&
           deviceIds.has(node.ha_device_id) &&
-          !node.available
+          node.available === false
       ).length;
     } finally {
       this._asyncDataLoaded = true;
