@@ -1094,9 +1094,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   };
 
   private _goBack(): void {
-    if (this._mode === "live") {
-      applyScene(this.hass, this._storedStates);
-    }
     afterNextRender(() => goBack("/config/scene/dashboard"));
   }
 
@@ -1121,9 +1118,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       return;
     }
     await deleteScene(this.hass, this.sceneId);
-    if (this._mode === "live") {
-      applyScene(this.hass, this._storedStates);
-    }
     goBack("/config/scene/dashboard");
   }
 
