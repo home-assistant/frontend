@@ -5,8 +5,8 @@ import "./ai-task-pref";
 import "./mcp-pref";
 import type { HomeAssistant } from "../../../types";
 
-@customElement("ha-config-section-ai-tasks")
-class HaConfigSectionAITasks extends LitElement {
+@customElement("ha-config-section-ai")
+class HaConfigSectionAI extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -17,7 +17,7 @@ class HaConfigSectionAITasks extends LitElement {
         back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize("ui.panel.config.ai_tasks.caption")}
+        .header=${this.hass.localize("ui.panel.config.ai.caption")}
       >
         <div class="content">
           <ai-task-pref
@@ -50,6 +50,6 @@ class HaConfigSectionAITasks extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-section-ai-tasks": HaConfigSectionAITasks;
+    "ha-config-section-ai": HaConfigSectionAI;
   }
 }
