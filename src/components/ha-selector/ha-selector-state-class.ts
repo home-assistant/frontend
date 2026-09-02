@@ -23,7 +23,7 @@ export class HaStateClassSelector extends LitElement {
       <ha-state-class-picker
         .value=${this.value}
         .multiple=${this.selector.state_class?.multiple ?? false}
-        .state_classes_filter=${this.selector.state_class?.state_classes_filter ?? SENSOR_STATE_CLASSES}
+        .state_classes=${this.selector.state_class?.state_classes ?? SENSOR_STATE_CLASSES}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}

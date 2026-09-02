@@ -43,7 +43,7 @@ export class HaStateClassPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Array }) public state_classes_filter?: string[];
+  @property({ type: Array }) public state_classes?: string[];
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -85,7 +85,7 @@ export class HaStateClassPicker extends LitElement {
   private _getItems = () => {
     const options = this._options(
       this._i18n?.localize,
-      this.state_classes_filter || SENSOR_STATE_CLASSES
+      this.state_classes || SENSOR_STATE_CLASSES
     );
     return this.multiple
       ? this._availableOptions(options, this._value)

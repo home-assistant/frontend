@@ -519,7 +519,7 @@ export interface SerialPortSelector {
 export interface StateClassSelector {
   state_class: {
     multiple?: boolean;
-    state_classes_filter?: string[];
+    state_classes?: string[];
   } | null;
 }
 
