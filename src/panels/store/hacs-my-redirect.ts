@@ -53,7 +53,7 @@ class HacsMyRedirect extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err: any) {
+    } catch {
       this._error = this.hass.localize("ui.panel.store.my.error");
       return;
     }

@@ -1,5 +1,4 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAlertCircleOutline,
   mdiDotsVertical,
@@ -24,17 +23,18 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage-data-table";
 
-import "../../../components/ha-dropdown";
 import "../../../components/ha-button";
-import "../../../components/ha-form/ha-form";
-import "../../../components/ha-markdown";
+import "../../../components/ha-dropdown";
+import type { HaDropdown } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { HaFormSchema } from "../../../components/ha-form/types";
-import { HaMenu } from "../../../components/ha-dropdown";
+import type { HaFormSchema } from "../../../components/ha-form/types";
 import "../../../components/ha-svg-icon";
-import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -85,7 +85,7 @@ export class HacsDashboard extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @property({ type: Boolean }) public isWide!: boolean;
+  @property({ attribute: false }) public isWide!: boolean;
 
   @storage({
     key: "hacs-dashboard-table-filtering",
@@ -136,16 +136,15 @@ export class HacsDashboard extends LitElement {
   })
   private _orderTableColumns?: string[];
 
-  @query("#overflow-menu")
-  private _overflowMenu!: HaMenu;
-
   @query("#repository-overflow-menu")
-  private _repositoryOverflowMenu!: HaMenu;
+  private _repositoryOverflowMenu!: HaDropdown;
 
   @state()
   private _overflowMenuRepository?: RepositoryBase;
 
-  protected render = (): TemplateResult | void => {
+  private _openingOverflowMenu = false;
+
+  protected render(): TemplateResult {
     const repositories = this._filterRepositories(
       this.hacs.repositories,
       this.hass.localize,
@@ -168,7 +167,6 @@ export class HacsDashboard extends LitElement {
         clickable
         .filter=${this._activeSearch || ""}
         has-filters
-        hasFab
         .filters=${this._activeFilters?.length}
         .noDataText=${this.hass.localize("ui.panel.store.dashboard.no_data")}
         .initialGroupColumn=${this._activeGrouping || "translated_status"}
@@ -185,12 +183,44 @@ export class HacsDashboard extends LitElement {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          .label=${this.hass.localize("ui.common.overflow_menu") || "overflow_menu"}
-          .path=${mdiDotsVertical}
-          @click=${this._showOverflowMenu}
-        ></ha-icon-button>
+        <ha-dropdown slot="toolbar-icon">
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.overflow_menu") || "overflow_menu"}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-dropdown-item @click=${this._openDocumentation}>
+            <ha-svg-icon .path=${mdiFileDocument} slot="icon"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.store.menu.documentation")}
+          </ha-dropdown-item>
+          <ha-dropdown-item @click=${this._openGitHub}>
+            <ha-svg-icon .path=${mdiGithub} slot="icon"></ha-svg-icon>
+            GitHub
+          </ha-dropdown-item>
+          <ha-dropdown-item @click=${this._openIssueTracker}>
+            <ha-svg-icon
+              .path=${mdiAlertCircleOutline}
+              slot="icon"
+            ></ha-svg-icon>
+            ${this.hass.localize("ui.panel.store.menu.open_issue")}
+          </ha-dropdown-item>
+          <ha-dropdown-item @click=${this._showCustomRepositories}>
+            <ha-svg-icon .path=${mdiGit} slot="icon"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
+          </ha-dropdown-item>
+          ${
+            repositoriesContainsNew
+              ? html`<ha-dropdown-item @click=${this._dismissNew}>
+                  <ha-svg-icon .path=${mdiNewBox} slot="icon"></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.store.menu.dismiss")}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          <ha-dropdown-item @click=${this._showAbout}>
+            <ha-svg-icon .path=${mdiInformation} slot="icon"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.store.menu.about")}
+          </ha-dropdown-item>
+        </ha-dropdown>
 
         <ha-form
           slot="filter-pane"
@@ -211,7 +241,11 @@ export class HacsDashboard extends LitElement {
           @value-changed=${this._handleFilterChanged}
         ></ha-form>
       </hass-tabs-subpage-data-table>
-      <ha-menu id="repository-overflow-menu" positioning="fixed">
+      <ha-dropdown
+        id="repository-overflow-menu"
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
         ${
           this._overflowMenuRepository
             ? repositoryMenuItems(
@@ -220,118 +254,25 @@ export class HacsDashboard extends LitElement {
                 this.hass.localize
               ).map((entry) =>
                 entry.divider
-                  ? html`<li divider role="separator"></li>`
+                  ? html`<wa-divider></wa-divider>`
                   : html`
-                      <ha-md-menu-item
-                        class="${entry.error ? "error" : entry.warning ? "warning" : ""}"
-                        .clickAction=${() => {
-                          entry?.action && entry.action();
-                        }}
+                      <ha-dropdown-item
+                        class=${entry.warning ? "warning" : ""}
+                        variant=${entry.error ? "danger" : "default"}
+                        @click=${entry.action}
                       >
                         <ha-svg-icon
                           .path=${entry.path}
-                          slot="start"
+                          slot="icon"
                         ></ha-svg-icon>
-                        <div slot="headline">${entry.label}</div>
-                      </ha-md-menu-item>
+                        ${entry.label}
+                      </ha-dropdown-item>
                     `
               )
             : nothing
         }
-      </ha-menu>
-      <ha-menu id="overflow-menu" positioning="fixed">
-        <ha-md-menu-item
-          .clickAction=${() => {
-            mainWindow.open(documentationUrl({}), "_blank", "noreferrer=true");
-          }}
-        >
-          <ha-svg-icon .path=${mdiFileDocument} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.store.menu.documentation")}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${() => {
-            mainWindow.open(
-              "https://github.com/hacs",
-              "_blank",
-              "noreferrer=true"
-            );
-          }}
-        >
-          <ha-svg-icon .path=${mdiGithub} slot="start"></ha-svg-icon>
-          <div slot="headline">GitHub</div>
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${() => {
-            mainWindow.open(
-              documentationUrl({
-                path: "/docs/help/issues",
-              }),
-              "_blank",
-              "noreferrer=true"
-            );
-          }}
-        >
-          <ha-svg-icon
-            .path=${mdiAlertCircleOutline}
-            slot="start"
-          ></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.store.menu.open_issue")}
-          </div>
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${() => {
-            if (!this.hacs.info.disabled_reason) {
-              showHacsCustomRepositoriesDialog(this, {
-                hacs: this.hacs,
-              });
-            } else {
-              showAlertDialog(this, {
-                title: "HACS is disabled",
-                text: this.hacs.info.disabled_reason,
-              });
-            }
-          }}
-        >
-          <ha-svg-icon .path=${mdiGit} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.store.menu.custom_repositories")}
-          </div>
-        </ha-md-menu-item>
-        ${
-          repositoriesContainsNew
-            ? html`<ha-md-menu-item
-                .clickAction=${() => {
-                  repositoriesClearNew(this.hass, this.hacs);
-                }}
-              >
-                <ha-svg-icon .path=${mdiNewBox} slot="start"></ha-svg-icon>
-                <div slot="headline">
-                  ${this.hass.localize("ui.panel.store.menu.dismiss")}
-                </div>
-              </ha-md-menu-item>`
-            : nothing
-        }
-        <ha-md-menu-item
-          .clickAction=${() => {
-            showHacsFormDialog(this, {
-              hacs: this.hacs,
-              title: APP_FULL_NAME,
-              description: html`<ha-markdown
-                .content=${aboutHacsmarkdownContent(this.hass, this.hacs)}
-              ></ha-markdown>`,
-            });
-          }}
-        >
-          <ha-svg-icon .path=${mdiInformation} slot="start"></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.store.menu.about")}
-          </div>
-        </ha-md-menu-item>
-      </ha-menu>`;
-  };
+      </ha-dropdown>`;
+  }
 
   private _filterRepositories = memoize(
     (
@@ -399,10 +340,10 @@ export class HacsDashboard extends LitElement {
                 <img
                   style="height: 32px; width: 32px"
                   slot="item-icon"
+                  alt=""
                   src=${brandsUrl({
                     domain: repository.domain || "invalid",
                     type: "icon",
-                    useFallback: true,
                     darkOptimized: this.hass.themes?.darkMode,
                   })}
                   referrerpolicy="no-referrer"
@@ -456,7 +397,7 @@ export class HacsDashboard extends LitElement {
               new Date(repository.last_updated),
               this.hass.locale
             );
-          } catch (e) {
+          } catch {
             return "-";
           }
         },
@@ -519,27 +460,71 @@ export class HacsDashboard extends LitElement {
     })
   );
 
-  private _showOverflowRepositoryMenu = (ev: any) => {
-    if (
-      this._repositoryOverflowMenu.open &&
-      ev.target === this._repositoryOverflowMenu.anchorElement
-    ) {
-      this._repositoryOverflowMenu.close();
+  private _showOverflowRepositoryMenu = (ev) => {
+    if (this._repositoryOverflowMenu.anchorElement === ev.target) {
+      this._repositoryOverflowMenu.anchorElement = undefined;
       return;
     }
+    this._openingOverflowMenu = true;
     this._repositoryOverflowMenu.anchorElement = ev.target;
     this._overflowMenuRepository = ev.target.repository;
-    this._repositoryOverflowMenu.show();
+    this._repositoryOverflowMenu.open = true;
   };
 
-  private _showOverflowMenu = (ev: any) => {
-    if (this._overflowMenu.open) {
-      this._overflowMenu.close();
+  private _overflowMenuOpened = () => {
+    this._openingOverflowMenu = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // Changing the anchor element fires a close event, ignore that one.
+    if (this._openingOverflowMenu) {
       return;
     }
-    this._overflowMenu.anchorElement = ev.target;
-    this._overflowMenu.show();
+
+    this._repositoryOverflowMenu.anchorElement = undefined;
   };
+
+  private _openDocumentation() {
+    mainWindow.open(documentationUrl({}), "_blank", "noreferrer=true");
+  }
+
+  private _openGitHub() {
+    mainWindow.open("https://github.com/hacs", "_blank", "noreferrer=true");
+  }
+
+  private _openIssueTracker() {
+    mainWindow.open(
+      documentationUrl({ path: "/docs/help/issues" }),
+      "_blank",
+      "noreferrer=true"
+    );
+  }
+
+  private _showCustomRepositories() {
+    if (this.hacs.info.disabled_reason) {
+      showAlertDialog(this, {
+        title: "HACS is disabled",
+        text: this.hacs.info.disabled_reason,
+      });
+      return;
+    }
+
+    showHacsCustomRepositoriesDialog(this, { hacs: this.hacs });
+  }
+
+  private _dismissNew() {
+    repositoriesClearNew(this.hass, this.hacs);
+  }
+
+  private _showAbout() {
+    showHacsFormDialog(this, {
+      hacs: this.hacs,
+      title: APP_FULL_NAME,
+      description: html`<ha-markdown
+        .content=${aboutHacsmarkdownContent(this.hass, this.hacs)}
+      ></ha-markdown>`,
+    });
+  }
 
   private _groupOrder = memoize(
     (localize: LocalizeFunc, activeGrouping: string | undefined) =>
@@ -594,20 +579,6 @@ export class HacsDashboard extends LitElement {
         },
       ] as const satisfies readonly HaFormSchema[]
   );
-
-  get _scrollerTarget() {
-    return (
-      this.shadowRoot
-        ?.querySelector("hass-tabs-subpage-data-table")
-        ?.shadowRoot?.querySelector("hass-tabs-subpage")
-        ?.shadowRoot?.querySelector(".content")
-        ?.querySelectorAll("SLOT")[0]
-        // @ts-ignore
-        ?.assignedNodes()
-        ?.find((node) => node.nodeName === "HA-DATA-TABLE")
-        ?.shadowRoot?.querySelector(".scroller")
-    );
-  }
 
   private _computeFilterFormLabel = (schema, _) =>
     this.hass.localize(

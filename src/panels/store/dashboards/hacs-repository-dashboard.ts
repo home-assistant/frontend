@@ -8,7 +8,7 @@ import {
   mdiStar,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -20,9 +20,12 @@ import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import "../../../components/ha-dropdown";
-import type { HaMenu } from "../../../components/ha-dropdown";
+import type { HaDropdown } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
@@ -54,7 +57,9 @@ export class HacsRepositoryDashboard extends LitElement {
   @state() private _error?: string;
 
   @query("#overflow-menu")
-  private _repositoryOverflowMenu!: HaMenu;
+  private _repositoryOverflowMenu!: HaDropdown;
+
+  private _openingOverflowMenu = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -221,7 +226,6 @@ export class HacsRepositoryDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .header=${this._repository.name}
-        hasFab
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -237,7 +241,7 @@ export class HacsRepositoryDashboard extends LitElement {
                   ? html`
                       <ha-assist-chip
                         .label=${this._repository.installed_version}
-                        title="${this.hass.localize("ui.panel.store.dialog_info.version_installed")}"
+                        title=${this.hass.localize("ui.panel.store.dialog_info.version_installed")}
                       >
                         <ha-svg-icon slot="icon" .path=${mdiCube}></ha-svg-icon>
                       </ha-assist-chip>
@@ -255,7 +259,7 @@ export class HacsRepositoryDashboard extends LitElement {
                         >
                           <ha-assist-chip
                             .label=${author}
-                            title="${this.hass.localize("ui.panel.store.dialog_info.author")}"
+                            title=${this.hass.localize("ui.panel.store.dialog_info.author")}
                           >
                             <ha-svg-icon
                               slot="icon"
@@ -270,7 +274,7 @@ export class HacsRepositoryDashboard extends LitElement {
               ${
                 this._repository.downloads
                   ? html` <ha-assist-chip
-                      title="${this.hass.localize("ui.panel.store.dialog_info.downloads")}"
+                      title=${this.hass.localize("ui.panel.store.dialog_info.downloads")}
                       .label=${String(this._repository.downloads)}
                     >
                       <ha-svg-icon
@@ -282,7 +286,7 @@ export class HacsRepositoryDashboard extends LitElement {
               }
               <ha-assist-chip
                 .label=${String(this._repository.stars)}
-                title="${this.hass.localize("ui.panel.store.dialog_info.stars")}"
+                title=${this.hass.localize("ui.panel.store.dialog_info.stars")}
               >
                 <ha-svg-icon slot="icon" .path=${mdiStar}></ha-svg-icon>
                 ${this._repository.stars}
@@ -294,7 +298,7 @@ export class HacsRepositoryDashboard extends LitElement {
               >
                 <ha-assist-chip
                   .label=${String(this._repository.issues)}
-                  title="${this.hass.localize("ui.panel.store.dialog_info.open_issues")}"
+                  title=${this.hass.localize("ui.panel.store.dialog_info.open_issues")}
                 >
                   <ha-svg-icon
                     slot="icon"
@@ -317,47 +321,62 @@ export class HacsRepositoryDashboard extends LitElement {
 
         ${
           !this._repository.installed_version
-            ? html`<ha-fab
-                .label=${this.hass.localize("ui.panel.store.common.download")}
-                .extended=${!this.narrow}
+            ? html`<ha-button
+                slot="fab"
+                size="l"
                 @click=${this._downloadRepositoryDialog}
               >
-                <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-              </ha-fab>`
-            : ""
+                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+                ${this.hass.localize("ui.panel.store.common.download")}
+              </ha-button>`
+            : nothing
         }
       </hass-subpage>
-      <ha-menu id="overflow-menu" positioning="fixed">
+      <ha-dropdown
+        id="overflow-menu"
+        @wa-after-show=${this._overflowMenuOpened}
+        @wa-after-hide=${this._overflowMenuClosed}
+      >
         ${repositoryMenuItems(this, this._repository, this.hass.localize).map(
           (entry) =>
             entry.divider
-              ? html`<li divider role="separator"></li>`
+              ? html`<wa-divider></wa-divider>`
               : html`
-                  <ha-md-menu-item
-                    class="${entry.error ? "error" : entry.warning ? "warning" : ""}"
-                    .clickAction=${() => {
-                      entry?.action && entry.action();
-                    }}
+                  <ha-dropdown-item
+                    class=${entry.warning ? "warning" : ""}
+                    variant=${entry.error ? "danger" : "default"}
+                    @click=${entry.action}
                   >
-                    <ha-svg-icon .path=${entry.path} slot="start"></ha-svg-icon>
-                    <div slot="headline">${entry.label}</div>
-                  </ha-md-menu-item>
+                    <ha-svg-icon .path=${entry.path} slot="icon"></ha-svg-icon>
+                    ${entry.label}
+                  </ha-dropdown-item>
                 `
         )}
-      </ha-menu>
+      </ha-dropdown>
     `;
   }
 
-  private _showOverflowRepositoryMenu = (ev: any) => {
-    if (
-      this._repositoryOverflowMenu.open &&
-      ev.target === this._repositoryOverflowMenu.anchorElement
-    ) {
-      this._repositoryOverflowMenu.close();
+  private _showOverflowRepositoryMenu = (ev) => {
+    if (this._repositoryOverflowMenu.anchorElement === ev.target) {
+      this._repositoryOverflowMenu.anchorElement = undefined;
       return;
     }
+    this._openingOverflowMenu = true;
     this._repositoryOverflowMenu.anchorElement = ev.target;
-    this._repositoryOverflowMenu.show();
+    this._repositoryOverflowMenu.open = true;
+  };
+
+  private _overflowMenuOpened = () => {
+    this._openingOverflowMenu = false;
+  };
+
+  private _overflowMenuClosed = () => {
+    // Changing the anchor element fires a close event, ignore that one.
+    if (this._openingOverflowMenu) {
+      return;
+    }
+
+    this._repositoryOverflowMenu.anchorElement = undefined;
   };
 
   private _downloadRepositoryDialog() {
@@ -383,24 +402,6 @@ export class HacsRepositoryDashboard extends LitElement {
           width: 100vw;
         }
 
-        ha-fab ha-svg-icon {
-          color: var(--hcv-text-color-on-background);
-        }
-
-        ha-fab {
-          position: fixed;
-          float: right;
-          right: calc(18px + env(safe-area-inset-right));
-          bottom: calc(16px + env(safe-area-inset-bottom));
-          z-index: 1;
-        }
-
-        ha-fab.rtl {
-          float: left;
-          right: auto;
-          left: calc(18px + env(safe-area-inset-left));
-        }
-
         ha-card {
           display: block;
           padding: 16px;
@@ -423,5 +424,11 @@ export class HacsRepositoryDashboard extends LitElement {
         }
       `,
     ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hacs-repository-dashboard": HacsRepositoryDashboard;
   }
 }

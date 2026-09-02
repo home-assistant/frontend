@@ -1,12 +1,18 @@
 import { mdiDelete } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
+import "../../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../../components/ha-icon-button";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/progress/ha-progress-bar";
 import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
 import {
@@ -38,7 +44,6 @@ export class HacsCustomRepositoriesDialog extends LitElement {
     this._errorSubscription = await websocketSubscription(
       this.hass,
       (data) => {
-        console.log(data);
         this._errors = { base: data?.message || data };
       },
       HacsDispatchEvent.ERROR
@@ -63,11 +68,8 @@ export class HacsCustomRepositoriesDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.store.dialog_custom_repositories.title")
+        .headerTitle=${this.hass.localize(
+          "ui.panel.store.dialog_custom_repositories.title"
         )}
         @closed=${this.closeDialog}
       >
@@ -88,23 +90,18 @@ export class HacsCustomRepositoriesDialog extends LitElement {
                       >${repository.full_name} (${repository.category})</span
                     >
 
-                    <mwc-icon-button
-                      @click=${(ev: Event) => {
-                        ev.preventDefault();
-                        this._removeRepository(String(repository.id));
-                        this.dispatchEvent(
-                          new CustomEvent("closed", {
-                            bubbles: true,
-                            composed: true,
-                          })
-                        );
-                      }}
+                    <ha-icon-button
+                      .label=${this.hass.localize(
+                        "ui.panel.store.common.remove"
+                      )}
+                      .repositoryId=${String(repository.id)}
+                      @click=${this._handleRemoveClick}
                     >
                       <ha-svg-icon
                         class="delete"
                         .path=${mdiDelete}
                       ></ha-svg-icon>
-                    </mwc-icon-button>
+                    </ha-icon-button>
                   </ha-settings-row>`
               )}
           </div>
@@ -134,46 +131,56 @@ export class HacsCustomRepositoriesDialog extends LitElement {
               },
             ]}
             .error=${this._errors}
-            .computeLabel=${(schema: HaFormSchema) =>
-              schema.name === "category"
-                ? this.hass.localize(
-                    "ui.panel.store.dialog_custom_repositories.type"
-                  )
-                : this.hass.localize("ui.panel.store.common.repository")}
+            .computeLabel=${this._computeLabel}
             @value-changed=${this._valueChanged}
-            dialogInitialFocus
+            autofocus
           ></ha-form>
           ${
             this._waiting
-              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
               : nothing
           }
         </div>
-        <mwc-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          dialogInitialFocus
-        >
-          ${this.hass.localize("ui.panel.store.common.cancel")}
-        </mwc-button>
-        <mwc-button
-          .disabled=${
-            this._waiting ||
-            !this._data ||
-            !this._data.repository ||
-            !this._data.category
-          }
-          slot="primaryAction"
-          @click=${this._addRepository}
-        >
-          ${this.hass.localize("ui.panel.store.common.add")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.panel.store.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            appearance="filled"
+            .disabled=${
+              this._waiting ||
+              !this._data ||
+              !this._data.repository ||
+              !this._data.category
+            }
+            @click=${this._addRepository}
+          >
+            ${this.hass.localize("ui.panel.store.common.add")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
+  private _computeLabel = (schema: HaFormSchema): string =>
+    schema.name === "category"
+      ? this.hass.localize("ui.panel.store.dialog_custom_repositories.type")
+      : this.hass.localize("ui.panel.store.common.repository");
+
   private _valueChanged(ev: CustomEvent) {
     this._data = { ...this._data, ...ev.detail.value };
+  }
+
+  private _handleRemoveClick(
+    ev: HASSDomCurrentTargetEvent<HaIconButton & { repositoryId: string }>
+  ) {
+    ev.preventDefault();
+    this._removeRepository(ev.currentTarget.repositoryId);
   }
 
   private async _addRepository() {
@@ -206,6 +213,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
     await this._updateRepositories();
     this._waiting = false;
   }
+
   private async _updateRepositories() {
     const repositories = await getRepositories(this.hass);
     fireEvent(this, "store-refresh", { target: "repositories" });
@@ -226,7 +234,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
         a {
           all: unset;
         }
-        mwc-linear-progress {
+        ha-progress-bar {
           margin-bottom: -8px;
           margin-top: 4px;
         }

@@ -1,4 +1,5 @@
 import { css } from "lit";
+
 export const hacsLinkStyle = css`
   a {
     text-decoration: var(--hcv-text-decoration-link);
@@ -9,15 +10,6 @@ export const hacsLinkStyle = css`
 export const hacsIconStyle = css`
   ha-svg-icon {
     color: var(--hcv-color-icon);
-  }
-`;
-
-export const hacsButtonStyle = css`
-  mwc-button[raised] {
-    border-radius: 4px;
-  }
-  mwc-button[raised] > ha-circular-progress {
-    --mdc-theme-primary: var(--hcv-text-color-primary);
   }
 `;
 

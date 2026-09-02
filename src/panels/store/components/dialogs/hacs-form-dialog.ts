@@ -1,14 +1,17 @@
-import { CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
-import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-settings-row";
+import "../../../../components/progress/ha-progress-bar";
 import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
 import { websocketSubscription } from "../../data/websocket";
@@ -31,7 +34,6 @@ class HacsFromDialog extends LitElement {
     this._errorSubscription = await websocketSubscription(
       this.hass,
       (data) => {
-        console.log(data);
         this._errors = { base: data?.message || data };
       },
       HacsDispatchEvent.ERROR
@@ -56,13 +58,7 @@ class HacsFromDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        .scrimClickAction=${this._dialogParams.saveAction !== undefined}
-        .escapeKeyAction=${this._dialogParams.saveAction !== undefined}
-        .heading=${
-          this._dialogParams.saveAction === undefined
-            ? createCloseHeading(this.hass, this._dialogParams.title)
-            : this._dialogParams.title
-        }
+        .headerTitle=${this._dialogParams.title}
         @closed=${this.closeDialog}
       >
         <div>
@@ -78,27 +74,30 @@ class HacsFromDialog extends LitElement {
                   .computeHelper=${this._computeHelper}
                   .computeError=${this._computeError}
                   @value-changed=${this._valueChanged}
-                  dialogInitialFocus
+                  autofocus
                 ></ha-form>`
               : nothing
           }
           ${
             this._waiting
-              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
               : nothing
           }
         </div>
         ${
           this._dialogParams.saveAction
-            ? html`<mwc-button
+            ? html`<ha-dialog-footer slot="footer">
+                <ha-button
                   slot="secondaryAction"
+                  appearance="plain"
                   @click=${this.closeDialog}
-                  dialogInitialFocus
                 >
                   ${this.hass.localize("ui.panel.store.common.cancel")}
-                </mwc-button>
-                <mwc-button
-                  class="${this._dialogParams.destructive ? "destructive" : ""}"
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  appearance="filled"
+                  variant=${this._dialogParams.destructive ? "danger" : "brand"}
                   .disabled=${
                     this._waiting ||
                     (this._dialogParams.schema?.some(
@@ -106,11 +105,14 @@ class HacsFromDialog extends LitElement {
                     ) &&
                       !this._dialogParams.data)
                   }
-                  slot="primaryAction"
                   @click=${this._saveClicked}
                 >
-                  ${this._dialogParams.saveLabel || this.hass.localize("ui.panel.store.common.save")}
-                </mwc-button>`
+                  ${
+                    this._dialogParams.saveLabel ||
+                    this.hass.localize("ui.panel.store.common.save")
+                  }
+                </ha-button>
+              </ha-dialog-footer>`
             : nothing
         }
       </ha-dialog>
@@ -124,7 +126,7 @@ class HacsFromDialog extends LitElement {
     };
   }
 
-  public async _saveClicked(): Promise<void> {
+  private async _saveClicked(): Promise<void> {
     if (!this._dialogParams?.saveAction) {
       return;
     }
@@ -162,23 +164,18 @@ class HacsFromDialog extends LitElement {
       ? this._dialogParams.computeError(error, schema)
       : error || "";
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .root > * {
-        display: block;
-      }
-      .root > *:not([own-margin]):not(:last-child) {
-        margin-bottom: 24px;
-      }
-      .destructive {
-        --mdc-theme-primary: var(--hcv-color-error);
-      }
-      mwc-linear-progress {
-        margin-bottom: -8px;
-        margin-top: 4px;
-      }
-    `;
-  }
+  static styles: CSSResultGroup = css`
+    .root > * {
+      display: block;
+    }
+    .root > *:not([own-margin]):not(:last-child) {
+      margin-bottom: 24px;
+    }
+    ha-progress-bar {
+      margin-bottom: -8px;
+      margin-top: 4px;
+    }
+  `;
 }
 
 declare global {

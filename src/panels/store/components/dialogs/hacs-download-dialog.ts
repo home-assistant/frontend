@@ -1,26 +1,26 @@
-import { css, CSSResultGroup, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { mainWindow } from "../../../../common/dom/get_main_window";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
+import "../../../../components/progress/ha-progress-bar";
 
 import { relativeTime } from "../../../../common/datetime/relative_time";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { HacsDispatchEvent } from "../../data/common";
+import type { RepositoryBase, RepositoryInfo } from "../../data/repository";
 import {
   fetchRepositoryInformation,
-  RepositoryBase,
   repositoryDownloadVersion,
-  RepositoryInfo,
   repositoryReleases,
 } from "../../data/repository";
 import { websocketSubscription } from "../../data/websocket";
@@ -55,28 +55,26 @@ export class ReleaseItem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        flex-direction: column;
-      }
-      .secondary {
-        font-size: 0.8em;
-        color: var(--secondary-text-color);
-        font-style: italic;
-      }
-      .pre-release {
-        background-color: var(--accent-color);
-        padding: 2px 4px;
-        font-size: 0.8em;
-        font-weight: 600;
-        border-radius: 12px;
-        margin: 0 2px;
-        color: var(--secondary-background-color);
-      }
-    `;
-  }
+  static styles: CSSResultGroup = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    .secondary {
+      font-size: 0.8em;
+      color: var(--secondary-text-color);
+      font-style: italic;
+    }
+    .pre-release {
+      background-color: var(--accent-color);
+      padding: 2px 4px;
+      font-size: 0.8em;
+      font-weight: 600;
+      border-radius: 12px;
+      margin: 0 2px;
+      color: var(--secondary-background-color);
+    }
+  `;
 }
 @customElement("hacs-download-dialog")
 export class HacsDonwloadDialog extends LitElement {
@@ -164,15 +162,12 @@ export class HacsDonwloadDialog extends LitElement {
     }
     if (!this._repository) {
       return html`
-        <ha-dialog open scrimClickAction escapeKeyAction heading="Loading...">
+        <ha-dialog open header-title="Loading...">
           <div class="loading">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
             ${
               this._error
-                ? html`<ha-alert
-                    alert-type="error"
-                    .rtl=${computeRTL(this.hass)}
-                  >
+                ? html`<ha-alert alert-type="error">
                     ${this._error.message || this._error}
                   </ha-alert>`
                 : nothing
@@ -186,9 +181,7 @@ export class HacsDonwloadDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        scrimClickAction
-        escapeKeyAction
-        .heading=${this._repository.name}
+        .headerTitle=${this._repository.name}
         @closed=${this.closeDialog}
       >
         <div class="content">
@@ -282,31 +275,34 @@ export class HacsDonwloadDialog extends LitElement {
           }
           ${
             this._error
-              ? html`<ha-alert alert-type="error" .rtl=${computeRTL(this.hass)}>
+              ? html`<ha-alert alert-type="error">
                   ${this._error.message || this._error}
                 </ha-alert>`
               : nothing
           }
           ${
             this._installing
-              ? html`<mwc-linear-progress indeterminate></mwc-linear-progress>`
+              ? html`<ha-progress-bar indeterminate></ha-progress-bar>`
               : nothing
           }
         </div>
-        <mwc-button
-          slot="secondaryAction"
-          @click=${this.closeDialog}
-          dialogInitialFocus
-        >
-          ${this.hass.localize("ui.panel.store.common.cancel")}
-        </mwc-button>
-        <mwc-button
-          slot="primaryAction"
-          ?disabled=${this._waiting || this._installing}
-          @click=${this._installRepository}
-        >
-          ${this.hass.localize("ui.panel.store.common.download")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.closeDialog}
+          >
+            ${this.hass.localize("ui.panel.store.common.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            appearance="filled"
+            ?disabled=${this._waiting || this._installing}
+            @click=${this._installRepository}
+          >
+            ${this.hass.localize("ui.panel.store.common.download")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -370,7 +366,7 @@ export class HacsDonwloadDialog extends LitElement {
     }
   }
 
-  async _fetchReleases() {
+  private async _fetchReleases() {
     if (this._releases !== undefined) {
       return;
     }
@@ -400,7 +396,7 @@ export class HacsDonwloadDialog extends LitElement {
           user-select: all;
           padding: 8px;
         }
-        mwc-linear-progress {
+        ha-progress-bar {
           margin-bottom: -8px;
           margin-top: 4px;
         }

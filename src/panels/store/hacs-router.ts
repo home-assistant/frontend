@@ -1,6 +1,7 @@
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
+import type { RouterOptions } from "../../layouts/hass-router-page";
+import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
 
 import type { Hacs } from "./data/hacs";
@@ -19,7 +20,7 @@ class HacsRouter extends HassRouterPage {
 
   @state() private _wide = false;
 
-  private _listeners: Array<() => void> = [];
+  private _listeners: (() => void)[] = [];
 
   public connectedCallback() {
     super.connectedCallback();

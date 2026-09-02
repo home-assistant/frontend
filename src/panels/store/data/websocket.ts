@@ -17,7 +17,7 @@ export const repositoryUninstall = async (
   hass: HomeAssistant,
   repository: string
 ) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repository/remove",
     repository,
   });
@@ -37,7 +37,7 @@ export const repositoryUpdate = async (
   hass: HomeAssistant,
   repository: string
 ) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repository/refresh",
     repository,
   });
@@ -46,13 +46,13 @@ export const repositoryDelete = async (
   hass: HomeAssistant,
   repository: string
 ) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repositories/remove",
     repository,
   });
 
 export const repositoriesClearNew = async (hass: HomeAssistant, hacs: Hacs) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repositories/clear_new",
     categories: hacs.info.categories,
   });
@@ -61,7 +61,7 @@ export const repositoriesClearNewRepository = async (
   hass: HomeAssistant,
   repository: string
 ) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repositories/clear_new",
     repository,
   });

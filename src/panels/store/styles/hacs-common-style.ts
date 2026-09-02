@@ -1,9 +1,6 @@
-import { css, CSSResultGroup } from "lit";
-import {
-  hacsButtonStyle,
-  hacsIconStyle,
-  hacsLinkStyle,
-} from "./element-styles";
+import type { CSSResultGroup } from "lit";
+import { css } from "lit";
+import { hacsIconStyle, hacsLinkStyle } from "./element-styles";
 import { haStyle } from "../../../resources/styles";
 
 export const hacsCommonClasses = css`
@@ -35,17 +32,9 @@ export const hacsCommonClasses = css`
 `;
 
 const hacsOverflowMenuStyle = css`
-  ha-md-menu-item.error {
-    --md-menu-item-label-text-color: var(--error-color);
-    --hcv-color-icon: var(--error-color);
-  }
-
-  ha-md-menu-item.warning {
-    --md-menu-item-label-text-color: var(--warning-color);
+  ha-dropdown-item.warning {
+    color: var(--warning-color);
     --hcv-color-icon: var(--warning-color);
-  }
-  li[role="separator"] {
-    border-bottom: 1px solid var(--divider-color);
   }
 `;
 
@@ -54,6 +43,5 @@ export const HacsStyles: CSSResultGroup = [
   hacsIconStyle,
   hacsCommonClasses,
   hacsLinkStyle,
-  hacsButtonStyle,
   hacsOverflowMenuStyle,
 ];

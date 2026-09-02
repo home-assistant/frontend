@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { RepositoryType } from "../data/repository";
 
-const _IconMap = {
+const TYPE_ICONS = {
   appdaemon: mdiRobot,
   integration: mdiPackageVariant,
   netdaemon: mdiDotNet,
@@ -19,4 +19,4 @@ const _IconMap = {
   theme: mdiPalette,
 };
 
-export const typeIcon = (type: RepositoryType): string => _IconMap[type];
+export const typeIcon = (type: RepositoryType): string => TYPE_ICONS[type];

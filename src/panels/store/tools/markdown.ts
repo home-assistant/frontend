@@ -10,8 +10,8 @@ export const markdownWithRepositoryContext = (
 ) => {
   // Handle convertion to raw GitHub URL
   input = input.replace(
-    /https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\s]+)/g,
-    function (x, owner, repo, path) {
+    /https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^\s]+)/g,
+    (x, owner, repo, path) => {
       return showGitHubWeb(x)
         ? x
         : `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
@@ -20,7 +20,7 @@ export const markdownWithRepositoryContext = (
 
   // Handle relative links
   if (repository) {
-    input = input.replace(/\[.*?\]\([^#](?!.*?:\/\/).*?\)/g, function (x) {
+    input = input.replace(/\[.*?\]\([^#](?!.*?:\/\/).*?\)/g, (x) => {
       const showWeb = showGitHubWeb(x);
       return x
         .replace("(/", "(")
@@ -33,7 +33,7 @@ export const markdownWithRepositoryContext = (
     });
 
     // Handle anchor refrences
-    input = input.replace(/\[.*\]\(\#.*\)/g, function (x) {
+    input = input.replace(/\[.*\]\(#.*\)/g, (x) => {
       return x.replace("(#", `(/hacs/repository/${repository.id}#`);
     });
 

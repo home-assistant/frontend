@@ -64,7 +64,7 @@ export const repositoryDownloadVersion = async (
   repository: string,
   version?: string
 ) =>
-  hass.connection.sendMessagePromise<void>({
+  hass.connection.sendMessagePromise<unknown>({
     type: "store/repository/download",
     repository: repository,
     version,
