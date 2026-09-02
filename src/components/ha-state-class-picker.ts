@@ -50,7 +50,7 @@ export class HaStateClassPicker extends LitElement {
   private _i18n?: HomeAssistantInternationalization;
 
   private _translationsLoaded = false;
-  
+
   protected willUpdate() {
     if (this._translationsLoaded || !this._i18n) {
       return;
