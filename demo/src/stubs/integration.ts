@@ -20,6 +20,7 @@ const manifests: IntegrationManifest[] = [
   manifest("hue", "Philips Hue"),
   manifest("sonos", "Sonos"),
   manifest("met", "Met.no", { iot_class: "cloud_polling" }),
+  manifest("bluetooth", "Bluetooth"),
   // Helpers
   manifest("template", "Template", { integration_type: "helper" }),
   manifest("input_boolean", "Toggle", {

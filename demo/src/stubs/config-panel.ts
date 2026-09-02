@@ -18,6 +18,7 @@ import { mockSearch } from "./search";
 import { mockSlugify } from "./slugify";
 import { mockSystemHealth } from "./system_health";
 import { mockTags } from "./tags";
+import { mockUsb } from "./usb";
 import { mockZone } from "./zone";
 
 // Registers every mock that is only needed once the config panel is opened.
@@ -40,6 +41,7 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockScene(hass);
   mockSearch(hass);
   mockTags(hass);
+  mockUsb(hass);
   mockAssist(hass);
   mockEntityRegistrySettings(hass);
   mockSlugify(hass);

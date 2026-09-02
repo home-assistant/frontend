@@ -81,6 +81,15 @@ export const demoConfigEntries: {
     },
   },
   {
+    type: "hub",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-bluetooth",
+      domain: "bluetooth",
+      title: "Bluetooth",
+    },
+  },
+  {
     type: "service",
     entry: {
       ...baseEntry,
