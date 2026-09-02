@@ -180,6 +180,7 @@ test("keeps the launch screen until initial panel content renders", async ({
       | "resolveLovelaceConfig"
       | "resolveMediaBrowse"
       | "resolveSerialPorts"
+      | "resolveStorageHostInfo"
     )[];
   }[] = [
     {
@@ -209,6 +210,13 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "serial-config-dashboard ha-spinner",
       readySelector: "serial-config-dashboard .empty",
       resolvers: ["resolveSerialPorts"],
+    },
+    {
+      name: "storage",
+      path: "/?scenario=delayed-storage#/config/storage",
+      loadingSelector: "ha-config-section-storage",
+      readySelector: "ha-config-section-storage hass-subpage",
+      resolvers: ["resolveStorageHostInfo"],
     },
     {
       name: "media browser error",

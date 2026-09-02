@@ -100,6 +100,7 @@ declare global {
     resolveLovelaceConfig?: () => void;
     resolveMediaBrowse?: () => void;
     resolveSerialPorts?: () => void;
+    resolveStorageHostInfo?: () => void;
   }
 }
 

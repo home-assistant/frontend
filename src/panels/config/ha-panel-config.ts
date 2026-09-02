@@ -152,6 +152,7 @@ class HaPanelConfig extends HassRouterPage {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
+        waitForReady: true,
       },
       updates: {
         tag: "ha-config-section-updates",
