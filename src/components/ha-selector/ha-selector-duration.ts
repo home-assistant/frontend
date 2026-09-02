@@ -28,16 +28,8 @@ export class HaTimeDuration extends LitElement {
   }
 
   private _data = memoizeOne(
-    (
-      selector: DurationSelector,
-      value?: HaDurationData | string | number
-    ): HaDurationData | undefined =>
-      createDurationData(
-        value,
-        selector.duration?.enable_day,
-        selector.duration?.enable_millisecond ?? false,
-        selector.duration?.allow_negative
-      )
+    (value?: HaDurationData | string | number): HaDurationData | undefined =>
+      createDurationData(value)
   );
 
   protected render() {
@@ -45,7 +37,7 @@ export class HaTimeDuration extends LitElement {
       <ha-duration-input
         .label=${this.label}
         .helper=${this.helper}
-        .data=${this._data(this.selector, this.value)}
+        .data=${this._data(this.value)}
         .disabled=${this.disabled}
         .required=${this.required}
         .enableDay=${this.selector.duration?.enable_day}

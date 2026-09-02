@@ -82,13 +82,18 @@ export class HaCalendarTrigger extends LitElement implements TriggerElement {
     const schema = this._schema(this.hass.localize);
     // Convert from string representation to ha form duration representation
     const trigger_offset = this.trigger.offset;
-    const duration: HaDurationData = createDurationData(trigger_offset)!;
+    // Copy, `createDurationData` returns the input object as-is for dict values.
+    const duration: HaDurationData = { ...createDurationData(trigger_offset)! };
     let offset_type = "after";
     if (
-      (typeof trigger_offset === "object" && duration!.hours! < 0) ||
+      (typeof trigger_offset === "object" && duration.hours! < 0) ||
       (typeof trigger_offset === "string" && trigger_offset.startsWith("-"))
     ) {
-      duration.hours = Math.abs(duration.hours!);
+      // A negative offset negates the whole period, and the sign is shown by
+      // the separate before/after select instead.
+      duration.hours = Math.abs(duration.hours ?? 0);
+      duration.minutes = Math.abs(duration.minutes ?? 0);
+      duration.seconds = Math.abs(duration.seconds ?? 0);
       offset_type = "before";
     }
     const data = {
