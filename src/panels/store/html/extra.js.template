@@ -1,0 +1,22 @@
+(function () {
+  function loadES5(src) {
+    var el = document.createElement("script");
+    el.src = src;
+    document.body.appendChild(el);
+  }
+  if (/.*Version\/(?:11|12)(?:\.\d+)*.*Safari\//.test(navigator.userAgent)) {
+    <% for (const entry of es5EntryJS) { %>
+      loadES5("<%= entry %>");
+    <% } %>
+  } else {
+    try {
+        <% for (const entry of latestEntryJS) { %>
+          new Function("import('<%= entry %>')")();
+        <% } %>
+    } catch (err) {
+      <% for (const entry of es5EntryJS) { %>
+        loadES5("<%= entry %>");
+      <% } %>
+  }
+  }
+})();
