@@ -22,10 +22,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import {
-  startMediaProgressInterval,
-  stopMediaProgressInterval,
-} from "../../common/util/media-progress";
+import { MediaProgressController } from "../../common/controllers/media-progress-controller";
 import { VolumeSliderController } from "../../common/util/volume-slider";
 import "../../components/ha-button";
 import "../../components/ha-domain-icon";
@@ -49,7 +46,6 @@ import {
   computeMediaControls,
   computeMediaDescription,
   formatMediaTime,
-  getCurrentProgress,
   handleMediaControlClick,
   setMediaPlayerVolume,
 } from "../../data/media-player";
@@ -76,8 +72,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   @query(".progress-slider") private _progressBar?: HaSlider;
 
-  @query("#CurrentProgress") private _currentProgress?: HTMLElement;
-
   @query(".volume-slider") private _volumeSlider?: HaSlider;
 
   @state() private _marqueeActive = false;
@@ -88,7 +82,10 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
 
   private _volumeValue = 0;
 
-  private _progressInterval?: number;
+  private _progressController = new MediaProgressController(this, {
+    getStateObj: () => this._stateObj,
+    getSlider: () => this._progressBar,
+  });
 
   private _browserPlayerVolume = 0.8;
 
@@ -108,30 +105,8 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     },
   });
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-
-    const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return;
-    }
-
-    if (
-      this._showProgressBar &&
-      stateObj.state === "playing" &&
-      !this._progressInterval
-    ) {
-      this._progressInterval = startMediaProgressInterval(
-        this._progressInterval,
-        () => this._updateProgressBar()
-      );
-    }
-  }
-
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._progressInterval = stopMediaProgressInterval(this._progressInterval);
     this._tearDownBrowserPlayer();
   }
 
@@ -300,7 +275,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           min="0"
                           max=${stateObj.attributes.media_duration || 0}
                           step="1"
-                          .value=${getCurrentProgress(stateObj)}
                           .withTooltip=${false}
                           size="s"
                           aria-label=${this.hass.localize(
@@ -314,13 +288,16 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                         ></ha-slider>`
                       : html`
                           <div class="progress">
-                            <div id="CurrentProgress"></div>
+                            <div id="CurrentProgress">
+                              ${formatMediaTime(
+                                this._progressController.progress
+                              )}
+                            </div>
                             <ha-slider
                               class="progress-slider"
                               min="0"
                               max=${stateObj.attributes.media_duration || 0}
                               step="1"
-                              .value=${getCurrentProgress(stateObj)}
                               .withTooltip=${false}
                               size="s"
                               aria-label=${this.hass.localize(
@@ -476,22 +453,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       this._updateVolumeValueFromState(stateObj);
     }
 
-    this._updateProgressBar();
     this._syncVolumeSlider();
-
-    if (this._showProgressBar && stateObj?.state === "playing") {
-      this._progressInterval = startMediaProgressInterval(
-        this._progressInterval,
-        () => this._updateProgressBar()
-      );
-    } else if (
-      this._progressInterval &&
-      (!this._showProgressBar || stateObj?.state !== "playing")
-    ) {
-      this._progressInterval = stopMediaProgressInterval(
-        this._progressInterval
-      );
-    }
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
@@ -515,45 +477,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
       return;
     }
     fireEvent(this, "hass-more-info", { entityId: this.entityId });
-  }
-
-  private get _showProgressBar() {
-    if (!this.hass) {
-      return false;
-    }
-
-    const stateObj = this._stateObj;
-
-    return (
-      stateObj &&
-      (stateObj.state === "playing" || stateObj.state === "paused") &&
-      "media_duration" in stateObj.attributes &&
-      "media_position" in stateObj.attributes
-    );
-  }
-
-  private _updateProgressBar(): void {
-    const stateObj = this._stateObj;
-
-    if (!this._progressBar || !stateObj) {
-      return;
-    }
-
-    if (!stateObj.attributes.media_duration) {
-      this._progressBar.value = 0;
-      if (this._currentProgress) {
-        this._currentProgress.innerHTML = "";
-      }
-      return;
-    }
-
-    const currentProgress = getCurrentProgress(stateObj);
-    this._progressBar.max = stateObj.attributes.media_duration;
-    this._progressBar.value = currentProgress;
-
-    if (this._currentProgress) {
-      this._currentProgress.innerHTML = formatMediaTime(currentProgress);
-    }
   }
 
   private _updateVolumeValueFromState(stateObj?: MediaPlayerEntity): void {
@@ -599,6 +522,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     const newValue = e.target.value;
+    this._progressController.seek(newValue);
 
     if (this.entityId === BROWSER_PLAYER) {
       this._browserPlayer?.seek(newValue);
