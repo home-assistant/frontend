@@ -85,7 +85,7 @@ export class HaStateClassPicker extends LitElement {
   private _getItems = () => {
     const options = this._options(
       this._i18n?.localize,
-      this.state_classes || SENSOR_STATE_CLASSES
+      this.stateClasses || SENSOR_STATE_CLASSES
     );
     return this.multiple
       ? this._availableOptions(options, this._value)
