@@ -55,7 +55,7 @@ export const fetchRepositoryInformation = async (
   repositoryId: string
 ): Promise<RepositoryInfo | undefined> =>
   hass.connection.sendMessagePromise({
-    type: "hacs/repository/info",
+    type: "store/repository/info",
     repository_id: repositoryId,
   });
 
@@ -65,7 +65,7 @@ export const repositoryDownloadVersion = async (
   version?: string
 ) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repository/download",
+    type: "store/repository/download",
     repository: repository,
     version,
   });
@@ -77,6 +77,6 @@ export const repositoryReleases = async (
   hass.connection.sendMessagePromise<
     { tag: string; name: string; published_at: string; prerelease: boolean }[]
   >({
-    type: "hacs/repository/releases",
+    type: "store/repository/releases",
     repository_id: repositoryId,
   });

@@ -1,18 +1,3 @@
-export interface Route {
-  path: string;
-  prefix: string;
-}
-
-export interface LovelaceResourcesMutableParams {
-  resource_id?: number;
-  res_type: "css" | "js" | "module" | "html";
-  url: string;
-}
-
-export interface LocationChangedEvent {
-  detail?: { route: Route; force?: boolean };
-}
-
 export enum HacsDispatchEvent {
   CONFIG = "hacs_dispatch_config",
   ERROR = "hacs_dispatch_error",

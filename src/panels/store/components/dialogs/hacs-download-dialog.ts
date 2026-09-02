@@ -349,14 +349,6 @@ export class HacsDonwloadDialog extends LitElement {
       return;
     }
 
-    this._dialogParams!.hacs.log.debug(
-      this._repository.category,
-      "_installRepository"
-    );
-    this._dialogParams!.hacs.log.debug(
-      this._dialogParams!.hacs.info.lovelace_mode,
-      "_installRepository"
-    );
     this._installing = false;
 
     if (this._repository.category === "plugin") {

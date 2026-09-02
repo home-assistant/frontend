@@ -5,12 +5,12 @@ import type { RepositoryBase } from "./repository";
 
 export const fetchHacsInfo = async (hass: HomeAssistant) =>
   hass.connection.sendMessagePromise<HacsInfo>({
-    type: "hacs/info",
+    type: "store/info",
   });
 
 export const getRepositories = async (hass: HomeAssistant) =>
   hass.connection.sendMessagePromise<RepositoryBase[]>({
-    type: "hacs/repositories/list",
+    type: "store/repositories/list",
   });
 
 export const repositoryUninstall = async (
@@ -18,7 +18,7 @@ export const repositoryUninstall = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repository/remove",
+    type: "store/repository/remove",
     repository,
   });
 
@@ -28,7 +28,7 @@ export const repositoryAdd = async (
   category: string
 ) =>
   hass.connection.sendMessagePromise<null | Record<string, string>>({
-    type: "hacs/repositories/add",
+    type: "store/repositories/add",
     repository: repository,
     category,
   });
@@ -38,7 +38,7 @@ export const repositoryUpdate = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repository/refresh",
+    type: "store/repository/refresh",
     repository,
   });
 
@@ -47,13 +47,13 @@ export const repositoryDelete = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repositories/remove",
+    type: "store/repositories/remove",
     repository,
   });
 
 export const repositoriesClearNew = async (hass: HomeAssistant, hacs: Hacs) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repositories/clear_new",
+    type: "store/repositories/clear_new",
     categories: hacs.info.categories,
   });
 
@@ -62,7 +62,7 @@ export const repositoriesClearNewRepository = async (
   repository: string
 ) =>
   hass.connection.sendMessagePromise<void>({
-    type: "hacs/repositories/clear_new",
+    type: "store/repositories/clear_new",
     repository,
   });
 
@@ -72,6 +72,6 @@ export const websocketSubscription = (
   event: HacsDispatchEvent
 ) =>
   hass.connection.subscribeMessage(onChange, {
-    type: "hacs/subscribe",
+    type: "store/subscribe",
     signal: event,
   });

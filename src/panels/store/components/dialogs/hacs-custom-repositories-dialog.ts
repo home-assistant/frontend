@@ -208,13 +208,7 @@ export class HacsCustomRepositoriesDialog extends LitElement {
   }
   private async _updateRepositories() {
     const repositories = await getRepositories(this.hass);
-    this.dispatchEvent(
-      new CustomEvent("update-hacs", {
-        detail: { repositories },
-        bubbles: true,
-        composed: true,
-      })
-    );
+    fireEvent(this, "store-refresh", { target: "repositories" });
     this._dialogParams = {
       ...this._dialogParams,
       hacs: { ...this._dialogParams!.hacs, repositories },

@@ -11,6 +11,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { extractSearchParamsObject } from "../../../common/url/search-params";
 import "../../../components/chips/ha-assist-chip";
@@ -128,8 +129,9 @@ export class HacsRepositoryDashboard extends LitElement {
         }
         try {
           await repositoryAdd(this.hass, requestedRepository, params.category);
-          this.hacs.repositories = await getRepositories(this.hass);
-          existing = this.hacs.repositories.find(
+          fireEvent(this, "store-refresh", { target: "repositories" });
+          const repositories = await getRepositories(this.hass);
+          existing = repositories.find(
             (repository) =>
               repository.full_name.toLocaleLowerCase() ===
               requestedRepository.toLocaleLowerCase()
