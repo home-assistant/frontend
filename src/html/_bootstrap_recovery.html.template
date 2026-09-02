@@ -15,31 +15,33 @@
    * browser fetches a fresh index.html that points at the current hashes. One
    * reload per minute, tracked in sessionStorage: if it did not help, stop and
    * show a message instead of reloading forever.
+   *
+   * Never transpiled, so it stays within the [legacy] browserslist floor
+   * (Chrome 59 / Safari 12): no object spread, Promise.finally, optional
+   * chaining or AbortController.
    */
   (function () {
-    var BUST_PARAM = "ha_cache_bust";
+    const BUST_PARAM = "ha_cache_bust";
     // Only production entry bundles carry a content hash. Requiring the hash
     // keeps the guard inert in development (unhashed core.js / app.js) and
     // scoped to the entry chunks whose 404 is fatal to boot - not translations
     // or lazily loaded panels, which fail non-fatally and are handled elsewhere.
     // Injected from stale-build-patterns.json (the single source shared with
     // the bundled util/recover-stale-build.ts) so the two never drift.
-    var HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
-    var MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
-    // The same pattern with the origin, so the failing chunk can be probed.
-    var CHUNK_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.chunkUrl) %>, "i");
+    const HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
+    const MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
     // Any file reference, to tell "a file we do not ship failed" apart from
     // "the browser did not say which file failed".
-    var ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
-    var PROBE_TIMEOUT = 5000;
+    const ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
+    const PROBE_TIMEOUT = 5000;
     // This build's own entry bundles, to probe when the browser did not name
     // the file that failed (Safari's message names none).
-    var LATEST_ENTRY_JS = <%= JSON.stringify(latestEntryJS) %>;
-    var ES5_ENTRY_JS = <%= JSON.stringify(es5EntryJS) %>;
+    const LATEST_ENTRY_JS = <%= JSON.stringify(latestEntryJS) %>;
+    const ES5_ENTRY_JS = <%= JSON.stringify(es5EntryJS) %>;
     // Shared with the bundled recovery: one reload per minute between them.
-    var RELOAD_STORAGE_KEY = "haStaleBuildReload";
-    var RELOAD_COOLDOWN = 60000;
-    var probing = false;
+    const RELOAD_STORAGE_KEY = "haStaleBuildReload";
+    const RELOAD_COOLDOWN = 60000;
+    const probing = {};
 
     function booted() {
       // The launch screen is only removed once the app has taken over the
@@ -50,7 +52,7 @@
     }
 
     function showFatal() {
-      var box = document.getElementById("ha-launch-screen-info-box");
+      const box = document.getElementById("ha-launch-screen-info-box");
       if (box) {
         box.textContent =
           "Could not load Home Assistant. Please refresh the page, and clear your browser cache if the problem persists.";
@@ -65,13 +67,13 @@
      * than lose the recovery entirely.
      */
     function claimReload() {
-      var now = Date.now();
-      var attempts = 0;
-      var last = 0;
+      const now = Date.now();
+      let attempts = 0;
+      let last = 0;
       try {
-        var stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
+        const stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
         if (stored) {
-          var parsed = JSON.parse(stored);
+          const parsed = JSON.parse(stored);
           attempts = Number(parsed.n) || 0;
           last = Number(parsed.t) || 0;
         }
@@ -108,7 +110,7 @@
         showFatal();
         return;
       }
-      var target =
+      const target =
         location.pathname +
         location.search +
         (location.search ? "&" : "?") +
@@ -121,31 +123,21 @@
       // stale cached index. Drop the worker and its caches first so the reload
       // is served fresh from the network.
       if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        var go = function () {
+        const go = () => {
           location.replace(target);
         };
         Promise.all([
           navigator.serviceWorker
             .getRegistrations()
-            .then(function (regs) {
-              return Promise.all(
-                regs.map(function (r) {
-                  return r.unregister();
-                })
-              );
-            })
-            .catch(function () {}),
+            .then((regs) => Promise.all(regs.map((reg) => reg.unregister())))
+            .catch(() => {}),
           self.caches
             ? caches
                 .keys()
-                .then(function (keys) {
-                  return Promise.all(
-                    keys.map(function (k) {
-                      return caches.delete(k);
-                    })
-                  );
-                })
-                .catch(function () {})
+                .then((keys) =>
+                  Promise.all(keys.map((key) => caches.delete(key)))
+                )
+                .catch(() => {})
             : null,
         ]).then(go, go);
       } else {
@@ -153,16 +145,33 @@
       }
     }
 
-    function chunkUrl(text) {
-      var match = text && CHUNK_URL.exec(text);
-      return match ? match[0] : null;
+    /*
+     * The file a failure is about: its absolute URL when this build ships it,
+     * "foreign" for anything else (a dashboard resource, an extra_module_url, a
+     * custom panel - those say nothing about the index being stale, and
+     * reloading over them never ends), or null when no file was named.
+     */
+    function failedFile(text) {
+      const match = ANY_URL.exec(text);
+      if (!match) {
+        return null;
+      }
+      try {
+        const url = new URL(match[0], location.href);
+        if (url.origin === location.origin && HASHED_ENTRY.test(url.pathname)) {
+          return url.href;
+        }
+      } catch (_err) {
+        // Not a URL after all.
+      }
+      return "foreign";
     }
 
     function referenceUrl() {
-      var entries = window.latestJS ? LATEST_ENTRY_JS : ES5_ENTRY_JS;
-      for (var i = 0; i < entries.length; i++) {
-        if (HASHED_ENTRY.test(entries[i])) {
-          return entries[i];
+      const entries = window.latestJS ? LATEST_ENTRY_JS : ES5_ENTRY_JS;
+      for (const entry of entries) {
+        if (HASHED_ENTRY.test(entry)) {
+          return new URL(entry, location.href).href;
         }
       }
       return null;
@@ -174,56 +183,48 @@
      * reloading. HEAD is never intercepted by the service worker (workbox
      * routes GET only), so the answer comes from the server itself.
      */
-    function probeGone(url, cb) {
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.open("HEAD", url, true);
-        xhr.timeout = PROBE_TIMEOUT;
-        xhr.setRequestHeader("Cache-Control", "no-cache");
-        xhr.onload = function () {
-          cb(xhr.status === 404 || xhr.status === 410);
-        };
-        // Unreachable or too slow to answer: not stale as far as we know.
-        xhr.onerror = function () {
-          cb(false);
-        };
-        xhr.ontimeout = function () {
-          cb(false);
-        };
-        xhr.send();
-      } catch (_err) {
-        cb(false);
-      }
+    function probeGone(url) {
+      // Status 0 stands for "no usable answer": unreachable, or too slow.
+      const status = (target, method) =>
+        Promise.race([
+          fetch(target, { method: method, cache: "no-store" }).then(
+            (response) => response.status,
+            () => 0
+          ),
+          new Promise((resolve) => {
+            setTimeout(() => resolve(0), PROBE_TIMEOUT);
+          }),
+        ]);
+      return status(url, "HEAD").then((head) => {
+        if (head !== 405 && head !== 501) {
+          return head === 404 || head === 410;
+        }
+        // A proxy that refuses HEAD. Retry with a GET whose query param dodges
+        // both the HTTP cache and the service worker's precache route.
+        const separator = url.indexOf("?") === -1 ? "?" : "&";
+        return status(url + separator + "ha_probe=" + Date.now(), "GET").then(
+          (get) => get === 404 || get === 410
+        );
+      });
     }
 
-    function maybeRecover(url, message) {
-      if (booted() || probing) {
+    function maybeRecover(text) {
+      if (booted() || (!HASHED_ENTRY.test(text) && !MODULE_ERROR.test(text))) {
         return;
       }
-      if (
-        !(url && HASHED_ENTRY.test(url)) &&
-        !(message && (HASHED_ENTRY.test(message) || MODULE_ERROR.test(message)))
-      ) {
+      const failed = failedFile(text);
+      if (failed === "foreign") {
         return;
       }
-      var target = chunkUrl(url) || chunkUrl(message);
-      if (!target) {
-        if (ANY_URL.test(url || "") || ANY_URL.test(message || "")) {
-          // A file this build does not ship: a dashboard resource, an
-          // extra_module_url, a custom panel. Those say nothing about the
-          // index being stale, and reloading over them never ends.
-          return;
-        }
-        target = referenceUrl();
-        if (!target) {
-          // No evidence at all — never drop caches on a guess.
-          return;
-        }
+      // Probe per URL: core.js and app.js fail as separate events, and one of
+      // them being served says nothing about the other.
+      const target = failed || referenceUrl();
+      if (!target || probing[target]) {
+        return;
       }
-      // One probe answers for the whole burst; both entries fail together.
-      probing = true;
-      probeGone(target, function (gone) {
-        probing = false;
+      probing[target] = true;
+      probeGone(target).then((gone) => {
+        delete probing[target];
         if (gone) {
           recover();
         }
@@ -234,10 +235,10 @@
     // they are only observable in the capture phase at the window.
     window.addEventListener(
       "error",
-      function (ev) {
-        var el = ev.target;
+      (ev) => {
+        const el = ev.target;
         if (el && (el.tagName === "SCRIPT" || el.tagName === "LINK")) {
-          maybeRecover(el.href || el.src, null);
+          maybeRecover(el.href || el.src || "");
         }
       },
       true
@@ -245,9 +246,9 @@
 
     // A failed dynamic import() rejects; the inline entry imports do not catch
     // it, so the rejection surfaces here.
-    window.addEventListener("unhandledrejection", function (ev) {
-      var reason = ev && ev.reason;
-      maybeRecover(null, reason && (reason.message || String(reason)));
+    window.addEventListener("unhandledrejection", (ev) => {
+      const reason = ev && ev.reason;
+      maybeRecover((reason && (reason.message || String(reason))) || "");
     });
   })();
 </script>

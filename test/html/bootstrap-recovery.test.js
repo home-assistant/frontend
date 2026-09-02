@@ -14,13 +14,16 @@ const repoRoot = path.resolve(
   "../.."
 );
 
-const ENTRY_URL = "/frontend_latest/app.a1b2c3d4e5.js";
+const ORIGIN = "http://ha.local";
+const CORE_ENTRY = "/frontend_latest/core.b1c2d3e4f5.js";
+const APP_ENTRY = "/frontend_latest/app.a1b2c3d4e5.js";
+const CHUNK = `${ORIGIN}/frontend_latest/45995.dce03284ae03.js`;
 
-// The boot guard is inline ES5 in index.html: it runs before any bundle loads,
-// so it is neither type-checked nor covered by the bundled recovery tests. Here
-// it is rendered exactly as the build renders it, then evaluated with every
-// global it touches passed in — which isolates it from the real environment and
-// makes the reload observable without navigating.
+// The boot guard is inline in index.html: it runs before any bundle loads, so
+// it is neither type-checked nor covered by the bundled recovery tests. Here it
+// is rendered exactly as the build renders it, then evaluated with every global
+// it touches passed in — which isolates it from the real environment and makes
+// the reload observable without navigating.
 const renderGuard = template(
   readFileSync(
     path.join(repoRoot, "src/html/_bootstrap_recovery.html.template"),
@@ -28,7 +31,7 @@ const renderGuard = template(
   )
 );
 
-const guardSource = (latestEntryJS = [ENTRY_URL]) => {
+const guardSource = (latestEntryJS) => {
   const rendered = renderGuard({
     staleBuildPatterns: patterns,
     latestEntryJS,
@@ -41,69 +44,33 @@ const guardSource = (latestEntryJS = [ENTRY_URL]) => {
   );
 };
 
-const CHUNK_URL = "http://ha.local/frontend_latest/core.abc12345def.js";
-const IMPORT_FAILURE = `error loading dynamically imported module: ${CHUNK_URL}`;
+const importFailure = (url) =>
+  `error loading dynamically imported module: ${url}`;
 
 describe("index.html boot recovery guard", () => {
-  /** @type {{ method: string, url: string }[]} */
+  /** @type {{ method: string, url: string, cache: string }[]} */
   let probes;
-  /** @type {number | "error" | "timeout"} */
-  let probeStatus;
+  /** Status per requested URL: a number, "error" or "hang". */
+  let statusFor;
+  /** Pending timeout callbacks, so the probe timeout is deterministic. */
+  let timeouts;
+  /** Resolvers of requests that never answer on their own. */
+  let hanging;
   let location;
   let infoBox;
   let booted;
   let storage;
 
-  /** Minimal sessionStorage, so the reload budget can be inspected and reset. */
   const fakeStorage = () => {
     const entries = new Map();
     return {
-      entries,
       getItem: (key) => entries.get(key) ?? null,
       setItem: (key, value) => entries.set(key, String(value)),
       removeItem: (key) => entries.delete(key),
     };
   };
 
-  const runGuard = (latestEntryJS) => {
-    class FakeXMLHttpRequest {
-      constructor() {
-        this.status = 0;
-        this.timeout = 0;
-        this.onload = null;
-        this.onerror = null;
-        this.ontimeout = null;
-      }
-
-      open(method, url) {
-        this._method = method;
-        this._url = url;
-      }
-
-      setRequestHeader(name, value) {
-        this._headers = { ...this._headers, [name]: value };
-      }
-
-      send() {
-        probes.push({
-          method: this._method,
-          url: this._url,
-          headers: this._headers,
-        });
-        // Answer out of band, like a real request.
-        Promise.resolve().then(() => {
-          if (probeStatus === "error") {
-            this.onerror?.();
-          } else if (probeStatus === "timeout") {
-            this.ontimeout?.();
-          } else {
-            this.status = probeStatus;
-            this.onload?.();
-          }
-        });
-      }
-    }
-
+  const runGuard = (latestEntryJS = [CORE_ENTRY, APP_ENTRY]) => {
     const env = {
       window: Object.assign(new EventTarget(), { latestJS: true }),
       document: {
@@ -120,7 +87,24 @@ describe("index.html boot recovery guard", () => {
       self: { caches: undefined },
       caches: undefined,
       sessionStorage: storage,
-      XMLHttpRequest: FakeXMLHttpRequest,
+      setTimeout: (fn) => {
+        timeouts.push(fn);
+        return timeouts.length;
+      },
+      fetch: (url, options) => {
+        probes.push({ method: options.method, url, cache: options.cache });
+        const status = statusFor(url);
+        if (status === "error") {
+          return Promise.reject(new TypeError("Failed to fetch"));
+        }
+        if (status === "hang") {
+          // Never settles on its own; the probe's timeout decides.
+          return new Promise((resolve) => {
+            hanging.push(resolve);
+          });
+        }
+        return Promise.resolve({ status });
+      },
     };
     // eslint-disable-next-line no-new-func
     new Function(...Object.keys(env), guardSource(latestEntryJS))(
@@ -133,7 +117,6 @@ describe("index.html boot recovery guard", () => {
     const event = new Event("unhandledrejection");
     event.reason = new Error(message);
     win.dispatchEvent(event);
-    // Let the probe answer.
     return new Promise((resolve) => {
       setTimeout(resolve, 0);
     });
@@ -141,11 +124,15 @@ describe("index.html boot recovery guard", () => {
 
   beforeEach(() => {
     probes = [];
-    probeStatus = 404;
+    statusFor = () => 404;
+    timeouts = [];
+    hanging = [];
     booted = false;
     infoBox = { textContent: "" };
     storage = fakeStorage();
     location = {
+      origin: ORIGIN,
+      href: `${ORIGIN}/lovelace/0`,
       pathname: "/lovelace/0",
       search: "",
       hash: "",
@@ -156,16 +143,9 @@ describe("index.html boot recovery guard", () => {
   it("reloads with a cache-busting param when the chunk is gone", async () => {
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
-    expect(probes).toEqual([
-      {
-        method: "HEAD",
-        url: CHUNK_URL,
-        // Never answered from a cache, so the verdict is the server's own.
-        headers: { "Cache-Control": "no-cache" },
-      },
-    ]);
+    expect(probes).toEqual([{ method: "HEAD", url: CHUNK, cache: "no-store" }]);
     expect(location.replace).toHaveBeenCalledOnce();
     expect(location.replace.mock.calls[0][0]).toMatch(
       /^\/lovelace\/0\?ha_cache_bust=\d+$/
@@ -175,42 +155,49 @@ describe("index.html boot recovery guard", () => {
   it.each([
     ["the chunk is still on the server", 200],
     ["the server is unreachable", "error"],
-    ["the server does not answer in time", "timeout"],
     ["the server errors without deleting anything", 502],
   ])("does not reload when %s", async (_case, status) => {
-    probeStatus = status;
+    statusFor = () => status;
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     // Probed, then left alone: a reload cannot fix a transport failure.
     expect(probes).toHaveLength(1);
     expect(location.replace).not.toHaveBeenCalled();
   });
 
-  it("probes once for a burst of failures", async () => {
-    probeStatus = 200;
+  it("does not reload when the probe does not answer in time", async () => {
+    statusFor = () => "hang";
     const win = runGuard();
 
-    await Promise.all([
-      failImport(win, IMPORT_FAILURE),
-      failImport(
-        win,
-        "error loading dynamically imported module: " +
-          "http://ha.local/frontend_latest/app.def67890ab.js"
-      ),
-    ]);
+    await failImport(win, importFailure(CHUNK));
+    timeouts.forEach((fn) => fn());
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
 
-    expect(probes).toHaveLength(1);
     expect(location.replace).not.toHaveBeenCalled();
+  });
+
+  it("retries with a cache-busted GET when the server refuses HEAD", async () => {
+    statusFor = (url) => (url.includes("ha_probe=") ? 404 : 405);
+    const win = runGuard();
+
+    await failImport(win, importFailure(CHUNK));
+
+    expect(probes).toHaveLength(2);
+    expect(probes[1].method).toBe("GET");
+    expect(probes[1].url).toContain("ha_probe=");
+    expect(location.replace).toHaveBeenCalledOnce();
   });
 
   it.each([
     "Failed to fetch dynamically imported module: /local/layout-card.js",
-    "error loading dynamically imported module: " +
-      "http://ha.local/hacsfiles/silam_pollen/forecast-card.js",
-    "error loading dynamically imported module: " +
-      "http://ha.local/[/hacsfiles/card-mod/card-mod.js?hacstag=1]",
+    `error loading dynamically imported module: ${ORIGIN}/hacsfiles/silam/forecast.js`,
+    `error loading dynamically imported module: ${ORIGIN}/[/hacsfiles/card-mod/card-mod.js?hacstag=1]`,
+    // Our path, someone else's host: still not a file we ship.
+    "error loading dynamically imported module: https://cdn.example/frontend_latest/app.a1b2c3d4e5.js",
   ])(
     "ignores a failure of a file this build does not ship: %s",
     async (message) => {
@@ -226,29 +213,43 @@ describe("index.html boot recovery guard", () => {
     }
   );
 
+  it("probes each failing entry, so a served one cannot hide a deleted one", async () => {
+    const gone = `${ORIGIN}${APP_ENTRY}`;
+    statusFor = (url) => (url === gone ? 404 : 200);
+    const win = runGuard();
+
+    await Promise.all([
+      failImport(win, importFailure(`${ORIGIN}${CORE_ENTRY}`)),
+      failImport(win, importFailure(gone)),
+    ]);
+
+    expect(probes.map((probe) => probe.url)).toEqual([
+      `${ORIGIN}${CORE_ENTRY}`,
+      gone,
+    ]);
+    expect(location.replace).toHaveBeenCalledOnce();
+  });
+
+  it("asks about the same URL only once while a probe is in flight", async () => {
+    statusFor = () => "hang";
+    const win = runGuard();
+
+    await Promise.all([
+      failImport(win, importFailure(CHUNK)),
+      failImport(win, importFailure(CHUNK)),
+    ]);
+
+    expect(probes).toHaveLength(1);
+  });
+
   it("probes this build's entry when the message names no file", async () => {
     const win = runGuard();
 
     // Safari's message names nothing, so the entry bundle stands in.
     await failImport(win, "Importing a module script failed.");
 
-    expect(probes).toEqual([
-      {
-        method: "HEAD",
-        url: ENTRY_URL,
-        headers: { "Cache-Control": "no-cache" },
-      },
-    ]);
+    expect(probes[0].url).toBe(`${ORIGIN}${CORE_ENTRY}`);
     expect(location.replace).toHaveBeenCalledOnce();
-  });
-
-  it("does not reload when this build's entry is still there", async () => {
-    probeStatus = 200;
-    const win = runGuard();
-
-    await failImport(win, "Importing a module script failed.");
-
-    expect(location.replace).not.toHaveBeenCalled();
   });
 
   it("does not reload on a guess when there is nothing to probe", async () => {
@@ -264,7 +265,7 @@ describe("index.html boot recovery guard", () => {
     booted = true;
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     // Post-boot failures belong to the bundled recovery, not this guard.
     expect(probes).toHaveLength(0);
@@ -274,7 +275,7 @@ describe("index.html boot recovery guard", () => {
   it("claims the shared reload budget when it recovers", async () => {
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).toHaveBeenCalledOnce();
     expect(JSON.parse(storage.getItem("haStaleBuildReload"))).toMatchObject({
@@ -284,14 +285,14 @@ describe("index.html boot recovery guard", () => {
 
   it("does not reload again after a recent reload, even without the param", async () => {
     // core.ts strips ha_cache_bust from the URL on every successful connect, so
-    // the param cannot bound the loop across page loads - the marker does.
+    // the param cannot bound the loop across page loads — the marker does.
     storage.setItem(
       "haStaleBuildReload",
       JSON.stringify({ n: 1, t: Date.now() })
     );
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).not.toHaveBeenCalled();
     expect(infoBox.textContent).toContain("Could not load Home Assistant");
@@ -304,7 +305,7 @@ describe("index.html boot recovery guard", () => {
     );
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).toHaveBeenCalledOnce();
   });
@@ -317,7 +318,7 @@ describe("index.html boot recovery guard", () => {
     };
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).toHaveBeenCalledOnce();
   });
@@ -326,7 +327,7 @@ describe("index.html boot recovery guard", () => {
     location.search = "?ha_cache_bust=123";
     const win = runGuard();
 
-    await failImport(win, IMPORT_FAILURE);
+    await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).not.toHaveBeenCalled();
     expect(infoBox.textContent).toContain("Could not load Home Assistant");

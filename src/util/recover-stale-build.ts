@@ -11,13 +11,10 @@ const patterns = ((staleBuildPatterns as any).default ??
   staleBuildPatterns) as {
   hashedEntry: string;
   moduleError: string;
-  chunkUrl: string;
   anyUrl: string;
 };
 const HASHED_ENTRY = new RegExp(patterns.hashedEntry, "i");
 const MODULE_ERROR = new RegExp(patterns.moduleError, "i");
-// The same pattern with the origin, so the failing chunk can be probed as-is.
-const CHUNK_URL = new RegExp(patterns.chunkUrl, "i");
 // Any file reference, to tell "a file we do not ship failed" apart from "the
 // browser did not say which file failed".
 const ANY_URL = new RegExp(patterns.anyUrl, "i");
@@ -45,16 +42,47 @@ export const isStaleBuildError = (
 
 type ChunkVerdict = "gone" | "present" | "unknown";
 
-// A failing dashboard rejects dozens of imports in a row, all asking the same
-// question, so one answer serves the whole burst.
+// How long a "this one is still there" verdict stands, so a burst of failures
+// for the same chunk asks the server once.
 const PROBE_SUPPRESS = 10_000;
 const PROBE_TIMEOUT = 5_000;
 
-let pendingRecovery: Promise<boolean> | undefined;
-let notStaleUntil = 0;
+// Both keyed by chunk URL: during a deploy some chunks can be gone while others
+// are still served, so one chunk's verdict must not answer for another.
+const pendingProbes = new Map<string, Promise<boolean>>();
+const probedPresent = new Map<string, number>();
 
-const chunkUrl = (urlOrMessage: string): string | undefined =>
-  CHUNK_URL.exec(urlOrMessage)?.[0];
+/**
+ * The file a failure is about: its absolute URL when this build ships it,
+ * `"foreign"` for anything else (a dashboard resource, an extra_module_url, a
+ * custom panel), or `undefined` when no file was named.
+ */
+const failedFile = (urlOrMessage: string): string | "foreign" | undefined => {
+  const match = ANY_URL.exec(urlOrMessage);
+  if (!match) {
+    return undefined;
+  }
+  try {
+    const url = new URL(match[0], location.href);
+    if (url.origin === location.origin && HASHED_ENTRY.test(url.pathname)) {
+      return url.href;
+    }
+  } catch (_err) {
+    // Not a URL after all.
+  }
+  return "foreign";
+};
+
+// Remember a chunk the server still has, dropping verdicts that have expired.
+const rememberPresent = (url: string): void => {
+  const now = Date.now();
+  probedPresent.forEach((until, key) => {
+    if (until <= now) {
+      probedPresent.delete(key);
+    }
+  });
+  probedPresent.set(url, now + PROBE_SUPPRESS);
+};
 
 /**
  * A hashed file of the running build, to probe when the browser did not name
@@ -64,8 +92,9 @@ const referenceUrl = (): string | undefined => {
   try {
     const entries = performance.getEntriesByType("resource");
     for (let i = entries.length - 1; i >= 0; i--) {
-      if (HASHED_ENTRY.test(entries[i].name)) {
-        return entries[i].name;
+      const { name } = entries[i];
+      if (HASHED_ENTRY.test(name) && name.startsWith(location.origin)) {
+        return name;
       }
     }
   } catch (_err) {
@@ -293,35 +322,38 @@ export const recoverFromStaleBuild = (
   if (!isStaleBuildError(urlOrMessage)) {
     return false;
   }
-  if (Date.now() < notStaleUntil) {
+  const failed = failedFile(urlOrMessage);
+  if (failed === "foreign") {
+    // Those fail on their own schedule and say nothing about the build being
+    // stale, so reloading over them never ends.
     return false;
   }
-  let url = chunkUrl(urlOrMessage);
+  // Nothing named (Safari's message names no file): ask about the build itself.
+  const url = failed ?? referenceUrl();
   if (!url) {
-    if (ANY_URL.test(urlOrMessage)) {
-      // A file this build does not ship: a dashboard resource, an
-      // extra_module_url, a custom panel. Those say nothing about the build
-      // being stale, and reloading over them never ends.
-      return false;
-    }
-    url = referenceUrl();
-    if (!url) {
-      // No evidence at all — never drop caches on a guess.
-      return false;
-    }
+    // No evidence at all — never drop caches on a guess.
+    return false;
   }
-  if (!pendingRecovery) {
-    pendingRecovery = probeChunk(url)
-      .then((verdict) => {
-        if (verdict !== "gone") {
-          notStaleUntil = Date.now() + PROBE_SUPPRESS;
-          return false;
-        }
-        return reloadForUpdate(rootEl);
-      })
-      .finally(() => {
-        pendingRecovery = undefined;
-      });
+  const now = Date.now();
+  const suppressed = probedPresent.get(url);
+  if (suppressed !== undefined && suppressed > now) {
+    return false;
   }
-  return pendingRecovery;
+  const pending = pendingProbes.get(url);
+  if (pending) {
+    return pending;
+  }
+  const probe = probeChunk(url)
+    .then((verdict) => {
+      if (verdict !== "gone") {
+        rememberPresent(url);
+        return false;
+      }
+      return reloadForUpdate(rootEl);
+    })
+    .finally(() => {
+      pendingProbes.delete(url);
+    });
+  pendingProbes.set(url, probe);
+  return probe;
 };

@@ -10,7 +10,7 @@ interface RecoverModule {
   recoverFromStaleBuild: typeof recoverFromStaleBuild;
 }
 
-const STALE_URL = "/frontend_latest/core.abc12345.js";
+const STALE_URL = `${location.origin}/frontend_latest/core.abc12345.js`;
 // Set by reloadFresh() right before it navigates; used here to observe that
 // the reload path ran without having to mock window.location (jsdom forbids
 // redefining it).
@@ -225,9 +225,8 @@ describe("recover-stale-build", () => {
     });
 
     describe("staleness probe", () => {
-      const IMPORT_FAILURE =
-        "error loading dynamically imported module: " +
-        "http://192.168.1.134:8123/frontend_latest/23792.c1214a5d0ae33023.js";
+      const FAILED_CHUNK = `${location.origin}/frontend_latest/23792.c1214a5d.js`;
+      const IMPORT_FAILURE = `error loading dynamically imported module: ${FAILED_CHUNK}`;
 
       it("does not reload when the chunk is still on the server", async () => {
         fetchMock.mockResolvedValue(httpResponse(200));
@@ -266,17 +265,17 @@ describe("recover-stale-build", () => {
         ).resolves.toBe(true);
 
         expect(fetchMock).toHaveBeenCalledWith(
-          "http://192.168.1.134:8123/frontend_latest/23792.c1214a5d0ae33023.js",
+          FAILED_CHUNK,
           expect.objectContaining({ method: "HEAD" })
         );
       });
 
-      it("probes once for a burst of failures", async () => {
+      it("asks about the same chunk only once while a probe is in flight", async () => {
         fetchMock.mockResolvedValue(httpResponse(200));
 
         const verdicts = await Promise.all(
-          Array.from({ length: 5 }, (_, i) =>
-            mod.recoverFromStaleBuild(`/frontend_latest/${i}.abc12345.js`, root)
+          Array.from({ length: 5 }, () =>
+            mod.recoverFromStaleBuild(STALE_URL, root)
           )
         );
 
@@ -284,7 +283,23 @@ describe("recover-stale-build", () => {
         expect(fetchMock).toHaveBeenCalledOnce();
       });
 
-      it("suppresses further probes after finding the build intact", async () => {
+      it("probes each chunk, so a served one cannot hide a deleted one", async () => {
+        // A deploy can have replaced some chunks and not others.
+        const gone = `${location.origin}/frontend_latest/gone.abcdef12.js`;
+        fetchMock.mockImplementation((url: string) =>
+          Promise.resolve(httpResponse(url === gone ? 404 : 200))
+        );
+
+        await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
+          false
+        );
+        await expect(mod.recoverFromStaleBuild(gone, root)).resolves.toBe(true);
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+        expect(reloadMarker()).not.toBeNull();
+      });
+
+      it("suppresses further probes for a chunk found intact", async () => {
         fetchMock.mockResolvedValue(httpResponse(200));
         await expect(mod.recoverFromStaleBuild(STALE_URL, root)).resolves.toBe(
           false
@@ -315,11 +330,12 @@ describe("recover-stale-build", () => {
         // index.html imports extra modules without a catch, so a broken one
         // rejects into the recovery on every page load.
         "Failed to fetch dynamically imported module: /local/layout-card.js",
-        "error loading dynamically imported module: " +
-          "http://192.168.1.134:8123/hacsfiles/silam_pollen/forecast-card.js",
+        `error loading dynamically imported module: ${location.origin}/hacsfiles/silam/forecast.js`,
         // A resource URL with literal brackets from a broken configuration.
+        `error loading dynamically imported module: ${location.origin}/[/hacsfiles/card-mod/card-mod.js?hacstag=1]`,
+        // Our path, someone else's host: still not a file we ship.
         "error loading dynamically imported module: " +
-          "http://192.168.1.134:8123/[/hacsfiles/card-mod/card-mod.js?hacstag=1]",
+          "https://cdn.example/frontend_latest/app.abc12345.js",
       ])(
         "ignores a failure of a file this build does not ship: %s",
         (message) => {
@@ -334,8 +350,9 @@ describe("recover-stale-build", () => {
         // stands in for the question.
         performance.clearResourceTimings?.();
         vi.spyOn(performance, "getEntriesByType").mockReturnValue([
-          { name: "https://ha.local/static/translations/en-abc12345.json" },
-          { name: "https://ha.local/frontend_latest/app.abc12345.js" },
+          { name: `${location.origin}/static/translations/en-abc12345.json` },
+          { name: "https://cdn.example/frontend_latest/other.abcdef12.js" },
+          { name: `${location.origin}/frontend_latest/app.abc12345.js` },
         ] as unknown as PerformanceEntryList);
 
         await expect(
@@ -343,7 +360,7 @@ describe("recover-stale-build", () => {
         ).resolves.toBe(true);
 
         expect(fetchMock).toHaveBeenCalledWith(
-          "https://ha.local/frontend_latest/app.abc12345.js",
+          `${location.origin}/frontend_latest/app.abc12345.js`,
           expect.objectContaining({ method: "HEAD" })
         );
         expect(reloadMarker()).not.toBeNull();
