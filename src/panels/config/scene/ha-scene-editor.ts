@@ -221,10 +221,14 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    // Hidden-tab panel suspend reattaches this same instance. Leave the
-    // live subscription in place so the websocket library can restore it
-    // after reconnect; a fresh subscribe here races the closed socket.
-    if (document.hidden) {
+    // Hidden-tab panel suspend detaches an ancestor and later reattaches
+    // this same instance. Direct removal (route change) has no parentNode,
+    // so we still tear down even if the tab is hidden — e.g. saving a new
+    // scene remounts the itemId editor.
+    // Leave the live subscription in place on suspend so the websocket
+    // library can restore it after reconnect; a fresh subscribe here races
+    // the closed socket.
+    if (document.hidden && this.parentNode) {
       return;
     }
     if (this._mode === "live" && this.hass) {
@@ -919,11 +923,14 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
+    if (this._unsubscribeEvents) {
+      return;
+    }
     const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
       (event) => this._stateChanged(event),
       "state_changed"
     );
-    if (!this.isConnected || this._mode !== "live") {
+    if (!this.isConnected || this._mode !== "live" || this._unsubscribeEvents) {
       unsubscribe();
       return;
     }
