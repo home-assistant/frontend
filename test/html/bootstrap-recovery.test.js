@@ -14,19 +14,32 @@ const repoRoot = path.resolve(
   "../.."
 );
 
+const ENTRY_URL = "/frontend_latest/app.a1b2c3d4e5.js";
+
 // The boot guard is inline ES5 in index.html: it runs before any bundle loads,
 // so it is neither type-checked nor covered by the bundled recovery tests. Here
 // it is rendered exactly as the build renders it, then evaluated with every
 // global it touches passed in — which isolates it from the real environment and
 // makes the reload observable without navigating.
-const GUARD = template(
+const renderGuard = template(
   readFileSync(
     path.join(repoRoot, "src/html/_bootstrap_recovery.html.template"),
     "utf-8"
   )
-)({ staleBuildPatterns: patterns })
-  .replace(/^\s*<script>/, "")
-  .replace(/<\/script>\s*$/, "");
+);
+
+const guardSource = (latestEntryJS = [ENTRY_URL]) => {
+  const rendered = renderGuard({
+    staleBuildPatterns: patterns,
+    latestEntryJS,
+    es5EntryJS: ["/frontend_es5/app.f6a7b8c9d0.js"],
+  });
+  // The template is a single script block; take what is between the tags.
+  return rendered.slice(
+    rendered.indexOf("\n"),
+    rendered.lastIndexOf("</script>")
+  );
+};
 
 const CHUNK_URL = "http://ha.local/frontend_latest/core.abc12345def.js";
 const IMPORT_FAILURE = `error loading dynamically imported module: ${CHUNK_URL}`;
@@ -52,7 +65,7 @@ describe("index.html boot recovery guard", () => {
     };
   };
 
-  const runGuard = () => {
+  const runGuard = (latestEntryJS) => {
     class FakeXMLHttpRequest {
       constructor() {
         this.status = 0;
@@ -92,7 +105,7 @@ describe("index.html boot recovery guard", () => {
     }
 
     const env = {
-      window: new EventTarget(),
+      window: Object.assign(new EventTarget(), { latestJS: true }),
       document: {
         getElementById: (id) => {
           if (id === "ha-launch-screen") {
@@ -110,7 +123,9 @@ describe("index.html boot recovery guard", () => {
       XMLHttpRequest: FakeXMLHttpRequest,
     };
     // eslint-disable-next-line no-new-func
-    new Function(...Object.keys(env), GUARD)(...Object.values(env));
+    new Function(...Object.keys(env), guardSource(latestEntryJS))(
+      ...Object.values(env)
+    );
     return env.window;
   };
 
@@ -211,14 +226,38 @@ describe("index.html boot recovery guard", () => {
     }
   );
 
-  it("reloads without probing when the message carries no URL", async () => {
+  it("probes this build's entry when the message names no file", async () => {
     const win = runGuard();
 
-    // Safari's message names no file, so there is nothing to ask about.
+    // Safari's message names nothing, so the entry bundle stands in.
+    await failImport(win, "Importing a module script failed.");
+
+    expect(probes).toEqual([
+      {
+        method: "HEAD",
+        url: ENTRY_URL,
+        headers: { "Cache-Control": "no-cache" },
+      },
+    ]);
+    expect(location.replace).toHaveBeenCalledOnce();
+  });
+
+  it("does not reload when this build's entry is still there", async () => {
+    probeStatus = 200;
+    const win = runGuard();
+
+    await failImport(win, "Importing a module script failed.");
+
+    expect(location.replace).not.toHaveBeenCalled();
+  });
+
+  it("does not reload on a guess when there is nothing to probe", async () => {
+    const win = runGuard([]);
+
     await failImport(win, "Importing a module script failed.");
 
     expect(probes).toHaveLength(0);
-    expect(location.replace).toHaveBeenCalledOnce();
+    expect(location.replace).not.toHaveBeenCalled();
   });
 
   it("stays inert once the app has booted", async () => {

@@ -32,6 +32,10 @@
     // "the browser did not say which file failed".
     var ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
     var PROBE_TIMEOUT = 5000;
+    // This build's own entry bundles, to probe when the browser did not name
+    // the file that failed (Safari's message names none).
+    var LATEST_ENTRY_JS = <%= JSON.stringify(latestEntryJS) %>;
+    var ES5_ENTRY_JS = <%= JSON.stringify(es5EntryJS) %>;
     // Shared with the bundled recovery: one reload per minute between them.
     var RELOAD_STORAGE_KEY = "haStaleBuildReload";
     var RELOAD_COOLDOWN = 60000;
@@ -154,6 +158,16 @@
       return match ? match[0] : null;
     }
 
+    function referenceUrl() {
+      var entries = window.latestJS ? LATEST_ENTRY_JS : ES5_ENTRY_JS;
+      for (var i = 0; i < entries.length; i++) {
+        if (HASHED_ENTRY.test(entries[i])) {
+          return entries[i];
+        }
+      }
+      return null;
+    }
+
     /*
      * A failed load looks identical whether the file was deleted by an upgrade
      * or the request never reached the server, and only the first is fixed by
@@ -200,10 +214,11 @@
           // index being stale, and reloading over them never ends.
           return;
         }
-        // Nothing identifiable (Safari's message names no file) and the launch
-        // screen is stuck either way, so try once; claimReload() bounds it.
-        recover();
-        return;
+        target = referenceUrl();
+        if (!target) {
+          // No evidence at all — never drop caches on a guess.
+          return;
+        }
       }
       // One probe answers for the whole burst; both entries fail together.
       probing = true;
