@@ -106,5 +106,5 @@ export const removeLocalMedia = async (
   });
 
 export const isStreamingMedia = (media_content_id: string): boolean =>
-  media_content_id.startsWith("/api/image_proxy_stream") ||
-  media_content_id.startsWith("/api/camera_proxy_stream");
+  media_content_id.includes("/api/image_proxy_stream") ||
+  media_content_id.includes("/api/camera_proxy_stream");

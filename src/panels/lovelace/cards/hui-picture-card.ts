@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
@@ -50,7 +51,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._resolvedImage && isStreamingMedia(this._resolvedImage)) {
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
       this._reconnectImg = true;
       this._img?.removeAttribute("src");
     }
@@ -58,9 +59,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._reconnectImg && this._resolvedImage) {
-      this._reconnectImg = false;
-      this._img?.setAttribute("src", this._resolvedImage);
+    if (this._reconnectImg) {
+      this.requestUpdate();
     }
   }
 
@@ -90,7 +90,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     if (
       !this._config ||
       hasConfigChanged(this, changedProps) ||
-      changedProps.has("_resolvedImage")
+      changedProps.has("_resolvedImage") ||
+      this._reconnectImg
     ) {
       return true;
     }
@@ -113,6 +114,9 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     if (!this._config || !this.hass) {
       return;
+    }
+    if (this.isConnected) {
+      this._reconnectImg = false;
     }
 
     const firstHass =
@@ -219,7 +223,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           alt=${ifDefined(
             this._config.alt_text || stateObj?.attributes.friendly_name
           )}
-          src=${this.hass.hassUrl(image)}
+          src=${live(this.hass.hassUrl(image))}
         />
       </ha-card>
     `;
