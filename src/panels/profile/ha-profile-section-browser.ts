@@ -98,9 +98,7 @@ class HaProfileSectionBrowser extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: initial;
         }
 
         .container {

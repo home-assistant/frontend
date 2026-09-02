@@ -42,37 +42,6 @@ function copyMdiIcons(staticDir) {
   fs.copySync(polyPath("build/mdi"), staticPath("mdi"));
 }
 
-function copyPolyfills(staticDir) {
-  const staticPath = genStaticPath(staticDir);
-
-  // For custom panels using ES5 builds that don't use Babel 7+
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"),
-    staticPath("polyfills/")
-  );
-
-  // Web Component polyfills and adapters
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js"),
-    staticPath("polyfills/")
-  );
-  copyFileDir(
-    npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
-    staticPath("polyfills/")
-  );
-  // Lit polyfill support
-  fs.copySync(
-    npmPath("lit/polyfill-support.js"),
-    path.join(staticPath("polyfills/"), "lit-polyfill-support.js")
-  );
-
-  // dialog-polyfill css
-  copyFileDir(
-    npmPath("dialog-polyfill/dialog-polyfill.css"),
-    staticPath("polyfills/")
-  );
-}
-
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
@@ -141,7 +110,6 @@ gulp.task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
-  copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
   copyLocaleData(staticDir);
@@ -163,7 +131,6 @@ gulp.task("copy-static-demo", async () => {
   );
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
-  copyPolyfills(paths.demo_output_static);
   await copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
   copyTranslations(paths.demo_output_static);
@@ -176,7 +143,6 @@ gulp.task("copy-static-cast", async () => {
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
   fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
-  copyPolyfills(paths.cast_output_static);
   await copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
   copyTranslations(paths.cast_output_static);
@@ -223,7 +189,6 @@ gulp.task("copy-static-e2e-test-app", async () => {
     fs.copySync(e2ePublic, paths.e2eTestApp_output_root);
   }
 
-  copyPolyfills(paths.e2eTestApp_output_static);
   await copyMapPanel(paths.e2eTestApp_output_static);
   copyFonts(paths.e2eTestApp_output_static);
   copyTranslations(paths.e2eTestApp_output_static);

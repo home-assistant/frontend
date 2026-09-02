@@ -145,16 +145,11 @@ export const applyThemesOnElement = (
   element.__themes = { cacheKey, keys: newTheme?.keys };
 
   // Set and/or reset styles
-  if (window.ShadyCSS) {
-    // Use ShadyCSS if available
-    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
-  } else {
-    for (const s in styles) {
-      if (s === null) {
-        element.style.removeProperty(s);
-      } else {
-        element.style.setProperty(s, styles[s]);
-      }
+  for (const s in styles) {
+    if (s === null) {
+      element.style.removeProperty(s);
+    } else {
+      element.style.setProperty(s, styles[s]);
     }
   }
 };

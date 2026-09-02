@@ -191,8 +191,8 @@ class LightColorTempPicker extends LitElement {
           --control-slider-thickness: 130px;
           --control-slider-border-radius: var(--ha-border-radius-6xl);
           --control-slider-color: var(--primary-color);
-          --control-slider-background: -webkit-linear-gradient(
-            top,
+          --control-slider-background: linear-gradient(
+            to bottom,
             var(--gradient)
           );
           --control-slider-tooltip-font-size: var(--ha-font-size-xl);
