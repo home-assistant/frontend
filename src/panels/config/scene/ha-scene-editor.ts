@@ -215,6 +215,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     super.connectedCallback();
     if (!this.sceneId) {
       this._mode = "live";
+    }
+    if (this._mode === "live") {
       this._subscribeEvents();
     }
   }
