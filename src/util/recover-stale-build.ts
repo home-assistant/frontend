@@ -1,4 +1,5 @@
 import { mainWindow } from "../common/dom/get_main_window";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { fireExternalBusMessage } from "../external_app/external_messaging";
 import * as staleBuildPatterns from "./stale-build-patterns.json";
 import { showToast } from "./toast";
@@ -14,6 +15,9 @@ const patterns = ((staleBuildPatterns as any).default ??
   anyUrl: string;
 };
 const HASHED_ENTRY = new RegExp(patterns.hashedEntry, "i");
+// The same pattern anchored: a URL is ours only when it *is* an entry path, not
+// when it merely contains one (/local/frontend_latest/custom.abc12345.js).
+const HASHED_PATH = new RegExp(`^(?:${patterns.hashedEntry})$`, "i");
 const MODULE_ERROR = new RegExp(patterns.moduleError, "i");
 // Any file reference, to tell "a file we do not ship failed" apart from "the
 // browser did not say which file failed".
@@ -64,7 +68,7 @@ const failedFile = (urlOrMessage: string): string | "foreign" | undefined => {
   }
   try {
     const url = new URL(match[0], location.href);
-    if (url.origin === location.origin && HASHED_ENTRY.test(url.pathname)) {
+    if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
       return url.href;
     }
   } catch (_err) {
@@ -93,8 +97,9 @@ const referenceUrl = (): string | undefined => {
     const entries = performance.getEntriesByType("resource");
     for (let i = entries.length - 1; i >= 0; i--) {
       const { name } = entries[i];
-      if (HASHED_ENTRY.test(name) && name.startsWith(location.origin)) {
-        return name;
+      const url = new URL(name, location.href);
+      if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
+        return url.href;
       }
     }
   } catch (_err) {
@@ -114,17 +119,11 @@ const referenceUrl = (): string | undefined => {
  * HEAD is never intercepted by the service worker (workbox routes GET only), so
  * the answer reflects what the server actually has.
  */
-const probeChunk = async (url: string): Promise<ChunkVerdict> => {
-  const controller =
-    typeof AbortController === "undefined" ? undefined : new AbortController();
-  const timeout = controller
-    ? window.setTimeout(() => controller.abort(), PROBE_TIMEOUT)
-    : undefined;
-  const options: RequestInit = {
-    method: "HEAD",
-    cache: "no-store",
-    signal: controller?.signal,
-  };
+const askServer = async (
+  url: string,
+  signal?: AbortSignal
+): Promise<ChunkVerdict> => {
+  const options: RequestInit = { method: "HEAD", cache: "no-store", signal };
   try {
     let response = await fetch(url, options);
     if (response.status === 405 || response.status === 501) {
@@ -144,10 +143,25 @@ const probeChunk = async (url: string): Promise<ChunkVerdict> => {
   } catch (_err) {
     // Aborted, offline, connection reset: unreachable, not stale.
     return "unknown";
-  } finally {
-    if (timeout !== undefined) {
-      clearTimeout(timeout);
+  }
+};
+
+const probeChunk = async (url: string): Promise<ChunkVerdict> => {
+  const controller =
+    typeof AbortController === "undefined" ? undefined : new AbortController();
+  try {
+    // Timed out rather than relying on the abort alone: without
+    // AbortController a stalled request would never settle, pinning the probe.
+    const verdict: ChunkVerdict = await promiseTimeout(
+      PROBE_TIMEOUT,
+      askServer(url, controller?.signal)
+    );
+    return verdict;
+  } catch (_err) {
+    if (controller) {
+      controller.abort();
     }
+    return "unknown";
   }
 };
 

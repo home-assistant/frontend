@@ -198,6 +198,8 @@ describe("index.html boot recovery guard", () => {
     `error loading dynamically imported module: ${ORIGIN}/[/hacsfiles/card-mod/card-mod.js?hacstag=1]`,
     // Our path, someone else's host: still not a file we ship.
     "error loading dynamically imported module: https://cdn.example/frontend_latest/app.a1b2c3d4e5.js",
+    // Our path nested under theirs: also not a file we ship.
+    `error loading dynamically imported module: ${ORIGIN}/local/frontend_latest/custom.a1b2c3d4e5.js`,
   ])(
     "ignores a failure of a file this build does not ship: %s",
     async (message) => {
@@ -228,6 +230,20 @@ describe("index.html boot recovery guard", () => {
       gone,
     ]);
     expect(location.replace).toHaveBeenCalledOnce();
+  });
+
+  it("does not show the fatal message while a recovery is navigating", async () => {
+    // Both entries are gone, so both probes confirm it moments apart.
+    const win = runGuard();
+
+    await Promise.all([
+      failImport(win, importFailure(`${ORIGIN}${CORE_ENTRY}`)),
+      failImport(win, importFailure(`${ORIGIN}${APP_ENTRY}`)),
+    ]);
+
+    expect(probes).toHaveLength(2);
+    expect(location.replace).toHaveBeenCalledOnce();
+    expect(infoBox.textContent).toBe("");
   });
 
   it("asks about the same URL only once while a probe is in flight", async () => {

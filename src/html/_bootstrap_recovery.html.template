@@ -30,6 +30,9 @@
     // the bundled util/recover-stale-build.ts) so the two never drift.
     const HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
     const MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
+    // The same pattern anchored: a URL is ours only when it *is* an entry path,
+    // not when it merely contains one (/local/frontend_latest/x.abc12345.js).
+    const HASHED_PATH = new RegExp("^(?:" + <%= JSON.stringify(staleBuildPatterns.hashedEntry) %> + ")$", "i");
     // Any file reference, to tell "a file we do not ship failed" apart from
     // "the browser did not say which file failed".
     const ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
@@ -42,6 +45,7 @@
     const RELOAD_STORAGE_KEY = "haStaleBuildReload";
     const RELOAD_COOLDOWN = 60000;
     const probing = {};
+    let recovering = false;
 
     function booted() {
       // The launch screen is only removed once the app has taken over the
@@ -98,6 +102,11 @@
     }
 
     function recover() {
+      if (recovering) {
+        // core.js and app.js are confirmed gone moments apart; the first
+        // verdict is already navigating.
+        return;
+      }
       if (location.search.indexOf(BUST_PARAM + "=") !== -1) {
         // We already reloaded once with a fresh index and it still failed;
         // stop to avoid a reload loop.
@@ -110,6 +119,7 @@
         showFatal();
         return;
       }
+      recovering = true;
       const target =
         location.pathname +
         location.search +
@@ -158,7 +168,7 @@
       }
       try {
         const url = new URL(match[0], location.href);
-        if (url.origin === location.origin && HASHED_ENTRY.test(url.pathname)) {
+        if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
           return url.href;
         }
       } catch (_err) {
@@ -170,8 +180,9 @@
     function referenceUrl() {
       const entries = window.latestJS ? LATEST_ENTRY_JS : ES5_ENTRY_JS;
       for (const entry of entries) {
-        if (HASHED_ENTRY.test(entry)) {
-          return new URL(entry, location.href).href;
+        const url = new URL(entry, location.href);
+        if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
+          return url.href;
         }
       }
       return null;

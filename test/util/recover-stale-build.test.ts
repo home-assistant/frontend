@@ -23,6 +23,8 @@ describe("recover-stale-build", () => {
   let serviceWorkerDescriptor: PropertyDescriptor | undefined;
   let cachesDescriptor: PropertyDescriptor | undefined;
   let fetchMock: ReturnType<typeof vi.fn>;
+  /** Resolvers of requests that never answer on their own. */
+  let stalled: ((value: unknown) => void)[];
 
   const httpResponse = (status: number) => ({
     status,
@@ -51,6 +53,7 @@ describe("recover-stale-build", () => {
     });
 
     // The staleness probe; by default the chunk really is gone.
+    stalled = [];
     fetchMock = vi.fn().mockResolvedValue(httpResponse(404));
     vi.stubGlobal("fetch", fetchMock);
 
@@ -310,6 +313,37 @@ describe("recover-stale-build", () => {
         expect(fetchMock).toHaveBeenCalledOnce();
       });
 
+      it("gives up on a stalled request without AbortController", async () => {
+        const abortController = globalThis.AbortController;
+        // @ts-expect-error — emulate a browser at the legacy floor
+        delete globalThis.AbortController;
+        // Never settles on its own; the probe's timeout has to end it.
+        fetchMock.mockReturnValue(
+          new Promise((resolve) => {
+            stalled.push(resolve);
+          })
+        );
+        vi.useFakeTimers();
+
+        try {
+          const recovery = mod.recoverFromStaleBuild(STALE_URL, root);
+          await vi.advanceTimersByTimeAsync(5_000);
+
+          await expect(recovery).resolves.toBe(false);
+          expect(reloadMarker()).toBeNull();
+
+          // The probe was released, so a later failure is not swallowed.
+          fetchMock.mockResolvedValue(httpResponse(404));
+          vi.setSystemTime(Date.now() + 11_000);
+          await expect(
+            mod.recoverFromStaleBuild(STALE_URL, root)
+          ).resolves.toBe(true);
+        } finally {
+          vi.useRealTimers();
+          globalThis.AbortController = abortController;
+        }
+      });
+
       it("retries with GET when the server refuses HEAD", async () => {
         fetchMock
           .mockResolvedValueOnce(httpResponse(405))
@@ -336,6 +370,8 @@ describe("recover-stale-build", () => {
         // Our path, someone else's host: still not a file we ship.
         "error loading dynamically imported module: " +
           "https://cdn.example/frontend_latest/app.abc12345.js",
+        // Our path nested under theirs: also not a file we ship.
+        `error loading dynamically imported module: ${location.origin}/local/frontend_latest/custom.abc12345.js`,
       ])(
         "ignores a failure of a file this build does not ship: %s",
         (message) => {
@@ -352,6 +388,8 @@ describe("recover-stale-build", () => {
         vi.spyOn(performance, "getEntriesByType").mockReturnValue([
           { name: `${location.origin}/static/translations/en-abc12345.json` },
           { name: "https://cdn.example/frontend_latest/other.abcdef12.js" },
+          // A host that merely starts with ours is a different origin.
+          { name: `${location.origin}.evil/frontend_latest/evil.abcdef12.js` },
           { name: `${location.origin}/frontend_latest/app.abc12345.js` },
         ] as unknown as PerformanceEntryList);
 
