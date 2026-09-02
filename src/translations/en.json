@@ -12114,6 +12114,7 @@
         "error_no_data": "You need to select some data sources first."
       },
       "store": {
+        "not_loaded": "The Community store has not been set up yet. Add it from the integrations page in Settings.",
         "common": {
           "add": "add",
           "cancel": "Cancel",

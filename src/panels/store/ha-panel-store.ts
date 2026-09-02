@@ -2,7 +2,9 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
@@ -52,6 +54,9 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
   }
 
   public hassSubscribe() {
+    if (!this._isLoaded) {
+      return [];
+    }
     return [
       websocketSubscription(
         this.hass,
@@ -82,13 +87,23 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated && this._isLoaded) {
       this._refreshInfo();
       this._refreshRepositories();
     }
   }
 
   protected render() {
+    if (!this._isLoaded) {
+      return html`
+        <hass-error-screen
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .error=${this.hass.localize("ui.panel.store.not_loaded")}
+        ></hass-error-screen>
+      `;
+    }
+
     if (!this._repositories || !this._info) {
       return html`
         <hass-loading-screen
@@ -106,6 +121,11 @@ class HaPanelStore extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
       ></ha-store-router>
     `;
+  }
+
+  // The panel is registered on every install, the integration is not.
+  private get _isLoaded(): boolean {
+    return isComponentLoaded(this.hass.config, "store");
   }
 
   private _handleRefresh = (
