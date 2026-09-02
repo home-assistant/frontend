@@ -654,8 +654,11 @@ export class HaChartBase extends LitElement {
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(this._chartContainer!, "custom");
-      this._isZoomed = false;
-      this._zoomRatio = 1;
+      if (this._isZoomed) {
+        this._isZoomed = false;
+        this._zoomRatio = 1;
+        fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+      }
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
