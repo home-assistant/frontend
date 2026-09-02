@@ -1,7 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { keyed } from "lit/directives/keyed";
 import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
+import { isExternalHassUrl } from "../common/url/hass-url";
+import { supervisorUrl } from "../data/hassio/common";
 
 @customElement("ha-app-icon")
 export class HaAppIcon extends LitElement {
@@ -18,12 +21,8 @@ export class HaAppIcon extends LitElement {
 
   @query("img") private _image?: HTMLImageElement;
 
-  private get _src() {
-    return `/api/hassio/addons/${this.slug}/icon`;
-  }
-
   protected render() {
-    const src = this._src;
+    const src = supervisorUrl(`addons/${this.slug}/icon`);
 
     if (!this.slug || this.hasIcon === false || this._failedSrc === src) {
       return html`<slot></slot>`;
@@ -36,7 +35,9 @@ export class HaAppIcon extends LitElement {
           src=${src}
           alt=${this.alt}
           loading=${this.loading}
-          crossorigin="anonymous"
+          crossorigin=${ifDefined(
+            isExternalHassUrl() ? undefined : "anonymous"
+          )}
           referrerpolicy="no-referrer"
           @error=${this._handleError}
         />
