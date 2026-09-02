@@ -167,8 +167,6 @@ class SupervisorAppsCardContent extends LitElement {
       line-height: var(--ha-line-height-condensed);
     }
     .footer {
-      border-top: var(--ha-border-width-sm) solid
-        var(--ha-color-border-neutral-quiet);
       padding-top: var(--ha-space-2);
       display: flex;
       gap: var(--ha-space-2);
