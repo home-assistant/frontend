@@ -43,7 +43,7 @@ export class HaStateClassPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Array }) public state_classes?: string[];
+  @property({ attribute: false }) public stateClasses?: string[];
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
