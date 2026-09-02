@@ -262,13 +262,10 @@ const delayedIntegrationsScenario: Scenario = (hass) => {
 const delayedSerialScenario: Scenario = (hass) => {
   addLaunchScreen();
 
-  let resolvePorts: ((ports: SerialPortUsage[]) => void) | undefined;
-  const portsPromise = new Promise<SerialPortUsage[]>((resolve) => {
-    resolvePorts = resolve;
-  });
+  const { promise, resolve } = Promise.withResolvers<SerialPortUsage[]>();
 
-  window.resolveSerialPorts = () => resolvePorts?.([]);
-  hass.mockWS("usb/list_serial_ports", () => portsPromise);
+  window.resolveSerialPorts = () => resolve([]);
+  hass.mockWS("usb/list_serial_ports", () => promise);
 };
 
 const delayedStorageScenario: Scenario = (hass) => {
