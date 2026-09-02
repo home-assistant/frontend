@@ -94,11 +94,9 @@ export class HaIntegrationCard extends LitElement {
             .domain=${this.domain}
             .localizedDomainName=${this.items[0].localized_domain_name}
             .info=${this._counts()}
-            .status=${status}
-            .statusVariant=${status ? statusVariant : undefined}
             .manifest=${this.manifest}
           >
-            ${this._renderIndicators(
+            ${this._renderFooter(
               status,
               statusVariant,
               entryState,
@@ -188,24 +186,13 @@ export class HaIntegrationCard extends LitElement {
     return undefined;
   }
 
-  private _renderIndicators(
+  private _renderFooter(
     status: string | undefined,
     statusVariant: "danger" | "neutral" | "warning",
     entryState: ConfigEntry["state"],
     inProgress: boolean,
     hasUpdate: boolean
   ) {
-    const updateLabel = this.hass.localize(
-      "ui.panel.config.integrations.config_entry.update_available"
-    );
-
-    const tooltipPlacement = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    )
-      ? "right"
-      : "left";
-
     const custom = Boolean(this.manifest && !this.manifest.is_built_in);
     const cloud = Boolean(this.manifest?.iot_class?.startsWith("cloud_"));
     const yaml = Boolean(
@@ -214,11 +201,49 @@ export class HaIntegrationCard extends LitElement {
       !this.items.every((itm) => itm.source === "system")
     );
 
+    // A healthy built-in integration has nothing to say down here, so the
+    // divider stays off rather than framing an empty row.
+    if (!status && !hasUpdate && !custom && !cloud && !yaml) {
+      return nothing;
+    }
+
+    const tooltipPlacement = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    )
+      ? "right"
+      : "left";
+
     return html`
-      <div class="indicators" slot="icons">
+      <div class="footer" slot="footer">
+        ${
+          status
+            ? html`<ha-automation-row-event-chip show .variant=${statusVariant}>
+                <ha-svg-icon
+                  .path=${entryState === "not_loaded" ? mdiStop : mdiAlert}
+                ></ha-svg-icon>
+                ${status}
+                ${
+                  inProgress
+                    ? html`<ha-spinner size="tiny"></ha-spinner>`
+                    : nothing
+                }
+              </ha-automation-row-event-chip>`
+            : nothing
+        }
+        ${
+          hasUpdate
+            ? html`<ha-automation-row-event-chip show>
+                <ha-svg-icon .path=${mdiArrowUpBoldCircle}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.update_available"
+                )}
+              </ha-automation-row-event-chip>`
+            : nothing
+        }
         ${
           custom || cloud || yaml
-            ? html`<div class="icons">
+            ? html`<div class="metadata-icons">
                 ${
                   custom
                     ? html`<span
@@ -282,38 +307,6 @@ export class HaIntegrationCard extends LitElement {
                     : nothing
                 }
               </div>`
-            : nothing
-        }
-        ${
-          status
-            ? html`<ha-automation-row-event-chip
-                show
-                .variant=${statusVariant}
-                aria-label=${status}
-              >
-                <ha-svg-icon
-                  .path=${entryState === "not_loaded" ? mdiStop : mdiAlert}
-                ></ha-svg-icon>
-                ${
-                  inProgress
-                    ? html`<ha-spinner size="tiny"></ha-spinner>`
-                    : nothing
-                }
-              </ha-automation-row-event-chip>`
-            : nothing
-        }
-        ${
-          hasUpdate
-            ? html`<ha-automation-row-event-chip
-                  id="chip-update"
-                  show
-                  aria-label=${updateLabel}
-                >
-                  <ha-svg-icon .path=${mdiArrowUpBoldCircle}></ha-svg-icon>
-                </ha-automation-row-event-chip>
-                <ha-tooltip for="chip-update" .placement=${tooltipPlacement}>
-                  ${updateLabel}
-                </ha-tooltip>`
             : nothing
         }
       </div>
@@ -415,16 +408,27 @@ export class HaIntegrationCard extends LitElement {
       height: 100%;
     }
     ha-spinner {
-      --ha-spinner-size: 24px;
+      --ha-spinner-size: 16px;
       --ha-spinner-indicator-color: currentColor;
       --track-width: 2px;
     }
-    .indicators {
+    /* full-bleed footer inside the header's 16px padding */
+    .footer {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: var(--ha-space-2);
+      /* auto top margin pins it to the bottom of an equal-height card */
+      margin: auto -16px -16px;
+      padding: var(--ha-space-3) 16px 16px;
+      border-top: 1px solid var(--divider-color, #e8e8e8);
+      font-size: var(--ha-font-size-s);
+    }
+    .metadata-icons {
+      display: flex;
+      align-items: center;
       flex-shrink: 0;
-      /* keeps them right-aligned both beside the name and on their own line */
+      /* pushes them to the far end of the footer */
       margin-inline-start: auto;
     }
     .debug-logging {
@@ -456,9 +460,6 @@ export class HaIntegrationCard extends LitElement {
       text-decoration: none;
       color: var(--primary-text-color);
     }
-    .icons {
-      display: flex;
-    }
     .icon {
       color: var(--label-badge-grey);
       padding: 4px;
@@ -470,12 +471,11 @@ export class HaIntegrationCard extends LitElement {
       color: var(--error-color);
     }
     /* the host is inline by default, whose line box adds a stray pixel of
-       leading and pushes the chip above the icons */
-    .indicators ha-automation-row-event-chip {
+       leading and misaligns a wrapped chip */
+    .footer ha-automation-row-event-chip {
       display: flex;
     }
-    /* metadata icons and both chips share one glyph size */
-    .indicators ha-svg-icon {
+    .metadata-icons ha-svg-icon {
       width: 24px;
       height: 24px;
       display: block;

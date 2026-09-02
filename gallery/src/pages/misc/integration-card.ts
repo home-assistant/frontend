@@ -58,7 +58,7 @@ const createManifest = (
   iot_class: isCloud ? "cloud_polling" : "local_polling",
 });
 
-// Worst case for the card row: a custom integration that replaces a core one,
+// Worst case for the icon row: a custom integration that replaces a core one,
 // relies on the cloud, and was not set up from the UI, so all three metadata
 // icons render at once alongside the status and update chips.
 const worstCaseManifest: IntegrationManifest = {

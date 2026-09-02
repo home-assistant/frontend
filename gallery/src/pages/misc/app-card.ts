@@ -41,7 +41,7 @@ const EXPERIMENTAL_TAG: AppTag = {
 const LONG_DESCRIPTION =
   "Manage and configure everything from a single place with a full featured editor";
 
-// Everything that can pile onto one row at once: a long name, a stage tag, the
+// Everything that can pile onto the icon row at once: a stage tag, the
 // installed badge, the update chip, an unhealthy state, and a long description.
 const worstCaseApps: DemoApp[] = [
   {

@@ -14,11 +14,6 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public info?: string;
 
-  @property() public status?: string;
-
-  @property({ attribute: false }) public statusVariant?:
-    "danger" | "warning" | "neutral";
-
   @property({ attribute: false }) public localizedDomainName?: string;
 
   @property() public domain!: string;
@@ -32,40 +27,39 @@ export class HaIntegrationHeader extends LitElement {
 
     return html`
       <div class="header">
-        <div class="thumbnail">
-          <img
-            alt=""
-            src=${brandsUrl(
-              {
-                domain: this.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
-            )}
-            referrerpolicy="no-referrer"
-            @error=${this._onImageError}
-            @load=${this._onImageLoad}
-          />
-        </div>
-        <div class="info">
-          <div
-            class="primary ${this.info || this.status ? "has-secondary" : ""}"
-            role="heading"
-            aria-level="1"
-          >
-            ${domainName}
+        <div class="top">
+          <div class="thumbnail">
+            <img
+              alt=""
+              src=${brandsUrl(
+                {
+                  domain: this.domain,
+                  type: "icon",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+              referrerpolicy="no-referrer"
+              @error=${this._onImageError}
+              @load=${this._onImageLoad}
+            />
           </div>
-          ${
-            this.status
-              ? html`<div class="secondary status ${this.statusVariant ?? ""}">
-                  ${this.status}
-                </div>`
-              : nothing
-          }
-          ${this.info ? html`<div class="secondary">${this.info}</div>` : nothing}
+          <div class="info">
+            <div
+              class="primary ${this.info ? "has-secondary" : ""}"
+              role="heading"
+              aria-level="1"
+            >
+              ${domainName}
+            </div>
+            ${
+              this.info
+                ? html`<div class="secondary">${this.info}</div>`
+                : nothing
+            }
+          </div>
         </div>
-        <slot name="icons"></slot>
+        <slot name="footer"></slot>
       </div>
     `;
   }
@@ -81,23 +75,23 @@ export class HaIntegrationHeader extends LitElement {
   static styles = css`
     .header {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
+      flex-direction: column;
+      gap: var(--ha-space-3);
       position: relative;
-      padding-top: 16px;
-      padding-bottom: 16px;
-      padding-inline-start: 16px;
-      padding-inline-end: 8px;
+      padding: 16px;
       direction: var(--direction);
       box-sizing: border-box;
       min-width: 0;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-4);
     }
     .thumbnail {
       flex-shrink: 0;
       width: 40px;
       height: 40px;
-      margin-inline-start: initial;
-      margin-inline-end: 16px;
       box-sizing: border-box;
       display: flex;
       align-items: center;
@@ -119,8 +113,7 @@ export class HaIntegrationHeader extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
-      align-self: center;
-      min-width: 120px;
+      min-width: 0;
     }
     .primary {
       overflow: hidden;
@@ -143,15 +136,6 @@ export class HaIntegrationHeader extends LitElement {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-    .status.danger {
-      color: var(--error-color);
-    }
-    .status.warning {
-      color: var(--warning-color);
-    }
-    .status.neutral {
-      color: var(--secondary-text-color);
     }
   `;
 }
