@@ -37,6 +37,9 @@
     // "the browser did not say which file failed".
     const ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
     const PROBE_TIMEOUT = 5000;
+    // Grace period before admitting defeat, so a modulepreload failure that
+    // the browser retries successfully does not flash the message.
+    const FATAL_DELAY = 10000;
     // This build's own entry bundles, to probe when the browser did not name
     // the file that failed (Safari's message names none).
     const LATEST_ENTRY_JS = <%= JSON.stringify(latestEntryJS) %>;
@@ -230,7 +233,16 @@
         delete probing[target];
         if (gone) {
           recover();
+          return;
         }
+        // Nothing was deleted, so a reload cannot help - but the file that
+        // failed is not coming back either. Say so if the app never takes over,
+        // rather than leaving an empty launch screen up for good.
+        setTimeout(() => {
+          if (!booted() && !recovering) {
+            showFatal();
+          }
+        }, FATAL_DELAY);
       });
     }
 

@@ -264,6 +264,35 @@ describe("index.html boot recovery guard", () => {
     expect(location.replace).not.toHaveBeenCalled();
   });
 
+  it("says so when the app never takes over and a reload would not help", async () => {
+    statusFor = () => 200;
+    const win = runGuard();
+
+    await failImport(win, importFailure(CHUNK));
+    timeouts.forEach((fn) => fn());
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(location.replace).not.toHaveBeenCalled();
+    expect(infoBox.textContent).toContain("Could not load Home Assistant");
+  });
+
+  it("stays quiet when the app takes over after all", async () => {
+    statusFor = () => 200;
+    const win = runGuard();
+
+    await failImport(win, importFailure(CHUNK));
+    // The browser retried the failed modulepreload and the app came up.
+    booted = true;
+    timeouts.forEach((fn) => fn());
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(infoBox.textContent).toBe("");
+  });
+
   it("stays inert once the app has booted", async () => {
     booted = true;
     const win = runGuard();
