@@ -392,17 +392,6 @@ export class HaStoreRepositoryDashboard extends LitElement {
     return [
       storeStyles,
       css`
-        hass-loading-screen {
-          --app-header-background-color: var(--sidebar-background-color);
-          --app-header-text-color: var(--sidebar-text-color);
-          height: 100vh;
-        }
-
-        hass-subpage {
-          position: absolute;
-          width: 100vw;
-        }
-
         ha-card {
           display: block;
           padding: 16px;
