@@ -1,11 +1,13 @@
 // FOR TESTING ONLY — Tile Card editor concept comparison. Not for merge.
 export type { HomeAssistant } from "../../../../types";
 
-export type ConceptId = "control" | "a";
+export type ConceptId = "control" | "a" | "b" | "c";
 
 export const CONCEPTS: { id: ConceptId; label: string }[] = [
   { id: "control", label: "Control" },
   { id: "a", label: "Concept A" },
+  { id: "b", label: "Concept B" },
+  { id: "c", label: "Concept C" },
 ];
 
 export interface TileCardLabConfig {

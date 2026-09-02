@@ -9,6 +9,8 @@ import type {
 } from "./tile-card-lab-types";
 import { CONCEPTS } from "./tile-card-lab-types";
 import "./tile-lab-concept-a";
+import "./tile-lab-concept-b";
+import "./tile-lab-concept-c";
 // Reused HA controls / sub-editors (registered so the concepts can render them).
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-switch";
@@ -88,6 +90,28 @@ export class TileCardLabEditor extends LitElement {
     this._applyStockTabs();
     this._injectHeaderSwitcher();
     this._matchDialogSize();
+    this._applyStickyPreview();
+  }
+
+  // Concept C: keep the card preview pinned to the side while the editor
+  // content scrolls. Only C wants this, so add/remove per active concept.
+  private _applyStickyPreview(): void {
+    const root = this._findDialog()?.shadowRoot;
+    if (!root) {
+      return;
+    }
+    const existing = root.getElementById("tcl-sticky-preview");
+    if (this._concept === "c") {
+      if (!existing) {
+        const style = document.createElement("style");
+        style.id = "tcl-sticky-preview";
+        style.textContent =
+          ".element-preview{position:sticky;top:0;align-self:flex-start;}";
+        root.appendChild(style);
+      }
+    } else {
+      existing?.remove();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -96,6 +120,7 @@ export class TileCardLabEditor extends LitElement {
     this._headerContainer = undefined;
     this._headerReady = false;
     const root = this._findDialog()?.shadowRoot;
+    root?.getElementById("tcl-sticky-preview")?.remove();
     const haDialog = root?.querySelector("ha-dialog") as HTMLElement | null;
     haDialog?.style.removeProperty("--ha-dialog-min-height");
     haDialog?.style.removeProperty("--ha-dialog-max-height");
@@ -271,6 +296,20 @@ export class TileCardLabEditor extends LitElement {
     switch (this._concept) {
       case "control":
         return this._renderControl();
+      case "b":
+        return html`<tile-lab-concept-b
+          .hass=${this.hass}
+          .config=${config}
+          .sectionConfig=${this._sectionConfig}
+          @config-changed=${this._conceptChanged}
+        ></tile-lab-concept-b>`;
+      case "c":
+        return html`<tile-lab-concept-c
+          .hass=${this.hass}
+          .config=${config}
+          .sectionConfig=${this._sectionConfig}
+          @config-changed=${this._conceptChanged}
+        ></tile-lab-concept-c>`;
       default:
         return html`<tile-lab-concept-a
           .hass=${this.hass}
@@ -306,7 +345,7 @@ export class TileCardLabEditor extends LitElement {
     }
     .switcher {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 4px;
       background: var(--divider-color, #e0e0e0);
       border-radius: var(--ha-border-radius-md, 12px);
