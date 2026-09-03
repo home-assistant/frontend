@@ -4,7 +4,6 @@ import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import type { NavigationFilterOptions } from "../../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -344,16 +343,10 @@ export class QuickBar extends LitElement {
                       .slug=${item.app.slug}
                       .hasIcon=${item.app.icon}
                       .alt=${item.primary ?? "Unknown"}
+                      class=${iconColor ? "colored" : nothing}
                       style=${
                         iconColor
-                          ? styleMap({
-                              backgroundColor: iconColor,
-                              padding: "var(--ha-space-1)",
-                              borderRadius: "var(--ha-border-radius-circle)",
-                              width: "var(--ha-space-6)",
-                              height: "var(--ha-space-6)",
-                              color: "var(--white-color)",
-                            })
+                          ? `--app-icon-background-color: ${iconColor}`
                           : nothing
                       }
                     >
