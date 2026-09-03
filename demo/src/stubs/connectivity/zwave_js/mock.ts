@@ -4,24 +4,27 @@ import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSNodeStatus,
   ZwaveJSProvisioningEntry,
-} from "../../../../src/data/zwave_js";
+} from "../../../../../src/data/zwave_js";
 import {
   NodeStatus,
   ProvisioningEntryStatus,
   SecurityClass,
-} from "../../../../src/data/zwave_js";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { emitInitial } from "./subscription";
+} from "../../../../../src/data/zwave_js";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import { emitInitial } from "../subscription";
 
-// Node IDs match the `zwave_js` device registry identifiers in ./fixtures.
-const CONTROLLER_NODE_ID = 1;
-const HALLWAY_NODE_ID = 7;
-const DIMMER_NODE_ID = 12;
-const MOTION_NODE_ID = 15;
-const LOCK_NODE_ID = 18;
-const THERMOSTAT_NODE_ID = 20;
-const SENSOR_NODE_ID = 23;
-const OUTLET_NODE_ID = 31;
+import {
+  CONTROLLER_NODE_ID,
+  DEVICE_IDS_BY_NODE_ID,
+  DIMMER_NODE_ID,
+  HALLWAY_NODE_ID,
+  HOME_ID,
+  LOCK_NODE_ID,
+  MOTION_NODE_ID,
+  OUTLET_NODE_ID,
+  SENSOR_NODE_ID,
+  THERMOSTAT_NODE_ID,
+} from "./fixtures";
 
 const node = (
   nodeId: number,
@@ -58,7 +61,7 @@ const NODES: ZWaveJSNodeStatus[] = [
 ];
 
 const CONTROLLER: ZWaveJSController = {
-  home_id: 3245146787,
+  home_id: HOME_ID,
   sdk_version: "7.19.3",
   type: 1,
   own_node_id: CONTROLLER_NODE_ID,
@@ -141,17 +144,6 @@ const ROUTES: Record<number, { repeaters: number[]; rssi: number }> = {
     rssi: -79,
   },
   [SENSOR_NODE_ID]: { repeaters: [DIMMER_NODE_ID], rssi: -81 },
-};
-
-const DEVICE_IDS_BY_NODE_ID: Record<number, string> = {
-  [CONTROLLER_NODE_ID]: "zwave-controller",
-  [HALLWAY_NODE_ID]: "zwave-hallway-switch",
-  [DIMMER_NODE_ID]: "zwave-dining-dimmer",
-  [MOTION_NODE_ID]: "zwave-kitchen-motion",
-  [LOCK_NODE_ID]: "zwave-back-door-lock",
-  [THERMOSTAT_NODE_ID]: "zwave-bedroom-thermostat",
-  [SENSOR_NODE_ID]: "zwave-basement-sensor",
-  [OUTLET_NODE_ID]: "zwave-porch-outlet",
 };
 
 const NODE_IDS_BY_DEVICE_ID: Record<string, number> = Object.fromEntries(

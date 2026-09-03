@@ -1,5 +1,5 @@
-import type { SerialPortUsage } from "../../../../src/data/usb";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
+import type { SerialPortUsage } from "../../../../../src/data/usb";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 const PORTS: SerialPortUsage[] = [
   {
@@ -101,7 +101,7 @@ const PORTS: SerialPortUsage[] = [
   },
 ];
 
-export const mockUsb = (hass: MockHomeAssistant) => {
+export const mockSerial = (hass: MockHomeAssistant) => {
   hass.mockWS("usb/list_serial_ports", () => PORTS);
   hass.mockWS("usb/scan", () => undefined);
 };

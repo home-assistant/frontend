@@ -7,8 +7,9 @@ import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
-import { CONNECTIVITY_COMMANDS } from "./stubs/connectivity/commands";
 import {
+  connectivityCommands,
+  connectivityComponents,
   connectivityEntities,
   connectivityEntityRegistryEntries,
 } from "./stubs/connectivity/fixtures";
@@ -65,7 +66,7 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
-  ...CONNECTIVITY_COMMANDS,
+  ...connectivityCommands,
 ];
 
 @customElement("ha-demo")
@@ -93,19 +94,7 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
-          // Connectivity integrations, so every panel under Settings >
-          // Connectivity is reachable in the demo.
-          "matter",
-          "zha",
-          "zwave_js",
-          "mqtt",
-          "thread",
-          "otbr",
-          "bluetooth",
-          "usb",
-          "infrared",
-          "radio_frequency",
-          "tag",
+          ...connectivityComponents,
         ],
       },
     });

@@ -1,14 +1,21 @@
-import type { OTBRInfoDict } from "../../../../src/data/otbr";
-import type { ThreadDataSet, ThreadRouter } from "../../../../src/data/thread";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { emitInitial } from "./subscription";
+import type { OTBRInfoDict } from "../../../../../src/data/otbr";
+import type {
+  ThreadDataSet,
+  ThreadRouter,
+} from "../../../../../src/data/thread";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import { emitInitial } from "../subscription";
 
 const HA_EXT_PAN_ID = "dead00beef00cafe";
-const APPLE_EXT_PAN_ID = "0011223344556677";
+const AMAZON_EXT_PAN_ID = "0011223344556677";
 
 const OTBR_EXT_ADDRESS = "f6a1c30d2b4e5f61";
 const OTBR_BORDER_AGENT_ID = "230c6a1ac57f6f4be262acf32e5ef52c";
 
+// The preferred network is shared by Home Assistant's own border router and the
+// Apple and Google border routers that joined it. The Amazon network is only
+// discovered: Amazon does not share its Thread credentials, so it has no
+// dataset and cannot be made preferred.
 const ROUTERS: ThreadRouter[] = [
   {
     instance_name: "HomeAssistant OpenThreadBorderRouter",
@@ -30,9 +37,9 @@ const ROUTERS: ThreadRouter[] = [
     border_agent_id: "6a1ac57f6f4be262acf32e5ef52c230c",
     brand: "apple",
     extended_address: "aabbccddeeff0011",
-    extended_pan_id: APPLE_EXT_PAN_ID,
+    extended_pan_id: HA_EXT_PAN_ID,
     model_name: "HomePod mini",
-    network_name: "MyHome",
+    network_name: "ha-thread",
     server: "homepod-mini.local.",
     thread_version: "1.3.0",
     unconfigured: null,
@@ -44,13 +51,27 @@ const ROUTERS: ThreadRouter[] = [
     border_agent_id: "ac57f6f4be262acf32e5ef52c230c6a1",
     brand: "google",
     extended_address: "bbccddeeff001122",
-    extended_pan_id: APPLE_EXT_PAN_ID,
+    extended_pan_id: HA_EXT_PAN_ID,
     model_name: "Google Nest Hub",
-    network_name: "MyHome",
+    network_name: "ha-thread",
     server: "nest-hub.local.",
     thread_version: "1.3.0",
     unconfigured: null,
     vendor_name: "Google Inc.",
+  },
+  {
+    instance_name: "Echo (4th Gen)",
+    addresses: ["192.168.1.42"],
+    border_agent_id: "57f6f4be262acf32e5ef52c230c6a1ac",
+    brand: "amazon",
+    extended_address: "ccddeeff00112233",
+    extended_pan_id: AMAZON_EXT_PAN_ID,
+    model_name: "Echo",
+    network_name: "AmazonThread",
+    server: "amazon-echo.local.",
+    thread_version: "1.3.0",
+    unconfigured: null,
+    vendor_name: "Amazon",
   },
 ];
 
@@ -66,18 +87,6 @@ const DATASETS: ThreadDataSet[] = [
     preferred_extended_address: OTBR_EXT_ADDRESS,
     preferred: true,
     source: "otbr",
-  },
-  {
-    channel: 25,
-    created: new Date(Date.now() - 86400000 * 90).toISOString(),
-    dataset_id: "myhome-dataset",
-    extended_pan_id: APPLE_EXT_PAN_ID,
-    network_name: "MyHome",
-    pan_id: "abcd",
-    preferred_border_agent_id: null,
-    preferred_extended_address: null,
-    preferred: false,
-    source: "Google",
   },
 ];
 

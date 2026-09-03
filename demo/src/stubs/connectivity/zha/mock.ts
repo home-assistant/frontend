@@ -5,17 +5,20 @@ import type {
   ZHADeviceEndpoint,
   ZHAGroup,
   ZHANetworkSettings,
-} from "../../../../src/data/zha";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
+} from "../../../../../src/data/zha";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import { minutesAgo } from "../helpers";
 
-const COORDINATOR_IEEE = "00:12:4b:00:24:c2:e1:00";
-const PORCH_IEEE = "84:2e:14:ff:fe:11:22:33";
-const MOTION_IEEE = "cc:cc:cc:ff:fe:44:55:66";
-const PLUG_IEEE = "00:15:8d:00:03:aa:bb:cc";
-const KITCHEN_IEEE = "84:2e:14:ff:fe:aa:bb:01";
-const BEDROOM_IEEE = "00:15:8d:00:03:aa:bb:02";
-const GARAGE_IEEE = "00:15:8d:00:03:aa:bb:03";
-const OFFICE_IEEE = "00:15:8d:00:03:aa:bb:04";
+import {
+  BEDROOM_IEEE,
+  COORDINATOR_IEEE,
+  GARAGE_IEEE,
+  KITCHEN_IEEE,
+  MOTION_IEEE,
+  OFFICE_IEEE,
+  PLUG_IEEE,
+  PORCH_IEEE,
+} from "./fixtures";
 
 const neighbor = (
   ieee: string,
@@ -24,9 +27,6 @@ const neighbor = (
   relationship: string,
   depth = "1"
 ): Neighbor => ({ ieee, nwk, lqi, depth, relationship });
-
-const minutesAgo = (minutes: number) =>
-  new Date(Date.now() - minutes * 60000).toISOString();
 
 const DEVICES: ZHADevice[] = [
   {

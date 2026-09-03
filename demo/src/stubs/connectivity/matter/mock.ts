@@ -3,10 +3,10 @@ import type {
   MatterNetworkTopologyConnection,
   MatterNetworkTopologyNode,
   MatterNodeDiagnostics,
-} from "../../../../src/data/matter";
-import { NetworkType, NodeType } from "../../../../src/data/matter";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { emitInitial } from "./subscription";
+} from "../../../../../src/data/matter";
+import { NetworkType, NodeType } from "../../../../../src/data/matter";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import { emitInitial } from "../subscription";
 
 const EXT_PAN_ID = "dead00beef00cafe";
 const THREAD_NETWORK = "ha-thread";

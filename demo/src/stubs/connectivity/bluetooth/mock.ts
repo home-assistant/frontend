@@ -3,13 +3,10 @@ import type {
   BluetoothDeviceData,
   BluetoothScannerDetails,
   BluetoothScannerState,
-} from "../../../../src/data/bluetooth";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { emitInitial } from "./subscription";
-
-const LOCAL_SOURCE = "00:1A:7D:DA:71:11";
-const PROXY_SOURCE = "E8:DB:84:A1:C2:30";
-const SHED_SOURCE = "A4:CF:12:9B:44:70";
+} from "../../../../../src/data/bluetooth";
+import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
+import { emitInitial } from "../subscription";
+import { LOCAL_SOURCE, PROXY_SOURCE, SHED_SOURCE } from "./fixtures";
 
 const SCANNERS: BluetoothScannerDetails[] = [
   {
@@ -49,12 +46,12 @@ const SCANNER_STATES: BluetoothScannerState[] = [
     requested_mode: "active",
   },
   {
-    // A proxy that was asked to scan actively but fell back to passive; the
-    // dashboard renders this as a warning.
+    // A proxy configured for passive scanning: it reports advertisements but
+    // cannot connect, matching its `connectable: false` scanner details.
     source: SHED_SOURCE,
     adapter: "esp32",
     current_mode: "passive",
-    requested_mode: "active",
+    requested_mode: "passive",
   },
 ];
 
