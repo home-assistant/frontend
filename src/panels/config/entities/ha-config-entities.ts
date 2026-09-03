@@ -992,6 +992,7 @@ export class HaConfigEntities extends LitElement {
         }
         <ha-filter-floor-areas
           type="entity"
+          include-disabled-entities
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1001,6 +1002,7 @@ export class HaConfigEntities extends LitElement {
         ></ha-filter-floor-areas>
         <ha-filter-devices
           .type=${"entity"}
+          include-disabled-entities
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
