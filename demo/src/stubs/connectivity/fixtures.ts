@@ -16,6 +16,8 @@ export const connectivityCommands = collect((f) => f.commands);
 
 export const connectivityConfigEntries = collect((f) => f.configEntries);
 
+export const connectivityManifests = collect((f) => f.manifests);
+
 export const connectivityDevices = collect((f) => f.devices);
 
 export const connectivityEntityRegistryEntries = collect(

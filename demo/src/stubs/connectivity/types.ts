@@ -1,7 +1,10 @@
 import type { ConfigEntry } from "../../../../src/data/config_entries";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../src/data/entity/entity_registry";
-import type { IntegrationType } from "../../../../src/data/integration";
+import type {
+  IntegrationManifest,
+  IntegrationType,
+} from "../../../../src/data/integration";
 import type { TranslationCategory } from "../../../../src/data/translation";
 import type { EntityInput } from "../../../../src/fake_data/entities/types";
 
@@ -22,6 +25,8 @@ export interface ConnectivityFixtures {
   /** WS command prefixes served by the integration's mock, if it has one. */
   commands?: string[];
   configEntries?: DemoConfigEntry[];
+  /** Manifests for the domains above, so their integration pages open. */
+  manifests?: IntegrationManifest[];
   devices?: DeviceRegistryEntry[];
   entityRegistryEntries?: EntityRegistryEntry[];
   /** States for the entities above; built lazily so timestamps stay fresh. */

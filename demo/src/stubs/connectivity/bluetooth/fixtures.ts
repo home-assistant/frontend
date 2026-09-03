@@ -1,3 +1,4 @@
+import { manifest } from "../../manifest";
 import { configEntry, device } from "../helpers";
 import type { ConnectivityFixtures } from "../types";
 
@@ -12,6 +13,7 @@ const PROXY_SHED_ENTRY_ID = "mock-bluetooth-proxy-shed";
 export const bluetoothFixtures: ConnectivityFixtures = {
   components: ["bluetooth"],
   commands: ["bluetooth/"],
+  manifests: [manifest("bluetooth", "Bluetooth", { integration_type: "hub" })],
   configEntries: [
     {
       type: "hub",

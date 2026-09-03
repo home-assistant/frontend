@@ -69,6 +69,29 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test("Bluetooth panel renders its mocked live data", async ({ page }) => {
+    // The connectivity mocks reach the panel through two mechanisms the rest of
+    // the demo suite never exercises: they are registered lazily, on the first
+    // WS command the config panel sends, and their subscriptions emit the first
+    // message from a timeout so it lands after `createCollection` has reset its
+    // store. If either breaks, the panel still renders but stays empty.
+    await loadDemo(page, "/#/config/bluetooth");
+
+    const dashboard = page.locator("bluetooth-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    // Adapters come from the config entries, connections and advertisements
+    // from the subscriptions. A count of zero means the data never arrived.
+    const rows = dashboard.locator("ha-md-list-item div[slot='headline']");
+    await expect(rows).toHaveCount(3, { timeout: PANEL_TIMEOUT });
+    // Asserted over the list as a whole so a single empty count still fails.
+    await expect(dashboard.locator("ha-md-list")).not.toHaveText(/\b0\b/, {
+      timeout: QUICK_TIMEOUT,
+    });
+
+    expectNoPageErrors(pageErrors);
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,
