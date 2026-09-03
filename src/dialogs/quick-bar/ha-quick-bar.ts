@@ -344,10 +344,18 @@ export class QuickBar extends LitElement {
                       .slug=${item.app.slug}
                       .hasIcon=${item.app.icon}
                       .alt=${item.primary ?? "Unknown"}
-                      class=${iconColor ? "app-icon colored" : "app-icon"}
-                      style=${styleMap({
-                        "--app-icon-background-color": iconColor,
-                      })}
+                      style=${
+                        iconColor
+                          ? styleMap({
+                              backgroundColor: iconColor,
+                              padding: "var(--ha-space-1)",
+                              borderRadius: "var(--ha-border-radius-circle)",
+                              width: "var(--ha-space-6)",
+                              height: "var(--ha-space-6)",
+                              color: "var(--white-color)",
+                            })
+                          : nothing
+                      }
                     >
                       ${
                         item.icon
@@ -914,18 +922,6 @@ export class QuickBar extends LitElement {
 
         ha-tip a {
           color: var(--primary-color);
-        }
-
-        ha-app-icon.app-icon {
-          --ha-app-icon-size: var(--ha-space-8);
-        }
-
-        ha-app-icon.app-icon.colored {
-          --ha-app-icon-size: var(--ha-space-6);
-          padding: var(--ha-space-1);
-          border-radius: var(--ha-border-radius-circle);
-          background-color: var(--app-icon-background-color);
-          color: var(--white-color);
         }
 
         @media all and (max-width: 450px), all and (max-height: 690px) {
