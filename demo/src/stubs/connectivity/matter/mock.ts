@@ -10,6 +10,7 @@ import { NetworkType, NodeType } from "../../../../../src/data/matter";
 import type {
   MatterLockInfo,
   MatterLockUsersResponse,
+  SetMatterLockCredentialResult,
 } from "../../../../../src/data/matter-lock";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { emitInitial } from "../subscription";
@@ -294,6 +295,12 @@ export const mockMatter = (hass: MockHomeAssistant) => {
   }));
   hass.mockService("matter", "set_lock_user", () => ({}));
   hass.mockService("matter", "clear_lock_user", () => ({}));
-  hass.mockService("matter", "set_lock_credential", () => ({}));
-  hass.mockService("matter", "clear_lock_credential", () => ({}));
+  // Read back straight after saving a user, unlike the two above.
+  hass.mockService("matter", "set_lock_credential", (data, target) => ({
+    [target!.entity_id]: {
+      credential_index: (data?.credential_index as number) ?? 3,
+      user_index: (data?.user_index as number) ?? LOCK_USERS.users.length + 1,
+      next_credential_index: null,
+    } satisfies SetMatterLockCredentialResult,
+  }));
 };
