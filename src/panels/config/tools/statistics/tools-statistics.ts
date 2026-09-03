@@ -600,13 +600,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
-  private _handleSearchChange(
-    ev: InputEvent & HASSDomTargetEvent<HaInputSearch>
-  ) {
-    if (this.filter === (ev.target as HaInputSearch).value) {
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    if (this.filter === ev.target.value) {
       return;
     }
-    this.filter = (ev.target as HaInputSearch).value ?? "";
+    this.filter = ev.target.value ?? "";
   }
 
   private _handleSelectionChanged(
@@ -717,9 +715,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   ) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
-      statistic: (
-        ev.currentTarget as HTMLElement & { statistic: StatisticData }
-      ).statistic,
+      statistic: ev.currentTarget.statistic,
     });
   }
 
@@ -795,9 +791,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       HTMLElement & { data: StatisticsValidationResult[] }
     >
   ) => {
-    const issues = (
-      ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] }
-    ).data.sort(
+    const issues = ev.currentTarget.data.sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
