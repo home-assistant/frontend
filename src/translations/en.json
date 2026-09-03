@@ -12236,12 +12236,9 @@
           "disabled": {
             "title": "The Community store is disabled",
             "reason": {
-              "constrains": "The Community store could not start because its requirements are not met.",
               "invalid_token": "The GitHub token is not valid. Reconfigure the Community store integration to set a working token.",
-              "load_hacs": "The Community store could not load its data.",
               "rate_limit": "The GitHub API rate limit has been reached. The Community store works again once the limit resets.",
               "removed": "The Community store integration has been removed.",
-              "restore": "The Community store could not restore its stored data.",
               "unknown": "The Community store is unavailable, check the Home Assistant logs for more information."
             }
           },

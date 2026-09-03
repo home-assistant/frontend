@@ -58,14 +58,7 @@ const STATUS_ORDER = [
 
 // The backend reports why the store is disabled, mapped so it can be shown
 // as a translated sentence.
-const DISABLED_REASONS = [
-  "constrains",
-  "invalid_token",
-  "load_hacs",
-  "rate_limit",
-  "removed",
-  "restore",
-] as const;
+const DISABLED_REASONS = ["invalid_token", "rate_limit", "removed"] as const;
 
 type DisabledReason = (typeof DISABLED_REASONS)[number];
 
