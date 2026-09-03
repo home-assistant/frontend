@@ -186,8 +186,7 @@ export class HaCardConditionsEditor extends LitElement {
       // types, plus state/numeric_state outside entity-filter mode); seed with
       // that editor's default config.
       const elClass = customElements.get(`ha-automation-condition-${value}`) as
-        | { defaultConfig?: object }
-        | undefined;
+        { defaultConfig?: object } | undefined;
       const defaultConfig = elClass?.defaultConfig;
       conditions.push(
         (defaultConfig

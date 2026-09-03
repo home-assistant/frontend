@@ -492,14 +492,16 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${hideLiveTest
-              ? nothing
-              : html`<ha-dropdown-item value="test">
-                  ${this.hass.localize(
+            ${
+              hideLiveTest
+                ? nothing
+                : html`<ha-dropdown-item value="test">
+                    ${this.hass.localize(
                     "ui.panel.lovelace.editor.condition-editor.test"
                   )}
-                  <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
-                </ha-dropdown-item>`}
+                    <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+                  </ha-dropdown-item>`
+            }
 
             <ha-dropdown-item value="duplicate">
               ${this.hass.localize(
@@ -576,15 +578,15 @@ export class HaCardConditionEditor extends LitElement {
                     ></ha-yaml-editor>
                   `
                 : this._usesAutomationEditor
-                ? html`
-                    <ha-automation-condition-editor
-                      .hass=${this.hass}
-                      .condition=${condition}
-                      .uiSupported=${true}
-                    ></ha-automation-condition-editor>
-                  `
-                : html`
-                    ${dynamicElement(
+                  ? html`
+                      <ha-automation-condition-editor
+                        .hass=${this.hass}
+                        .condition=${condition}
+                        .uiSupported=${true}
+                      ></ha-automation-condition-editor>
+                    `
+                  : html`
+                      ${dynamicElement(
                       getConditionClassName(
                         condition.condition,
                         this._noEntity
@@ -594,7 +596,8 @@ export class HaCardConditionEditor extends LitElement {
                         condition: condition,
                       }
                     )}
-                  `}
+                    `
+            }
             }
           </div>
         </ha-expansion-panel>
