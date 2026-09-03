@@ -83,11 +83,13 @@ export class HaCardConditionsEditor extends LitElement {
 
   @state() private _rowSortSelected?: number;
 
-  private _conditionKeys = new WeakMap<VisibilityCondition, string>();
+  private _conditionKeys = new WeakMap<VisibilityCondition, number>();
 
-  private _getKey(condition: VisibilityCondition): string {
+  private _nextConditionKey = 0;
+
+  private _getKey(condition: VisibilityCondition): number {
     if (!this._conditionKeys.has(condition)) {
-      this._conditionKeys.set(condition, Math.random().toString());
+      this._conditionKeys.set(condition, this._nextConditionKey++);
     }
 
     return this._conditionKeys.get(condition)!;
