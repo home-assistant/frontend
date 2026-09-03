@@ -310,18 +310,13 @@ describe("index.html boot recovery guard", () => {
     await failImport(win, importFailure(CHUNK));
 
     expect(location.replace).toHaveBeenCalledOnce();
-    expect(JSON.parse(storage.getItem("haStaleBuildReload"))).toMatchObject({
-      n: 1,
-    });
+    expect(Number(storage.getItem("haStaleBuildReload"))).toBeGreaterThan(0);
   });
 
   it("does not reload again after a recent reload, even without the param", async () => {
     // core.ts strips ha_cache_bust from the URL on every successful connect, so
     // the param cannot bound the loop across page loads — the marker does.
-    storage.setItem(
-      "haStaleBuildReload",
-      JSON.stringify({ n: 1, t: Date.now() })
-    );
+    storage.setItem("haStaleBuildReload", String(Date.now()));
     const win = runGuard();
 
     await failImport(win, importFailure(CHUNK));
@@ -331,10 +326,7 @@ describe("index.html boot recovery guard", () => {
   });
 
   it("reloads again once the cooldown has passed", async () => {
-    storage.setItem(
-      "haStaleBuildReload",
-      JSON.stringify({ n: 1, t: Date.now() - 61_000 })
-    );
+    storage.setItem("haStaleBuildReload", String(Date.now() - 61_000));
     const win = runGuard();
 
     await failImport(win, importFailure(CHUNK));
@@ -343,7 +335,8 @@ describe("index.html boot recovery guard", () => {
   });
 
   it("replaces a marker it cannot read", async () => {
-    storage.setItem("haStaleBuildReload", "not json");
+    // Also covers a marker written by an older build, which was JSON.
+    storage.setItem("haStaleBuildReload", '{"n":1,"t":1788243737299}');
     const win = runGuard();
 
     await failImport(win, importFailure(CHUNK));
@@ -351,9 +344,7 @@ describe("index.html boot recovery guard", () => {
     // Recovered once, and left a marker that bounds the next boot — an
     // unreadable one must not hand out a reload on every page load.
     expect(location.replace).toHaveBeenCalledOnce();
-    expect(JSON.parse(storage.getItem("haStaleBuildReload"))).toMatchObject({
-      n: 1,
-    });
+    expect(Number(storage.getItem("haStaleBuildReload"))).toBeGreaterThan(0);
   });
 
   it("still recovers when session storage is unavailable", async () => {

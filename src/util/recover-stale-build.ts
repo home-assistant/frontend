@@ -198,8 +198,9 @@ const dropCachesAndReload = async (bust: number): Promise<void> => {
  * guard blocked it — so callers can fall back to logging / an error screen
  * instead of silently swallowing a still-failing chunk.
  *
- * Guarded by a monotonic sessionStorage counter — NOT the boot guard's URL
- * param, which core.ts strips on every successful connect — so a recovery that
+ * Guarded by the time of the last recovery reload in sessionStorage — NOT the
+ * boot guard's URL param, which core.ts strips on every connect — so a recovery
+ * that
  * boots and then immediately re-triggers the same missing chunk (a deep-linked
  * panel, more-info from the URL, or a preloaded route) cannot reload-loop.
  */
@@ -208,39 +209,22 @@ export const reloadFresh = (): boolean => {
     return false;
   }
   const now = Date.now();
-  let attempts = 0;
   let last = 0;
   let storageOk = true;
-  let stored: string | null = null;
   try {
-    stored = sessionStorage.getItem(RELOAD_STORAGE_KEY);
+    // A missing or unreadable marker reads as 0, i.e. no recent reload; it is
+    // replaced below rather than standing in the way of every later recovery.
+    last = Number(sessionStorage.getItem(RELOAD_STORAGE_KEY)) || 0;
   } catch (_err) {
     storageOk = false;
   }
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored);
-      attempts = Number(parsed.n) || 0;
-      last = Number(parsed.t) || 0;
-    } catch (_err) {
-      // A marker we cannot read is one to replace below, not to trust: kept in
-      // the same try as the storage access it would count as no storage at all,
-      // and the bad value would survive to block every later recovery.
-    }
-  }
-  if (now - last > RELOAD_COOLDOWN) {
-    attempts = 0;
-  }
-  if (attempts >= 1) {
-    // Already reloaded once recently and it still failed: stop, to avoid a
-    // reload loop on a genuinely broken (not merely stale) deploy.
+  if (now - last <= RELOAD_COOLDOWN) {
+    // Already reloaded within the cooldown and it still failed: stop, to avoid
+    // a reload loop on a genuinely broken (not merely stale) deploy.
     return false;
   }
   try {
-    sessionStorage.setItem(
-      RELOAD_STORAGE_KEY,
-      JSON.stringify({ n: attempts + 1, t: now })
-    );
+    sessionStorage.setItem(RELOAD_STORAGE_KEY, String(now));
   } catch (_err) {
     storageOk = false;
   }
