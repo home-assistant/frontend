@@ -40,7 +40,7 @@ export const mockMqtt = (hass: MockHomeAssistant) => {
   hass.mockWS("mqtt/device/debug_info", () => ({
     entities: [
       {
-        entity_id: "sensor.kitchen_temperature",
+        entity_id: "sensor.fridge_temperature",
         discovery_data: {
           topic: "homeassistant/sensor/kitchen/temperature/config",
           payload:

@@ -11,8 +11,8 @@ const ENTRY_ID = "mock-mqtt";
 
 const DEVICES = [
   device(
-    "mqtt-kitchen-sensor",
-    "Kitchen sensor",
+    "mqtt-fridge-sensor",
+    "Fridge sensor",
     "Xiaomi",
     "LYWSD03MMC",
     ENTRY_ID,
@@ -29,14 +29,14 @@ const DEVICES = [
 
 const REGISTRY_ENTRIES = [
   registryEntry(
-    "sensor.kitchen_temperature",
-    "mqtt-kitchen-sensor",
+    "sensor.fridge_temperature",
+    "mqtt-fridge-sensor",
     ENTRY_ID,
     "mqtt"
   ),
   registryEntry(
-    "sensor.kitchen_battery",
-    "mqtt-kitchen-sensor",
+    "sensor.fridge_battery",
+    "mqtt-fridge-sensor",
     ENTRY_ID,
     "mqtt"
   ),
@@ -60,21 +60,21 @@ export const mqttFixtures: ConnectivityFixtures = {
   entityRegistryEntries: REGISTRY_ENTRIES,
   entities: () =>
     withRegistryLinks(REGISTRY_ENTRIES, {
-      "sensor.kitchen_temperature": {
-        entity_id: "sensor.kitchen_temperature",
+      "sensor.fridge_temperature": {
+        entity_id: "sensor.fridge_temperature",
         state: "21.4",
         attributes: {
-          friendly_name: "Kitchen temperature",
+          friendly_name: "Fridge temperature",
           device_class: "temperature",
           state_class: "measurement",
           unit_of_measurement: "°C",
         },
       },
-      "sensor.kitchen_battery": {
-        entity_id: "sensor.kitchen_battery",
+      "sensor.fridge_battery": {
+        entity_id: "sensor.fridge_battery",
         state: "92",
         attributes: {
-          friendly_name: "Kitchen battery",
+          friendly_name: "Fridge battery",
           device_class: "battery",
           state_class: "measurement",
           unit_of_measurement: "%",
