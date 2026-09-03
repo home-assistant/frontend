@@ -1,5 +1,6 @@
 import type { Feature, FeatureCollection, Polygon } from "geojson";
 import type {
+  GeoJSONSource,
   IControl,
   LayerSpecification,
   Map as MapLibreMap,
@@ -29,16 +30,23 @@ import type {
   MapCircleOptions,
   MapClusterOptions,
   MapControlPosition,
+  MapDraggableMarkerOptions,
+  MapEditableCircleHandle,
+  MapEditableCircleOptions,
+  MapEditableMarkerHandle,
+  MapEditingSupport,
   MapEngine,
+  MapMarkerHandle,
   MapEngineEvents,
   MapEngineOptions,
   MapFitOptions,
   MapItemHandle,
   MapLatLng,
-  MapMarkerHandle,
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
+import { distanceMeters, pointEastOf } from "../map-engine";
+import { createResizeHandleElement, RESIZE_KEY_STEP } from "../editable-circle";
 
 type MapLibreModule = typeof maplibregl;
 
@@ -109,7 +117,12 @@ interface ManagedMarker {
   element: HTMLElement;
   location: MapLatLng;
   options: MapMarkerOptions;
-  handle: MapMarkerHandle;
+  handle: MapEditableMarkerHandle;
+  draggable?: boolean;
+  onDragEnd?: (location: MapLatLng) => void;
+  dragging?: boolean;
+  /** Pre-drag location; the next update echoing it is ignored (see setLocation) */
+  staleLocation?: MapLatLng;
   mlMarker?: MapLibreMarker;
   decoration?: MapItemHandle;
   removed?: boolean;
@@ -513,11 +526,35 @@ export class MapLibreMapEngine implements MapEngine {
     );
   }
 
+  public panTo(location: MapLatLng): void {
+    this._map?.panTo([location[1], location[0]]);
+  }
+
+  public containsLocation(location: MapLatLng): boolean {
+    return this._map?.getBounds().contains([location[1], location[0]]) ?? false;
+  }
+
   public addMarker(
     element: HTMLElement,
     location: MapLatLng,
     options: MapMarkerOptions
   ): MapMarkerHandle {
+    return this._addMarker(element, location, options);
+  }
+
+  public editing: MapEditingSupport = {
+    addDraggableMarker: (element, location, options) =>
+      this._addMarker(element, location, options, true),
+    addEditableCircle: (center, options) =>
+      this._addEditableCircle(center, options),
+  };
+
+  private _addMarker(
+    element: HTMLElement,
+    location: MapLatLng,
+    options: MapDraggableMarkerOptions,
+    draggable = false
+  ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
     if (options.title) {
@@ -535,11 +572,32 @@ export class MapLibreMapEngine implements MapEngine {
       element,
       location,
       options,
-      handle: undefined as unknown as MapMarkerHandle,
+      draggable,
+      onDragEnd: options.onDragEnd,
+      handle: undefined as unknown as MapEditableMarkerHandle,
     };
     managed.handle = {
-      location,
+      get location() {
+        return managed.location;
+      },
       clusterData: options.clusterData,
+      setLocation: (newLocation) => {
+        if (managed.dragging) {
+          return;
+        }
+        // Skip one update echoing the pre-drag location (the save has not returned yet)
+        const stale = managed.staleLocation;
+        managed.staleLocation = undefined;
+        if (
+          stale &&
+          newLocation[0] === stale[0] &&
+          newLocation[1] === stale[1]
+        ) {
+          return;
+        }
+        managed.location = newLocation;
+        managed.mlMarker?.setLngLat([newLocation[1], newLocation[0]]);
+      },
       remove: () => {
         managed.removed = true;
         this._hideMarker(managed);
@@ -566,6 +624,7 @@ export class MapLibreMapEngine implements MapEngine {
       const { options } = managed;
       managed.mlMarker = new this._maplibre.Marker({
         element: managed.element,
+        draggable: managed.draggable ?? false,
         ...(options.anchor
           ? {
               anchor: "top-left" as const,
@@ -578,6 +637,18 @@ export class MapLibreMapEngine implements MapEngine {
       })
         .setLngLat([managed.location[1], managed.location[0]])
         .addTo(this._map);
+      if (managed.draggable) {
+        managed.mlMarker.on("dragstart", () => {
+          managed.dragging = true;
+          managed.staleLocation = managed.location;
+        });
+        managed.mlMarker.on("dragend", () => {
+          managed.dragging = false;
+          const lngLat = managed.mlMarker!.getLngLat();
+          managed.location = [lngLat.lat, lngLat.lng];
+          managed.onDragEnd?.(managed.location);
+        });
+      }
     }
     if (managed.options.decoration && !managed.decoration) {
       managed.decoration = this.addCircle(
@@ -617,6 +688,239 @@ export class MapLibreMapEngine implements MapEngine {
     });
     return {
       remove: () => {
+        this._removeCustomLayer(`${id}-fill`);
+        this._removeCustomLayer(`${id}-line`);
+        this._removeCustomSource(id);
+      },
+    };
+  }
+
+  private _addEditableCircle(
+    center: MapLatLng,
+    options: MapEditableCircleOptions
+  ): MapEditableCircleHandle {
+    if (!this._map || !this._maplibre) {
+      return {
+        center,
+        radius: options.radius,
+        update: () => undefined,
+        remove: () => undefined,
+      };
+    }
+    const map = this._map;
+    const maplibre = this._maplibre;
+    let currentCenter = center;
+    let currentRadius = options.radius;
+
+    const id = `${CUSTOM_PREFIX}editable-${this._idCounter++}`;
+    this._addCustomSource(id, circlePolygon(center, options.radius));
+    this._addCustomLayer({
+      id: `${id}-fill`,
+      type: "fill",
+      source: id,
+      paint: { "fill-color": options.color, "fill-opacity": 0.2 },
+    });
+    this._addCustomLayer({
+      id: `${id}-line`,
+      type: "line",
+      source: id,
+      paint: { "line-color": options.color, "line-width": 3 },
+    });
+    // Redraw at most once per frame while dragging
+    let frame: number | undefined;
+    const redraw = () => {
+      if (frame !== undefined) {
+        return;
+      }
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+        (map.getSource(id) as GeoJSONSource | undefined)?.setData(
+          circlePolygon(currentCenter, currentRadius)
+        );
+      });
+    };
+
+    const centerSize = options.centerSize ?? [16, 16];
+    const centerEl = options.centerElement ?? document.createElement("div");
+    if (!options.centerElement) {
+      centerEl.className = "editable-circle-center";
+    }
+    centerEl.style.width = `${centerSize[0]}px`;
+    centerEl.style.height = `${centerSize[1]}px`;
+    if (options.title) {
+      centerEl.title = options.title;
+    }
+    if (options.onClick) {
+      centerEl.tabIndex = 0;
+    }
+    setMarkerAccessibility(centerEl, options.title, !!options.onClick);
+    const centerMarker = new maplibre.Marker({
+      element: centerEl,
+      draggable: options.moveable ?? false,
+    })
+      .setLngLat([center[1], center[0]])
+      .addTo(map);
+
+    let resizeMarker: MapLibreMarker | undefined;
+    let resizeHandle: HTMLElement | undefined;
+    const placeResizeHandle = () => {
+      const east = pointEastOf(currentCenter, currentRadius);
+      resizeMarker?.setLngLat([east[1], east[0]]);
+      const radiusText = String(Math.round(currentRadius));
+      resizeHandle?.setAttribute("aria-valuenow", radiusText);
+      // Without a value text the value is read as a percentage of the range
+      resizeHandle?.setAttribute("aria-valuetext", radiusText);
+    };
+
+    if (options.resizable) {
+      const east = pointEastOf(center, options.radius);
+      resizeHandle = createResizeHandleElement(options.resizeLabel);
+      resizeMarker = new maplibre.Marker({
+        element: resizeHandle,
+        draggable: true,
+      })
+        .setLngLat([east[1], east[0]])
+        .addTo(map);
+      placeResizeHandle();
+      resizeMarker.on("drag", () => {
+        const lngLat = resizeMarker!.getLngLat();
+        currentRadius = Math.max(
+          1,
+          distanceMeters(currentCenter, [lngLat.lat, lngLat.lng])
+        );
+        redraw();
+      });
+      resizeMarker.on("dragend", () => {
+        // Snap the handle back onto the east edge
+        placeResizeHandle();
+        options.onResize?.(currentRadius);
+      });
+      // Arrow keys resize in steps, committed on key release
+      let keyboardRadius: number | undefined;
+      resizeHandle.addEventListener("keydown", (ev) => {
+        const direction =
+          ev.key === "ArrowRight" || ev.key === "ArrowUp"
+            ? 1
+            : ev.key === "ArrowLeft" || ev.key === "ArrowDown"
+              ? -1
+              : 0;
+        if (!direction) {
+          return;
+        }
+        ev.preventDefault();
+        currentRadius = Math.max(
+          1,
+          currentRadius * (1 + direction * RESIZE_KEY_STEP)
+        );
+        keyboardRadius = currentRadius;
+        placeResizeHandle();
+        redraw();
+      });
+      const commitKeyboardResize = () => {
+        if (keyboardRadius !== undefined) {
+          keyboardRadius = undefined;
+          options.onResize?.(currentRadius);
+        }
+      };
+      resizeHandle.addEventListener("keyup", commitKeyboardResize);
+      // Focus can leave while a key is still held
+      resizeHandle.addEventListener("blur", commitKeyboardResize);
+    }
+
+    // Skip one update echoing the pre-drag values (the save has not returned yet)
+    let dragging = false;
+    let staleCenter: MapLatLng | undefined;
+    let staleRadius: number | undefined;
+    [centerMarker, resizeMarker].forEach((handleMarker) => {
+      handleMarker?.on("dragstart", () => {
+        dragging = true;
+        staleCenter = currentCenter;
+        staleRadius = currentRadius;
+      });
+      handleMarker?.on("dragend", () => {
+        dragging = false;
+      });
+    });
+    const isStale = (candidateCenter: MapLatLng, candidateRadius: number) =>
+      staleCenter !== undefined &&
+      staleRadius !== undefined &&
+      candidateCenter[0] === staleCenter[0] &&
+      candidateCenter[1] === staleCenter[1] &&
+      candidateRadius === staleRadius;
+
+    if (options.moveable) {
+      centerMarker.on("drag", () => {
+        const lngLat = centerMarker.getLngLat();
+        currentCenter = [lngLat.lat, lngLat.lng];
+        placeResizeHandle();
+        redraw();
+      });
+      centerMarker.on("dragend", () => options.onMove?.(currentCenter));
+    }
+
+    // The center element may be reused for a rebuilt circle; its listeners go with this one
+    let removeCenterListeners: (() => void) | undefined;
+    if (options.onClick) {
+      // A drag can end in a click; only one with its own pointer down counts
+      let dragged = false;
+      centerMarker.on("dragstart", () => {
+        dragged = true;
+      });
+      const onPointerDown = () => {
+        dragged = false;
+      };
+      const onClick = (ev: MouseEvent) => {
+        ev.stopPropagation();
+        if (dragged) {
+          return;
+        }
+        options.onClick!();
+      };
+      const onKeydown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter") {
+          options.onClick!();
+        }
+      };
+      centerEl.addEventListener("pointerdown", onPointerDown);
+      centerEl.addEventListener("click", onClick);
+      centerEl.addEventListener("keydown", onKeydown);
+      removeCenterListeners = () => {
+        centerEl.removeEventListener("pointerdown", onPointerDown);
+        centerEl.removeEventListener("click", onClick);
+        centerEl.removeEventListener("keydown", onKeydown);
+      };
+    }
+
+    return {
+      get center() {
+        return currentCenter;
+      },
+      get radius() {
+        return currentRadius;
+      },
+      update: (newCenter, newRadius) => {
+        if (dragging) {
+          return;
+        }
+        const stale = isStale(newCenter, newRadius);
+        staleCenter = undefined;
+        staleRadius = undefined;
+        if (stale) {
+          return;
+        }
+        currentCenter = newCenter;
+        currentRadius = newRadius;
+        centerMarker.setLngLat([newCenter[1], newCenter[0]]);
+        placeResizeHandle();
+        redraw();
+      },
+      remove: () => {
+        if (frame !== undefined) {
+          cancelAnimationFrame(frame);
+        }
+        removeCenterListeners?.();
+        centerMarker.remove();
+        resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
         this._removeCustomSource(id);
