@@ -174,9 +174,9 @@ export class HaCardConditionsEditor extends LitElement {
               >
                 <div
                   slot="drag-handle"
-                  class="handle ${this._rowSortSelected === idx
-                    ? "active"
-                    : ""}"
+                  class="handle ${
+                    this._rowSortSelected === idx ? "active" : ""
+                  }"
                   role="button"
                   tabindex="0"
                   aria-label=${this.hass.localize("ui.common.move")}
@@ -198,25 +198,29 @@ export class HaCardConditionsEditor extends LitElement {
                   "ui.panel.lovelace.editor.condition-editor.add"
                 )}
               </ha-button>
-              ${this._canPaste
-                ? html`
-                    <ha-dropdown-item value="paste">
-                      ${this.hass.localize(
+              ${
+                this._canPaste
+                  ? html`
+                      <ha-dropdown-item value="paste">
+                        ${this.hass.localize(
                         "ui.panel.lovelace.editor.edit_card.paste_condition"
                       )}
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiContentPaste}
-                      ></ha-svg-icon>
-                    </ha-dropdown-item>
-                  `
-                : nothing}
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiContentPaste}
+                        ></ha-svg-icon>
+                      </ha-dropdown-item>
+                    `
+                  : nothing
+              }
               ${this._availableConditions.map(
                 (condition) => html`
                   <ha-dropdown-item .value=${condition}>
-                    ${this.hass!.localize(
-                      `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
-                    ) || condition}
+                    ${
+                      this.hass!.localize(
+                        `ui.panel.lovelace.editor.condition-editor.condition.${condition}.label`
+                      ) || condition
+                    }
                     <ha-svg-icon
                       slot="icon"
                       .path=${ICON_CONDITION[condition]}
@@ -225,7 +229,7 @@ export class HaCardConditionsEditor extends LitElement {
                 `
               )}
             </ha-dropdown>
-        </div>
+          </div>
         </div>
       </ha-sortable>
     `;
