@@ -26,6 +26,7 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
+import { pruneOrphanedSegments } from "../../../../data/vacuum";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -105,11 +106,18 @@ export class DialogVacuumSegmentMapping
 
     try {
       const mapper = this._mapper!;
+      const lastSeenSegments = mapper.lastSeenSegments;
+
+      // Only prune when segments actually loaded, to avoid wiping the mapping
+      // on a transient load error.
+      const areaMapping = lastSeenSegments
+        ? pruneOrphanedSegments(this._areaMapping, lastSeenSegments)
+        : this._areaMapping;
 
       const options: VacuumEntityOptions = {
         ...(this._entry?.options?.vacuum ?? {}),
-        area_mapping: this._areaMapping,
-        last_seen_segments: mapper.lastSeenSegments,
+        area_mapping: areaMapping,
+        last_seen_segments: lastSeenSegments,
       };
 
       await updateEntityRegistryEntry(this.hass, this._params.entityId, {
