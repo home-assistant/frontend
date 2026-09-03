@@ -12,7 +12,16 @@ const layer = (id, layout) => ({ id, type: "symbol", layout });
 
 const STYLE = {
   layers: [
-    layer("label-place-city", { "text-field": ["get", "name"] }),
+    {
+      ...layer("label-place-city", { "text-field": ["get", "name"] }),
+      "source-layer": "place_labels",
+      filter: ["==", ["get", "kind"], "city"],
+    },
+    {
+      ...layer("label-place-suburb", { "text-field": ["get", "name"] }),
+      "source-layer": "place_labels",
+      filter: ["==", ["get", "kind"], "suburb"],
+    },
     layer("label-street-primary", {
       "symbol-placement": "line",
       "text-field": ["get", "name"],
@@ -101,6 +110,33 @@ describe("addLatinLabels", () => {
 
   it("does not touch other layers", () => {
     expect(textField(style, "label-motorway-shield")).toBe("{ref}");
-    expect(style.layers[3]).toEqual(STYLE.layers[3]);
+    expect(style.layers.at(-1)).toEqual(STYLE.layers.at(-1));
+  });
+
+  // The OSMF tiles carry some places twice (node and area centroid). Without
+  // these, doubled town labels come back and nothing else fails.
+  describe("deduplicates places", () => {
+    const byId = (id) => style.layers.find((l) => l.id === id);
+
+    it("requires a population on towns and larger, keeping the kind filter", () => {
+      expect(byId("label-place-city").filter).toEqual([
+        "all",
+        ["==", ["get", "kind"], "city"],
+        ["has", "population"],
+      ]);
+      expect(byId("label-place-city").layout["text-padding"]).toBeUndefined();
+    });
+
+    it("pads smaller places instead, which often lack a population", () => {
+      const suburb = byId("label-place-suburb");
+      expect(suburb.filter).toEqual(["==", ["get", "kind"], "suburb"]);
+      expect(suburb.layout["text-padding"]).toBeGreaterThan(0);
+    });
+
+    it("leaves non-place labels alone", () => {
+      const streetLayer = byId("label-street-primary");
+      expect(streetLayer.filter).toBeUndefined();
+      expect(streetLayer.layout["text-padding"]).toBeUndefined();
+    });
   });
 });
