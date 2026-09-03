@@ -267,9 +267,9 @@ class PartialPanelResolver extends HassRouterPage {
       // screen, so later panel updates do not fire it again. Native apps remove
       // it instantly because their own splash screen is still visible.
       if (
-        removeLaunchScreen(!!this.hass.auth.external?.config.hasSplashscreen)
+        removeLaunchScreen(!!this.hass.auth?.external?.config.hasSplashscreen)
       ) {
-        this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
+        this.hass.auth?.external?.fireMessage({ type: "frontend/loaded" });
       }
     }
   }
