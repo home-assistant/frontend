@@ -9,23 +9,46 @@
    * recover this, because the bundle itself failed to load, so this guard has
    * to live inline in the HTML document.
    *
-   * On a failed entry load we navigate once to the same URL with a
-   * cache-busting query param (and, on https, after dropping the service
-   * worker + its caches) so the browser fetches a fresh index.html that points
-   * at the current hashes. The param doubles as a one-shot loop guard: if the
-   * freshly fetched index still fails we stop and show a message instead of
-   * reloading forever. core.ts strips the param again after a successful boot.
+   * Only a file the server no longer has means a stale index (see probeGone).
+   * On a 404 we navigate once to the same URL with a cache-busting query param
+   * (and, on https, after dropping the service worker + its caches) so the
+   * browser fetches a fresh index.html that points at the current hashes. One
+   * reload per minute, tracked in sessionStorage: if it did not help, stop and
+   * show a message instead of reloading forever.
+   *
+   * Never transpiled, so it stays within the [legacy] browserslist floor
+   * (Chrome 59 / Safari 12): no object spread, Promise.finally, optional
+   * chaining or AbortController.
    */
   (function () {
-    var BUST_PARAM = "ha_cache_bust";
+    const BUST_PARAM = "ha_cache_bust";
     // Only production entry bundles carry a content hash. Requiring the hash
     // keeps the guard inert in development (unhashed core.js / app.js) and
     // scoped to the entry chunks whose 404 is fatal to boot - not translations
     // or lazily loaded panels, which fail non-fatally and are handled elsewhere.
     // Injected from stale-build-patterns.json (the single source shared with
     // the bundled util/recover-stale-build.ts) so the two never drift.
-    var HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
-    var MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
+    const HASHED_ENTRY = new RegExp(<%= JSON.stringify(staleBuildPatterns.hashedEntry) %>, "i");
+    const MODULE_ERROR = new RegExp(<%= JSON.stringify(staleBuildPatterns.moduleError) %>, "i");
+    // The same pattern anchored: a URL is ours only when it *is* an entry path,
+    // not when it merely contains one (/local/frontend_latest/x.abc12345.js).
+    const HASHED_PATH = new RegExp("^(?:" + <%= JSON.stringify(staleBuildPatterns.hashedEntry) %> + ")$", "i");
+    // Any file reference, to tell "a file we do not ship failed" apart from
+    // "the browser did not say which file failed".
+    const ANY_URL = new RegExp(<%= JSON.stringify(staleBuildPatterns.anyUrl) %>, "i");
+    const PROBE_TIMEOUT = 5000;
+    // Grace period before admitting defeat, so a modulepreload failure that
+    // the browser retries successfully does not flash the message.
+    const FATAL_DELAY = 10000;
+    // This build's own entry bundles, to probe when the browser did not name
+    // the file that failed (Safari's message names none).
+    const LATEST_ENTRY_JS = <%= JSON.stringify(latestEntryJS) %>;
+    const ES5_ENTRY_JS = <%= JSON.stringify(es5EntryJS) %>;
+    // Shared with the bundled recovery: one reload per minute between them.
+    const RELOAD_STORAGE_KEY = "haStaleBuildReload";
+    const RELOAD_COOLDOWN = 60000;
+    const probing = {};
+    let recovering = false;
 
     function booted() {
       // The launch screen is only removed once the app has taken over the
@@ -36,21 +59,62 @@
     }
 
     function showFatal() {
-      var box = document.getElementById("ha-launch-screen-info-box");
+      const box = document.getElementById("ha-launch-screen-info-box");
       if (box) {
         box.textContent =
           "Could not load Home Assistant. Please refresh the page, and clear your browser cache if the problem persists.";
       }
     }
 
+    /*
+     * Claim a recovery reload: one per cooldown window, timed rather than
+     * counted. The bust param alone is not a
+     * durable marker: core.ts strips it on every successful connect, so a page
+     * that boots and then fails on the next load would reload again and again.
+     * When storage is unavailable we keep the old param-only behaviour rather
+     * than lose the recovery entirely.
+     */
+    function claimReload() {
+      const now = Date.now();
+      let last = 0;
+      try {
+        // A missing or unreadable marker reads as 0, i.e. no recent reload; it
+        // is replaced below rather than handing out a reload on every boot.
+        last = Number(sessionStorage.getItem(RELOAD_STORAGE_KEY)) || 0;
+      } catch (_err) {
+        return true;
+      }
+      if (now - last <= RELOAD_COOLDOWN) {
+        return false;
+      }
+      try {
+        sessionStorage.setItem(RELOAD_STORAGE_KEY, String(now));
+      } catch (_err) {
+        // ignore
+      }
+      return true;
+    }
+
     function recover() {
+      if (recovering) {
+        // core.js and app.js are confirmed gone moments apart; the first
+        // verdict is already navigating.
+        return;
+      }
       if (location.search.indexOf(BUST_PARAM + "=") !== -1) {
         // We already reloaded once with a fresh index and it still failed;
         // stop to avoid a reload loop.
         showFatal();
         return;
       }
-      var target =
+      if (!claimReload()) {
+        // Reloaded recently (possibly on the previous page load, before the
+        // param was stripped) and it did not help: stop asking.
+        showFatal();
+        return;
+      }
+      recovering = true;
+      const target =
         location.pathname +
         location.search +
         (location.search ? "&" : "?") +
@@ -63,31 +127,21 @@
       // stale cached index. Drop the worker and its caches first so the reload
       // is served fresh from the network.
       if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-        var go = function () {
+        const go = () => {
           location.replace(target);
         };
         Promise.all([
           navigator.serviceWorker
             .getRegistrations()
-            .then(function (regs) {
-              return Promise.all(
-                regs.map(function (r) {
-                  return r.unregister();
-                })
-              );
-            })
-            .catch(function () {}),
+            .then((regs) => Promise.all(regs.map((reg) => reg.unregister())))
+            .catch(() => {}),
           self.caches
             ? caches
                 .keys()
-                .then(function (keys) {
-                  return Promise.all(
-                    keys.map(function (k) {
-                      return caches.delete(k);
-                    })
-                  );
-                })
-                .catch(function () {})
+                .then((keys) =>
+                  Promise.all(keys.map((key) => caches.delete(key)))
+                )
+                .catch(() => {})
             : null,
         ]).then(go, go);
       } else {
@@ -95,26 +149,102 @@
       }
     }
 
-    function maybeRecover(url, message) {
-      if (booted()) {
+    /*
+     * The file a failure is about: its absolute URL when this build ships it,
+     * "foreign" for anything else (a dashboard resource, an extra_module_url, a
+     * custom panel - those say nothing about the index being stale, and
+     * reloading over them never ends), or null when no file was named.
+     */
+    function failedFile(text) {
+      const match = ANY_URL.exec(text);
+      if (!match) {
+        return null;
+      }
+      try {
+        const url = new URL(match[0], location.href);
+        if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
+          return url.href;
+        }
+      } catch (_err) {
+        // Not a URL after all.
+      }
+      return "foreign";
+    }
+
+    function referenceUrl() {
+      const entries = window.latestJS ? LATEST_ENTRY_JS : ES5_ENTRY_JS;
+      for (const entry of entries) {
+        const url = new URL(entry, location.href);
+        if (url.origin === location.origin && HASHED_PATH.test(url.pathname)) {
+          return url.href;
+        }
+      }
+      return null;
+    }
+
+    /*
+     * A failed load looks identical whether the file was deleted by an upgrade
+     * or the request never reached the server, and only the first is fixed by
+     * reloading. HEAD is never intercepted by the service worker (workbox
+     * routes GET only), so the answer comes from the server itself. A server
+     * that refuses HEAD outright leaves us with no answer, and no answer means
+     * no recovery: a GET cannot substitute, because the frontend_latest route
+     * is CacheFirst with `ignoreSearch`, so a controlling worker can answer it
+     * from its own cache.
+     */
+    function probeGone(url) {
+      // Status 0 stands for "no usable answer": unreachable, or too slow.
+      return Promise.race([
+        fetch(url, { method: "HEAD", cache: "no-store" }).then(
+          (response) => response.status,
+          () => 0
+        ),
+        new Promise((resolve) => {
+          setTimeout(() => resolve(0), PROBE_TIMEOUT);
+        }),
+      ]).then((status) => status === 404 || status === 410);
+    }
+
+    function maybeRecover(text) {
+      if (booted() || (!HASHED_ENTRY.test(text) && !MODULE_ERROR.test(text))) {
         return;
       }
-      if (
-        (url && HASHED_ENTRY.test(url)) ||
-        (message && (HASHED_ENTRY.test(message) || MODULE_ERROR.test(message)))
-      ) {
-        recover();
+      const failed = failedFile(text);
+      if (failed === "foreign") {
+        return;
       }
+      // Probe per URL: core.js and app.js fail as separate events, and one of
+      // them being served says nothing about the other.
+      const target = failed || referenceUrl();
+      if (!target || probing[target]) {
+        return;
+      }
+      probing[target] = true;
+      probeGone(target).then((gone) => {
+        delete probing[target];
+        if (gone) {
+          recover();
+          return;
+        }
+        // Nothing was deleted, so a reload cannot help - but the file that
+        // failed is not coming back either. Say so if the app never takes over,
+        // rather than leaving an empty launch screen up for good.
+        setTimeout(() => {
+          if (!booted() && !recovering) {
+            showFatal();
+          }
+        }, FATAL_DELAY);
+      });
     }
 
     // Resource-load errors (<script>, modulepreload <link>) do not bubble, so
     // they are only observable in the capture phase at the window.
     window.addEventListener(
       "error",
-      function (ev) {
-        var el = ev.target;
+      (ev) => {
+        const el = ev.target;
         if (el && (el.tagName === "SCRIPT" || el.tagName === "LINK")) {
-          maybeRecover(el.href || el.src, null);
+          maybeRecover(el.href || el.src || "");
         }
       },
       true
@@ -122,9 +252,9 @@
 
     // A failed dynamic import() rejects; the inline entry imports do not catch
     // it, so the rejection surfaces here.
-    window.addEventListener("unhandledrejection", function (ev) {
-      var reason = ev && ev.reason;
-      maybeRecover(null, reason && (reason.message || String(reason)));
+    window.addEventListener("unhandledrejection", (ev) => {
+      const reason = ev && ev.reason;
+      maybeRecover((reason && (reason.message || String(reason))) || "");
     });
   })();
 </script>
