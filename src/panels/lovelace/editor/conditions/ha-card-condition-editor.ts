@@ -45,7 +45,6 @@ import "../../../config/automation/condition/types/ha-automation-condition-state
 import "../../../config/automation/condition/types/ha-automation-condition-sun";
 import "../../../config/automation/condition/types/ha-automation-condition-template";
 import "../../../config/automation/condition/types/ha-automation-condition-zone";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -551,11 +550,13 @@ export class HaCardConditionEditor extends LitElement {
               : nothing
           }
           <h3 slot="header">
-            ${description ||
-            this.hass.localize(
-              `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
-            ) ||
-            condition.condition}
+            ${
+              description ||
+              this.hass.localize(
+                `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
+              ) ||
+              condition.condition
+            }
           </h3>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}
