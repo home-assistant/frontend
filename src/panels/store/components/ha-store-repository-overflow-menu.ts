@@ -184,7 +184,7 @@ export const repositoryMenuItems = (
       label: localize("ui.panel.store.repository_card.open_source"),
       action: () =>
         window.open(
-          `${generateFrontendResourceURL({ repository })}?cachebuster=${Date.now()}`,
+          `${generateFrontendResourceURL({ repository })}?v=${Date.now()}`,
           "_blank",
           "noreferrer=true"
         ),
