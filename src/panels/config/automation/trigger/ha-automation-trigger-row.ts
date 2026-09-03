@@ -72,6 +72,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -261,6 +262,13 @@ export default class HaAutomationTriggerRow extends LitElement {
                 triggerTargetSpec,
                 type !== "device"
               )
+            : nothing
+        }
+        ${
+          type === "platform"
+            ? html`<ha-automation-row-options
+                .config=${this.trigger}
+              ></ha-automation-row-options>`
             : nothing
         }
         ${

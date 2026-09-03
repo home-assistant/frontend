@@ -5245,6 +5245,9 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "for": "for",
+            "offset_before": "{offset} before",
+            "offset_after": "{offset} after",
             "note": {
               "label": "Note",
               "edit": "Edit note",
