@@ -264,7 +264,7 @@ export interface ValvePositionFavoriteCardFeatureConfig {
   type: "valve-position-favorite";
 }
 
-export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+export const LAWN_MOWER_COMMANDS = ["start_pause", "stop", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
 
