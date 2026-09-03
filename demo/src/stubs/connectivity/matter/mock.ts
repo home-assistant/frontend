@@ -1,4 +1,5 @@
 import type {
+  MatterCommissioningParameters,
   MatterFabricData,
   MatterNetworkTopology,
   MatterNetworkTopologyConnection,
@@ -59,7 +60,7 @@ const NODES: MatterNetworkTopologyNode[] = [
     kind: "matter",
     network_type: "thread",
     node_id: 2,
-    ha_device_id: "matter-front-door-lock",
+    ha_device_id: "matter-side-door-lock",
     available: true,
     role: "sleepy_end_device",
     ext_address: "20b3c4d5e6f70819",
@@ -85,7 +86,7 @@ const NODES: MatterNetworkTopologyNode[] = [
     kind: "matter",
     network_type: "thread",
     node_id: 4,
-    ha_device_id: "matter-garden-sensor",
+    ha_device_id: "matter-patio-sensor",
     available: false,
     role: "end_device",
     ext_address: "30c4d5e6f708192a",
@@ -216,4 +217,18 @@ export const mockMatter = (hass: MockHomeAssistant) => {
   });
 
   hass.mockWS("matter/interview_node", () => undefined);
+
+  // Actions the device page offers for an available node. Without these the
+  // dialogs behind them fail with `command_not_mocked`.
+  hass.mockWS(
+    "matter/open_commissioning_window",
+    (): MatterCommissioningParameters => ({
+      setup_pin_code: 34970112332,
+      setup_manual_code: "34970112332",
+      setup_qr_code: "MT:Y.K9042C00KA0648G00",
+    })
+  );
+  hass.mockWS("matter/remove_matter_fabric", () => undefined);
+  hass.mockWS("matter/set_wifi_credentials", () => undefined);
+  hass.mockWS("matter/set_thread", () => undefined);
 };

@@ -19,8 +19,8 @@ const DEVICES = [
     { area_id: "kitchen", sw_version: "3.5.7" }
   ),
   device(
-    "matter-front-door-lock",
-    "Front door lock",
+    "matter-side-door-lock",
+    "Side door lock",
     "Aqara",
     "Smart Lock U100",
     ENTRY_ID,
@@ -30,7 +30,7 @@ const DEVICES = [
     area_id: "office",
     sw_version: "3.2.0",
   }),
-  device("matter-garden-sensor", "Garden sensor", "Eve", "Weather", ENTRY_ID, {
+  device("matter-patio-sensor", "Patio sensor", "Eve", "Weather", ENTRY_ID, {
     area_id: "garden",
     sw_version: "3.2.1",
   }),
@@ -43,12 +43,7 @@ const REGISTRY_ENTRIES = [
     ENTRY_ID,
     "matter"
   ),
-  registryEntry(
-    "lock.front_door",
-    "matter-front-door-lock",
-    ENTRY_ID,
-    "matter"
-  ),
+  registryEntry("lock.side_door", "matter-side-door-lock", ENTRY_ID, "matter"),
   registryEntry("switch.office_plug", "matter-office-plug", ENTRY_ID, "matter"),
   registryEntry(
     "sensor.office_plug_power",
@@ -57,8 +52,8 @@ const REGISTRY_ENTRIES = [
     "matter"
   ),
   registryEntry(
-    "sensor.garden_temperature",
-    "matter-garden-sensor",
+    "sensor.patio_temperature",
+    "matter-patio-sensor",
     ENTRY_ID,
     "matter"
   ),
@@ -90,10 +85,10 @@ export const matterFixtures: ConnectivityFixtures = {
           brightness: 204,
         },
       },
-      "lock.front_door": {
-        entity_id: "lock.front_door",
+      "lock.side_door": {
+        entity_id: "lock.side_door",
         state: "locked",
-        attributes: { friendly_name: "Front door lock" },
+        attributes: { friendly_name: "Side door lock" },
       },
       "switch.office_plug": {
         entity_id: "switch.office_plug",
@@ -110,11 +105,11 @@ export const matterFixtures: ConnectivityFixtures = {
           unit_of_measurement: "W",
         },
       },
-      "sensor.garden_temperature": {
-        entity_id: "sensor.garden_temperature",
+      "sensor.patio_temperature": {
+        entity_id: "sensor.patio_temperature",
         state: "14.2",
         attributes: {
-          friendly_name: "Garden temperature",
+          friendly_name: "Patio temperature",
           device_class: "temperature",
           state_class: "measurement",
           unit_of_measurement: "°C",

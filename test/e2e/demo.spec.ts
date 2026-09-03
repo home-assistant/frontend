@@ -106,6 +106,45 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test("Matter panel renders its mocked topology", async ({ page }) => {
+    // Same lazily registered mocks and deferred subscription delivery as the
+    // Bluetooth test above, reached through the topology this time.
+    await loadDemo(page, "/#/config/matter");
+
+    const dashboard = page.locator("matter-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+    // Only filled in once the topology reports a node that is both a Matter
+    // device and unavailable, so it covers the fetch reaching the panel.
+    await expect(dashboard.locator("small.offline")).not.toBeEmpty({
+      timeout: PANEL_TIMEOUT,
+    });
+    // The device and entity counts come from the registries; a zero means the
+    // fixtures did not reach them.
+    await expect(dashboard.locator("ha-md-list").first()).not.toHaveText(
+      /\b0\b/,
+      { timeout: QUICK_TIMEOUT }
+    );
+
+    // The map reads the topology over a subscription rather than a fetch.
+    await loadDemo(page, "/#/config/matter/visualization");
+
+    const graph = page.locator("matter-network-visualization ha-network-graph");
+    await expect(graph).toBeAttached({ timeout: PANEL_TIMEOUT });
+    await expect
+      .poll(
+        () =>
+          graph.evaluate(
+            (element) =>
+              (element as HTMLElement & { data?: { nodes?: unknown[] } }).data
+                ?.nodes?.length ?? 0
+          ),
+        { timeout: PANEL_TIMEOUT }
+      )
+      .toBeGreaterThan(0);
+
+    expectNoPageErrors(pageErrors);
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,
