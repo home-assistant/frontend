@@ -25,7 +25,7 @@ export const DEVICE_IDS_BY_NODE_ID: Record<number, string> = {
   [CONTROLLER_NODE_ID]: "zwave-controller",
   [HALLWAY_NODE_ID]: "zwave-hallway-switch",
   [DIMMER_NODE_ID]: "zwave-dining-dimmer",
-  [MOTION_NODE_ID]: "zwave-kitchen-motion",
+  [MOTION_NODE_ID]: "zwave-garage-motion",
   [LOCK_NODE_ID]: "zwave-back-door-lock",
   [THERMOSTAT_NODE_ID]: "zwave-bedroom-thermostat",
   [SENSOR_NODE_ID]: "zwave-basement-sensor",
@@ -69,12 +69,12 @@ const DEVICES = [
     identifiers: identifiers(HALLWAY_NODE_ID),
   }),
   device(
-    "zwave-kitchen-motion",
-    "Kitchen motion",
+    "zwave-garage-motion",
+    "Garage motion",
     "Aeotec",
     "MultiSensor 7",
     ENTRY_ID,
-    { area_id: "kitchen", identifiers: identifiers(MOTION_NODE_ID) }
+    { identifiers: identifiers(MOTION_NODE_ID) }
   ),
   device(
     "zwave-bedroom-thermostat",
@@ -105,8 +105,8 @@ const REGISTRY_ENTRIES = [
   ),
   registryEntry("light.hallway", "zwave-hallway-switch", ENTRY_ID, "zwave_js"),
   registryEntry(
-    "binary_sensor.kitchen_motion",
-    "zwave-kitchen-motion",
+    "binary_sensor.garage_motion",
+    "zwave-garage-motion",
     ENTRY_ID,
     "zwave_js"
   ),
@@ -174,10 +174,10 @@ export const zwaveJsFixtures: ConnectivityFixtures = {
           supported_color_modes: ["onoff"],
         },
       },
-      "binary_sensor.kitchen_motion": {
-        entity_id: "binary_sensor.kitchen_motion",
+      "binary_sensor.garage_motion": {
+        entity_id: "binary_sensor.garage_motion",
         state: "on",
-        attributes: { friendly_name: "Kitchen motion", device_class: "motion" },
+        attributes: { friendly_name: "Garage motion", device_class: "motion" },
       },
       "climate.bedroom": {
         entity_id: "climate.bedroom",
