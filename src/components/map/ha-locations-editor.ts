@@ -16,6 +16,10 @@ import "./ha-map";
 import type { HaMap, HaMapEditableLocation } from "./ha-map";
 import type { HaIcon } from "../ha-icon";
 import type { HaSvgIcon } from "../ha-svg-icon";
+import {
+  createZoneMarkerElement,
+  ZONE_CIRCLE_SIZE,
+} from "../../common/map/zone-marker";
 
 declare global {
   // for fire event
@@ -152,7 +156,9 @@ export class HaLocationsEditor extends LitElement {
         location: [location.latitude, location.longitude],
         radius: location.radius,
         element: this._elementFor(location),
-        elementSize: [ICON_SIZE, ICON_SIZE],
+        elementSize: location.radius
+          ? [ZONE_CIRCLE_SIZE, ZONE_CIRCLE_SIZE]
+          : [ICON_SIZE, ICON_SIZE],
         title: location.name,
         color: location.radius_color,
         locationEditable: location.location_editable,
@@ -166,18 +172,37 @@ export class HaLocationsEditor extends LitElement {
   private _elements = new Map<string, { key: string; element?: HTMLElement }>();
 
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
+    const isZone = !!location.radius;
     const key = JSON.stringify([
+      isZone,
       location.icon,
       location.iconPath,
       location.name,
+      location.radius_color,
       location.location_editable,
     ]);
     const cached = this._elements.get(location.id);
     if (cached?.key === key) {
       return cached.element;
     }
-    const element = this._createIcon(location);
+    // The zone marker doubles as the circle's draggable center
+    const element = isZone
+      ? this._createZoneMarker(location)
+      : this._createIcon(location);
     this._elements.set(location.id, { key, element });
+    return element;
+  }
+
+  private _createZoneMarker(location: MarkerLocation): HTMLElement {
+    const element = createZoneMarkerElement({
+      color:
+        location.radius_color ||
+        getComputedStyle(this).getPropertyValue("--accent-color"),
+      icon: location.icon,
+      iconPath: location.iconPath,
+      name: location.name ?? "",
+    });
+    element.classList.toggle("draggable", !!location.location_editable);
     return element;
   }
 
