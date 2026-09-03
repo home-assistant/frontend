@@ -363,18 +363,19 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
   }
 
   private _toggleCloud(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
-    this._cloudChecked = (ev.currentTarget as HaSwitch).checked;
+    this._cloudChecked = ev.currentTarget.checked;
     this._showCustomExternalUrl = !this._cloudChecked;
   }
 
   private _toggleInternalAutomatic(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
-    this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
+    this._showCustomInternalUrl = !ev.currentTarget.checked;
   }
 
-  private _handleChange(ev: InputEvent) {
-    const target = ev.currentTarget as HaInputCopy;
+  private _handleChange(
+    ev: InputEvent & HASSDomCurrentTargetEvent<HaInputCopy>
+  ) {
     const input = ev.composedPath()[0] as HaInput;
-    this[`_${target.dataset.name}`] = input.value || "";
+    this[`_${ev.currentTarget.dataset.name}`] = input.value || "";
   }
 
   private async _save() {

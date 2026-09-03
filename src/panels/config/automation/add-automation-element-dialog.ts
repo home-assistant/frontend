@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -2166,8 +2167,8 @@ class DialogAddAutomationElement
     }
   }
 
-  private _handleFilterInput = (ev: InputEvent) => {
-    this._debounceFilterChanged((ev.target as HaInputSearch).value ?? "");
+  private _handleFilterInput = (ev: HASSDomTargetEvent<HaInputSearch>) => {
+    this._debounceFilterChanged(ev.target.value ?? "");
   };
 
   private _debounceFilterChanged = debounce((value: string) => {

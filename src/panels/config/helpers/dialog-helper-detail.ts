@@ -5,6 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
@@ -368,9 +369,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
   );
 
-  private async _filterChanged(e: InputEvent) {
-    const target = e.target as HaInputSearch;
-    this._filter = target.value;
+  private async _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = e.target.value;
   }
 
   private _valueChanged(ev: CustomEvent): void {
