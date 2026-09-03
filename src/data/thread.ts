@@ -4,7 +4,9 @@ export interface ThreadRouter {
   instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
-  brand: "google" | "apple" | "homeassistant";
+  // Backend brand slug, resolved from the border agent's vendor name. Not
+  // exhaustive: the backend knows more vendors than are listed here.
+  brand: "amazon" | "google" | "apple" | "homeassistant";
   extended_address: string;
   extended_pan_id: string;
   model_name: string | null;
