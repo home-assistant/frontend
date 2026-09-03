@@ -189,8 +189,8 @@ export class HaCardConditionsEditor extends LitElement {
                   ? html`
                       <ha-dropdown-item value="paste">
                         ${this.hass.localize(
-                        "ui.panel.lovelace.editor.edit_card.paste_condition"
-                      )}
+                          "ui.panel.lovelace.editor.edit_card.paste_condition"
+                        )}
                         <ha-svg-icon
                           slot="icon"
                           .path=${mdiContentPaste}
