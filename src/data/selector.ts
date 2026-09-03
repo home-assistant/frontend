@@ -68,6 +68,7 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
+  | StateClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -513,6 +514,13 @@ export interface SelectorSelector {
 export interface SerialPortSelector {
   serial_port: {
     extra_recommended_domains?: string[];
+  } | null;
+}
+
+export interface StateClassSelector {
+  state_class: {
+    multiple?: boolean;
+    state_classes?: string[];
   } | null;
 }
 
