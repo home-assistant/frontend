@@ -89,6 +89,20 @@ test.describe("Home Assistant Demo", () => {
       timeout: QUICK_TIMEOUT,
     });
 
+    // The adapter page is the one that reads the scanner details subscription.
+    // Only a local adapter gets a settings button; the two proxies are known to
+    // be remote from their scanner type, so without those details all three
+    // would render one.
+    await loadDemo(page, "/#/config/bluetooth/adapter-info");
+
+    const adapters = page.locator(
+      "bluetooth-adapter-info-page ha-md-list-item"
+    );
+    await expect(adapters).toHaveCount(3, { timeout: PANEL_TIMEOUT });
+    await expect(adapters.locator("ha-icon-button")).toHaveCount(1, {
+      timeout: QUICK_TIMEOUT,
+    });
+
     expectNoPageErrors(pageErrors);
   });
 
