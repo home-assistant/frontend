@@ -3,19 +3,17 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import type { ContextType } from "@lit/context";
 import { consume, ContextConsumer } from "@lit/context";
 import { resolveThemeColor } from "../../../common/color/compute-color";
-import {
-  entityMapColor,
-  zoneColor,
-} from "../../../common/map/entity-map-colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -34,6 +32,11 @@ import type {
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapLatLng } from "../../../common/map/map-engine";
+import {
+  entityMapColor,
+  subscribeEntityMapColors,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { Themes } from "../../../data/ws-themes";
@@ -41,6 +44,8 @@ import { fullEntitiesContext, uiContext } from "../../../data/context";
 import { transform } from "../../../common/decorators/transform";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { PANEL_VIEW_LAYOUT } from "../views/const";
 import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
@@ -56,6 +61,12 @@ import {
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
+
+// GPS accuracy (meters) above which the selected person's circle is shown
+const IMPRECISE_GPS_ACCURACY = 100;
+
+const FOCUS_PERSON_ZOOM = 19;
+const FOCUS_ZONE_MAX_ZOOM = 18;
 
 interface GeoEntity {
   entity_id: string;
@@ -82,6 +93,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
+
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _stateHistory?: HistoryStates;
 
@@ -111,6 +124,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _themes?: Themes;
 
   @state() private _clusterMarkers = true;
+
+  @state() private _overviewSelected?: string;
+
+  // Height of the overview drawer when it sits over the bottom of the map
+  @state() private _overviewHeight = 0;
+
+  private _overviewLoaded = false;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
@@ -237,8 +257,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card id="card" .header=${this._config.title}>
-        <div id="root">
+        <div
+          id="root"
+          class=${this.layout === PANEL_VIEW_LAYOUT ? "panel-layout" : ""}
+          @hass-more-info=${this._handleMapMoreInfo}
+        >
           <ha-map
+            style=${styleMap({
+              "--overview-height": `${this._overviewHeight}px`,
+            })}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(
@@ -249,11 +276,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
+            .zoomPosition=${
+              this.layout === PANEL_VIEW_LAYOUT &&
+              !computeRTL(
+                this.hass.language,
+                this.hass.translationMetadata.translations
+              )
+                ? "topright"
+                : "topleft"
+            }
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
             .scaleRuler=${this._config.scale_ruler || false}
+            @map-clicked=${this._handleMapClicked}
             interactive-zones
-            render-passive
+            .renderPassive=${this.layout !== PANEL_VIEW_LAYOUT}
           ></ha-map>
           <div id="buttons">
             ${
@@ -285,6 +322,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               tabindex="0"
             ></ha-icon-button>
           </div>
+          ${
+            this.layout === PANEL_VIEW_LAYOUT
+              ? html`<hui-map-overview
+                  id="overview"
+                  .entities=${this._filteredMapEntities}
+                  .selected=${this._overviewSelected}
+                  @map-overview-select=${this._handleOverviewSelect}
+                  @map-overview-resize=${this._handleOverviewResize}
+                ></hui-map-overview>`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
@@ -332,6 +380,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+    if (changedProps.has("hass")) {
+      this._subscribeColors();
+    }
     if (
       this._config?.show_all &&
       !this._config?.entities &&
@@ -371,18 +422,75 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     } else {
       this._filteredMapEntities = this._mapEntities;
     }
+
+    if (this.layout === PANEL_VIEW_LAYOUT) {
+      if (!this._overviewLoaded) {
+        this._overviewLoaded = true;
+        void import("./map/hui-map-overview");
+      }
+      this._filteredMapEntities = this._decorateOverviewEntities(
+        this._filteredMapEntities,
+        this._overviewSelected,
+        this._overviewSelected
+          ? this.hass.states[this._overviewSelected]
+          : undefined,
+        this.preview
+      );
+    }
   }
+
+  // In panel layout, only the selected zone shows its radius (all of them
+  // while editing) and only an imprecise selected person its accuracy circle
+  private _decorateOverviewEntities = memoizeOne(
+    (
+      entities: HaMapEntity[],
+      selectedId: string | undefined,
+      selectedStateObj: HassEntity | undefined,
+      preview: boolean
+    ): HaMapEntity[] => {
+      const selectedLocation = selectedStateObj
+        ? getEntityLocation(selectedStateObj, this.hass.states)
+        : undefined;
+      const showSelectedAccuracy =
+        (selectedLocation?.gpsAccuracy ?? 0) > IMPRECISE_GPS_ACCURACY;
+      return entities.map((entity) => ({
+        ...entity,
+        hide_accuracy: !(
+          showSelectedAccuracy && entity.entity_id === selectedId
+        ),
+        hide_radius: !preview && entity.entity_id !== selectedId,
+        selected: entity.entity_id === selectedId,
+      }));
+    }
+  );
+
+  private _unsubscribeColors?: () => void;
 
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
       this._subscribeHistory();
     }
+    this._subscribeColors();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
+    this._unsubscribeColors?.();
+    this._unsubscribeColors = undefined;
+  }
+
+  private _subscribeColors(): void {
+    if (this._unsubscribeColors || !this.hass?.connection) {
+      return;
+    }
+    this._unsubscribeColors = subscribeEntityMapColors(
+      this.hass.connection,
+      () => {
+        this._mapEntities = this._getMapEntities();
+      }
+    );
   }
 
   private _subscribeHistory() {
@@ -463,6 +571,74 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _resetFocus() {
     this._map?.fitMap({ unpause_autofit: true });
+  }
+
+  private _handleMapClicked() {
+    // A click on the map itself (not on a marker) deselects
+    if (this._overviewSelected) {
+      this._overviewSelected = undefined;
+    }
+  }
+
+  private _handleMapMoreInfo(ev: HASSDomEvent<{ entityId: string | null }>) {
+    if ((ev.target as HTMLElement)?.localName === "hui-map-overview") {
+      // The overview asks for the dialog itself, so let it through
+      return;
+    }
+    const entityId = ev.detail.entityId;
+    if (
+      this.layout !== PANEL_VIEW_LAYOUT ||
+      !entityId ||
+      !["person", "device_tracker", "zone"].includes(computeDomain(entityId)) ||
+      (computeDomain(entityId) !== "zone" &&
+        !this._filteredMapEntities.some(
+          (entity) => entity.entity_id === entityId
+        ))
+    ) {
+      return;
+    }
+    ev.stopPropagation();
+    this._overviewSelected = entityId;
+    this._focusEntity(entityId);
+  }
+
+  private _handleOverviewResize(ev: HASSDomEvent<{ height: number }>) {
+    this._overviewHeight = ev.detail.height;
+  }
+
+  private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
+    this._overviewSelected = ev.detail.entityId;
+    if (ev.detail.entityId) {
+      this._focusEntity(ev.detail.entityId);
+    }
+  }
+
+  private _focusEntity(entityId: string) {
+    const stateObj = this.hass.states[entityId];
+    if (!stateObj) {
+      return;
+    }
+    if (computeStateDomain(stateObj) === "zone") {
+      const { latitude, longitude, radius } = stateObj.attributes;
+      // Convert the zone radius (meters) to a degree offset for a bounding box
+      const latOffset = (radius ?? 100) / 111320;
+      const lngOffset =
+        latOffset / Math.max(Math.cos((latitude * Math.PI) / 180), 0.01);
+      this._map?.fitBounds(
+        [
+          [latitude - latOffset, longitude - lngOffset],
+          [latitude + latOffset, longitude + lngOffset],
+        ],
+        { pad: 0.2, zoom: FOCUS_ZONE_MAX_ZOOM }
+      );
+      return;
+    }
+    const location = getEntityLocation(stateObj, this.hass.states);
+    if (location) {
+      this._map?.fitBounds([[location.latitude, location.longitude]], {
+        zoom: FOCUS_PERSON_ZOOM,
+      });
+    }
   }
 
   private _toggleClusterMarkers() {
@@ -636,9 +812,44 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       flex-direction: column;
     }
 
+    /* The overview panel covers the start side in panel layout */
+    #root.panel-layout #buttons {
+      left: auto;
+      inset-inline-start: auto;
+      inset-inline-end: 3px;
+    }
+
     #root {
       position: relative;
       height: 100%;
+    }
+
+    #overview {
+      position: absolute;
+      top: var(--ha-space-3);
+      inset-inline-start: var(--ha-space-3);
+      width: min(360px, calc(100% - 2 * var(--ha-space-3)));
+      max-height: calc(100% - 2 * var(--ha-space-3));
+      display: flex;
+      z-index: 1;
+    }
+
+    @media (max-width: 600px) {
+      #overview {
+        top: auto;
+        bottom: 0;
+        inset-inline-start: 0;
+        inset-inline-end: 0;
+        width: auto;
+        max-height: 70%;
+      }
+
+      /* Keep the attribution and scale ruler above the drawer */
+      #root.panel-layout ha-map {
+        --ha-map-bottom-inset: calc(
+          var(--overview-height, 0px) + var(--ha-space-2)
+        );
+      }
     }
   `;
 }

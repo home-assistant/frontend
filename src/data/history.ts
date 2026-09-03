@@ -93,14 +93,14 @@ export interface HistoryStreamMessage {
 }
 
 export const entityIdHistoryNeedsAttributes = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states">,
   entityId: string
 ) =>
   !hass.states[entityId] ||
   NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
 
 export const fetchDateWS = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
   entityIds: string[]
