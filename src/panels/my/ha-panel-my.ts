@@ -388,7 +388,16 @@ export const getMyRedirects = (): Redirects => ({
     component: "hassio",
     redirect: "/config/apps/available",
   },
+  supervisor_apps: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
   supervisor_addons: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
+  supervisor: {
+    // Supervisor panel was removed in 2026.2, fallback to apps
     component: "hassio",
     redirect: "/config/apps",
   },
@@ -427,9 +436,6 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
-  },
-  lights: {
-    redirect: "/lights",
   },
 });
 
