@@ -474,17 +474,19 @@ export const provideHass = (
       }
       const entityIds =
         data && "entity_id" in data ? data.entity_id : target?.entity_id;
+      // The service data is optional, but the entities read straight from it.
+      const serviceData = data ?? {};
       if (entityIds) {
         // eslint-disable-next-line
-        console.log("Entity service call", domain, service, data);
+        console.log("Entity service call", domain, service, serviceData);
         await Promise.all(
           ensureArray(entityIds).map((ent) =>
-            entities[ent]?.handleService(domain, service, data)
+            entities[ent]?.handleService(domain, service, serviceData)
           )
         );
       } else {
         // eslint-disable-next-line
-        console.log("unmocked callService", domain, service, data);
+        console.log("unmocked callService", domain, service, serviceData);
       }
       return { context };
     },
