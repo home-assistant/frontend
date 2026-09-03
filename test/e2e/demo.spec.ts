@@ -142,6 +142,35 @@ test.describe("Home Assistant Demo", () => {
       )
       .toBeGreaterThan(0);
 
+    // Diagnostics are per device: the Wi-Fi plug and the offline sensor must
+    // not report the Thread router's node. Read over the connection, because
+    // the device page only renders a subset of them.
+    const diagnostics = await page.evaluate(async () => {
+      const demo = document.querySelector("ha-demo") as HTMLElement & {
+        hass: { connection: { sendMessagePromise: (msg: unknown) => any } };
+      };
+      const read = (device_id: string) =>
+        demo.hass.connection
+          .sendMessagePromise({ type: "matter/node_diagnostics", device_id })
+          .then(
+            (result: { network_type: string; available: boolean }) =>
+              `${result.network_type}:${result.available}`,
+            () => "rejected"
+          );
+      return {
+        thread: await read("matter-kitchen-light"),
+        wifi: await read("matter-office-plug"),
+        offline: await read("matter-patio-sensor"),
+        unknown: await read("not-a-matter-device"),
+      };
+    });
+    expect(diagnostics).toEqual({
+      thread: "thread:true",
+      wifi: "wifi:true",
+      offline: "thread:false",
+      unknown: "rejected",
+    });
+
     expectNoPageErrors(pageErrors);
   });
 

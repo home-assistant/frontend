@@ -7,6 +7,10 @@ import type {
   MatterNodeDiagnostics,
 } from "../../../../../src/data/matter";
 import { NetworkType, NodeType } from "../../../../../src/data/matter";
+import type {
+  MatterLockInfo,
+  MatterLockUsersResponse,
+} from "../../../../../src/data/matter-lock";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { emitInitial } from "../subscription";
 
@@ -194,6 +198,61 @@ const buildNodeDiagnostics = (
   active_fabric_index: 1,
 });
 
+// The backend resolves the device before acting, so both node commands answer
+// the same way when it cannot.
+const nodeNotFound = (deviceId: string) =>
+  Promise.reject({
+    code: "node_not_found",
+    message: `No Matter node for device ${deviceId}`,
+  });
+
+// The manual and QR codes below are the Matter test payload for passcode
+// 20202021 with discriminator 3840; the three have to agree.
+const COMMISSIONING_PARAMETERS: MatterCommissioningParameters = {
+  setup_pin_code: 20202021,
+  setup_manual_code: "34970112332",
+  setup_qr_code: "MT:Y.K9042C00KA0648G00",
+};
+
+const LOCK_INFO: MatterLockInfo = {
+  supports_user_management: true,
+  supported_credential_types: ["pin"],
+  max_users: 10,
+  max_pin_users: 10,
+  max_rfid_users: null,
+  max_credentials_per_user: 2,
+  min_pin_length: 4,
+  max_pin_length: 8,
+  min_rfid_length: null,
+  max_rfid_length: null,
+};
+
+const LOCK_USERS: MatterLockUsersResponse = {
+  max_users: 10,
+  users: [
+    {
+      user_index: 1,
+      user_name: "Anne",
+      user_unique_id: 1,
+      user_status: "occupied_enabled",
+      user_type: "unrestricted_user",
+      credential_rule: "single",
+      credentials: [{ type: "pin", index: 1 }],
+      next_user_index: 2,
+    },
+    {
+      user_index: 2,
+      user_name: "Cleaner",
+      user_unique_id: 2,
+      user_status: "occupied_disabled",
+      user_type: "week_day_schedule_user",
+      credential_rule: "single",
+      credentials: [{ type: "pin", index: 2 }],
+      next_user_index: null,
+    },
+  ],
+};
+
 export const mockMatter = (hass: MockHomeAssistant) => {
   hass.mockWS("matter/network_topology", () => buildTopology());
 
@@ -203,17 +262,14 @@ export const mockMatter = (hass: MockHomeAssistant) => {
 
   hass.mockWS("matter/node_diagnostics", (msg: { device_id: string }) => {
     const node = NODES_BY_DEVICE_ID.get(msg.device_id);
-    return node
-      ? buildNodeDiagnostics(node)
-      : Promise.reject({
-          code: "node_not_found",
-          message: `No Matter node for device ${msg.device_id}`,
-        });
+    return node ? buildNodeDiagnostics(node) : nodeNotFound(msg.device_id);
   });
 
   hass.mockWS("matter/ping_node", (msg: { device_id: string }) => {
     const node = NODES_BY_DEVICE_ID.get(msg.device_id);
-    return node ? { [nodeIpAddress(node)]: node.available !== false } : {};
+    return node
+      ? { [nodeIpAddress(node)]: node.available !== false }
+      : nodeNotFound(msg.device_id);
   });
 
   hass.mockWS("matter/interview_node", () => undefined);
@@ -222,13 +278,22 @@ export const mockMatter = (hass: MockHomeAssistant) => {
   // dialogs behind them fail with `command_not_mocked`.
   hass.mockWS(
     "matter/open_commissioning_window",
-    (): MatterCommissioningParameters => ({
-      setup_pin_code: 34970112332,
-      setup_manual_code: "34970112332",
-      setup_qr_code: "MT:Y.K9042C00KA0648G00",
-    })
+    () => COMMISSIONING_PARAMETERS
   );
   hass.mockWS("matter/remove_matter_fabric", () => undefined);
   hass.mockWS("matter/set_wifi_credentials", () => undefined);
   hass.mockWS("matter/set_thread", () => undefined);
+
+  // The lock device exposes "Manage lock", whose dialog reads back the response
+  // of these services.
+  hass.mockService("matter", "get_lock_info", (_data, target) => ({
+    [target!.entity_id]: LOCK_INFO,
+  }));
+  hass.mockService("matter", "get_lock_users", (_data, target) => ({
+    [target!.entity_id]: LOCK_USERS,
+  }));
+  hass.mockService("matter", "set_lock_user", () => ({}));
+  hass.mockService("matter", "clear_lock_user", () => ({}));
+  hass.mockService("matter", "set_lock_credential", () => ({}));
+  hass.mockService("matter", "clear_lock_credential", () => ({}));
 };
