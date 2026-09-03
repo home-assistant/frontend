@@ -49,6 +49,10 @@ import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";
 
+type DashboardSummary<Key extends string, Item> = Record<Key, Item[]> & {
+  total: number;
+};
+
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];
   let tips = [
@@ -153,7 +157,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _tip?: string;
 
-  @state() private _repairsIssues: { issues: RepairsIssue[]; total: number } = {
+  @state() private _repairsIssues: DashboardSummary<"issues", RepairsIssue> = {
     issues: [],
     total: 0,
   };
@@ -383,7 +387,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     (
       entities: HomeAssistant["states"],
       entityRegistry: HomeAssistant["entities"]
-    ): { updates: UpdateEntity[]; total: number } => {
+    ): DashboardSummary<"updates", UpdateEntity> => {
       const updates = filterUpdateEntitiesParameterized(
         entities,
         false,
