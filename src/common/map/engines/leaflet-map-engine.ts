@@ -33,17 +33,9 @@ interface LeafletMarkerHandle extends MapMarkerHandle {
   marker: HandledMarker;
 }
 
-/**
- * The Leaflet implementation of MapEngine. Renders vector tiles through the
- * maplibre-gl-leaflet adapter when WebGL2 is available and raster tiles
- * otherwise (see createBaseLayer), so it is both the non-WebGL2 fallback and
- * the engine ha-locations-editor requires for leaflet-draw.
- */
+/** The Leaflet engine: raster viewing fallback without WebGL2, no editing */
 export class LeafletMapEngine implements MapEngine {
-  /**
-   * Escape hatch for ha-locations-editor, which manages its own Leaflet
-   * layers (leaflet-draw). Not for use anywhere else.
-   */
+  /** For the ha-map jsdom tests only */
   public leafletMap?: Map;
 
   public Leaflet?: LeafletModuleType;
@@ -194,6 +186,14 @@ export class LeafletMapEngine implements MapEngine {
       maxZoom: options?.maxZoom,
       animate: options?.animate,
     });
+  }
+
+  public panTo(location: MapLatLng): void {
+    this.leafletMap?.panTo(location);
+  }
+
+  public containsLocation(location: MapLatLng): boolean {
+    return this.leafletMap?.getBounds().contains(location) ?? false;
   }
 
   public addMarker(

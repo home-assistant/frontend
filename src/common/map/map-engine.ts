@@ -1,26 +1,13 @@
 /**
- * Engine abstraction for ha-map.
+ * Map engine abstraction for ha-map: MapLibre GL where WebGL2 is available,
+ * Leaflet as the viewing fallback. The Leaflet engine is frozen at this
+ * contract; new capabilities go on MapLibre only, as optional members like
+ * `editing`.
  *
- * ha-map keeps all Home Assistant semantics (entities, zones, cluster bubble
- * DOM, history path math, fit policy) and delegates the primitive map
- * operations to a MapEngine, so the engine can be selected at runtime:
- * MapLibre GL native where WebGL2 is available, Leaflet otherwise (and always
- * for ha-locations-editor, which edits with leaflet-draw).
- *
- * The interface exposes no engine types: positions are [latitude, longitude]
- * tuples and marker content is caller-owned HTML elements.
- *
- * Zoom levels use Leaflet semantics (zoom 0 = one world tile), the historical
- * convention across Home Assistant map configs. The MapLibre engine converts
- * internally (MapLibre zoom = Leaflet zoom - 1).
+ * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
 export type MapLatLng = [latitude: number, longitude: number];
-
-export interface MapPoint {
-  x: number;
-  y: number;
-}
 
 export type MapControlPosition =
   "topleft" | "topright" | "bottomleft" | "bottomright";
@@ -109,6 +96,58 @@ export interface MapMarkerHandle extends MapItemHandle {
   readonly clusterData?: unknown;
 }
 
+export interface MapDraggableMarkerOptions extends MapMarkerOptions {
+  onDragEnd?(location: MapLatLng): void;
+}
+
+export interface MapEditableCircleOptions {
+  /** Radius in meters */
+  radius: number;
+  /** Stroke color; the fill is derived from it, translucent */
+  color: string;
+  /** Element shown at the center, e.g. the zone icon; a plain dot otherwise */
+  centerElement?: HTMLElement;
+  centerSize?: [width: number, height: number];
+  title?: string;
+  /** The center can be dragged */
+  moveable?: boolean;
+  /** A handle on the edge can be dragged to change the radius */
+  resizable?: boolean;
+  /** Accessible name of the radius handle, e.g. "Radius of Home in meters" */
+  resizeLabel?: string;
+  onMove?(center: MapLatLng): void;
+  onResize?(radius: number): void;
+  onClick?(): void;
+}
+
+export interface MapEditingSupport {
+  /** Place a draggable HTML element marker */
+  addDraggableMarker(
+    element: HTMLElement,
+    location: MapLatLng,
+    options: MapDraggableMarkerOptions
+  ): MapEditableMarkerHandle;
+
+  /** Draw a circle whose center and radius can be dragged */
+  addEditableCircle(
+    center: MapLatLng,
+    options: MapEditableCircleOptions
+  ): MapEditableCircleHandle;
+}
+
+/** A circle with drag handles for its center and radius */
+export interface MapEditableCircleHandle extends MapItemHandle {
+  readonly center: MapLatLng;
+  readonly radius: number;
+  /** Move and resize without recreating (no-op mid-drag) */
+  update(center: MapLatLng, radius: number): void;
+}
+
+export interface MapEditableMarkerHandle extends MapMarkerHandle {
+  /** Move without recreating (no-op mid-drag) */
+  setLocation(location: MapLatLng): void;
+}
+
 export interface MapClusterIcon {
   element: HTMLElement;
   size: [width: number, height: number];
@@ -159,13 +198,13 @@ export interface MapEngine {
   /** Fit the given points into view; a single point centers on it */
   fitBounds(points: MapLatLng[], options?: MapFitOptions): void;
 
-  // Content ------------------------------------------------------------
+  /** Pan to the location, keeping the zoom */
+  panTo(location: MapLatLng): void;
 
-  /**
-   * Place an HTML element on the map. The element is owned by the caller;
-   * the engine positions it and, for interactive markers, makes it
-   * focusable.
-   */
+  /** Whether the location is inside the current viewport */
+  containsLocation(location: MapLatLng): boolean;
+
+  /** Place a caller-owned element on the map */
   addMarker(
     element: HTMLElement,
     location: MapLatLng,
@@ -175,24 +214,45 @@ export interface MapEngine {
   /** Draw a meter-radius circle (zone radius) */
   addCircle(center: MapLatLng, options: MapCircleOptions): MapItemHandle;
 
+  /** Editing support, MapLibre only; undefined on the Leaflet fallback */
+  editing?: MapEditingSupport;
+
   /** Draw one history trail (points with tooltips, connecting segments) */
   addPath(path: MapPath): MapItemHandle;
 
-  /**
-   * Enable or disable clustering of the markers added with cluster: true.
-   * Must be called after each batch of addMarker calls to place clusterable
-   * markers on the map; null places them unclustered.
-   */
+  /** Cluster the markers added with cluster: true; call after each batch of addMarker calls */
   setClustering(options: MapClusterOptions | null): void;
 
   /** Rebuild cluster icons without regrouping (e.g. after a style change) */
   refreshClusters(): void;
 }
 
-/**
- * Bounding box corners of a circle, for fitting a radius into view without
- * engine-specific circle bounds.
- */
+const EARTH_RADIUS = 6371008.8;
+
+/** Great-circle distance in meters */
+export const distanceMeters = (a: MapLatLng, b: MapLatLng): number => {
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(b[0] - a[0]);
+  const dLng = toRad(b[1] - a[1]);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng / 2) ** 2;
+  return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(h));
+};
+
+/** The point the given distance due east of center, e.g. for a resize handle */
+export const pointEastOf = (
+  center: MapLatLng,
+  distanceInMeters: number
+): MapLatLng => {
+  const lngOffset =
+    (distanceInMeters /
+      (EARTH_RADIUS * Math.cos((center[0] * Math.PI) / 180))) *
+    (180 / Math.PI);
+  return [center[0], center[1] + lngOffset];
+};
+
+/** Bounding box corners of a circle, for fitting a radius into view */
 export const circleBoundsPoints = (
   center: MapLatLng,
   radiusMeters: number

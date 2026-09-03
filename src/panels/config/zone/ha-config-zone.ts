@@ -364,6 +364,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
+  // Selecting an item in code (from the map) fires the same "property"
+  // request-selected event a click ends with, but with _activeEntry already set
+  private _isProgrammaticSelection(ev: CustomEvent): boolean {
+    return (
+      ev.detail.source === "property" &&
+      (ev.currentTarget! as any).value === this._activeEntry
+    );
+  }
+
   private async _locationUpdated(ev: CustomEvent) {
     this._activeEntry = ev.detail.id;
     if (ev.detail.id === "zone.home" && this._canEditCore) {
@@ -409,7 +418,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private _itemClicked(ev: CustomEvent) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
+    if (
+      this._isProgrammaticSelection(ev) ||
+      !shouldHandleRequestSelectedEvent(ev)
+    ) {
       return;
     }
 
@@ -423,7 +435,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private _stateItemClicked(ev: CustomEvent) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
+    if (
+      this._isProgrammaticSelection(ev) ||
+      !shouldHandleRequestSelectedEvent(ev)
+    ) {
       return;
     }
 

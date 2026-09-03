@@ -6022,15 +6022,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet-draw@npm:1.0.13":
-  version: 1.0.13
-  resolution: "@types/leaflet-draw@npm:1.0.13"
-  dependencies:
-    "@types/leaflet": "npm:^1.9"
-  checksum: 10/1a6c3a8b3011f15362108b522fa6d17cca888a7f866e2e582dac921e2c748d9e24685d83b2a5ed1d97e3a1448b0f5b1879a42f1143ffdeb36b71c7fb9b94e9f5
-  languageName: node
-  linkType: hard
-
 "@types/leaflet.markercluster@npm:1.5.6":
   version: 1.5.6
   resolution: "@types/leaflet.markercluster@npm:1.5.6"
@@ -10407,7 +10398,6 @@ __metadata:
     "@types/culori": "npm:4.0.1"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/leaflet": "npm:1.9.22"
-    "@types/leaflet-draw": "npm:1.0.13"
     "@types/leaflet.markercluster": "npm:1.5.6"
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.7.5"
@@ -10465,7 +10455,6 @@ __metadata:
     jsdom: "npm:30.0.1"
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
-    leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
     license-checker-rseidelsohn: "npm:5.0.1"
     lightningcss: "npm:1.33.0"
@@ -11689,20 +11678,6 @@ __metadata:
   version: 4.0.0
   resolution: "lead@npm:4.0.0"
   checksum: 10/7117297c29b94e4846822e5ae0a25780af834586c0862b89ff899e44547f4f742d67801f19838b34611d36eec44868604c55525e12d2a1fb0c9496a9792ca396
-  languageName: node
-  linkType: hard
-
-"leaflet-draw@npm:1.0.4":
-  version: 1.0.4
-  resolution: "leaflet-draw@npm:1.0.4"
-  checksum: 10/180cc222a2d63de9d1ea197bca107ba5b977e1ce323dd714028be0ba30d0b8a2963619b2555bff5b2efb7befd240a45ad973c0e1947ca355ee4e7e2d11231cbe
-  languageName: node
-  linkType: hard
-
-"leaflet-draw@patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch::locator=home-assistant-frontend%40workspace%3A.":
-  version: 1.0.4
-  resolution: "leaflet-draw@patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch::version=1.0.4&hash=790842&locator=home-assistant-frontend%40workspace%3A."
-  checksum: 10/70e43ef0307dd3995dc392609a627b349070f25a57b908a4ab07e17b579878fdd0ff090847ca42826b933c547e324a4e560f35a8a1417f8209e702c3512e4d8a
   languageName: node
   linkType: hard
 

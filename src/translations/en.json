@@ -1149,7 +1149,10 @@
         "category": "Category"
       },
       "map": {
-        "error": "Unable to load map"
+        "error": "Unable to load map",
+        "editing_unavailable": "This browser can't edit locations on the map.",
+        "radius": "Radius in meters",
+        "radius_of": "Radius of {name} in meters"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
