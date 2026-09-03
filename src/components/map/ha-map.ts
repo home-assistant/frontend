@@ -18,6 +18,7 @@ import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsWebGL2 } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
+  MapControlPosition,
   MapEngine,
   MapItemHandle,
   MapLatLng,
@@ -287,6 +288,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
+  @property({ attribute: "zoom-position" })
+  public zoomPosition: MapControlPosition = "topleft";
+
   private _zonePositions: Record<string, MapLatLng> = {};
 
   @property({ attribute: "theme-mode", type: String })
@@ -432,6 +436,10 @@ export class HaMap extends ReactiveElement {
       this._drawEntities();
     }
 
+    if (changedProps.has("zoomPosition")) {
+      this._engine?.setZoomControlPosition(this.zoomPosition);
+    }
+
     const oldConfig = changedProps.get("_config") as HassConfig | undefined;
     if (
       changedProps.has("_loaded") ||
@@ -559,7 +567,7 @@ export class HaMap extends ReactiveElement {
         darkMode: this._darkMode,
         token,
         rasterOnly: this._forceLeaflet,
-        zoomControlPosition: "topleft",
+        zoomControlPosition: this.zoomPosition,
         events: {
           click: (location) => this._handleEngineClick(location),
           zoomStart: () => {
@@ -739,6 +747,8 @@ export class HaMap extends ReactiveElement {
     if (this._deferIfUnsized(() => this.fitBounds(boundingbox, options))) {
       return;
     }
+    // An explicit fit is user intent; the reset focus control resumes auto-fit
+    this._pauseAutoFit = true;
     this._withProgrammaticFit(() => {
       this._engine!.fitBounds(boundingbox, {
         maxZoom: options?.zoom || this.zoom,
@@ -1378,6 +1388,11 @@ export class HaMap extends ReactiveElement {
       top: 0;
       left: 0;
     }
+    .maplibregl-ctrl-bottom-left,
+    .maplibregl-ctrl-bottom-right {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
     .dark .maplibregl-ctrl.maplibregl-ctrl-group {
       background-color: #1c1c1c;
     }
@@ -1475,6 +1490,10 @@ export class HaMap extends ReactiveElement {
       --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
+    .leaflet-bottom {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
     .leaflet-control,
     .leaflet-top,
     .leaflet-bottom {
