@@ -497,8 +497,8 @@ export class HaCardConditionEditor extends LitElement {
                 ? nothing
                 : html`<ha-dropdown-item value="test">
                     ${this.hass.localize(
-                    "ui.panel.lovelace.editor.condition-editor.test"
-                  )}
+                      "ui.panel.lovelace.editor.condition-editor.test"
+                    )}
                     <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
                   </ha-dropdown-item>`
             }
@@ -587,15 +587,15 @@ export class HaCardConditionEditor extends LitElement {
                     `
                   : html`
                       ${dynamicElement(
-                      getConditionClassName(
-                        condition.condition,
-                        this._noEntity
-                      ),
-                      {
-                        hass: this.hass,
-                        condition: condition,
-                      }
-                    )}
+                        getConditionClassName(
+                          condition.condition,
+                          this._noEntity
+                        ),
+                        {
+                          hass: this.hass,
+                          condition: condition,
+                        }
+                      )}
                     `
             }
             }
