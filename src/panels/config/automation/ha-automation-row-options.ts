@@ -4,12 +4,21 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
-import type { Condition, ForDict, Trigger } from "../../../data/automation";
+import type { ForDict } from "../../../data/automation";
 import { internationalizationContext } from "../../../data/context";
+
+interface HaAutomationRowOptionsConfig {
+  options?: {
+    for?: string | number | ForDict;
+    offset?: string | number | ForDict;
+    offset_type?: "before" | "after";
+  };
+  timeout?: string | number | ForDict;
+}
 
 @customElement("ha-automation-row-options")
 export class HaAutomationRowOptions extends LitElement {
-  @property({ attribute: false }) public config!: Trigger | Condition;
+  @property({ attribute: false }) public config!: HaAutomationRowOptionsConfig;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -26,30 +35,39 @@ export class HaAutomationRowOptions extends LitElement {
   }
 
   private _formatOptions = memoizeOne(
-    (config: Trigger | Condition): string[] => {
-      if (!("options" in config) || !config.options) {
-        return [];
-      }
-      const options = config.options;
+    (config: HaAutomationRowOptionsConfig): string[] => {
       const parts: string[] = [];
 
-      const forDuration = this._duration(options.for);
-      if (forDuration) {
-        parts.push(
-          `${this._i18n.localize("ui.panel.config.automation.editor.for")} ${forDuration}`
-        );
+      if ("options" in config && config.options) {
+        const options = config.options;
+
+        const forDuration = this._duration(options.for);
+        if (forDuration) {
+          parts.push(
+            `${this._i18n.localize("ui.panel.config.automation.editor.row_options.for")} ${forDuration}`
+          );
+        }
+
+        const offsetDuration = this._duration(options.offset);
+        if (offsetDuration) {
+          const offsetType =
+            options.offset_type === "before" ? "before" : "after";
+          parts.push(
+            this._i18n.localize(
+              `ui.panel.config.automation.editor.row_options.offset_${offsetType}`,
+              { offset: offsetDuration }
+            )
+          );
+        }
       }
 
-      const offsetDuration = this._duration(options.offset);
-      if (offsetDuration) {
-        const offsetType =
-          options.offset_type === "before" ? "before" : "after";
-        parts.push(
-          this._i18n.localize(
-            `ui.panel.config.automation.editor.offset_${offsetType}`,
-            { offset: offsetDuration }
-          )
-        );
+      if ("timeout" in config) {
+        const timeoutDuration = this._duration(config.timeout);
+        if (timeoutDuration) {
+          parts.push(
+            `${this._i18n.localize("ui.panel.config.automation.editor.row_options.timeout")} ${timeoutDuration}`
+          );
+        }
       }
 
       return parts;
@@ -71,7 +89,7 @@ export class HaAutomationRowOptions extends LitElement {
 
   static styles = css`
     .option {
-      color: var(--secondary-text-color);
+      color: var(--ha-color-text-secondary);
     }
   `;
 }

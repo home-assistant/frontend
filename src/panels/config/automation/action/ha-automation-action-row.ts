@@ -39,9 +39,9 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
-import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -91,6 +91,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -371,6 +372,13 @@ export default class HaAutomationActionRow extends LitElement {
                 serviceTargetSpec,
                 type !== "device_id"
               )
+            : nothing
+        }
+        ${
+          type === "wait_template" || type === "wait_for_trigger"
+            ? html`<ha-automation-row-options
+                .config=${this.action}
+              ></ha-automation-row-options>`
             : nothing
         }
         ${

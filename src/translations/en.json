@@ -5245,9 +5245,12 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
-            "for": "for",
-            "offset_before": "{offset} before",
-            "offset_after": "{offset} after",
+            "row_options": {
+              "for": "for",
+              "offset_before": "{offset} before",
+              "offset_after": "{offset} after",
+              "timeout": "timeout"
+            },
             "note": {
               "label": "Note",
               "edit": "Edit note",
