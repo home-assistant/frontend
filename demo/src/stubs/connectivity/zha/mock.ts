@@ -10,7 +10,7 @@ import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_has
 import { minutesAgo } from "../helpers";
 
 import {
-  BEDROOM_IEEE,
+  LANDING_IEEE,
   COORDINATOR_IEEE,
   GARAGE_IEEE,
   KITCHEN_IEEE,
@@ -155,7 +155,7 @@ const DEVICES: ZHADevice[] = [
   {
     available: true,
     name: "Aqara temperature sensor",
-    ieee: BEDROOM_IEEE,
+    ieee: LANDING_IEEE,
     nwk: 0xab12,
     lqi: 164,
     rssi: "-74",
@@ -166,8 +166,8 @@ const DEVICES: ZHADevice[] = [
     quirk_class: "zhaquirks.xiaomi.aqara.weather.Weather",
     entities: [],
     manufacturer_code: 4447,
-    device_reg_id: "zha-bedroom-sensor",
-    user_given_name: "Bedroom sensor",
+    device_reg_id: "zha-landing-sensor",
+    user_given_name: "Landing sensor",
     power_source: "Battery",
     device_type: "EndDevice",
     active_coordinator: false,
@@ -220,7 +220,7 @@ const DEVICES: ZHADevice[] = [
     signature: {},
     neighbors: [
       neighbor(COORDINATOR_IEEE, "0x0000", "211", "Parent", "0"),
-      neighbor(BEDROOM_IEEE, "0xab12", "164", "Child", "2"),
+      neighbor(LANDING_IEEE, "0xab12", "164", "Child", "2"),
       neighbor(GARAGE_IEEE, "0xcd34", "118", "Child", "2"),
     ],
     routes: [],
@@ -337,7 +337,7 @@ const NETWORK_SETTINGS: ZHANetworkSettings = {
         [MOTION_IEEE]: "0x5e6f",
         [PLUG_IEEE]: "0x3c4d",
         [KITCHEN_IEEE]: "0x9c0d",
-        [BEDROOM_IEEE]: "0xab12",
+        [LANDING_IEEE]: "0xab12",
         [GARAGE_IEEE]: "0xcd34",
         [OFFICE_IEEE]: "0x7a8b",
       },

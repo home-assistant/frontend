@@ -14,7 +14,7 @@ export const PORCH_IEEE = "84:2e:14:ff:fe:11:22:33";
 export const MOTION_IEEE = "cc:cc:cc:ff:fe:44:55:66";
 export const PLUG_IEEE = "00:15:8d:00:03:aa:bb:cc";
 export const KITCHEN_IEEE = "84:2e:14:ff:fe:aa:bb:01";
-export const BEDROOM_IEEE = "00:15:8d:00:03:aa:bb:02";
+export const LANDING_IEEE = "00:15:8d:00:03:aa:bb:02";
 export const GARAGE_IEEE = "00:15:8d:00:03:aa:bb:03";
 export const OFFICE_IEEE = "00:15:8d:00:03:aa:bb:04";
 
@@ -56,12 +56,12 @@ const DEVICES = [
     { area_id: "kitchen", identifiers: [["zha", KITCHEN_IEEE]] }
   ),
   device(
-    "zha-bedroom-sensor",
-    "Bedroom sensor",
+    "zha-landing-sensor",
+    "Landing sensor",
     "Aqara",
     "WSDCGQ11LM",
     ENTRY_ID,
-    { area_id: "bedroom", identifiers: [["zha", BEDROOM_IEEE]] }
+    { identifiers: [["zha", LANDING_IEEE]] }
   ),
   device(
     "zha-garage-contact",
@@ -95,8 +95,8 @@ const REGISTRY_ENTRIES = [
     "zha"
   ),
   registryEntry(
-    "sensor.bedroom_temperature",
-    "zha-bedroom-sensor",
+    "sensor.landing_temperature",
+    "zha-landing-sensor",
     ENTRY_ID,
     "zha"
   ),
@@ -159,11 +159,11 @@ export const zhaFixtures: ConnectivityFixtures = {
           unit_of_measurement: "%",
         },
       },
-      "sensor.bedroom_temperature": {
-        entity_id: "sensor.bedroom_temperature",
+      "sensor.landing_temperature": {
+        entity_id: "sensor.landing_temperature",
         state: "19.6",
         attributes: {
-          friendly_name: "Bedroom temperature",
+          friendly_name: "Landing temperature",
           device_class: "temperature",
           state_class: "measurement",
           unit_of_measurement: "°C",
