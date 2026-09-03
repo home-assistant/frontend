@@ -3081,7 +3081,7 @@
             },
             "uninstall_dialog": {
               "title": "Uninstall app",
-              "text": "{name} and everything in its private data folder will be permanently deleted, including any databases, credentials and other internal state it kept there.",
+              "text": "{name} and everything in its private data folder will be permanently deleted, including any databases, credentials, and other internal state it kept there.",
               "remove_config": "Also delete the app's configuration folder (if used)",
               "uninstall": "Uninstall"
             },
