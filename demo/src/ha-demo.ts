@@ -7,6 +7,11 @@ import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
+import { CONNECTIVITY_COMMANDS } from "./stubs/connectivity/commands";
+import {
+  connectivityEntities,
+  connectivityEntityRegistryEntries,
+} from "./stubs/connectivity/fixtures";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -60,6 +65,7 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  ...CONNECTIVITY_COMMANDS,
 ];
 
 @customElement("ha-demo")
@@ -87,6 +93,19 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
+          // Connectivity integrations, so every panel under Settings >
+          // Connectivity is reachable in the demo.
+          "matter",
+          "zha",
+          "zwave_js",
+          "mqtt",
+          "thread",
+          "otbr",
+          "bluetooth",
+          "usb",
+          "infrared",
+          "radio_frequency",
+          "tag",
         ],
       },
     });
@@ -99,7 +118,7 @@ export class HaDemo extends HomeAssistantAppEl {
 
     mockLovelace(hass, localizePromise);
     mockAuth(hass);
-    mockTranslations(hass);
+    mockTranslations(hass, localizePromise);
     mockHistory(hass);
     mockRecorder(hass);
     mockTodo(hass);
@@ -172,9 +191,11 @@ export class HaDemo extends HomeAssistantAppEl {
         created_at: 0,
         modified_at: 0,
       },
+      ...connectivityEntityRegistryEntries,
     ]);
 
     hass.addEntities(energyEntities());
+    hass.addEntities(connectivityEntities());
 
     // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
