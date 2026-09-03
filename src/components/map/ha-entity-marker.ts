@@ -24,6 +24,8 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "show-icon", type: Boolean }) public showIcon = false;
 
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
   protected render() {
     return html`
       <div
@@ -76,12 +78,19 @@ class HaEntityMarker extends LitElement {
       height: var(--ha-marker-size, 48px);
       font-size: var(--ha-marker-font-size, var(--ha-font-size-xl));
       border-radius: var(--ha-marker-border-radius, 50%);
-      border: 1px solid var(--ha-marker-color, var(--primary-color));
+      border: var(--ha-marker-border-width, 1px) solid
+        var(--ha-marker-color, var(--primary-color));
       color: var(--primary-text-color);
-      background-color: var(--card-background-color);
+      background-color: var(
+        --ha-marker-background,
+        var(--card-background-color)
+      );
     }
     .marker.picture {
       overflow: hidden;
+    }
+    :host([selected]) .marker {
+      border-width: 3px;
     }
     .entity-picture {
       background-size: cover;

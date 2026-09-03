@@ -23,6 +23,10 @@ import type {
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import {
+  subscribeEntityMapColors,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -69,15 +73,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _regEntities: string[] = [];
 
+  // Storage zone id (its unique id) to entity id
+  @state() private _zoneEntityIds: Record<string, string> = {};
+
+  // Bumped when entity map colors change to recompute the memoized locations
+  @state() private _colorVersion = 0;
+
   private _getZones = memoizeOne(
-    (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
+    (
+      storageItems: Zone[],
+      stateItems: HassEntity[],
+      zoneEntityIds: Record<string, string>,
+      _colorVersion: number
+    ): MarkerLocation[] => {
       const computedStyles = getComputedStyle(this);
-      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
-      const passiveRadiusColor = computedStyles.getPropertyValue(
-        "--secondary-text-color"
-      );
-      const homeRadiusColor =
-        computedStyles.getPropertyValue("--primary-color");
 
       const stateLocations: MarkerLocation[] = stateItems.map(
         (entityState) => ({
@@ -87,12 +96,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
-          radius_color:
-            entityState.entity_id === "zone.home"
-              ? homeRadiusColor
-              : entityState.attributes.passive
-                ? passiveRadiusColor
-                : zoneRadiusColor,
+          radius_color: zoneColor(
+            entityState.entity_id,
+            !!entityState.attributes.passive,
+            computedStyles
+          ),
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
           radius_editable:
@@ -101,7 +109,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
-        radius_color: zone.passive ? passiveRadiusColor : zoneRadiusColor,
+        radius_color: zoneColor(
+          zoneEntityIds[zone.id] ?? `zone.${zone.id}`,
+          !!zone.passive,
+          computedStyles
+        ),
         location_editable: true,
         radius_editable: true,
       }));
@@ -111,9 +123,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
+      subscribeEntityMapColors(this.hass.connection!, () => {
+        this._colorVersion++;
+      }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
         this._regEntities = entities.map(
           (registryEntry) => registryEntry.entity_id
+        );
+        this._zoneEntityIds = Object.fromEntries(
+          entities
+            .filter((registryEntry) => registryEntry.platform === "zone")
+            .map((registryEntry) => [
+              registryEntry.unique_id,
+              registryEntry.entity_id,
+            ])
         );
         this._filterStates();
       }),
@@ -269,7 +292,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   <ha-locations-editor
                     .locations=${this._getZones(
                       this._storageItems,
-                      this._stateItems
+                      this._stateItems,
+                      this._zoneEntityIds,
+                      this._colorVersion
                     )}
                     @location-updated=${this._locationUpdated}
                     @radius-updated=${this._radiusUpdated}
