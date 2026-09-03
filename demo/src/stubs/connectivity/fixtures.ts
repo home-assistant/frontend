@@ -1,10 +1,11 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
+import { zhaFixtures } from "./zha/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
 // data to mock. Each owns its own fixtures, so they can be added and removed
 // one at a time.
-const INTEGRATIONS: ConnectivityFixtures[] = [bluetoothFixtures];
+const INTEGRATIONS: ConnectivityFixtures[] = [bluetoothFixtures, zhaFixtures];
 
 const collect = <T>(
   pick: (fixtures: ConnectivityFixtures) => T[] | undefined
