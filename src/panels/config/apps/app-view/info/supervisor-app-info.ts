@@ -1469,15 +1469,15 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.i18n.localize(
-        "ui.panel.config.apps.dashboard.uninstall_dialog.title",
-        {
-          name: getAppDisplayName(addon.name, addon.stage),
-        }
+        "ui.panel.config.apps.dashboard.uninstall_dialog.title"
       ),
       text: html`
         <p>
           ${this.i18n.localize(
-            "ui.panel.config.apps.dashboard.uninstall_dialog.text"
+            "ui.panel.config.apps.dashboard.uninstall_dialog.text",
+            {
+              name: getAppDisplayName(addon.name, addon.stage),
+            }
           )}
         </p>
         <ha-formfield

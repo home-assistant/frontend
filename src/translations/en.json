@@ -3080,8 +3080,8 @@
               "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
-              "title": "Uninstall {name}?",
-              "text": "This permanently deletes the app and the data it stored, including its databases and any other files it created.",
+              "title": "Uninstall app",
+              "text": "{name} and all the data it stored will be permanently deleted, including its databases and any other files it created.",
               "remove_config": "Also remove the app's configuration folder",
               "uninstall": "Uninstall"
             },
