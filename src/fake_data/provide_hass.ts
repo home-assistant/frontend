@@ -50,6 +50,12 @@ import type { EntityInput } from "./entities/types";
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
 
+type MockServiceCallback = (
+  data: Record<string, any> | undefined,
+  target: Record<string, any> | undefined,
+  hass: MockHomeAssistant
+) => any;
+
 type MockRestCallback = (
   hass: MockHomeAssistant,
   method: string,
@@ -79,6 +85,8 @@ export interface MockHomeAssistant extends HomeAssistant {
     ) => Awaited<ReturnType<T>>
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
+  // Registers a service that answers with data, for `callService(..., true)`.
+  mockService(domain: string, service: string, callback: MockServiceCallback);
   // Register a loader that is run (once) the first time an unmocked WS command
   // or REST path matching `shouldLoad` is received, allowing mocks to be
   // code-split into a dynamically imported chunk. The loader registers the
@@ -190,6 +198,12 @@ export const provideHass = (
 
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
+
+  // Services that answer with data, keyed by "<domain>.<service>". Without one
+  // registered, a call that asks for a response gets none and callers that read
+  // it straight back throw.
+  const serviceMocks: Record<string, MockServiceCallback> = {};
+  const context = { id: "mock-context", user_id: null, parent_id: null };
 
   // Optional loader to lazily register mocks on first matching unmocked command.
   let lazyMatcher: ((commandOrPath: string) => boolean) | undefined;
@@ -452,19 +466,27 @@ export const provideHass = (
     kioskMode: false,
     suspendWhenHidden: false,
     // @ts-ignore
-    async callService(domain, service, data) {
-      if (data && "entity_id" in data) {
+    async callService(domain, service, data, target, _notify, returnResponse) {
+      const mock = serviceMocks[`${domain}.${service}`];
+      if (mock) {
+        const response = await mock(data, target, hass());
+        return returnResponse ? { context, response } : { context };
+      }
+      const entityIds =
+        data && "entity_id" in data ? data.entity_id : target?.entity_id;
+      if (entityIds) {
         // eslint-disable-next-line
         console.log("Entity service call", domain, service, data);
         await Promise.all(
-          ensureArray(data.entity_id).map((ent) =>
-            entities[ent].handleService(domain, service, data)
+          ensureArray(entityIds).map((ent) =>
+            entities[ent]?.handleService(domain, service, data)
           )
         );
       } else {
         // eslint-disable-next-line
         console.log("unmocked callService", domain, service, data);
       }
+      return { context };
     },
     async callApi(method, path, parameters) {
       const findResponse = () =>
@@ -523,6 +545,9 @@ export const provideHass = (
       lazyLoader = loader;
     },
     mockAPI,
+    mockService(domain, service, callback) {
+      serviceMocks[`${domain}.${service}`] = callback;
+    },
     mockEvent(event) {
       (eventListeners[event] || []).forEach((fn) => {
         fn(event);
