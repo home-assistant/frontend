@@ -12,14 +12,21 @@ import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mi
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 
-const SCHEMA = [
-  {
-    name: "location",
-    required: true,
-    selector: { location: { radius: true } },
-  },
-];
+const SCHEMA = memoizeOne(
+  (icon: string, color: string) =>
+    [
+      {
+        name: "location",
+        required: true,
+        selector: { location: { radius: true, icon, color } },
+      },
+    ] as const
+);
 
 @customElement("dialog-home-zone-detail")
 class DialogHomeZoneDetail extends DirtyStateProviderMixin<HomeZoneMutableParams>()(
@@ -81,7 +88,11 @@ class DialogHomeZoneDetail extends DirtyStateProviderMixin<HomeZoneMutableParams
         <ha-form
           autofocus
           .hass=${this.hass}
-          .schema=${SCHEMA}
+          .schema=${SCHEMA(
+            this.hass.states[HOME_ZONE_ENTITY_ID]?.attributes.icon ||
+              "mdi:home",
+            zoneColor(HOME_ZONE_ENTITY_ID, false, getComputedStyle(this))
+          )}
           .data=${this._formData(this._data)}
           .error=${this._error}
           .computeLabel=${this._computeLabel}
