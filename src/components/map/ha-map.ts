@@ -914,8 +914,6 @@ export class HaMap extends ReactiveElement {
     #map.clickable:active,
     #map:active {
       cursor: grabbing;
-      cursor: -moz-grabbing;
-      cursor: -webkit-grabbing;
     }
     /* Only the raster fallback is inverted for dark mode, the vector style
        ships its own dark cartography. */

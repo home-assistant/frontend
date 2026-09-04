@@ -884,7 +884,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding: 0 16px;
       box-sizing: border-box;
       overflow-x: scroll;
-      -ms-overflow-style: none;
       scrollbar-width: none;
     }
 

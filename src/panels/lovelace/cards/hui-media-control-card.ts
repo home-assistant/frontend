@@ -13,6 +13,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
+import { MediaProgressController } from "../../../common/controllers/media-progress-controller";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -30,7 +31,6 @@ import {
   cleanupMediaTitle,
   computeMediaControls,
   computeMediaDescription,
-  getCurrentProgress,
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
@@ -86,7 +86,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @state() private _marqueeActive = false;
 
-  private _progressInterval?: number;
+  private _progressController = new MediaProgressController(this, {
+    getStateObj: () => this._stateObj,
+    getSlider: () => this._progressBar,
+  });
 
   private _resizeObserver?: ResizeObserver;
 
@@ -107,35 +110,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   public connectedCallback(): void {
     super.connectedCallback();
     this.updateComplete.then(() => this._attachObserver());
-
-    if (!this.hass || !this._config) {
-      return;
-    }
-
-    const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return;
-    }
-
-    if (
-      !this._progressInterval &&
-      this._showProgressBar &&
-      stateObj.state === "playing"
-    ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
-      );
-    }
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    if (this._progressInterval) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -358,6 +336,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         ? ""
                         : html`
                             <ha-slider
+                              min="0"
+                              max=${stateObj.attributes.media_duration || 0}
+                              step="1"
                               style=${styleMap({
                                 "--ha-slider-indicator-color":
                                   this._foregroundColor ||
@@ -410,10 +391,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const stateObj = this._stateObj;
 
     if (!stateObj) {
-      if (this._progressInterval) {
-        clearInterval(this._progressInterval);
-        this._progressInterval = undefined;
-      }
       this._foregroundColor = undefined;
       this._backgroundColor = undefined;
       return;
@@ -446,8 +423,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const stateObj = this._stateObj;
-
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       MediaControlCardConfig | undefined;
@@ -459,25 +434,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       oldConfig.theme !== this._config.theme
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
-    }
-
-    this._updateProgressBar();
-
-    if (
-      !this._progressInterval &&
-      this._showProgressBar &&
-      stateObj.state === "playing"
-    ) {
-      this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(),
-        1000
-      );
-    } else if (
-      this._progressInterval &&
-      (!this._showProgressBar || stateObj.state !== "playing")
-    ) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
     }
   }
 
@@ -575,15 +531,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
   }
 
-  private _updateProgressBar(): void {
-    if (this._progressBar && this._stateObj?.attributes.media_duration) {
-      this._progressBar.value =
-        (getCurrentProgress(this._stateObj) /
-          this._stateObj!.attributes.media_duration) *
-        100;
-    }
-  }
-
   private get _stateObj(): MediaPlayerEntity | undefined {
     return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
   }
@@ -595,10 +542,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const percentValue = this._progressBar?.value ?? 0;
-    const percent = percentValue ? percentValue / 100 : 0;
-
-    const position = this._stateObj!.attributes.media_duration! * percent;
+    const position = this._progressBar?.value ?? 0;
+    this._progressController.seek(position);
 
     this.hass!.callService("media_player", "media_seek", {
       entity_id: this._config!.entity,

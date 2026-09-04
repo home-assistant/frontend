@@ -1454,6 +1454,12 @@
         "test_on": "Turn on testing",
         "test_off": "Turn off testing"
       },
+      "state-class-picker": {
+        "state_class": "State class",
+        "add": "Add state class",
+        "no_state_classes": "No state classes available",
+        "no_match": "No state classes found for {term}"
+      },
       "state-content-picker": {
         "state": "State",
         "name": "Name",
@@ -1636,7 +1642,7 @@
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
             "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
-            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
+            "ai": "[%key:ui::panel::config::ai::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -1694,7 +1700,6 @@
         "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
-        "no_labels": "None",
         "toggle_yaml_mode": "Toggle YAML mode",
         "back_to_info": "Back to info",
         "info": "Information",
@@ -2937,6 +2942,21 @@
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
         },
+        "mcp": {
+          "header": "Model Context Protocol",
+          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "documentation": "documentation",
+          "enable": "[%key:ui::common::enable%]",
+          "disable": "[%key:ui::common::disable%]",
+          "disable_confirm_title": "Disable the Model Context Protocol server?",
+          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "your_api_header": "Your MCP API",
+          "apis_header": "Individual MCP APIs",
+          "copy_url": "Copy URL",
+          "configure": "Configure",
+          "error_load": "Failed to load the Model Context Protocol configuration",
+          "error_delete_entry": "Failed to disable the Model Context Protocol server"
+        },
         "apps": {
           "caption": "Apps",
           "description": "Install and manage apps",
@@ -3153,8 +3173,9 @@
               "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
-              "title": "Uninstall {name}?",
-              "remove_data": "Also remove app data",
+              "title": "Uninstall app",
+              "text": "{name} and everything in its private data folder will be permanently deleted, including any databases, credentials, and other internal state it kept there.",
+              "remove_config": "Also delete the app's configuration folder (if used)",
               "uninstall": "Uninstall"
             },
             "restart_dialog": {
@@ -8531,6 +8552,7 @@
             "add_device": "Add device",
             "status_online": "Online",
             "status_offline": "Offline",
+            "devices_offline": "{count} offline",
             "my_network_title": "My network",
             "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
@@ -8842,9 +8864,9 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
-        "ai_tasks": {
-          "caption": "AI tasks",
-          "description": "Configure AI suggestions and task preferences"
+        "ai": {
+          "caption": "AI",
+          "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
         "entity_id_format": {
           "caption": "Entity ID format",
@@ -10970,6 +10992,11 @@
               },
               "select-options": {
                 "label": "Select options",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "buttons": "Buttons"
+                },
                 "options": "Options",
                 "customize_options": "Customize options"
               },

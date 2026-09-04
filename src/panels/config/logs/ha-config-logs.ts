@@ -13,6 +13,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
@@ -95,8 +96,8 @@ export class HaConfigLogs extends LitElement {
     this._init();
   }
 
-  private async _filterChanged(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
   protected render(): TemplateResult {
@@ -344,9 +345,7 @@ export class HaConfigLogs extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: initial;
         }
         .search {
           position: sticky;

@@ -39,7 +39,7 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
             target &&
             (target.tagName === "SCRIPT" || target.tagName === "LINK")
           ) {
-            recoverFromStaleBuild(target.src || target.href, this);
+            void recoverFromStaleBuild(target.src || target.href, this);
           }
         },
         true
@@ -47,9 +47,16 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
       window.addEventListener("error", async (ev) => {
         // A stale build can surface as a runtime error while evaluating a
         // freshly (re)loaded chunk; recover rather than log it.
-        if (recoverFromStaleBuild(ev.error?.message || ev.message, this)) {
+        const recovery = recoverFromStaleBuild(
+          ev.error?.message || ev.message,
+          this
+        );
+        if (recovery) {
           ev.preventDefault();
-          return;
+          // A chunk that is still on the server failed in transport: log it.
+          if (await recovery) {
+            return;
+          }
         }
         if (!this.hass?.connected) {
           return;
@@ -94,9 +101,12 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
             : typeof reason === "string"
               ? reason
               : "";
-        if (recoverFromStaleBuild(reasonMessage, this)) {
+        const recovery = recoverFromStaleBuild(reasonMessage, this);
+        if (recovery) {
           ev.preventDefault();
-          return;
+          if (await recovery) {
+            return;
+          }
         }
         if (!this.hass?.connected) {
           return;

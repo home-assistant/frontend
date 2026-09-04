@@ -540,8 +540,8 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/config/ai-tasks",
-      translationKey: "ai_tasks",
+      path: "/config/ai",
+      translationKey: "ai",
       iconPath: mdiStarFourPoints,
       iconColor: "#8B69E3",
       core: true,

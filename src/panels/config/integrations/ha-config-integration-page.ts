@@ -18,6 +18,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -1231,8 +1232,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._filterTree(data, filter, areas)
   );
 
-  private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
   private async _handleEnableDebugLogging() {

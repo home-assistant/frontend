@@ -43,4 +43,10 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockAssist(hass);
   mockEntityRegistrySettings(hass);
   mockSlugify(hass);
+  hass.mockWS("llm/api/list", () => ({
+    apis: [
+      { id: "assist", name: "Assist" },
+      { id: "music_assistant", name: "Music Assistant" },
+    ],
+  }));
 };

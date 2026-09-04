@@ -15,6 +15,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -685,6 +686,8 @@ class DialogAddAutomationElement
                   automationElementType,
                   this.hass.localize,
                   this.hass.services,
+                  this._triggerDescriptions,
+                  this._conditionDescriptions,
                   this._manifests
                 )}
                 .convertToItem=${this._convertToItem}
@@ -1034,6 +1037,8 @@ class DialogAddAutomationElement
                 this._selectedCollectionIndex ?? 0,
                 this.hass.localize,
                 this.hass.services,
+                this._triggerDescriptions,
+                this._conditionDescriptions,
                 this._manifests,
                 this._systemDomains?.byEntityDomain
               ),
@@ -1071,6 +1076,8 @@ class DialogAddAutomationElement
       type: AddAutomationElementDialogParams["type"],
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
+      triggerDescriptions: TriggerDescriptions,
+      conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup
     ): AddAutomationElementListItem[] => {
       const groups = this._getGroups(type);
@@ -1087,14 +1094,12 @@ class DialogAddAutomationElement
 
       const items = flattenGroups(groups).flat();
       if (type === "trigger") {
-        items.push(
-          ...this._triggers(localize, this._triggerDescriptions, undefined)
-        );
+        items.push(...this._triggers(localize, triggerDescriptions, undefined));
       } else if (type === "condition") {
         items.push(
           ...this._conditions(
             localize,
-            this._conditionDescriptions,
+            conditionDescriptions,
             manifests,
             undefined
           )
@@ -1253,13 +1258,15 @@ class DialogAddAutomationElement
       collectionIndex: number,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
+      triggerDescriptions: TriggerDescriptions,
+      conditionDescriptions: ConditionDescriptions,
       manifests?: DomainManifestLookup,
       systemDomainsByEntityDomain?: Map<string, Set<string>>
     ): AddAutomationElementListItem[] => {
       if (type === "trigger" && isDynamic(group)) {
         return this._triggers(
           localize,
-          this._triggerDescriptions,
+          triggerDescriptions,
           systemDomainsByEntityDomain,
           group
         );
@@ -1267,7 +1274,7 @@ class DialogAddAutomationElement
       if (type === "condition" && isDynamic(group)) {
         return this._conditions(
           localize,
-          this._conditionDescriptions,
+          conditionDescriptions,
           manifests,
           systemDomainsByEntityDomain,
           group
@@ -1284,9 +1291,17 @@ class DialogAddAutomationElement
 
       let result: AddAutomationElementListItem[];
 
+      const descriptions =
+        type === "condition" ? conditionDescriptions : triggerDescriptions;
+
       if (groupDef?.domains && !groupDef.members) {
         // Curated group whose items come solely from backend domains (e.g. Sun).
-        result = this._getDomainElementItems(type, groupDef.domains, localize);
+        result = this._getDomainElementItems(
+          type,
+          groupDef.domains,
+          localize,
+          descriptions
+        );
       } else {
         const groups = this._getGroups(type, group, collectionIndex);
         result = Object.entries(groups).map(([key, options]) =>
@@ -1295,7 +1310,12 @@ class DialogAddAutomationElement
         if (groupDef?.domains) {
           // Curated group with both static members and backend domains (Time).
           result.push(
-            ...this._getDomainElementItems(type, groupDef.domains, localize)
+            ...this._getDomainElementItems(
+              type,
+              groupDef.domains,
+              localize,
+              descriptions
+            )
           );
         }
       }
@@ -1673,18 +1693,19 @@ class DialogAddAutomationElement
   private _getDomainElementItems(
     type: AddAutomationElementDialogParams["type"],
     domains: string[],
-    localize: LocalizeFunc
+    localize: LocalizeFunc,
+    descriptions: TriggerDescriptions | ConditionDescriptions
   ): AddAutomationElementListItem[] {
     const domainSet = new Set(domains);
     if (type === "trigger") {
-      return Object.keys(this._triggerDescriptions)
+      return Object.keys(descriptions)
         .filter((trigger) => domainSet.has(getTriggerDomain(trigger)))
         .map((trigger) =>
           this._getTriggerListItem(localize, getTriggerDomain(trigger), trigger)
         );
     }
     if (type === "condition") {
-      return Object.keys(this._conditionDescriptions)
+      return Object.keys(descriptions)
         .filter((condition) => domainSet.has(getConditionDomain(condition)))
         .map((condition) =>
           this._getConditionListItem(
@@ -2146,8 +2167,8 @@ class DialogAddAutomationElement
     }
   }
 
-  private _handleFilterInput = (ev: InputEvent) => {
-    this._debounceFilterChanged((ev.target as HaInputSearch).value ?? "");
+  private _handleFilterInput = (ev: HASSDomTargetEvent<HaInputSearch>) => {
+    this._debounceFilterChanged(ev.target.value ?? "");
   };
 
   private _debounceFilterChanged = debounce((value: string) => {

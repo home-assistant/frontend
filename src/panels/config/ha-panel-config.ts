@@ -73,6 +73,7 @@ class HaPanelConfig extends HassRouterPage {
       connectivity: {
         tag: "ha-config-connectivity",
         load: () => import("./connectivity/ha-config-connectivity"),
+        waitForReady: true,
       },
       devices: {
         tag: "ha-config-devices",
@@ -151,6 +152,7 @@ class HaPanelConfig extends HassRouterPage {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
+        waitForReady: true,
       },
       updates: {
         tag: "ha-config-section-updates",
@@ -181,9 +183,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-labs",
         load: () => import("./labs/ha-config-labs"),
       },
-      "ai-tasks": {
-        tag: "ha-config-section-ai-tasks",
-        load: () => import("./core/ha-config-section-ai-tasks"),
+      ai: {
+        tag: "ha-config-section-ai",
+        load: () => import("./core/ha-config-section-ai"),
       },
       "entity-id-format": {
         tag: "ha-config-section-entity-id-format",
@@ -228,6 +230,7 @@ class HaPanelConfig extends HassRouterPage {
         tag: "serial-config-dashboard",
         load: () =>
           import("./integrations/integration-panels/serial/serial-config-dashboard"),
+        waitForReady: true,
       },
       dhcp: {
         tag: "dhcp-config-panel",
