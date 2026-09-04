@@ -1,5 +1,6 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
 import { serialFixtures } from "./serial/fixtures";
+import { matterFixtures } from "./matter/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
@@ -8,6 +9,7 @@ import type { ConnectivityFixtures } from "./types";
 const INTEGRATIONS: ConnectivityFixtures[] = [
   bluetoothFixtures,
   serialFixtures,
+  matterFixtures,
 ];
 
 const collect = <T>(
