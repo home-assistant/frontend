@@ -138,6 +138,11 @@ const parseDatasetTlv = (value: string) => {
     if (end > value.length) {
       return undefined;
     }
+    if (fields.has(type)) {
+      // A repeated tag is malformed, and the backend's parser refuses it
+      // rather than letting the later one win.
+      return undefined;
+    }
     fields.set(type, value.slice(start, end).toUpperCase());
     index = end;
   }
@@ -160,12 +165,17 @@ const parseDatasetTlv = (value: string) => {
     return undefined;
   }
   const channel = fields.get(0x00);
+  // Absent is fine; present and zero is not a channel the backend accepts.
+  const channelNumber = channel ? parseInt(channel.slice(2), 16) : null;
+  if (channelNumber === 0) {
+    return undefined;
+  }
   return {
     activeTimestamp,
     extendedPanId,
     networkName: decodedName,
     panId: fields.get(0x01) ?? null,
-    channel: channel ? parseInt(channel.slice(2), 16) : null,
+    channel: channelNumber,
   };
 };
 
