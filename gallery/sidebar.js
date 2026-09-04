@@ -57,6 +57,7 @@ export default [
           "ha-control-select",
           "ha-control-select-menu",
           "ha-hs-color-picker",
+          "ha-color-temp-brightness-picker",
         ],
       },
       {
