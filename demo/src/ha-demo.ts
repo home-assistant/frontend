@@ -60,6 +60,8 @@ const CONFIG_PANEL_COMMANDS = [
   "assist_pipeline/",
   "config/entity_registry/settings/",
   "slugify",
+  "usb/",
+  "modbus/",
 ];
 
 @customElement("ha-demo")
@@ -87,6 +89,8 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
+          "usb",
+          "modbus",
         ],
       },
     });

@@ -90,6 +90,33 @@ export const demoConfigEntries: {
       supports_options: true,
     },
   },
+  {
+    type: "device",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-flexit",
+      domain: "flexit",
+      title: "Flexit Nordic S4",
+    },
+  },
+  {
+    type: "device",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-solaredge",
+      domain: "solaredge_modbus",
+      title: "SolarEdge SE7K",
+    },
+  },
+  {
+    type: "device",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-fronius",
+      domain: "fronius",
+      title: "Fronius Symo",
+    },
+  },
 ];
 
 const filterEntries = (filters?: {

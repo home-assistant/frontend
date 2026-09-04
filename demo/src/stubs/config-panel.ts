@@ -11,6 +11,7 @@ import { mockDeviceAutomation } from "./device_automation";
 import { mockEntityRegistrySettings } from "./entity_registry_settings";
 import { mockEntitySources } from "./entity_sources";
 import { mockExpose } from "./expose";
+import { mockModbus } from "./modbus";
 import { mockNetwork } from "./network";
 import { mockPerson } from "./person";
 import { mockScene } from "./scene";
@@ -18,6 +19,7 @@ import { mockSearch } from "./search";
 import { mockSlugify } from "./slugify";
 import { mockSystemHealth } from "./system_health";
 import { mockTags } from "./tags";
+import { mockUsb } from "./usb";
 import { mockZone } from "./zone";
 
 // Registers every mock that is only needed once the config panel is opened.
@@ -43,6 +45,8 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockAssist(hass);
   mockEntityRegistrySettings(hass);
   mockSlugify(hass);
+  mockUsb(hass);
+  mockModbus(hass);
   hass.mockWS("llm/api/list", () => ({
     apis: [
       { id: "assist", name: "Assist" },

@@ -2826,6 +2826,10 @@
             "main": "Serial",
             "secondary": "Serial ports and the integrations and apps using them"
           },
+          "modbus": {
+            "main": "Modbus",
+            "secondary": "Industrial devices sharing a serial or network link"
+          },
           "knx": {
             "main": "KNX",
             "secondary": "Building automation standard"
@@ -7620,6 +7624,7 @@
           "consumer_not_running": "{name} (not running)",
           "can_be_used_with": "Can be used with {integrations}",
           "discovered_by": "Discovered by {integration}, set it up",
+          "used_by_modbus": "Used by Modbus",
           "port_information": "Port information",
           "fields": {
             "device": "Device",
@@ -7632,6 +7637,27 @@
             "vid": "Vendor ID",
             "pid": "Product ID",
             "bcd_device": "Device revision"
+          }
+        },
+        "modbus": {
+          "title": "Modbus",
+          "status_ok": "All connections up",
+          "status_disconnected": "Connections down",
+          "status_summary": "{units, plural,\n one {# unit}\n other {# units}\n} on {total, plural,\n one {# connection}\n other {# connections}\n}",
+          "status_summary_disconnected": "{count} unreachable",
+          "connected": "Connected",
+          "connected_description": "Home Assistant is talking to these devices.",
+          "disconnected": "Disconnected",
+          "disconnected_description": "These devices are set up but cannot be reached right now.",
+          "no_connections": "No Modbus connections",
+          "no_connections_description": "A connection opens as soon as an integration starts talking to a Modbus device.",
+          "loading_error": "Failed to load Modbus connections",
+          "units": "{count, plural,\n one {Unit {ids}}\n other {Units {ids}}\n}",
+          "view_serial_port": "View this port under Serial",
+          "transport": {
+            "tcp": "TCP",
+            "udp": "UDP",
+            "serial": "Serial"
           }
         },
         "dhcp": {
