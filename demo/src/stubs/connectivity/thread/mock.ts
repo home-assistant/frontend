@@ -81,6 +81,19 @@ const ROUTERS: ThreadRouter[] = [
 // Operational datasets are type/length/value triplets. Building them rather
 // than pasting a literal keeps the declared lengths honest, and keeps each
 // dataset's extended PAN ID and network name inside its own TLV.
+// Network names are UTF-8, so the bytes cannot be read one character each.
+// Undefined for a sequence the backend's strict decoder would refuse.
+const decodeUtf8 = (value: string): string | undefined => {
+  const bytes = Uint8Array.from(
+    (value.match(/../g) ?? []).map((byte) => parseInt(byte, 16))
+  );
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    return undefined;
+  }
+};
+
 const tlv = (type: number, value: string) =>
   type.toString(16).padStart(2, "0").toUpperCase() +
   (value.length / 2).toString(16).padStart(2, "0").toUpperCase() +
@@ -142,13 +155,15 @@ const parseDatasetTlv = (value: string) => {
   ) {
     return undefined;
   }
+  const decodedName = decodeUtf8(networkName);
+  if (decodedName === undefined) {
+    return undefined;
+  }
   const channel = fields.get(0x00);
   return {
     activeTimestamp,
     extendedPanId,
-    networkName: (networkName.match(/../g) ?? [])
-      .map((byte) => String.fromCharCode(parseInt(byte, 16)))
-      .join(""),
+    networkName: decodedName,
     panId: fields.get(0x01) ?? null,
     channel: channel ? parseInt(channel.slice(2), 16) : null,
   };
@@ -206,12 +221,14 @@ const moveRouter = (
   datasetId: string
 ) => {
   const info = OTBR_INFO[extendedAddress];
+  const moved = DATASETS.find((item) => item.dataset_id === datasetId);
   if (info) {
     info.extended_pan_id = extendedPanId;
     // The dialog looks for the network's ID inside this, so it has to follow
-    // the router onto its new network.
+    // the router onto its new network, and the channel comes with it.
     info.active_dataset_tlvs =
       DATASET_TLVS[datasetId] ?? info.active_dataset_tlvs;
+    info.channel = moved?.channel ?? info.channel;
   }
   const router = ROUTERS.find(
     (candidate) => candidate.extended_address === extendedAddress
@@ -332,6 +349,9 @@ export const mockThread = (hass: MockHomeAssistant) => {
       throw new Error("Preferred dataset cannot be deleted");
     }
     DATASETS.splice(index, 1);
+    // The credentials go with it, so reading them back reports not found the
+    // way an unknown ID does.
+    delete DATASET_TLVS[msg.dataset_id];
     return undefined;
   });
 
@@ -420,6 +440,16 @@ export const mockThread = (hass: MockHomeAssistant) => {
       const info = OTBR_INFO[msg.extended_address];
       if (info) {
         info.channel = msg.channel;
+        // The active dataset carries the channel too, so leaving it behind
+        // would have the channel prompt and the dataset dialog disagree.
+        const dataset = DATASETS.find(
+          (candidate) => candidate.extended_pan_id === info.extended_pan_id
+        );
+        if (dataset) {
+          dataset.channel = msg.channel;
+          DATASET_TLVS[dataset.dataset_id] = buildDatasetTlv(dataset);
+          info.active_dataset_tlvs = DATASET_TLVS[dataset.dataset_id];
+        }
       }
       return { delay: 120 };
     }

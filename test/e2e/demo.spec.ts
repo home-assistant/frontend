@@ -174,6 +174,78 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test("Thread panel groups its routers and follows the border router", async ({
+    page,
+  }) => {
+    // The panel groups routers by the network its discovery stream reports, so
+    // the state the write commands change is only visible if those commands
+    // announce the router again. That is the part this covers.
+    await loadDemo(page, "/#/config/thread");
+
+    const panel = page.locator("thread-config-panel");
+    await expect(panel).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    const cards = panel.locator("ha-card");
+    await expect(cards).toHaveCount(2, { timeout: PANEL_TIMEOUT });
+    // The preferred network holds Home Assistant's border router alongside the
+    // two it shares credentials with; the discovered one holds the Echo.
+    await expect(cards.first()).toContainText("ha-thread");
+    await expect(cards.first()).toContainText("3 border routers");
+    await expect(cards.nth(1)).toContainText("AmazonThread");
+
+    // Resetting moves the border router onto a network of its own, which the
+    // panel can only show if the discovery subscription is told.
+    await panel.evaluate(async (element) => {
+      const hass = (element as HTMLElement & { hass: any }).hass;
+      await hass.connection.sendMessagePromise({
+        type: "otbr/create_network",
+        extended_address: "f6a1c30d2b4e5f61",
+      });
+    });
+    await expect(cards).toHaveCount(3, { timeout: PANEL_TIMEOUT });
+    await expect(cards.first()).toContainText("2 border routers");
+
+    // And rejoining puts it back, leaving the preferred network unchanged.
+    await panel.evaluate(async (element) => {
+      const hass = (element as HTMLElement & { hass: any }).hass;
+      await hass.connection.sendMessagePromise({
+        type: "otbr/set_network",
+        extended_address: "f6a1c30d2b4e5f61",
+        dataset_id: "ha-thread-dataset",
+      });
+    });
+    await expect(cards).toHaveCount(2, { timeout: PANEL_TIMEOUT });
+    await expect(cards.first()).toContainText("3 border routers");
+
+    // Credentials are per dataset, and go away with it.
+    const datasets = await panel.evaluate(async (element) => {
+      const hass = (element as HTMLElement & { hass: any }).hass;
+      const send = (msg: unknown) => hass.connection.sendMessagePromise(msg);
+      const read = (dataset_id: string) =>
+        send({ type: "thread/get_dataset_tlv", dataset_id }).then(
+          (result: { tlv: string }) => result.tlv.slice(0, 4),
+          () => "rejected"
+        );
+      const before = await read("ha-thread-dataset");
+      await send({
+        type: "thread/delete_dataset",
+        dataset_id: "created-dataset-1",
+      });
+      return {
+        preferred: before,
+        deleted: await read("created-dataset-1"),
+        unknown: await read("not-a-dataset"),
+      };
+    });
+    expect(datasets).toEqual({
+      preferred: "0E08",
+      deleted: "rejected",
+      unknown: "rejected",
+    });
+
+    expectNoPageErrors(pageErrors);
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,
