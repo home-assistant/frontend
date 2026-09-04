@@ -15,6 +15,7 @@ export const threadFixtures: ConnectivityFixtures = {
     }),
     manifest("otbr", "Open Thread Border Router", {
       integration_type: "service",
+      iot_class: "local_polling",
     }),
   ],
   configEntries: [

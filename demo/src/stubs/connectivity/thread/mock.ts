@@ -78,6 +78,49 @@ const ROUTERS: ThreadRouter[] = [
   },
 ];
 
+// Operational datasets are type/length/value triplets. Building them rather
+// than pasting a literal keeps the declared lengths honest, and keeps each
+// dataset's extended PAN ID and network name inside its own TLV.
+const tlv = (type: number, value: string) =>
+  type.toString(16).padStart(2, "0").toUpperCase() +
+  (value.length / 2).toString(16).padStart(2, "0").toUpperCase() +
+  value.toUpperCase();
+
+const textToHex = (text: string) =>
+  Array.from(text)
+    .map((character) => character.charCodeAt(0).toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+
+const buildDatasetTlv = (dataset: ThreadDataSet) =>
+  [
+    tlv(0x0e, "0000000000010000"), // active timestamp
+    tlv(0x00, `00${(dataset.channel ?? 15).toString(16).padStart(4, "0")}`),
+    tlv(0x35, "000040010200"), // channel mask
+    tlv(0x02, dataset.extended_pan_id),
+    tlv(0x07, "FD11220000000000"), // mesh-local prefix
+    tlv(0x05, "00112233445566778899AABBCCDDEEFF"), // network key
+    tlv(0x03, textToHex(dataset.network_name)),
+    tlv(0x01, (dataset.pan_id ?? "1234").padStart(4, "0")),
+    tlv(0x04, "1035060004001FFFE00C0402A0F7F800"), // PSKc
+    tlv(0x0c, "02A0F7F8"), // security policy
+  ].join("");
+
+// The extended PAN ID lives in the type 0x02 field, not at a fixed offset.
+const extendedPanIdFromTlv = (value: string): string | undefined => {
+  let index = 0;
+  while (index + 4 <= value.length) {
+    const type = parseInt(value.slice(index, index + 2), 16);
+    const length = parseInt(value.slice(index + 2, index + 4), 16);
+    const start = index + 4;
+    if (type === 0x02) {
+      return value.slice(start, start + length * 2).toUpperCase();
+    }
+    index = start + length * 2;
+  }
+  return undefined;
+};
+
 const DATASETS: ThreadDataSet[] = [
   {
     channel: 15,
@@ -93,10 +136,13 @@ const DATASETS: ThreadDataSet[] = [
   },
 ];
 
+const DATASET_TLVS: Record<string, string> = Object.fromEntries(
+  DATASETS.map((dataset) => [dataset.dataset_id, buildDatasetTlv(dataset)])
+);
+
 const OTBR_INFO: OTBRInfoDict = {
   [OTBR_EXT_ADDRESS]: {
-    active_dataset_tlvs:
-      "0E080000000000010000000300000F350600004001020000000208DEAD00BEEF00CAFE0708FD11220000000000051000112233445566778899AAABBCCDDEEFF030A68612D74687265616401021234041035060004001FFFE00C0402A0F7F8",
+    active_dataset_tlvs: DATASET_TLVS["ha-thread-dataset"],
     border_agent_id: OTBR_BORDER_AGENT_ID,
     channel: 15,
     extended_address: OTBR_EXT_ADDRESS,
@@ -108,16 +154,31 @@ const OTBR_INFO: OTBRInfoDict = {
 let added = 0;
 let created = 0;
 
+// Eight bytes of hex, the shape the backend can actually return.
+const randomExtendedPanId = () =>
+  Array.from({ length: 8 }, () =>
+    Math.floor(Math.random() * 256)
+      .toString(16)
+      .padStart(2, "0")
+  )
+    .join("")
+    .toUpperCase();
+
 // Keeps the router, the OTBR info and the subscribers in step, so the panel
 // redraws the border router under its new network.
 const moveRouter = (
   extendedAddress: string,
   extendedPanId: string,
-  networkName: string
+  networkName: string,
+  datasetId: string
 ) => {
   const info = OTBR_INFO[extendedAddress];
   if (info) {
     info.extended_pan_id = extendedPanId;
+    // The dialog looks for the network's ID inside this, so it has to follow
+    // the router onto its new network.
+    info.active_dataset_tlvs =
+      DATASET_TLVS[datasetId] ?? info.active_dataset_tlvs;
   }
   const router = ROUTERS.find(
     (candidate) => candidate.extended_address === extendedAddress
@@ -167,9 +228,13 @@ export const mockThread = (hass: MockHomeAssistant) => {
   hass.mockWS("thread/list_datasets", () => ({
     datasets: DATASETS.map((dataset) => ({ ...dataset })),
   }));
-  hass.mockWS("thread/get_dataset_tlv", () => ({
-    tlv: OTBR_INFO[OTBR_EXT_ADDRESS].active_dataset_tlvs,
-  }));
+  hass.mockWS("thread/get_dataset_tlv", (msg: { dataset_id: string }) => {
+    const value = DATASET_TLVS[msg.dataset_id];
+    if (!value) {
+      throw new Error(`Dataset ${msg.dataset_id} not found`);
+    }
+    return { tlv: value };
+  });
 
   hass.mockWS("otbr/info", () => OTBR_INFO);
 
@@ -179,18 +244,20 @@ export const mockThread = (hass: MockHomeAssistant) => {
     "thread/add_dataset_tlv",
     (msg: { source: string; tlv: string }) => {
       added += 1;
-      DATASETS.push({
+      const dataset: ThreadDataSet = {
         channel: 15,
         created: new Date().toISOString(),
         dataset_id: `added-dataset-${added}`,
-        extended_pan_id: msg.tlv.slice(0, 16).toUpperCase(),
+        extended_pan_id: extendedPanIdFromTlv(msg.tlv) ?? randomExtendedPanId(),
         network_name: `added-network-${added}`,
-        pan_id: "abcd",
+        pan_id: "ABCD",
         preferred_border_agent_id: null,
         preferred_extended_address: null,
         preferred: false,
         source: msg.source,
-      });
+      };
+      DATASETS.push(dataset);
+      DATASET_TLVS[dataset.dataset_id] = buildDatasetTlv(dataset);
       return undefined;
     }
   );
@@ -241,21 +308,26 @@ export const mockThread = (hass: MockHomeAssistant) => {
   // the panel its "add to my network" path back.
   hass.mockWS("otbr/create_network", (msg: { extended_address: string }) => {
     created += 1;
-    const extendedPanId = `RESET${String(created).padStart(11, "0")}`;
-    const networkName = `ha-thread-${created}`;
-    DATASETS.push({
+    const dataset: ThreadDataSet = {
       channel: 15,
       created: new Date().toISOString(),
       dataset_id: `created-dataset-${created}`,
-      extended_pan_id: extendedPanId,
-      network_name: networkName,
+      extended_pan_id: randomExtendedPanId(),
+      network_name: `ha-thread-${created}`,
       pan_id: "1234",
       preferred_border_agent_id: OTBR_BORDER_AGENT_ID,
       preferred_extended_address: msg.extended_address,
       preferred: false,
       source: "otbr",
-    });
-    moveRouter(msg.extended_address, extendedPanId, networkName);
+    };
+    DATASETS.push(dataset);
+    DATASET_TLVS[dataset.dataset_id] = buildDatasetTlv(dataset);
+    moveRouter(
+      msg.extended_address,
+      dataset.extended_pan_id,
+      dataset.network_name,
+      dataset.dataset_id
+    );
     return undefined;
   });
 
@@ -273,7 +345,8 @@ export const mockThread = (hass: MockHomeAssistant) => {
         moveRouter(
           msg.extended_address,
           dataset.extended_pan_id,
-          dataset.network_name
+          dataset.network_name,
+          dataset.dataset_id
         );
       }
       return undefined;
