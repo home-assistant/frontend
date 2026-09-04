@@ -4,6 +4,8 @@ import type {
   ZHADevice,
   ZHADeviceEndpoint,
   ZHAGroup,
+  ZHAGroupMember,
+  ZHANetworkBackup,
   ZHANetworkSettings,
 } from "../../../../../src/data/zha";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
@@ -298,6 +300,8 @@ const CONFIGURATION: ZHAConfiguration = {
   },
 };
 
+const BACKUPS: ZHANetworkBackup[] = [];
+
 const NETWORK_SETTINGS: ZHANetworkSettings = {
   radio_type: "ezsp",
   device: { path: "/dev/ttyUSB0", baudrate: 115200, flow_control: "hardware" },
@@ -362,5 +366,103 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/topology/update", () => undefined);
   hass.mockWS("zha/devices/bindable", () => []);
   hass.mockWS("zha/devices/groupable", () => []);
-  hass.mockWS("zha/network/backups/list", () => []);
+  hass.mockWS("zha/network/backups/list", () => BACKUPS);
+
+  // The panel offers all of the below, and refetches after each, so they
+  // change the mocked state rather than only resolving.
+  hass.mockWS("zha/configuration/update", (msg: { data: any }) => {
+    Object.entries(msg.data ?? {}).forEach(([section, values]) => {
+      CONFIGURATION.data[section] = {
+        ...CONFIGURATION.data[section],
+        ...(values as Record<string, unknown>),
+      };
+    });
+    return undefined;
+  });
+
+  hass.mockWS("zha/network/backups/create", () => {
+    const backup: ZHANetworkBackup = {
+      backup_time: new Date().toISOString(),
+      network_info: NETWORK_SETTINGS.settings.network_info,
+      node_info: NETWORK_SETTINGS.settings.node_info,
+    };
+    BACKUPS.push(backup);
+    return { backup, is_complete: true };
+  });
+
+  hass.mockWS(
+    "zha/network/change_channel",
+    (msg: { new_channel: "auto" | number }) => {
+      NETWORK_SETTINGS.settings.network_info.channel =
+        msg.new_channel === "auto" ? 25 : msg.new_channel;
+      return undefined;
+    }
+  );
+
+  hass.mockWS(
+    "zha/group/add",
+    (msg: {
+      group_name: string;
+      group_id?: number;
+      members?: ZHAGroupMember[];
+    }) => {
+      const group: ZHAGroup = {
+        name: msg.group_name,
+        group_id:
+          msg.group_id ??
+          GROUPS.reduce(
+            (highest, item) => Math.max(highest, item.group_id),
+            0
+          ) + 1,
+        members: (msg.members ?? []).map((item) => member(item.ieee)),
+      };
+      GROUPS.push(group);
+      return group;
+    }
+  );
+
+  hass.mockWS("zha/group/remove", (msg: { group_ids: number[] }) => {
+    msg.group_ids.forEach((groupId) => {
+      const index = GROUPS.findIndex((group) => group.group_id === groupId);
+      if (index !== -1) {
+        GROUPS.splice(index, 1);
+      }
+    });
+    return GROUPS;
+  });
+
+  const findGroup = (groupId: number) => {
+    const group = GROUPS.find((candidate) => candidate.group_id === groupId);
+    if (!group) {
+      throw new Error(`Group ${groupId} not found`);
+    }
+    return group;
+  };
+
+  hass.mockWS(
+    "zha/group/members/add",
+    (msg: { group_id: number; members: ZHAGroupMember[] }) => {
+      const group = findGroup(msg.group_id);
+      const known = new Set(group.members.map((item) => item.device.ieee));
+      group.members = [
+        ...group.members,
+        ...msg.members
+          .filter((item) => !known.has(item.ieee))
+          .map((item) => member(item.ieee)),
+      ];
+      return group;
+    }
+  );
+
+  hass.mockWS(
+    "zha/group/members/remove",
+    (msg: { group_id: number; members: ZHAGroupMember[] }) => {
+      const group = findGroup(msg.group_id);
+      const dropped = new Set(msg.members.map((item) => item.ieee));
+      group.members = group.members.filter(
+        (item) => !dropped.has(item.device.ieee)
+      );
+      return group;
+    }
+  );
 };
