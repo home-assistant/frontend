@@ -3,7 +3,6 @@ import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
-  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiEye,
@@ -906,10 +905,7 @@ export class HaConfigEntities extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.automation.picker.bulk_actions.add_label"
                     )}
-                    <ha-svg-icon
-                      slot="end"
-                      .path=${mdiChevronRight}
-                    ></ha-svg-icon>
+                    <ha-icon-next slot="end"></ha-icon-next>
                     ${this._renderLabelItems("submenu")}
                   </ha-dropdown-item>
                   <wa-divider></wa-divider>`
