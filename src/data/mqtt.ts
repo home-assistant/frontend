@@ -16,7 +16,9 @@ export interface MQTTTopicDebugInfo {
 export interface MQTTDiscoveryDebugInfo {
   topic: string;
   // The discovery config, which `mqtt-discovery-payload` renders as YAML/JSON.
-  payload: Record<string, unknown>;
+  // An entity with debug traffic but nothing discovered has no config, and the
+  // backend sends an empty string for it.
+  payload: Record<string, unknown> | string;
 }
 
 export interface MQTTEntityDebugInfo {
