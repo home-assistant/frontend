@@ -194,6 +194,8 @@ export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  temperature_entity?: string;
+  weather_entity?: string;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {

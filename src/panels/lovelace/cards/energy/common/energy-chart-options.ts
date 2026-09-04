@@ -326,8 +326,10 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
-    const displayUnit =
-      param.seriesId === "primary-weather-temperature" ? secondaryUnit : unit;
+    const isSecondary =
+      param.seriesId === "primary-weather-temperature" ||
+      (param as any).yAxisIndex === 1;
+    const displayUnit = isSecondary && secondaryUnit ? secondaryUnit : unit;
     rows.push(
       html`<ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}

@@ -114,6 +114,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _weatherUnit?: string;
 
+  private _weatherRequestToken = 0;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -528,94 +530,154 @@ export class HuiEnergyUsageGraphCard
     let totalCost = 0;
     let hasCost = false;
 
+    const getMeterCost = (
+      energyStatId: string | null,
+      directCostStatId: string | null,
+      numberPrice: number | null | undefined
+    ): number | undefined => {
+      if (!energyStatId) return undefined;
+      let costStatId = directCostStatId;
+      if (!costStatId && energyData.info?.cost_sensors) {
+        costStatId = energyData.info.cost_sensors[energyStatId] || null;
+      }
+      if (costStatId && energyData.stats[costStatId]) {
+        const costStats = energyData.stats[costStatId];
+        const costGrowth = calculateStatisticSumGrowth(costStats);
+        if (costGrowth !== null && !isNaN(costGrowth)) {
+          return costGrowth;
+        }
+        const sumChange = costStats.reduce(
+          (acc, curr) => acc + (curr.change ?? 0),
+          0
+        );
+        return sumChange;
+      }
+      if (numberPrice !== null && numberPrice !== undefined) {
+        const energyStats = energyData.stats[energyStatId];
+        const energyGrowth = calculateStatisticSumGrowth(energyStats);
+        if (energyGrowth !== null && !isNaN(energyGrowth)) {
+          return energyGrowth * numberPrice;
+        }
+        if (energyStats) {
+          const sumChange = energyStats.reduce(
+            (acc, curr) => acc + (curr.change ?? 0),
+            0
+          );
+          return sumChange * numberPrice;
+        }
+      }
+      return undefined;
+    };
+
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "grid") {
         const gridSource = source as GridSourceTypeEnergyPreference;
-        if (gridSource.stat_energy_from) {
-          let costStatId = gridSource.stat_cost;
-          if (!costStatId && energyData.info?.cost_sensors) {
-            costStatId =
-              energyData.info.cost_sensors[gridSource.stat_energy_from] || null;
-          }
-          if (costStatId && energyData.stats[costStatId]) {
-            const costStats = energyData.stats[costStatId];
-            const costGrowth = calculateStatisticSumGrowth(costStats);
-            if (costGrowth !== null && !isNaN(costGrowth)) {
-              totalCost += costGrowth;
-              hasCost = true;
-            } else {
-              const sumChange = costStats.reduce(
-                (acc, curr) => acc + (curr.change ?? 0),
-                0
-              );
-              if (sumChange > 0) {
-                totalCost += sumChange;
-                hasCost = true;
-              }
-            }
-          } else if (
-            gridSource.number_energy_price !== null &&
-            gridSource.number_energy_price !== undefined
-          ) {
-            const energyStats = energyData.stats[gridSource.stat_energy_from];
-            const energyGrowth = calculateStatisticSumGrowth(energyStats);
-            if (energyGrowth !== null && !isNaN(energyGrowth)) {
-              totalCost += energyGrowth * gridSource.number_energy_price;
-              hasCost = true;
-            } else if (energyStats) {
-              const sumChange = energyStats.reduce(
-                (acc, curr) => acc + (curr.change ?? 0),
-                0
-              );
-              if (sumChange > 0) {
-                totalCost += sumChange * gridSource.number_energy_price;
-                hasCost = true;
-              }
-            }
-          }
+        const importCost = getMeterCost(
+          gridSource.stat_energy_from,
+          gridSource.stat_cost,
+          gridSource.number_energy_price
+        );
+        if (importCost !== undefined) {
+          totalCost += importCost;
+          hasCost = true;
+        }
+
+        const exportCompensation = getMeterCost(
+          gridSource.stat_energy_to,
+          gridSource.stat_compensation,
+          gridSource.number_energy_price_export
+        );
+        if (exportCompensation !== undefined) {
+          totalCost -= exportCompensation;
+          hasCost = true;
         }
       }
     }
 
     this._totalCost = hasCost ? totalCost : undefined;
 
-    const primaryWeatherEntityId = Object.keys(this.hass.states).find((eid) =>
-      eid.startsWith("weather.")
-    );
+    // Immediately commit the base energy datasets without waiting for supplemental weather
+    this._weatherUnit = undefined;
+    this._chartData = datasets;
+    this._legendData = this._getLegendData(datasets);
+    this._total = this._processTotal(consumption);
 
-    let weatherSeries: LineSeriesOption | undefined;
-    let weatherUnit: string | undefined;
+    const requestToken = ++this._weatherRequestToken;
 
-    if (primaryWeatherEntityId && this.hass.states[primaryWeatherEntityId]) {
-      const weatherState = this.hass.states[primaryWeatherEntityId];
+    let targetTempEntityId: string | undefined;
+
+    if (
+      this._config?.temperature_entity &&
+      this.hass.states[this._config.temperature_entity]
+    ) {
+      targetTempEntityId = this._config.temperature_entity;
+    } else {
+      const weatherEntityId =
+        this._config?.weather_entity ||
+        Object.keys(this.hass.states).find((eid) => eid.startsWith("weather."));
+
+      if (weatherEntityId && this.hass.entities?.[weatherEntityId]?.device_id) {
+        const deviceId = this.hass.entities[weatherEntityId].device_id;
+        const matchingEntry = Object.values(this.hass.entities).find(
+          (entry) =>
+            entry.device_id === deviceId &&
+            entry.entity_id.startsWith("sensor.") &&
+            (entry.translation_key === "temperature" ||
+              this.hass.states[entry.entity_id]?.attributes.device_class ===
+                "temperature")
+        );
+        if (matchingEntry && this.hass.states[matchingEntry.entity_id]) {
+          targetTempEntityId = matchingEntry.entity_id;
+        }
+      }
+
+      if (!targetTempEntityId) {
+        const outdoorSensor = Object.keys(this.hass.states).find(
+          (eid) =>
+            eid.startsWith("sensor.") &&
+            this.hass.states[eid]?.attributes.device_class === "temperature" &&
+            (eid.includes("outdoor") ||
+              eid.includes("outside") ||
+              (this.hass.states[eid]?.attributes.friendly_name
+                ?.toLowerCase()
+                .includes("outdoor") ??
+                false) ||
+              (this.hass.states[eid]?.attributes.friendly_name
+                ?.toLowerCase()
+                .includes("outside") ??
+                false))
+        );
+        if (outdoorSensor) {
+          targetTempEntityId = outdoorSensor;
+        }
+      }
+    }
+
+    if (targetTempEntityId && this.hass.states[targetTempEntityId]) {
+      const tempState = this.hass.states[targetTempEntityId];
       const tempUnit =
-        (weatherState.attributes.temperature_unit as string | undefined) ||
+        (tempState.attributes.unit_of_measurement as string | undefined) ||
         this.hass.config.unit_system.temperature ||
         "°C";
 
       try {
         const period = getSuggestedPeriod(this._start, this._end);
-        const weatherName = primaryWeatherEntityId.split(".")[1];
-        const candidateStatIds = [
-          primaryWeatherEntityId,
-          `sensor.${weatherName}_temperature`,
-          `sensor.${weatherName}_outdoor_temperature`,
-        ];
         const weatherStats = await fetchStatistics(
           this.hass,
           this._start,
           this._end,
-          candidateStatIds,
+          [targetTempEntityId],
           period
         );
 
-        const matchingStatId = candidateStatIds.find(
-          (id) => weatherStats?.[id]?.length
-        );
+        if (this._weatherRequestToken !== requestToken) {
+          return;
+        }
 
-        if (matchingStatId && weatherStats[matchingStatId]?.length) {
+        const stats = weatherStats?.[targetTempEntityId];
+        if (stats && stats.length > 0) {
           const weatherData: LineDataItemOption[] = [];
-          weatherStats[matchingStatId].forEach((stat) => {
+          stats.forEach((stat) => {
             const temp = stat.mean ?? stat.state;
             if (temp !== null && temp !== undefined) {
               const displayX = computeStatMidpoint(
@@ -630,7 +692,6 @@ export class HuiEnergyUsageGraphCard
           });
 
           if (weatherData.length > 0) {
-            weatherUnit = tempUnit;
             const weatherColor =
               computedStyles
                 .getPropertyValue("--energy-temperature-color")
@@ -641,7 +702,7 @@ export class HuiEnergyUsageGraphCard
               computedStyles.getPropertyValue("--warning-color").trim() ||
               "#ff7b00";
 
-            weatherSeries = {
+            const weatherSeries: LineSeriesOption = {
               id: "primary-weather-temperature",
               name:
                 this.hass.localize(
@@ -660,24 +721,20 @@ export class HuiEnergyUsageGraphCard
               },
               data: weatherData,
             };
+
+            this._weatherUnit = tempUnit;
+            const allDatasets: (BarSeriesOption | LineSeriesOption)[] = [
+              ...datasets,
+              weatherSeries,
+            ];
+            this._chartData = allDatasets;
+            this._legendData = this._getLegendData(allDatasets);
           }
         }
       } catch {
-        weatherSeries = undefined;
-        weatherUnit = undefined;
+        // Silently ignore supplemental weather fetching failure
       }
     }
-
-    this._weatherUnit = weatherUnit;
-
-    const allDatasets: (BarSeriesOption | LineSeriesOption)[] = [...datasets];
-    if (weatherSeries) {
-      allDatasets.push(weatherSeries);
-    }
-
-    this._chartData = allDatasets;
-    this._legendData = this._getLegendData(allDatasets);
-    this._total = this._processTotal(consumption);
   }
 
   private _getLegendData(

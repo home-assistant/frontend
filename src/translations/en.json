@@ -10132,7 +10132,8 @@
             },
             "energy-usage-graph": {
               "name": "Energy usage graph",
-              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came."
+              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came.",
+              "temperature_entity": "Temperature entity"
             },
             "energy-solar-graph": {
               "name": "Solar production graph",
