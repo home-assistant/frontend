@@ -5,7 +5,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { BarSeriesOption } from "echarts/charts";
+import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
+import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -27,7 +28,11 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
+import {
+  calculateStatisticSumGrowth,
+  fetchStatistics,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -36,6 +41,7 @@ import type { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   type EnergyDataPoint,
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   generateFillBuckets,
   getCommonOptions,
@@ -88,7 +94,7 @@ export class HuiEnergyUsageGraphCard
     };
   }
 
-  @state() private _chartData: BarSeriesOption[] = [];
+  @state() private _chartData: (BarSeriesOption | LineSeriesOption)[] = [];
 
   @state() private _yAxisFractionDigits = 1;
 
@@ -103,6 +109,12 @@ export class HuiEnergyUsageGraphCard
   @state() private _compareEnd?: Date;
 
   @state() private _total?: number;
+
+  @state() private _totalCost?: number;
+
+  @state() private _weatherUnit?: string;
+
+  private _weatherRequestToken = 0;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -144,18 +156,32 @@ export class HuiEnergyUsageGraphCard
           this._config.title
             ? html` <div class="card-header">
                 <span>${this._config.title}</span>
-                ${
-                  this._total
-                    ? html`<hui-energy-graph-chip
-                        .tooltip=${this._formatTotal(this._total)}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
-                          { num: formatNumber(this._total, this.hass.locale) }
-                        )}
-                      </hui-energy-graph-chip>`
-                    : nothing
-                }
+                <div class="chips">
+                  ${
+                    this._total
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._formatTotal(this._total)}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
+                            { num: formatNumber(this._total, this.hass.locale) }
+                          )}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                  ${
+                    this._totalCost !== undefined
+                      ? html`<hui-energy-graph-chip
+                          .tooltip=${this._formatTotalCost(this._totalCost)}
+                        >
+                          ${formatNumber(this._totalCost, this.hass.locale, {
+                            style: "currency",
+                            currency: this.hass.config.currency,
+                          })}
+                        </hui-energy-graph-chip>`
+                      : nothing
+                  }
+                </div>
               </div>`
             : nothing
         }
@@ -175,7 +201,8 @@ export class HuiEnergyUsageGraphCard
               this._compareStart,
               this._compareEnd,
               this._yAxisFractionDigits,
-              this._legendData
+              this._legendData,
+              this._weatherUnit
             )}
             chart-type="bar"
             .expandLegend=${this._config.expand_legend}
@@ -206,6 +233,21 @@ export class HuiEnergyUsageGraphCard
       { num: formatNumber(total, this.hass.locale) }
     );
 
+  private _formatTotalCost = (totalCost: number) =>
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_usage_graph.total_cost",
+      {
+        num: formatNumber(totalCost, this.hass.locale, {
+          style: "currency",
+          currency: this.hass.config.currency,
+        }),
+      }
+    ) ||
+    `Total ${formatNumber(totalCost, this.hass.locale, {
+      style: "currency",
+      currency: this.hass.config.currency,
+    })}`;
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -215,7 +257,8 @@ export class HuiEnergyUsageGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number,
-      legendData?: CustomLegendOption["data"]
+      legendData?: CustomLegendOption["data"],
+      weatherUnit?: string
     ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -227,7 +270,8 @@ export class HuiEnergyUsageGraphCard
         compareEnd,
         this._formatTotal,
         false,
-        yAxisFractionDigits
+        yAxisFractionDigits,
+        weatherUnit
       );
       const tooltip = commonOptions.tooltip;
       const baseFormatter =
@@ -482,13 +526,219 @@ export class HuiEnergyUsageGraphCard
       )
     );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
+
+    let totalCost = 0;
+    let hasCost = false;
+
+    const getMeterCost = (
+      energyStatId: string | null,
+      directCostStatId: string | null,
+      numberPrice: number | null | undefined
+    ): number | undefined => {
+      if (!energyStatId) return undefined;
+      let costStatId = directCostStatId;
+      if (!costStatId && energyData.info?.cost_sensors) {
+        costStatId = energyData.info.cost_sensors[energyStatId] || null;
+      }
+      if (costStatId && energyData.stats[costStatId]) {
+        const costStats = energyData.stats[costStatId];
+        const costGrowth = calculateStatisticSumGrowth(costStats);
+        if (costGrowth !== null && !isNaN(costGrowth)) {
+          return costGrowth;
+        }
+        const sumChange = costStats.reduce(
+          (acc, curr) => acc + (curr.change ?? 0),
+          0
+        );
+        return sumChange;
+      }
+      if (numberPrice !== null && numberPrice !== undefined) {
+        const energyStats = energyData.stats[energyStatId];
+        const energyGrowth = calculateStatisticSumGrowth(energyStats);
+        if (energyGrowth !== null && !isNaN(energyGrowth)) {
+          return energyGrowth * numberPrice;
+        }
+        if (energyStats) {
+          const sumChange = energyStats.reduce(
+            (acc, curr) => acc + (curr.change ?? 0),
+            0
+          );
+          return sumChange * numberPrice;
+        }
+      }
+      return undefined;
+    };
+
+    for (const source of energyData.prefs.energy_sources) {
+      if (source.type === "grid") {
+        const gridSource = source as GridSourceTypeEnergyPreference;
+        const importCost = getMeterCost(
+          gridSource.stat_energy_from,
+          gridSource.stat_cost,
+          gridSource.number_energy_price
+        );
+        if (importCost !== undefined) {
+          totalCost += importCost;
+          hasCost = true;
+        }
+
+        const exportCompensation = getMeterCost(
+          gridSource.stat_energy_to,
+          gridSource.stat_compensation,
+          gridSource.number_energy_price_export
+        );
+        if (exportCompensation !== undefined) {
+          totalCost -= exportCompensation;
+          hasCost = true;
+        }
+      }
+    }
+
+    this._totalCost = hasCost ? totalCost : undefined;
+
+    // Immediately commit the base energy datasets without waiting for supplemental weather
+    this._weatherUnit = undefined;
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+
+    const requestToken = ++this._weatherRequestToken;
+
+    let targetTempEntityId: string | undefined;
+
+    if (
+      this._config?.temperature_entity &&
+      this.hass.states[this._config.temperature_entity]
+    ) {
+      targetTempEntityId = this._config.temperature_entity;
+    } else {
+      const weatherEntityId =
+        this._config?.weather_entity ||
+        Object.keys(this.hass.states).find((eid) => eid.startsWith("weather."));
+
+      if (weatherEntityId && this.hass.entities?.[weatherEntityId]?.device_id) {
+        const deviceId = this.hass.entities[weatherEntityId].device_id;
+        const matchingEntry = Object.values(this.hass.entities).find(
+          (entry) =>
+            entry.device_id === deviceId &&
+            entry.entity_id.startsWith("sensor.") &&
+            (entry.translation_key === "temperature" ||
+              this.hass.states[entry.entity_id]?.attributes.device_class ===
+                "temperature")
+        );
+        if (matchingEntry && this.hass.states[matchingEntry.entity_id]) {
+          targetTempEntityId = matchingEntry.entity_id;
+        }
+      }
+
+      if (!targetTempEntityId) {
+        const outdoorSensor = Object.keys(this.hass.states).find(
+          (eid) =>
+            eid.startsWith("sensor.") &&
+            this.hass.states[eid]?.attributes.device_class === "temperature" &&
+            (eid.includes("outdoor") ||
+              eid.includes("outside") ||
+              (this.hass.states[eid]?.attributes.friendly_name
+                ?.toLowerCase()
+                .includes("outdoor") ??
+                false) ||
+              (this.hass.states[eid]?.attributes.friendly_name
+                ?.toLowerCase()
+                .includes("outside") ??
+                false))
+        );
+        if (outdoorSensor) {
+          targetTempEntityId = outdoorSensor;
+        }
+      }
+    }
+
+    if (targetTempEntityId && this.hass.states[targetTempEntityId]) {
+      const tempState = this.hass.states[targetTempEntityId];
+      const tempUnit =
+        (tempState.attributes.unit_of_measurement as string | undefined) ||
+        this.hass.config.unit_system.temperature ||
+        "°C";
+
+      try {
+        const period = getSuggestedPeriod(this._start, this._end);
+        const weatherStats = await fetchStatistics(
+          this.hass,
+          this._start,
+          this._end,
+          [targetTempEntityId],
+          period
+        );
+
+        if (this._weatherRequestToken !== requestToken) {
+          return;
+        }
+
+        const stats = weatherStats?.[targetTempEntityId];
+        if (stats && stats.length > 0) {
+          const weatherData: LineDataItemOption[] = [];
+          stats.forEach((stat) => {
+            const temp = stat.mean ?? stat.state;
+            if (temp !== null && temp !== undefined) {
+              const displayX = computeStatMidpoint(
+                stat.start,
+                stat.end,
+                period
+              );
+              weatherData.push({
+                value: [displayX, temp, stat.start],
+              });
+            }
+          });
+
+          if (weatherData.length > 0) {
+            const weatherColor =
+              computedStyles
+                .getPropertyValue("--energy-temperature-color")
+                .trim() ||
+              computedStyles
+                .getPropertyValue("--state-climate-heat-color")
+                .trim() ||
+              computedStyles.getPropertyValue("--warning-color").trim() ||
+              "#ff7b00";
+
+            const weatherSeries: LineSeriesOption = {
+              id: "primary-weather-temperature",
+              name:
+                this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+                ) || "Outdoor temperature",
+              type: "line",
+              yAxisIndex: 1,
+              smooth: true,
+              showSymbol: false,
+              lineStyle: {
+                width: 2.5,
+                color: weatherColor,
+              },
+              itemStyle: {
+                color: weatherColor,
+              },
+              data: weatherData,
+            };
+
+            this._weatherUnit = tempUnit;
+            const allDatasets: (BarSeriesOption | LineSeriesOption)[] = [
+              ...datasets,
+              weatherSeries,
+            ];
+            this._chartData = allDatasets;
+            this._legendData = this._getLegendData(allDatasets);
+          }
+        }
+      } catch {
+        // Silently ignore supplemental weather fetching failure
+      }
+    }
   }
 
   private _getLegendData(
-    datasets: BarSeriesOption[]
+    datasets: (BarSeriesOption | LineSeriesOption)[]
   ): CustomLegendOption["data"] {
     // Each main series gets a legend item, and its matching compare
     // series (if any) is attached as a secondary id so toggling
@@ -501,7 +751,9 @@ export class HuiEnergyUsageGraphCard
     return datasets
       .filter(
         (dataset) =>
-          dataset.id && !(dataset.id as string).startsWith("compare-")
+          dataset.id &&
+          dataset.id !== "compare-placeholder" &&
+          !(dataset.id as string).startsWith("compare-")
       )
       .map((dataset) => {
         const id = dataset.id as string;
@@ -694,6 +946,11 @@ export class HuiEnergyUsageGraphCard
       justify-content: space-between;
       align-items: center;
       padding-bottom: 0;
+    }
+    .chips {
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
     .content {
       padding: 16px;

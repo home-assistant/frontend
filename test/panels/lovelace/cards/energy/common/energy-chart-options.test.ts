@@ -1,4 +1,5 @@
 import { assert, describe, it } from "vitest";
+import { render } from "lit";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 
 import {
@@ -6,6 +7,7 @@ import {
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   generateFillBuckets,
+  getCommonOptions,
   getCompareTransform,
   getPeriodMidpointOffset,
   getSuggestedMax,
@@ -1062,5 +1064,153 @@ describe("splitUntrackedConsumption", () => {
     splitUntrackedConsumption(usedTotal, deviceTotal);
     assert.deepEqual(usedTotal, usedCopy);
     assert.deepEqual(deviceTotal, deviceCopy);
+  });
+});
+
+describe("getCommonOptions secondaryUnit", () => {
+  const dummyLocale: any = {
+    language: "en",
+    number_format: "language",
+    time_format: "language",
+    date_format: "language",
+    first_weekday: "language",
+    time_zone: "local",
+  };
+  const dummyConfig: any = {
+    currency: "USD",
+    unit_system: {
+      temperature: "°F",
+      length: "mi",
+      mass: "lb",
+      pressure: "psi",
+      volume: "gal",
+      wind_speed: "mph",
+      accumulated_precipitation: "in",
+    },
+  };
+  const start = new Date("2026-08-30T00:00:00.000Z");
+  const end = new Date("2026-08-30T23:59:59.000Z");
+
+  it("returns single primary yAxis when secondaryUnit is omitted", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh"
+    );
+    assert.isObject(options.yAxis);
+    assert.isFalse(Array.isArray(options.yAxis));
+    assert.equal((options.yAxis as any).name, "kWh");
+  });
+
+  it("returns dual yAxes array when secondaryUnit is provided", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°F"
+    );
+    assert.isArray(options.yAxis);
+    const axes = options.yAxis as any[];
+    assert.equal(axes.length, 2);
+    assert.equal(axes[0].name, "kWh");
+    assert.equal(axes[1].name, "°F");
+    assert.equal(axes[1].position, "right");
+    assert.isFalse(axes[1].splitLine.show);
+  });
+
+  it("formats mixed bar and temperature series with respective primary and secondary units in tooltip", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°F"
+    );
+
+    assert.isFunction((options.tooltip as any)?.formatter);
+    const formatter = (options.tooltip as any).formatter as (
+      ...args: any[]
+    ) => any;
+
+    const barParam = {
+      seriesId: "grid-consumption",
+      seriesName: "Grid consumption",
+      componentSubType: "bar",
+      value: [start.getTime(), 4.25, start.toISOString()],
+      color: "#0000ff",
+    };
+
+    const tempParam = {
+      seriesId: "primary-weather-temperature",
+      seriesName: "Outdoor temperature",
+      componentSubType: "line",
+      yAxisIndex: 1,
+      value: [start.getTime(), 72.5, start.toISOString()],
+      color: "#ff7b00",
+    };
+
+    const tooltipResult = formatter([barParam, tempParam]);
+    assert.isNotNull(tooltipResult);
+
+    const container = document.createElement("div");
+    render(tooltipResult, container);
+
+    const text = container.textContent || "";
+    assert.include(text, "Grid consumption");
+    assert.include(text, "4.25 kWh");
+    assert.include(text, "Outdoor temperature");
+    assert.include(text, "72.5 °F");
+  });
+
+  it("formats secondary unit for any series with yAxisIndex === 1", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      dummyLocale,
+      dummyConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C"
+    );
+
+    const formatter = (options.tooltip as any).formatter as (
+      ...args: any[]
+    ) => any;
+
+    const customSeriesParam = {
+      seriesId: "custom-sensor",
+      seriesName: "Ambient sensor",
+      componentSubType: "line",
+      yAxisIndex: 1,
+      value: [start.getTime(), 21.4, start.toISOString()],
+      color: "#ff0000",
+    };
+
+    const tooltipResult = formatter([customSeriesParam]);
+    const container = document.createElement("div");
+    render(tooltipResult, container);
+
+    const text = container.textContent || "";
+    assert.include(text, "Ambient sensor");
+    assert.include(text, "21.4 °C");
   });
 });
