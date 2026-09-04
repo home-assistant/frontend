@@ -9,6 +9,7 @@ import type {
 import { NetworkType, NodeType } from "../../../../../src/data/matter";
 import type {
   MatterLockInfo,
+  MatterLockUser,
   MatterLockUsersResponse,
   SetMatterLockCredentialResult,
 } from "../../../../../src/data/matter-lock";
@@ -228,30 +229,50 @@ const LOCK_INFO: MatterLockInfo = {
   max_rfid_length: null,
 };
 
-const LOCK_USERS: MatterLockUsersResponse = {
-  max_users: 10,
-  users: [
-    {
-      user_index: 1,
-      user_name: "Anne",
-      user_unique_id: 1,
-      user_status: "occupied_enabled",
-      user_type: "unrestricted_user",
-      credential_rule: "single",
-      credentials: [{ type: "pin", index: 1 }],
-      next_user_index: 2,
-    },
-    {
-      user_index: 2,
-      user_name: "Cleaner",
-      user_unique_id: 2,
-      user_status: "occupied_disabled",
-      user_type: "week_day_schedule_user",
-      credential_rule: "single",
-      credentials: [{ type: "pin", index: 2 }],
-      next_user_index: null,
-    },
-  ],
+const initialLockUsers = (): MatterLockUser[] => [
+  {
+    user_index: 1,
+    user_name: "Anne",
+    user_unique_id: 1,
+    user_status: "occupied_enabled",
+    user_type: "unrestricted_user",
+    credential_rule: "single",
+    credentials: [{ type: "pin", index: 1 }],
+    next_user_index: 2,
+  },
+  {
+    user_index: 2,
+    user_name: "Cleaner",
+    user_unique_id: 2,
+    user_status: "occupied_disabled",
+    user_type: "week_day_schedule_user",
+    credential_rule: "single",
+    credentials: [{ type: "pin", index: 2 }],
+    next_user_index: null,
+  },
+];
+
+// The manage dialog reloads the list after every add, edit and delete, so the
+// mocked services keep the lock's users rather than answering from a constant,
+// which would make every change look like it was reverted.
+const lockUsers = new Map<string, MatterLockUser[]>();
+
+const usersFor = (entityId: string): MatterLockUser[] => {
+  let users = lockUsers.get(entityId);
+  if (!users) {
+    users = initialLockUsers();
+    lockUsers.set(entityId, users);
+  }
+  return users;
+};
+
+// Lowest free slot, the way a lock hands out user and credential indexes.
+const nextFreeIndex = (taken: number[]): number => {
+  let index = 1;
+  while (taken.includes(index)) {
+    index += 1;
+  }
+  return index;
 };
 
 export const mockMatter = (hass: MockHomeAssistant) => {
@@ -291,16 +312,93 @@ export const mockMatter = (hass: MockHomeAssistant) => {
     [target!.entity_id]: LOCK_INFO,
   }));
   hass.mockService("matter", "get_lock_users", (_data, target) => ({
-    [target!.entity_id]: LOCK_USERS,
-  }));
-  hass.mockService("matter", "set_lock_user", () => ({}));
-  hass.mockService("matter", "clear_lock_user", () => ({}));
-  // Read back straight after saving a user, unlike the two above.
-  hass.mockService("matter", "set_lock_credential", (data, target) => ({
+    // Copied, the way a real response would be: the dialog assigns the list to
+    // reactive state, so handing back the same array leaves it unchanged and
+    // the list never rerenders.
     [target!.entity_id]: {
-      credential_index: (data?.credential_index as number) ?? 3,
-      user_index: (data?.user_index as number) ?? LOCK_USERS.users.length + 1,
-      next_credential_index: null,
-    } satisfies SetMatterLockCredentialResult,
+      max_users: LOCK_INFO.max_users!,
+      users: usersFor(target!.entity_id).map((user) => ({
+        ...user,
+        credentials: user.credentials.map((credential) => ({ ...credential })),
+      })),
+    } satisfies MatterLockUsersResponse,
   }));
+
+  // Renames the user the credential below created, or edits an existing one.
+  hass.mockService("matter", "set_lock_user", (data, target) => {
+    const user = usersFor(target!.entity_id).find(
+      (candidate) => candidate.user_index === data?.user_index
+    );
+    if (user) {
+      if (data?.user_name !== undefined) {
+        user.user_name = data.user_name;
+      }
+      if (data?.user_type !== undefined) {
+        user.user_type = data.user_type;
+      }
+      if (data?.credential_rule !== undefined) {
+        user.credential_rule = data.credential_rule;
+      }
+    }
+    return {};
+  });
+
+  hass.mockService("matter", "clear_lock_user", (data, target) => {
+    const users = usersFor(target!.entity_id);
+    const index = users.findIndex(
+      (candidate) => candidate.user_index === data?.user_index
+    );
+    if (index !== -1) {
+      users.splice(index, 1);
+    }
+    return {};
+  });
+
+  // Adding a user starts here: the credential creates it, and the dialog reads
+  // the assigned index straight back to name it.
+  hass.mockService("matter", "set_lock_credential", (data, target) => {
+    const users = usersFor(target!.entity_id);
+    const userIndex =
+      (data?.user_index as number | null | undefined) ??
+      nextFreeIndex(
+        users
+          .map((user) => user.user_index)
+          .filter((i): i is number => i !== null)
+      );
+    const credentialIndex =
+      (data?.credential_index as number | null | undefined) ??
+      nextFreeIndex(
+        users.flatMap((user) =>
+          user.credentials
+            .map((credential) => credential.index)
+            .filter((i): i is number => i !== null)
+        )
+      );
+    const credential = {
+      type: (data?.credential_type as string) ?? "pin",
+      index: credentialIndex,
+    };
+    const user = users.find((candidate) => candidate.user_index === userIndex);
+    if (user) {
+      user.credentials = [...user.credentials, credential];
+    } else {
+      users.push({
+        user_index: userIndex,
+        user_name: null,
+        user_unique_id: userIndex,
+        user_status: data?.user_status ?? "occupied_enabled",
+        user_type: data?.user_type ?? "unrestricted_user",
+        credential_rule: "single",
+        credentials: [credential],
+        next_user_index: null,
+      });
+    }
+    return {
+      [target!.entity_id]: {
+        credential_index: credentialIndex,
+        user_index: userIndex,
+        next_credential_index: null,
+      } satisfies SetMatterLockCredentialResult,
+    };
+  });
 };
