@@ -3,6 +3,7 @@ import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -27,6 +28,11 @@ import {
   subscribeEntityMapColors,
   zoneColor,
 } from "../../../common/map/entity-map-colors";
+import {
+  contrastingZoneContent,
+  zoneInitials,
+  zoneMarkerStyles,
+} from "../../../common/map/zone-marker";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -94,6 +100,28 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   // Bumped when entity map colors change to recompute the memoized locations
   @state() private _colorVersion = 0;
+
+  // The zone as it looks on the map: its color, with its icon or initials
+  private _renderZoneGraphic(
+    entityId: string,
+    passive: boolean,
+    icon: string | undefined,
+    name: string
+  ) {
+    const color = zoneColor(entityId, passive, getComputedStyle(this));
+    return html`
+      <div
+        slot="graphic"
+        class="zone-avatar"
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : zoneInitials(name)}
+      </div>
+    `;
+  }
 
   private _getZones = memoizeOne(
     (
@@ -189,12 +217,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   <ha-list-item
                     .entry=${entry}
                     .id=${this.narrow ? entry.id : ""}
-                    graphic="icon"
+                    graphic="avatar"
                     .hasMeta=${!this.narrow}
                     @request-selected=${this._itemClicked}
                     .value=${entry.id}
                   >
-                    <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
+                    ${this._renderZoneGraphic(
+                      this._zoneEntityIds[entry.id] ?? `zone.${entry.id}`,
+                      !!entry.passive,
+                      entry.icon,
+                      entry.name
+                    )}
                     ${entry.name}
                     ${
                       !this.narrow
@@ -219,7 +252,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               ${this._stateItems.map(
                 (stateObject) => html`
                   <ha-list-item
-                    graphic="icon"
+                    graphic="avatar"
                     .id=${this.narrow ? stateObject.entity_id : ""}
                     .hasMeta=${
                       !this.narrow || stateObject.entity_id !== "zone.home"
@@ -231,12 +264,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       !this._canEditCore
                     }
                   >
-                    <ha-icon
-                      .icon=${stateObject.attributes.icon}
-                      slot="graphic"
-                    >
-                    </ha-icon>
-
+                    ${this._renderZoneGraphic(
+                      stateObject.entity_id,
+                      !!stateObject.attributes.passive,
+                      stateObject.attributes.icon,
+                      stateObject.attributes.friendly_name ||
+                        stateObject.entity_id
+                    )}
                     ${
                       stateObject.attributes.friendly_name ||
                       stateObject.entity_id
@@ -662,6 +696,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ha-icon,
     ha-icon-button:not([disabled]) {
       color: var(--secondary-text-color);
+    }
+    .zone-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--ha-font-weight-medium);
+    }
+    .zone-avatar ha-icon {
+      color: inherit;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
     ha-icon-button {
       --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
