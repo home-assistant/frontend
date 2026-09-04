@@ -4,9 +4,10 @@ export interface ThreadRouter {
   instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
-  // Backend brand slug, resolved from the border agent's vendor name. Not
-  // exhaustive: the backend knows more vendors than are listed here.
-  brand: "amazon" | "google" | "apple" | "homeassistant";
+  // Backend brand slug, resolved from the border agent's vendor name. The
+  // backend knows more vendors than the frontend can usefully enumerate, and
+  // this only ever reaches `brandsUrl`, so it is not narrowed to a union.
+  brand: string;
   extended_address: string;
   extended_pan_id: string;
   model_name: string | null;

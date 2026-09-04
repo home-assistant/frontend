@@ -6,7 +6,10 @@ import type {
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { emitInitial } from "../subscription";
 
-const HA_EXT_PAN_ID = "dead00beef00cafe";
+// Uppercase to match the hex in `active_dataset_tlvs` below: the dataset
+// dialog looks for this ID inside that string with a case-sensitive
+// `includes`, and shows the border router's URL only when it matches.
+const HA_EXT_PAN_ID = "DEAD00BEEF00CAFE";
 const AMAZON_EXT_PAN_ID = "0011223344556677";
 
 const OTBR_EXT_ADDRESS = "f6a1c30d2b4e5f61";
@@ -102,6 +105,9 @@ const OTBR_INFO: OTBRInfoDict = {
   },
 };
 
+let added = 0;
+let created = 0;
+
 export const mockThread = (hass: MockHomeAssistant) => {
   hass.mockWS("thread/discover_routers", (_msg, _hass, onChange) =>
     emitInitial(() =>
@@ -115,10 +121,123 @@ export const mockThread = (hass: MockHomeAssistant) => {
     )
   );
 
-  hass.mockWS("thread/list_datasets", () => ({ datasets: DATASETS }));
+  hass.mockWS("thread/list_datasets", () => ({
+    datasets: DATASETS.map((dataset) => ({ ...dataset })),
+  }));
   hass.mockWS("thread/get_dataset_tlv", () => ({
     tlv: OTBR_INFO[OTBR_EXT_ADDRESS].active_dataset_tlvs,
   }));
 
   hass.mockWS("otbr/info", () => OTBR_INFO);
+
+  // The panel offers all of the below, and refetches after each, so they
+  // change the data rather than just resolving.
+  hass.mockWS(
+    "thread/add_dataset_tlv",
+    (msg: { source: string; tlv: string }) => {
+      added += 1;
+      DATASETS.push({
+        channel: 15,
+        created: new Date().toISOString(),
+        dataset_id: `added-dataset-${added}`,
+        extended_pan_id: msg.tlv.slice(0, 16).toUpperCase(),
+        network_name: `added-network-${added}`,
+        pan_id: "abcd",
+        preferred_border_agent_id: null,
+        preferred_extended_address: null,
+        preferred: false,
+        source: msg.source,
+      });
+      return undefined;
+    }
+  );
+
+  hass.mockWS("thread/delete_dataset", (msg: { dataset_id: string }) => {
+    const index = DATASETS.findIndex(
+      (dataset) => dataset.dataset_id === msg.dataset_id
+    );
+    if (index === -1) {
+      throw new Error(`Dataset ${msg.dataset_id} not found`);
+    }
+    if (DATASETS[index].preferred) {
+      // What the backend refuses too, so the panel shows its error.
+      throw new Error("Preferred dataset cannot be deleted");
+    }
+    DATASETS.splice(index, 1);
+    return undefined;
+  });
+
+  hass.mockWS("thread/set_preferred_dataset", (msg: { dataset_id: string }) => {
+    DATASETS.forEach((dataset) => {
+      dataset.preferred = dataset.dataset_id === msg.dataset_id;
+    });
+    return undefined;
+  });
+
+  hass.mockWS(
+    "thread/set_preferred_border_agent",
+    (msg: {
+      dataset_id: string;
+      border_agent_id: string | null;
+      extended_address: string;
+    }) => {
+      const dataset = DATASETS.find(
+        (candidate) => candidate.dataset_id === msg.dataset_id
+      );
+      if (dataset) {
+        dataset.preferred_border_agent_id = msg.border_agent_id;
+        dataset.preferred_extended_address = msg.extended_address;
+      }
+      return undefined;
+    }
+  );
+
+  // Resets the border router onto a network of its own.
+  hass.mockWS("otbr/create_network", (msg: { extended_address: string }) => {
+    created += 1;
+    const dataset: ThreadDataSet = {
+      channel: 15,
+      created: new Date().toISOString(),
+      dataset_id: `created-dataset-${created}`,
+      extended_pan_id: HA_EXT_PAN_ID,
+      network_name: `ha-thread-${created}`,
+      pan_id: "1234",
+      preferred_border_agent_id: OTBR_BORDER_AGENT_ID,
+      preferred_extended_address: msg.extended_address,
+      preferred: true,
+      source: "otbr",
+    };
+    DATASETS.forEach((existing) => {
+      existing.preferred = false;
+    });
+    DATASETS.push(dataset);
+    return undefined;
+  });
+
+  hass.mockWS(
+    "otbr/set_network",
+    (msg: { extended_address: string; dataset_id: string }) => {
+      const dataset = DATASETS.find(
+        (candidate) => candidate.dataset_id === msg.dataset_id
+      );
+      const info = OTBR_INFO[msg.extended_address];
+      if (dataset && info) {
+        info.extended_pan_id = dataset.extended_pan_id;
+        info.channel = dataset.channel ?? info.channel;
+      }
+      return undefined;
+    }
+  );
+
+  // The panel reads the delay back to tell the user when the change lands.
+  hass.mockWS(
+    "otbr/set_channel",
+    (msg: { extended_address: string; channel: number }) => {
+      const info = OTBR_INFO[msg.extended_address];
+      if (info) {
+        info.channel = msg.channel;
+      }
+      return { delay: 120 };
+    }
+  );
 };
