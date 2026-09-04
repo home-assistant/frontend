@@ -869,13 +869,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {
