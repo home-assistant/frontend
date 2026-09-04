@@ -10,8 +10,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { zoneColor } from "../../../../common/map/entity-map-colors";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../../common/map/entity-map-colors";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { transform } from "../../../../common/decorators/transform";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -408,18 +411,46 @@ export class HuiMapOverview extends LitElement {
     `;
   }
 
+  // The color of the zone a person's state names; undefined when away or unknown
+  private _zoneColorForState(entityState: string): string | undefined {
+    if (entityState === "not_home" || entityState === "unknown") {
+      return undefined;
+    }
+    const zone =
+      entityState === "home"
+        ? this._states[HOME_ZONE_ENTITY_ID]
+        : Object.values(this._states).find(
+            (candidate) =>
+              computeStateDomain(candidate) === "zone" &&
+              computeStateName(candidate) === entityState
+          );
+    if (!zone) {
+      return undefined;
+    }
+    return zoneColor(
+      zone.entity_id,
+      !!zone.attributes.passive,
+      getComputedStyle(this)
+    );
+  }
+
   private _renderActivityEntry(stateObj: HassEntity, entry: ActivityEntry) {
     const person = entry.personId ? this._states[entry.personId] : undefined;
+    // Zone changes take the zone's color; arrivals and departures keep green and grey
+    const stateColor = entry.personId
+      ? undefined
+      : this._zoneColorForState(entry.state);
 
     return html`
       <li>
         <span
           class="dot ${classMap({
-            home: entry.personId ? !!entry.arrived : entry.state === "home",
+            home: !!entry.personId && !!entry.arrived,
             away: entry.personId
               ? !entry.arrived
               : entry.state === "not_home" || entry.state === "unknown",
           })}"
+          style=${styleMap({ background: stateColor })}
         ></span>
         <span class="entry-state">
           ${
@@ -823,7 +854,11 @@ export class HuiMapOverview extends LitElement {
       border-radius: 50%;
       border: none;
       background: var(--accent-color);
-      color: var(--text-accent-color, var(--text-primary-color));
+      color: #fff;
+    }
+
+    .avatar.zone ha-state-icon {
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
 
     ha-relative-time {
