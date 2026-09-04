@@ -8,6 +8,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
@@ -245,7 +246,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                 return html`<ha-list-item
                   class="router"
                   twoline
-                  graphic="avatar"
+                  graphic=${ifDefined(router.brand ? "avatar" : undefined)}
                   .hasMeta=${showOverflow}
                 >
                   ${

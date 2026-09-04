@@ -130,11 +130,21 @@ const parseDatasetTlv = (value: string) => {
   }
   const extendedPanId = fields.get(0x02);
   const networkName = fields.get(0x03);
-  if (!extendedPanId || extendedPanId.length !== 16 || !networkName) {
+  const activeTimestamp = fields.get(0x0e);
+  // The backend refuses a dataset without an active timestamp, which is also
+  // what decides whether an import replaces the network it names.
+  if (
+    !extendedPanId ||
+    extendedPanId.length !== 16 ||
+    !networkName ||
+    !activeTimestamp ||
+    activeTimestamp.length !== 16
+  ) {
     return undefined;
   }
   const channel = fields.get(0x00);
   return {
+    activeTimestamp,
     extendedPanId,
     networkName: (networkName.match(/../g) ?? [])
       .map((byte) => String.fromCharCode(parseInt(byte, 16)))
@@ -272,6 +282,23 @@ export const mockThread = (hass: MockHomeAssistant) => {
       if (!parsed) {
         throw new Error("Invalid dataset");
       }
+      // Datasets sharing an extended PAN ID are revisions of one network, so
+      // an import updates that network instead of adding a second card for it,
+      // and only a newer active timestamp wins.
+      const existing = DATASETS.find(
+        (candidate) => candidate.extended_pan_id === parsed.extendedPanId
+      );
+      if (existing) {
+        const current = parseDatasetTlv(DATASET_TLVS[existing.dataset_id]);
+        if (current && parsed.activeTimestamp <= current.activeTimestamp) {
+          return undefined;
+        }
+        existing.channel = parsed.channel;
+        existing.network_name = parsed.networkName;
+        existing.pan_id = parsed.panId;
+        DATASET_TLVS[existing.dataset_id] = msg.tlv.toUpperCase();
+        return undefined;
+      }
       added += 1;
       const dataset: ThreadDataSet = {
         channel: parsed.channel,
@@ -346,8 +373,10 @@ export const mockThread = (hass: MockHomeAssistant) => {
       extended_pan_id: randomExtendedPanId(),
       network_name: `ha-thread-${created}`,
       pan_id: "1234",
-      preferred_border_agent_id: OTBR_BORDER_AGENT_ID,
-      preferred_extended_address: msg.extended_address,
+      // A reset leaves the default router unset; nominating one is its own
+      // action in the panel.
+      preferred_border_agent_id: null,
+      preferred_extended_address: null,
       preferred: false,
       source: "otbr",
     };
