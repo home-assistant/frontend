@@ -162,9 +162,18 @@ export const mockMqtt = (hass: MockHomeAssistant) => {
   // work together.
   hass.mockWS(
     "execute_script",
-    (msg: { sequence: { action?: string; data?: Record<string, any> }[] }) => {
-      msg.sequence
-        ?.filter((action) => action.action === "mqtt.publish")
+    (msg: {
+      sequence:
+        | { action?: string; data?: Record<string, any> }
+        | { action?: string; data?: Record<string, any> }[];
+    }) => {
+      // The sequence is one action or a list of them: the automation editor's
+      // run button sends a single action, so this cannot assume an array.
+      const actions = Array.isArray(msg.sequence)
+        ? msg.sequence
+        : [msg.sequence];
+      actions
+        .filter((action) => action?.action === "mqtt.publish")
         .forEach((action) => {
           const topic = String(action.data?.topic ?? "");
           const message: MQTTMessage = {
