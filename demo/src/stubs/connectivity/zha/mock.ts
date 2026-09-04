@@ -372,7 +372,14 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/network/settings", () => NETWORK_SETTINGS);
   hass.mockWS("zha/topology/update", () => undefined);
   hass.mockWS("zha/devices/bindable", () => []);
-  hass.mockWS("zha/devices/groupable", () => []);
+  // The add group page and the add members dialog build their pickers from
+  // this, so an empty list leaves both permanently empty and the group
+  // commands below unreachable. The lights and plugs are the groupable ones.
+  hass.mockWS("zha/devices/groupable", () => [
+    member(PORCH_IEEE),
+    member(OFFICE_IEEE),
+    member(PLUG_IEEE),
+  ]);
   hass.mockWS("zha/network/backups/list", () => BACKUPS);
 
   // The panel offers all of the below, and refetches after each, so they
