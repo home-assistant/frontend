@@ -1,4 +1,5 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
+import { serialFixtures } from "./serial/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
@@ -7,6 +8,7 @@ import type { ConnectivityFixtures } from "./types";
 // one at a time.
 const INTEGRATIONS: ConnectivityFixtures[] = [
   bluetoothFixtures,
+  serialFixtures,
   infraredFixtures,
 ];
 
