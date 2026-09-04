@@ -15,7 +15,8 @@ export interface MQTTTopicDebugInfo {
 
 export interface MQTTDiscoveryDebugInfo {
   topic: string;
-  payload: string;
+  // The discovery config, which `mqtt-discovery-payload` renders as YAML/JSON.
+  payload: Record<string, unknown>;
 }
 
 export interface MQTTEntityDebugInfo {
