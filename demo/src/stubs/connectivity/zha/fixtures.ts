@@ -144,9 +144,11 @@ export const zhaFixtures: ConnectivityFixtures = {
         state: "off",
         attributes: { friendly_name: "Hall motion", device_class: "motion" },
       },
+      // The Zigbee panel reports this device as offline, so its entity has to
+      // agree, or the device page contradicts the panel.
       "switch.tv_plug": {
         entity_id: "switch.tv_plug",
-        state: "on",
+        state: "unavailable",
         attributes: { friendly_name: "TV plug" },
       },
       "sensor.kitchen_switch_battery": {
@@ -180,10 +182,24 @@ export const zhaFixtures: ConnectivityFixtures = {
         attributes: { friendly_name: "Office desk" },
       },
     }),
+  // The options page labels every field through these, falling back to the raw
+  // identifier when one is missing, so each schema field needs its own key.
   backendTranslations: {
     config_panel: {
       "component.zha.config_panel.zha_options.title": "Global options",
+      "component.zha.config_panel.zha_options.default_light_transition":
+        "Default light transition time (seconds)",
+      "component.zha.config_panel.zha_options.enhanced_light_transition":
+        "Enable enhanced light color/temperature transition from an off state",
+      "component.zha.config_panel.zha_options.always_prefer_xy_color_mode":
+        "Always prefer XY color mode",
       "component.zha.config_panel.zha_alarm_options.title": "Alarm options",
+      "component.zha.config_panel.zha_alarm_options.alarm_master_code":
+        "Alarm master code",
+      "component.zha.config_panel.zha_alarm_options.alarm_failed_tries":
+        "Failed authentication attempts before restart",
+      "component.zha.config_panel.zha_alarm_options.alarm_arm_requires_code":
+        "Code required for arming",
     },
   },
 };
