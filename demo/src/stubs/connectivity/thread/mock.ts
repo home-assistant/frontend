@@ -105,6 +105,25 @@ const textToHex = (text: string) =>
     .join("")
     .toUpperCase();
 
+// Rewrites one triplet and leaves the rest of the credentials untouched. A
+// dataset that was imported carries fields this mock never models, so
+// rebuilding it from the summary would quietly replace them with fixtures.
+const replaceTlvField = (value: string, type: number, replacement: string) => {
+  let index = 0;
+  let out = "";
+  let replaced = false;
+  while (index + 4 <= value.length) {
+    const fieldType = parseInt(value.slice(index, index + 2), 16);
+    const length = parseInt(value.slice(index + 2, index + 4), 16);
+    const end = index + 4 + length * 2;
+    out +=
+      fieldType === type ? tlv(type, replacement) : value.slice(index, end);
+    replaced = replaced || fieldType === type;
+    index = end;
+  }
+  return replaced ? out : out + tlv(type, replacement);
+};
+
 const buildDatasetTlv = (dataset: ThreadDataSet) =>
   [
     tlv(0x0e, "0000000000010000"), // active timestamp
@@ -457,7 +476,11 @@ export const mockThread = (hass: MockHomeAssistant) => {
         );
         if (dataset) {
           dataset.channel = msg.channel;
-          DATASET_TLVS[dataset.dataset_id] = buildDatasetTlv(dataset);
+          DATASET_TLVS[dataset.dataset_id] = replaceTlvField(
+            DATASET_TLVS[dataset.dataset_id],
+            0x00,
+            `00${msg.channel.toString(16).padStart(4, "0")}`
+          );
           info.active_dataset_tlvs = DATASET_TLVS[dataset.dataset_id];
         }
       }
