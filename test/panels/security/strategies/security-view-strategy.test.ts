@@ -1,8 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { SecurityViewStrategy } from "../../../../src/panels/security/strategies/security-view-strategy";
-import { createMockHass } from "../../../fixtures/hass";
+import {
+  isSecurityPanelEntity,
+  SecurityViewStrategy,
+} from "../../../../src/panels/security/strategies/security-view-strategy";
+import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
 
 describe("security-view-strategy", () => {
+  it("includes glass break binary sensors", () => {
+    const hass = createMockHass();
+    const stateObj = createMockEntityState("binary_sensor.glass_break", "off", {
+      device_class: "glass_break",
+    });
+    hass.states[stateObj.entity_id] = stateObj;
+
+    expect(isSecurityPanelEntity(hass, stateObj)).toBe(true);
+  });
+
   it("renders active alerts as individual cards in a visible section", async () => {
     const hass = createMockHass();
     hass.config = { ...hass.config, components: [] };

@@ -95,6 +95,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "door",
       "garage_door",
       "gas",
+      "glass_break",
       "heat",
       "light",
       "lock",
