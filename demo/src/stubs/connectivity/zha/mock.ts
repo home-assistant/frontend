@@ -4,6 +4,7 @@ import type {
   ZHADevice,
   ZHADeviceEndpoint,
   ZHAGroup,
+  ZHAEntityReference,
   ZHAGroupMember,
   ZHANetworkBackup,
   ZHANetworkSettings,
@@ -232,10 +233,25 @@ const DEVICES: ZHADevice[] = [
 const deviceByIeee = (ieee: string): ZHADevice =>
   DEVICES.find((d) => d.ieee === ieee)!;
 
+// The group pickers summarise a row by its entity names, so an endpoint with
+// none reads "No entities" for a device the fixtures do give entities.
+const ENDPOINT_ENTITIES: Record<string, { entity_id: string; name: string }[]> =
+  {
+    [PORCH_IEEE]: [{ entity_id: "light.porch", name: "Porch light" }],
+    [PLUG_IEEE]: [{ entity_id: "switch.tv_plug", name: "TV plug" }],
+    [OFFICE_IEEE]: [{ entity_id: "switch.office_desk", name: "Office desk" }],
+  };
+
 const member = (ieee: string, endpointId = 1): ZHADeviceEndpoint => ({
   device: deviceByIeee(ieee),
   endpoint_id: endpointId,
-  entities: [],
+  entities: (ENDPOINT_ENTITIES[ieee] ?? []).map(
+    (entity) =>
+      ({
+        ...entity,
+        original_name: entity.name,
+      }) as ZHAEntityReference
+  ),
 });
 
 const GROUPS: ZHAGroup[] = [
@@ -382,6 +398,11 @@ export const mockZha = (hass: MockHomeAssistant) => {
   ]);
   hass.mockWS("zha/network/backups/list", () => BACKUPS);
 
+  // The add device page subscribes to this the moment it opens, and sits on
+  // its spinner for the full permit duration if the subscription rejects.
+  // Nothing pairs in the demo, so this only has to stay open.
+  hass.mockWS("zha/devices/permit", () => () => undefined);
+
   // The panel offers all of the below, and refetches after each, so they
   // change the mocked state rather than only resolving.
   hass.mockWS("zha/configuration/update", (msg: { data: any }) => {
@@ -397,8 +418,10 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/network/backups/create", () => {
     const backup: ZHANetworkBackup = {
       backup_time: new Date().toISOString(),
-      network_info: NETWORK_SETTINGS.settings.network_info,
-      node_info: NETWORK_SETTINGS.settings.node_info,
+      // Copied, or changing the channel afterwards would rewrite the backup
+      // too, which is the one thing a backup must not do.
+      network_info: structuredClone(NETWORK_SETTINGS.settings.network_info),
+      node_info: structuredClone(NETWORK_SETTINGS.settings.node_info),
     };
     BACKUPS.push(backup);
     return { backup, is_complete: true };
