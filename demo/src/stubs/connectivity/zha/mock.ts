@@ -259,6 +259,10 @@ const CONFIGURATION: ZHAConfiguration = {
       light_transitioning_flag: true,
       always_prefer_xy_color_mode: true,
       group_members_assume_state: true,
+      // The options page falls back to two hours when these are absent, which
+      // would misreport the battery default.
+      consider_unavailable_mains: 7200,
+      consider_unavailable_battery: 21600,
     },
     zha_alarm_options: {
       alarm_master_code: "1234",
@@ -361,7 +365,10 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/group", (msg: { group_id: number }) =>
     GROUPS.find((group) => group.group_id === msg.group_id)
   );
-  hass.mockWS("zha/configuration", () => CONFIGURATION);
+  // Copied: both options editors mutate the fetched data as the user changes a
+  // control, so handing out the backing object would persist edits that were
+  // never saved. Only the update below writes to it.
+  hass.mockWS("zha/configuration", () => structuredClone(CONFIGURATION));
   hass.mockWS("zha/network/settings", () => NETWORK_SETTINGS);
   hass.mockWS("zha/topology/update", () => undefined);
   hass.mockWS("zha/devices/bindable", () => []);
