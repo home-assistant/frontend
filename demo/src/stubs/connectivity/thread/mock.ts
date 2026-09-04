@@ -106,19 +106,42 @@ const buildDatasetTlv = (dataset: ThreadDataSet) =>
     tlv(0x0c, "02A0F7F8"), // security policy
   ].join("");
 
-// The extended PAN ID lives in the type 0x02 field, not at a fixed offset.
-const extendedPanIdFromTlv = (value: string): string | undefined => {
+// Walks the triplets, so an import reads the credentials it was handed rather
+// than guessing at fixed offsets. Undefined for anything that does not decode.
+const parseDatasetTlv = (value: string) => {
+  if (value.length % 2 !== 0 || !/^[0-9A-Fa-f]*$/.test(value)) {
+    return undefined;
+  }
+  const fields = new Map<number, string>();
   let index = 0;
-  while (index + 4 <= value.length) {
+  while (index < value.length) {
+    if (index + 4 > value.length) {
+      return undefined;
+    }
     const type = parseInt(value.slice(index, index + 2), 16);
     const length = parseInt(value.slice(index + 2, index + 4), 16);
     const start = index + 4;
-    if (type === 0x02) {
-      return value.slice(start, start + length * 2).toUpperCase();
+    const end = start + length * 2;
+    if (end > value.length) {
+      return undefined;
     }
-    index = start + length * 2;
+    fields.set(type, value.slice(start, end).toUpperCase());
+    index = end;
   }
-  return undefined;
+  const extendedPanId = fields.get(0x02);
+  const networkName = fields.get(0x03);
+  if (!extendedPanId || extendedPanId.length !== 16 || !networkName) {
+    return undefined;
+  }
+  const channel = fields.get(0x00);
+  return {
+    extendedPanId,
+    networkName: (networkName.match(/../g) ?? [])
+      .map((byte) => String.fromCharCode(parseInt(byte, 16)))
+      .join(""),
+    panId: fields.get(0x01) ?? null,
+    channel: channel ? parseInt(channel.slice(2), 16) : null,
+  };
 };
 
 const DATASETS: ThreadDataSet[] = [
@@ -243,21 +266,29 @@ export const mockThread = (hass: MockHomeAssistant) => {
   hass.mockWS(
     "thread/add_dataset_tlv",
     (msg: { source: string; tlv: string }) => {
+      // The backend refuses credentials it cannot decode, so the panel gets to
+      // show its error rather than importing an invented network.
+      const parsed = parseDatasetTlv(msg.tlv);
+      if (!parsed) {
+        throw new Error("Invalid dataset");
+      }
       added += 1;
       const dataset: ThreadDataSet = {
-        channel: 15,
+        channel: parsed.channel,
         created: new Date().toISOString(),
         dataset_id: `added-dataset-${added}`,
-        extended_pan_id: extendedPanIdFromTlv(msg.tlv) ?? randomExtendedPanId(),
-        network_name: `added-network-${added}`,
-        pan_id: "ABCD",
+        extended_pan_id: parsed.extendedPanId,
+        network_name: parsed.networkName,
+        pan_id: parsed.panId,
         preferred_border_agent_id: null,
         preferred_extended_address: null,
         preferred: false,
         source: msg.source,
       };
       DATASETS.push(dataset);
-      DATASET_TLVS[dataset.dataset_id] = buildDatasetTlv(dataset);
+      // Kept verbatim: these are the credentials that were imported, so
+      // reading them back has to hand back the same ones.
+      DATASET_TLVS[dataset.dataset_id] = msg.tlv.toUpperCase();
       return undefined;
     }
   );
