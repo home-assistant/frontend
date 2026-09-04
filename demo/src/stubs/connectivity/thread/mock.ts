@@ -108,18 +108,61 @@ const OTBR_INFO: OTBRInfoDict = {
 let added = 0;
 let created = 0;
 
-export const mockThread = (hass: MockHomeAssistant) => {
-  hass.mockWS("thread/discover_routers", (_msg, _hass, onChange) =>
-    emitInitial(() =>
-      ROUTERS.forEach((router) =>
-        onChange?.({
-          key: router.extended_address,
-          type: "router_discovered",
-          data: router,
-        })
-      )
-    )
+// Keeps the router, the OTBR info and the subscribers in step, so the panel
+// redraws the border router under its new network.
+const moveRouter = (
+  extendedAddress: string,
+  extendedPanId: string,
+  networkName: string
+) => {
+  const info = OTBR_INFO[extendedAddress];
+  if (info) {
+    info.extended_pan_id = extendedPanId;
+  }
+  const router = ROUTERS.find(
+    (candidate) => candidate.extended_address === extendedAddress
   );
+  if (router) {
+    router.extended_pan_id = extendedPanId;
+    router.network_name = networkName;
+    announce(router);
+  }
+};
+
+type RouterListener = (event: {
+  key: string;
+  type: "router_discovered" | "router_removed";
+  data: ThreadRouter;
+}) => void;
+
+// The panel groups the routers it renders from this stream, not from
+// `otbr/info`, so a network change has to be pushed to whoever is listening or
+// the router stays drawn on its old network.
+const listeners = new Set<RouterListener>();
+
+const announce = (router: ThreadRouter) =>
+  listeners.forEach((listener) =>
+    listener({
+      key: router.extended_address,
+      type: "router_discovered",
+      data: router,
+    })
+  );
+
+export const mockThread = (hass: MockHomeAssistant) => {
+  hass.mockWS("thread/discover_routers", (_msg, _hass, onChange) => {
+    const listener = onChange as RouterListener | undefined;
+    if (listener) {
+      listeners.add(listener);
+    }
+    const stopInitial = emitInitial(() => ROUTERS.forEach(announce));
+    return () => {
+      stopInitial();
+      if (listener) {
+        listeners.delete(listener);
+      }
+    };
+  });
 
   hass.mockWS("thread/list_datasets", () => ({
     datasets: DATASETS.map((dataset) => ({ ...dataset })),
@@ -193,24 +236,26 @@ export const mockThread = (hass: MockHomeAssistant) => {
   );
 
   // Resets the border router onto a network of its own.
+  // A reset moves the border router onto a network of its own. It adds that
+  // network rather than taking over the preferred one, which is what leaves
+  // the panel its "add to my network" path back.
   hass.mockWS("otbr/create_network", (msg: { extended_address: string }) => {
     created += 1;
-    const dataset: ThreadDataSet = {
+    const extendedPanId = `RESET${String(created).padStart(11, "0")}`;
+    const networkName = `ha-thread-${created}`;
+    DATASETS.push({
       channel: 15,
       created: new Date().toISOString(),
       dataset_id: `created-dataset-${created}`,
-      extended_pan_id: HA_EXT_PAN_ID,
-      network_name: `ha-thread-${created}`,
+      extended_pan_id: extendedPanId,
+      network_name: networkName,
       pan_id: "1234",
       preferred_border_agent_id: OTBR_BORDER_AGENT_ID,
       preferred_extended_address: msg.extended_address,
-      preferred: true,
+      preferred: false,
       source: "otbr",
-    };
-    DATASETS.forEach((existing) => {
-      existing.preferred = false;
     });
-    DATASETS.push(dataset);
+    moveRouter(msg.extended_address, extendedPanId, networkName);
     return undefined;
   });
 
@@ -220,10 +265,16 @@ export const mockThread = (hass: MockHomeAssistant) => {
       const dataset = DATASETS.find(
         (candidate) => candidate.dataset_id === msg.dataset_id
       );
-      const info = OTBR_INFO[msg.extended_address];
-      if (dataset && info) {
-        info.extended_pan_id = dataset.extended_pan_id;
-        info.channel = dataset.channel ?? info.channel;
+      if (dataset) {
+        const info = OTBR_INFO[msg.extended_address];
+        if (info) {
+          info.channel = dataset.channel ?? info.channel;
+        }
+        moveRouter(
+          msg.extended_address,
+          dataset.extended_pan_id,
+          dataset.network_name
+        );
       }
       return undefined;
     }

@@ -248,22 +248,28 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   graphic="avatar"
                   .hasMeta=${showOverflow}
                 >
-                  <img
-                    slot="graphic"
-                    .src=${brandsUrl(
-                      {
-                        domain: router.brand,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
-                    alt=${router.brand}
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    @error=${this._onImageError}
-                    @load=${this._onImageLoad}
-                  />
+                  ${
+                    // An unknown vendor has no brand, and asking for its icon
+                    // would only request one that cannot exist.
+                    router.brand
+                      ? html`<img
+                          slot="graphic"
+                          .src=${brandsUrl(
+                            {
+                              domain: router.brand,
+                              type: "icon",
+                              darkOptimized: this.hass.themes?.darkMode,
+                            },
+                            this.hass.auth.data.hassUrl
+                          )}
+                          alt=${router.brand}
+                          crossorigin="anonymous"
+                          referrerpolicy="no-referrer"
+                          @error=${this._onImageError}
+                          @load=${this._onImageLoad}
+                        />`
+                      : nothing
+                  }
                   ${
                     router.instance_name ||
                     router.model_name ||
