@@ -55,18 +55,17 @@ export const showSubConfigFlowDialog = (
     deleteFlow: deleteSubConfigFlow,
 
     renderAbortDescription(hass, step) {
-      const description =
-        hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.abort.${step.reason}`,
-          step.description_placeholders
-        ) ||
-        // Shared reasons are defined once under `config`, not per subentry type
-        (step.translation_domain
-          ? hass.localize(
-              `component.${step.translation_domain}.config.abort.${step.reason}`,
-              step.description_placeholders
-            )
-          : undefined);
+      // A translation domain means the reason is shared by several integrations
+      // and is defined once under `config`, not per subentry type
+      const description = step.translation_domain
+        ? hass.localize(
+            `component.${step.translation_domain}.config.abort.${step.reason}`,
+            step.description_placeholders
+          )
+        : hass.localize(
+            `component.${configEntry.domain}.config_subentries.${flowType}.abort.${step.reason}`,
+            step.description_placeholders
+          );
 
       return description
         ? html`
