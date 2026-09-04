@@ -3,6 +3,7 @@ import { serialFixtures } from "./serial/fixtures";
 import { mqttFixtures } from "./mqtt/fixtures";
 import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
+import { zwaveJsFixtures } from "./zwave_js/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
@@ -14,6 +15,7 @@ const INTEGRATIONS: ConnectivityFixtures[] = [
   mqttFixtures,
   matterFixtures,
   infraredFixtures,
+  zwaveJsFixtures,
 ];
 
 const collect = <T>(
