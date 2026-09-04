@@ -45,7 +45,8 @@ const REGISTRY_ENTRIES = [
 
 export const mqttFixtures: ConnectivityFixtures = {
   components: ["mqtt"],
-  commands: ["mqtt/"],
+  // `execute_script` too: the panel publishes through a script action.
+  commands: ["mqtt/", "execute_script"],
   manifests: [manifest("mqtt", "MQTT", { integration_type: "hub" })],
   configEntries: [
     {

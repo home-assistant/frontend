@@ -12,7 +12,9 @@ const PAYLOADS: Record<string, () => string> = {
     JSON.stringify({
       battery: 92,
       linkquality: 120,
-      temperature: 21.4 + Math.round(Math.random() * 10) / 10,
+      // Built from whole tenths, so the payload never carries the noise a
+      // float sum leaves behind, like 21.599999999999998.
+      temperature: (214 + Math.floor(Math.random() * 11)) / 10,
     }),
 };
 
@@ -40,6 +42,36 @@ const buildMessage = (topic: string, qos: number): MQTTMessage => ({
   retain: 0,
   time: new Date().toISOString(),
 });
+
+// A filter matches a topic level by level: "+" stands for one level, "#" for
+// the rest of them.
+const filterMatches = (filter: string, topic: string): boolean => {
+  const filterLevels = filter.split("/");
+  const topicLevels = topic.split("/");
+  for (let index = 0; index < filterLevels.length; index += 1) {
+    if (filterLevels[index] === "#") {
+      return true;
+    }
+    if (index >= topicLevels.length) {
+      return false;
+    }
+    if (
+      filterLevels[index] !== "+" &&
+      filterLevels[index] !== topicLevels[index]
+    ) {
+      return false;
+    }
+  }
+  return filterLevels.length === topicLevels.length;
+};
+
+// The panel's listen card and its publish button talk to each other through
+// the broker, so the mock keeps the subscriptions and delivers to them.
+const subscriptions = new Set<{
+  filter: string;
+  qos: number;
+  deliver: (message: MQTTMessage) => void;
+}>();
 
 const topicDebug = (topic: string) => ({
   topic,
@@ -108,14 +140,47 @@ export const mockMqtt = (hass: MockHomeAssistant) => {
     (msg: { topic: string; qos?: number }, _hass, onChange) => {
       // Echo a message on the subscribed topic every few seconds so the
       // listen card in the MQTT panel shows traffic.
+      const qos = msg.qos ?? 0;
       const topic = resolveFilter(msg.topic);
-      const send = () => onChange?.(buildMessage(topic, msg.qos ?? 0));
+      const deliver = (message: MQTTMessage) => onChange?.(message);
+      const subscription = { filter: msg.topic, qos, deliver };
+      subscriptions.add(subscription);
+      const send = () => deliver(buildMessage(topic, qos));
       const stopInitial = emitInitial(send);
       const interval = window.setInterval(send, 3000);
       return () => {
         stopInitial();
         clearInterval(interval);
+        subscriptions.delete(subscription);
       };
+    }
+  );
+
+  // The panel publishes through a script action rather than a `mqtt/` command,
+  // so without this the publish button only ever reports a failure. Delivering
+  // to the matching subscriptions is what makes the two halves of the panel
+  // work together.
+  hass.mockWS(
+    "execute_script",
+    (msg: { sequence: { action?: string; data?: Record<string, any> }[] }) => {
+      msg.sequence
+        ?.filter((action) => action.action === "mqtt.publish")
+        .forEach((action) => {
+          const topic = String(action.data?.topic ?? "");
+          const message: MQTTMessage = {
+            topic,
+            payload: String(action.data?.payload ?? ""),
+            qos: Number(action.data?.qos ?? 0),
+            retain: action.data?.retain ? 1 : 0,
+            time: new Date().toISOString(),
+          };
+          subscriptions.forEach((subscription) => {
+            if (filterMatches(subscription.filter, topic)) {
+              subscription.deliver(message);
+            }
+          });
+        });
+      return { context: { id: "mock-context" }, response: {} };
     }
   );
 
