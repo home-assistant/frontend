@@ -1,11 +1,16 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
+import { serialFixtures } from "./serial/fixtures";
 import { tagsFixtures } from "./tags/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
 // data to mock. Each owns its own fixtures, so they can be added and removed
 // one at a time.
-const INTEGRATIONS: ConnectivityFixtures[] = [bluetoothFixtures, tagsFixtures];
+const INTEGRATIONS: ConnectivityFixtures[] = [
+  bluetoothFixtures,
+  serialFixtures,
+  tagsFixtures,
+];
 
 const collect = <T>(
   pick: (fixtures: ConnectivityFixtures) => T[] | undefined
