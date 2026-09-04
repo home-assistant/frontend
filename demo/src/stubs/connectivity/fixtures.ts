@@ -1,5 +1,6 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
 import { serialFixtures } from "./serial/fixtures";
+import { mqttFixtures } from "./mqtt/fixtures";
 import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { zhaFixtures } from "./zha/fixtures";
@@ -11,6 +12,7 @@ import type { ConnectivityFixtures } from "./types";
 const INTEGRATIONS: ConnectivityFixtures[] = [
   bluetoothFixtures,
   serialFixtures,
+  mqttFixtures,
   matterFixtures,
   infraredFixtures,
   zhaFixtures,
