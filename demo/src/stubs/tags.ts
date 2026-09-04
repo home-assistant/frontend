@@ -15,9 +15,18 @@ export const mockTags = (hass: MockHomeAssistant) => {
   hass.mockWS(
     "tag/create",
     (msg: UpdateTagParams & { tag_id?: string }): Tag => {
-      created += 1;
+      // The dialog lets the user pick the ID, and the backend's tag collection
+      // refuses one that is taken.
+      if (msg.tag_id && find(msg.tag_id)) {
+        throw new Error(`Tag ${msg.tag_id} already exists`);
+      }
+      let id = msg.tag_id;
+      while (!id) {
+        created += 1;
+        id = find(`tag-${created}`) ? undefined : `tag-${created}`;
+      }
       const tag: Tag = {
-        id: msg.tag_id || `tag-${created}`,
+        id,
         name: msg.name,
         description: msg.description,
       };
@@ -33,8 +42,14 @@ export const mockTags = (hass: MockHomeAssistant) => {
       if (!tag) {
         throw new Error(`Tag ${msg.tag_id} not found`);
       }
-      tag.name = msg.name;
-      tag.description = msg.description;
+      // The params are partial, and the backend merges them, so an update that
+      // sends only a name must not drop the description.
+      if ("name" in msg) {
+        tag.name = msg.name;
+      }
+      if ("description" in msg) {
+        tag.description = msg.description;
+      }
       return { ...tag };
     }
   );
