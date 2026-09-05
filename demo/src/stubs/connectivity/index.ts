@@ -3,6 +3,7 @@ import { mockBluetooth } from "./bluetooth/mock";
 import { mockSerial } from "./serial/mock";
 import { mockMqtt } from "./mqtt/mock";
 import { mockMatter } from "./matter/mock";
+import { mockZwaveJs } from "./zwave_js/mock";
 import { mockRadioFrequency } from "./radio_frequency/mock";
 
 // The WebSocket mocks, code-split into the config panel chunk.
@@ -11,6 +12,7 @@ const MOCKS = [
   mockSerial,
   mockMatter,
   mockMqtt,
+  mockZwaveJs,
   mockRadioFrequency,
 ];
 
