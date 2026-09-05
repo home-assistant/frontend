@@ -532,23 +532,26 @@ export class HuiEnergyUsageGraphCard
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
     this._total = this._processTotal(consumption);
 
+    const requestToken = ++this._weatherRequestToken;
+
+    this._chartData = datasets;
+    this._legendData = this._getLegendData(datasets);
+    this._weatherUnit = undefined;
+
     const hasEnergyData = datasets.some((dataset) => dataset.data?.length);
     const hasWeatherConfig = Boolean(
       this._config?.temperature_entity || this._config?.weather_entity
     );
 
     if (!hasEnergyData || !hasWeatherConfig) {
-      this._chartData = datasets;
-      this._legendData = this._getLegendData(datasets);
-      this._weatherUnit = undefined;
       return;
     }
-
-    const requestToken = ++this._weatherRequestToken;
 
     try {
       let targetTempEntityId: string | undefined;
       let targetTempMetadata: StatisticsMetaData | undefined;
+      let targetTempName: string | undefined;
+
       if (this._config?.temperature_entity) {
         const statsMeta = await getStatisticMetadata(this.hass, [
           this._config.temperature_entity,
@@ -566,6 +569,11 @@ export class HuiEnergyUsageGraphCard
         if (meta && statisticsMetaHasType(meta, "mean") && isTemperature) {
           targetTempEntityId = this._config.temperature_entity;
           targetTempMetadata = meta;
+          targetTempName = getStatisticLabel(
+            this.hass,
+            targetTempEntityId,
+            targetTempMetadata
+          );
         }
       } else if (this._config?.weather_entity) {
         const weatherEntity = this.hass.entities?.[this._config.weather_entity];
@@ -630,15 +638,15 @@ export class HuiEnergyUsageGraphCard
               targetTempMetadata = statsMeta.find(
                 (m) => m.statistic_id === primarySibling!.entity_id
               );
+              targetTempName = this.hass.localize(
+                "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+              );
             }
           }
         }
       }
 
       if (!targetTempEntityId) {
-        this._chartData = datasets;
-        this._legendData = this._getLegendData(datasets);
-        this._weatherUnit = undefined;
         return;
       }
 
@@ -671,9 +679,6 @@ export class HuiEnergyUsageGraphCard
 
       const tempStats = stats[targetTempEntityId];
       if (!tempStats || tempStats.length === 0) {
-        this._chartData = datasets;
-        this._legendData = this._getLegendData(datasets);
-        this._weatherUnit = undefined;
         return;
       }
 
@@ -685,9 +690,6 @@ export class HuiEnergyUsageGraphCard
         ]);
 
       if (weatherPoints.length === 0) {
-        this._chartData = datasets;
-        this._legendData = this._getLegendData(datasets);
-        this._weatherUnit = undefined;
         return;
       }
 
@@ -696,9 +698,11 @@ export class HuiEnergyUsageGraphCard
 
       const weatherSeries: LineSeriesOption = {
         id: "primary-weather-temperature",
-        name: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
-        ),
+        name:
+          targetTempName ||
+          this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+          ),
         type: "line",
         yAxisIndex: 1,
         smooth: true,
@@ -723,6 +727,9 @@ export class HuiEnergyUsageGraphCard
       this._legendData = this._getLegendData(updatedDatasets);
       this._weatherUnit = tempUnit || rawTempUnit;
     } catch {
+      if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+        return;
+      }
       this._chartData = datasets;
       this._legendData = this._getLegendData(datasets);
       this._weatherUnit = undefined;
