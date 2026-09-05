@@ -86,6 +86,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
     const entities = this._filterEntities(
       this.params.exposedEntities,
+      this.params.lockedEntities,
       this._filter
     );
 
@@ -180,6 +181,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   private _filterEntities = memoizeOne(
     (
       exposedEntities: Record<string, ExposeEntitySettings>,
+      lockedEntities: Record<string, ExposeEntitySettings> | undefined,
       filter?: string
     ): FilteredEntity[] => {
       const lowerFilter = filter?.toLowerCase();
@@ -189,6 +191,14 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
         if (
           this.params!.filterAssistants.every(
             (ass) => exposedEntities[entity.entity_id]?.[ass]
+          )
+        ) {
+          continue;
+        }
+
+        if (
+          this.params!.filterAssistants.some(
+            (ass) => lockedEntities?.[entity.entity_id]?.[ass]
           )
         ) {
           continue;

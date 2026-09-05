@@ -80,6 +80,11 @@ export class VoiceAssistantsExpose extends LitElement {
     ExposeEntitySettings
   >;
 
+  @property({ attribute: false }) public lockedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
+
   @state()
   @consume({ context: entitiesContext, subscribe: true })
   _entities!: HomeAssistant["entities"];
@@ -100,7 +105,10 @@ export class VoiceAssistantsExpose extends LitElement {
   @state() private _selectedEntities: string[] = [];
 
   @state() private _supportedEntities?: Record<
-    "cloud.google_assistant" | "cloud.alexa" | "conversation",
+    | "cloud.google_assistant"
+    | "cloud.alexa"
+    | "conversation"
+    | "google_assistant",
     string[] | undefined
   >;
 
@@ -152,7 +160,10 @@ export class VoiceAssistantsExpose extends LitElement {
       availableAssistants: string[],
       supportedEntities:
         | Record<
-            "cloud.google_assistant" | "cloud.alexa" | "conversation",
+            | "cloud.google_assistant"
+            | "cloud.alexa"
+            | "conversation"
+            | "google_assistant",
             string[] | undefined
           >
         | undefined,
@@ -250,6 +261,7 @@ export class VoiceAssistantsExpose extends LitElement {
       localize: LocalizeFunc,
       entities: Record<string, ExtEntityRegistryEntry>,
       exposedEntities: Record<string, ExposeEntitySettings>,
+      lockedEntities: Record<string, ExposeEntitySettings> | undefined,
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       cloudStatus: CloudStatus | undefined,
@@ -402,6 +414,22 @@ export class VoiceAssistantsExpose extends LitElement {
           }
         });
       }
+
+      for (const entityId of Object.keys(result)) {
+        const lockedAssistants = Object.keys(
+          lockedEntities?.[entityId] ?? {}
+        ).filter((assistant) => lockedEntities![entityId][assistant]);
+        if (!lockedAssistants.length) {
+          continue;
+        }
+        result[entityId].manAssistants = [
+          ...new Set([
+            ...(result[entityId].manAssistants ?? []),
+            ...lockedAssistants,
+          ]),
+        ];
+      }
+
       return Object.values(result);
     }
   );
@@ -458,6 +486,8 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       // TODO add supported entity for assist
       conversation: undefined,
+      // TODO add supported entity for manual Google Assistant
+      google_assistant: undefined,
     };
   }
 
@@ -484,6 +514,7 @@ export class VoiceAssistantsExpose extends LitElement {
       this.hass.localize,
       this._extEntities,
       this.exposedEntities,
+      this.lockedEntities,
       this.hass.devices,
       this.hass.areas,
       this.cloudStatus,
@@ -604,6 +635,7 @@ export class VoiceAssistantsExpose extends LitElement {
     showExposeEntityDialog(this, {
       filterAssistants: assistants,
       exposedEntities: this.exposedEntities!,
+      lockedEntities: this.lockedEntities,
       exposeEntities: (entities) => {
         exposeEntities(this.hass, assistants, entities, true).then(() =>
           fireEvent(this, "exposed-entities-changed")
@@ -622,12 +654,27 @@ export class VoiceAssistantsExpose extends LitElement {
     this._selectedEntities = ev.detail.value;
   }
 
+  private _unlockedSelectedEntities(assistants: string[]): string[] {
+    return this._selectedEntities.filter(
+      (entityId) =>
+        !assistants.some(
+          (assistant) => this.lockedEntities?.[entityId]?.[assistant]
+        )
+    );
+  }
+
   private _removeEntity = (ev) => {
     ev.stopPropagation();
     const entityId = ev.currentTarget.closest(".mdc-data-table__row").rowId;
-    const assistants = this._searchParms.has("assistants")
-      ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants;
+    const locked = this.lockedEntities?.[entityId];
+    const assistants = (
+      this._searchParms.has("assistants")
+        ? this._searchParms.get("assistants")!.split(",")
+        : this._availableAssistants
+    ).filter((assistant) => !locked?.[assistant]);
+    if (!assistants.length) {
+      return;
+    }
     exposeEntities(this.hass, assistants, [entityId], false).then(() =>
       fireEvent(this, "exposed-entities-changed")
     );
@@ -637,6 +684,7 @@ export class VoiceAssistantsExpose extends LitElement {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
       : this._availableAssistants;
+    const entities = this._unlockedSelectedEntities(assistants);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
@@ -647,7 +695,7 @@ export class VoiceAssistantsExpose extends LitElement {
           assistants: assistants
             .map((ass) => voiceAssistants[ass].name)
             .join(", "),
-          entities: this._selectedEntities.length,
+          entities: entities.length,
         }
       ),
       confirmText: this.hass.localize(
@@ -655,12 +703,9 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(
-          this.hass,
-          assistants,
-          this._selectedEntities,
-          false
-        ).then(() => fireEvent(this, "exposed-entities-changed"));
+        exposeEntities(this.hass, assistants, entities, false).then(() =>
+          fireEvent(this, "exposed-entities-changed")
+        );
         this._clearSelection();
       },
     });
@@ -670,6 +715,7 @@ export class VoiceAssistantsExpose extends LitElement {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
       : this._availableAssistants;
+    const entities = this._unlockedSelectedEntities(assistants);
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.expose_confirm_title"
@@ -680,7 +726,7 @@ export class VoiceAssistantsExpose extends LitElement {
           assistants: assistants
             .map((ass) => voiceAssistants[ass].name)
             .join(", "),
-          entities: this._selectedEntities.length,
+          entities: entities.length,
         }
       ),
       confirmText: this.hass.localize(
@@ -688,12 +734,9 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(
-          this.hass,
-          assistants,
-          this._selectedEntities,
-          true
-        ).then(() => fireEvent(this, "exposed-entities-changed"));
+        exposeEntities(this.hass, assistants, entities, true).then(() =>
+          fireEvent(this, "exposed-entities-changed")
+        );
         this._clearSelection();
       },
     });
@@ -708,6 +751,7 @@ export class VoiceAssistantsExpose extends LitElement {
     showVoiceSettingsDialog(this, {
       entityId,
       exposed: this.exposedEntities![entityId],
+      locked: this.lockedEntities?.[entityId],
       extEntityReg: this._extEntities?.[entityId],
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");

@@ -12,12 +12,17 @@ export const voiceAssistants = {
     domain: "google_assistant",
     name: "Google Assistant",
   },
+  google_assistant: {
+    domain: "google_assistant",
+    name: "Google Assistant",
+  },
 } as const;
 
 export interface ExposeEntitySettings {
   conversation?: boolean;
   "cloud.alexa"?: boolean;
   "cloud.google_assistant"?: boolean;
+  google_assistant?: boolean;
 }
 
 export const setExposeNewEntities = (
@@ -51,7 +56,10 @@ export const exposeEntities = (
   });
 
 export const listExposedEntities = (hass: HomeAssistant) =>
-  hass.callWS<{ exposed_entities: Record<string, ExposeEntitySettings> }>({
+  hass.callWS<{
+    exposed_entities: Record<string, ExposeEntitySettings>;
+    locked_entities: Record<string, ExposeEntitySettings>;
+  }>({
     type: "homeassistant/expose_entity/list",
   });
 

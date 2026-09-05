@@ -68,6 +68,7 @@ class DialogVoiceSettings extends LitElement {
             .entityId=${this._params.entityId}
             .entry=${this._params.extEntityReg}
             .exposed=${this._params.exposed}
+            .locked=${this._params.locked}
             @entity-entry-updated=${this._entityEntryUpdated}
             @exposed-entities-changed=${this._exposedEntitiesChanged}
           ></entity-voice-settings>
