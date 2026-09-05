@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
+  mdiQrcode,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -50,6 +51,7 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
+import { showThreadEphemeralKeyDialog } from "./show-dialog-thread-ephemeral-key";
 
 export interface ThreadNetwork {
   name: string;
@@ -180,14 +182,24 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _renderNetwork(network: ThreadNetwork) {
+    // A router is matched by its current network, as the dataset keeps pointing
+    // at its preferred router after that router has joined another network
+    const otbrsOnNetwork =
+      this._otbrInfo && network.dataset
+        ? Object.values(this._otbrInfo).filter(
+            (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
+          )
+        : [];
     const otbrForNetwork =
-      this._otbrInfo &&
-      network.dataset &&
-      ((network.dataset.preferred_extended_address &&
-        this._otbrInfo[network.dataset.preferred_extended_address]) ||
-        Object.values(this._otbrInfo).find(
-          (otbr) => otbr.extended_pan_id === network.dataset!.extended_pan_id
-        ));
+      otbrsOnNetwork.find(
+        (otbr) =>
+          otbr.extended_address === network.dataset?.preferred_extended_address
+      ) || otbrsOnNetwork[0];
+    // Any border router on the network can share its credentials, so fall back
+    // to one that supports it when the preferred router does not
+    const otbrForSharing = otbrForNetwork?.ephemeral_key_supported
+      ? otbrForNetwork
+      : otbrsOnNetwork.find((otbr) => otbr.ephemeral_key_supported);
     const canImportKeychain =
       this.hass.auth.external?.config.canTransferThreadCredentialsToKeychain;
 
@@ -196,6 +208,18 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ${network.name}${
           network.dataset
             ? html`<div>
+                ${
+                  otbrForSharing
+                    ? html`<ha-icon-button
+                        .label=${this.hass.localize(
+                          "ui.panel.config.thread.share_credentials"
+                        )}
+                        .otbr=${otbrForSharing}
+                        .path=${mdiQrcode}
+                        @click=${this._shareCredentials}
+                      ></ha-icon-button>`
+                    : ""
+                }
                 <ha-icon-button
                   .label=${this.hass.localize(
                     "ui.panel.config.thread.thread_network_info"
@@ -430,6 +454,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         ).tlv,
         extended_pan_id: dataset.extended_pan_id,
       },
+    });
+  }
+
+  private _shareCredentials(ev: Event) {
+    const otbr = (ev.currentTarget as any).otbr as OTBRInfo;
+    showThreadEphemeralKeyDialog(this, {
+      extendedAddress: otbr.extended_address,
     });
   }
 

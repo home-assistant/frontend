@@ -7684,6 +7684,13 @@
           "thread_network_send_credentials_ha_description": "Import Thread network credentials from your phone to Home Assistant. Use this if you already have a Thread network set up through another platform, like Apple Home or Google Home.",
           "thread_network_send_credentials_phone": "Send credentials to phone",
           "thread_network_send_credentials_phone_description": "Share your Thread network credentials with your phone, allowing it to directly commission new Thread devices onto your network.",
+          "share_credentials": "Share network credentials",
+          "share_credentials_text": "To add another border router to your Thread network, open that border router's app and choose to join an existing network. Then scan this QR code or enter the code below.",
+          "share_credentials_expiry": "This code can only be used once. It expires in {time} or as soon as you close this dialog.",
+          "share_credentials_expired": "This code has expired. Close this dialog and share the credentials again to get a new one.",
+          "share_credentials_failed": "Failed to share credentials",
+          "share_credentials_not_supported": "The border router does not support sharing credentials.",
+          "share_credentials_in_use": "A code from this border router is already in use on another device or in another dialog. Close it or wait for it to expire, then try again.",
           "thread_network_make_preferred": "Make preferred network"
         },
         "ssdp": {
