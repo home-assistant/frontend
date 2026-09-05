@@ -34,6 +34,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
+      <slot name="alerts"></slot>
       ${
         this.stateObj?.state === "off"
           ? html`
