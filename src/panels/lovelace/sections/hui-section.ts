@@ -19,7 +19,6 @@ import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
-import { checkConditionsMet } from "../common/validate-condition";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
@@ -280,14 +279,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this._config.visibility ||
-        checkConditionsMet(
-          this._config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
 
     if (!visible) {
       this._setElementVisibility(false);

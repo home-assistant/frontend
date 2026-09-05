@@ -13,7 +13,9 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ConditionListenersController } from "../../../../common/controllers/condition-listeners-controller";
+import { isPureClientCondition } from "../../../../common/condition/translate";
+import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
+import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -32,19 +34,33 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../config/automation/condition/ha-automation-condition-editor";
+import "../../../config/automation/condition/types/ha-automation-condition-device";
+import "../../../config/automation/condition/types/ha-automation-condition-numeric_state";
+import "../../../config/automation/condition/types/ha-automation-condition-state";
+import "../../../config/automation/condition/types/ha-automation-condition-sun";
+import "../../../config/automation/condition/types/ha-automation-condition-template";
+import "../../../config/automation/condition/types/ha-automation-condition-zone";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import type {
+  NumericStateCondition as CoreNumericStateCondition,
+  StateCondition as CoreStateCondition,
+} from "../../../../data/automation";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
   Condition,
+  ConditionContext,
   LegacyCondition,
   NotCondition,
+  NumericStateCondition,
   OrCondition,
+  StateCondition,
+  VisibilityCondition,
 } from "../../common/validate-condition";
 import {
-  checkConditionsMet,
+  addEntityToCondition,
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { ConditionsEntityContext } from "./context";
@@ -72,14 +88,98 @@ const containsNoEntityCondition = (
   noEntity &&
   CONTAINER_CONDITIONS.includes(condition.condition) &&
   (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
-    (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
+    (c) =>
+      NO_ENTITY_CONDITIONS.includes(c.condition) ||
+      containsNoEntityCondition(c, noEntity)
   ) === true;
+
+// Server-class condition types with no lovelace editor; edited via the
+// automation condition editors (which already speak core format).
+export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
+
+export const isServerEditorCondition = (condition: string): boolean =>
+  SERVER_EDITOR_CONDITIONS.includes(condition);
+
+// Condition types edited via the core automation condition editors. The
+// server-class types always are; `state` / `numeric_state` are too, except in
+// entity-filter mode, where they keep the lovelace no-entity syntax and editor.
+export const usesAutomationConditionEditor = (
+  conditionType: string,
+  noEntity: boolean
+): boolean =>
+  isServerEditorCondition(conditionType) ||
+  (!noEntity &&
+    (conditionType === "state" || conditionType === "numeric_state"));
+
+// Render-only translation: present a lovelace `state` / `numeric_state`
+// condition in the struct-valid core format the automation editor speaks. This
+// is edit-faithful — unlike the eval-oriented `translateToCoreCondition`, it
+// never collapses an incomplete config to always-false. Already-core conditions
+// (carrying `entity_id`) and every other type pass through unchanged. When the
+// lovelace condition is entity-less (it implicitly targets the host card's
+// entity), `contextEntityId` is folded in as the `entity_id` so the automation
+// editor shows the effective entity instead of an empty, invalid field.
+const toCoreEditorCondition = (
+  condition: VisibilityCondition,
+  contextEntityId?: string
+): VisibilityCondition => {
+  if ("entity_id" in condition) {
+    return condition;
+  }
+  // Legacy `{ entity, state }` has no `condition` key and is treated as `state`.
+  if (!("condition" in condition) || condition.condition === "state") {
+    const lovelace = condition as StateCondition | LegacyCondition;
+    const attribute = "attribute" in lovelace ? lovelace.attribute : undefined;
+    const entity_id = lovelace.entity ?? contextEntityId ?? "";
+    // Core has no `state_not`; represent it as `not(state)`, which routes to
+    // the (lovelace) `not` editor wrapping a core `state` editor.
+    if (lovelace.state === undefined && lovelace.state_not !== undefined) {
+      const inner: CoreStateCondition = {
+        condition: "state",
+        entity_id,
+        state: lovelace.state_not,
+      };
+      if (attribute !== undefined) {
+        inner.attribute = attribute;
+      }
+      return { condition: "not", conditions: [inner] };
+    }
+    // Incomplete configs keep an empty `state` so the editor stays usable.
+    const core: CoreStateCondition = {
+      condition: "state",
+      entity_id,
+      state: lovelace.state ?? [],
+    };
+    if (attribute !== undefined) {
+      core.attribute = attribute;
+    }
+    return core;
+  }
+  if (condition.condition === "numeric_state") {
+    const lovelace = condition as NumericStateCondition;
+    const core: CoreNumericStateCondition = {
+      condition: "numeric_state",
+      entity_id: lovelace.entity ?? contextEntityId ?? "",
+    };
+    if (lovelace.attribute !== undefined) {
+      core.attribute = lovelace.attribute;
+    }
+    if (lovelace.above !== undefined) {
+      core.above = lovelace.above;
+    }
+    if (lovelace.below !== undefined) {
+      core.below = lovelace.below;
+    }
+    return core;
+  }
+  return condition;
+};
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition | LegacyCondition;
+  @property({ attribute: false }) condition!: VisibilityCondition;
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -95,7 +195,7 @@ export class HaCardConditionEditor extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: Condition | LegacyCondition;
+  protected _clipboard?: VisibilityCondition;
 
   @state() public _yamlMode = false;
 
@@ -112,7 +212,31 @@ export class HaCardConditionEditor extends LitElement {
     message?: string;
   } = { state: "unknown" };
 
-  private _listeners = new ConditionListenersController(this);
+  // Live-test indicator, driven by the same server-backed evaluator the
+  // dashboard uses at runtime: client leaves locally, server-class subtrees via
+  // `subscribe_condition`, combined with three-valued logic.
+  private _conditionEvaluator = new ConditionEvaluatorController(this, {
+    // Debounce so editing (e.g. typing a template) doesn't churn subscriptions.
+    resubscribeDelay: 500,
+    onResult: (result, error) => this._setLiveTestResult(result, error),
+  });
+
+  // Cache of the folded observation (and its client-validity) keyed by the
+  // source condition + entity context, so the evaluator's reference-based
+  // signature memo keeps hitting on hass-only ticks instead of rebuilding the
+  // array — mirrors ConditionalListenerMixin.
+  private __observedSource?: VisibilityCondition;
+
+  private __observedEntityId?: string;
+
+  private __observed?: VisibilityCondition[];
+
+  private __clientInvalid = false;
+
+  // Pins the live-test result for the hidden / client-invalid branches that
+  // bypass the evaluator, so its torn-down `unknown` callback can't clobber
+  // them — mirrors ha-visibility-status.
+  private _override?: LiveTestState;
 
   private get _editor() {
     if (!this._condition) return undefined;
@@ -121,82 +245,141 @@ export class HaCardConditionEditor extends LitElement {
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
+  private get _usesAutomationEditor(): boolean {
+    return (
+      !!this._condition &&
+      usesAutomationConditionEditor(this._condition.condition, this._noEntity)
+    );
+  }
+
+  // No-entity (filter-mode) conditions have no entity to evaluate against, so
+  // the live-test indicator is suppressed for those.
+  private _hideLiveTest(condition: Condition): boolean {
+    return (
+      isNoEntityCondition(condition.condition, this._noEntity) ||
+      containsNoEntityCondition(condition, this._noEntity)
+    );
+  }
+
   public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
   }
 
-  private _setupConditionListeners() {
-    this._listeners.setup(
-      this.condition ? [this.condition as Condition] : [],
-      this.hass,
-      () => this._evaluateLiveTest()
-    );
-  }
-
   protected willUpdate(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has("condition")) {
-      this._condition = {
+    // Recompute on entity-context change too: an entity-less condition folds in
+    // the host card's entity, which arrives via context (possibly after the
+    // condition is first set).
+    if (
+      changedProperties.has("condition") ||
+      (changedProperties as Map<string, unknown>).has("_entityContext")
+    ) {
+      const normalized = {
         condition: "state",
         ...this.condition,
-      };
-      const validator = this._editor?.validateUIConfig;
-      if (validator) {
-        try {
-          validator(this._condition, this.hass);
-          this._uiAvailable = true;
-          this._uiWarnings = [];
-        } catch (err) {
-          this._uiWarnings = handleStructError(
-            this.hass,
-            err as Error
-          ).warnings;
-          this._uiAvailable = false;
-        }
-      } else {
-        this._uiAvailable = false;
+      } as Condition;
+      // In "current" mode the card supplies the entity for entity-less
+      // conditions; fold it into the displayed core condition.
+      const contextEntityId =
+        this._entityContext?.mode === "current"
+          ? this._entityContext.entityId
+          : undefined;
+      // Present lovelace `state` / `numeric_state` in core format for the
+      // automation editor (read-both back-compat); every other type passes
+      // through unchanged. `_condition` always carries a `condition` key (core
+      // entries coexist as the wider runtime shape, narrowed here for display).
+      this._condition = (
+        usesAutomationConditionEditor(normalized.condition, this._noEntity)
+          ? toCoreEditorCondition(normalized, contextEntityId)
+          : normalized
+      ) as Condition;
+      if (this._usesAutomationEditor) {
+        // Rendered by the embedded automation condition editor, which provides
+        // its own UI for these core-format types.
+        this._uiAvailable = true;
         this._uiWarnings = [];
+      } else {
+        const validator = this._editor?.validateUIConfig;
+        if (validator) {
+          try {
+            validator(this._condition, this.hass);
+            this._uiAvailable = true;
+            this._uiWarnings = [];
+          } catch (err) {
+            this._uiWarnings = handleStructError(
+              this.hass,
+              err as Error
+            ).warnings;
+            this._uiAvailable = false;
+          }
+        } else {
+          this._uiAvailable = false;
+          this._uiWarnings = [];
+        }
       }
 
       if (!this._uiAvailable && !this._yamlMode) {
         this._yamlMode = true;
       }
-
-      this._setupConditionListeners();
     }
 
     if (changedProperties.has("condition") || changedProperties.has("hass")) {
-      this._evaluateLiveTest();
+      this._updateLiveTest();
     }
   }
 
   protected updated(changedProperties: PropertyValues<this>): void {
     if ((changedProperties as Map<string, unknown>).has("_entityContext")) {
-      this._evaluateLiveTest();
+      this._updateLiveTest();
     }
   }
 
-  private _evaluateLiveTest() {
-    if (!this.condition || !this._condition) {
+  private _liveTestContext(): ConditionContext {
+    return this._entityContext?.mode === "current"
+      ? { entity_id: this._entityContext.entityId }
+      : {};
+  }
+
+  // Feed the condition (with the card's entity folded in when in "current"
+  // mode) to the evaluator, which subscribes server subtrees and evaluates
+  // client leaves locally. `onResult` maps its verdict to the indicator.
+  private _updateLiveTest() {
+    if (
+      !this.condition ||
+      !this._condition ||
+      this._hideLiveTest(this._condition)
+    ) {
+      this._override = "unknown";
+      this._conditionEvaluator.observe(undefined, this.hass);
       this._liveTestResult = { state: "unknown" };
       return;
     }
 
+    const entityId = this._liveTestContext().entity_id;
+    // Rebuild the folded observation + client-validity only when the source
+    // condition or entity context changes, so a fresh array isn't fed to the
+    // evaluator on every hass tick (which would defeat its signature memo).
     if (
-      isNoEntityCondition(this._condition.condition, this._noEntity) ||
-      containsNoEntityCondition(this._condition, this._noEntity)
+      this.condition !== this.__observedSource ||
+      entityId !== this.__observedEntityId
     ) {
-      this._liveTestResult = {
-        state: "unknown",
-        message: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.live_test_state.unknown"
-        ),
-      };
-      return;
+      this.__observedSource = this.condition;
+      this.__observedEntityId = entityId;
+      this.__clientInvalid =
+        isPureClientCondition(this.condition) &&
+        !validateConditionalConfig([this.condition] as Condition[]);
+      const observed = entityId
+        ? addEntityToCondition(this.condition as Condition, entityId)
+        : this.condition;
+      this.__observed = [observed] as VisibilityCondition[];
     }
 
-    if (!validateConditionalConfig([this.condition])) {
+    // The server-backed path only reports errors for server-class subtrees, so
+    // surface a malformed client-only config as `invalid` here.
+    if (this.__clientInvalid) {
+      this._override = "invalid";
+      this._conditionEvaluator.observe(undefined, this.hass);
       this._liveTestResult = {
         state: "invalid",
         message: this.hass.localize(
@@ -206,15 +389,32 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    const testContext =
-      this._entityContext?.mode === "current"
-        ? { entity_id: this._entityContext.entityId }
-        : {};
-    const pass = checkConditionsMet([this.condition], this.hass, testContext);
+    this._override = undefined;
+    this._conditionEvaluator.observe(this.__observed, this.hass, () =>
+      this._liveTestContext()
+    );
+  }
+
+  private _setLiveTestResult(result: ConditionEvaluation, error?: string) {
+    // The hidden / client-invalid branches pin the result; ignore the
+    // evaluator's (torn-down) callback in those cases — mirrors
+    // ha-visibility-status.
+    if (this._override !== undefined) {
+      return;
+    }
+    if (error) {
+      // Surface the raw server error as the tooltip detail (the localized
+      // `invalid` label remains the indicator's aria-label) — matches how the
+      // automation condition editor reports validation/test errors.
+      this._liveTestResult = { state: "invalid", message: error };
+      return;
+    }
+    const liveState: LiveTestState =
+      result === "visible" ? "pass" : result === "hidden" ? "fail" : "unknown";
     this._liveTestResult = {
-      state: pass ? "pass" : "fail",
+      state: liveState,
       message: this.hass.localize(
-        `ui.panel.lovelace.editor.condition-editor.live_test_state.${pass ? "pass" : "fail"}`
+        `ui.panel.lovelace.editor.condition-editor.live_test_state.${liveState}`
       ),
     };
   }
@@ -224,9 +424,7 @@ export class HaCardConditionEditor extends LitElement {
 
     if (!condition) return nothing;
 
-    const hideLiveTest =
-      isNoEntityCondition(condition.condition, this._noEntity) ||
-      containsNoEntityCondition(condition, this._noEntity);
+    const hideLiveTest = this._hideLiveTest(condition);
 
     return html`
       <div class="container">
@@ -295,8 +493,7 @@ export class HaCardConditionEditor extends LitElement {
             </ha-icon-button>
 
             ${
-              isNoEntityCondition(condition.condition, this._noEntity) ||
-              containsNoEntityCondition(condition, this._noEntity)
+              hideLiveTest
                 ? nothing
                 : html`<ha-dropdown-item value="test">
                     ${this.hass.localize(
@@ -380,18 +577,27 @@ export class HaCardConditionEditor extends LitElement {
                       @value-changed=${this._onYamlChange}
                     ></ha-yaml-editor>
                   `
-                : html`
-                    ${dynamicElement(
-                      getConditionClassName(
-                        condition.condition,
-                        this._noEntity
-                      ),
-                      {
-                        hass: this.hass,
-                        condition: condition,
-                      }
-                    )}
-                  `
+                : this._usesAutomationEditor
+                  ? html`
+                      <ha-automation-condition-editor
+                        .hass=${this.hass}
+                        .condition=${condition}
+                        .uiSupported=${true}
+                      ></ha-automation-condition-editor>
+                    `
+                  : html`
+                      ${dynamicElement(
+                        getConditionClassName(
+                          condition.condition,
+                          this._noEntity
+                        ),
+                        {
+                          hass: this.hass,
+                          condition: condition,
+                        }
+                      )}
+                    `
+            }
             }
           </div>
         </ha-expansion-panel>
@@ -399,7 +605,7 @@ export class HaCardConditionEditor extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: HaDropdownSelectEvent) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (action === undefined) {
@@ -408,7 +614,7 @@ export class HaCardConditionEditor extends LitElement {
 
     switch (action) {
       case "test":
-        await this._testCondition();
+        this._testCondition();
         return;
       case "duplicate":
         this._duplicateCondition();
@@ -429,37 +635,20 @@ export class HaCardConditionEditor extends LitElement {
 
   private _timeout?: number;
 
-  private async _testCondition() {
+  private _testCondition() {
     if (this._timeout) {
       window.clearTimeout(this._timeout);
       this._timeout = undefined;
     }
-    this._testingResult = undefined;
-    const condition = this.condition;
-
-    const validateResult = validateConditionalConfig([this.condition]);
-
-    if (!validateResult) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_text"
-        ),
-      });
+    // Surface the evaluator's current live verdict as a transient chip. A
+    // not-yet-reported (unknown) server result shows no chip rather than
+    // asserting a false failure.
+    const result = this._conditionEvaluator.result;
+    if (result === "unknown") {
+      this._testingResult = undefined;
       return;
     }
-
-    const testContext =
-      this._entityContext?.mode === "current"
-        ? { entity_id: this._entityContext.entityId }
-        : {};
-    this._testingResult = checkConditionsMet(
-      [condition],
-      this.hass,
-      testContext
-    );
+    this._testingResult = result === "visible";
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
@@ -541,6 +730,6 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "duplicate-condition": { value: Condition | LegacyCondition };
+    "duplicate-condition": { value: VisibilityCondition };
   }
 }

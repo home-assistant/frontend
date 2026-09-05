@@ -1,6 +1,6 @@
 import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -40,7 +40,9 @@ interface NumericStateConditionData {
   below?: number | string;
 }
 
-@customElement("ha-card-condition-numeric_state")
+// Base class for the entity-filter (no-entity) numeric_state editor. The
+// with-entity dashboard editing path now uses the core automation condition
+// editor, so this class is not registered as an element on its own.
 export class HaCardConditionNumericState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -210,10 +212,4 @@ export class HaCardConditionNumericState extends LitElement {
         return "";
     }
   };
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "ha-card-condition-numeric_state": HaCardConditionNumericState;
-  }
 }

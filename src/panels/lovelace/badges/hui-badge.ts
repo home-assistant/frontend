@@ -7,7 +7,6 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
 import type { LovelaceBadge } from "../types";
@@ -165,14 +164,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this.config?.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 

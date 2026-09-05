@@ -15,7 +15,7 @@ import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   Condition,
-  LegacyCondition,
+  VisibilityCondition,
 } from "../../common/validate-condition";
 import type { ConditionsEntityContext } from "./context";
 import { conditionsEntityContext } from "./context";
@@ -23,16 +23,15 @@ import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,
+  usesAutomationConditionEditor,
 } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-location";
 import "./types/ha-card-condition-not";
-import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
-import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
@@ -44,10 +43,15 @@ const UI_CONDITION = [
   "screen",
   "time",
   "user",
+  // Server-class types, edited via the automation condition editors.
+  "template",
+  "sun",
+  "zone",
+  "device",
   "and",
   "not",
   "or",
-] as const satisfies readonly Condition["condition"][];
+] as const satisfies readonly string[];
 
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
@@ -59,11 +63,9 @@ export class HaCardConditionsEditor extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: Condition | LegacyCondition;
+  protected _clipboard?: VisibilityCondition;
 
-  @property({ attribute: false }) public conditions!: (
-    Condition | LegacyCondition
-  )[];
+  @property({ attribute: false }) public conditions!: VisibilityCondition[];
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -76,6 +78,11 @@ export class HaCardConditionsEditor extends LitElement {
   private _focusLastConditionOnChange = false;
 
   protected firstUpdated() {
+    // The reused automation condition editors (state / numeric_state / template
+    // / sun / zone / device) label their form fields from the `config`
+    // translation fragment, which the dashboard editor does not otherwise load.
+    this.hass.loadFragmentTranslation("config");
+
     // Expand the condition if there is only one
     if (this.conditions.length === 1) {
       const row = this.shadowRoot!.querySelector<HaCardConditionEditor>(
@@ -164,17 +171,30 @@ export class HaCardConditionsEditor extends LitElement {
   }
 
   private _addCondition(ev: HaDropdownSelectEvent) {
-    const condition = ev.detail.item.value as "paste" | Condition["condition"];
+    const value = ev.detail.item.value as string;
     const conditions = [...this.conditions];
 
-    if (!condition || (condition === "paste" && !this._clipboard)) {
+    if (!value || (value === "paste" && !this._clipboard)) {
       return;
     }
 
-    if (condition === "paste") {
+    if (value === "paste") {
       const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
+    } else if (usesAutomationConditionEditor(value, this._noEntity)) {
+      // Authored in core format via the automation condition editors (server
+      // types, plus state/numeric_state outside entity-filter mode); seed with
+      // that editor's default config.
+      const elClass = customElements.get(`ha-automation-condition-${value}`) as
+        { defaultConfig?: object } | undefined;
+      const defaultConfig = elClass?.defaultConfig;
+      conditions.push(
+        (defaultConfig
+          ? { ...defaultConfig }
+          : { condition: value }) as VisibilityCondition
+      );
     } else {
+      const condition = value as Condition["condition"];
       const elClass = customElements.get(
         getConditionClassName(condition, this._noEntity)
       ) as LovelaceConditionEditorConstructor | undefined;
