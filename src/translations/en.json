@@ -528,6 +528,14 @@
         "validation_failed": "Form validation failed."
       },
       "selectors": {
+        "infrared_command": {
+          "name": "Name",
+          "capture": "Capture command",
+          "captured_name": "Command {number}",
+          "press_a_button": "Press a button on your remote",
+          "capture_failed": "Could not listen to the infrared receiver.",
+          "select_receiver": "Select an infrared receiver to capture commands from."
+        },
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",

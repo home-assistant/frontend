@@ -11,6 +11,31 @@ const INFRARED_DOMAIN = "infrared";
 
 export type InfraredProxyType = "emitter" | "receiver";
 
+// A named infrared code, as captured from a receiver. Used by the infrared
+// command selector, for example in the infrared trigger.
+export interface InfraredCommand {
+  name: string;
+  code: string;
+}
+
+export const isInfraredReceiver = (
+  hass: HomeAssistant,
+  entityId: string
+): boolean =>
+  computeDomain(entityId) === INFRARED_DOMAIN &&
+  hass.states[entityId]?.attributes.device_class === "receiver";
+
+// Streams the codes a receiver picks up, so a remote's buttons can be captured.
+export const subscribeInfraredReceiver = (
+  hass: HomeAssistant,
+  entityId: string,
+  callback: (code: string) => void
+) =>
+  hass.connection.subscribeMessage<{ code: string }>(
+    (message) => callback(message.code),
+    { type: "infrared/receiver/subscribe", entity_id: entityId }
+  );
+
 export type InfraredDeviceType = InfraredProxyType | "both";
 
 export interface InfraredDevice {
