@@ -5,6 +5,7 @@ import { mockMqtt } from "./mqtt/mock";
 import { mockMatter } from "./matter/mock";
 import { mockZwaveJs } from "./zwave_js/mock";
 import { mockZha } from "./zha/mock";
+import { mockRadioFrequency } from "./radio_frequency/mock";
 
 // The WebSocket mocks, code-split into the config panel chunk.
 const MOCKS = [
@@ -14,6 +15,7 @@ const MOCKS = [
   mockMqtt,
   mockZwaveJs,
   mockZha,
+  mockRadioFrequency,
 ];
 
 export const mockConnectivity = (hass: MockHomeAssistant) => {
