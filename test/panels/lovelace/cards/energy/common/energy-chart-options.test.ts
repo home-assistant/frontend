@@ -1073,14 +1073,17 @@ describe("getCommonOptions secondaryUnit", () => {
   const start = new Date("2024-03-15T00:00:00.000Z");
   const end = new Date("2024-03-15T23:59:59.999Z");
 
-  it("creates a single yAxis when secondaryUnit is not provided", () => {
+  it("creates dual yAxes with secondary yAxis hidden when secondaryUnit is not provided", () => {
     const options = getCommonOptions(start, end, mockLocale, demoConfig, "kWh");
-    assert.isFalse(Array.isArray(options.yAxis));
-    assert.equal((options.yAxis as any).name, "kWh");
+    assert.isTrue(Array.isArray(options.yAxis));
+    const axes = options.yAxis as any[];
+    assert.equal(axes.length, 2);
+    assert.equal(axes[0].name, "kWh");
+    assert.isFalse(axes[1].show);
     assert.equal((options.grid as any).right, 1);
   });
 
-  it("creates dual yAxes when secondaryUnit is provided", () => {
+  it("shows secondary yAxis with precision bounds when secondaryUnit is provided", () => {
     const options = getCommonOptions(
       start,
       end,
@@ -1099,6 +1102,7 @@ describe("getCommonOptions secondaryUnit", () => {
     const axes = options.yAxis as any[];
     assert.equal(axes.length, 2);
     assert.equal(axes[0].name, "kWh");
+    assert.isTrue(axes[1].show);
     assert.equal(axes[1].name, "°C");
     assert.equal(axes[1].position, "right");
     assert.isFalse(axes[1].splitLine.show);
@@ -1159,5 +1163,49 @@ describe("getCommonOptions secondaryUnit", () => {
     assert.include(container.textContent, "Outdoor temperature:");
     assert.include(container.textContent, "21.5 °C");
     assert.include(container.textContent, "Total: 8 kWh");
+  });
+
+  it("preserves zero readings for secondary series in tooltips while suppressing zero bars", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+
+    const formatter = (options.tooltip as any)?.formatter;
+    assert.isFunction(formatter);
+
+    const mockParams = [
+      {
+        componentSubType: "bar",
+        seriesId: "grid-consumption",
+        seriesName: "Grid",
+        value: [start.getTime() + 1800000, 0, start.getTime()],
+        color: "#123456",
+      },
+      {
+        componentSubType: "line",
+        seriesId: "primary-weather-temperature",
+        seriesName: "Outdoor temperature",
+        value: [start.getTime() + 1800000, 0],
+        color: "#ff9800",
+      },
+    ];
+
+    const result = formatter(mockParams);
+    const container = document.createElement("div");
+    render(result, container);
+    assert.notInclude(container.textContent, "Grid:");
+    assert.include(container.textContent, "Outdoor temperature:");
+    assert.include(container.textContent, "0 °C");
   });
 });

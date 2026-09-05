@@ -103,6 +103,8 @@ export class HuiEnergyUsageGraphCard
 
   private _weatherRequestToken = 0;
 
+  private _latestEnergyData?: EnergyData;
+
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -131,7 +133,17 @@ export class HuiEnergyUsageGraphCard
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
+    const tempConfigChanged =
+      this._config &&
+      (this._config.temperature_entity !== config.temperature_entity ||
+        this._config.weather_entity !== config.weather_entity);
     this._config = config;
+    if (tempConfigChanged) {
+      this._weatherRequestToken++;
+      if (this._latestEnergyData) {
+        this._getStatistics(this._latestEnergyData);
+      }
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
@@ -297,6 +309,7 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._latestEnergyData = energyData;
     if (!this.isConnected) {
       return;
     }

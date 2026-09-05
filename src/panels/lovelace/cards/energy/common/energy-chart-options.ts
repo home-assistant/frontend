@@ -192,32 +192,42 @@ export function getCommonOptions(
     },
   };
 
-  const secondaryYAxis: any = secondaryUnit
-    ? {
-        type: "value",
-        name: secondaryUnit,
-        nameGap: 2,
-        nameTextStyle: {
-          align: "right",
-        },
-        position: "right",
-        splitLine: {
-          show: false,
-        },
-        axisLabel: {
-          formatter: createYAxisLabelFormatter(locale, () => 0),
-        },
-      }
-    : undefined;
+  let secondaryFractionDigits = 0;
+  const secondaryYAxis: any = {
+    type: "value",
+    show: Boolean(secondaryUnit),
+    name: secondaryUnit ?? "",
+    nameGap: 2,
+    nameTextStyle: {
+      align: "right",
+    },
+    position: "right",
+    splitLine: {
+      show: false,
+    },
+    ...createYAxisPrecisionBounds({
+      includeZero: false,
+      unit: secondaryUnit,
+      onFractionDigits: (digits) => {
+        secondaryFractionDigits = digits;
+      },
+    }),
+    axisLabel: {
+      formatter: createYAxisLabelFormatter(
+        locale,
+        () => secondaryFractionDigits
+      ),
+    },
+  };
 
   const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
-    yAxis: secondaryYAxis ? [primaryYAxis, secondaryYAxis] : primaryYAxis,
+    yAxis: [primaryYAxis, secondaryYAxis],
     grid: {
       top: 15,
       bottom: 0,
       left: 1,
-      right: secondaryYAxis ? 12 : 1,
+      right: secondaryUnit ? 12 : 1,
       containLabel: true,
     },
     tooltip: {
@@ -317,12 +327,19 @@ function formatTooltip(
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
+    const isSecondary =
+      param.seriesId === "primary-weather-temperature" ||
+      (secondarySeriesIds &&
+        param.seriesId &&
+        secondarySeriesIds.includes(param.seriesId));
     const value = formatNumber(
       y,
       locale,
-      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      !isSecondary && y < 0.1 && y > 0
+        ? { maximumFractionDigits: 3 }
+        : undefined
     );
-    if (value === "0") {
+    if (!isSecondary && value === "0") {
       continue;
     }
     // Only the positive bars (consumption) are summed into a total. Negative
@@ -332,11 +349,6 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
-    const isSecondary =
-      param.seriesId === "primary-weather-temperature" ||
-      (secondarySeriesIds &&
-        param.seriesId &&
-        secondarySeriesIds.includes(param.seriesId));
     const displayUnit = isSecondary && secondaryUnit ? secondaryUnit : unit;
     rows.push(
       html`<ha-chart-tooltip-marker
