@@ -9882,7 +9882,15 @@
                 "label": "Entity numeric state",
                 "attribute": "[%key:ui::panel::lovelace::editor::condition-editor::condition::state::attribute%]",
                 "above": "Above",
-                "below": "Below"
+                "below": "Below",
+                "description": {
+                  "above": "{entity} is above {above}",
+                  "below": "{entity} is below {below}",
+                  "above_below": "{entity} is above {above} and below {below}",
+                  "above_attribute": "{entity} {attribute} is above {above}",
+                  "below_attribute": "{entity} {attribute} is below {below}",
+                  "above_below_attribute": "{entity} {attribute} is above {above} and below {below}"
+                }
               },
               "screen": {
                 "label": "Screen",
@@ -9900,7 +9908,13 @@
                 "attribute": "Attribute (optional)",
                 "current_entity": "Current entity",
                 "state_equal": "State is equal to",
-                "state_not_equal": "State is not equal to"
+                "state_not_equal": "State is not equal to",
+                "description": {
+                  "is": "{entity} is {state}",
+                  "is_not": "{entity} is not {state}",
+                  "is_attribute": "{entity} {attribute} is {state}",
+                  "is_not_attribute": "{entity} {attribute} is not {state}"
+                }
               },
               "time": {
                 "label": "Time",
