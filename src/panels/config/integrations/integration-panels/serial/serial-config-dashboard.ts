@@ -23,7 +23,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { domainToName } from "../../../../../data/integration";
+import {
+  domainToName,
+  getConfigPanelPath,
+} from "../../../../../data/integration";
 import type {
   SerialPort,
   SerialPortConsumer,
@@ -204,11 +207,25 @@ export class SerialConfigDashboard extends LitElement {
     />`;
   }
 
+  // Where the port's use is managed: the integration's own panel when it has
+  // one and is running, otherwise its entry on the integration page
+  private _consumerHref(consumer: SerialPortConsumer): string {
+    if (consumer.kind !== "config_entry") {
+      return `/config/app/${consumer.slug}/info`;
+    }
+
+    const configPanel =
+      consumer.active && consumer.domain
+        ? getConfigPanelPath(consumer.domain, this.hass.panels)
+        : undefined;
+
+    return configPanel
+      ? `/${configPanel}?config_entry=${consumer.config_entry_id}`
+      : `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`;
+  }
+
   private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
-    const href =
-      consumer.kind === "config_entry"
-        ? `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`
-        : `/config/app/${consumer.slug}/info`;
+    const href = this._consumerHref(consumer);
 
     return html`
       <ha-md-list-item type="link" href=${href} class="consumer">
