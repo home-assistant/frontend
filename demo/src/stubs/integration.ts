@@ -1,19 +1,7 @@
 import type { IntegrationManifest } from "../../../src/data/integration";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-
-const manifest = (
-  domain: string,
-  name: string,
-  overrides: Partial<IntegrationManifest> = {}
-): IntegrationManifest => ({
-  is_built_in: true,
-  domain,
-  name,
-  config_flow: true,
-  documentation: `https://www.home-assistant.io/integrations/${domain}/`,
-  iot_class: "local_push",
-  ...overrides,
-});
+import { connectivityManifests } from "./connectivity/fixtures";
+import { manifest } from "./manifest";
 
 const manifests: IntegrationManifest[] = [
   manifest("co2signal", "Electricity Maps", { iot_class: "cloud_polling" }),
@@ -62,11 +50,18 @@ const manifests: IntegrationManifest[] = [
     integration_type: "helper",
     iot_class: "local_polling",
   }),
+  ...connectivityManifests,
 ];
 
 export const mockIntegration = (hass: MockHomeAssistant) => {
   hass.mockWS("manifest/list", () => manifests);
-  hass.mockWS("manifest/get", (msg: { integration: string }) =>
-    manifests.find((m) => m.domain === msg.integration)
+  // Never answer with undefined: the integration page reads the manifest it
+  // gets back without guarding, so an unlisted domain would throw. The real
+  // backend always has a manifest for a domain that has config entries.
+  hass.mockWS(
+    "manifest/get",
+    (msg: { integration: string }) =>
+      manifests.find((m) => m.domain === msg.integration) ??
+      manifest(msg.integration, msg.integration)
   );
 };
