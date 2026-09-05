@@ -64,9 +64,9 @@ const SCHEMA: HaFormSchema[] = [
     visible: { field: "type", value: "energy-usage-graph" },
     required: false,
     selector: {
-      entity: {
-        domain: "sensor",
+      statistic: {
         device_class: "temperature",
+        statistic_types: "mean",
       },
     },
   },

@@ -256,21 +256,17 @@ export const sonifyChart = async (
     return null;
   }
   const xAxis = ensureArray(chartOptions.xAxis)?.[0] as XAXisOption | undefined;
-  const yAxis = ensureArray(chartOptions.yAxis)?.[0] as YAXisOption | undefined;
+  const yAxes = ensureArray(chartOptions.yAxis) as (YAXisOption | undefined)[];
+  const yAxis = yAxes?.[0];
+  const yAxis2 = yAxes?.[1];
 
   // Chart2Music throws while validating a group with no points, which is what
   // placeholder, legend-hidden and all-null series turn into, so only offer it
-  // the series carrying points it can read. Additionally exclude series mapped to
-  // secondary axes (yAxisIndex > 0) because Chart2Music announces all series
-  // using yAxis[0]'s unit.
+  // the series carrying points it can read.
   const allSeries = ensureArray(chartOptions.series) as (
     HaECSeriesItem | undefined
   )[];
-  const readable = allSeries.filter(
-    (s) =>
-      (!s || !("yAxisIndex" in s) || !s.yAxisIndex) &&
-      countNumericPoints(s?.data, 1)
-  );
+  const readable = allSeries.filter((s) => countNumericPoints(s?.data, 1));
   // A single point is not navigable, so it does not earn a focus stop either.
   if (countNavigablePoints(readable) < MIN_NAVIGABLE_POINTS) {
     return null;
@@ -308,6 +304,12 @@ export const sonifyChart = async (
       (isHorizontal ? xAxis?.name : yAxis?.name) ||
       localize("ui.components.history_charts.value"),
   };
+  const y2 =
+    !isHorizontal && yAxis2
+      ? {
+          label: yAxis2.name || localize("ui.components.history_charts.value"),
+        }
+      : undefined;
 
   let connection: ReturnType<typeof connect>;
   try {
@@ -319,7 +321,11 @@ export const sonifyChart = async (
         ? locale.language
         : "en",
       errorCallback: options.onError,
-      axes: { x, y },
+      axes: {
+        x,
+        y,
+        ...(y2 ? { y2 } : {}),
+      },
     });
   } catch (err) {
     options.onError(err instanceof Error ? err.message : String(err));

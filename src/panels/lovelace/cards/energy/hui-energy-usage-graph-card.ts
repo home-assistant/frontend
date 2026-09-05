@@ -31,7 +31,12 @@ import type {
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "../../../../data/recorder";
-import { fetchStatistics, getStatisticLabel } from "../../../../data/recorder";
+import {
+  fetchStatistics,
+  getStatisticLabel,
+  getStatisticMetadata,
+  statisticsMetaHasType,
+} from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -527,69 +532,97 @@ export class HuiEnergyUsageGraphCard
 
     const requestToken = ++this._weatherRequestToken;
 
-    let targetTempEntityId: string | undefined;
-    if (this._config?.temperature_entity) {
-      if (this.hass.states[this._config.temperature_entity]) {
-        targetTempEntityId = this._config.temperature_entity;
-      }
-    } else if (this._config?.weather_entity) {
-      const weatherEntity = this.hass.entities?.[this._config.weather_entity];
-      const deviceId = weatherEntity?.device_id;
-      if (deviceId) {
-        const siblings = Object.values(this.hass.entities).filter(
-          (entity) =>
-            entity.device_id === deviceId &&
-            entity.entity_id.startsWith("sensor.") &&
-            this.hass.states[entity.entity_id]?.attributes.device_class ===
-              "temperature"
-        );
-        const candidates = siblings.filter(
-          (entity) =>
-            !entity.entity_id.includes("apparent") &&
-            !entity.entity_id.includes("dew_point") &&
-            !entity.entity_id.includes("feels_like") &&
-            !entity.entity_id.includes("wind_chill") &&
-            !entity.entity_id.includes("wet_bulb")
-        );
-        let primarySibling: (typeof siblings)[0] | undefined;
-        if (candidates.length === 1) {
-          primarySibling = candidates[0];
-        } else if (candidates.length > 1) {
-          const exact = candidates.filter(
-            (entity) =>
-              entity.translation_key === "temperature" ||
-              entity.entity_id.endsWith("_temperature") ||
-              entity.entity_id.endsWith("_outdoor_temperature")
-          );
-          if (exact.length === 1) {
-            primarySibling = exact[0];
+    try {
+      let targetTempEntityId: string | undefined;
+      if (this._config?.temperature_entity) {
+        if (this.hass.states[this._config.temperature_entity]) {
+          const statsMeta = await getStatisticMetadata(this.hass, [
+            this._config.temperature_entity,
+          ]);
+          if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+            return;
+          }
+          if (statsMeta.some((meta) => statisticsMetaHasType(meta, "mean"))) {
+            targetTempEntityId = this._config.temperature_entity;
           }
         }
-        if (primarySibling) {
-          targetTempEntityId = primarySibling.entity_id;
+      } else if (this._config?.weather_entity) {
+        const weatherEntity = this.hass.entities?.[this._config.weather_entity];
+        const deviceId = weatherEntity?.device_id;
+        if (deviceId) {
+          const siblings = Object.values(this.hass.entities).filter(
+            (entity) =>
+              entity.device_id === deviceId &&
+              entity.entity_id.startsWith("sensor.") &&
+              this.hass.states[entity.entity_id]?.attributes.device_class ===
+                "temperature"
+          );
+          const candidates = siblings.filter(
+            (entity) =>
+              !entity.entity_id.includes("apparent") &&
+              !entity.entity_id.includes("dew_point") &&
+              !entity.entity_id.includes("feels_like") &&
+              !entity.entity_id.includes("wind_chill") &&
+              !entity.entity_id.includes("wet_bulb")
+          );
+          if (candidates.length) {
+            const statsMeta = await getStatisticMetadata(
+              this.hass,
+              candidates.map((c) => c.entity_id)
+            );
+            if (
+              this._weatherRequestToken !== requestToken ||
+              !this.isConnected
+            ) {
+              return;
+            }
+            const validStatIds = new Set(
+              statsMeta
+                .filter((meta) => statisticsMetaHasType(meta, "mean"))
+                .map((meta) => meta.statistic_id)
+            );
+            const validCandidates = candidates.filter((c) =>
+              validStatIds.has(c.entity_id)
+            );
+            let primarySibling: (typeof siblings)[0] | undefined;
+            if (validCandidates.length === 1) {
+              primarySibling = validCandidates[0];
+            } else if (validCandidates.length > 1) {
+              const exact = validCandidates.filter(
+                (entity) =>
+                  entity.translation_key === "temperature" ||
+                  entity.entity_id.endsWith("_temperature") ||
+                  entity.entity_id.endsWith("_outdoor_temperature")
+              );
+              if (exact.length === 1) {
+                primarySibling = exact[0];
+              }
+            }
+            if (primarySibling) {
+              targetTempEntityId = primarySibling.entity_id;
+            }
+          }
         }
       }
-    }
 
-    if (!targetTempEntityId) {
-      return;
-    }
+      if (!targetTempEntityId) {
+        return;
+      }
 
-    const tempState = this.hass.states[targetTempEntityId];
-    const rawTempUnit =
-      tempState?.attributes.unit_of_measurement ||
-      this.hass.config.unit_system.temperature;
-    const tempUnit = ["°C", "°F", "K"].includes(rawTempUnit)
-      ? (rawTempUnit as "°C" | "°F" | "K")
-      : undefined;
+      const tempState = this.hass.states[targetTempEntityId];
+      const rawTempUnit =
+        tempState?.attributes.unit_of_measurement ||
+        this.hass.config.unit_system.temperature;
+      const tempUnit = ["°C", "°F", "K"].includes(rawTempUnit)
+        ? (rawTempUnit as "°C" | "°F" | "K")
+        : undefined;
 
-    const units: StatisticsUnitConfiguration | undefined = tempUnit
-      ? { temperature: tempUnit }
-      : undefined;
+      const units: StatisticsUnitConfiguration | undefined = tempUnit
+        ? { temperature: tempUnit }
+        : undefined;
 
-    const period = getSuggestedPeriod(this._start, this._end);
+      const period = getSuggestedPeriod(this._start, this._end);
 
-    try {
       const stats = await fetchStatistics(
         this.hass,
         this._start,

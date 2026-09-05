@@ -424,7 +424,7 @@ describe("sonifyChart", () => {
     expect(connectedAxes().x.valueLabels).toBeUndefined();
   });
 
-  it("excludes series mapped to secondary axes from sonification", async () => {
+  it("supports secondary y axis with its own label", async () => {
     await sonify({
       xAxis: [{ type: "time" }],
       yAxis: [
@@ -452,6 +452,11 @@ describe("sonifyChart", () => {
       ],
     });
 
-    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([0]);
+    expect(connectedAxes()).toMatchObject({
+      x: { label: "ui.components.history_charts.time" },
+      y: { label: "kWh" },
+      y2: { label: "°C" },
+    });
+    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([0, 1]);
   });
 });
