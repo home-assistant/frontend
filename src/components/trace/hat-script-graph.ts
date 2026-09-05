@@ -520,7 +520,7 @@ export class HatScriptGraph extends LitElement {
             slot="head"
             nofocus
           ></hat-graph-node>
-          ${ensureArray(node.sequence).map((action, i) =>
+          ${ensureArray(node.sequence ?? []).map((action, i) =>
             this._renderActionNode(
               action,
               `${path}/sequence/${i}`,
