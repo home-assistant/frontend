@@ -12,6 +12,7 @@ export const DOMAIN_DEVICE_CLASSES: Record<string, string[]> = {
     "door",
     "garage_door",
     "gas",
+    "glass_break",
     "heat",
     "light",
     "lock",
