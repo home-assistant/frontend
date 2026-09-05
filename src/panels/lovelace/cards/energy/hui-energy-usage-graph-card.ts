@@ -209,7 +209,11 @@ export class HuiEnergyUsageGraphCard
             .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
-            !this._chartData.some((dataset) => dataset.data!.length)
+            !this._chartData.some(
+              (dataset) =>
+                dataset.id !== "primary-weather-temperature" &&
+                dataset.data!.length
+            )
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
@@ -530,6 +534,11 @@ export class HuiEnergyUsageGraphCard
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+
+    const hasEnergyData = datasets.some((dataset) => dataset.data?.length);
+    if (!hasEnergyData) {
+      return;
+    }
 
     const requestToken = ++this._weatherRequestToken;
 
