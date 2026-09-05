@@ -499,7 +499,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         }
         if (dataset.preferred) {
           preferred = {
-            name: dataset.network_name,
+            name: dataset.network_name || "",
             dataset: dataset,
             routers: networks[network]?.routers,
           };
@@ -509,7 +509,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         if (network in networks) {
           networks[network].dataset = dataset;
         } else {
-          networks[network] = { name: dataset.network_name, dataset: dataset };
+          networks[network] = {
+            name: dataset.network_name || "",
+            dataset: dataset,
+          };
         }
       }
       return {
@@ -679,7 +682,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset",
-        { name: dataset.network_name }
+        { name: dataset.network_name || dataset.extended_pan_id }
       ),
       text: this.hass.localize(
         "ui.panel.config.thread.confirm_delete_dataset_text"

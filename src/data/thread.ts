@@ -20,7 +20,7 @@ export interface ThreadDataSet {
   created: string;
   dataset_id: string;
   extended_pan_id: string;
-  network_name: string;
+  network_name: string | null;
   pan_id: string | null;
   preferred_border_agent_id: string | null;
   preferred_extended_address: string | null;

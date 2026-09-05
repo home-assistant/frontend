@@ -120,7 +120,9 @@ const buildDatasetTlv = (dataset: ThreadDataSet) =>
     tlv(0x02, dataset.extended_pan_id),
     tlv(0x07, "FD11220000000000"), // mesh-local prefix
     tlv(0x05, "00112233445566778899AABBCCDDEEFF"), // network key
-    tlv(0x03, textToHex(dataset.network_name)),
+    dataset.network_name === null
+      ? ""
+      : tlv(0x03, textToHex(dataset.network_name)),
     tlv(0x01, (dataset.pan_id ?? "1234").padStart(4, "0")),
     tlv(0x04, "1035060004001FFFE00C0402A0F7F800"), // PSKc
     tlv(0x0c, "02A0F7F8"), // security policy
@@ -155,13 +157,13 @@ const parseDatasetTlv = (value: string) => {
   if (
     !extendedPanId ||
     extendedPanId.length !== 16 ||
-    !networkName ||
     !activeTimestamp ||
     activeTimestamp.length !== 16
   ) {
     return undefined;
   }
-  const decodedName = decodeUtf8(networkName);
+  const decodedName =
+    networkName === undefined ? null : decodeUtf8(networkName);
   if (decodedName === undefined) {
     return undefined;
   }
@@ -224,7 +226,7 @@ const randomExtendedPanId = () =>
 const moveRouter = (
   extendedAddress: string,
   extendedPanId: string,
-  networkName: string,
+  networkName: string | null,
   datasetId: string
 ) => {
   const info = OTBR_INFO[extendedAddress];
