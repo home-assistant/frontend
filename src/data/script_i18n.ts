@@ -359,7 +359,7 @@ const tryDescribeAction = <T extends ActionType>(
 
   if (actionType === "sequence") {
     const config = action as SequenceAction;
-    const numActions = ensureArray(config.sequence).length;
+    const numActions = ensureArray(config.sequence ?? []).length;
     return hass.localize(
       `${actionTranslationBaseKey}.sequence.description.full`,
       { number: numActions }
