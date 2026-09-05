@@ -27,14 +27,14 @@ const REGISTRY_ENTRIES = [
     "radio_frequency.garage_bridge",
     "rf-bridge-garage",
     ENTRY_ID,
-    "sonoff",
+    "esphome",
     "Transceiver"
   ),
   registryEntry(
     "radio_frequency.shed_bridge",
     "rf-bridge-shed",
     ENTRY_ID,
-    "sonoff",
+    "esphome",
     "Transceiver"
   ),
 ];
@@ -42,14 +42,9 @@ const REGISTRY_ENTRIES = [
 export const radioFrequencyFixtures: ConnectivityFixtures = {
   components: ["radio_frequency"],
   commands: ["radio_frequency/"],
-  manifests: [
-    manifest("sonoff", "Sonoff", {
-      is_built_in: false,
-      integration_type: "hub",
-    }),
-  ],
+  manifests: [manifest("esphome", "ESPHome", { integration_type: "device" })],
   configEntries: [
-    { type: "hub", entry: configEntry(ENTRY_ID, "sonoff", "RF Bridge") },
+    { type: "device", entry: configEntry(ENTRY_ID, "esphome", "RF Bridge") },
   ],
   devices: DEVICES,
   entityRegistryEntries: REGISTRY_ENTRIES,
