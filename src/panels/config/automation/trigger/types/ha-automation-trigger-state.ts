@@ -15,7 +15,6 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../../../common/array/ensure-array";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -220,21 +219,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     return true;
   }
 
-  private _wrapForValue(
-    forValue: StateTrigger["for"]
-  ): Record<string, unknown> | undefined {
-    if (forValue === undefined) {
-      return undefined;
-    }
-    if (typeof forValue === "string" && hasTemplate(forValue)) {
-      return { active_choice: "template", template: forValue };
-    }
-    return {
-      active_choice: "duration",
-      duration: createDurationData(forValue),
-    };
-  }
-
   private _unwrapForValue(
     forValue: Record<string, unknown> | undefined
   ): StateTrigger["for"] {
@@ -251,7 +235,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const data = {
       ...this.trigger,
       entity_id: ensureArray(this.trigger.entity_id),
-      for: this._wrapForValue(this.trigger.for),
     };
 
     data.to = this._normalizeStates(this.trigger.to, data.attribute);

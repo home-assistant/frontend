@@ -45,8 +45,11 @@ export class HaChooseSelector extends LitElement {
     }
     if (
       changedProperties.has("value") &&
-      changedProperties.get("value")?.active_choice &&
-      changedProperties.get("value")?.active_choice !== this._activeChoice
+      typeof this.value === "object" &&
+      this.value !== null &&
+      "active_choice" in this.value &&
+      this.value.active_choice in this.selector.choose.choices &&
+      this.value.active_choice !== this._activeChoice
     ) {
       this._setActiveChoice();
     }
@@ -150,14 +153,14 @@ export class HaChooseSelector extends LitElement {
     if (this.value === null || this.value === undefined) {
       return undefined;
     }
-    return typeof this.value === "object"
+    return typeof this.value === "object" && "active_choice" in this.value
       ? this.value[choice || this.value.active_choice]
       : this.value;
   }
 
   private _setActiveChoice() {
     if (this.value) {
-      if (typeof this.value === "object") {
+      if (typeof this.value === "object" && "active_choice" in this.value) {
         if (this.value.active_choice in this.selector.choose.choices) {
           this._activeChoice = this.value.active_choice;
           return;
@@ -196,6 +199,12 @@ export class HaChooseSelector extends LitElement {
         if (typeofValue === "string" && selectorTypes.includes("text")) {
           this._activeChoice = Object.keys(this.selector.choose.choices)[
             selectorTypes.indexOf("text")
+          ];
+          return;
+        }
+        if (typeofValue === "object" && selectorTypes.includes("duration")) {
+          this._activeChoice = Object.keys(this.selector.choose.choices)[
+            selectorTypes.indexOf("duration")
           ];
           return;
         }
