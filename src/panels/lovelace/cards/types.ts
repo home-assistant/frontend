@@ -453,14 +453,14 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date_format?: ClockCardDatePart[];
+  date_format?: DateFormatPart[];
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
   face_style?: "markers" | "numbers_upright" | "roman";
 }
 
-export type ClockCardDatePart =
+export type DateFormatPart =
   | "weekday-short"
   | "weekday-long"
   | "day-numeric"
@@ -475,6 +475,15 @@ export type ClockCardDatePart =
   | "separator-slash"
   | "separator-dot"
   | "separator-new-line";
+
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?: DateFormatPart[];
+  time_zone?: string;
+  no_background?: boolean;
+}
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;

@@ -6,11 +6,11 @@ import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import {
-  formatClockCardDate,
-  getClockCardDateConfig,
-  hasClockCardDate,
+  formatDateFromParts,
+  getDateFormatConfig,
+  hasDateFormatParts,
   resolveClockCardLocale,
-} from "./clock-date-format";
+} from "../date-format";
 
 const INTERVAL = 1000;
 
@@ -119,7 +119,7 @@ export class HuiClockCardDigital extends LitElement {
   }
 
   private _updateDate(date: Date) {
-    if (!this.config || !hasClockCardDate(this.config) || !this._language) {
+    if (!this.config || !hasDateFormatParts(this.config) || !this._language) {
       this._date = undefined;
       this._lastDateMinute = undefined;
       return;
@@ -133,8 +133,8 @@ export class HuiClockCardDigital extends LitElement {
       return;
     }
 
-    const dateConfig = getClockCardDateConfig(this.config);
-    this._date = formatClockCardDate(
+    const dateConfig = getDateFormatConfig(this.config);
+    this._date = formatDateFromParts(
       date,
       dateConfig,
       this._language,
@@ -149,7 +149,7 @@ export class HuiClockCardDigital extends LitElement {
     const sizeClass = this.config.clock_size
       ? `size-${this.config.clock_size}`
       : "";
-    const showDate = hasClockCardDate(this.config);
+    const showDate = hasDateFormatParts(this.config);
 
     return html`
       <div class="clock-container">

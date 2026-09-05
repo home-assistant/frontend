@@ -8,11 +8,11 @@ import "../../../../components/ha-marquee-text";
 import type { HomeAssistant } from "../../../../types";
 import type { ClockCardConfig } from "../types";
 import {
-  formatClockCardDate,
-  getClockCardDateConfig,
-  hasClockCardDate,
+  formatDateFromParts,
+  getDateFormatConfig,
+  hasDateFormatParts,
   resolveClockCardLocale,
-} from "./clock-date-format";
+} from "../date-format";
 
 function romanize12HourClock(num: number) {
   const numerals = [
@@ -119,7 +119,7 @@ export class HuiClockCardAnalog extends LitElement {
     this._computeOffsets();
     this._updateDate();
 
-    if (this.isConnected && hasClockCardDate(this.config)) {
+    if (this.isConnected && hasDateFormatParts(this.config)) {
       this._startDateTick();
     } else {
       this._stopDateTick();
@@ -165,13 +165,13 @@ export class HuiClockCardAnalog extends LitElement {
   }
 
   private _updateDate() {
-    if (!this.config || !hasClockCardDate(this.config) || !this._language) {
+    if (!this.config || !hasDateFormatParts(this.config) || !this._language) {
       this._date = undefined;
       return;
     }
 
-    const dateConfig = getClockCardDateConfig(this.config);
-    this._date = formatClockCardDate(
+    const dateConfig = getDateFormatConfig(this.config);
+    this._date = formatDateFromParts(
       new Date(),
       dateConfig,
       this._language,
@@ -181,8 +181,8 @@ export class HuiClockCardAnalog extends LitElement {
 
   private _computeClock = memoizeOne((config: ClockCardConfig) => {
     const faceParts = config.face_style?.split("_");
-    const dateConfig = getClockCardDateConfig(config);
-    const showDate = hasClockCardDate(config);
+    const dateConfig = getDateFormatConfig(config);
+    const showDate = hasDateFormatParts(config);
     const isLongDate =
       dateConfig.parts.includes("month-long") ||
       dateConfig.parts.includes("weekday-long");

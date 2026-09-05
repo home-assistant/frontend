@@ -9442,6 +9442,9 @@
           },
           "heading": {
             "default_heading": "Kitchen"
+          },
+          "date": {
+            "default_title": "Today"
           }
         },
         "unused_entities": {
@@ -9931,6 +9934,32 @@
             "raw_configuration_editor": "[%key:ui::panel::lovelace::editor::menu::raw_editor%]",
             "show_code_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_code_editor%]",
             "show_visual_editor": "[%key:ui::panel::lovelace::editor::edit_card::show_visual_editor%]"
+          },
+          "date_format": {
+            "description": "Select and order the date parts. Add a separator to control punctuation.",
+            "sections": {
+              "weekday": "Weekday",
+              "day": "Day",
+              "month": "Month",
+              "year": "Year",
+              "separator": "Separator"
+            },
+            "parts": {
+              "weekday-short": "Short",
+              "weekday-long": "Long",
+              "day-numeric": "Numeric",
+              "day-2-digit": "2-digit",
+              "month-short": "Short",
+              "month-long": "Long",
+              "month-numeric": "Numeric",
+              "month-2-digit": "2-digit",
+              "year-2-digit": "2-digit",
+              "year-numeric": "Full",
+              "separator-dash": "Dash",
+              "separator-slash": "Slash",
+              "separator-dot": "Dot",
+              "separator-new-line": "New line"
+            }
           },
           "card": {
             "alarm-panel": {
@@ -10482,33 +10511,8 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "date": {
-                "label": "Date",
-                "description": "Select and order the date parts. Add a separator to control punctuation.",
-                "sections": {
-                  "weekday": "Weekday",
-                  "day": "Day",
-                  "month": "Month",
-                  "year": "Year",
-                  "separator": "Separator"
-                },
-                "parts": {
-                  "weekday-short": "Short",
-                  "weekday-long": "Long",
-                  "day-numeric": "Numeric",
-                  "day-2-digit": "2-digit",
-                  "month-short": "Short",
-                  "month-long": "Long",
-                  "month-numeric": "Numeric",
-                  "month-2-digit": "2-digit",
-                  "year-2-digit": "2-digit",
-                  "year-numeric": "Full",
-                  "separator-dash": "Dash",
-                  "separator-slash": "Slash",
-                  "separator-dot": "Dot",
-                  "separator-new-line": "New line"
-                }
-              },
+              "date_format": "Date",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::date_format::description%]",
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "auto": "Use user settings",
@@ -10574,6 +10578,20 @@
                   "description": "Show Roman numerals (I-XII) around the clock face"
                 }
               }
+            },
+            "date": {
+              "name": "Date",
+              "description": "This card displays the current date using your desired size and format.",
+              "date_size": "Date size",
+              "date_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "date_format": "Date format",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::date_format::description%]",
+              "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
             },
             "media-control": {
               "name": "Media control",
