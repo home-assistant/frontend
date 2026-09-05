@@ -3548,7 +3548,7 @@
           "agents": {
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
-            "network_mount_agent_description": "Network storage",
+            "network_mount_agent_description": "Additional storage",
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
@@ -3833,7 +3833,7 @@
               "no_location": "No location selected",
               "no_location_description": "You have to select at least one location to create a backup.",
               "more_locations": "Explore more locations",
-              "manage_network_storage": "Manage network storage",
+              "manage_network_storage": "Manage storage",
               "ha_cloud_backup": "{home_assistant_cloud} backup",
               "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
@@ -8824,7 +8824,7 @@
           "join_chat": "Chat",
           "join_blog": "Blog",
           "join_newsletter": "Newsletter",
-          "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
+          "media_storage": "You can add additional storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
           "caption": "Analytics",
@@ -9087,15 +9087,16 @@
             "move": "Move"
           },
           "network_mounts": {
-            "title": "Network storage",
-            "add_title": "Add network storage",
-            "update_title": "Update network storage",
-            "no_mounts": "No connected network storage",
+            "title": "Additional storage",
+            "add_title": "Add storage",
+            "update_title": "Update storage",
+            "no_mounts": "No additional storage configured",
+            "no_disk_candidates": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
             "not_supported": {
-              "title": "The operating system does not support network storage",
-              "supervised": "Network storage is not supported on this host",
-              "os": "To use network storage you need to run at least Home Assistant OS {version}",
+              "title": "The operating system does not support additional storage",
+              "supervised": "Additional storage is not supported on this host",
+              "os": "To use additional storage you need to run at least Home Assistant OS {version}",
               "navigate_to_updates": "Go to updates"
             },
             "mount_usage": {
@@ -9105,7 +9106,8 @@
             },
             "mount_type": {
               "nfs": "Network File System (NFS)",
-              "cifs": "Samba/Windows (CIFS)"
+              "cifs": "Samba/Windows (CIFS)",
+              "disk": "Local disk"
             },
             "cifs_versions": {
               "auto": "Auto (2.1+)",
@@ -9133,12 +9135,24 @@
                 "description": "This is the path of the remote share on your storage server"
               },
               "type": {
-                "title": "Protocol",
-                "description": "This determines how to communicate with the storage server"
+                "title": "Type",
+                "description": "This determines the kind of storage you want to add"
               },
               "usage": {
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
+              },
+              "device": {
+                "title": "Disk",
+                "description": "This is the disk connected to your system that you want to use"
+              },
+              "device_identity": {
+                "title": "Disk",
+                "description": "This is the disk this storage was set up with, which cannot be changed"
+              },
+              "read_only": {
+                "title": "Read-only",
+                "description": "Home Assistant will not be able to write to this storage. Backup storage cannot be read-only"
               },
               "version": {
                 "title": "Samba/Windows (CIFS) version",
