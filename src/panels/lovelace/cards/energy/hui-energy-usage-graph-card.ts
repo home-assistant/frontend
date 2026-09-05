@@ -684,9 +684,10 @@ export class HuiEnergyUsageGraphCard
 
       const weatherPoints: LineSeriesOption["data"] = tempStats
         .filter((stat) => stat.mean !== null && stat.mean !== undefined)
-        .map((stat) => [
+.map((stat) => [
           computeStatMidpoint(stat.start, stat.end, period),
           stat.mean as number,
+          stat.start,
         ]);
 
       if (weatherPoints.length === 0) {
