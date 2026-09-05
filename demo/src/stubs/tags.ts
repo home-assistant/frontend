@@ -2,9 +2,6 @@ import type { Tag, UpdateTagParams } from "../../../src/data/tag";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockTags = (hass: MockHomeAssistant) => {
-  // The panel offers add, edit and delete, so the mock keeps the tags rather
-  // than answering from a constant, and hands back copies the way a real
-  // response would.
   const tags: Tag[] = [{ id: "my-tag", name: "My Tag" }];
   let created = 0;
 
@@ -15,8 +12,6 @@ export const mockTags = (hass: MockHomeAssistant) => {
   hass.mockWS(
     "tag/create",
     (msg: UpdateTagParams & { tag_id?: string }): Tag => {
-      // The dialog lets the user pick the ID, and the backend's tag collection
-      // refuses one that is taken.
       if (msg.tag_id && find(msg.tag_id)) {
         throw new Error(`Tag ${msg.tag_id} already exists`);
       }
@@ -42,8 +37,6 @@ export const mockTags = (hass: MockHomeAssistant) => {
       if (!tag) {
         throw new Error(`Tag ${msg.tag_id} not found`);
       }
-      // The params are partial, and the backend merges them, so an update that
-      // sends only a name must not drop the description.
       if ("name" in msg) {
         tag.name = msg.name;
       }
