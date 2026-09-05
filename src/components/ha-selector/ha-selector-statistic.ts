@@ -40,6 +40,7 @@ export class HaStatisticSelector extends LitElement {
       <ha-statistics-picker
         .hass=${this.hass}
         .includeDeviceClass=${this.selector.statistic.device_class}
+        .statisticTypes=${this.selector.statistic.statistic_types}
         .value=${this.value}
         .helper=${this.helper}
         .disabled=${this.disabled}
