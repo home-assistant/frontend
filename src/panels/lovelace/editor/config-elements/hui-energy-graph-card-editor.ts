@@ -173,10 +173,8 @@ export class HuiEnergyGraphCardEditor
           `ui.panel.lovelace.editor.card.power-sources-graph.${schema.name}`
         );
       case "temperature_entity":
-        return (
-          this.hass!.localize(
-            `ui.panel.lovelace.editor.card.energy-usage-graph.${schema.name}`
-          ) || "Temperature entity"
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.energy-usage-graph.${schema.name}`
         );
       default:
         return this.hass!.localize(

@@ -33,6 +33,7 @@ import type {
 } from "../../../../data/recorder";
 import {
   fetchStatistics,
+  getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   statisticsMetaHasType,
@@ -534,17 +535,20 @@ export class HuiEnergyUsageGraphCard
 
     try {
       let targetTempEntityId: string | undefined;
+      let targetTempMetadata: StatisticsMetaData | undefined;
       if (this._config?.temperature_entity) {
-        if (this.hass.states[this._config.temperature_entity]) {
-          const statsMeta = await getStatisticMetadata(this.hass, [
-            this._config.temperature_entity,
-          ]);
-          if (this._weatherRequestToken !== requestToken || !this.isConnected) {
-            return;
-          }
-          if (statsMeta.some((meta) => statisticsMetaHasType(meta, "mean"))) {
-            targetTempEntityId = this._config.temperature_entity;
-          }
+        const statsMeta = await getStatisticMetadata(this.hass, [
+          this._config.temperature_entity,
+        ]);
+        if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+          return;
+        }
+        const meta = statsMeta.find(
+          (m) => m.statistic_id === this._config!.temperature_entity
+        );
+        if (meta && statisticsMetaHasType(meta, "mean")) {
+          targetTempEntityId = this._config.temperature_entity;
+          targetTempMetadata = meta;
         }
       } else if (this._config?.weather_entity) {
         const weatherEntity = this.hass.entities?.[this._config.weather_entity];
@@ -600,6 +604,9 @@ export class HuiEnergyUsageGraphCard
             }
             if (primarySibling) {
               targetTempEntityId = primarySibling.entity_id;
+              targetTempMetadata = statsMeta.find(
+                (m) => m.statistic_id === primarySibling!.entity_id
+              );
             }
           }
         }
@@ -609,9 +616,8 @@ export class HuiEnergyUsageGraphCard
         return;
       }
 
-      const tempState = this.hass.states[targetTempEntityId];
       const rawTempUnit =
-        tempState?.attributes.unit_of_measurement ||
+        getDisplayUnit(this.hass, targetTempEntityId, targetTempMetadata) ||
         this.hass.config.unit_system.temperature;
       const tempUnit = ["°C", "°F", "K"].includes(rawTempUnit)
         ? (rawTempUnit as "°C" | "°F" | "K")
