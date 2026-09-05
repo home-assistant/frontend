@@ -6,8 +6,6 @@ const TRANSMITTERS: RadioFrequencyTransmitter[] = [
     entity_id: "radio_frequency.garage_bridge",
     device_id: "rf-bridge-garage",
     config_entry_id: "mock-rf-bridge",
-    // The RF Bridge R2 is a 433.92 MHz device, and the backend serializes the
-    // modulation enum in upper case.
     supported_frequency_ranges: [[433920000, 433920000]],
     supported_modulations: ["OOK"],
   },
