@@ -11,6 +11,7 @@ import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
+import type { SecurityAlertEntityConfig } from "../../../../data/frontend";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -24,6 +25,7 @@ import type { HomeAssistant } from "../../../../types";
 import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
   AreaCardConfig,
+  ConditionalCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
   HeadingCardConfig,
@@ -35,17 +37,20 @@ import type {
   UpdatesCardConfig,
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import { computeSecurityAlertCardConfig } from "../../../security/strategies/security-alerts";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { generateLovelaceSectionStrategy } from "../get-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
+  alert_entities?: SecurityAlertEntityConfig[];
   favorite_entities?: string[];
   home_panel?: boolean;
   hide_welcome_message?: boolean;
@@ -256,16 +261,25 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     let favoritesSection: LovelaceSectionRawConfig | undefined;
     if (!config.hide_suggested_entities) {
-      favoritesSection = {
-        strategy: {
-          type: "common-controls",
-          limit: maxCommonControls,
-          include_entities: favoriteEntities,
-          hide_empty: true,
-          heading: favoritesHeadingCard,
-        } satisfies CommonControlsSectionStrategyConfig,
-        column_span: maxColumns,
-      } satisfies LovelaceStrategySectionConfig;
+      const generatedFavoritesSection = await generateLovelaceSectionStrategy(
+        {
+          strategy: {
+            type: "common-controls",
+            limit: maxCommonControls,
+            include_entities: favoriteEntities,
+            hide_empty: true,
+            heading: favoritesHeadingCard,
+          } satisfies CommonControlsSectionStrategyConfig,
+          column_span: maxColumns,
+        } satisfies LovelaceStrategySectionConfig,
+        hass
+      );
+      if (!generatedFavoritesSection.disabled) {
+        favoritesSection = {
+          ...generatedFavoritesSection,
+          column_span: maxColumns,
+        };
+      }
     } else if (favoriteEntities.length > 0) {
       favoritesSection = {
         type: "grid",
@@ -454,6 +468,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
+    const hasVisibleSummaryCards = summaryCards.some(
+      (card) => !("hide_empty" in card && card.hide_empty)
+    );
+
     // Build summary cards for sidebar (full width: columns 12)
     const sidebarSummaryCards = summaryCards.map((card) => ({
       ...card,
@@ -500,62 +518,127 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           }
         : undefined;
 
+    const alertCards = config.alert_entities?.map((alertEntity) =>
+      computeSecurityAlertCardConfig(
+        hass.states[alertEntity.entity],
+        alertEntity
+      )
+    );
+
+    const alertsSection: LovelaceSectionConfig | undefined = alertCards?.length
+      ? {
+          type: "grid",
+          column_span: maxColumns,
+          visibility: [
+            {
+              condition: "or",
+              conditions: alertCards.map((alertCard) => ({
+                condition: "and",
+                conditions: alertCard.visibility!,
+              })),
+            },
+          ],
+          cards: [
+            {
+              type: "heading",
+              heading: hass.localize(
+                "ui.panel.lovelace.strategy.security.active_alerts"
+              ),
+              heading_style: "title",
+              grid_options: { columns: "full" },
+            },
+            ...alertCards,
+          ],
+        }
+      : undefined;
+
+    const emptyStateCard = {
+      type: "empty-state",
+      icon: "mdi:home-assistant",
+      content_only: true,
+      title: hass.localize("ui.panel.lovelace.strategy.home.welcome_title"),
+      content: hass.localize("ui.panel.lovelace.strategy.home.welcome_content"),
+      ...(config.home_panel && hass.user?.is_admin
+        ? {
+            buttons: [
+              {
+                icon: "mdi:plus",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_add_device"
+                ),
+                appearance: "filled" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "fire-dom-event" as const,
+                  home_panel: {
+                    type: "add_integration",
+                  },
+                },
+              },
+              {
+                icon: "mdi:home-edit",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                ),
+                appearance: "plain" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "navigate" as const,
+                  navigation_path: "/config/areas/dashboard",
+                },
+              },
+            ],
+          }
+        : {}),
+    } as EmptyStateCardConfig;
+
     // No sections, show empty state
-    if (floorsSections.length === 0) {
+    if (floorsSections.length === 0 && !alertsSection) {
       return {
         type: "panel",
-        cards: [
-          {
-            type: "empty-state",
-            icon: "mdi:home-assistant",
-            content_only: true,
-            title: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_title"
-            ),
-            content: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_content"
-            ),
-            ...(config.home_panel && hass.user?.is_admin
-              ? {
-                  buttons: [
-                    {
-                      icon: "mdi:plus",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_add_device"
-                      ),
-                      appearance: "filled",
-                      variant: "brand",
-                      tap_action: {
-                        action: "fire-dom-event",
-                        home_panel: {
-                          type: "add_integration",
-                        },
-                      },
-                    },
-                    {
-                      icon: "mdi:home-edit",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
-                      ),
-                      appearance: "plain",
-                      variant: "brand",
-                      tap_action: {
-                        action: "navigate",
-                        navigation_path: "/config/areas/dashboard",
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          } as EmptyStateCardConfig,
-        ],
+        cards: [emptyStateCard],
       };
     }
 
+    const emptyStateSection: LovelaceSectionConfig | undefined =
+      floorsSections.length === 0 &&
+      !favoritesSection &&
+      !hasVisibleSummaryCards &&
+      alertCards?.length
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            cards: [
+              {
+                type: "conditional",
+                conditions: [
+                  {
+                    condition: "not",
+                    conditions: [
+                      {
+                        condition: "or",
+                        conditions: alertCards.map((alertCard) => ({
+                          condition: "and",
+                          conditions: alertCard.visibility!,
+                        })),
+                      },
+                    ],
+                  },
+                ],
+                card: emptyStateCard,
+              } satisfies ConditionalCardConfig,
+            ],
+          }
+        : undefined;
+
     const sections = (
-      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        LovelaceSectionRawConfig | undefined
-      )[]
+      [
+        alertsSection,
+        emptyStateSection,
+        favoritesSection,
+        mobileSummarySection,
+        ...floorsSections,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
