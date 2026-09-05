@@ -4,6 +4,7 @@ import { mqttFixtures } from "./mqtt/fixtures";
 import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { zwaveJsFixtures } from "./zwave_js/fixtures";
+import { zhaFixtures } from "./zha/fixtures";
 import { tagsFixtures } from "./tags/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
@@ -17,6 +18,7 @@ const INTEGRATIONS: ConnectivityFixtures[] = [
   matterFixtures,
   infraredFixtures,
   zwaveJsFixtures,
+  zhaFixtures,
   tagsFixtures,
 ];
 
