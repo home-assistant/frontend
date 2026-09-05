@@ -43,6 +43,23 @@ const STATE_COLORED_DOMAIN = new Set([
   "weather",
 ]);
 
+export const isNegativeNumericState = (state?: string): boolean => {
+  if (!state || state.trim() === "") {
+    return false;
+  }
+
+  const value = Number(state);
+  return Number.isFinite(value) && value < 0;
+};
+
+export const stateValueColorCss = (
+  stateObj: HassEntity,
+  colorNegativeNumericStates = false
+): string | undefined =>
+  colorNegativeNumericStates && isNegativeNumericState(stateObj.state)
+    ? "var(--state-negative-color)"
+    : undefined;
+
 export const stateColorCss = (stateObj: HassEntity, state?: string) => {
   const compareState = state !== undefined ? state : stateObj?.state;
   if (compareState === UNAVAILABLE) {

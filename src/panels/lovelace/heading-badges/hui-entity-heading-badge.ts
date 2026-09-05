@@ -185,6 +185,9 @@ export class HuiEntityHeadingBadge
                   .stateObj=${stateObj}
                   .content=${config.state_content}
                   .name=${name}
+                  .colorNegativeNumericStates=${
+                    this.hass.userData?.colorNegativeNumericStates === true
+                  }
                   dash-unavailable
                 ></state-display>
               `

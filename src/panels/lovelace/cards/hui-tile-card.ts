@@ -295,6 +295,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .hass=${this.hass}
             .content=${this._config.state_content}
             .timeFormat=${this._config.time_format}
+            .colorNegativeNumericStates=${
+              this.hass.userData?.colorNegativeNumericStates === true
+            }
           >
           </state-display>
         `;

@@ -16,6 +16,7 @@ import {
 import {
   stateColorBrightness,
   stateColorCss,
+  stateValueColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
@@ -144,7 +145,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
-    const colored = stateObj && this._getStateColor(stateObj, this._config);
+    const colored = this._getStateColor(stateObj, this._config);
+    const valueColor =
+      "attribute" in this._config
+        ? undefined
+        : stateValueColorCss(
+            stateObj,
+            this.hass.userData?.colorNegativeNumericStates === true
+          );
 
     const fixedFooter =
       this.layout === "grid" && this._footerElement !== undefined;
@@ -196,12 +204,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                       ></ha-attribute-value>`
                     : this.hass.localize("state.default.unknown"),
                   unit,
-                  false
+                  false,
+                  valueColor
                 )
               : this._renderValueWithUnit(
                   valueFromParts(stateParts),
                   unit,
-                  unitFirst
+                  unitFirst,
+                  valueColor
                 )
           }
         </div>
@@ -222,10 +232,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   private _renderValueWithUnit(
     value: TemplateResult | string,
     unit: string,
-    unitFirst: boolean
+    unitFirst: boolean,
+    valueColor?: string
   ) {
     return html`<span
         class=${classMap({ value: true, "first-part": !unitFirst })}
+        style=${styleMap({ color: valueColor })}
         >${value}</span
       >${
         unit

@@ -11,6 +11,7 @@ export interface CoreFrontendUserData {
   default_panel?: string;
   apps_info_dismissed?: boolean;
   dashboard_favorite_card_types?: string[];
+  colorNegativeNumericStates?: boolean;
 }
 
 export interface SidebarFrontendUserData {

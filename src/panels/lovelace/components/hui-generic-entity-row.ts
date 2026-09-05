@@ -3,9 +3,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateValueColorCss } from "../../../common/entity/state_color";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-tooltip";
@@ -60,10 +62,15 @@ export class HuiGenericEntityRow extends LitElement {
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
     const name = this.hass.formatEntityName(stateObj, this.config.name);
+    const stateValueColor = stateValueColorCss(
+      stateObj,
+      this.hass.userData?.colorNegativeNumericStates === true
+    );
 
     return html`
       <div
         class="row ${classMap({ pointer })}"
+        style=${styleMap({ "--state-value-color": stateValueColor })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this.config!.hold_action),
@@ -101,6 +108,10 @@ export class HuiGenericEntityRow extends LitElement {
                               .content=${this.config.secondary_info}
                               .timeFormat=${this.config.time_format}
                               .name=${name}
+                              .colorNegativeNumericStates=${
+                                this.hass.userData
+                                  ?.colorNegativeNumericStates === true
+                              }
                               timestamp-tooltip
                             >
                             </state-display>`
@@ -188,6 +199,9 @@ export class HuiGenericEntityRow extends LitElement {
     ha-relative-time {
       color: var(--secondary-text-color);
     }
+    ::slotted(.text-content) {
+      color: var(--state-value-color, inherit);
+    }
     state-badge {
       flex: 0 0 40px;
     }
@@ -196,6 +210,7 @@ export class HuiGenericEntityRow extends LitElement {
     }
     .state {
       text-align: var(--float-end);
+      color: var(--state-value-color, inherit);
     }
     .value {
       direction: ltr;

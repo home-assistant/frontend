@@ -6,6 +6,7 @@ import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { stateValueColorCss } from "../common/entity/state_color";
 import {
   STRINGS_SEPARATOR_DOT,
   TIMESTAMP_STATE_DOMAINS,
@@ -116,6 +117,8 @@ class StateDisplay extends LitElement {
   @property({ attribute: false }) public name?: string;
 
   @property({ attribute: false }) public timeFormat?: string;
+
+  @property({ attribute: false }) public colorNegativeNumericStates = false;
 
   @property({ type: Boolean, attribute: "timestamp-tooltip" })
   public timestampTooltip = false;
@@ -256,16 +259,28 @@ class StateDisplay extends LitElement {
   protected render() {
     const stateObj = this.stateObj;
     const contents = ensureArray(this._content);
+    const valueColor = stateValueColorCss(
+      stateObj,
+      this.colorNegativeNumericStates
+    );
 
     const values = contents
-      .map((content) => this._computeContent(content))
+      .map((content) => {
+        const value = this._computeContent(content);
+        return value && content === "state" && valueColor
+          ? html`<span style="color: ${valueColor}">${value}</span>`
+          : value;
+      })
       .filter(Boolean);
 
-    if (!values.length) {
-      return html`${this.hass!.formatEntityState(stateObj)}`;
+    if (values.length) {
+      return join(values, STRINGS_SEPARATOR_DOT);
     }
 
-    return join(values, STRINGS_SEPARATOR_DOT);
+    const display = html`${this.hass!.formatEntityState(stateObj)}`;
+    return valueColor
+      ? html`<span style="color: ${valueColor}">${display}</span>`
+      : display;
   }
 }
 

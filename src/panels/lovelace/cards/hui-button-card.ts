@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -20,13 +20,14 @@ import { stateActive } from "../../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
+  stateValueColorCss,
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { uiContext } from "../../../data/context";
+import { configContext, uiContext } from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { Themes } from "../../../data/ws-themes";
@@ -90,6 +91,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
 
   @state() private _config?: ButtonCardConfig;
 
@@ -222,7 +227,16 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         }
         ${
           this._config.show_state && stateObj
-            ? html`<span class="state">
+            ? html`<span
+                class="state"
+                style=${styleMap({
+                  color: stateValueColorCss(
+                    stateObj,
+                    this._hassConfig?.userData?.colorNegativeNumericStates ===
+                      true
+                  ),
+                })}
+              >
                 ${this.hass.formatEntityState(stateObj)}
               </span>`
             : nothing

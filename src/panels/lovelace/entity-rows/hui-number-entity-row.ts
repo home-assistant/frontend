@@ -1,7 +1,9 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { debounce } from "../../../common/util/debounce";
+import { stateValueColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-slider";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
@@ -73,6 +75,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const stateValueColor = stateValueColorCss(
+      stateObj,
+      this.hass.userData?.colorNegativeNumericStates === true
+    );
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${
@@ -101,6 +108,9 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
             : html`
                 <div class="flex box">
                   <ha-input
+                    style=${styleMap({
+                      "--wa-form-control-value-color": stateValueColor,
+                    })}
                     auto-validate
                     .disabled=${stateObj.state === UNAVAILABLE}
                     pattern="[0-9]+([\\.][0-9]+)?"
@@ -135,6 +145,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     .state {
       min-width: 45px;
       text-align: end;
+      color: var(--state-value-color, inherit);
     }
     .box {
       flex-grow: 0;

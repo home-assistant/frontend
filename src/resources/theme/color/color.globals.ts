@@ -174,6 +174,7 @@ export const colorStyles = css`
     /* state color */
     --state-active-color: var(--amber-color);
     --state-inactive-color: var(--grey-color);
+    --state-negative-color: var(--ha-color-on-danger-normal);
     --state-unavailable-color: var(--state-icon-unavailable-color, var(--disabled-text-color));
 
     /* state domain colors */
