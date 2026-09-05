@@ -119,7 +119,9 @@ export function getCommonOptions(
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
-  yAxisFractionDigits = 1
+  yAxisFractionDigits = 1,
+  secondaryUnit?: string,
+  secondarySeriesIds?: string[]
 ): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
@@ -169,36 +171,63 @@ export function getCommonOptions(
     },
   };
 
+  const primaryYAxis: any = {
+    type: "value",
+    name: unit,
+    nameGap: 2,
+    nameTextStyle: {
+      align: "left",
+    },
+    ...createYAxisPrecisionBounds({
+      includeZero: true,
+      onFractionDigits: (digits) => {
+        currentFractionDigits = digits;
+      },
+    }),
+    axisLabel: {
+      formatter: createYAxisLabelFormatter(locale, () => currentFractionDigits),
+    },
+    splitLine: {
+      show: true,
+    },
+  };
+
+  let secondaryFractionDigits = 0;
+  const secondaryYAxis: any = {
+    type: "value",
+    show: Boolean(secondaryUnit),
+    name: secondaryUnit ?? "",
+    nameGap: 2,
+    nameTextStyle: {
+      align: "right",
+    },
+    position: "right",
+    splitLine: {
+      show: false,
+    },
+    ...createYAxisPrecisionBounds({
+      includeZero: false,
+      unit: secondaryUnit,
+      onFractionDigits: (digits) => {
+        secondaryFractionDigits = digits;
+      },
+    }),
+    axisLabel: {
+      formatter: createYAxisLabelFormatter(
+        locale,
+        () => secondaryFractionDigits
+      ),
+    },
+  };
+
   const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
-    yAxis: {
-      type: "value",
-      name: unit,
-      nameGap: 2,
-      nameTextStyle: {
-        align: "left",
-      },
-      ...createYAxisPrecisionBounds({
-        includeZero: true,
-        onFractionDigits: (digits) => {
-          currentFractionDigits = digits;
-        },
-      }),
-      axisLabel: {
-        formatter: createYAxisLabelFormatter(
-          locale,
-          () => currentFractionDigits
-        ),
-      },
-      splitLine: {
-        show: true,
-      },
-    },
+    yAxis: [primaryYAxis, secondaryYAxis],
     grid: {
       top: 15,
       bottom: 0,
       left: 1,
-      right: 1,
+      right: secondaryUnit ? 12 : 1,
       containLabel: true,
     },
     tooltip: {
@@ -225,7 +254,9 @@ export function getCommonOptions(
                 compare,
                 showCompareYear,
                 unit,
-                formatTotal
+                formatTotal,
+                secondaryUnit,
+                secondarySeriesIds
               )
             )
             .filter((s): s is TemplateResult => s !== nothing);
@@ -243,7 +274,9 @@ export function getCommonOptions(
           compare,
           showCompareYear,
           unit,
-          formatTotal
+          formatTotal,
+          secondaryUnit,
+          secondarySeriesIds
         );
       },
     },
@@ -259,7 +292,9 @@ function formatTooltip(
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  secondaryUnit?: string,
+  secondarySeriesIds?: string[]
 ): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
     return nothing;
@@ -292,12 +327,17 @@ function formatTooltip(
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
+    const isSecondary =
+      param.seriesId === "primary-weather-temperature" ||
+      (secondarySeriesIds &&
+        param.seriesId &&
+        secondarySeriesIds.includes(param.seriesId));
     const value = formatNumber(
       y,
       locale,
-      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      !isSecondary && y < 0.1 ? { maximumFractionDigits: 3 } : undefined
     );
-    if (value === "0") {
+    if (!isSecondary && value === "0") {
       continue;
     }
     // Only the positive bars (consumption) are summed into a total. Negative
@@ -307,12 +347,15 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
+    const displayUnit = isSecondary && secondaryUnit ? secondaryUnit : unit;
     rows.push(
       html`<ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
         ${param.seriesName}:
-        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+        <div style="direction:ltr; display: inline;">
+          ${value} ${displayUnit}
+        </div>`
     );
   }
   if (rows.length === 0) {

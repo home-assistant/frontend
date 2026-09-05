@@ -423,4 +423,72 @@ describe("sonifyChart", () => {
     });
     expect(connectedAxes().x.valueLabels).toBeUndefined();
   });
+
+  it("supports secondary y axis with its own label", async () => {
+    await sonify({
+      xAxis: [{ type: "time" }],
+      yAxis: [
+        { type: "value", name: "kWh" },
+        { type: "value", name: "°C" },
+      ],
+      series: [
+        {
+          type: "bar",
+          name: "Grid",
+          data: [
+            [1700000000000, 1.5],
+            [1700003600000, 2.0],
+          ],
+        },
+        {
+          type: "line",
+          name: "Temperature",
+          yAxisIndex: 1,
+          data: [
+            [1700000000000, 20],
+            [1700003600000, 21],
+          ],
+        },
+      ],
+    });
+
+    expect(connectedAxes()).toMatchObject({
+      x: { label: "ui.components.history_charts.time" },
+      y: { label: "kWh" },
+      y2: { label: "°C" },
+    });
+    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([0, 1]);
+  });
+
+  it("does not expose y2 for hidden secondary axes and excludes secondary series", async () => {
+    await sonify({
+      xAxis: [{ type: "time" }],
+      yAxis: [
+        { type: "value", name: "kWh" },
+        { type: "value", name: "", show: false },
+      ],
+      series: [
+        {
+          type: "bar",
+          name: "Grid",
+          data: [
+            [1700000000000, 1.5],
+            [1700003600000, 2.0],
+          ],
+        },
+        {
+          type: "line",
+          name: "Temperature",
+          yAxisIndex: 1,
+          data: [
+            [1700000000000, 20],
+            [1700003600000, 21],
+          ],
+        },
+      ],
+    });
+
+    expect(connectedAxes().y2).toBeUndefined();
+    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([0]);
+  });
 });

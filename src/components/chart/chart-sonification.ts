@@ -256,27 +256,49 @@ export const sonifyChart = async (
     return null;
   }
   const xAxis = ensureArray(chartOptions.xAxis)?.[0] as XAXisOption | undefined;
-  const yAxis = ensureArray(chartOptions.yAxis)?.[0] as YAXisOption | undefined;
+  const yAxes = ensureArray(chartOptions.yAxis) as (YAXisOption | undefined)[];
+  const yAxis = yAxes?.[0];
+  const yAxis2 = yAxes?.[1];
+
+  const isTimeAxis = xAxis?.type === "time";
+  const isHorizontal = xAxis?.type === "value" && yAxis?.type === "category";
+
+  const isAxisVisible = (axis?: YAXisOption): boolean =>
+    Boolean(axis && axis.show !== false);
+
+  const hasSecondaryAxis = !isHorizontal && isAxisVisible(yAxis2);
+  const y2 = hasSecondaryAxis
+    ? {
+        label: yAxis2!.name || localize("ui.components.history_charts.value"),
+      }
+    : undefined;
+
+  const isSecondarySeries = (s: HaECSeriesItem | undefined): boolean =>
+    Boolean(
+      s &&
+      "yAxisIndex" in s &&
+      typeof s.yAxisIndex === "number" &&
+      s.yAxisIndex > 0
+    );
 
   // Chart2Music throws while validating a group with no points, which is what
   // placeholder, legend-hidden and all-null series turn into, so only offer it
-  // the series carrying points it can read.
+  // the series carrying points it can read. If a secondary axis is missing or hidden,
+  // exclude secondary-axis series so they are not announced under yAxis[0]'s unit.
   const allSeries = ensureArray(chartOptions.series) as (
     HaECSeriesItem | undefined
   )[];
-  const readable = allSeries.filter((s) => countNumericPoints(s?.data, 1));
+  const readable = allSeries.filter(
+    (s) =>
+      (hasSecondaryAxis || !isSecondarySeries(s)) &&
+      countNumericPoints(s?.data, 1)
+  );
   // A single point is not navigable, so it does not earn a focus stop either.
   if (countNavigablePoints(readable) < MIN_NAVIGABLE_POINTS) {
     return null;
   }
   const seriesIndex = readable.map((s) => allSeries.indexOf(s));
 
-  // Chart2Music always reads out an axis label, and the extension picks the wrong
-  // axis to name when there is no category axis, so label both explicitly. On a
-  // horizontal chart the announced x is the category from the y axis and the
-  // announced y is the value from the x axis, so the sources swap.
-  const isTimeAxis = xAxis?.type === "time";
-  const isHorizontal = xAxis?.type === "value" && yAxis?.type === "category";
   const valueLabels = buildValueLabels(
     isHorizontal ? yAxis : xAxis,
     readable[0],
@@ -313,7 +335,11 @@ export const sonifyChart = async (
         ? locale.language
         : "en",
       errorCallback: options.onError,
-      axes: { x, y },
+      axes: {
+        x,
+        y,
+        ...(y2 ? { y2 } : {}),
+      },
     });
   } catch (err) {
     options.onError(err instanceof Error ? err.message : String(err));

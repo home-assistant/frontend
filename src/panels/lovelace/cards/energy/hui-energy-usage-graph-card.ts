@@ -5,7 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { BarSeriesOption } from "echarts/charts";
+import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -26,8 +26,18 @@ import {
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticsUnitConfiguration,
+} from "../../../../data/recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticLabel,
+  getStatisticMetadata,
+  statisticsMetaHasType,
+} from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -36,6 +46,7 @@ import type { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   type EnergyDataPoint,
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   generateFillBuckets,
   getCommonOptions,
@@ -88,11 +99,17 @@ export class HuiEnergyUsageGraphCard
     };
   }
 
-  @state() private _chartData: BarSeriesOption[] = [];
+  @state() private _chartData: (BarSeriesOption | LineSeriesOption)[] = [];
 
   @state() private _yAxisFractionDigits = 1;
 
   @state() private _legendData?: CustomLegendOption["data"];
+
+  @state() private _weatherUnit?: string;
+
+  private _weatherRequestToken = 0;
+
+  private _latestEnergyData?: EnergyData;
 
   @state() private _start = startOfToday();
 
@@ -122,7 +139,17 @@ export class HuiEnergyUsageGraphCard
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
+    const tempConfigChanged =
+      this._config &&
+      (this._config.temperature_entity !== config.temperature_entity ||
+        this._config.weather_entity !== config.weather_entity);
     this._config = config;
+    if (tempConfigChanged) {
+      this._weatherRequestToken++;
+      if (this._latestEnergyData) {
+        this._getStatistics(this._latestEnergyData);
+      }
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
@@ -175,13 +202,18 @@ export class HuiEnergyUsageGraphCard
               this._compareStart,
               this._compareEnd,
               this._yAxisFractionDigits,
-              this._legendData
+              this._legendData,
+              this._weatherUnit
             )}
             chart-type="bar"
             .expandLegend=${this._config.expand_legend}
           ></ha-chart-base>
           ${
-            !this._chartData.some((dataset) => dataset.data!.length)
+            !this._chartData.some(
+              (dataset) =>
+                dataset.id !== "primary-weather-temperature" &&
+                dataset.data!.length
+            )
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)
@@ -215,7 +247,8 @@ export class HuiEnergyUsageGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number,
-      legendData?: CustomLegendOption["data"]
+      legendData?: CustomLegendOption["data"],
+      weatherUnit?: string
     ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -227,7 +260,9 @@ export class HuiEnergyUsageGraphCard
         compareEnd,
         this._formatTotal,
         false,
-        yAxisFractionDigits
+        yAxisFractionDigits,
+        weatherUnit,
+        weatherUnit ? ["primary-weather-temperature"] : undefined
       );
       const tooltip = commonOptions.tooltip;
       const baseFormatter =
@@ -250,6 +285,18 @@ export class HuiEnergyUsageGraphCard
               return nothing;
             }
             const sorted = [...params].sort((a, b) => {
+              const aIsLine =
+                a.seriesType === "line" ||
+                a.seriesId === "primary-weather-temperature";
+              const bIsLine =
+                b.seriesType === "line" ||
+                b.seriesId === "primary-weather-temperature";
+              if (aIsLine && !bIsLine) {
+                return 1;
+              }
+              if (!aIsLine && bIsLine) {
+                return -1;
+              }
               const aValue = (a.value as number[])?.[1];
               const bValue = (b.value as number[])?.[1];
               if (aValue > 0 && bValue < 0) {
@@ -272,6 +319,7 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._latestEnergyData = energyData;
     if (!this.isConnected) {
       return;
     }
@@ -482,13 +530,215 @@ export class HuiEnergyUsageGraphCard
       )
     );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
+    this._total = this._processTotal(consumption);
+
+    const requestToken = ++this._weatherRequestToken;
+
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
-    this._total = this._processTotal(consumption);
+    this._weatherUnit = undefined;
+
+    const hasEnergyData = datasets.some((dataset) => dataset.data?.length);
+    const hasWeatherConfig = Boolean(
+      this._config?.temperature_entity || this._config?.weather_entity
+    );
+
+    if (!hasEnergyData || !hasWeatherConfig) {
+      return;
+    }
+
+    try {
+      let targetTempEntityId: string | undefined;
+      let targetTempMetadata: StatisticsMetaData | undefined;
+      let targetTempName: string | undefined;
+
+      if (this._config?.temperature_entity) {
+        const statsMeta = await getStatisticMetadata(this.hass, [
+          this._config.temperature_entity,
+        ]);
+        if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+          return;
+        }
+        const meta = statsMeta.find(
+          (m) => m.statistic_id === this._config!.temperature_entity
+        );
+        const tempState = this.hass.states[this._config.temperature_entity];
+        const isTemperature =
+          meta?.unit_class === "temperature" ||
+          tempState?.attributes.device_class === "temperature";
+        if (meta && statisticsMetaHasType(meta, "mean") && isTemperature) {
+          targetTempEntityId = this._config.temperature_entity;
+          targetTempMetadata = meta;
+          targetTempName = getStatisticLabel(
+            this.hass,
+            targetTempEntityId,
+            targetTempMetadata
+          );
+        }
+      } else if (this._config?.weather_entity) {
+        const weatherEntity = this.hass.entities?.[this._config.weather_entity];
+        const deviceId = weatherEntity?.device_id;
+        if (deviceId) {
+          const siblings = Object.values(this.hass.entities).filter(
+            (entity) =>
+              entity.device_id === deviceId &&
+              entity.entity_id.startsWith("sensor.") &&
+              this.hass.states[entity.entity_id]?.attributes.device_class ===
+                "temperature"
+          );
+          const candidates = siblings.filter(
+            (entity) =>
+              !entity.entity_id.includes("apparent") &&
+              !entity.entity_id.includes("dew_point") &&
+              !entity.entity_id.includes("feels_like") &&
+              !entity.entity_id.includes("wind_chill") &&
+              !entity.entity_id.includes("wet_bulb")
+          );
+          if (candidates.length) {
+            const statsMeta = await getStatisticMetadata(
+              this.hass,
+              candidates.map((c) => c.entity_id)
+            );
+            if (
+              this._weatherRequestToken !== requestToken ||
+              !this.isConnected
+            ) {
+              return;
+            }
+            const validStatIds = new Set(
+              statsMeta
+                .filter(
+                  (meta) =>
+                    statisticsMetaHasType(meta, "mean") &&
+                    (meta.unit_class === "temperature" ||
+                      this.hass.states[meta.statistic_id]?.attributes
+                        .device_class === "temperature")
+                )
+                .map((meta) => meta.statistic_id)
+            );
+            const validCandidates = candidates.filter((c) =>
+              validStatIds.has(c.entity_id)
+            );
+            let primarySibling: (typeof siblings)[0] | undefined;
+            if (validCandidates.length === 1) {
+              primarySibling = validCandidates[0];
+            } else if (validCandidates.length > 1) {
+              const exact = validCandidates.filter(
+                (entity) =>
+                  entity.translation_key === "temperature" ||
+                  entity.entity_id.endsWith("_temperature") ||
+                  entity.entity_id.endsWith("_outdoor_temperature")
+              );
+              if (exact.length === 1) {
+                primarySibling = exact[0];
+              }
+            }
+            if (primarySibling) {
+              targetTempEntityId = primarySibling.entity_id;
+              targetTempMetadata = statsMeta.find(
+                (m) => m.statistic_id === primarySibling!.entity_id
+              );
+              targetTempName = this.hass.localize(
+                "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+              );
+            }
+          }
+        }
+      }
+
+      if (!targetTempEntityId) {
+        return;
+      }
+
+      const rawTempUnit =
+        getDisplayUnit(this.hass, targetTempEntityId, targetTempMetadata) ||
+        this.hass.config.unit_system.temperature;
+      const tempUnit = ["°C", "°F", "K"].includes(rawTempUnit)
+        ? (rawTempUnit as "°C" | "°F" | "K")
+        : undefined;
+
+      const units: StatisticsUnitConfiguration | undefined = tempUnit
+        ? { temperature: tempUnit }
+        : undefined;
+
+      const period = getSuggestedPeriod(this._start, this._end);
+
+      const stats = await fetchStatistics(
+        this.hass,
+        this._start,
+        this._end,
+        [targetTempEntityId],
+        period,
+        units,
+        ["mean"]
+      );
+
+      if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+        return;
+      }
+
+      const tempStats = stats[targetTempEntityId];
+      if (!tempStats || tempStats.length === 0) {
+        return;
+      }
+
+      const weatherPoints: LineSeriesOption["data"] = tempStats
+        .filter((stat) => stat.mean !== null && stat.mean !== undefined)
+.map((stat) => [
+          computeStatMidpoint(stat.start, stat.end, period),
+          stat.mean as number,
+          stat.start,
+        ]);
+
+      if (weatherPoints.length === 0) {
+        return;
+      }
+
+      const weatherColor =
+        computedStyles.getPropertyValue("--warning-color").trim() || "#ffa600";
+
+      const weatherSeries: LineSeriesOption = {
+        id: "primary-weather-temperature",
+        name:
+          targetTempName ||
+          this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+          ),
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        connectNulls: true,
+        showSymbol: weatherPoints.length === 1,
+        cursor: "default",
+        data: weatherPoints,
+        lineStyle: {
+          color: weatherColor,
+          width: 2,
+        },
+        itemStyle: {
+          color: weatherColor,
+        },
+      };
+
+      const updatedDatasets: (BarSeriesOption | LineSeriesOption)[] = [
+        ...datasets,
+        weatherSeries,
+      ];
+      this._chartData = updatedDatasets;
+      this._legendData = this._getLegendData(updatedDatasets);
+      this._weatherUnit = tempUnit || rawTempUnit;
+    } catch {
+      if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+        return;
+      }
+      this._chartData = datasets;
+      this._legendData = this._getLegendData(datasets);
+      this._weatherUnit = undefined;
+    }
   }
 
   private _getLegendData(
-    datasets: BarSeriesOption[]
+    datasets: (BarSeriesOption | LineSeriesOption)[]
   ): CustomLegendOption["data"] {
     // Each main series gets a legend item, and its matching compare
     // series (if any) is attached as a secondary id so toggling

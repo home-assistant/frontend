@@ -60,6 +60,17 @@ const SCHEMA: HaFormSchema[] = [
     selector: { boolean: {} },
   },
   {
+    name: "temperature_entity",
+    visible: { field: "type", value: "energy-usage-graph" },
+    required: false,
+    selector: {
+      statistic: {
+        device_class: "temperature",
+        statistic_types: "mean",
+      },
+    },
+  },
+  {
     type: "string",
     name: "collection_key",
     required: false,
@@ -88,6 +99,8 @@ const cardConfigStruct = assign(
     show_legend: optional(boolean()),
     expand_legend: optional(boolean()),
     link_dashboard: optional(boolean()),
+    temperature_entity: optional(string()),
+    weather_entity: optional(string()),
   })
 );
 
@@ -158,6 +171,10 @@ export class HuiEnergyGraphCardEditor
       case "show_legend":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.power-sources-graph.${schema.name}`
+        );
+      case "temperature_entity":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.energy-usage-graph.${schema.name}`
         );
       default:
         return this.hass!.localize(

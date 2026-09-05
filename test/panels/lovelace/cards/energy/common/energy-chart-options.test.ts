@@ -1,3 +1,4 @@
+import { render } from "lit";
 import { assert, describe, it } from "vitest";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 
@@ -6,11 +7,14 @@ import {
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   generateFillBuckets,
+  getCommonOptions,
   getCompareTransform,
   getPeriodMidpointOffset,
   getSuggestedMax,
   splitUntrackedConsumption,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/energy-chart-options";
+import { demoConfig } from "../../../../../../src/fake_data/demo_config";
+import { mockLocale } from "../../../../../fixtures/hass";
 
 // Helper to get x value from either [x,y] or {value: [x,y]} format
 function getX(item: any): number {
@@ -1062,5 +1066,182 @@ describe("splitUntrackedConsumption", () => {
     splitUntrackedConsumption(usedTotal, deviceTotal);
     assert.deepEqual(usedTotal, usedCopy);
     assert.deepEqual(deviceTotal, deviceCopy);
+  });
+});
+
+describe("getCommonOptions secondaryUnit", () => {
+  const start = new Date("2024-03-15T00:00:00.000Z");
+  const end = new Date("2024-03-15T23:59:59.999Z");
+
+  it("creates dual yAxes with secondary yAxis hidden when secondaryUnit is not provided", () => {
+    const options = getCommonOptions(start, end, mockLocale, demoConfig, "kWh");
+    assert.isTrue(Array.isArray(options.yAxis));
+    const axes = options.yAxis as any[];
+    assert.equal(axes.length, 2);
+    assert.equal(axes[0].name, "kWh");
+    assert.isFalse(axes[1].show);
+    assert.equal((options.grid as any).right, 1);
+  });
+
+  it("shows secondary yAxis with precision bounds when secondaryUnit is provided", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+    assert.isTrue(Array.isArray(options.yAxis));
+    const axes = options.yAxis as any[];
+    assert.equal(axes.length, 2);
+    assert.equal(axes[0].name, "kWh");
+    assert.isTrue(axes[1].show);
+    assert.equal(axes[1].name, "°C");
+    assert.equal(axes[1].position, "right");
+    assert.isFalse(axes[1].splitLine.show);
+    assert.equal((options.grid as any).right, 12);
+  });
+
+  it("formats tooltip with mixed primary and secondary units and excludes secondary series from total", () => {
+    const formatTotal = (val: number) => `Total: ${val} kWh`;
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      formatTotal,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+
+    const formatter = (options.tooltip as any)?.formatter;
+    assert.isFunction(formatter);
+
+    const mockParams = [
+      {
+        componentSubType: "bar",
+        seriesId: "grid-consumption",
+        seriesName: "Grid",
+        value: [start.getTime() + 1800000, 5, start.getTime()],
+        color: "#123456",
+      },
+      {
+        componentSubType: "bar",
+        seriesId: "solar-consumption",
+        seriesName: "Solar",
+        value: [start.getTime() + 1800000, 3, start.getTime()],
+        color: "#ffc107",
+      },
+      {
+        componentSubType: "line",
+        seriesId: "primary-weather-temperature",
+        seriesName: "Outdoor temperature",
+        value: [start.getTime() + 1800000, 21.5],
+        color: "#ff9800",
+      },
+    ];
+
+    const result = formatter(mockParams);
+    const container = document.createElement("div");
+    render(result, container);
+    assert.include(container.textContent, "Grid:");
+    assert.include(container.textContent, "5 kWh");
+    assert.include(container.textContent, "Solar:");
+    assert.include(container.textContent, "3 kWh");
+    assert.include(container.textContent, "Outdoor temperature:");
+    assert.include(container.textContent, "21.5 °C");
+    assert.include(container.textContent, "Total: 8 kWh");
+  });
+
+  it("preserves zero readings for secondary series in tooltips while suppressing zero bars", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+
+    const formatter = (options.tooltip as any)?.formatter;
+    assert.isFunction(formatter);
+
+    const mockParams = [
+      {
+        componentSubType: "bar",
+        seriesId: "grid-consumption",
+        seriesName: "Grid",
+        value: [start.getTime() + 1800000, 0, start.getTime()],
+        color: "#123456",
+      },
+      {
+        componentSubType: "line",
+        seriesId: "primary-weather-temperature",
+        seriesName: "Outdoor temperature",
+        value: [start.getTime() + 1800000, 0],
+        color: "#ff9800",
+      },
+    ];
+
+    const result = formatter(mockParams);
+    const container = document.createElement("div");
+    render(result, container);
+    assert.notInclude(container.textContent, "Grid:");
+    assert.include(container.textContent, "Outdoor temperature:");
+    assert.include(container.textContent, "0 °C");
+  });
+
+  it("preserves 3-decimal precision for small negative energy values", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+
+    const formatter = (options.tooltip as any)?.formatter;
+    assert.isFunction(formatter);
+
+    const mockParams = [
+      {
+        componentSubType: "bar",
+        seriesId: "battery-in",
+        seriesName: "Battery in",
+        value: [start.getTime() + 1800000, -0.005, start.getTime()],
+        color: "#123456",
+      },
+    ];
+
+    const result = formatter(mockParams);
+    const container = document.createElement("div");
+    render(result, container);
+    assert.include(container.textContent, "Battery in:");
+    assert.include(container.textContent, "-0.005 kWh");
   });
 });

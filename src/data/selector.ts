@@ -329,6 +329,7 @@ export interface StatisticSelector {
   statistic: {
     device_class?: string;
     multiple?: boolean;
+    statistic_types?: "mean" | "sum";
   };
 }
 

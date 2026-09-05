@@ -9327,6 +9327,7 @@
             "energy_usage_graph": {
               "total_consumed": "Total {num} kWh",
               "total_usage": "{num} kWh",
+              "outdoor_temperature": "Outdoor temperature",
               "combined_from_grid": "Grid",
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",
@@ -10130,7 +10131,8 @@
             },
             "energy-usage-graph": {
               "name": "Energy usage graph",
-              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came."
+              "description": "This card shows the amount of energy your house has consumed, and from what source this energy came.",
+              "temperature_entity": "Temperature statistic"
             },
             "energy-solar-graph": {
               "name": "Solar production graph",
