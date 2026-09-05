@@ -51,9 +51,18 @@ export class HaComboBoxItem extends HaMdListItem {
         white-space: normal;
       }
       ::slotted(state-badge),
-      ::slotted(img) {
+      ::slotted(img),
+      ::slotted(ha-app-icon) {
         width: 32px;
         height: 32px;
+      }
+      ::slotted(ha-app-icon.colored) {
+        width: var(--ha-space-6);
+        height: var(--ha-space-6);
+        padding: var(--ha-space-1);
+        border-radius: var(--ha-border-radius-circle);
+        background-color: var(--app-icon-background-color);
+        color: var(--white-color);
       }
       ::slotted(.code) {
         font-family: var(--ha-font-family-code);

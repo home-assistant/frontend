@@ -17,6 +17,7 @@ import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
+import "../../../components/ha-app-icon";
 import "../../../components/ha-button";
 import "../../../components/ha-generic-picker";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
@@ -24,7 +25,10 @@ import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { LogProvider } from "../../../data/error_log";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import {
+  fetchHassioAddonsInfo,
+  type HassioAddonInfo,
+} from "../../../data/hassio/addon";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
@@ -60,6 +64,11 @@ const logProviders: LogProvider[] = [
     name: "Multicast",
   },
 ];
+
+interface LogProviderPickerItem extends PickerComboBoxItem {
+  addon?: HassioAddonInfo;
+  hasAppIcon?: boolean;
+}
 
 @customElement("ha-config-logs")
 export class HaConfigLogs extends LitElement {
@@ -138,18 +147,9 @@ export class HaConfigLogs extends LitElement {
                     @click=${this._openPicker}
                   >
                     ${
-                      selectedProvider?.icon
-                        ? html`<img
-                            src=${selectedProvider.icon}
-                            alt=${selectedProvider.primary}
-                            slot="start"
-                          />`
-                        : selectedProvider?.icon_path
-                          ? html`<ha-svg-icon
-                              slot="start"
-                              .path=${selectedProvider.icon_path}
-                            ></ha-svg-icon>`
-                          : nothing
+                      selectedProvider
+                        ? this._renderProviderIcon(selectedProvider)
+                        : nothing
                     }
                     ${selectedProvider?.primary}
                     <ha-svg-icon
@@ -264,33 +264,40 @@ export class HaConfigLogs extends LitElement {
     }
   }
 
-  private _getLogProviderItems = (): PickerComboBoxItem[] =>
+  private _getLogProviderItems = (): LogProviderPickerItem[] =>
     this._logProviders.map((provider) => ({
       id: provider.key,
       primary: provider.name,
-      icon: provider.addon
+      addon: provider.addon,
+      hasAppIcon: provider.addon
         ? atLeastVersion(this.hass.config.version, 0, 105) &&
           provider.addon.icon
-          ? `/api/hassio/addons/${provider.addon.slug}/icon`
-          : undefined
         : undefined,
       icon_path: provider.addon
         ? mdiPuzzle
         : this._getProviderIconPath(provider.key),
     }));
 
-  private _providerRenderer = (item: PickerComboBoxItem) => html`
+  private _renderProviderIcon(item: LogProviderPickerItem) {
+    if (item.addon) {
+      return html`<ha-app-icon
+        slot="start"
+        .alt=${item.primary}
+        .hasIcon=${item.hasAppIcon}
+        .slug=${item.addon.slug}
+      >
+        <ha-svg-icon .path=${item.icon_path}></ha-svg-icon>
+      </ha-app-icon>`;
+    }
+
+    return item.icon_path
+      ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
+      : nothing;
+  }
+
+  private _providerRenderer = (item: LogProviderPickerItem) => html`
     <ha-combo-box-item type="button" compact>
-      ${
-        item.icon
-          ? html`<img src=${item.icon} alt=${item.primary} slot="start" />`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : nothing
-      }
+      ${this._renderProviderIcon(item)}
       <span slot="headline">${item.primary}</span>
       ${
         item.secondary
@@ -308,11 +315,10 @@ export class HaConfigLogs extends LitElement {
       return {
         id: provider.key,
         primary: provider.name,
-        icon: provider.addon
+        addon: provider.addon,
+        hasAppIcon: provider.addon
           ? atLeastVersion(this.hass.config.version, 0, 105) &&
             provider.addon.icon
-            ? `/api/hassio/addons/${provider.addon.slug}/icon`
-            : undefined
           : undefined,
         icon_path: provider.addon
           ? mdiPuzzle
@@ -365,8 +371,8 @@ export class HaConfigLogs extends LitElement {
           --mdc-icon-size: var(--ha-space-6);
         }
 
-        img {
-          height: 32px;
+        ha-app-icon {
+          --ha-app-icon-size: 32px;
         }
 
         @media all and (max-width: 870px) {
