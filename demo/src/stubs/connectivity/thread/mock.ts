@@ -6,9 +6,6 @@ import type {
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { emitInitial } from "../subscription";
 
-// Uppercase to match the hex in `active_dataset_tlvs` below: the dataset
-// dialog looks for this ID inside that string with a case-sensitive
-// `includes`, and shows the border router's URL only when it matches.
 const HA_EXT_PAN_ID = "DEAD00BEEF00CAFE";
 const AMAZON_EXT_PAN_ID = "0011223344556677";
 
@@ -114,18 +111,18 @@ const replaceTlvField = (value: string, type: number, replacement: string) => {
 
 const buildDatasetTlv = (dataset: ThreadDataSet) =>
   [
-    tlv(0x0e, "0000000000010000"), // active timestamp
+    tlv(0x0e, "0000000000010000"),
     tlv(0x00, `00${(dataset.channel ?? 15).toString(16).padStart(4, "0")}`),
-    tlv(0x35, "000040010200"), // channel mask
+    tlv(0x35, "000040010200"),
     tlv(0x02, dataset.extended_pan_id),
-    tlv(0x07, "FD11220000000000"), // mesh-local prefix
-    tlv(0x05, "00112233445566778899AABBCCDDEEFF"), // network key
+    tlv(0x07, "FD11220000000000"),
+    tlv(0x05, "00112233445566778899AABBCCDDEEFF"),
     dataset.network_name === null
       ? ""
       : tlv(0x03, textToHex(dataset.network_name)),
     tlv(0x01, (dataset.pan_id ?? "1234").padStart(4, "0")),
-    tlv(0x04, "1035060004001FFFE00C0402A0F7F800"), // PSKc
-    tlv(0x0c, "02A0F7F8"), // security policy
+    tlv(0x04, "1035060004001FFFE00C0402A0F7F800"),
+    tlv(0x0c, "02A0F7F8"),
   ].join("");
 
 const parseDatasetTlv = (value: string) => {
@@ -253,9 +250,6 @@ type RouterListener = (event: {
   data: ThreadRouter;
 }) => void;
 
-// The panel groups the routers it renders from this stream, not from
-// `otbr/info`, so a network change has to be pushed to whoever is listening or
-// the router stays drawn on its old network.
 const listeners = new Set<RouterListener>();
 
 const announce = (router: ThreadRouter) =>
