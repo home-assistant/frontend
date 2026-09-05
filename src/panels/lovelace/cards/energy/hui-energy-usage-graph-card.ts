@@ -5,7 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { BarSeriesOption } from "echarts/charts";
+import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -26,8 +26,12 @@ import {
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticsUnitConfiguration,
+} from "../../../../data/recorder";
+import { fetchStatistics, getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -36,6 +40,7 @@ import type { EnergyUsageGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
   type EnergyDataPoint,
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   generateFillBuckets,
   getCommonOptions,
@@ -88,11 +93,15 @@ export class HuiEnergyUsageGraphCard
     };
   }
 
-  @state() private _chartData: BarSeriesOption[] = [];
+  @state() private _chartData: (BarSeriesOption | LineSeriesOption)[] = [];
 
   @state() private _yAxisFractionDigits = 1;
 
   @state() private _legendData?: CustomLegendOption["data"];
+
+  @state() private _weatherUnit?: string;
+
+  private _weatherRequestToken = 0;
 
   @state() private _start = startOfToday();
 
@@ -175,7 +184,8 @@ export class HuiEnergyUsageGraphCard
               this._compareStart,
               this._compareEnd,
               this._yAxisFractionDigits,
-              this._legendData
+              this._legendData,
+              this._weatherUnit
             )}
             chart-type="bar"
             .expandLegend=${this._config.expand_legend}
@@ -215,7 +225,8 @@ export class HuiEnergyUsageGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number,
-      legendData?: CustomLegendOption["data"]
+      legendData?: CustomLegendOption["data"],
+      weatherUnit?: string
     ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -227,7 +238,9 @@ export class HuiEnergyUsageGraphCard
         compareEnd,
         this._formatTotal,
         false,
-        yAxisFractionDigits
+        yAxisFractionDigits,
+        weatherUnit,
+        weatherUnit ? ["primary-weather-temperature"] : undefined
       );
       const tooltip = commonOptions.tooltip;
       const baseFormatter =
@@ -250,6 +263,18 @@ export class HuiEnergyUsageGraphCard
               return nothing;
             }
             const sorted = [...params].sort((a, b) => {
+              const aIsLine =
+                a.seriesType === "line" ||
+                a.seriesId === "primary-weather-temperature";
+              const bIsLine =
+                b.seriesType === "line" ||
+                b.seriesId === "primary-weather-temperature";
+              if (aIsLine && !bIsLine) {
+                return 1;
+              }
+              if (!aIsLine && bIsLine) {
+                return -1;
+              }
               const aValue = (a.value as number[])?.[1];
               const bValue = (b.value as number[])?.[1];
               if (aValue > 0 && bValue < 0) {
@@ -482,13 +507,119 @@ export class HuiEnergyUsageGraphCard
       )
     );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
+    this._weatherUnit = undefined;
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
+
+    const requestToken = ++this._weatherRequestToken;
+
+    let targetTempEntityId: string | undefined;
+    if (this._config?.temperature_entity) {
+      if (this.hass.states[this._config.temperature_entity]) {
+        targetTempEntityId = this._config.temperature_entity;
+      }
+    } else if (this._config?.weather_entity) {
+      const weatherEntity = this.hass.entities?.[this._config.weather_entity];
+      const deviceId = weatherEntity?.device_id;
+      if (deviceId) {
+        const sibling = Object.values(this.hass.entities).find(
+          (entity) =>
+            entity.device_id === deviceId &&
+            entity.entity_id.startsWith("sensor.") &&
+            this.hass.states[entity.entity_id]?.attributes.device_class ===
+              "temperature"
+        );
+        if (sibling) {
+          targetTempEntityId = sibling.entity_id;
+        }
+      }
+    }
+
+    if (!targetTempEntityId) {
+      return;
+    }
+
+    const tempState = this.hass.states[targetTempEntityId];
+    const rawTempUnit =
+      tempState?.attributes.unit_of_measurement ||
+      this.hass.config.unit_system.temperature;
+    const tempUnit = ["°C", "°F", "K"].includes(rawTempUnit)
+      ? (rawTempUnit as "°C" | "°F" | "K")
+      : undefined;
+
+    const units: StatisticsUnitConfiguration | undefined = tempUnit
+      ? { temperature: tempUnit }
+      : undefined;
+
+    const period = getSuggestedPeriod(this._start, this._end);
+
+    try {
+      const stats = await fetchStatistics(
+        this.hass,
+        this._start,
+        this._end,
+        [targetTempEntityId],
+        period,
+        units,
+        ["mean"]
+      );
+
+      if (this._weatherRequestToken !== requestToken || !this.isConnected) {
+        return;
+      }
+
+      const tempStats = stats[targetTempEntityId];
+      if (!tempStats || tempStats.length === 0) {
+        return;
+      }
+
+      const weatherPoints: LineSeriesOption["data"] = tempStats
+        .filter((stat) => stat.mean !== null && stat.mean !== undefined)
+        .map((stat) => [
+          computeStatMidpoint(stat.start, stat.end, period),
+          stat.mean as number,
+        ]);
+
+      if (weatherPoints.length === 0) {
+        return;
+      }
+
+      const weatherSeries: LineSeriesOption = {
+        id: "primary-weather-temperature",
+        name: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_usage_graph.outdoor_temperature"
+        ),
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        connectNulls: true,
+        showSymbol: false,
+        cursor: "default",
+        data: weatherPoints,
+        lineStyle: {
+          color: "rgba(255, 152, 0, 0.8)",
+          width: 2,
+        },
+        itemStyle: {
+          color: "rgba(255, 152, 0, 0.8)",
+        },
+      };
+
+      const updatedDatasets: (BarSeriesOption | LineSeriesOption)[] = [
+        ...datasets,
+        weatherSeries,
+      ];
+      this._chartData = updatedDatasets;
+      this._legendData = this._getLegendData(updatedDatasets);
+      this._weatherUnit = tempUnit || rawTempUnit;
+    } catch {
+      // Ignore weather stats errors
+    }
   }
 
   private _getLegendData(
-    datasets: BarSeriesOption[]
+    datasets: (BarSeriesOption | LineSeriesOption)[]
   ): CustomLegendOption["data"] {
     // Each main series gets a legend item, and its matching compare
     // series (if any) is attached as a secondary id so toggling

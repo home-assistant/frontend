@@ -119,7 +119,9 @@ export function getCommonOptions(
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
-  yAxisFractionDigits = 1
+  yAxisFractionDigits = 1,
+  secondaryUnit?: string,
+  secondarySeriesIds?: string[]
 ): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
@@ -169,36 +171,53 @@ export function getCommonOptions(
     },
   };
 
+  const primaryYAxis: any = {
+    type: "value",
+    name: unit,
+    nameGap: 2,
+    nameTextStyle: {
+      align: "left",
+    },
+    ...createYAxisPrecisionBounds({
+      includeZero: true,
+      onFractionDigits: (digits) => {
+        currentFractionDigits = digits;
+      },
+    }),
+    axisLabel: {
+      formatter: createYAxisLabelFormatter(locale, () => currentFractionDigits),
+    },
+    splitLine: {
+      show: true,
+    },
+  };
+
+  const secondaryYAxis: any = secondaryUnit
+    ? {
+        type: "value",
+        name: secondaryUnit,
+        nameGap: 2,
+        nameTextStyle: {
+          align: "right",
+        },
+        position: "right",
+        splitLine: {
+          show: false,
+        },
+        axisLabel: {
+          formatter: createYAxisLabelFormatter(locale, () => 0),
+        },
+      }
+    : undefined;
+
   const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
-    yAxis: {
-      type: "value",
-      name: unit,
-      nameGap: 2,
-      nameTextStyle: {
-        align: "left",
-      },
-      ...createYAxisPrecisionBounds({
-        includeZero: true,
-        onFractionDigits: (digits) => {
-          currentFractionDigits = digits;
-        },
-      }),
-      axisLabel: {
-        formatter: createYAxisLabelFormatter(
-          locale,
-          () => currentFractionDigits
-        ),
-      },
-      splitLine: {
-        show: true,
-      },
-    },
+    yAxis: secondaryYAxis ? [primaryYAxis, secondaryYAxis] : primaryYAxis,
     grid: {
       top: 15,
       bottom: 0,
       left: 1,
-      right: 1,
+      right: secondaryYAxis ? 12 : 1,
       containLabel: true,
     },
     tooltip: {
@@ -225,7 +244,9 @@ export function getCommonOptions(
                 compare,
                 showCompareYear,
                 unit,
-                formatTotal
+                formatTotal,
+                secondaryUnit,
+                secondarySeriesIds
               )
             )
             .filter((s): s is TemplateResult => s !== nothing);
@@ -243,7 +264,9 @@ export function getCommonOptions(
           compare,
           showCompareYear,
           unit,
-          formatTotal
+          formatTotal,
+          secondaryUnit,
+          secondarySeriesIds
         );
       },
     },
@@ -259,7 +282,9 @@ function formatTooltip(
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  secondaryUnit?: string,
+  secondarySeriesIds?: string[]
 ): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
     return nothing;
@@ -307,12 +332,20 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
+    const isSecondary =
+      param.seriesId === "primary-weather-temperature" ||
+      (secondarySeriesIds &&
+        param.seriesId &&
+        secondarySeriesIds.includes(param.seriesId));
+    const displayUnit = isSecondary && secondaryUnit ? secondaryUnit : unit;
     rows.push(
       html`<ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
         ${param.seriesName}:
-        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+        <div style="direction:ltr; display: inline;">
+          ${value} ${displayUnit}
+        </div>`
     );
   }
   if (rows.length === 0) {
