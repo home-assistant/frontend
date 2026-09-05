@@ -5,6 +5,7 @@ import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { zwaveJsFixtures } from "./zwave_js/fixtures";
 import { zhaFixtures } from "./zha/fixtures";
+import { tagsFixtures } from "./tags/fixtures";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
@@ -18,6 +19,7 @@ const INTEGRATIONS: ConnectivityFixtures[] = [
   infraredFixtures,
   zwaveJsFixtures,
   zhaFixtures,
+  tagsFixtures,
 ];
 
 const collect = <T>(
