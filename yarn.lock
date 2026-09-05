@@ -3488,10 +3488,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:16.4.0":
-  version: 16.4.0
-  resolution: "@lokalise/node-api@npm:16.4.0"
-  checksum: 10/68bc43e4cdeec93b44ddbfc10999acda68938ef889c9f595a2849da7289e5a6b33e34f5c4d7234e12a730348eb3adff164145acfeba610785c6adc509b7e4cf4
+"@lokalise/node-api@npm:16.4.1":
+  version: 16.4.1
+  resolution: "@lokalise/node-api@npm:16.4.1"
+  checksum: 10/404980ba9c9fa5e5a62d805e88d3c11d4d90491fd266797f52b60f726199d019f7f17627ac566e7405e4218e1a5c9b35f9f324e9196dc14689ec90b2307efb05
   languageName: node
   linkType: hard
 
@@ -10380,7 +10380,7 @@ __metadata:
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
     "@lit/task": "npm:1.0.3"
-    "@lokalise/node-api": "npm:16.4.0"
+    "@lokalise/node-api": "npm:16.4.1"
     "@mapbox/mapbox-gl-rtl-text": "npm:0.4.0"
     "@maplibre/maplibre-gl-leaflet": "npm:0.1.4"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
