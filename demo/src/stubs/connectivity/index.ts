@@ -1,5 +1,6 @@
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { mockBluetooth } from "./bluetooth/mock";
+import { mockInfrared } from "./infrared/mock";
 import { mockSerial } from "./serial/mock";
 import { mockMqtt } from "./mqtt/mock";
 import { mockMatter } from "./matter/mock";
@@ -9,6 +10,7 @@ import { mockZha } from "./zha/mock";
 // The WebSocket mocks, code-split into the config panel chunk.
 const MOCKS = [
   mockBluetooth,
+  mockInfrared,
   mockSerial,
   mockMatter,
   mockMqtt,

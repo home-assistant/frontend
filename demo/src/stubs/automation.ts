@@ -1,6 +1,7 @@
 import type { AutomationConfig } from "../../../src/data/automation";
 import type { ScriptConfig } from "../../../src/data/script";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { connectivityTriggers } from "./connectivity/fixtures";
 
 const demoAutomationConfig = (entityId: string): AutomationConfig => ({
   id: entityId.split(".")[1],
@@ -43,7 +44,7 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
   hass.mockAPI(/config\/script\/config\/.+/, () => demoScriptConfig());
 
   // Trigger/condition type pickers subscribe for integration-provided
-  // platforms. The demo only uses the built-in ones, so emit empty records.
+  // platforms.
   hass.mockWS(
     "trigger_platforms/subscribe",
     (
@@ -51,10 +52,11 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
       _hass,
       onChange?: (descriptions: Record<string, unknown>) => void
     ) => {
-      onChange?.({});
+      onChange?.(connectivityTriggers);
       return () => undefined;
     }
   );
+  // The demo serves no integration conditions yet.
   hass.mockWS(
     "condition_platforms/subscribe",
     (

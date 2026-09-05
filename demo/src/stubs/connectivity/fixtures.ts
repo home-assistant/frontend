@@ -5,6 +5,7 @@ import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { zwaveJsFixtures } from "./zwave_js/fixtures";
 import { zhaFixtures } from "./zha/fixtures";
+import type { TriggerDescriptions } from "../../../../src/data/trigger";
 import type { ConnectivityFixtures } from "./types";
 
 // Every integration reachable from Settings > Connectivity that has frontend
@@ -40,6 +41,11 @@ export const connectivityEntityRegistryEntries = collect(
 
 export const connectivityEntities = () =>
   INTEGRATIONS.flatMap((fixtures) => fixtures.entities?.() ?? []);
+
+export const connectivityTriggers: TriggerDescriptions = Object.assign(
+  {},
+  ...INTEGRATIONS.map((fixtures) => fixtures.triggers ?? {})
+);
 
 /** Backend translation resources, merged per category. */
 export const connectivityBackendTranslations = INTEGRATIONS.reduce<

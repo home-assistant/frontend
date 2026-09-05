@@ -58,10 +58,15 @@ const REGISTRY_ENTRIES = [
 
 export const infraredFixtures: ConnectivityFixtures = {
   components: ["infrared"],
+  commands: ["infrared/"],
   manifests: [
     manifest("broadlink", "Broadlink", {
       integration_type: "hub",
       iot_class: "local_polling",
+    }),
+    manifest("infrared", "Infrared", {
+      integration_type: "entity",
+      config_flow: false,
     }),
   ],
   configEntries: [
@@ -97,11 +102,36 @@ export const infraredFixtures: ConnectivityFixtures = {
         },
       },
     }),
+  // The trigger has no fields of its own besides the captured commands, which
+  // the infrared command selector renders.
+  triggers: {
+    infrared: {
+      target: {
+        entity: [{ domain: ["infrared"], device_class: ["receiver"] }],
+      },
+      fields: {
+        commands: {
+          required: true,
+          selector: { infrared_command: {} },
+          context: { filter_target: "target" },
+        },
+      },
+    },
+  },
   backendTranslations: {
     entity_component: {
       // The emitter is the default device class, stored under the "_" key.
       "component.infrared.entity_component._.name": "Emitter",
       "component.infrared.entity_component.receiver.name": "Receiver",
+    },
+    triggers: {
+      // An integration trigger without a name of its own is keyed by "_".
+      "component.infrared.triggers._.name": "Infrared command received",
+      "component.infrared.triggers._.description":
+        "Triggers when one of the captured infrared commands is received.",
+      "component.infrared.triggers._.fields.commands.name": "Commands",
+      "component.infrared.triggers._.fields.commands.description":
+        "The infrared commands to trigger on. Capture a command by pressing the button on your remote, then give it a name to use it in conditions and actions.",
     },
   },
 };
