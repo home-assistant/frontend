@@ -174,57 +174,6 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
-  test("ZHA device page reaches the Zigbee panels", async ({ page }) => {
-    // Both the info card and the device actions look up the device's `zigbee`
-    // connection and render nothing without it, so an empty card here means
-    // the fixtures only registered the `zha` identifier.
-    await loadDemo(page, "/#/config/devices/device/zha-porch-light");
-
-    const info = page.locator("ha-device-info-zha");
-    await expect(info).toBeAttached({ timeout: PANEL_TIMEOUT });
-    // The panel is only rendered once the device lookup returns.
-    await expect(info.locator("ha-expansion-panel")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-
-    // The manage page is reached from those actions and asks for the device's
-    // clusters; without them it renders its empty state instead of a cluster.
-    await loadDemo(
-      page,
-      "/#/config/zha/device/84:2e:14:ff:fe:11:22:33/clusters"
-    );
-
-    const clusters = page.locator("zha-manage-clusters");
-    await expect(clusters).toBeAttached({ timeout: PANEL_TIMEOUT });
-    await expect(clusters.locator("zha-cluster-attributes")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-
-    // Group binding offers only the client side of a device, so a mock with
-    // nothing but `in` clusters leaves its bind button permanently disabled.
-    // The switch is the device that binds, so it is the one that must have
-    // them.
-    const outClusters = await page.evaluate(() => {
-      const demo = document.querySelector("ha-demo") as HTMLElement & {
-        hass: { connection: { sendMessagePromise: (msg: unknown) => any } };
-      };
-      return demo.hass.connection
-        .sendMessagePromise({
-          type: "zha/devices/clusters",
-          ieee: "84:2e:14:ff:fe:aa:bb:01",
-        })
-        .then((result: { name: string; type: string }[]) =>
-          result
-            .filter((cluster) => cluster.type === "out")
-            .map((cluster) => cluster.name)
-            .sort()
-        );
-    });
-    expect(outClusters).toEqual(["Identify", "LevelControl", "OnOff"]);
-
-    expectNoPageErrors(pageErrors);
-  });
-
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,

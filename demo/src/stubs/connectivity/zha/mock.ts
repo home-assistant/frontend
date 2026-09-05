@@ -237,8 +237,6 @@ const DEVICES: ZHADevice[] = [
   },
 ];
 
-// The area comes from the device registry in the backend, so it is filled in
-// from the registry fixtures rather than repeated here.
 DEVICES.forEach((zhaDevice) => {
   zhaDevice.area_id = AREA_BY_IEEE[zhaDevice.ieee];
 });
@@ -246,8 +244,6 @@ DEVICES.forEach((zhaDevice) => {
 const deviceByIeee = (ieee: string): ZHADevice =>
   DEVICES.find((d) => d.ieee === ieee)!;
 
-// The group pickers summarise a row by its entity names, so an endpoint with
-// none reads "No entities" for a device the fixtures do give entities.
 const ENDPOINT_ENTITIES: Record<string, { entity_id: string; name: string }[]> =
   {
     [PORCH_IEEE]: [{ entity_id: "light.porch", name: "Porch light" }],
@@ -288,8 +284,6 @@ const CONFIGURATION: ZHAConfiguration = {
       light_transitioning_flag: true,
       always_prefer_xy_color_mode: true,
       group_members_assume_state: true,
-      // The options page falls back to two hours when these are absent, which
-      // would misreport the battery default.
       consider_unavailable_mains: 7200,
       consider_unavailable_battery: 21600,
     },
@@ -385,9 +379,6 @@ const NETWORK_SETTINGS: ZHANetworkSettings = {
   },
 };
 
-// The cluster pages ask for a device's clusters, then for the selected
-// cluster's attributes and commands, so all three come out of one table and a
-// device only has to name the clusters it exposes.
 interface ClusterDefinition {
   name: string;
   attributes: Attribute[];
@@ -559,8 +550,6 @@ const DEFAULT_ATTRIBUTE_VALUES: Record<string, string> = {
   "2820:1291": "94",
 };
 
-// Written attributes are kept, so reading one back after a write agrees with
-// what the write button reported.
 const writtenAttributes = new Map<string, string>();
 
 const attributeKey = (data: ReadAttributeServiceData) =>
@@ -601,17 +590,12 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/configuration", () => structuredClone(CONFIGURATION));
   hass.mockWS("zha/network/settings", () => NETWORK_SETTINGS);
   hass.mockWS("zha/topology/update", () => undefined);
-  // The bindings tab hides its device half when this is empty, and the group
-  // half below is what the bind buttons drive. Routers are the ones a device
-  // can bind to, and a device cannot bind to itself.
   hass.mockWS("zha/devices/bindable", (msg: { ieee: string }) =>
     DEVICES.filter(
       (candidate) =>
         candidate.device_type === "Router" && candidate.ieee !== msg.ieee
     )
   );
-  // Nothing reads binding state back, so these only have to succeed; without
-  // them both buttons end in their error state.
   hass.mockWS("zha/devices/bind", () => undefined);
   hass.mockWS("zha/devices/unbind", () => undefined);
   hass.mockWS("zha/groups/bind", () => undefined);
@@ -637,9 +621,6 @@ export const mockZha = (hass: MockHomeAssistant) => {
     writtenAttributes.set(attributeKey(write), String(write.value));
     return undefined;
   });
-  // The add group page and the add members dialog build their pickers from
-  // this, so an empty list leaves both permanently empty and the group
-  // commands below unreachable. The lights and plugs are the groupable ones.
   hass.mockWS("zha/devices/groupable", () => [
     member(PORCH_IEEE),
     member(OFFICE_IEEE),
@@ -647,13 +628,8 @@ export const mockZha = (hass: MockHomeAssistant) => {
   ]);
   hass.mockWS("zha/network/backups/list", () => BACKUPS);
 
-  // The add device page subscribes to this the moment it opens, and sits on
-  // its spinner for the full permit duration if the subscription rejects.
-  // Nothing pairs in the demo, so this only has to stay open.
   hass.mockWS("zha/devices/permit", () => () => undefined);
 
-  // The reconfigure dialog stays on its progress bar until the done event
-  // arrives, so the run has to be walked through and then closed out.
   hass.mockWS(
     "zha/devices/reconfigure",
     (msg: { ieee: string }, _hass, onChange) => {
@@ -714,8 +690,6 @@ export const mockZha = (hass: MockHomeAssistant) => {
     }
   );
 
-  // The panel offers all of the below, and refetches after each, so they
-  // change the mocked state rather than only resolving.
   hass.mockWS(
     "zha/configuration/update",
     (msg: { data: ZHAConfiguration["data"] }) => {

@@ -129,9 +129,6 @@ const REGISTRY_ENTRIES = [
   registryEntry("switch.office_desk", "zha-office-plug", ENTRY_ID, "zha"),
 ];
 
-// The backend puts the registry's area on the ZHA device payload, and the
-// group pickers read it from there rather than resolving the registry
-// themselves. Derived so the two cannot drift apart.
 export const AREA_BY_IEEE: Record<string, string> = Object.fromEntries(
   DEVICES.flatMap((entry) => {
     const areaId = entry.area_id;
@@ -178,8 +175,6 @@ export const zhaFixtures: ConnectivityFixtures = {
         state: "off",
         attributes: { friendly_name: "Hall motion", device_class: "motion" },
       },
-      // The Zigbee panel reports this device as offline, so its entity has to
-      // agree, or the device page contradicts the panel.
       "switch.tv_plug": {
         entity_id: "switch.tv_plug",
         state: "unavailable",
@@ -216,8 +211,6 @@ export const zhaFixtures: ConnectivityFixtures = {
         attributes: { friendly_name: "Office desk" },
       },
     }),
-  // The options page labels every field through these, falling back to the raw
-  // identifier when one is missing, so each schema field needs its own key.
   backendTranslations: {
     config_panel: {
       "component.zha.config_panel.zha_options.title": "Global options",
