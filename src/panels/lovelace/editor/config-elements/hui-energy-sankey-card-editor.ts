@@ -38,6 +38,7 @@ const cardConfigStruct = assign(
     group_by_floor: optional(boolean()),
     group_by_area: optional(boolean()),
     max_devices: optional(number()),
+    show_values: optional(boolean()),
   })
 );
 
@@ -89,6 +90,11 @@ export class HuiEnergySankeyCardEditor
               },
               {
                 name: "group_by_area",
+                required: false,
+                selector: { boolean: {} },
+              },
+              {
+                name: "show_values",
                 required: false,
                 selector: { boolean: {} },
               },
@@ -156,6 +162,7 @@ export class HuiEnergySankeyCardEditor
       case "group_by_floor":
       case "group_by_area":
       case "max_devices":
+      case "show_values":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-sankey.${schema.name}`
         );

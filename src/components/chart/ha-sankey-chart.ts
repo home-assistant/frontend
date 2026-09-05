@@ -55,6 +55,9 @@ export class HaSankeyChart extends LitElement {
 
   @property({ type: Boolean }) public vertical = false;
 
+  @property({ type: Boolean, attribute: "show-values" }) public showValues =
+    false;
+
   @property({ attribute: false }) public valueFormatter?: (
     value: number
   ) => string;
@@ -84,7 +87,11 @@ export class HaSankeyChart extends LitElement {
 
     return html`<ha-chart-base
       .hass=${this.hass}
-      .data=${this._createData(this.data, this._sizeController.value?.width)}
+      .data=${this._createData(
+        this.data,
+        this._sizeController.value?.width,
+        this.showValues
+      )}
       .options=${options}
       height="100%"
       .extraComponents=${[SankeyChart]}
@@ -142,7 +149,11 @@ export class HaSankeyChart extends LitElement {
     }
   };
 
-  private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
+  private _computeData = (
+    data: SankeyChartData,
+    width = 0,
+    showValues = false
+  ) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
     const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
     const depthMap = new Map<number, number>();
@@ -209,9 +220,19 @@ export class HaSankeyChart extends LitElement {
       layoutIterations: 0,
       animationDuration: 500,
       label: {
-        formatter: (params) =>
-          data.nodes.find((node) => node.id === (params.data as Node).id)
-            ?.label ?? (params.data as Node).id,
+        formatter: (params) => {
+          const nodeData = params.data as Record<string, any>;
+          const node = data.nodes.find((n) => n.id === nodeData.id);
+          const label = node?.label ?? nodeData.id;
+          if (!showValues || !nodeData.id) return label;
+          const formatted = this.valueFormatter
+            ? this.valueFormatter(nodeData.value)
+                .replace(/<[^>]*>/g, "")
+                .replace(/\s+/g, " ")
+                .trim()
+            : String(nodeData.value);
+          return `${label}\n${formatted}`;
+        },
         position: this.vertical ? "bottom" : "right",
         distance: LABEL_DISTANCE,
         minMargin: 5,
@@ -261,7 +282,9 @@ export class HaSankeyChart extends LitElement {
         focus: "adjacency",
       },
     } as SankeySeriesOption;
-  });
+  };
+
+  private _createData = memoizeOne(this._computeData);
 
   private _processLinks(nodes: Node[], rawLinks: Link[]) {
     const accountedIn = new Map<string, number>();
