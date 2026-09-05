@@ -26,12 +26,14 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   TargetHumidityCardFeatureConfig,
 } from "./types";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-number-buttons";
 
 const supportsTargetHumidityCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -86,7 +88,13 @@ class HuiTargetHumidityCardFeature
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
       type: "target-humidity",
+      style: "slider",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-target-humidity-card-feature-editor");
+    return document.createElement("hui-target-humidity-card-feature-editor");
   }
 
   public setConfig(config: TargetHumidityCardFeatureConfig): void {
@@ -138,6 +146,34 @@ class HuiTargetHumidityCardFeature
       !supportsTargetHumidityCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
+    }
+
+    if (this._config.style === "buttons") {
+      const step = this._config.step ?? this._step;
+      const digits = step.toString().split(".")?.[1]?.length ?? 0;
+
+      return html`
+        <ha-control-button-group>
+          <ha-control-number-buttons
+            .formatOptions=${{
+              maximumFractionDigits: digits,
+              minimumFractionDigits: digits,
+            }}
+            .value=${this._stateObj.attributes.humidity}
+            .min=${this._min}
+            .max=${this._max}
+            .step=${step}
+            .disabled=${this._stateObj.state === UNAVAILABLE}
+            @value-changed=${this._valueChanged}
+            .label=${this._formatters.formatEntityAttributeName(
+              this._stateObj,
+              "humidity"
+            )}
+            unit="%"
+            .locale=${this._locale}
+          ></ha-control-number-buttons>
+        </ha-control-button-group>
+      `;
     }
 
     return html`
