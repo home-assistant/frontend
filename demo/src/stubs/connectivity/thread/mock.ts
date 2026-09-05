@@ -15,10 +15,6 @@ const AMAZON_EXT_PAN_ID = "0011223344556677";
 const OTBR_EXT_ADDRESS = "f6a1c30d2b4e5f61";
 const OTBR_BORDER_AGENT_ID = "230c6a1ac57f6f4be262acf32e5ef52c";
 
-// The preferred network is shared by Home Assistant's own border router and the
-// Apple and Google border routers that joined it. The Amazon network is only
-// discovered: Amazon does not share its Thread credentials, so it has no
-// dataset and cannot be made preferred.
 const ROUTERS: ThreadRouter[] = [
   {
     instance_name: "HomeAssistant OpenThreadBorderRouter",
@@ -78,11 +74,6 @@ const ROUTERS: ThreadRouter[] = [
   },
 ];
 
-// Operational datasets are type/length/value triplets. Building them rather
-// than pasting a literal keeps the declared lengths honest, and keeps each
-// dataset's extended PAN ID and network name inside its own TLV.
-// Network names are UTF-8, so the bytes cannot be read one character each.
-// Undefined for a sequence the backend's strict decoder would refuse.
 const decodeUtf8 = (value: string): string | undefined => {
   const bytes = Uint8Array.from(
     (value.match(/../g) ?? []).map((byte) => parseInt(byte, 16))
@@ -105,9 +96,6 @@ const textToHex = (text: string) =>
     .join("")
     .toUpperCase();
 
-// Rewrites one triplet and leaves the rest of the credentials untouched. A
-// dataset that was imported carries fields this mock never models, so
-// rebuilding it from the summary would quietly replace them with fixtures.
 const replaceTlvField = (value: string, type: number, replacement: string) => {
   let index = 0;
   let out = "";
@@ -138,8 +126,6 @@ const buildDatasetTlv = (dataset: ThreadDataSet) =>
     tlv(0x0c, "02A0F7F8"), // security policy
   ].join("");
 
-// Walks the triplets, so an import reads the credentials it was handed rather
-// than guessing at fixed offsets. Undefined for anything that does not decode.
 const parseDatasetTlv = (value: string) => {
   if (value.length % 2 !== 0 || !/^[0-9A-Fa-f]*$/.test(value)) {
     return undefined;
@@ -158,8 +144,6 @@ const parseDatasetTlv = (value: string) => {
       return undefined;
     }
     if (fields.has(type)) {
-      // A repeated tag is malformed, and the backend's parser refuses it
-      // rather than letting the later one win.
       return undefined;
     }
     fields.set(type, value.slice(start, end).toUpperCase());
@@ -168,8 +152,6 @@ const parseDatasetTlv = (value: string) => {
   const extendedPanId = fields.get(0x02);
   const networkName = fields.get(0x03);
   const activeTimestamp = fields.get(0x0e);
-  // The backend refuses a dataset without an active timestamp, which is also
-  // what decides whether an import replaces the network it names.
   if (
     !extendedPanId ||
     extendedPanId.length !== 16 ||
@@ -184,7 +166,6 @@ const parseDatasetTlv = (value: string) => {
     return undefined;
   }
   const channel = fields.get(0x00);
-  // Absent is fine; present and zero is not a channel the backend accepts.
   const channelNumber = channel ? parseInt(channel.slice(2), 16) : null;
   if (channelNumber === 0) {
     return undefined;
@@ -231,7 +212,6 @@ const OTBR_INFO: OTBRInfoDict = {
 let added = 0;
 let created = 0;
 
-// Eight bytes of hex, the shape the backend can actually return.
 const randomExtendedPanId = () =>
   Array.from({ length: 8 }, () =>
     Math.floor(Math.random() * 256)
@@ -241,8 +221,6 @@ const randomExtendedPanId = () =>
     .join("")
     .toUpperCase();
 
-// Keeps the router, the OTBR info and the subscribers in step, so the panel
-// redraws the border router under its new network.
 const moveRouter = (
   extendedAddress: string,
   extendedPanId: string,
@@ -253,8 +231,6 @@ const moveRouter = (
   const moved = DATASETS.find((item) => item.dataset_id === datasetId);
   if (info) {
     info.extended_pan_id = extendedPanId;
-    // The dialog looks for the network's ID inside this, so it has to follow
-    // the router onto its new network, and the channel comes with it.
     info.active_dataset_tlvs =
       DATASET_TLVS[datasetId] ?? info.active_dataset_tlvs;
     info.channel = moved?.channel ?? info.channel;
@@ -317,20 +293,13 @@ export const mockThread = (hass: MockHomeAssistant) => {
 
   hass.mockWS("otbr/info", () => OTBR_INFO);
 
-  // The panel offers all of the below, and refetches after each, so they
-  // change the data rather than just resolving.
   hass.mockWS(
     "thread/add_dataset_tlv",
     (msg: { source: string; tlv: string }) => {
-      // The backend refuses credentials it cannot decode, so the panel gets to
-      // show its error rather than importing an invented network.
       const parsed = parseDatasetTlv(msg.tlv);
       if (!parsed) {
         throw new Error("Invalid dataset");
       }
-      // Datasets sharing an extended PAN ID are revisions of one network, so
-      // an import updates that network instead of adding a second card for it,
-      // and only a newer active timestamp wins.
       const existing = DATASETS.find(
         (candidate) => candidate.extended_pan_id === parsed.extendedPanId
       );
@@ -359,8 +328,6 @@ export const mockThread = (hass: MockHomeAssistant) => {
         source: msg.source,
       };
       DATASETS.push(dataset);
-      // Kept verbatim: these are the credentials that were imported, so
-      // reading them back has to hand back the same ones.
       DATASET_TLVS[dataset.dataset_id] = msg.tlv.toUpperCase();
       return undefined;
     }
@@ -374,12 +341,9 @@ export const mockThread = (hass: MockHomeAssistant) => {
       throw new Error(`Dataset ${msg.dataset_id} not found`);
     }
     if (DATASETS[index].preferred) {
-      // What the backend refuses too, so the panel shows its error.
       throw new Error("Preferred dataset cannot be deleted");
     }
     DATASETS.splice(index, 1);
-    // The credentials go with it, so reading them back reports not found the
-    // way an unknown ID does.
     delete DATASET_TLVS[msg.dataset_id];
     return undefined;
   });
@@ -409,10 +373,6 @@ export const mockThread = (hass: MockHomeAssistant) => {
     }
   );
 
-  // Resets the border router onto a network of its own.
-  // A reset moves the border router onto a network of its own. It adds that
-  // network rather than taking over the preferred one, which is what leaves
-  // the panel its "add to my network" path back.
   hass.mockWS("otbr/create_network", (msg: { extended_address: string }) => {
     created += 1;
     const dataset: ThreadDataSet = {
@@ -422,8 +382,6 @@ export const mockThread = (hass: MockHomeAssistant) => {
       extended_pan_id: randomExtendedPanId(),
       network_name: `ha-thread-${created}`,
       pan_id: "1234",
-      // A reset leaves the default router unset; nominating one is its own
-      // action in the panel.
       preferred_border_agent_id: null,
       preferred_extended_address: null,
       preferred: false,
@@ -462,15 +420,12 @@ export const mockThread = (hass: MockHomeAssistant) => {
     }
   );
 
-  // The panel reads the delay back to tell the user when the change lands.
   hass.mockWS(
     "otbr/set_channel",
     (msg: { extended_address: string; channel: number }) => {
       const info = OTBR_INFO[msg.extended_address];
       if (info) {
         info.channel = msg.channel;
-        // The active dataset carries the channel too, so leaving it behind
-        // would have the channel prompt and the dataset dialog disagree.
         const dataset = DATASETS.find(
           (candidate) => candidate.extended_pan_id === info.extended_pan_id
         );

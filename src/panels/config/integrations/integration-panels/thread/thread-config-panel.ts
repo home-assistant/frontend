@@ -250,8 +250,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   .hasMeta=${showOverflow}
                 >
                   ${
-                    // An unknown vendor has no brand, and asking for its icon
-                    // would only request one that cannot exist.
                     router.brand
                       ? html`<img
                           slot="graphic"

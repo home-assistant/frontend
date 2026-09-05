@@ -4,10 +4,6 @@ export interface ThreadRouter {
   instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
-  // Backend brand slug, resolved from the border agent's vendor name. Null when
-  // the vendor is not one the backend knows. Not narrowed to a union: the
-  // backend knows more vendors than the frontend can usefully enumerate, and
-  // this only ever reaches `brandsUrl`.
   brand: string | null;
   extended_address: string;
   extended_pan_id: string;
