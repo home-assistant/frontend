@@ -58,6 +58,7 @@ const LOAD_ELEMENTS = {
   time: () => import("./ha-selector-time"),
   icon: () => import("./ha-selector-icon"),
   infrared_command: () => import("./ha-selector-infrared-command"),
+  infrared_command_name: () => import("./ha-selector-infrared-command-name"),
   media: () => import("./ha-selector-media"),
   theme: () => import("./ha-selector-theme"),
   timezone: () => import("./ha-selector-timezone"),

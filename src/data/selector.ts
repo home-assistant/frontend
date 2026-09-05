@@ -55,6 +55,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | InfraredCommandNameSelector
   | InfraredCommandSelector
   | LabelSelector
   | LanguageSelector
@@ -348,6 +349,10 @@ export interface IconSelector {
 
 export interface InfraredCommandSelector {
   infrared_command: {} | null;
+}
+
+export interface InfraredCommandNameSelector {
+  infrared_command_name: {} | null;
 }
 
 export interface LabelSelector {

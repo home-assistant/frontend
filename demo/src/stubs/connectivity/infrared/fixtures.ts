@@ -118,6 +118,15 @@ export const infraredFixtures: ConnectivityFixtures = {
       },
     },
   },
+  // The command names are chosen per automation, so the selector reads them
+  // from the automation being edited.
+  conditions: {
+    infrared: {
+      fields: {
+        command: { required: true, selector: { infrared_command_name: {} } },
+      },
+    },
+  },
   backendTranslations: {
     entity_component: {
       // The emitter is the default device class, stored under the "_" key.
@@ -132,6 +141,14 @@ export const infraredFixtures: ConnectivityFixtures = {
       "component.infrared.triggers._.fields.commands.name": "Commands",
       "component.infrared.triggers._.fields.commands.description":
         "The infrared commands to trigger on. Capture a command by pressing the button on your remote, then give it a name to use it in conditions and actions.",
+    },
+    conditions: {
+      "component.infrared.conditions._.name": "Infrared command",
+      "component.infrared.conditions._.description":
+        "Tests which of the infrared commands of the trigger was received.",
+      "component.infrared.conditions._.fields.command.name": "Commands",
+      "component.infrared.conditions._.fields.command.description":
+        "The condition passes when the automation was started by one of these infrared commands.",
     },
   },
 };

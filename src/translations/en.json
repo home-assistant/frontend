@@ -528,6 +528,9 @@
         "validation_failed": "Form validation failed."
       },
       "selectors": {
+        "infrared_command_name": {
+          "no_commands": "The infrared triggers of this automation have not captured any commands yet."
+        },
         "infrared_command": {
           "name": "Name",
           "capture": "Capture command",

@@ -5,6 +5,7 @@ import { matterFixtures } from "./matter/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { zwaveJsFixtures } from "./zwave_js/fixtures";
 import { zhaFixtures } from "./zha/fixtures";
+import type { ConditionDescriptions } from "../../../../src/data/condition";
 import type { TriggerDescriptions } from "../../../../src/data/trigger";
 import type { ConnectivityFixtures } from "./types";
 
@@ -45,6 +46,11 @@ export const connectivityEntities = () =>
 export const connectivityTriggers: TriggerDescriptions = Object.assign(
   {},
   ...INTEGRATIONS.map((fixtures) => fixtures.triggers ?? {})
+);
+
+export const connectivityConditions: ConditionDescriptions = Object.assign(
+  {},
+  ...INTEGRATIONS.map((fixtures) => fixtures.conditions ?? {})
 );
 
 /** Backend translation resources, merged per category. */

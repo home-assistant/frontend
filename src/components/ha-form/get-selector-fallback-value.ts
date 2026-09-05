@@ -57,6 +57,7 @@ const SELECTOR_FALLBACK_VALUES = {
   time: undefined,
   icon: undefined,
   infrared_command: undefined,
+  infrared_command_name: undefined,
   media: undefined,
   theme: undefined,
   timezone: undefined,

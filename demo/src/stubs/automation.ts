@@ -1,7 +1,10 @@
 import type { AutomationConfig } from "../../../src/data/automation";
 import type { ScriptConfig } from "../../../src/data/script";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
-import { connectivityTriggers } from "./connectivity/fixtures";
+import {
+  connectivityConditions,
+  connectivityTriggers,
+} from "./connectivity/fixtures";
 
 const demoAutomationConfig = (entityId: string): AutomationConfig => ({
   id: entityId.split(".")[1],
@@ -56,7 +59,6 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
       return () => undefined;
     }
   );
-  // The demo serves no integration conditions yet.
   hass.mockWS(
     "condition_platforms/subscribe",
     (
@@ -64,7 +66,7 @@ export const mockAutomation = (hass: MockHomeAssistant) => {
       _hass,
       onChange?: (descriptions: Record<string, unknown>) => void
     ) => {
-      onChange?.({});
+      onChange?.(connectivityConditions);
       return () => undefined;
     }
   );
