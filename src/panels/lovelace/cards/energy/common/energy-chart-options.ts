@@ -335,9 +335,7 @@ function formatTooltip(
     const value = formatNumber(
       y,
       locale,
-      !isSecondary && y < 0.1 && y > 0
-        ? { maximumFractionDigits: 3 }
-        : undefined
+      !isSecondary && y < 0.1 ? { maximumFractionDigits: 3 } : undefined
     );
     if (!isSecondary && value === "0") {
       continue;

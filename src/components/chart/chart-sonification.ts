@@ -260,11 +260,17 @@ export const sonifyChart = async (
 
   // Chart2Music throws while validating a group with no points, which is what
   // placeholder, legend-hidden and all-null series turn into, so only offer it
-  // the series carrying points it can read.
+  // the series carrying points it can read. Additionally exclude series mapped to
+  // secondary axes (yAxisIndex > 0) because Chart2Music announces all series
+  // using yAxis[0]'s unit.
   const allSeries = ensureArray(chartOptions.series) as (
     HaECSeriesItem | undefined
   )[];
-  const readable = allSeries.filter((s) => countNumericPoints(s?.data, 1));
+  const readable = allSeries.filter(
+    (s) =>
+      (!s || !("yAxisIndex" in s) || !s.yAxisIndex) &&
+      countNumericPoints(s?.data, 1)
+  );
   // A single point is not navigable, so it does not earn a focus stop either.
   if (countNavigablePoints(readable) < MIN_NAVIGABLE_POINTS) {
     return null;

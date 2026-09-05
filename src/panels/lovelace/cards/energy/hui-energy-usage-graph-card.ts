@@ -536,15 +536,37 @@ export class HuiEnergyUsageGraphCard
       const weatherEntity = this.hass.entities?.[this._config.weather_entity];
       const deviceId = weatherEntity?.device_id;
       if (deviceId) {
-        const sibling = Object.values(this.hass.entities).find(
+        const siblings = Object.values(this.hass.entities).filter(
           (entity) =>
             entity.device_id === deviceId &&
             entity.entity_id.startsWith("sensor.") &&
             this.hass.states[entity.entity_id]?.attributes.device_class ===
               "temperature"
         );
-        if (sibling) {
-          targetTempEntityId = sibling.entity_id;
+        const candidates = siblings.filter(
+          (entity) =>
+            !entity.entity_id.includes("apparent") &&
+            !entity.entity_id.includes("dew_point") &&
+            !entity.entity_id.includes("feels_like") &&
+            !entity.entity_id.includes("wind_chill") &&
+            !entity.entity_id.includes("wet_bulb")
+        );
+        let primarySibling: (typeof siblings)[0] | undefined;
+        if (candidates.length === 1) {
+          primarySibling = candidates[0];
+        } else if (candidates.length > 1) {
+          const exact = candidates.filter(
+            (entity) =>
+              entity.translation_key === "temperature" ||
+              entity.entity_id.endsWith("_temperature") ||
+              entity.entity_id.endsWith("_outdoor_temperature")
+          );
+          if (exact.length === 1) {
+            primarySibling = exact[0];
+          }
+        }
+        if (primarySibling) {
+          targetTempEntityId = primarySibling.entity_id;
         }
       }
     }
@@ -598,6 +620,9 @@ export class HuiEnergyUsageGraphCard
         return;
       }
 
+      const weatherColor =
+        computedStyles.getPropertyValue("--warning-color").trim() || "#ffa600";
+
       const weatherSeries: LineSeriesOption = {
         id: "primary-weather-temperature",
         name: this.hass.localize(
@@ -607,15 +632,15 @@ export class HuiEnergyUsageGraphCard
         yAxisIndex: 1,
         smooth: true,
         connectNulls: true,
-        showSymbol: false,
+        showSymbol: weatherPoints.length === 1,
         cursor: "default",
         data: weatherPoints,
         lineStyle: {
-          color: "rgba(255, 152, 0, 0.8)",
+          color: weatherColor,
           width: 2,
         },
         itemStyle: {
-          color: "rgba(255, 152, 0, 0.8)",
+          color: weatherColor,
         },
       };
 

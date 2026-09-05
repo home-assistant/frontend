@@ -1208,4 +1208,40 @@ describe("getCommonOptions secondaryUnit", () => {
     assert.include(container.textContent, "Outdoor temperature:");
     assert.include(container.textContent, "0 °C");
   });
+
+  it("preserves 3-decimal precision for small negative energy values", () => {
+    const options = getCommonOptions(
+      start,
+      end,
+      mockLocale,
+      demoConfig,
+      "kWh",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      1,
+      "°C",
+      ["primary-weather-temperature"]
+    );
+
+    const formatter = (options.tooltip as any)?.formatter;
+    assert.isFunction(formatter);
+
+    const mockParams = [
+      {
+        componentSubType: "bar",
+        seriesId: "battery-in",
+        seriesName: "Battery in",
+        value: [start.getTime() + 1800000, -0.005, start.getTime()],
+        color: "#123456",
+      },
+    ];
+
+    const result = formatter(mockParams);
+    const container = document.createElement("div");
+    render(result, container);
+    assert.include(container.textContent, "Battery in:");
+    assert.include(container.textContent, "-0.005 kWh");
+  });
 });

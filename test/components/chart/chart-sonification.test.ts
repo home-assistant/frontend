@@ -423,4 +423,35 @@ describe("sonifyChart", () => {
     });
     expect(connectedAxes().x.valueLabels).toBeUndefined();
   });
+
+  it("excludes series mapped to secondary axes from sonification", async () => {
+    await sonify({
+      xAxis: [{ type: "time" }],
+      yAxis: [
+        { type: "value", name: "kWh" },
+        { type: "value", name: "°C" },
+      ],
+      series: [
+        {
+          type: "bar",
+          name: "Grid",
+          data: [
+            [1700000000000, 1.5],
+            [1700003600000, 2.0],
+          ],
+        },
+        {
+          type: "line",
+          name: "Temperature",
+          yAxisIndex: 1,
+          data: [
+            [1700000000000, 20],
+            [1700003600000, 21],
+          ],
+        },
+      ],
+    });
+
+    expect(mockedConnect.mock.lastCall![1]!.seriesIndex).toEqual([0]);
+  });
 });
