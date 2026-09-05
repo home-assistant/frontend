@@ -337,9 +337,19 @@ export class HaChartBase extends LitElement {
       this._sonificationUnavailable = false;
       // The connection is built from the series that had data at the time, so
       // drop it and let the next focus rebuild it against the current set.
+      const oldData = changedProps.get("data") as typeof this.data | undefined;
+      const seriesTopologyChanged = Boolean(
+        oldData &&
+        (oldData.length !== this.data.length ||
+          oldData.some(
+            (s, i) =>
+              (s as HaECSeriesItem)?.id !== (this.data[i] as HaECSeriesItem)?.id
+          ))
+      );
       if (
         this._sonification &&
         (changedProps.has("_hiddenDatasets") ||
+          seriesTopologyChanged ||
           !canSonifyChart(this.data, this._hiddenDatasets))
       ) {
         this._disposeSonification();
@@ -347,6 +357,20 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
+      const oldOptions = changedProps.get("options") as HaECOption | undefined;
+      const axesTopologyChanged = Boolean(
+        oldOptions &&
+        (ensureArray(oldOptions.yAxis).length !==
+          ensureArray(this.options?.yAxis).length ||
+          ensureArray(oldOptions.yAxis).some(
+            (axis, i) =>
+              axis?.show !== ensureArray(this.options?.yAxis)[i]?.show ||
+              axis?.name !== ensureArray(this.options?.yAxis)[i]?.name
+          ))
+      );
+      if (this._sonification && axesTopologyChanged) {
+        this._disposeSonification();
+      }
       if (
         this._compareCustomLegendOptions(
           changedProps.get("options"),

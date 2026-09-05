@@ -530,13 +530,17 @@ export class HuiEnergyUsageGraphCard
       )
     );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
-    this._weatherUnit = undefined;
-    this._chartData = datasets;
-    this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
 
     const hasEnergyData = datasets.some((dataset) => dataset.data?.length);
-    if (!hasEnergyData) {
+    const hasWeatherConfig = Boolean(
+      this._config?.temperature_entity || this._config?.weather_entity
+    );
+
+    if (!hasEnergyData || !hasWeatherConfig) {
+      this._chartData = datasets;
+      this._legendData = this._getLegendData(datasets);
+      this._weatherUnit = undefined;
       return;
     }
 
@@ -555,7 +559,11 @@ export class HuiEnergyUsageGraphCard
         const meta = statsMeta.find(
           (m) => m.statistic_id === this._config!.temperature_entity
         );
-        if (meta && statisticsMetaHasType(meta, "mean")) {
+        const tempState = this.hass.states[this._config.temperature_entity];
+        const isTemperature =
+          meta?.unit_class === "temperature" ||
+          tempState?.attributes.device_class === "temperature";
+        if (meta && statisticsMetaHasType(meta, "mean") && isTemperature) {
           targetTempEntityId = this._config.temperature_entity;
           targetTempMetadata = meta;
         }
@@ -591,7 +599,13 @@ export class HuiEnergyUsageGraphCard
             }
             const validStatIds = new Set(
               statsMeta
-                .filter((meta) => statisticsMetaHasType(meta, "mean"))
+                .filter(
+                  (meta) =>
+                    statisticsMetaHasType(meta, "mean") &&
+                    (meta.unit_class === "temperature" ||
+                      this.hass.states[meta.statistic_id]?.attributes
+                        .device_class === "temperature")
+                )
                 .map((meta) => meta.statistic_id)
             );
             const validCandidates = candidates.filter((c) =>
@@ -622,6 +636,9 @@ export class HuiEnergyUsageGraphCard
       }
 
       if (!targetTempEntityId) {
+        this._chartData = datasets;
+        this._legendData = this._getLegendData(datasets);
+        this._weatherUnit = undefined;
         return;
       }
 
@@ -654,6 +671,9 @@ export class HuiEnergyUsageGraphCard
 
       const tempStats = stats[targetTempEntityId];
       if (!tempStats || tempStats.length === 0) {
+        this._chartData = datasets;
+        this._legendData = this._getLegendData(datasets);
+        this._weatherUnit = undefined;
         return;
       }
 
@@ -665,6 +685,9 @@ export class HuiEnergyUsageGraphCard
         ]);
 
       if (weatherPoints.length === 0) {
+        this._chartData = datasets;
+        this._legendData = this._getLegendData(datasets);
+        this._weatherUnit = undefined;
         return;
       }
 
@@ -700,7 +723,9 @@ export class HuiEnergyUsageGraphCard
       this._legendData = this._getLegendData(updatedDatasets);
       this._weatherUnit = tempUnit || rawTempUnit;
     } catch {
-      // Ignore weather stats errors
+      this._chartData = datasets;
+      this._legendData = this._getLegendData(datasets);
+      this._weatherUnit = undefined;
     }
   }
 
