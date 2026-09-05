@@ -53,7 +53,6 @@ export const radioFrequencyFixtures: ConnectivityFixtures = {
   ],
   devices: DEVICES,
   entityRegistryEntries: REGISTRY_ENTRIES,
-  // A transceiver's state is the timestamp it was last used.
   entities: () =>
     withRegistryLinks(REGISTRY_ENTRIES, {
       "radio_frequency.garage_bridge": {
