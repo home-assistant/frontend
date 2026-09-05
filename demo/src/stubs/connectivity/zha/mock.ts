@@ -460,6 +460,11 @@ const CLUSTERS: Record<number, ClusterDefinition> = {
       },
     ],
   },
+  25: {
+    name: "Ota",
+    attributes: [{ name: "current_file_version", id: 2 }],
+    commands: [],
+  },
   768: {
     name: "ColorControl",
     attributes: [
@@ -508,23 +513,29 @@ const CLUSTERS: Record<number, ClusterDefinition> = {
   },
 };
 
-const clusterList = (ids: number[]): Cluster[] =>
-  ids.map((id) => ({
+const clusterList = (inIds: number[], outIds: number[] = []): Cluster[] =>
+  [
+    ...inIds.map((id) => ({ id, type: "in" })),
+    ...outIds.map((id) => ({ id, type: "out" })),
+  ].map(({ id, type }) => ({
     name: CLUSTERS[id].name,
     id,
     endpoint_id: 1,
-    type: "in",
+    type,
   }));
 
+// A device binds from its client side, and group binding lists only those, so
+// the remotes carry the `out` clusters they would have on real hardware and
+// the mains-powered devices only their OTA one.
 const DEVICE_CLUSTERS: Record<string, Cluster[]> = {
   [COORDINATOR_IEEE]: clusterList([0]),
-  [PORCH_IEEE]: clusterList([0, 3, 4, 6, 8, 768]),
-  [MOTION_IEEE]: clusterList([0, 1, 3, 1280]),
-  [PLUG_IEEE]: clusterList([0, 3, 4, 6, 2820]),
-  [KITCHEN_IEEE]: clusterList([0, 1, 3, 6]),
+  [PORCH_IEEE]: clusterList([0, 3, 4, 6, 8, 768], [25]),
+  [MOTION_IEEE]: clusterList([0, 1, 3, 1280], [3, 6, 8]),
+  [PLUG_IEEE]: clusterList([0, 3, 4, 6, 2820], [25]),
+  [KITCHEN_IEEE]: clusterList([0, 1, 3], [3, 6, 8]),
   [LANDING_IEEE]: clusterList([0, 1, 3, 1026]),
   [GARAGE_IEEE]: clusterList([0, 1, 3, 1280]),
-  [OFFICE_IEEE]: clusterList([0, 3, 4, 6, 2820]),
+  [OFFICE_IEEE]: clusterList([0, 3, 4, 6, 2820], [25]),
 };
 
 const DEFAULT_ATTRIBUTE_VALUES: Record<string, string> = {
@@ -590,7 +601,21 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/configuration", () => structuredClone(CONFIGURATION));
   hass.mockWS("zha/network/settings", () => NETWORK_SETTINGS);
   hass.mockWS("zha/topology/update", () => undefined);
-  hass.mockWS("zha/devices/bindable", () => []);
+  // The bindings tab hides its device half when this is empty, and the group
+  // half below is what the bind buttons drive. Routers are the ones a device
+  // can bind to, and a device cannot bind to itself.
+  hass.mockWS("zha/devices/bindable", (msg: { ieee: string }) =>
+    DEVICES.filter(
+      (candidate) =>
+        candidate.device_type === "Router" && candidate.ieee !== msg.ieee
+    )
+  );
+  // Nothing reads binding state back, so these only have to succeed; without
+  // them both buttons end in their error state.
+  hass.mockWS("zha/devices/bind", () => undefined);
+  hass.mockWS("zha/devices/unbind", () => undefined);
+  hass.mockWS("zha/groups/bind", () => undefined);
+  hass.mockWS("zha/groups/unbind", () => undefined);
   hass.mockWS(
     "zha/devices/clusters",
     (msg: { ieee: string }) => DEVICE_CLUSTERS[msg.ieee] ?? []
@@ -691,15 +716,18 @@ export const mockZha = (hass: MockHomeAssistant) => {
 
   // The panel offers all of the below, and refetches after each, so they
   // change the mocked state rather than only resolving.
-  hass.mockWS("zha/configuration/update", (msg: { data: any }) => {
-    Object.entries(msg.data ?? {}).forEach(([section, values]) => {
-      CONFIGURATION.data[section] = {
-        ...CONFIGURATION.data[section],
-        ...(values as Record<string, unknown>),
-      };
-    });
-    return undefined;
-  });
+  hass.mockWS(
+    "zha/configuration/update",
+    (msg: { data: ZHAConfiguration["data"] }) => {
+      Object.entries(msg.data ?? {}).forEach(([section, values]) => {
+        CONFIGURATION.data[section] = {
+          ...CONFIGURATION.data[section],
+          ...values,
+        };
+      });
+      return undefined;
+    }
+  );
 
   hass.mockWS("zha/network/backups/create", () => {
     const backup: ZHANetworkBackup = {

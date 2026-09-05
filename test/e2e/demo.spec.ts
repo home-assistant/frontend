@@ -200,6 +200,28 @@ test.describe("Home Assistant Demo", () => {
       timeout: PANEL_TIMEOUT,
     });
 
+    // Group binding offers only the client side of a device, so a mock with
+    // nothing but `in` clusters leaves its bind button permanently disabled.
+    // The switch is the device that binds, so it is the one that must have
+    // them.
+    const outClusters = await page.evaluate(() => {
+      const demo = document.querySelector("ha-demo") as HTMLElement & {
+        hass: { connection: { sendMessagePromise: (msg: unknown) => any } };
+      };
+      return demo.hass.connection
+        .sendMessagePromise({
+          type: "zha/devices/clusters",
+          ieee: "84:2e:14:ff:fe:aa:bb:01",
+        })
+        .then((result: { name: string; type: string }[]) =>
+          result
+            .filter((cluster) => cluster.type === "out")
+            .map((cluster) => cluster.name)
+            .sort()
+        );
+    });
+    expect(outClusters).toEqual(["Identify", "LevelControl", "OnOff"]);
+
     expectNoPageErrors(pageErrors);
   });
 
