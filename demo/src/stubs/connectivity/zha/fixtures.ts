@@ -129,6 +129,20 @@ const REGISTRY_ENTRIES = [
   registryEntry("switch.office_desk", "zha-office-plug", ENTRY_ID, "zha"),
 ];
 
+// The backend puts the registry's area on the ZHA device payload, and the
+// group pickers read it from there rather than resolving the registry
+// themselves. Derived so the two cannot drift apart.
+export const AREA_BY_IEEE: Record<string, string> = Object.fromEntries(
+  DEVICES.flatMap((entry) => {
+    const areaId = entry.area_id;
+    return areaId
+      ? entry.connections
+          .filter(([type]) => type === "zigbee")
+          .map(([, ieee]) => [ieee, areaId])
+      : [];
+  })
+);
+
 export const zhaFixtures: ConnectivityFixtures = {
   components: ["zha"],
   commands: ["zha/"],

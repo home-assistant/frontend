@@ -19,6 +19,7 @@ import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_has
 import { minutesAgo } from "../helpers";
 
 import {
+  AREA_BY_IEEE,
   LANDING_IEEE,
   COORDINATOR_IEEE,
   GARAGE_IEEE,
@@ -235,6 +236,12 @@ const DEVICES: ZHADevice[] = [
     routes: [],
   },
 ];
+
+// The area comes from the device registry in the backend, so it is filled in
+// from the registry fixtures rather than repeated here.
+DEVICES.forEach((zhaDevice) => {
+  zhaDevice.area_id = AREA_BY_IEEE[zhaDevice.ieee];
+});
 
 const deviceByIeee = (ieee: string): ZHADevice =>
   DEVICES.find((d) => d.ieee === ieee)!;
