@@ -25,7 +25,11 @@ const DEVICES = [
     "Nabu Casa",
     "Connect ZBT-1",
     ENTRY_ID,
-    { sw_version: "7.4.4.0", identifiers: [["zha", COORDINATOR_IEEE]] }
+    {
+      sw_version: "7.4.4.0",
+      connections: [["zigbee", COORDINATOR_IEEE]],
+      identifiers: [["zha", COORDINATOR_IEEE]],
+    }
   ),
   device(
     "zha-porch-light",
@@ -33,7 +37,10 @@ const DEVICES = [
     "IKEA of Sweden",
     "TRADFRI bulb E27 CWS 806lm",
     ENTRY_ID,
-    { identifiers: [["zha", PORCH_IEEE]] }
+    {
+      connections: [["zigbee", PORCH_IEEE]],
+      identifiers: [["zha", PORCH_IEEE]],
+    }
   ),
   device(
     "zha-hall-motion",
@@ -41,10 +48,14 @@ const DEVICES = [
     "IKEA of Sweden",
     "TRADFRI motion sensor",
     ENTRY_ID,
-    { identifiers: [["zha", MOTION_IEEE]] }
+    {
+      connections: [["zigbee", MOTION_IEEE]],
+      identifiers: [["zha", MOTION_IEEE]],
+    }
   ),
   device("zha-tv-plug", "TV plug", "Innr", "SP 220", ENTRY_ID, {
     area_id: "living_room",
+    connections: [["zigbee", PLUG_IEEE]],
     identifiers: [["zha", PLUG_IEEE]],
   }),
   device(
@@ -53,7 +64,11 @@ const DEVICES = [
     "IKEA of Sweden",
     "TRADFRI on/off switch",
     ENTRY_ID,
-    { area_id: "kitchen", identifiers: [["zha", KITCHEN_IEEE]] }
+    {
+      area_id: "kitchen",
+      connections: [["zigbee", KITCHEN_IEEE]],
+      identifiers: [["zha", KITCHEN_IEEE]],
+    }
   ),
   device(
     "zha-landing-sensor",
@@ -61,7 +76,10 @@ const DEVICES = [
     "Aqara",
     "WSDCGQ11LM",
     ENTRY_ID,
-    { identifiers: [["zha", LANDING_IEEE]] }
+    {
+      connections: [["zigbee", LANDING_IEEE]],
+      identifiers: [["zha", LANDING_IEEE]],
+    }
   ),
   device(
     "zha-garage-contact",
@@ -70,11 +88,13 @@ const DEVICES = [
     "MCCGQ11LM",
     ENTRY_ID,
     {
+      connections: [["zigbee", GARAGE_IEEE]],
       identifiers: [["zha", GARAGE_IEEE]],
     }
   ),
   device("zha-office-plug", "Office plug", "Innr", "SP 240", ENTRY_ID, {
     area_id: "office",
+    connections: [["zigbee", OFFICE_IEEE]],
     identifiers: [["zha", OFFICE_IEEE]],
   }),
 ];

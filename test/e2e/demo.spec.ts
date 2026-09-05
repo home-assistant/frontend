@@ -174,6 +174,35 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test("ZHA device page reaches the Zigbee panels", async ({ page }) => {
+    // Both the info card and the device actions look up the device's `zigbee`
+    // connection and render nothing without it, so an empty card here means
+    // the fixtures only registered the `zha` identifier.
+    await loadDemo(page, "/#/config/devices/device/zha-porch-light");
+
+    const info = page.locator("ha-device-info-zha");
+    await expect(info).toBeAttached({ timeout: PANEL_TIMEOUT });
+    // The panel is only rendered once the device lookup returns.
+    await expect(info.locator("ha-expansion-panel")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+
+    // The manage page is reached from those actions and asks for the device's
+    // clusters; without them it renders its empty state instead of a cluster.
+    await loadDemo(
+      page,
+      "/#/config/zha/device/84:2e:14:ff:fe:11:22:33/clusters"
+    );
+
+    const clusters = page.locator("zha-manage-clusters");
+    await expect(clusters).toBeAttached({ timeout: PANEL_TIMEOUT });
+    await expect(clusters.locator("zha-cluster-attributes")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+
+    expectNoPageErrors(pageErrors);
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,

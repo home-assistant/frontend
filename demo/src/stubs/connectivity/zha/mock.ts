@@ -1,5 +1,11 @@
 import type {
+  Attribute,
+  AttributeConfigurationStatus,
+  Cluster,
+  ClusterConfigurationEvent,
+  Command,
   Neighbor,
+  ReadAttributeServiceData,
   ZHAConfiguration,
   ZHADevice,
   ZHADeviceEndpoint,
@@ -372,6 +378,196 @@ const NETWORK_SETTINGS: ZHANetworkSettings = {
   },
 };
 
+// The cluster pages ask for a device's clusters, then for the selected
+// cluster's attributes and commands, so all three come out of one table and a
+// device only has to name the clusters it exposes.
+interface ClusterDefinition {
+  name: string;
+  attributes: Attribute[];
+  commands: Command[];
+}
+
+const numberField = (name: string, max: number) => ({
+  name,
+  required: true,
+  selector: { number: { min: 0, max, mode: "box" as const } },
+});
+
+const CLUSTERS: Record<number, ClusterDefinition> = {
+  0: {
+    name: "Basic",
+    attributes: [
+      { name: "zcl_version", id: 0 },
+      { name: "app_version", id: 1 },
+      { name: "manufacturer", id: 4 },
+      { name: "model", id: 5 },
+    ],
+    commands: [],
+  },
+  1: {
+    name: "PowerConfiguration",
+    attributes: [
+      { name: "battery_voltage", id: 32 },
+      { name: "battery_percentage_remaining", id: 33 },
+    ],
+    commands: [],
+  },
+  3: {
+    name: "Identify",
+    attributes: [{ name: "identify_time", id: 0 }],
+    commands: [
+      {
+        name: "identify",
+        id: 0,
+        type: "server",
+        schema: [numberField("identify_time", 65535)],
+      },
+    ],
+  },
+  4: {
+    name: "Groups",
+    attributes: [{ name: "name_support", id: 0 }],
+    commands: [],
+  },
+  6: {
+    name: "OnOff",
+    attributes: [{ name: "on_off", id: 0 }],
+    commands: [
+      { name: "off", id: 0, type: "server", schema: [] },
+      { name: "on", id: 1, type: "server", schema: [] },
+      { name: "toggle", id: 2, type: "server", schema: [] },
+    ],
+  },
+  8: {
+    name: "LevelControl",
+    attributes: [{ name: "current_level", id: 0 }],
+    commands: [
+      {
+        name: "move_to_level",
+        id: 0,
+        type: "server",
+        schema: [
+          numberField("level", 254),
+          numberField("transition_time", 65535),
+        ],
+      },
+    ],
+  },
+  768: {
+    name: "ColorControl",
+    attributes: [
+      { name: "current_hue", id: 0 },
+      { name: "current_saturation", id: 1 },
+      { name: "color_temperature", id: 7 },
+    ],
+    commands: [
+      {
+        name: "move_to_color_temp",
+        id: 10,
+        type: "server",
+        schema: [
+          numberField("color_temp_mireds", 500),
+          numberField("transition_time", 65535),
+        ],
+      },
+    ],
+  },
+  1026: {
+    name: "TemperatureMeasurement",
+    attributes: [
+      { name: "measured_value", id: 0 },
+      { name: "min_measured_value", id: 1 },
+      { name: "max_measured_value", id: 2 },
+    ],
+    commands: [],
+  },
+  1280: {
+    name: "IasZone",
+    attributes: [
+      { name: "zone_state", id: 0 },
+      { name: "zone_type", id: 1 },
+      { name: "zone_status", id: 2 },
+    ],
+    commands: [],
+  },
+  2820: {
+    name: "ElectricalMeasurement",
+    attributes: [
+      { name: "rms_voltage", id: 1285 },
+      { name: "rms_current", id: 1288 },
+      { name: "active_power", id: 1291 },
+    ],
+    commands: [],
+  },
+};
+
+const clusterList = (ids: number[]): Cluster[] =>
+  ids.map((id) => ({
+    name: CLUSTERS[id].name,
+    id,
+    endpoint_id: 1,
+    type: "in",
+  }));
+
+const DEVICE_CLUSTERS: Record<string, Cluster[]> = {
+  [COORDINATOR_IEEE]: clusterList([0]),
+  [PORCH_IEEE]: clusterList([0, 3, 4, 6, 8, 768]),
+  [MOTION_IEEE]: clusterList([0, 1, 3, 1280]),
+  [PLUG_IEEE]: clusterList([0, 3, 4, 6, 2820]),
+  [KITCHEN_IEEE]: clusterList([0, 1, 3, 6]),
+  [LANDING_IEEE]: clusterList([0, 1, 3, 1026]),
+  [GARAGE_IEEE]: clusterList([0, 1, 3, 1280]),
+  [OFFICE_IEEE]: clusterList([0, 3, 4, 6, 2820]),
+};
+
+const DEFAULT_ATTRIBUTE_VALUES: Record<string, string> = {
+  "1:32": "30",
+  "1:33": "184",
+  "3:0": "0",
+  "4:0": "0",
+  "6:0": "1",
+  "8:0": "254",
+  "768:0": "42",
+  "768:1": "180",
+  "768:7": "370",
+  "1026:0": "2140",
+  "1026:1": "-2000",
+  "1026:2": "6000",
+  "1280:0": "1",
+  "1280:1": "21",
+  "1280:2": "0",
+  "2820:1285": "2300",
+  "2820:1288": "410",
+  "2820:1291": "94",
+};
+
+// Written attributes are kept, so reading one back after a write agrees with
+// what the write button reported.
+const writtenAttributes = new Map<string, string>();
+
+const attributeKey = (data: ReadAttributeServiceData) =>
+  `${data.ieee}:${data.endpoint_id}:${data.cluster_id}:${data.attribute}`;
+
+const attributeValue = (data: ReadAttributeServiceData): string => {
+  const written = writtenAttributes.get(attributeKey(data));
+  if (written !== undefined) {
+    return written;
+  }
+  if (data.cluster_id === 0) {
+    const device = DEVICES.find((candidate) => candidate.ieee === data.ieee);
+    if (data.attribute === 4) {
+      return device?.manufacturer ?? "";
+    }
+    if (data.attribute === 5) {
+      return device?.model ?? "";
+    }
+    return "3";
+  }
+  return (
+    DEFAULT_ATTRIBUTE_VALUES[`${data.cluster_id}:${data.attribute}`] ?? "0"
+  );
+};
+
 export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/devices", () => DEVICES);
   hass.mockWS("zha/device", (msg: { ieee: string }) =>
@@ -388,6 +584,27 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/network/settings", () => NETWORK_SETTINGS);
   hass.mockWS("zha/topology/update", () => undefined);
   hass.mockWS("zha/devices/bindable", () => []);
+  hass.mockWS(
+    "zha/devices/clusters",
+    (msg: { ieee: string }) => DEVICE_CLUSTERS[msg.ieee] ?? []
+  );
+  hass.mockWS(
+    "zha/devices/clusters/attributes",
+    (msg: { cluster_id: number }) => CLUSTERS[msg.cluster_id]?.attributes ?? []
+  );
+  hass.mockWS(
+    "zha/devices/clusters/commands",
+    (msg: { cluster_id: number }) => CLUSTERS[msg.cluster_id]?.commands ?? []
+  );
+  hass.mockWS(
+    "zha/devices/clusters/attributes/value",
+    (msg: ReadAttributeServiceData) => attributeValue(msg)
+  );
+  hass.mockService("zha", "set_zigbee_cluster_attribute", (data) => {
+    const write = data as ReadAttributeServiceData & { value: unknown };
+    writtenAttributes.set(attributeKey(write), String(write.value));
+    return undefined;
+  });
   // The add group page and the add members dialog build their pickers from
   // this, so an empty list leaves both permanently empty and the group
   // commands below unreachable. The lights and plugs are the groupable ones.
@@ -402,6 +619,68 @@ export const mockZha = (hass: MockHomeAssistant) => {
   // its spinner for the full permit duration if the subscription rejects.
   // Nothing pairs in the demo, so this only has to stay open.
   hass.mockWS("zha/devices/permit", () => () => undefined);
+
+  // The reconfigure dialog stays on its progress bar until the done event
+  // arrives, so the run has to be walked through and then closed out.
+  hass.mockWS(
+    "zha/devices/reconfigure",
+    (msg: { ieee: string }, _hass, onChange) => {
+      const deviceClusters = DEVICE_CLUSTERS[msg.ieee] ?? [];
+      const timers: number[] = [];
+      let cancelled = false;
+      const emit = (event: ClusterConfigurationEvent, step: number) => {
+        timers.push(
+          window.setTimeout(() => {
+            if (!cancelled) {
+              onChange!(event);
+            }
+          }, step * 400)
+        );
+      };
+
+      deviceClusters.forEach((cluster, index) => {
+        emit(
+          {
+            type: "zha_channel_bind",
+            zha_channel_msg_data: {
+              cluster_name: cluster.name,
+              cluster_id: cluster.id,
+              success: true,
+            },
+          },
+          index + 1
+        );
+        const attributes: AttributeConfigurationStatus[] = CLUSTERS[
+          cluster.id
+        ].attributes.map((attribute) => ({
+          ...attribute,
+          status: "SUCCESS",
+          min: 30,
+          max: 900,
+          change: 1,
+        }));
+        if (attributes.length) {
+          emit(
+            {
+              type: "zha_channel_configure_reporting",
+              zha_channel_msg_data: {
+                cluster_name: cluster.name,
+                cluster_id: cluster.id,
+                attributes,
+              },
+            },
+            index + 1
+          );
+        }
+      });
+      emit({ type: "zha_channel_cfg_done" }, deviceClusters.length + 1);
+
+      return () => {
+        cancelled = true;
+        timers.forEach((timer) => clearTimeout(timer));
+      };
+    }
+  );
 
   // The panel offers all of the below, and refetches after each, so they
   // change the mocked state rather than only resolving.
