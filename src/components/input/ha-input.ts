@@ -374,7 +374,8 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input.label-raised::part(label),
       :host(:focus-within) wa-input::part(label),
-      :host([type="date"]) wa-input::part(label) {
+      :host([type="date"]) wa-input::part(label),
+      :host([type="color"]) wa-input::part(label) {
         padding-top: var(--ha-space-3);
         font-size: var(--ha-font-size-xs);
       }

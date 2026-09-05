@@ -102,6 +102,7 @@ export class DemoHaInput extends LitElement {
                     <ha-input label="URL" type="url" placeholder="https://...">
                     </ha-input>
                     <ha-input label="Date" type="date"></ha-input>
+                    <ha-input label="Color" type="color"></ha-input>
                   </div>
 
                   <h3>States</h3>
