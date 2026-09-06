@@ -137,7 +137,7 @@ export const infraredFixtures: ConnectivityFixtures = {
       // An integration trigger without a name of its own is keyed by "_".
       "component.infrared.triggers._.name": "Infrared command received",
       "component.infrared.triggers._.description":
-        "Triggers when one of the captured infrared commands is received.",
+        "Triggers when one of the captured infrared commands is received. Holding the button down triggers once.",
       "component.infrared.triggers._.fields.commands.name": "Commands",
       "component.infrared.triggers._.fields.commands.description":
         "The infrared commands to trigger on. Capture a command by pressing the button on your remote, then give it a name to use it in conditions and actions.",
