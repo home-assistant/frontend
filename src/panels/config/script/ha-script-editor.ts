@@ -430,7 +430,18 @@ export class HaScriptEditor extends SubscribeMixin(
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-script=${this._handleSaveScript}
-                            ></blueprint-script-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-script-editor>
                           `
                         : html`
                             <manual-script-editor
