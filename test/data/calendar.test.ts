@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, it } from "vitest";
 import { getCalendarColors } from "../../src/data/calendar";
 
 const style = {
@@ -6,31 +6,46 @@ const style = {
 } as CSSStyleDeclaration;
 
 describe("getCalendarColors", () => {
-  test("pick dark text for a light background", () => {
+  it("picks dark text for a light background", () => {
     expect(getCalendarColors("#ffe066", 0, style)).toEqual({
       backgroundColor: "#ffe066",
       textColor: "#000000",
     });
   });
 
-  test("pick light text for a dark background", () => {
+  it("picks light text for a dark background", () => {
     expect(getCalendarColors("#00679e", 0, style)).toEqual({
       backgroundColor: "#00679e",
       textColor: "#ffffff",
     });
   });
 
-  test("fall back to the color for the index", () => {
+  it("falls back to the color for the index", () => {
     expect(getCalendarColors(undefined, 0, style)).toEqual({
       backgroundColor: "#4269d0",
       textColor: "#ffffff",
     });
+    expect(getCalendarColors("not a color", 0, style).backgroundColor).toBe(
+      "#4269d0"
+    );
   });
 
-  test("resolve a theme color", () => {
-    expect(getCalendarColors("yellow", 0, style)).toEqual({
-      backgroundColor: "var(--yellow-color)",
+  it("reads a theme color from the element it is rendered on", () => {
+    const themed = {
+      getPropertyValue: (prop: string) =>
+        prop === "--blue-color" ? "#ffe066" : "",
+    } as CSSStyleDeclaration;
+    // Resolving against the document instead would read the named color blue
+    expect(getCalendarColors("blue", 0, themed)).toEqual({
+      backgroundColor: "var(--blue-color)",
       textColor: "#000000",
     });
+  });
+
+  it("survives a palette variable that does not resolve", () => {
+    const empty = {
+      getPropertyValue: () => "",
+    } as unknown as CSSStyleDeclaration;
+    expect(getCalendarColors(undefined, 0, empty).textColor).toBe("#ffffff");
   });
 });

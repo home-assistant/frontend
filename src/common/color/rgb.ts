@@ -1,4 +1,4 @@
-import { wcagLuminance, wcagContrast } from "culori";
+import { parse, wcagLuminance, wcagContrast } from "culori";
 import { theme2hex } from "./convert-color";
 
 /**
@@ -51,11 +51,17 @@ export const getRGBContrastRatio = (
 ) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 
 /**
- * Returns a contrasted color (black or white) based on the luminance of another color
+ * Returns a contrasted color (black or white) for another color
  * @param color - Color (HEX, rgb/rgba, named color) to calculate a contrasted color
- * @returns HEX color ("#000000" for dark backgrounds, "#ffffff" for light backgrounds)
+ * @returns HEX color, whichever of black and white has the higher contrast ratio
  */
 export const getContrastedColorHex = (color: string): string => {
-  const lum = wcagLuminance(theme2hex(color));
-  return lum > 0.5 ? "#000000" : "#ffffff";
+  const hex = theme2hex(color.trim());
+  // culori throws on a color it cannot read
+  if (!parse(hex)) {
+    return "#ffffff";
+  }
+  return wcagContrast(hex, "#000000") >= wcagContrast(hex, "#ffffff")
+    ? "#000000"
+    : "#ffffff";
 };

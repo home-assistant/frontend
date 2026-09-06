@@ -1,6 +1,7 @@
 import {
   computeCssColor,
   isValidColorString,
+  resolveThemeColor,
 } from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
 import { getContrastedColorHex } from "../common/color/rgb";
@@ -122,7 +123,11 @@ export const getCalendarColors = (
       : getColorByIndex(index, computedStyles);
   return {
     backgroundColor: computeCssColor(resolved),
-    textColor: getContrastedColorHex(resolved),
+    // A theme color stays a CSS variable in the background, so the text color
+    // comes from what that variable holds for this element.
+    textColor: getContrastedColorHex(
+      resolveThemeColor(resolved, computedStyles)
+    ),
   };
 };
 
