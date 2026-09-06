@@ -38,11 +38,6 @@ export const supportsTextInputCardFeature = (
   return supportsTextInputCardFeatureFromState(stateObj);
 };
 
-// Pure and unit-testable: mirrors the min/max/pattern constraints of the
-// text/input_text domains without relying on native DOM constraint
-// validation (which cannot be exercised in this repo's test setup).
-// The regex is fully anchored so a pattern like "[0-9]+" cannot be
-// satisfied by a substring (e.g. "abc1"), unlike a bare `.test()` call.
 export const isTextInputValueValid = (
   value: string,
   stateObj: Pick<HassEntity, "attributes">
@@ -50,7 +45,18 @@ export const isTextInputValueValid = (
   const { min, max, pattern } = stateObj.attributes;
   if (typeof min === "number" && value.length < min) return false;
   if (typeof max === "number" && value.length > max) return false;
-  if (pattern && !new RegExp(`^(?:${pattern})$`).test(value)) return false;
+  if (pattern) {
+    let regex: RegExp;
+    try {
+      regex = new RegExp(`^(?:${pattern})$`);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        return true;
+      }
+      throw err;
+    }
+    if (!regex.test(value)) return false;
+  }
   return true;
 };
 
@@ -92,7 +98,6 @@ class HuiTextInputCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    // Sync only when the state comes from outside (not while the user types)
     if (changedProp.has("_stateObj") && this._stateObj) {
       this._localValue = this._stateObj.state;
     }
@@ -110,8 +115,6 @@ class HuiTextInputCardFeature
     const isReserved = value === UNAVAILABLE || value === UNKNOWN;
 
     if (isReserved || !isTextInputValueValid(value, stateObj)) {
-      // Let the native constraint (minlength/maxlength/pattern below)
-      // surface and announce a validation message, then restore.
       target.reportValidity();
       target.value = stateObj.state;
       this._localValue = stateObj.state;

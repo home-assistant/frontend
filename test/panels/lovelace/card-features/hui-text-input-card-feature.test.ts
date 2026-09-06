@@ -77,8 +77,6 @@ describe("isTextInputValueValid", () => {
   });
 
   it("rejects a value that only partially matches the pattern", () => {
-    // Regression test: without anchoring, "[0-9]+" would match the
-    // substring "1" inside "abc1" via a bare RegExp#test call.
     const stateObj = entity("input_text.test", { pattern: "[0-9]+" });
     expect(isTextInputValueValid("abc1", stateObj)).toBe(false);
   });
