@@ -3,11 +3,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
-import {
-  computeCssColor,
-  isValidColorString,
-} from "../../../common/color/compute-color";
-import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
@@ -20,6 +15,7 @@ import type {
   CalendarEventApiData,
 } from "../../../data/calendar";
 import {
+  getCalendarColors,
   normalizeSubscriptionEventData,
   subscribeCalendarEvents,
 } from "../../../data/calendar";
@@ -142,21 +138,14 @@ export class HuiCalendarCard
         ]) ?? []
       );
       if (this._config?.entities) {
-        this._calendars = this._config.entities.map((entity, idx) => {
-          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
-          let backgroundColor: string;
-          // Validate and use the color from entity registry if valid
-          if (entityColor && isValidColorString(entityColor)) {
-            backgroundColor = computeCssColor(entityColor);
-          } else {
-            // Fall back to default color by index
-            backgroundColor = getColorByIndex(idx, computedStyles);
-          }
-          return {
-            entity_id: entity,
-            backgroundColor,
-          };
-        });
+        this._calendars = this._config.entities.map((entity, idx) => ({
+          entity_id: entity,
+          ...getCalendarColors(
+            entityOptionsMap.get(entity)?.calendar?.color,
+            idx,
+            computedStyles
+          ),
+        }));
       }
     }
   }
