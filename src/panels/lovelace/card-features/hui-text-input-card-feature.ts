@@ -3,12 +3,18 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/input/ha-input";
-import { apiContext } from "../../../data/context";
-import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { HomeAssistant, HomeAssistantApi } from "../../../types";
+import type { HaInput } from "../../../components/input/ha-input";
+import { apiContext, formattersContext } from "../../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -32,6 +38,22 @@ export const supportsTextInputCardFeature = (
   return supportsTextInputCardFeatureFromState(stateObj);
 };
 
+// Pure and unit-testable: mirrors the min/max/pattern constraints of the
+// text/input_text domains without relying on native DOM constraint
+// validation (which cannot be exercised in this repo's test setup).
+// The regex is fully anchored so a pattern like "[0-9]+" cannot be
+// satisfied by a substring (e.g. "abc1"), unlike a bare `.test()` call.
+export const isTextInputValueValid = (
+  value: string,
+  stateObj: Pick<HassEntity, "attributes">
+): boolean => {
+  const { min, max, pattern } = stateObj.attributes;
+  if (typeof min === "number" && value.length < min) return false;
+  if (typeof max === "number" && value.length > max) return false;
+  if (pattern && !new RegExp(`^(?:${pattern})$`).test(value)) return false;
+  return true;
+};
+
 @customElement("hui-text-input-card-feature")
 class HuiTextInputCardFeature
   extends LitElement
@@ -46,6 +68,10 @@ class HuiTextInputCardFeature
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
 
   @state() private _config?: TextInputCardFeatureConfig;
 
@@ -66,34 +92,38 @@ class HuiTextInputCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
+    // Sync only when the state comes from outside (not while the user types)
     if (changedProp.has("_stateObj") && this._stateObj) {
       this._localValue = this._stateObj.state;
     }
   }
-  @state() private _invalid = false;
-  private _valueChanged(ev: CustomEvent) {
-    this._localValue = (ev.target as any).value ?? "";
-    this._invalid = false;
+
+  private _valueChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._localValue = ev.target.value ?? "";
   }
 
-  private async _valueCommitted(ev: CustomEvent) {
+  private _valueCommitted(ev: HASSDomTargetEvent<HaInput>) {
     const stateObj = this._stateObj!;
-    const value = (ev.target as any).value ?? "";
-    const { min, max, pattern } = stateObj.attributes;
+    const target = ev.target;
+    const value = target.value ?? "";
 
-    const isValid =
-      (min === undefined || value.length >= min) &&
-      (max === undefined || value.length <= max) &&
-      (!pattern || new RegExp(pattern).test(value));
+    const isReserved = value === UNAVAILABLE || value === UNKNOWN;
 
-    if (!isValid) {
+    if (isReserved || !isTextInputValueValid(value, stateObj)) {
+      // Let the native constraint (minlength/maxlength/pattern below)
+      // surface and announce a validation message, then restore.
+      target.reportValidity();
+      target.value = stateObj.state;
       this._localValue = stateObj.state;
-      this._invalid = true;
+      return;
+    }
+
+    if (value === stateObj.state) {
       return;
     }
 
     const domain = computeDomain(stateObj.entity_id);
-    await this._api.callService(domain, "set_value", {
+    this._api.callService(domain, "set_value", {
       entity_id: stateObj.entity_id,
       value,
     });
@@ -108,20 +138,22 @@ class HuiTextInputCardFeature
     ) {
       return nothing;
     }
+
     const stateObj = this._stateObj;
     const isPassword = stateObj.attributes.mode === "password";
 
     return html`
       <ha-input
         appearance="outlined"
+        aria-label=${this._formatters.formatEntityName(stateObj, undefined)}
         .type=${isPassword ? "password" : "text"}
         .passwordToggle=${isPassword}
         .value=${this._localValue ?? ""}
         .minlength=${stateObj.attributes.min}
         .maxlength=${stateObj.attributes.max}
         .pattern=${stateObj.attributes.pattern}
+        .autoValidate=${Boolean(stateObj.attributes.pattern)}
         .disabled=${stateObj.state === UNAVAILABLE}
-        .invalid=${this._invalid}
         @input=${this._valueChanged}
         @change=${this._valueCommitted}
       ></ha-input>
