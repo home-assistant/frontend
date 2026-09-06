@@ -184,6 +184,10 @@ export interface NumericInputCardFeatureConfig {
   style?: "buttons" | "slider";
 }
 
+export interface TextInputCardFeatureConfig {
+  type: "text-input";
+}
+
 export interface TargetHumidityCardFeatureConfig {
   type: "target-humidity";
 }
@@ -380,6 +384,7 @@ export type LovelaceCardFeatureConfig =
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
+  | TextInputCardFeatureConfig
   | TimerActionsCardFeatureConfig
   | TimerPresetsCardFeatureConfig
   | ToggleCardFeatureConfig

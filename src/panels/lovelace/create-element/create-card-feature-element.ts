@@ -35,6 +35,7 @@ import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
 import "../card-features/hui-target-humidity-card-feature";
 import "../card-features/hui-target-temperature-card-feature";
+import "../card-features/hui-text-input-card-feature";
 import "../card-features/hui-timer-actions-card-feature";
 import "../card-features/hui-timer-presets-card-feature";
 import "../card-features/hui-toggle-card-feature";
@@ -100,6 +101,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "target-humidity",
   "target-temperature",
   "temperature-forecast",
+  "text-input",
   "timer-actions",
   "timer-presets",
   "toggle",

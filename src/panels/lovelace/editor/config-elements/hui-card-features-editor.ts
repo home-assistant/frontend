@@ -64,6 +64,7 @@ import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsTextInputCardFeature } from "../../card-features/hui-text-input-card-feature";
 import { supportsTimerActionsCardFeature } from "../../card-features/hui-timer-actions-card-feature";
 import { supportsTimerPresetsCardFeature } from "../../card-features/hui-timer-presets-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
@@ -132,6 +133,7 @@ const UI_FEATURE_TYPES = [
   "target-humidity",
   "target-temperature",
   "temperature-forecast",
+  "text-input",
   "timer-actions",
   "timer-presets",
   "toggle",
@@ -230,6 +232,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "temperature-forecast": supportsTemperatureForecastCardFeature,
+  "text-input": supportsTextInputCardFeature,
   "timer-actions": supportsTimerActionsCardFeature,
   "timer-presets": supportsTimerPresetsCardFeature,
   toggle: supportsToggleCardFeature,

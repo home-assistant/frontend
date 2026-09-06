@@ -11009,6 +11009,9 @@
                   "slider": "Slider"
                 }
               },
+              "text-input": {
+                "label": "Text input"
+              },
               "target-temperature": {
                 "label": "Target temperature"
               },

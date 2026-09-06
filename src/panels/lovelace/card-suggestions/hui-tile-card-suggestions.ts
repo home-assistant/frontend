@@ -21,6 +21,8 @@ const DATE_VARIANTS: TileVariant[] = [TILE_VARIANT, ["date-set"]];
 
 const BUTTON_VARIANTS: TileVariant[] = [TILE_VARIANT, ["button"]];
 
+const TEXT_INPUT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["text-input"]];
+
 const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   light: [
     TILE_VARIANT,
@@ -89,6 +91,8 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   input_number: NUMERIC_INPUT_VARIANTS,
   number: NUMERIC_INPUT_VARIANTS,
   input_datetime: DATE_VARIANTS,
+  input_text: TEXT_INPUT_VARIANTS,
+  text: TEXT_INPUT_VARIANTS,
   date: DATE_VARIANTS,
   update: [TILE_VARIANT, ["update-actions"]],
   water_heater: [
