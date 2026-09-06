@@ -38,15 +38,28 @@ export const supportsTextInputCardFeature = (
   return supportsTextInputCardFeatureFromState(stateObj);
 };
 
+const compilePattern = (pattern: string): RegExp | null => {
+  try {
+    return new RegExp(`^(?:${pattern})$`, "u");
+  } catch {
+    return null;
+  }
+};
+
 export const isTextInputValueValid = (
   value: string,
   stateObj: Pick<HassEntity, "attributes">
 ): boolean => {
-  const { min, max } = stateObj.attributes;
+  const { min, max, pattern } = stateObj.attributes;
   const length = [...value].length;
 
   if (typeof min === "number" && length < min) return false;
   if (typeof max === "number" && length > max) return false;
+
+  if (typeof pattern === "string" && pattern) {
+    const regex = compilePattern(pattern);
+    if (regex && !regex.test(value)) return false;
+  }
 
   return true;
 };
@@ -155,6 +168,8 @@ class HuiTextInputCardFeature
         .disabled=${stateObj.state === UNAVAILABLE}
         .minlength=${stateObj.attributes.min}
         .maxlength=${stateObj.attributes.max}
+        .pattern=${stateObj.attributes.pattern}
+        .required=${typeof stateObj.attributes.min === "number" && stateObj.attributes.min > 0}
         @input=${this._valueChanged}
         @change=${this._valueCommitted}
       ></ha-input>

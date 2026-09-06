@@ -85,4 +85,37 @@ describe("isTextInputValueValid", () => {
     const stateObj = entity("input_text.test", {});
     expect(isTextInputValueValid("anything", stateObj)).toBe(true);
   });
+
+  it("accepts a value that matches the pattern", () => {
+    const stateObj = entity("text.test", { pattern: "[a-z]+" });
+    expect(isTextInputValueValid("hello", stateObj)).toBe(true);
+  });
+
+  it("rejects a value that does not match the pattern", () => {
+    const stateObj = entity("text.test", { pattern: "[a-z]+" });
+    expect(isTextInputValueValid("HELLO123", stateObj)).toBe(false);
+  });
+
+  it("respects both length and pattern constraints together", () => {
+    const stateObj = entity("text.test", { min: 3, max: 5, pattern: "[a-z]+" });
+    expect(isTextInputValueValid("ab", stateObj)).toBe(false);
+    expect(isTextInputValueValid("abcdef", stateObj)).toBe(false);
+    expect(isTextInputValueValid("ABC", stateObj)).toBe(false);
+    expect(isTextInputValueValid("abc", stateObj)).toBe(true);
+  });
+
+  it("does not block the value when the pattern is not valid JS regex syntax", () => {
+    const stateObj = entity("text.test", { pattern: "(?i)foo" });
+    expect(isTextInputValueValid("anything", stateObj)).toBe(true);
+  });
+
+  it("accepts any value when no pattern is set", () => {
+    const stateObj = entity("input_text.test", {});
+    expect(isTextInputValueValid("anything123", stateObj)).toBe(true);
+  });
+
+  it("rejects an empty value when min is greater than 0", () => {
+    const stateObj = entity("input_text.test", { min: 3 });
+    expect(isTextInputValueValid("", stateObj)).toBe(false);
+  });
 });
