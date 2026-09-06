@@ -42,21 +42,12 @@ export const isTextInputValueValid = (
   value: string,
   stateObj: Pick<HassEntity, "attributes">
 ): boolean => {
-  const { min, max, pattern } = stateObj.attributes;
-  if (typeof min === "number" && value.length < min) return false;
-  if (typeof max === "number" && value.length > max) return false;
-  if (pattern) {
-    let regex: RegExp;
-    try {
-      regex = new RegExp(`^(?:${pattern})$`);
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        return true;
-      }
-      throw err;
-    }
-    if (!regex.test(value)) return false;
-  }
+  const { min, max } = stateObj.attributes;
+  const length = [...value].length;
+
+  if (typeof min === "number" && length < min) return false;
+  if (typeof max === "number" && length > max) return false;
+
   return true;
 };
 
@@ -107,11 +98,10 @@ class HuiTextInputCardFeature
     this._localValue = ev.target.value ?? "";
   }
 
-  private _valueCommitted(ev: HASSDomTargetEvent<HaInput>) {
+  private async _valueCommitted(ev: HASSDomTargetEvent<HaInput>) {
     const stateObj = this._stateObj!;
     const target = ev.target;
     const value = target.value ?? "";
-
     const isReserved = value === UNAVAILABLE || value === UNKNOWN;
 
     if (isReserved || !isTextInputValueValid(value, stateObj)) {
@@ -126,10 +116,20 @@ class HuiTextInputCardFeature
     }
 
     const domain = computeDomain(stateObj.entity_id);
-    this._api.callService(domain, "set_value", {
-      entity_id: stateObj.entity_id,
-      value,
-    });
+
+    try {
+      await this._api.callService(domain, "set_value", {
+        entity_id: stateObj.entity_id,
+        value,
+      });
+    } catch {
+      if (
+        this._stateObj?.entity_id === stateObj.entity_id &&
+        this._localValue === value
+      ) {
+        this._localValue = this._stateObj.state;
+      }
+    }
   }
 
   protected render() {
@@ -152,10 +152,6 @@ class HuiTextInputCardFeature
         .type=${isPassword ? "password" : "text"}
         .passwordToggle=${isPassword}
         .value=${this._localValue ?? ""}
-        .minlength=${stateObj.attributes.min}
-        .maxlength=${stateObj.attributes.max}
-        .pattern=${stateObj.attributes.pattern}
-        .autoValidate=${Boolean(stateObj.attributes.pattern)}
         .disabled=${stateObj.state === UNAVAILABLE}
         @input=${this._valueChanged}
         @change=${this._valueCommitted}
