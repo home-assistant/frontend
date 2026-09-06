@@ -4,7 +4,7 @@ import {
   resolveThemeColor,
 } from "../common/color/compute-color";
 import { getColorByIndex } from "../common/color/colors";
-import { getContrastedColorHex } from "../common/color/rgb";
+import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
@@ -115,19 +115,21 @@ export const getCalendarColors = (
   color: string | null | undefined,
   index: number,
   computedStyles: CSSStyleDeclaration
-): { backgroundColor: string; textColor: string } => {
+): { backgroundColor: string; textColor?: string } => {
   // Fall back to a color by index when the entity has none set
   const resolved =
     color && isValidColorString(color)
       ? color
       : getColorByIndex(index, computedStyles);
+  // A theme color stays a CSS variable in the background, so the text color
+  // comes from what that variable holds for this element.
+  const background = resolveThemeColor(resolved, computedStyles);
   return {
     backgroundColor: computeCssColor(resolved),
-    // A theme color stays a CSS variable in the background, so the text color
-    // comes from what that variable holds for this element.
-    textColor: getContrastedColorHex(
-      resolveThemeColor(resolved, computedStyles)
-    ),
+    // A background we cannot measure keeps the color fullcalendar picks itself
+    textColor: isOpaqueColor(background)
+      ? getContrastedColorHex(background)
+      : undefined,
   };
 };
 

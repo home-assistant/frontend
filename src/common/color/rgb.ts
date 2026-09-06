@@ -51,6 +51,17 @@ export const getRGBContrastRatio = (
 ) => Math.round((rgbContrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 
 /**
+ * Tells whether a color can be measured, which a CSS function that is passed
+ * through unevaluated cannot, and whether it covers what is behind it
+ * @param color - Color (HEX, rgb/rgba, named color) to check
+ * @returns Whether a contrast against this color says anything
+ */
+export const isOpaqueColor = (color: string): boolean => {
+  const parsed = parse(color.trim());
+  return parsed !== undefined && (parsed.alpha ?? 1) === 1;
+};
+
+/**
  * Returns a contrasted color (black or white) for another color
  * @param color - Color (HEX, rgb/rgba, named color) to calculate a contrasted color
  * @returns HEX color, whichever of black and white has the higher contrast ratio

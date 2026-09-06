@@ -42,10 +42,17 @@ describe("getCalendarColors", () => {
     });
   });
 
-  it("survives a palette variable that does not resolve", () => {
+  it("leaves the text color unset for a background it cannot measure", () => {
     const empty = {
       getPropertyValue: () => "",
     } as unknown as CSSStyleDeclaration;
-    expect(getCalendarColors(undefined, 0, empty).textColor).toBe("#ffffff");
+    expect(getCalendarColors(undefined, 0, empty).textColor).toBeUndefined();
+    expect(
+      getCalendarColors("color-mix(in srgb, white 90%, black)", 0, style)
+        .textColor
+    ).toBeUndefined();
+    expect(
+      getCalendarColors("rgba(255, 255, 255, 0.1)", 0, style).textColor
+    ).toBeUndefined();
   });
 });
