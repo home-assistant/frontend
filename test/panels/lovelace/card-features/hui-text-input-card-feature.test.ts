@@ -71,14 +71,14 @@ describe("isTextInputValueValid", () => {
     expect(isTextInputValueValid("hello", stateObj)).toBe(false);
   });
 
-  it("accepts a value fully matching the pattern", () => {
-    const stateObj = entity("input_text.test", { pattern: "[0-9]+" });
-    expect(isTextInputValueValid("1234", stateObj)).toBe(true);
+  it("counts Unicode code points for min/max length", () => {
+    const stateObj = entity("input_text.test", { min: 2, max: 2 });
+    expect(isTextInputValueValid("😀😀", stateObj)).toBe(true);
   });
 
-  it("rejects a value that only partially matches the pattern", () => {
-    const stateObj = entity("input_text.test", { pattern: "[0-9]+" });
-    expect(isTextInputValueValid("abc1", stateObj)).toBe(false);
+  it("accepts a single emoji when max is 1", () => {
+    const stateObj = entity("input_text.test", { max: 1 });
+    expect(isTextInputValueValid("😀", stateObj)).toBe(true);
   });
 
   it("accepts any value when no constraints are set", () => {

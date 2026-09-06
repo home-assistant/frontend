@@ -153,6 +153,8 @@ class HuiTextInputCardFeature
         .passwordToggle=${isPassword}
         .value=${this._localValue ?? ""}
         .disabled=${stateObj.state === UNAVAILABLE}
+        .minlength=${stateObj.attributes.min}
+        .maxlength=${stateObj.attributes.max}
         @input=${this._valueChanged}
         @change=${this._valueCommitted}
       ></ha-input>
