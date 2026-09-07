@@ -1,4 +1,6 @@
-/* eslint-disable -- FOR TESTING ONLY: tile card editor concept comparison; not for merge */
+/* FOR TESTING ONLY: tile card editor concept comparison; not for merge.
+   No eslint-disable here — this file needs none, and an unused disable
+   directive is itself a lint warning (CI runs with --max-warnings=0). */
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiDragHorizontalVariant, mdiPencilOutline, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
