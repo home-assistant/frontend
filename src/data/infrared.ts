@@ -11,39 +11,97 @@ const INFRARED_DOMAIN = "infrared";
 
 export type InfraredProxyType = "emitter" | "receiver";
 
-// A named infrared code, as captured from a receiver. Used by the infrared
-// command selector, for example in the infrared trigger.
+// A named infrared code, as recorded from a receiver, in the global database
+// of known commands.
 export interface InfraredCommand {
+  id: string;
   name: string;
   code: string;
 }
 
-export const isInfraredReceiver = (
+export const fetchInfraredCommands = (hass: HomeAssistant) =>
+  hass.callWS<InfraredCommand[]>({ type: "infrared/commands/list" });
+
+export const createInfraredCommand = (
   hass: HomeAssistant,
-  entityId: string
-): boolean =>
-  computeDomain(entityId) === INFRARED_DOMAIN &&
-  hass.states[entityId]?.attributes.device_class === "receiver";
+  values: { name: string; code: string }
+) =>
+  hass.callWS<InfraredCommand>({
+    type: "infrared/commands/create",
+    ...values,
+  });
+
+export const updateInfraredCommand = (
+  hass: HomeAssistant,
+  commandId: string,
+  updates: { name: string }
+) =>
+  hass.callWS<InfraredCommand>({
+    type: "infrared/commands/update",
+    command_id: commandId,
+    ...updates,
+  });
+
+export const deleteInfraredCommand = (hass: HomeAssistant, commandId: string) =>
+  hass.callWS({
+    type: "infrared/commands/delete",
+    command_id: commandId,
+  });
+
+interface InfraredCommandChange {
+  change_type: "added" | "updated" | "removed";
+  command_id: string;
+  item: InfraredCommand;
+}
+
+// The backend streams the changes to the command database, so keep the list
+// together here and hand callers the whole of it.
+export const subscribeInfraredCommands = (
+  hass: HomeAssistant,
+  callback: (commands: InfraredCommand[]) => void
+) => {
+  const commands = new Map<string, InfraredCommand>();
+  return hass.connection.subscribeMessage<InfraredCommandChange[]>(
+    (changes) => {
+      for (const change of changes) {
+        if (change.change_type === "removed") {
+          commands.delete(change.command_id);
+        } else {
+          commands.set(change.command_id, change.item);
+        }
+      }
+      callback(Array.from(commands.values()));
+    },
+    { type: "infrared/commands/subscribe" }
+  );
+};
+
+export const infraredReceiverEntityIds = (
+  states: HomeAssistant["states"]
+): string[] =>
+  Object.keys(states).filter(
+    (entityId) =>
+      computeDomain(entityId) === INFRARED_DOMAIN &&
+      states[entityId].attributes.device_class === "receiver"
+  );
 
 export interface InfraredCapturedCode {
   code: string;
-  // The known code this signal matches, when it is one already captured.
+  // The id of the known command this signal matches, when there is one.
   duplicate_of: string | null;
 }
 
 // Streams the codes a receiver picks up, so a remote's buttons can be
-// captured. Two presses of a button never report the same code, so the codes
-// already captured are passed along for the backend to recognize.
+// recorded. Two presses of a button never report the same code, so the backend
+// recognizes the ones it already knows.
 export const subscribeInfraredReceiver = (
   hass: HomeAssistant,
   entityId: string,
-  knownCodes: string[],
   callback: (captured: InfraredCapturedCode) => void
 ) =>
   hass.connection.subscribeMessage<InfraredCapturedCode>(callback, {
     type: "infrared/receiver/subscribe",
     entity_id: entityId,
-    known_codes: knownCodes,
   });
 
 export type InfraredDeviceType = InfraredProxyType | "both";

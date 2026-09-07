@@ -100,8 +100,6 @@ const SELECTOR_INITIAL_VALUES = {
   text: (selector) => (selector.text?.multiple ? [] : ""),
   time: () => "00:00:00",
   icon: () => "",
-  infrared_command: () => [],
-  infrared_command_name: () => [],
   media: (selector) => (selector.media?.multiple ? [] : {}),
   theme: () => "",
   timezone: undefined,

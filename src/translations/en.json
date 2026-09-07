@@ -528,19 +528,6 @@
         "validation_failed": "Form validation failed."
       },
       "selectors": {
-        "infrared_command_name": {
-          "no_commands": "The infrared triggers of this automation have not captured any commands yet."
-        },
-        "infrared_command": {
-          "name": "Name",
-          "capture": "Capture command",
-          "captured_name": "Command {number}",
-          "press_a_button": "Press a button on your remote",
-          "capture_failed": "Could not listen to the infrared receiver.",
-          "duplicate": "You already captured this command as {name}.",
-          "duplicate_unknown": "You already captured this command.",
-          "select_receiver": "Select an infrared receiver to capture commands from."
-        },
         "serial_port": {
           "enter_manually": "Enter manually",
           "device_in_area": "{device}, {area}",
@@ -7534,10 +7521,34 @@
           "my_devices": "My devices",
           "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
           "devices_navigation": "Devices",
+          "commands_count": "{count} {count, plural,\n  one {command}\n  other {commands}\n}",
+          "commands_navigation": "Commands",
           "name": "Name",
           "type": "Type",
           "last_used": "Last used",
-          "no_devices": "No infrared proxies found"
+          "no_devices": "No infrared proxies found",
+          "no_commands": "No commands recorded yet",
+          "rename": {
+            "title": "Rename command"
+          },
+          "delete": {
+            "title": "Delete command?",
+            "text": "{name} will be deleted. Automations that use it will stop working."
+          },
+          "record": {
+            "button": "Record command",
+            "title": "Record command",
+            "receiver": "Infrared receiver",
+            "receiver_description": "The receiver that picks up the button press.",
+            "no_receivers": "No infrared receiver was found. Add a device with an infrared receiver to record commands.",
+            "start": "Start",
+            "press_a_button": "Press a button on your remote",
+            "listen_failed": "Could not listen to the infrared receiver.",
+            "duplicate": "You already recorded this command as {name}. Press another button to record it.",
+            "duplicate_unknown": "You already recorded this command. Press another button to record it.",
+            "name": "Name",
+            "suggested_name": "Command {number}"
+          }
         },
         "bluetooth": {
           "title": "Bluetooth",

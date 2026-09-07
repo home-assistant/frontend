@@ -10,6 +10,11 @@ import type { ConnectivityFixtures } from "../types";
 
 const ENTRY_ID = "mock-broadlink";
 
+// The commands the demo starts with. The mock pairs them with pronto codes and
+// serves them as the known command database, so the receiver's event entity
+// reports the same event types.
+export const INFRARED_COMMAND_NAMES = ["Power", "Volume up", "Volume down"];
+
 const DEVICES = [
   device(
     "broadlink-living-room",
@@ -46,6 +51,13 @@ const REGISTRY_ENTRIES = [
     ENTRY_ID,
     "broadlink",
     "Receiver"
+  ),
+  registryEntry(
+    "event.living_room_blaster_infrared_command",
+    "broadlink-living-room",
+    ENTRY_ID,
+    "broadlink",
+    "Infrared command"
   ),
   registryEntry(
     "infrared.bedroom_blaster_emitter",
@@ -93,6 +105,15 @@ export const infraredFixtures: ConnectivityFixtures = {
           device_class: "receiver",
         },
       },
+      "event.living_room_blaster_infrared_command": {
+        entity_id: "event.living_room_blaster_infrared_command",
+        state: minutesAgo(3),
+        attributes: {
+          friendly_name: "Living room blaster Infrared command",
+          event_types: INFRARED_COMMAND_NAMES,
+          event_type: INFRARED_COMMAND_NAMES[0],
+        },
+      },
       "infrared.bedroom_blaster_emitter": {
         entity_id: "infrared.bedroom_blaster_emitter",
         state: minutesAgo(1440),
@@ -102,53 +123,15 @@ export const infraredFixtures: ConnectivityFixtures = {
         },
       },
     }),
-  // The trigger has no fields of its own besides the captured commands, which
-  // the infrared command selector renders.
-  triggers: {
-    infrared: {
-      target: {
-        entity: [{ domain: ["infrared"], device_class: ["receiver"] }],
-      },
-      fields: {
-        commands: {
-          required: true,
-          selector: { infrared_command: {} },
-          context: { filter_target: "target" },
-        },
-      },
-    },
-  },
-  // The command names are chosen per automation, so the selector reads them
-  // from the automation being edited.
-  conditions: {
-    infrared: {
-      fields: {
-        command: { required: true, selector: { infrared_command_name: {} } },
-      },
-    },
-  },
   backendTranslations: {
     entity_component: {
       // The emitter is the default device class, stored under the "_" key.
       "component.infrared.entity_component._.name": "Emitter",
       "component.infrared.entity_component.receiver.name": "Receiver",
     },
-    triggers: {
-      // An integration trigger without a name of its own is keyed by "_".
-      "component.infrared.triggers._.name": "Infrared command received",
-      "component.infrared.triggers._.description":
-        "Triggers when one of the captured infrared commands is received. Holding the button down triggers once.",
-      "component.infrared.triggers._.fields.commands.name": "Commands",
-      "component.infrared.triggers._.fields.commands.description":
-        "The infrared commands to trigger on. Capture a command by pressing the button on your remote, then give it a name to use it in conditions and actions.",
-    },
-    conditions: {
-      "component.infrared.conditions._.name": "Infrared command",
-      "component.infrared.conditions._.description":
-        "Tests which of the infrared commands of the trigger was received.",
-      "component.infrared.conditions._.fields.command.name": "Commands",
-      "component.infrared.conditions._.fields.command.description":
-        "The condition passes when the automation was started by one of these infrared commands.",
+    entity: {
+      "component.infrared.entity.event.infrared_command.name":
+        "Infrared command",
     },
   },
 };

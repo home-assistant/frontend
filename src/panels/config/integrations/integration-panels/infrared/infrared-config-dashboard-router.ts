@@ -26,6 +26,10 @@ class InfraredConfigDashboardRouter extends HassRouterPage {
         tag: "infrared-devices-page",
         load: () => import("./infrared-devices-page"),
       },
+      commands: {
+        tag: "infrared-commands-page",
+        load: () => import("./infrared-commands-page"),
+      },
     },
   };
 

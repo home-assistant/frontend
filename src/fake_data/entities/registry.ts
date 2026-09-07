@@ -3,6 +3,7 @@ import type { EntityInput } from "./types";
 import { MockAlarmControlPanelEntity } from "./alarm-control-panel-entity";
 import { MockClimateEntity } from "./climate-entity";
 import { MockCoverEntity } from "./cover-entity";
+import { MockEventEntity } from "./event-entity";
 import { MockFanEntity } from "./fan-entity";
 import { MockGroupEntity } from "./group-entity";
 import { MockHumidifierEntity } from "./humidifier-entity";
@@ -25,6 +26,7 @@ const TYPES: Record<string, EntityConstructor> = {
   alarm_control_panel: MockAlarmControlPanelEntity,
   climate: MockClimateEntity,
   cover: MockCoverEntity,
+  event: MockEventEntity,
   fan: MockFanEntity,
   group: MockGroupEntity,
   humidifier: MockHumidifierEntity,

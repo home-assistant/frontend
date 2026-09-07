@@ -2,23 +2,30 @@ import {
   mdiAlertCircleOutline,
   mdiCheck,
   mdiCloseCircleOutline,
+  mdiGestureTapButton,
   mdiRemote,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
-import type { InfraredDevice } from "../../../../../data/infrared";
+import type {
+  InfraredCommand,
+  InfraredDevice,
+} from "../../../../../data/infrared";
+import { subscribeInfraredCommands } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 
 @customElement("infrared-config-dashboard")
-export class InfraredConfigDashboard extends LitElement {
+export class InfraredConfigDashboard extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -28,6 +35,16 @@ export class InfraredConfigDashboard extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public devices: InfraredDevice[] = [];
+
+  @state() private _commands: InfraredCommand[] = [];
+
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    return [
+      subscribeInfraredCommands(this.hass, (commands) => {
+        this._commands = commands;
+      }),
+    ];
+  }
 
   protected render(): TemplateResult {
     const devices = this.devices;
@@ -89,6 +106,19 @@ export class InfraredConfigDashboard extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.infrared.devices_count",
                       { count: deviceCount }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+                <ha-md-list-item type="link" href="/config/infrared/commands">
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiGestureTapButton}
+                  ></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.infrared.commands_count",
+                      { count: this._commands.length }
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>

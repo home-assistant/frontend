@@ -5,8 +5,6 @@ import type {
   IntegrationManifest,
   IntegrationType,
 } from "../../../../src/data/integration";
-import type { ConditionDescriptions } from "../../../../src/data/condition";
-import type { TriggerDescriptions } from "../../../../src/data/trigger";
 import type { TranslationCategory } from "../../../../src/data/translation";
 import type { EntityInput } from "../../../../src/fake_data/entities/types";
 
@@ -33,10 +31,6 @@ export interface ConnectivityFixtures {
   entityRegistryEntries?: EntityRegistryEntry[];
   /** States for the entities above; built lazily so timestamps stay fresh. */
   entities?: () => EntityInput[];
-  /** Automation triggers the integration serves to the trigger picker. */
-  triggers?: TriggerDescriptions;
-  /** Automation conditions the integration serves to the condition picker. */
-  conditions?: ConditionDescriptions;
   /** Backend translations the panel looks up, by category. */
   backendTranslations?: Partial<
     Record<TranslationCategory, Record<string, string>>
