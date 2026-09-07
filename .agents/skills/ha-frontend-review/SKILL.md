@@ -111,7 +111,7 @@ For user-facing changes, establish the existing design context as part of fronte
 
 - Before reviewing a pull request, read its existing comments, reviews, and threads, including their status, resolver, and Copilot resolution reason when available.
 - Prioritise substantive human feedback, especially from authors marked `MEMBER`, and validate agent-generated feedback against the code and repository guidance.
-- Do not duplicate unresolved findings as new inline comments; reference any that still need action in the review summary. Treat resolved feedback as closed and respect **Won't fix** and **Incorrect** reasons.
+- Do not duplicate unresolved findings as new inline comments; reference any that still need action in the review summary. Treat resolved feedback as closed only when the resolution reason or surrounding discussion supports that outcome; otherwise validate it against the current code before suppressing it. Respect **Won't fix** and **Incorrect** reasons.
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
 - Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
