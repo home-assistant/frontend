@@ -130,14 +130,20 @@ export interface EntityTableFilterContext {
 export class HaEntityTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public narrow = false;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
   @property({ attribute: false }) public route!: Route;
   @property({ attribute: false }) public tabs: PageNavigation[] = [];
   @property({ attribute: "back-path" }) public backPath?: string;
+  @property({ attribute: false }) public backCallback?: () => void;
+  @property({ attribute: false }) public entityIds?: ReadonlySet<string>;
+  @property({ attribute: false }) public noDataText?: string;
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
   @property() public filter = "";
   @property({ attribute: false }) public filterValues: DataTableFiltersValues =
     {};
   @property({ type: Boolean }) public selectable = false;
+  @property({ attribute: false })
+  public selectionMode: HaTabsSubpageDataTable["selectionMode"] = "toggle";
   @property({ type: Boolean }) public clickable = false;
   @property({ type: Number }) public selected = 0;
   @property({ attribute: "has-fab", type: Boolean }) public hasFab = false;
@@ -146,6 +152,10 @@ export class HaEntityTable extends LitElement {
   @property({ attribute: false }) public initialCollapsedGroups?: string[];
   @property({ attribute: false }) public columnOrder?: string[];
   @property({ attribute: false }) public hiddenColumns?: string[];
+  @property({ attribute: false }) public exposedEntities?: Record<
+    string,
+    ExposeEntitySettings
+  >;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -234,6 +244,13 @@ export class HaEntityTable extends LitElement {
           this._loadSubEntries(subEntryConfigEntry);
         }
       }
+    }
+    if (
+      this.hasUpdated &&
+      changedProps.has("exposedEntities") &&
+      this.exposedEntities === undefined
+    ) {
+      this._fetchExposedEntities();
     }
   }
 
@@ -441,7 +458,8 @@ export class HaEntityTable extends LitElement {
       states: HomeAssistant["states"],
       entities: EntityRegistryEntry[],
       sources: EntitySources | undefined,
-      exposedEntities: Record<string, ExposeEntitySettings> | undefined
+      exposedEntities: Record<string, ExposeEntitySettings> | undefined,
+      selectionMode: HaTabsSubpageDataTable["selectionMode"]
     ): StateEntity[] => {
       const regEntityIds = new Set(entities.map((entity) => entity.entity_id));
       return Object.keys(states)
@@ -458,7 +476,7 @@ export class HaEntityTable extends LitElement {
           device_id: null,
           icon: null,
           readonly: true,
-          selectable: false,
+          selectable: selectionMode === "always",
           entity_category: null,
           has_entity_name: false,
           options: Object.fromEntries(
@@ -488,7 +506,8 @@ export class HaEntityTable extends LitElement {
       entries: ConfigEntry[] | undefined,
       labelReg: LabelRegistryEntry[] | undefined,
       entitySources: EntitySources | undefined,
-      exposedEntities: Record<string, ExposeEntitySettings> | undefined
+      exposedEntities: Record<string, ExposeEntitySettings> | undefined,
+      entityIds: ReadonlySet<string> | undefined
     ) => {
       const result: EntityRow[] = [];
       const stateFilters = filters["ha-filter-states"] as string[];
@@ -510,6 +529,11 @@ export class HaEntityTable extends LitElement {
         !stateFilters?.length || stateFilters.includes("readonly");
 
       let filteredEntities = entities.concat(entitiesWithoutUniqueId);
+      if (entityIds) {
+        filteredEntities = filteredEntities.filter((entity) =>
+          entityIds.has(entity.entity_id)
+        );
+      }
       let filteredConfigEntry: ConfigEntry | undefined;
       const filteredDomains = new Set<string>();
 
@@ -675,14 +699,16 @@ export class HaEntityTable extends LitElement {
         this._entityStates,
         this._entities!,
         this._entitySources,
-        this._exposedEntities
+        this.exposedEntities ?? this._exposedEntities,
+        this.selectionMode
       ),
       this.filterValues,
       this._filteredItems,
       this._entries,
       this._labels,
       this._entitySources,
-      this._exposedEntities
+      this.exposedEntities ?? this._exposedEntities,
+      this.entityIds
     );
   }
 
@@ -695,7 +721,10 @@ export class HaEntityTable extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
         .backPath=${this.backPath}
+        .backCallback=${this.backCallback}
+        .noDataText=${this.noDataText}
         .route=${this.route}
         .tabs=${this.tabs}
         .columns=${this._columns(this._i18n.localize, this.hass, getAvailableAssistants(this.cloudStatus, this.hass), filteredEntities)}
@@ -704,6 +733,9 @@ export class HaEntityTable extends LitElement {
         has-filters
         .filters=${Object.values(this.filterValues).filter((filter) => (Array.isArray(filter) ? filter.length : filter && Object.values(filter).some((val) => (Array.isArray(val) ? val.length : val)))).length}
         .selectable=${this.selectable}
+        .selectionMode=${this.selectionMode}
+        .selectionScope=${this.selectionMode === "always" ? this.entityIds : undefined}
+        .selectOnRowClick=${this.selectionMode === "always"}
         .selected=${this.selected}
         .initialGroupColumn=${this.initialGroupColumn}
         .initialCollapsedGroups=${this.initialCollapsedGroups}
@@ -863,6 +895,9 @@ export class HaEntityTable extends LitElement {
   }
 
   private _fetchExposedEntities = async () => {
+    if (this.exposedEntities !== undefined) {
+      return;
+    }
     try {
       this._exposedEntities = (
         await listExposedEntities(this.hass)

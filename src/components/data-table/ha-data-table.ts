@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume, type ContextType } from "@lit/context";
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
@@ -125,6 +126,11 @@ export class HaDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ attribute: false }) public selectionScope?: ReadonlySet<string>;
+
+  @property({ type: Boolean, attribute: "select-on-row-click" })
+  public selectOnRowClick = false;
+
   @property({ type: Boolean }) public clickable = false;
 
   /**
@@ -205,12 +211,15 @@ export class HaDataTable extends LitElement {
   }
 
   public selectAll(extraFilter?: (row: DataTableRowData) => boolean): void {
-    this._checkedRows = (this._filteredData || [])
+    const selectedRows = (this._filteredData || [])
       .filter(
         (data) =>
-          data.selectable !== false && (!extraFilter || extraFilter(data))
+          this._isRowSelectable(data) && (!extraFilter || extraFilter(data))
       )
       .map((data) => data[this.id]);
+    this._checkedRows = this.selectionScope
+      ? [...new Set([...this._checkedRows, ...selectedRows])]
+      : selectedRows;
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
@@ -224,6 +233,10 @@ export class HaDataTable extends LitElement {
   }
 
   protected firstUpdated() {
+    new ResizeController(this, {
+      target: this._header,
+      callback: () => this._calcTableHeight(),
+    });
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
@@ -299,10 +312,11 @@ export class HaDataTable extends LitElement {
       this._lastSelectedRowId = null;
     }
 
-    if (properties.has("data")) {
-      // Clean up checked rows that no longer exist in the data
+    if (properties.has("data") || properties.has("selectionScope")) {
       if (this._checkedRows.length) {
-        const validIds = new Set(this.data.map((row) => String(row[this.id])));
+        const validIds =
+          this.selectionScope ??
+          new Set(this.data.map((row) => String(row[this.id])));
         const validCheckedRows = this._checkedRows.filter((id) =>
           validIds.has(id)
         );
@@ -347,7 +361,10 @@ export class HaDataTable extends LitElement {
 
     if (
       this._filteredData &&
-      (properties.has("selectable") || properties.has("hiddenColumns"))
+      (properties.has("selectable") ||
+        properties.has("selectionScope") ||
+        properties.has("selectOnRowClick") ||
+        properties.has("hiddenColumns"))
     ) {
       this._filteredData = [...this._filteredData];
     }
@@ -392,6 +409,16 @@ export class HaDataTable extends LitElement {
       this._renderRow(columns, this.narrow, row, index);
 
     const filteredDataLength = this._filteredData?.length || 0;
+    const matchingSelectableRows = this.selectionScope
+      ? (this._filteredData || []).filter((row) => this._isRowSelectable(row))
+      : undefined;
+    const checkedRowsCount = matchingSelectableRows
+      ? matchingSelectableRows.filter((row) =>
+          this._checkedRows.includes(String(row[this.id]))
+        ).length
+      : this._checkedRows.length;
+    const checkableRowsCount =
+      matchingSelectableRows?.length ?? this._checkableRowsCount;
 
     return html`
       <div class="mdc-data-table">
@@ -440,14 +467,12 @@ export class HaDataTable extends LitElement {
                           class="mdc-data-table__row-checkbox"
                           @change=${this._handleHeaderRowCheckboxClick}
                           .indeterminate=${
-                            !!this._checkedRows.length &&
-                            this._checkedRows.length !==
-                              this._checkableRowsCount
+                            !!checkedRowsCount &&
+                            checkedRowsCount !== checkableRowsCount
                           }
                           .checked=${
-                            !!this._checkedRows.length &&
-                            this._checkedRows.length ===
-                              this._checkableRowsCount
+                            !!checkedRowsCount &&
+                            checkedRowsCount === checkableRowsCount
                           }
                         >
                         </ha-checkbox>
@@ -595,12 +620,16 @@ export class HaDataTable extends LitElement {
           "mdc-data-table__row--selected": this._checkedRows.includes(
             String(row[this.id])
           ),
-          clickable: this.clickable,
+          clickable:
+            this.clickable ||
+            (this.selectable &&
+              this.selectOnRowClick &&
+              this._isRowSelectable(row)),
         })}"
         aria-selected=${ifDefined(
           this._checkedRows.includes(String(row[this.id])) ? true : undefined
         )}
-        .selectable=${row.selectable !== false}
+        .selectable=${this._isRowSelectable(row)}
       >
         ${
           this.selectable
@@ -613,7 +642,7 @@ export class HaDataTable extends LitElement {
                     class="mdc-data-table__row-checkbox"
                     @click=${this._handleRowCheckboxClicked}
                     .rowId=${row[this.id]}
-                    .disabled=${row.selectable === false}
+                    .disabled=${!this._isRowSelectable(row)}
                     .checked=${this._checkedRows.includes(String(row[this.id]))}
                   >
                   </ha-checkbox>
@@ -911,6 +940,16 @@ export class HaDataTable extends LitElement {
   private _handleHeaderRowCheckboxClick(ev: HASSDomTargetEvent<HaCheckbox>) {
     if (ev.target.checked) {
       this.selectAll();
+    } else if (this.selectionScope) {
+      const matchingIds = new Set(
+        (this._filteredData || [])
+          .filter((row) => this._isRowSelectable(row))
+          .map((row) => String(row[this.id]))
+      );
+      this._checkedRows = this._checkedRows.filter(
+        (id) => !matchingIds.has(id)
+      );
+      this._checkedRowsChanged();
     } else {
       this._checkedRows = [];
       this._checkedRowsChanged();
@@ -945,9 +984,8 @@ export class HaDataTable extends LitElement {
       this.sortDirection
     );
 
-    if (
-      groupedData.find((data) => data[this.id] === rowId)?.selectable === false
-    ) {
+    const row = groupedData.find((data) => data[this.id] === rowId);
+    if (!row || !this._isRowSelectable(row)) {
       return;
     }
 
@@ -973,7 +1011,7 @@ export class HaDataTable extends LitElement {
         this._checkedRows = [...this._checkedRows, rowId];
       }
     } else {
-      this._checkedRows = this._checkedRows.filter((row) => row !== rowId);
+      this._checkedRows = this._checkedRows.filter((id) => id !== rowId);
     }
 
     if (rowIndex > -1) {
@@ -996,7 +1034,7 @@ export class HaDataTable extends LitElement {
       const row = groupedData[i];
       if (
         row &&
-        row.selectable !== false &&
+        this._isRowSelectable(row) &&
         !this._checkedRows.includes(row[this.id])
       ) {
         checkedRows.push(row[this.id]);
@@ -1024,9 +1062,50 @@ export class HaDataTable extends LitElement {
     ) {
       return;
     }
+    if (
+      this.selectOnRowClick &&
+      ev
+        .composedPath()
+        .some(
+          (element) =>
+            element instanceof HTMLElement &&
+            element !== ev.currentTarget &&
+            element.matches(
+              "a, button, input, select, textarea, summary, [role='button'], [role='checkbox'], [role='link'], [contenteditable='true']"
+            )
+        )
+    ) {
+      return;
+    }
     const rowId = ev.currentTarget.rowId;
+    if (this.selectOnRowClick) {
+      const row = this.data.find((data) => data[this.id] === rowId);
+      if (
+        !this.selectable ||
+        rowId == null ||
+        !row ||
+        !this._isRowSelectable(row)
+      ) {
+        return;
+      }
+      this._checkedRows = this._checkedRows.includes(rowId)
+        ? this._checkedRows.filter((id) => id !== rowId)
+        : [...this._checkedRows, rowId];
+      this._lastSelectedRowId = rowId;
+      this._checkedRowsChanged();
+      return;
+    }
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   };
+
+  private _isRowSelectable(row: DataTableRowData) {
+    return (
+      row.selectable !== false &&
+      !row.append &&
+      !row.empty &&
+      (!this.selectionScope || this.selectionScope.has(String(row[this.id])))
+    );
+  }
 
   private _setTitle(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     if (ev.currentTarget.scrollWidth > ev.currentTarget.offsetWidth) {
@@ -1035,6 +1114,7 @@ export class HaDataTable extends LitElement {
   }
 
   private _checkedRowsChanged() {
+    this.requestUpdate();
     // force scroller to update, change it's items
     if (this._filteredData?.length) {
       this._filteredData = [...this._filteredData];

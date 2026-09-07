@@ -76,6 +76,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
    */
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ attribute: false }) public selectionMode: "toggle" | "always" =
+    "toggle";
+
+  @property({ attribute: false }) public selectionScope?: ReadonlySet<string>;
+
+  @property({ type: Boolean, attribute: "select-on-row-click" })
+  public selectOnRowClick = false;
+
   /**
    * Should rows be clickable.
    * @type {Boolean}
@@ -248,7 +256,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       : nothing;
 
     const selectModeBtn =
-      this.selectable && !this._selectMode
+      this.selectable && this.selectionMode === "toggle" && !this._selectMode
         ? html`<ha-assist-chip
             class="has-dropdown select-mode-chip"
             .active=${this._selectMode}
@@ -401,61 +409,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         @sorting-changed=${this._sortingChanged}
       >
         ${
-          this._selectMode
+          this.selectionMode === "toggle" && this._selectMode
             ? html`<div class="selection-bar" slot="toolbar">
-                <div class="selection-controls">
-                  <ha-icon-button
-                    .path=${mdiClose}
-                    @click=${this._disableSelectMode}
-                    .label=${localize(
-                      "ui.components.subpage-data-table.exit_selection_mode"
-                    )}
-                  ></ha-icon-button>
-                  <ha-dropdown @wa-select=${this._handleSelect}>
-                    <ha-assist-chip
-                      .label=${localize(
-                        "ui.components.subpage-data-table.select"
-                      )}
-                      slot="trigger"
-                    >
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiFormatListChecks}
-                      ></ha-svg-icon>
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon
-                    ></ha-assist-chip>
-                    <ha-dropdown-item value="all">
-                      ${localize("ui.components.subpage-data-table.select_all")}
-                    </ha-dropdown-item>
-                    <ha-dropdown-item value="none">
-                      ${localize("ui.components.subpage-data-table.select_none")}
-                    </ha-dropdown-item>
-                    <wa-divider></wa-divider>
-                    <ha-dropdown-item value="disable_select_mode">
-                      ${localize(
-                        "ui.components.subpage-data-table.exit_selection_mode"
-                      )}
-                    </ha-dropdown-item>
-                  </ha-dropdown>
-                  ${
-                    this.selected !== undefined
-                      ? html`<p>
-                          ${localize(
-                            "ui.components.subpage-data-table.selected",
-                            {
-                              selected: this.selected || "0",
-                            }
-                          )}
-                        </p>`
-                      : nothing
-                  }
-                </div>
-                <div class="center-vertical">
-                  <slot name="selection-bar"></slot>
-                </div>
+                ${this._renderSelectionControls(localize)}
               </div>`
             : nothing
         }
@@ -500,7 +456,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   <slot name="toolbar-icon"></slot>
                 </div>
                 ${
-                  this.narrow
+                  this.narrow && this.selectionMode === "toggle"
                     ? html`
                         <div slot="header">
                           <slot name="header">
@@ -516,7 +472,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .data=${this.data}
                   .noDataText=${this.noDataText}
                   .filter=${this.filter}
-                  .selectable=${this._selectMode}
+                  .selectable=${this.selectionMode === "always" || this._selectMode}
+                  .selectionScope=${this.selectionScope}
+                  .selectOnRowClick=${this.selectOnRowClick}
                   .id=${this.id}
                   .clickable=${this.clickable}
                   .appendRow=${this.appendRow}
@@ -533,6 +491,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       ? html`
                           <div slot="header">
                             <slot name="top-header"></slot>
+                            ${
+                              this.selectionMode === "always"
+                                ? html`<div
+                                    class="selection-bar persistent-selection-bar"
+                                  >
+                                    ${this._renderSelectionControls(localize)}
+                                  </div>`
+                                : nothing
+                            }
                             <slot name="header">
                               <div class="table-header">
                                 ${
@@ -547,6 +514,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                       : html`
                           <div slot="header">
                             <slot name="top-header"></slot>
+                            ${
+                              this.selectionMode === "always"
+                                ? html`<div
+                                      class="selection-bar persistent-selection-bar"
+                                    >
+                                      ${this._renderSelectionControls(localize)}
+                                    </div>
+                                    <div class="table-header">
+                                      ${searchBar}
+                                    </div>`
+                                : nothing
+                            }
                           </div>
                           <div slot="header-row" class="narrow-header-row">
                             ${
@@ -611,6 +590,62 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _clearFilters() {
     fireEvent(this, "clear-filter");
+  }
+
+  private _renderSelectionControls(localize: LocalizeFunc) {
+    return html`
+      <div class="selection-controls">
+        ${
+          this.selectionMode === "toggle"
+            ? html`<ha-icon-button
+                .path=${mdiClose}
+                @click=${this._disableSelectMode}
+                .label=${localize(
+                  "ui.components.subpage-data-table.exit_selection_mode"
+                )}
+              ></ha-icon-button>`
+            : nothing
+        }
+        <ha-dropdown @wa-select=${this._handleSelect}>
+          <ha-assist-chip
+            .label=${localize("ui.components.subpage-data-table.select")}
+            slot="trigger"
+          >
+            <ha-svg-icon slot="icon" .path=${mdiFormatListChecks}></ha-svg-icon>
+            <ha-svg-icon
+              slot="trailing-icon"
+              .path=${mdiMenuDown}
+            ></ha-svg-icon>
+          </ha-assist-chip>
+          <ha-dropdown-item value="all">
+            ${localize("ui.components.subpage-data-table.select_all")}
+          </ha-dropdown-item>
+          <ha-dropdown-item value="none">
+            ${localize("ui.components.subpage-data-table.select_none")}
+          </ha-dropdown-item>
+          ${
+            this.selectionMode === "toggle"
+              ? html`<wa-divider></wa-divider>
+                  <ha-dropdown-item value="disable_select_mode">
+                    ${localize(
+                      "ui.components.subpage-data-table.exit_selection_mode"
+                    )}
+                  </ha-dropdown-item>`
+              : nothing
+          }
+        </ha-dropdown>
+        ${
+          this.selected !== undefined
+            ? html`<p>
+                ${localize("ui.components.subpage-data-table.selected", {
+                  selected: this.selected || "0",
+                })}
+              </p>`
+            : nothing
+        }
+      </div>
+      <div class="center-vertical"><slot name="selection-bar"></slot></div>
+    `;
   }
 
   private _toggleFilters() {
@@ -719,6 +754,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _disableSelectMode = () => {
+    if (this.selectionMode === "always") {
+      return;
+    }
     this._selectMode = false;
     this._dataTable.clearSelection();
   };
@@ -908,6 +946,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     .selection-controls {
       display: flex;
       align-items: center;
+      gap: var(--ha-space-2);
+    }
+
+    .persistent-selection-bar {
+      height: auto;
+      min-height: var(--ha-space-14);
+      flex-wrap: wrap;
       gap: var(--ha-space-2);
     }
 
