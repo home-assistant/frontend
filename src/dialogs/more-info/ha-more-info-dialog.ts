@@ -636,6 +636,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
         : false;
 
+    const copyFavoritesDisabled =
+      favoritesContext && favoritesHandler?.canCopy
+        ? !favoritesHandler.canCopy(favoritesContext.entry)
+        : false;
+
     const isRTL = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations
@@ -790,7 +795,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                     ></ha-svg-icon>
                                     ${favoritesLabels?.reset}
                                   </ha-dropdown-item>
-                                  <ha-dropdown-item value="copy_favorites">
+                                  <ha-dropdown-item
+                                    value="copy_favorites"
+                                    .disabled=${copyFavoritesDisabled}
+                                  >
                                     <ha-svg-icon
                                       slot="icon"
                                       .path=${mdiContentDuplicate}
