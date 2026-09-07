@@ -1,6 +1,6 @@
 ---
 name: ha-frontend-review
-description: Home Assistant frontend PR and review guidance. Use when reviewing frontend changes, preparing a PR, checking recurring review issues, or applying the PR template.
+description: Home Assistant frontend PR and review guidance, including implementation quality, established design patterns, and the authority of UI/UX evidence. Use when reviewing frontend changes, preparing a PR, checking recurring review issues, or applying the PR template.
 ---
 
 # HA Frontend Review
@@ -92,14 +92,25 @@ Configuration and props:
 - Keep APIs extensible without adding speculative abstractions.
 - Validate configuration before applying changes.
 
+## UI/UX Evidence
+
+For user-facing changes, establish the existing design context as part of frontend review:
+
+- Treat an applicable gallery specification as the authoritative repository source for the documented component or interaction. Inspect both its written guidance and demos when reviewing changes to that behaviour.
+- Note relevant production designs, approved designs, and shared `ha-*` components so the implementation can also be compared with established frontend behaviour.
+- Require the applicable gallery documentation or demo to change when the implementation intentionally changes behaviour documented there.
+- Prefer an established input layout or appropriate shared component over a raw input or ad hoc control.
+- Treat explicit UI/UX approval, current repository guidance, and direct human or workflow instructions as stronger evidence than inference.
+- Treat linked tasks as evidence of the problem and stated requirements, not automatic UI/UX approval.
+- When the direction remains uncertain, search frontend pull requests that carry or previously carried **Needs UX**. Inspect their label history, comments, and reviews rather than relying on the current label alone.
+- Judge relevant feedback by its content and surrounding discussion. When GitHub provides `author_association`, prioritise feedback marked `MEMBER`.
+- Prefer recent feedback about similar interactions or components. Label removal can show that a workflow gate moved on, but does not prove approval without the surrounding discussion.
+- Summarise the applicable guidance instead of maintaining a reviewer list or treating one historical decision as a permanent rule.
+
 ## Review Flow
 
-- Note the existing patterns, approved designs, and shared components that apply so reviewers can compare the implementation with established frontend behaviour, whether or not further UI/UX input is needed.
-- For UI/UX readiness:
-  - Load `ha-frontend-ux-readiness` to decide whether a new card, badge, screen, or interaction pattern needs UI/UX input.
-  - Do not load it for a PR carrying **Needs UX**; reviewers have already asked designers or UX reviewers for guidance.
-  - Keep existing-feature fixes and technical details in frontend review when they preserve the established experience.
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
+- Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
 - Load the matching `ha-frontend-*` skill when a finding falls within its area.
