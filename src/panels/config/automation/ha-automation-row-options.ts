@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
+import { hasTemplate } from "../../../common/string/has-template";
 import type { ForDict } from "../../../data/automation";
 import { internationalizationContext } from "../../../data/context";
 
@@ -87,7 +88,7 @@ export class HaAutomationRowOptions extends LitElement {
   );
 
   private _duration(value: unknown): string | undefined {
-    if (value === undefined) {
+    if (value === undefined || hasTemplate(value)) {
       return undefined;
     }
     const duration = createDurationData(
