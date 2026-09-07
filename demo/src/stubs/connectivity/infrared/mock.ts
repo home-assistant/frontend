@@ -13,11 +13,21 @@ let nextCode = 0;
 export const mockInfrared = (hass: MockHomeAssistant) => {
   // Capturing waits for a button press, so answer after a moment to let the
   // "press a button on your remote" state be seen.
-  hass.mockWS("infrared/receiver/subscribe", (_msg, _hass, onChange) => {
-    const timeout = window.setTimeout(() => {
-      onChange?.({ code: CODES[nextCode % CODES.length] });
-      nextCode += 1;
-    }, 1500);
-    return () => clearTimeout(timeout);
-  });
+  hass.mockWS(
+    "infrared/receiver/subscribe",
+    (msg: { known_codes?: string[] }, _hass, onChange) => {
+      const timeout = window.setTimeout(() => {
+        const code = CODES[nextCode % CODES.length];
+        nextCode += 1;
+        // The demo replays fixed codes, so comparing them is enough to stand
+        // in for the timing comparison the backend does.
+        onChange?.({
+          code,
+          duplicate_of:
+            msg.known_codes?.find((known) => known === code) ?? null,
+        });
+      }, 1500);
+      return () => clearTimeout(timeout);
+    }
+  );
 };

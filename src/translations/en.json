@@ -537,6 +537,8 @@
           "captured_name": "Command {number}",
           "press_a_button": "Press a button on your remote",
           "capture_failed": "Could not listen to the infrared receiver.",
+          "duplicate": "You already captured this command as {name}.",
+          "duplicate_unknown": "You already captured this command.",
           "select_receiver": "Select an infrared receiver to capture commands from."
         },
         "serial_port": {

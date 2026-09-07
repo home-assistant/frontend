@@ -46,7 +46,8 @@ const EMITTER = "infrared.blaster_emitter";
 
 let subscriptions: {
   entityId: string;
-  send: (message: { code: string }) => void;
+  knownCodes: string[];
+  send: (message: { code: string; duplicate_of: string | null }) => void;
   unsubscribe: ReturnType<typeof vi.fn>;
 }[] = [];
 
@@ -62,12 +63,16 @@ const hass = {
   },
   connection: {
     subscribeMessage: (
-      callback: (message: { code: string }) => void,
-      message: { entity_id: string }
+      callback: (message: {
+        code: string;
+        duplicate_of: string | null;
+      }) => void,
+      message: { entity_id: string; known_codes: string[] }
     ) => {
       const unsubscribe = vi.fn();
       subscriptions.push({
         entityId: message.entity_id,
+        knownCodes: message.known_codes,
         send: callback,
         unsubscribe,
       });
@@ -140,8 +145,8 @@ describe("ha-selector-infrared_command", () => {
 
     await clickButton(selector, "ha-button");
     await selector.updateComplete;
-    subscriptions[0].send({ code: "0000 006d" });
-    subscriptions[0].send({ code: "0000 1111" });
+    subscriptions[0].send({ code: "0000 006d", duplicate_of: null });
+    subscriptions[0].send({ code: "0000 1111", duplicate_of: null });
     await selector.updateComplete;
 
     expect(values).toEqual([
@@ -162,11 +167,39 @@ describe("ha-selector-infrared_command", () => {
     await clickButton(selector, "ha-button");
     await selector.updateComplete;
     await clickButton(selector, "ha-button");
-    subscriptions[0].send({ code: "0000 006d" });
+    subscriptions[0].send({ code: "0000 006d", duplicate_of: null });
     await selector.updateComplete;
 
     expect(values).toEqual([]);
     expect(subscriptions[0].unsubscribe).toHaveBeenCalledOnce();
+  });
+
+  it("hands the codes it already holds to the receiver", async () => {
+    const commands = [{ name: "Power", code: "0000 0001" }];
+    const selector = await mountSelector(commands, [RECEIVER]);
+
+    await clickButton(selector, "ha-button");
+    await selector.updateComplete;
+
+    expect(subscriptions[0].knownCodes).toEqual(["0000 0001"]);
+  });
+
+  it("keeps the name a duplicated command already has", async () => {
+    const commands = [{ name: "Power", code: "0000 0001" }];
+    const selector = await mountSelector(commands, [RECEIVER]);
+    const values = capturedValues(selector);
+
+    await clickButton(selector, "ha-button");
+    await selector.updateComplete;
+    // Pressing the same button reports a code of its own, matched to the one
+    // already captured by the backend.
+    subscriptions[0].send({ code: "0000 0009", duplicate_of: "0000 0001" });
+    await selector.updateComplete;
+
+    expect(values).toEqual([]);
+    expect(selector.shadowRoot!.textContent).toContain(
+      "ui.components.selectors.infrared_command.duplicate"
+    );
   });
 
   it("deletes the command the delete button belongs to", async () => {

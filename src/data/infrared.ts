@@ -25,16 +25,26 @@ export const isInfraredReceiver = (
   computeDomain(entityId) === INFRARED_DOMAIN &&
   hass.states[entityId]?.attributes.device_class === "receiver";
 
-// Streams the codes a receiver picks up, so a remote's buttons can be captured.
+export interface InfraredCapturedCode {
+  code: string;
+  // The known code this signal matches, when it is one already captured.
+  duplicate_of: string | null;
+}
+
+// Streams the codes a receiver picks up, so a remote's buttons can be
+// captured. Two presses of a button never report the same code, so the codes
+// already captured are passed along for the backend to recognize.
 export const subscribeInfraredReceiver = (
   hass: HomeAssistant,
   entityId: string,
-  callback: (code: string) => void
+  knownCodes: string[],
+  callback: (captured: InfraredCapturedCode) => void
 ) =>
-  hass.connection.subscribeMessage<{ code: string }>(
-    (message) => callback(message.code),
-    { type: "infrared/receiver/subscribe", entity_id: entityId }
-  );
+  hass.connection.subscribeMessage<InfraredCapturedCode>(callback, {
+    type: "infrared/receiver/subscribe",
+    entity_id: entityId,
+    known_codes: knownCodes,
+  });
 
 export type InfraredDeviceType = InfraredProxyType | "both";
 

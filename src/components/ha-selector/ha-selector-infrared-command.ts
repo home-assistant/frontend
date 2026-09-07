@@ -6,7 +6,10 @@ import type {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { InfraredCommand } from "../../data/infrared";
+import type {
+  InfraredCapturedCode,
+  InfraredCommand,
+} from "../../data/infrared";
 import {
   isInfraredReceiver,
   subscribeInfraredReceiver,
@@ -171,9 +174,15 @@ export class HaSelectorInfraredCommand extends LitElement {
     this._error = undefined;
     this._capturing = true;
     try {
+      const knownCodes = (this.value ?? []).map((command) => command.code);
       const unsubscribes = await Promise.all(
         receivers.map((entityId) =>
-          subscribeInfraredReceiver(this.hass, entityId, this._codeCaptured)
+          subscribeInfraredReceiver(
+            this.hass,
+            entityId,
+            knownCodes,
+            this._codeCaptured
+          )
         )
       );
       if (!this._capturing) {
@@ -198,12 +207,31 @@ export class HaSelectorInfraredCommand extends LitElement {
 
   // Only the first code that comes in is captured, so a remote that repeats
   // its frame while the button is held adds a single command.
-  private _codeCaptured = async (code: string) => {
+  private _codeCaptured = async ({
+    code,
+    duplicate_of,
+  }: InfraredCapturedCode) => {
     if (!this._capturing) {
       return;
     }
     this._stopCapture();
     const commands = this.value ?? [];
+    if (duplicate_of) {
+      // The button is already in the list, so keep the name it was given
+      // there rather than adding a second command that could never fire.
+      const captured = commands.find(
+        (command) => command.code === duplicate_of
+      );
+      this._error = captured
+        ? this.hass.localize(
+            "ui.components.selectors.infrared_command.duplicate",
+            { name: captured.name }
+          )
+        : this.hass.localize(
+            "ui.components.selectors.infrared_command.duplicate_unknown"
+          );
+      return;
+    }
     this._fireChanged([
       ...commands,
       {
