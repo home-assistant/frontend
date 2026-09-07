@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
+  mdiAutoFix,
   mdiDelete,
   mdiDotsVertical,
   mdiDragHorizontalVariant,
@@ -7,13 +8,14 @@ import {
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -32,10 +34,32 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
+  @property({ type: Boolean, attribute: "is-strategy", reflect: true })
+  public isStrategy = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="section-header">
         <div class="section-actions">
+          ${
+            this.isStrategy
+              ? html`
+                  <ha-svg-icon
+                    id="strategy-icon"
+                    .path=${mdiAutoFix}
+                    role="img"
+                    aria-label=${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.automatic"
+                    )}
+                  ></ha-svg-icon>
+                  <ha-tooltip for="strategy-icon">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.automatic"
+                    )}
+                  </ha-tooltip>
+                `
+              : nothing
+          }
           <ha-svg-icon
             aria-hidden="true"
             class="handle"
@@ -70,7 +94,25 @@ export class HuiSectionEditMode extends LitElement {
         </div>
       </div>
       <div class="section-wrapper">
-        <slot></slot>
+        <div class="section-content" ?inert=${this.isStrategy}>
+          <slot></slot>
+        </div>
+        ${
+          this.isStrategy
+            ? html`
+                <button
+                  class="edit-overlay"
+                  type="button"
+                  aria-label=${this.hass.localize(
+                    "ui.panel.lovelace.editor.section.edit_automatic"
+                  )}
+                  @click=${this._editSection}
+                >
+                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                </button>
+              `
+            : nothing
+        }
       </div>
     `;
   }
@@ -183,7 +225,12 @@ export class HuiSectionEditMode extends LitElement {
           padding: 8px;
         }
 
+        #strategy-icon {
+          padding: var(--ha-space-2);
+        }
+
         .section-wrapper {
+          position: relative;
           padding: 8px;
           border-radius: var(
             --ha-section-border-radius,
@@ -192,6 +239,67 @@ export class HuiSectionEditMode extends LitElement {
           border-start-end-radius: 0;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
+        }
+
+        :host([is-strategy]) .section-wrapper {
+          border-style: solid;
+        }
+
+        .section-content {
+          position: relative;
+          z-index: 0;
+        }
+
+        .edit-overlay {
+          position: absolute;
+          z-index: 0;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: 0;
+          border-radius: inherit;
+          background: none;
+          color: var(--primary-text-color);
+          cursor: pointer;
+          opacity: 0;
+          transition: opacity var(--ha-animation-duration-fast) ease-in-out;
+        }
+
+        .edit-overlay::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border: 1px solid var(--divider-color);
+          border-radius: inherit;
+          background: var(--primary-background-color);
+          opacity: 0.8;
+        }
+
+        .edit-overlay:hover,
+        .edit-overlay:focus-visible,
+        .edit-overlay:active {
+          opacity: 1;
+        }
+
+        .edit-overlay:focus-visible {
+          outline: 2px solid var(--primary-color);
+          outline-offset: -2px;
+        }
+
+        .edit-overlay ha-svg-icon {
+          position: relative;
+          padding: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-circle);
+          background: var(--secondary-background-color);
+          --mdc-icon-size: 20px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .edit-overlay {
+            transition: none;
+          }
         }
       `,
     ];

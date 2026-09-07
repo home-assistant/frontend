@@ -324,7 +324,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._layoutElementType = config.type;
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       ev.stopPropagation();
-      if (!this.lovelace) return;
+      if (!this.lovelace || isStrategySection(this.config)) return;
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
@@ -357,7 +357,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
-      if (!this.lovelace) return;
+      if (!this.lovelace || isStrategySection(this.config)) return;
       performDeleteCard(this.hass, this.lovelace, ev.detail);
     });
     this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
