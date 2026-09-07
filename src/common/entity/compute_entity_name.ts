@@ -29,7 +29,7 @@ export const computeEntityEntryName = (
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name ||
+    entry.name ??
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
       : undefined);
