@@ -96,7 +96,7 @@ Configuration and props:
 
 For user-facing changes, establish the existing design context as part of frontend review:
 
-- Treat an applicable gallery specification as the authoritative repository source for the documented component or interaction. Inspect both its written guidance and demos when reviewing changes to that behaviour.
+- Treat an applicable gallery specification as the authoritative repository source for the documented component or interaction. Inspect its written guidance and demos when present.
 - Note relevant production designs, approved designs, and shared `ha-*` components so the implementation can also be compared with established frontend behaviour.
 - Require the applicable gallery documentation or demo to change when the implementation intentionally changes behaviour documented there.
 - Prefer an established input layout or appropriate shared component over a raw input or ad hoc control.
