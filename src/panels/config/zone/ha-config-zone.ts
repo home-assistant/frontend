@@ -455,6 +455,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _editHomeZone(ev) {
+    // Keep the click from selecting the list item, which zooms the map
+    ev.stopPropagation();
     if (ev.currentTarget.noEdit) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
