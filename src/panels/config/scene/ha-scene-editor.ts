@@ -1125,11 +1125,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     goBack("/config/scene/dashboard");
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
+  private async _confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
     const confirmed = await showConfirmationDialog(this, {
+      addHistory,
       title: this.hass!.localize(
         "ui.panel.config.scene.editor.unsaved_confirm_title"
       ),
@@ -1408,7 +1409,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
+    return this._confirmUnsavedChanged(false);
   }
 
   static get styles(): CSSResultGroup {
