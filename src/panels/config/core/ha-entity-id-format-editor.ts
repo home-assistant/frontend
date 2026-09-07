@@ -23,11 +23,11 @@ import type {
 import type { ValueChangedEvent } from "../../../types";
 
 const STRUCTURAL_TYPES = [
+  "floor",
   "area",
   "parent_device",
   "device",
   "entity",
-  "floor",
 ] as const;
 
 const REQUIRED_TYPES: readonly EntityIdPart[] = ["device", "entity"];
@@ -71,6 +71,7 @@ export class HaEntityIdFormatEditor extends LitElement {
       <div class="container">
         ${this.label ? html`<label>${this.label}</label>` : nothing}
         <ha-generic-picker
+          no-sort
           .disabled=${this.disabled}
           .getItems=${this._getFilteredItems}
           .rowRenderer=${rowRenderer}
