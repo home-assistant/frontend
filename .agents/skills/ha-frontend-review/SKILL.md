@@ -94,6 +94,11 @@ Configuration and props:
 
 ## Review Flow
 
+- Note the existing patterns, approved designs, and shared components that apply so reviewers can compare the implementation with established frontend behaviour, whether or not further UI/UX input is needed.
+- For UI/UX readiness:
+  - Load `ha-frontend-ux-readiness` to decide whether a new card, badge, screen, or interaction pattern needs UI/UX input.
+  - Do not load it for a PR carrying **Needs UX**; reviewers have already asked designers or UX reviewers for guidance.
+  - Keep existing-feature fixes and technical details in frontend review when they preserve the established experience.
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
