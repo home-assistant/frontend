@@ -53,3 +53,7 @@ export const timeCacheEntityPromiseFunc = async <T>(
 
   return result;
 };
+
+export const invalidateTimeCache = (cacheKey: string, hass: HomeAssistant) => {
+  delete (hass as any)[cacheKey];
+};

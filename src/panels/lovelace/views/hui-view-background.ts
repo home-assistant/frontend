@@ -1,12 +1,14 @@
 import { css, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { STATE_RUNNING } from "home-assistant-js-websocket/dist/config";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
   isMediaSourceContentId,
   resolveMediaSourceWithCache,
 } from "../../../data/media_source";
+import { invalidateTimeCache } from "../../../common/util/time-cache-entity-promise-func";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -130,6 +132,20 @@ export class HUIViewBackground extends LitElement {
         this.hass.selectedTheme !== oldHass.selectedTheme
       ) {
         applyTheme = true;
+      }
+
+      if (
+        oldHass &&
+        this.hass.connected &&
+        this.hass.config.state === STATE_RUNNING &&
+        (!oldHass.connected || oldHass.config.state !== STATE_RUNNING)
+      ) {
+        invalidateTimeCache("_resolvedMediaSource", this.hass);
+        const background = this._getBackgroundImage(this.background);
+        if (background && isMediaSourceContentId(background)) {
+          this.resolvedImage = undefined;
+          this._fetchMedia();
+        }
       }
     }
 
