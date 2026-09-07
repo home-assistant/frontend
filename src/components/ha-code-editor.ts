@@ -791,19 +791,19 @@ export class HaCodeEditor extends ReactiveElement {
       });
     }
 
+    if (deviceName) {
+      completionItems.push({
+        label: this._i18n!.localize("ui.components.device-picker.device"),
+        value: deviceName,
+      });
+    }
+
     if (parentDeviceName) {
       completionItems.push({
         label: this._i18n!.localize(
           "ui.components.device-picker.parent_device"
         ),
         value: parentDeviceName,
-      });
-    }
-
-    if (deviceName) {
-      completionItems.push({
-        label: this._i18n!.localize("ui.components.device-picker.device"),
-        value: deviceName,
       });
     }
 
