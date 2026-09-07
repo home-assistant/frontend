@@ -194,9 +194,9 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     const primary = entityName || deviceName || entityId;
     const secondary = [
-      entityName ? deviceName : undefined,
-      parentDeviceName,
       areaName,
+      parentDeviceName,
+      entityName ? deviceName : undefined,
     ]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");

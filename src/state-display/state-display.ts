@@ -57,12 +57,12 @@ export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
   valve: ["state", "current_position"],
 };
 
-const NAME_CONTENT_TYPES: Partial<Record<string, EntityNameType>> = {
-  device_name: "device",
-  parent_device_name: "parent_device",
-  area_name: "area",
-  floor_name: "floor",
-};
+const NAME_CONTENT_TYPES = new Map<string, EntityNameType>([
+  ["device_name", "device"],
+  ["parent_device_name", "parent_device"],
+  ["area_name", "area"],
+  ["floor_name", "floor"],
+]);
 
 const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
 
@@ -198,7 +198,7 @@ class StateDisplay extends LitElement {
     if (content === "entity-id") {
       return stateObj.entity_id;
     }
-    const nameType = NAME_CONTENT_TYPES[content];
+    const nameType = NAME_CONTENT_TYPES.get(content);
     if (nameType) {
       return (
         this.hass.formatEntityName(stateObj, { type: nameType }) || undefined

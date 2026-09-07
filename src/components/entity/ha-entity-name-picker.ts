@@ -401,7 +401,9 @@ export class HaEntityNamePicker extends LitElement {
 
     const types = this._validTypes(entityId);
 
-    const items = ENTITY_NAME_TYPES.map<PickerComboBoxItem>((name) => {
+    const items = ENTITY_NAME_TYPES.filter(
+      (name) => name !== "parent_device" || types.has(name)
+    ).map<PickerComboBoxItem>((name) => {
       const stateObj = this.hass.states[entityId];
       const isValid = types.has(name);
       const primary = this.hass.localize(
