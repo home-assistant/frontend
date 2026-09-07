@@ -441,7 +441,9 @@ export class HaMap extends ReactiveElement {
     }
     this._forceLeaflet = true;
     if (this._loading) {
-      // Setup in flight; it switches to the fallback once init settles
+      // Setup in flight: tearing its engine down settles a pending init, and
+      // the setup then hands over to the fallback
+      this._startingEngine?.destroy();
       return;
     }
     this._engine?.destroy();

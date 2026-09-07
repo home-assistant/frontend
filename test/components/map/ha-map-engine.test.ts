@@ -36,15 +36,25 @@ const fakeEngine = vi.hoisted(() => {
       FakeMapLibreEngine.instances.push(this);
     }
 
+    /** Settles a pending init, as the real engine's destroy does */
+    private _settleInit?: () => void;
+
     init = vi.fn(async (_container: HTMLElement, options: MapEngineOptions) => {
       this.options = options;
-      await FakeMapLibreEngine.initGate;
+      await Promise.race([
+        FakeMapLibreEngine.initGate,
+        new Promise<void>((resolve) => {
+          this._settleInit = resolve;
+        }),
+      ]);
       if (FakeMapLibreEngine.failInit) {
         throw new Error("WebGL context refused");
       }
     });
 
-    destroy = vi.fn();
+    destroy = vi.fn(() => {
+      this._settleInit?.();
+    });
 
     invalidateSize = vi.fn();
 
@@ -206,17 +216,18 @@ describe("ha-map engine selection", () => {
     await vi.waitUntil(() => fakeEngine.instances[0]?.options);
     const engine = fakeEngine.instances[0];
 
-    // The context is lost before init has resolved
+    // The context is lost before init has resolved, and init never would
+    // resolve on its own: tearing the engine down is what settles it
     engine.options!.events.fatal!();
     expect(isLoaded(el)).toBe(false);
-    openGate();
 
     await vi.waitUntil(() => leafletMap(el) !== undefined && isLoaded(el));
     await el.updateComplete;
     // The failed engine was never installed, and the fallback drew the map
-    expect(engine.destroy).toHaveBeenCalledOnce();
+    expect(engine.destroy).toHaveBeenCalled();
     expect(fakeEngine.instances).toHaveLength(1);
     expect(entityHandles(el)).toHaveLength(2);
+    openGate();
   });
 
   it("tears down an engine still setting up when disconnected, and sets up again on reconnect", async () => {
