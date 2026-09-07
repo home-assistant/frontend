@@ -22,6 +22,10 @@ import {
 } from "../../../common/entity/entity_domain_filter";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  createVoiceAssistantQueryString,
+  decodeVoiceAssistantQueryParams,
+} from "../../../common/url/voice-assistant-query-params";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -60,7 +64,6 @@ import {
 import { getAvailableAssistants } from "./expose/available-assistants";
 import "./expose/expose-assistant-icon";
 import { voiceAssistantTabs } from "./ha-config-voice-assistants";
-import { showExposeEntityDialog } from "./show-dialog-expose-entity";
 import { showVoiceSettingsDialog } from "./show-dialog-voice-settings";
 
 @customElement("ha-config-voice-assistants-expose")
@@ -598,18 +601,16 @@ export class VoiceAssistantsExpose extends LitElement {
   }
 
   private _addEntry() {
-    const assistants = this._searchParms.has("assistants")
-      ? this._searchParms.get("assistants")!.split(",")
-      : this._availableAssistants;
-    showExposeEntityDialog(this, {
-      filterAssistants: assistants,
-      exposedEntities: this.exposedEntities!,
-      exposeEntities: (entities) => {
-        exposeEntities(this.hass, assistants, entities, true).then(() =>
-          fireEvent(this, "exposed-entities-changed")
-        );
-      },
-    });
+    const { assistants } = decodeVoiceAssistantQueryParams(
+      Object.fromEntries(this._searchParms)
+    );
+    navigate(
+      `/config/voice-assistants/expose-entity?${createVoiceAssistantQueryString(
+        {
+          assistants: assistants ?? this._availableAssistants,
+        }
+      )}`
+    );
   }
 
   private _handleSearchChange(ev: CustomEvent) {
