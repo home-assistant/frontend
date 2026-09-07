@@ -57,8 +57,8 @@ export class HaComboBoxItem extends HaMdListItem {
         height: 32px;
       }
       ::slotted(ha-app-icon.colored) {
-        width: var(--ha-space-6);
-        height: var(--ha-space-6);
+        width: 24px;
+        height: 24px;
         padding: var(--ha-space-1);
         border-radius: var(--ha-border-radius-circle);
         background-color: var(--app-icon-background-color);
