@@ -66,6 +66,11 @@ const WHEEL_ZOOM_RATE = 1 / 200;
 // Regroup clusters once continuous zooming settles, not on every wheel notch
 const CLUSTER_REBUILD_DELAY = 120;
 
+type GeoJSONSourceSpecification = Extract<
+  Parameters<MapLibreMap["addSource"]>[1],
+  { type: "geojson" }
+>;
+
 // A marker element keeps MapLibre's positioning once it leaves the map
 const resetMarkerElement = (element: HTMLElement): void => {
   Array.from(element.classList)
@@ -144,9 +149,11 @@ export class MapLibreMapEngine implements MapEngine {
   private _idCounter = 0;
 
   // Carried over style swaps, which replace all sources and layers
-  private _customSources = new Set<string>();
+  // Kept by spec, not id: a style swap arriving while the previous swap is
+  // still loading has no previous style to carry them over from
+  private _customSources = new Map<string, GeoJSONSourceSpecification>();
 
-  private _customLayers = new Set<string>();
+  private _customLayers = new Map<string, LayerSpecification>();
 
   // The only custom layers that take clicks (hover tooltips)
   private _pathPointLayers = new Set<string>();
@@ -399,18 +406,13 @@ export class MapLibreMapEngine implements MapEngine {
     previous: StyleSpecification | undefined,
     next: StyleSpecification
   ): StyleSpecification {
-    if (!previous) {
-      return next;
-    }
     const sources = { ...next.sources };
-    for (const [id, source] of Object.entries(previous.sources ?? {})) {
-      if (this._customSources.has(id)) {
-        sources[id] = source;
-      }
+    for (const [id, source] of this._customSources) {
+      sources[id] = previous?.sources?.[id] ?? source;
     }
     const nextIds = new Set(next.layers.map((layer) => layer.id));
-    const customLayers = (previous.layers ?? []).filter(
-      (layer) => this._customLayers.has(layer.id) && !nextIds.has(layer.id)
+    const customLayers = [...this._customLayers.values()].filter(
+      (layer) => !nextIds.has(layer.id)
     );
     const layers = [...next.layers];
     const symbolIndex = layers.findIndex((layer) => layer.type === "symbol");
@@ -748,8 +750,9 @@ export class MapLibreMapEngine implements MapEngine {
     data: Feature<Polygon> | FeatureCollection
   ): void {
     this._whenStyleLoaded(() => {
-      this._map!.addSource(id, { type: "geojson", data });
-      this._customSources.add(id);
+      const source: GeoJSONSourceSpecification = { type: "geojson", data };
+      this._map!.addSource(id, source);
+      this._customSources.set(id, source);
     });
   }
 
@@ -761,7 +764,7 @@ export class MapLibreMapEngine implements MapEngine {
           styleLayer.type === "symbol" && !this._customLayers.has(styleLayer.id)
       );
       this._map!.addLayer(layer, symbolLayer?.id);
-      this._customLayers.add(layer.id);
+      this._customLayers.set(layer.id, layer);
     });
   }
 

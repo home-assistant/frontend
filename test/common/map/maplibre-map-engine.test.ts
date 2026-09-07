@@ -132,8 +132,12 @@ const fakes = vi.hoisted(() => {
           FakeMap.failNextSetStyle = false;
           throw new Error("Invalid style");
         }
+        // MapLibre hands over the current style only once it has loaded
         this.style = options?.transformStyle
-          ? options.transformStyle(this.style, style)
+          ? options.transformStyle(
+              this.styleLoaded ? this.style : undefined,
+              style
+            )
           : style;
         // A rebuilt style is unloaded until the next frame
         this.styleLoaded = false;
@@ -420,6 +424,25 @@ describe("MapLibreMapEngine", () => {
         expect(ids.indexOf(id)).toBeGreaterThan(ids.indexOf("land"));
         expect(ids.indexOf(id)).toBeLessThan(ids.indexOf("labels"));
       }
+    });
+
+    it("keeps its sources and layers when a swap arrives while another is loading", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      engine.addCircle([52, 4], { radius: 100, color: "red" });
+
+      engine.setDarkMode(true);
+      await flush();
+      // The dark style has not loaded, so this swap sees no previous style
+      engine.setDarkMode(false);
+      await flush();
+      expect(map.setStyle).toHaveBeenCalledTimes(2);
+
+      map.loadStyle();
+      expect(customSourceIds(map)).toHaveLength(1);
+      expect(layerIds(map).filter((id) => id.startsWith("ha-"))).toHaveLength(
+        2
+      );
     });
 
     it("does not swap twice for the same mode, and retries after a failed swap", async () => {
