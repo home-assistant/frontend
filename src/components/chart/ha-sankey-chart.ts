@@ -226,10 +226,7 @@ export class HaSankeyChart extends LitElement {
           const label = node?.label ?? nodeData.id;
           if (!showValues || !nodeData.id) return label;
           const formatted = this.valueFormatter
-            ? this.valueFormatter(nodeData.value)
-                .replace(/<[^>]*>/g, "")
-                .replace(/\s+/g, " ")
-                .trim()
+            ? this.valueFormatter(nodeData.value).replace(/\s+/g, " ").trim()
             : String(nodeData.value);
           return `${label}\n${formatted}`;
         },
@@ -242,7 +239,7 @@ export class HaSankeyChart extends LitElement {
         if (this.vertical) {
           // reduce the label font size so the longest word fits on one line
           const longestWord = params.text
-            .split(" ")
+            .split(/\s+/)
             .reduce(
               (longest, current) =>
                 longest.length > current.length ? longest : current,

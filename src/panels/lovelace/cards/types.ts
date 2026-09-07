@@ -178,7 +178,6 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_floor?: boolean;
   group_by_area?: boolean;
   max_devices?: number;
-  show_values?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
@@ -257,10 +256,12 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
   type: "energy-sankey";
+  show_values?: boolean;
 }
 
 export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "power-sankey";
+  show_values?: boolean;
 }
 
 export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
@@ -270,6 +271,12 @@ export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
 export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-flow-sankey";
 }
+
+export type SankeyCardConfig =
+  | EnergySankeyCardConfig
+  | PowerSankeyCardConfig
+  | WaterSankeyCardConfig
+  | WaterFlowSankeyCardConfig;
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
