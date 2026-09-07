@@ -47,7 +47,7 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
-- `ha-frontend-review`: PR template use, review checklist, recurring review issues, and UI/UX evidence including gallery specifications.
+- `ha-frontend-review`: PR template use, existing review feedback, review checklist, recurring issues, and UI/UX evidence including gallery specifications.
 - `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.
 - `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
 - `ha-frontend-demo`: standalone demo structure, configurations, navigation, shared stubs, and verification.
