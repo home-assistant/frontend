@@ -41,6 +41,7 @@ import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
 import "../../components/ha-filter-pane";
+import type { HaFilterPane } from "../../components/ha-filter-pane";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-icon-button";
 import type { SourceFilters } from "../../components/ha-sources-picker";
@@ -107,6 +108,8 @@ class HaPanelHistory extends LitElement {
   private _storedFilters?: SourceFilters;
 
   @state() private _showSources?: boolean;
+
+  @query("ha-filter-pane") private _filterPane?: HaFilterPane;
 
   @state() private _entitySources?: EntitySources;
 
@@ -294,19 +297,9 @@ class HaPanelHistory extends LitElement {
             : "ui.panel.history.start_search"
         )}
       >
-        ${
-          !this._sourcesShown()
-            ? html`
-                <ha-button appearance="plain" @click=${this._openSources}>
-                  ${this.hass.localize(
-                    hasTargets
-                      ? "ui.panel.history.change_sources"
-                      : "ui.panel.history.add_targets"
-                  )}
-                </ha-button>
-              `
-            : nothing
-        }
+        <ha-button appearance="plain" @click=${this._openSources}>
+          ${this.hass.localize("ui.panel.history.change_sources")}
+        </ha-button>
       </ha-empty-state>
     `;
   }
@@ -397,6 +390,10 @@ class HaPanelHistory extends LitElement {
   }
 
   private _openSources() {
+    if (this._sourcesShown()) {
+      this._filterPane?.highlight();
+      return;
+    }
     this._showSources = true;
   }
 
