@@ -181,6 +181,8 @@ export class MapLibreMapEngine implements MapEngine {
 
   private _resizing = false;
 
+  private _settleInit?: () => void;
+
   public async init(
     container: HTMLElement,
     options: MapEngineOptions
@@ -309,8 +311,12 @@ export class MapLibreMapEngine implements MapEngine {
         resolve();
         return;
       }
+      // destroy() settles a pending init, so a host torn down mid-setup
+      // gets to finish
+      this._settleInit = resolve;
       map.once("style.load", () => resolve());
     });
+    this._settleInit = undefined;
   }
 
   private _handleVisibility = () => {
@@ -332,6 +338,8 @@ export class MapLibreMapEngine implements MapEngine {
 
   public destroy(): void {
     this._destroyed = true;
+    this._settleInit?.();
+    this._settleInit = undefined;
     this._unsubscribeToken?.();
     clearTimeout(this._fallbackTimeout);
     clearTimeout(this._clusterRebuildTimeout);
@@ -517,6 +525,9 @@ export class MapLibreMapEngine implements MapEngine {
     }
     if (options.interactive ?? true) {
       element.tabIndex = 0;
+    } else {
+      // Leaflet lets input through non-interactive markers; MapLibre does not
+      element.style.pointerEvents = "none";
     }
     setMarkerAccessibility(element, options.title, options.interactive ?? true);
 
@@ -838,11 +849,18 @@ export class MapLibreMapEngine implements MapEngine {
     if (!this._map) {
       return;
     }
-    this._clusterGroups.forEach((group) => group.iconMarker?.remove());
-
     const clusterable = this._markers.filter(
       (managed) => managed.options.cluster && !managed.removed
     );
+    // A member that had focus hands it to the icon replacing it; read before
+    // the open bubble holding it is removed
+    const active = (
+      this._map.getContainer().getRootNode() as Document | ShadowRoot
+    ).activeElement;
+    const focusedMember = active
+      ? clusterable.find((managed) => managed.element.contains(active))
+      : undefined;
+    this._clusterGroups.forEach((group) => group.iconMarker?.remove());
 
     if (!this._clusterOptions) {
       this._clusterGroups = [];
@@ -972,6 +990,10 @@ export class MapLibreMapEngine implements MapEngine {
         if (ev.key === "Enter" || ev.key === " ") {
           ev.preventDefault();
           zoomToMembers();
+          // Keyboard focus follows into the opened bubble
+          if (group.open) {
+            group.members[0]?.element.focus();
+          }
         }
       });
       const location = icon.location ?? group.center;
@@ -986,6 +1008,14 @@ export class MapLibreMapEngine implements MapEngine {
       })
         .setLngLat([location[1], location[0]])
         .addTo(this._map);
+    }
+    if (focusedMember) {
+      const group = this._clusterGroups.find((candidate) =>
+        candidate.members.includes(focusedMember)
+      );
+      if (group?.iconMarker && !group.open) {
+        group.iconMarker.getElement().focus();
+      }
     }
   }
 }

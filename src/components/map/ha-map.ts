@@ -219,6 +219,11 @@ export class HaMap extends ReactiveElement {
     );
     this._engine?.destroy();
     this._engine = undefined;
+    // An engine still setting up goes too; its setup notices and stops
+    this._setupAttempt++;
+    this._startingEngine?.destroy();
+    this._startingEngine = undefined;
+    this._loading = false;
     this._entityHandles = [];
     this._zoneHandles = [];
     this._pathHandles = [];
@@ -324,6 +329,11 @@ export class HaMap extends ReactiveElement {
 
   private _forceLeaflet = false;
 
+  // The engine being set up, so a disconnect can tear it down mid-init
+  private _startingEngine?: MapEngine;
+
+  private _setupAttempt = 0;
+
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
     if (this.engine === "leaflet" || this._forceLeaflet || !supportsWebGL2()) {
@@ -362,6 +372,7 @@ export class HaMap extends ReactiveElement {
     map.id = "map";
     this.shadowRoot!.append(map);
     this._loading = true;
+    const attempt = ++this._setupAttempt;
     let engine: MapEngine | undefined;
     try {
       // Without a connection or the tile proxy the map sets up without tiles
@@ -371,6 +382,10 @@ export class HaMap extends ReactiveElement {
 
       const rasterOnly = this._forceLeaflet;
       engine = await this._createEngine();
+      if (attempt !== this._setupAttempt) {
+        return;
+      }
+      this._startingEngine = engine;
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
@@ -396,9 +411,8 @@ export class HaMap extends ReactiveElement {
           fatal: () => this._handleEngineFatal(),
         },
       });
-      // Disconnected while the style was loading; disconnectedCallback had
-      // nothing to tear down yet
-      if (!this.isConnected) {
+      // Disconnected while the style was loading, or superseded by a newer setup
+      if (!this.isConnected || attempt !== this._setupAttempt) {
         return;
       }
       // A fatal event during setup asked for the fallback; _loadMap retries on it
@@ -409,7 +423,10 @@ export class HaMap extends ReactiveElement {
       this._updateMapStyle();
       this._loaded = true;
     } finally {
-      this._loading = false;
+      if (attempt === this._setupAttempt) {
+        this._loading = false;
+        this._startingEngine = undefined;
+      }
       // An engine that did not make it may already hold a map and a WebGL context
       if (engine && engine !== this._engine) {
         engine.destroy();

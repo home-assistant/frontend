@@ -219,6 +219,34 @@ describe("ha-map engine selection", () => {
     expect(entityHandles(el)).toHaveLength(2);
   });
 
+  it("tears down an engine still setting up when disconnected, and sets up again on reconnect", async () => {
+    let openGate!: () => void;
+    fakeEngine.initGate = new Promise<void>((resolve) => {
+      openGate = resolve;
+    });
+    const el = document.createElement("ha-map");
+    el.entities = ["device_tracker.paulus"];
+    el.clusterMarkers = false;
+    (el as any)._states = STATES;
+    (el as any)._config = {
+      config: { latitude: 52.3731339, longitude: 4.8903147 },
+    };
+    document.body.appendChild(el);
+    await vi.waitUntil(() => fakeEngine.instances[0]?.options);
+
+    el.remove();
+    expect(fakeEngine.instances[0].destroy).toHaveBeenCalledOnce();
+    openGate();
+    fakeEngine.initGate = undefined;
+
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
+    // The abandoned engine was not installed; a fresh one was set up
+    expect(fakeEngine.instances).toHaveLength(2);
+    expect(fakeEngine.instances[1].init).toHaveBeenCalledOnce();
+    expect(fakeEngine.instances[1].destroy).not.toHaveBeenCalled();
+  });
+
   it("rebuilds on Leaflet after a fatal engine failure", async () => {
     const el = await createMap();
     const engine = fakeEngine.instances[0];

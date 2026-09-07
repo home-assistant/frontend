@@ -50,6 +50,7 @@ const fakes = vi.hoisted(() => {
     addTo() {
       this.onMap = true;
       FakeMarker.all.push(this);
+      document.body.appendChild(this.options.element);
       return this;
     }
 
@@ -59,7 +60,12 @@ const fakes = vi.hoisted(() => {
       if (index !== -1) {
         FakeMarker.all.splice(index, 1);
       }
+      (this.options.element as HTMLElement).remove();
       return this;
+    }
+
+    getElement() {
+      return this.options.element as HTMLElement;
     }
 
     on() {
@@ -380,6 +386,21 @@ describe("MapLibreMapEngine", () => {
       expect(resolved).toBe(true);
     });
 
+    it("settles a pending init when destroyed", async () => {
+      fakeMap.startLoaded = false;
+      const { engine, ready } = await createEngine();
+      let resolved = false;
+      ready.then(() => {
+        resolved = true;
+      });
+
+      await flush();
+      expect(resolved).toBe(false);
+      engine.destroy();
+      await ready;
+      expect(resolved).toBe(true);
+    });
+
     it("queues sources and layers while a swapped style is loading", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
@@ -555,6 +576,25 @@ describe("MapLibreMapEngine", () => {
     });
   });
 
+  describe("markers", () => {
+    it("lets input through non-interactive markers", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      const interactive = document.createElement("div");
+      engine.addMarker(interactive, [52, 4], { size: [36, 36] });
+      const passive = document.createElement("div");
+      engine.addMarker(passive, [52, 4], {
+        size: [36, 36],
+        interactive: false,
+      });
+
+      expect(interactive.tabIndex).toBe(0);
+      expect(interactive.style.pointerEvents).toBe("");
+      expect(passive.style.pointerEvents).toBe("none");
+    });
+  });
+
   describe("clustering", () => {
     const addMarker = (
       engine: MapLibreMapEngine,
@@ -695,6 +735,26 @@ describe("MapLibreMapEngine", () => {
       expect(iconBuilder).toHaveBeenCalledTimes(2);
       expect(fakeMarker.all).toHaveLength(1);
       expect(fakeMarker.all[0].options.anchor).toBeUndefined();
+    });
+
+    it("moves keyboard focus into an opened cluster and back to its icon", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      const first = document.createElement("div");
+      engine.addMarker(first, [52, 4], { size: [48, 48], cluster: true });
+      addMarker(engine, [52, 4]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      const icon = iconBuilder.mock.results[0].value.element as HTMLElement;
+
+      icon.focus();
+      icon.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      expect(document.activeElement).toBe(first);
+
+      // The bubble closes on the next regroup; focus lands on the new icon
+      engine.setClustering({ radius: 40, iconBuilder });
+      const reopened = iconBuilder.mock.results[1].value.element as HTMLElement;
+      expect(document.activeElement).toBe(reopened);
     });
 
     it("opens a cluster at maximum zoom in a bubble", async () => {
