@@ -20,7 +20,7 @@ If the PR already carries the **Needs UX** label, reviewers have already decided
    - Existing-feature fixes and technical details normally remain with frontend review when they preserve the established experience.
    - New cards, badges, screens, and interaction patterns normally need this readiness check.
 3. Decide whether the evidence gathered during frontend review settles the direction.
-   - An explicit approval, current guidance, established pattern, or sufficiently specific task can settle the direction.
+   - Frontend maintainer guidance, explicit UI/UX approval, current guidance, an established pattern, or a task that settles the material visual and interaction choices can settle the direction.
    - Insufficient or conflicting evidence leaves the direction unresolved.
 4. Select exactly one route below and state which frontend-review evidence supports it.
 
@@ -28,11 +28,11 @@ If the PR already carries the **Needs UX** label, reviewers have already decided
 
 | Route                          | Use when                                                                                                                                                                                                                                                     | Action                                                                                                                        |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend review sufficient** | The change preserves the established experience, or explicit UI/UX approval, current guidance, an established pattern, or a sufficiently specific task settles the design direction.                                                                         | Cite the evidence that settles the direction and continue with `ha-frontend-review`.                                          |
+| **Frontend review sufficient** | The change preserves the established experience, or frontend maintainer guidance, explicit UI/UX approval, current guidance, an established pattern, or a task settles the material visual and interaction choices.                                          | Cite the evidence that settles the direction and continue with `ha-frontend-review`.                                          |
 | **UI/UX review recommended**   | The change introduces a new user experience with material design choices that are not settled by UI/UX approval, current guidance, or an established pattern. This also covers conflicting feedback and tasks that leave important UI/UX choices unresolved. | Recommend UI/UX review and identify the decision that needs input.                                                            |
 | **UI/UX review required**      | A workflow rule or direct human instruction explicitly requires UI/UX review.                                                                                                                                                                                | Cite that evidence and treat UI/UX review as required. A new design, task link, or lack of evidence is not enough on its own. |
 
-Explicit UI/UX approval, established patterns, task requirements, and conflicting or missing evidence inform the route; they are not separate results. Approval or an established direction can make frontend review sufficient. A task can settle requirements without approving the UI/UX. Recommend UI/UX review when important design choices remain unresolved.
+Frontend maintainer guidance, explicit UI/UX approval, established patterns, and task requirements inform the route. A task can settle requirements without settling the UI/UX. Recommend UI/UX review when important design choices remain unresolved.
 
 ## Reporting
 
