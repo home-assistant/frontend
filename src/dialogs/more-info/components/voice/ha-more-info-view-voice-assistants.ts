@@ -1,6 +1,9 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-spinner";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { ExposeEntitySettings } from "../../../../data/expose";
 import { listExposedEntities } from "../../../../data/expose";
@@ -8,7 +11,7 @@ import "../../../../panels/config/voice-assistants/entity-voice-settings";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-view-voice-assistants")
-class MoreInfoViewVoiceAssistants extends LitElement {
+export class MoreInfoViewVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
@@ -19,23 +22,54 @@ class MoreInfoViewVoiceAssistants extends LitElement {
 
   @state() private _locked?: ExposeEntitySettings;
 
+  @state() private _error = false;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("entry") && this.entry) {
+      this._exposed = undefined;
+      this._locked = undefined;
       this._fetchExposed();
     }
   }
 
-  private async _fetchExposed() {
-    const { exposed_entities, locked_entities } = await listExposedEntities(
-      this.hass
-    );
-    this._exposed = exposed_entities[this.entry.entity_id] ?? {};
-    this._locked = locked_entities[this.entry.entity_id];
-  }
+  private _fetchExposed = async () => {
+    const entityId = this.entry.entity_id;
+    this._error = false;
+    try {
+      const { exposed_entities, locked_entities } = await listExposedEntities(
+        this.hass
+      );
+      if (entityId !== this.entry.entity_id) {
+        // The entry moved on to another entity while this was in flight;
+        // that newer entity already has its own fetch in progress.
+        return;
+      }
+      this._exposed = exposed_entities[entityId] ?? {};
+      this._locked = locked_entities[entityId];
+    } catch (_err) {
+      if (entityId !== this.entry.entity_id) {
+        return;
+      }
+      this._error = true;
+    }
+  };
 
   protected render() {
-    if (!this.params || !this._exposed) {
+    if (!this.params) {
       return nothing;
+    }
+    if (this._error) {
+      return html`
+        <ha-alert alert-type="error">
+          ${this.hass.localize("ui.dialogs.voice-settings.load_error")}
+          <ha-button slot="action" @click=${this._fetchExposed}>
+            ${this.hass.localize("ui.dialogs.voice-settings.retry")}
+          </ha-button>
+        </ha-alert>
+      `;
+    }
+    if (!this._exposed) {
+      return html`<ha-spinner active></ha-spinner>`;
     }
     return html`<entity-voice-settings
       .hass=${this.hass}
@@ -60,6 +94,9 @@ class MoreInfoViewVoiceAssistants extends LitElement {
           justify-content: center;
           padding: var(--ha-space-6);
           flex: 1;
+        }
+        ha-spinner {
+          margin: var(--ha-space-8) auto;
         }
       `,
     ];

@@ -2036,7 +2036,9 @@
         "ask_pin": "Ask for PIN",
         "manual_config": "Managed in configuration.yaml",
         "unsupported": "Unsupported",
-        "view_entity": "More info about entity"
+        "view_entity": "More info about entity",
+        "load_error": "Failed to load voice assistant settings for this entity.",
+        "retry": "Retry"
       },
       "restart": {
         "heading": "Restart Home Assistant",
