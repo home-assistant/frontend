@@ -23,6 +23,7 @@ import type {
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
+import { setMarkerAccessibility } from "../marker-accessibility";
 
 /** A leaflet marker that knows the engine handle it was created for */
 interface HandledMarker extends DecoratedMarker {
@@ -209,6 +210,13 @@ export class LeafletMapEngine implements MapEngine {
         })
       : undefined;
 
+    // Leaflet's keyboard support focuses its own wrapper, where the element's
+    // activation handlers never hear a key; the element itself takes focus
+    const interactive = options.interactive ?? true;
+    if (interactive) {
+      element.tabIndex = 0;
+    }
+    setMarkerAccessibility(element, options.title, interactive);
     const marker: HandledMarker = new DecoratedMarker(location, decoration, {
       icon: this.Leaflet!.divIcon({
         html: element,
@@ -216,8 +224,8 @@ export class LeafletMapEngine implements MapEngine {
         iconAnchor: options.anchor,
         className: "",
       }),
-      interactive: options.interactive ?? true,
-      keyboard: options.interactive ?? true,
+      interactive,
+      keyboard: false,
       title: options.title,
     });
 

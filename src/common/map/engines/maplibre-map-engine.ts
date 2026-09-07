@@ -4,10 +4,12 @@ import type {
   LayerSpecification,
   Map as MapLibreMap,
   MapLayerMouseEvent,
+  MapMouseEvent,
   Marker as MapLibreMarker,
   StyleSpecification,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
+import { setMarkerAccessibility } from "../marker-accessibility";
 import {
   CONTEXT_RESTORE_GRACE,
   ensureRTLTextPlugin,
@@ -63,26 +65,6 @@ const WHEEL_ZOOM_RATE = 1 / 200;
 
 // Regroup clusters once continuous zooming settles, not on every wheel notch
 const CLUSTER_REBUILD_DELAY = 120;
-
-// Without these MapLibre sets aria-label "Map marker" and role button
-const setMarkerAccessibility = (
-  element: HTMLElement,
-  title: string | undefined,
-  interactive: boolean
-): void => {
-  if (title && !element.hasAttribute("aria-label")) {
-    element.setAttribute("aria-label", title);
-  }
-  if (!element.hasAttribute("role")) {
-    if (interactive) {
-      element.setAttribute("role", "button");
-    } else if (title) {
-      element.setAttribute("role", "img");
-    } else {
-      element.setAttribute("aria-hidden", "true");
-    }
-  }
-};
 
 // A meter-radius circle as a polygon (spherical approximation)
 const circlePolygon = (
@@ -301,14 +283,14 @@ export class MapLibreMapEngine implements MapEngine {
     });
     document.addEventListener("visibilitychange", this._handleVisibility);
 
-    // Sources and layers can be added once the style is applied; it was
-    // fetched above, so this cannot fail
+    // Sources and layers can be added once the style has loaded (see
+    // _whenStyleLoaded); it was fetched above, so this cannot fail
     await new Promise<void>((resolve) => {
-      if (map.isStyleLoaded()) {
+      if (map.getStyle()) {
         resolve();
         return;
       }
-      map.once("styledata", () => resolve());
+      map.once("style.load", () => resolve());
     });
   }
 
@@ -682,29 +664,42 @@ export class MapLibreMapEngine implements MapEngine {
       offset: 10,
     });
     const layerId = `${id}-points`;
-    const onEnter = (ev: MapLayerMouseEvent) => {
+    const showPopup = (ev: MapLayerMouseEvent) => {
       const feature = ev.features?.[0];
       if (!feature || feature.geometry.type !== "Point") {
         return;
       }
-      map.getCanvas().style.cursor = "pointer";
       popup
         .setLngLat(feature.geometry.coordinates as [number, number])
         .setHTML(feature.properties?.tooltip ?? "")
         .addTo(map);
     };
+    const onEnter = (ev: MapLayerMouseEvent) => {
+      map.getCanvas().style.cursor = "pointer";
+      showPopup(ev);
+    };
     const onLeave = () => {
       map.getCanvas().style.cursor = "";
       popup.remove();
     };
+    // Touch has no hover: a tap shows the popup, a tap elsewhere dismisses it
+    const onMapClick = (ev: MapMouseEvent) => {
+      if (!map.queryRenderedFeatures(ev.point, { layers: [layerId] }).length) {
+        popup.remove();
+      }
+    };
     map.on("mouseenter", layerId, onEnter);
     map.on("mouseleave", layerId, onLeave);
+    map.on("click", layerId, showPopup);
+    map.on("click", onMapClick);
     this._pathPointLayers.add(layerId);
 
     return {
       remove: () => {
         map.off("mouseenter", layerId, onEnter);
         map.off("mouseleave", layerId, onLeave);
+        map.off("click", layerId, showPopup);
+        map.off("click", onMapClick);
         this._pathPointLayers.delete(layerId);
         popup.remove();
         this._removeCustomLayer(`${id}-lines`);
@@ -715,7 +710,8 @@ export class MapLibreMapEngine implements MapEngine {
     };
   }
 
-  // Runs now, or once the style has loaded; getStyle() is undefined until then
+  // Runs now, or once the style has loaded. MapLibre serializes nothing
+  // until then, so getStyle() is undefined exactly while the style is unloaded
   private _whenStyleLoaded(operation: () => void): void {
     const map = this._map;
     if (!map) {

@@ -338,13 +338,14 @@ export class HaMap extends ReactiveElement {
 
   // An engine that cannot start hands over to the Leaflet fallback
   private async _loadMap(): Promise<void> {
+    const onFallback = this._forceLeaflet || !supportsWebGL2();
     try {
       await this._setUpEngine();
     } catch (err) {
       if (!this.isConnected) {
         return;
       }
-      if (this._forceLeaflet || !supportsWebGL2()) {
+      if (onFallback) {
         // Already on the fallback; nothing left to try
         throw err;
       }
@@ -367,6 +368,7 @@ export class HaMap extends ReactiveElement {
         ? await ensureMapTilesToken(this._connection.connection)
         : undefined;
 
+      const rasterOnly = this._forceLeaflet;
       const engine = await this._createEngine();
       await engine.init(map, {
         center: [
@@ -399,6 +401,11 @@ export class HaMap extends ReactiveElement {
         engine.destroy();
         return;
       }
+      // A fatal event during setup asked for the fallback; _loadMap retries on it
+      if (this._forceLeaflet && !rasterOnly) {
+        engine.destroy();
+        throw new Error("Map engine failed during setup");
+      }
       this._engine = engine;
       this._updateMapStyle();
       this._loaded = true;
@@ -413,6 +420,10 @@ export class HaMap extends ReactiveElement {
       return;
     }
     this._forceLeaflet = true;
+    if (this._loading) {
+      // Setup in flight; it switches to the fallback once init settles
+      return;
+    }
     this._engine?.destroy();
     this._engine = undefined;
     this._entityHandles = [];
