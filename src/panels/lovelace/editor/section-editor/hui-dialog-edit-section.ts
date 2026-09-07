@@ -8,6 +8,8 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { cache } from "lit/directives/cache";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
@@ -22,6 +24,8 @@ import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import { isStrategySection } from "../../../../data/lovelace/config/section";
+import type { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { saveConfig } from "../../../../data/lovelace/config/types";
 import {
@@ -35,7 +39,8 @@ import {
   haStyleDialog,
   haStyleDialogFixedTop,
 } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import { cleanLegacyStrategyConfig } from "../../strategies/legacy-strategy";
 import type { Lovelace } from "../../types";
 import { addSection, deleteSection, moveSection } from "../config-util";
 import {
@@ -45,12 +50,15 @@ import {
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
+import "./hui-section-strategy-element-editor";
+import type { HuiSectionStrategyElementEditor } from "./hui-section-strategy-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { getViewType } from "../../views/get-view-type";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 
-const TABS = ["tab-settings", "tab-visibility"] as const;
+const TABS = ["tab-strategy", "tab-appearance", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-section")
 export class HuiDialogEditSection
@@ -73,7 +81,14 @@ export class HuiDialogEditSection
 
   @state() private _open = false;
 
+  @state() private _strategyError = false;
+
+  @state() private _yamlError = false;
+
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
+
+  @query("hui-section-strategy-element-editor")
+  private _strategyEditor?: HuiSectionStrategyElementEditor;
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -95,6 +110,9 @@ export class HuiDialogEditSection
       this._params.viewIndex,
       this._params.sectionIndex,
     ]);
+    this._currTab = isStrategySection(this._config)
+      ? "tab-strategy"
+      : "tab-appearance";
     this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
     ]);
@@ -111,6 +129,8 @@ export class HuiDialogEditSection
     this._yamlMode = false;
     this._config = undefined;
     this._currTab = TABS[0];
+    this._strategyError = false;
+    this._yamlError = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -123,6 +143,15 @@ export class HuiDialogEditSection
       "ui.panel.lovelace.editor.edit_section.header"
     );
 
+    const strategy = isStrategySection(this._config)
+      ? cleanLegacyStrategyConfig(this._config.strategy)
+      : undefined;
+    const tabs = strategy ? TABS : TABS.filter((tab) => tab !== "tab-strategy");
+    const currentTab =
+      !strategy && this._currTab === "tab-strategy"
+        ? "tab-appearance"
+        : this._currTab;
+
     let content: TemplateResult<1> | typeof nothing = nothing;
 
     if (this._yamlMode) {
@@ -134,8 +163,8 @@ export class HuiDialogEditSection
         ></ha-yaml-editor>
       `;
     } else {
-      switch (this._currTab) {
-        case "tab-settings":
+      switch (currentTab) {
+        case "tab-appearance":
           content = html`
             <hui-section-settings-editor
               .config=${this._config}
@@ -153,6 +182,17 @@ export class HuiDialogEditSection
               @value-changed=${this._configChanged}
             >
             </hui-section-visibility-editor>
+          `;
+          break;
+        case "tab-strategy":
+          content = html`
+            <hui-section-strategy-element-editor
+              .hass=${this.hass}
+              .lovelace=${this._params.lovelaceConfig}
+              .value=${strategy}
+              in-dialog
+              @config-changed=${this._strategyConfigChanged}
+            ></hui-section-strategy-element-editor>
           `;
           break;
       }
@@ -207,12 +247,12 @@ export class HuiDialogEditSection
             !this._yamlMode
               ? html`
                   <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                    ${TABS.map(
+                    ${tabs.map(
                       (tab) => html`
                         <ha-tab-group-tab
                           slot="nav"
                           .panel=${tab}
-                          .active=${this._currTab === tab}
+                          .active=${currentTab === tab}
                         >
                           ${this.hass!.localize(
                             `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
@@ -225,7 +265,7 @@ export class HuiDialogEditSection
               : nothing
           }
         </ha-dialog-header>
-        ${content}
+        ${this._yamlMode ? content : cache(content)}
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -238,7 +278,7 @@ export class HuiDialogEditSection
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            ?disabled=${!this.isDirtyState}
+            ?disabled=${!this.isDirtyState || this._yamlError || this._strategyError}
           >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
@@ -247,10 +287,28 @@ export class HuiDialogEditSection
     `;
   }
 
-  private _configChanged(ev: CustomEvent): void {
+  private _configChanged(
+    ev: ValueChangedEvent<LovelaceSectionRawConfig>
+  ): void {
     ev.stopPropagation();
     this._config = ev.detail.value;
     this._updateDirtyState(this._config!);
+  }
+
+  private _strategyConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceStrategyConfig>>
+  ): void {
+    ev.stopPropagation();
+    if (!this._config || !isStrategySection(this._config)) return;
+    this._strategyError = Boolean(
+      this._strategyEditor?.hasError ||
+      ev.detail.error ||
+      typeof ev.detail.config?.type !== "string" ||
+      !ev.detail.config.type
+    );
+    if (this._strategyError) return;
+    this._config = { ...this._config, strategy: ev.detail.config };
+    this._updateDirtyState(this._config);
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
@@ -402,12 +460,21 @@ export class HuiDialogEditSection
     }
   };
 
-  private _viewYamlChanged(ev: CustomEvent) {
+  private _viewYamlChanged(
+    ev: ValueChangedEvent<LovelaceSectionRawConfig> &
+      HASSDomEvent<{ isValid: boolean }>
+  ) {
     ev.stopPropagation();
-    if (!ev.detail.isValid) {
+    this._yamlError =
+      !ev.detail.isValid ||
+      !ev.detail.value ||
+      typeof ev.detail.value !== "object" ||
+      Array.isArray(ev.detail.value);
+    if (this._yamlError) {
       return;
     }
     this._config = ev.detail.value;
+    this._strategyError = false;
     this._updateDirtyState(this._config!);
   }
 
@@ -423,7 +490,12 @@ export class HuiDialogEditSection
   }
 
   private async _save(): Promise<void> {
-    if (!this._params || !this._config) {
+    if (
+      !this._params ||
+      !this._config ||
+      this._yamlError ||
+      this._strategyError
+    ) {
       return;
     }
     const newConfig = updateLovelaceContainer(
