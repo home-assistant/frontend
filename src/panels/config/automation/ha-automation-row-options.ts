@@ -94,7 +94,12 @@ export class HaAutomationRowOptions extends LitElement {
     const duration = createDurationData(
       value as string | number | ForDict | undefined
     );
-    if (!duration) {
+    if (
+      !duration ||
+      Object.values(duration).some(
+        (part) => part !== undefined && !Number.isFinite(part)
+      )
+    ) {
       return undefined;
     }
     return formatDurationNarrow(this._i18n.locale, duration);
