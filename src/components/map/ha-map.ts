@@ -792,7 +792,8 @@ export class HaMap extends ReactiveElement {
           };
           iconEl.addEventListener("click", openMoreInfo);
           iconEl.addEventListener("keydown", (ev) => {
-            if (ev.key === "Enter") {
+            if (ev.key === "Enter" || ev.key === " ") {
+              ev.preventDefault();
               openMoreInfo(ev);
             }
           });
