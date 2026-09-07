@@ -4,9 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
+  getImageEntityIdFromMediaSourceContentId,
   isMediaSourceContentId,
   resolveMediaSourceWithCache,
 } from "../../../data/media_source";
+import { computeImageUrl } from "../../../data/image";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {
@@ -16,6 +18,8 @@ export class HUIViewBackground extends LitElement {
     string | LovelaceViewBackgroundConfig | undefined;
 
   @state({ attribute: false }) resolvedImage?: string;
+
+  private _entityId: string | undefined = undefined;
 
   protected render() {
     return nothing;
@@ -37,17 +41,36 @@ export class HUIViewBackground extends LitElement {
     const backgroundImage = this._getBackgroundImage(this.background);
 
     if (!backgroundImage || !isMediaSourceContentId(backgroundImage)) {
+      this._entityId = undefined;
       this.resolvedImage = undefined;
       return;
     }
 
     let resolvedUrl: string | undefined;
-    try {
-      resolvedUrl = (
-        await resolveMediaSourceWithCache(this.hass, backgroundImage)
-      ).url;
-    } catch {
-      resolvedUrl = undefined;
+    this._entityId = getImageEntityIdFromMediaSourceContentId(backgroundImage);
+    if (this._entityId) {
+      const stateObj = this.hass.states[this._entityId];
+      if (stateObj) {
+        const url = computeImageUrl(stateObj);
+        if (url) {
+          const image = new Image();
+          image.src = url;
+          try {
+            await image.decode();
+            resolvedUrl = url;
+          } catch {
+            resolvedUrl = undefined;
+          }
+        }
+      }
+    } else {
+      try {
+        resolvedUrl = (
+          await resolveMediaSourceWithCache(this.hass, backgroundImage)
+        ).url;
+      } catch {
+        resolvedUrl = undefined;
+      }
     }
     // Discard if the background changed while resolving
     if (this._getBackgroundImage(this.background) === backgroundImage) {
@@ -129,6 +152,13 @@ export class HUIViewBackground extends LitElement {
         this.hass.themes !== oldHass.themes ||
         this.hass.selectedTheme !== oldHass.selectedTheme
       ) {
+        applyTheme = true;
+      }
+      if (
+        this._entityId &&
+        this.hass.states[this._entityId] !== oldHass?.states[this._entityId]
+      ) {
+        this._fetchMedia();
         applyTheme = true;
       }
     }
