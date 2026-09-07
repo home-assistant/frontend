@@ -734,7 +734,8 @@ export class MapLibreMapEngine implements MapEngine {
       }
       frame = requestAnimationFrame(() => {
         frame = undefined;
-        (map.getSource(id) as GeoJSONSource | undefined)?.setData(
+        this._setCustomSourceData(
+          id,
           circlePolygon(currentCenter, currentRadius)
         );
       });
@@ -1069,6 +1070,17 @@ export class MapLibreMapEngine implements MapEngine {
       this._map!.addSource(id, source);
       this._customSources.set(id, source);
     });
+  }
+
+  private _setCustomSourceData(
+    id: string,
+    data: Feature<Polygon> | FeatureCollection
+  ): void {
+    const source = this._customSources.get(id);
+    if (source) {
+      source.data = data;
+    }
+    (this._map?.getSource(id) as GeoJSONSource | undefined)?.setData(data);
   }
 
   private _addCustomLayer(layer: LayerSpecification): void {
