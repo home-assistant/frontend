@@ -69,7 +69,6 @@ export const isLocalMediaSourceContentId = (mediaId: string) =>
 export const isImageUploadMediaSourceContentId = (mediaId: string) =>
   mediaId.startsWith("media-source://image_upload");
 
-// Returns image entity ID or undefined.
 export const getImageEntityIdFromMediaSourceContentId = (
   mediaId: string
 ): string | undefined =>
