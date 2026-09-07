@@ -59,9 +59,10 @@ export class HUIViewBackground extends LitElement {
             await image.decode();
             const newStateObj = this.hass.states[this._entityId];
             // Discard if stale
-            if (url === computeImageUrl(newStateObj)) {
-              resolvedUrl = url;
+            if (url !== computeImageUrl(newStateObj)) {
+              return;
             }
+            resolvedUrl = url;
           } catch {
             resolvedUrl = undefined;
           }
