@@ -1,7 +1,7 @@
 import { css, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { STATE_RUNNING } from "home-assistant-js-websocket/dist/config";
+import { STATE_RUNNING } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
