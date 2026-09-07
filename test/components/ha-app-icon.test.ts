@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HaAppIcon } from "../../src/components/ha-app-icon";
 import "../../src/components/ha-app-icon";
 
@@ -16,6 +16,7 @@ const mountAppIcon = async (properties: Partial<HaAppIcon> = {}) => {
 afterEach(() => {
   appIcon?.remove();
   appIcon = undefined;
+  vi.unstubAllGlobals();
 });
 
 describe("ha-app-icon", () => {
@@ -36,6 +37,17 @@ describe("ha-app-icon", () => {
       ).toBe("/api/hassio/addons/example/icon");
     }
   );
+
+  it("requests the icon from the configured Home Assistant URL", async () => {
+    vi.stubGlobal("__HASS_URL__", "http://homeassistant.local:8123");
+    const element = await mountAppIcon({ slug: "example", hasIcon: true });
+    const image = element.shadowRoot!.querySelector("img")!;
+
+    expect(image.getAttribute("src")).toBe(
+      "http://homeassistant.local:8123/api/hassio/addons/example/icon"
+    );
+    expect(image.hasAttribute("crossorigin")).toBe(false);
+  });
 
   it("renders the fallback after an image error", async () => {
     const element = await mountAppIcon({ slug: "example", hasIcon: true });
