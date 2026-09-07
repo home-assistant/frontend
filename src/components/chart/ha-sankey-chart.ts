@@ -221,14 +221,14 @@ export class HaSankeyChart extends LitElement {
       animationDuration: 500,
       label: {
         formatter: (params) => {
-          const nodeData = params.data as Record<string, any>;
+          const nodeData = params.data as { id: string; value: number };
           const node = data.nodes.find((n) => n.id === nodeData.id);
           const label = node?.label ?? nodeData.id;
           if (!showValues || !nodeData.id) return label;
           const formatted = this.valueFormatter
             ? this.valueFormatter(nodeData.value).replace(/\s+/g, " ").trim()
             : String(nodeData.value);
-          return `${label}\n${formatted}`;
+          return `${label}\n\u2066${formatted}\u2069`;
         },
         position: this.vertical ? "bottom" : "right",
         distance: LABEL_DISTANCE,
