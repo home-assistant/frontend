@@ -387,11 +387,11 @@ export class MapLibreMapEngine implements MapEngine {
     loadStyle(VECTOR_STYLES[darkMode ? "dark" : "light"])
       .then((style) => {
         if (request === this._latestStyleRequest && this._map) {
-          this._appliedDarkMode = darkMode;
           this._map.setStyle(style, {
             transformStyle: (previous, next) =>
               this._carryCustomLayers(previous, next),
           });
+          this._appliedDarkMode = darkMode;
         }
       })
       .catch(() => {
