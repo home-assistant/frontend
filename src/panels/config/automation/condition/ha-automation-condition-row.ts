@@ -73,6 +73,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
@@ -229,6 +230,15 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${
+          this._getType(this.condition, this.conditionDescriptions) ===
+          "platform"
+            ? html`<ha-automation-row-behavior
+                mode="condition"
+                .config=${this.condition}
+              ></ha-automation-row-behavior>`
+            : nothing
+        }
         ${
           target !== undefined || targetRequired
             ? this._renderTargets(

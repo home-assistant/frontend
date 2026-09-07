@@ -3,6 +3,25 @@ import { css } from "lit";
 export const SIDEBAR_MIN_WIDTH = 375;
 export const CONTENT_MIN_WIDTH = 350;
 
+export const rowSummaryStyles = css`
+  :host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+    vertical-align: middle;
+    color: var(--ha-color-text-secondary);
+  }
+  :host([hidden]) {
+    display: none;
+  }
+  .dot-separator {
+    width: 2px;
+    height: 2px;
+    border-radius: var(--ha-border-radius-circle);
+    background-color: currentColor;
+  }
+`;
+
 export const rowStyles = css`
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
