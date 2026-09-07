@@ -10985,10 +10985,10 @@
               },
               "target-humidity": {
                 "label": "Target humidity",
-                "style": "Style",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
-                  "buttons": "Buttons",
-                  "slider": "Slider"
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
                 }
               },
               "water-heater-operation-modes": {
