@@ -10,7 +10,7 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
+  getPowerEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -66,9 +66,10 @@ export class HuiPowerSourcesGraphCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => this._getStatistics(data)),
+      getPowerEnergyDataCollection(
+        this.hass,
+        this._config?.collection_key
+      ).subscribe((data) => this._getStatistics(data)),
     ];
   }
 

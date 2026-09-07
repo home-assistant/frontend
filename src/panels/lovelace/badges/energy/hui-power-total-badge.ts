@@ -14,7 +14,7 @@ import {
 } from "../../../../data/context";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
-  getEnergyDataCollection,
+  getPowerEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -54,9 +54,10 @@ export class HuiPowerTotalBadge
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
+      getPowerEnergyDataCollection(
+        this.hass,
+        this._config?.collection_key
+      ).subscribe((data) => {
         this._data = data;
       }),
     ];

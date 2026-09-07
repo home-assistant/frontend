@@ -9,7 +9,7 @@ import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatPowerShort,
-  getEnergyDataCollection,
+  getPowerEnergyDataCollection,
   getPowerFromState,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -92,9 +92,10 @@ class HuiPowerSankeyCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
+      getPowerEnergyDataCollection(
+        this.hass,
+        this._config?.collection_key
+      ).subscribe((data) => {
         this._data = data;
       }),
     ];

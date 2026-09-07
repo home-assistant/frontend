@@ -1141,6 +1141,35 @@ export const getEnergyDataCollection = (
   return collection;
 };
 
+/**
+ * Default collection key for the real-time power elements (power sources
+ * graph, power sankey, power total badge) when they are used outside the
+ * Energy panel. Like the Energy panel's own "Now" view, they get a collection
+ * of their own so their day period can roll over at midnight without changing
+ * the behavior of the statistics cards on the same dashboard.
+ */
+export const getDefaultPowerCollectionKey = (hass: HomeAssistant): string =>
+  hass.panelUrl
+    ? `${ENERGY_COLLECTION_KEY_PREFIX}${hass.panelUrl}_now`
+    : DEFAULT_POWER_COLLECTION_KEY;
+
+/**
+ * Energy data collection for the real-time power elements. An explicitly
+ * configured collection key is used as-is, sharing the period of whatever
+ * else uses that key. Without one, the elements use the dashboard's power
+ * collection, which rolls its day period over at midnight.
+ */
+export const getPowerEnergyDataCollection = (
+  hass: HomeAssistant,
+  collectionKey?: string
+): EnergyCollection =>
+  collectionKey
+    ? getEnergyDataCollection(hass, { key: collectionKey })
+    : getEnergyDataCollection(hass, {
+        key: getDefaultPowerCollectionKey(hass),
+        midnightRollover: true,
+      });
+
 export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   hass.callWS<EnergySolarForecasts>({
     type: "energy/solar_forecast",

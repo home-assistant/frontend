@@ -24,6 +24,9 @@ import {
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
+  getPowerEnergyDataCollection,
+  getDefaultPowerCollectionKey,
+  DEFAULT_POWER_COLLECTION_KEY,
   EMPTY_PREFERENCES,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
@@ -1484,6 +1487,89 @@ describe("computeEnergyDeviceLabels", () => {
     assert.deepEqual(
       computeEnergyDeviceLabels(hass, DEVICES, undefined, "stat_rate"),
       { "sensor.washer_power": "Washer Power" }
+    );
+  });
+});
+
+describe("getPowerEnergyDataCollection", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  const createHass = (panelUrl?: string) => {
+    const hass = createMockHass();
+    hass.locale = energyPeriodLocale;
+    hass.config = { ...hass.config, time_zone: "America/New_York" };
+    Object.assign(hass, {
+      panelUrl,
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS: vi.fn(async (msg: { type: string }) => {
+        if (msg.type === "energy/get_prefs") {
+          return EMPTY_PREFERENCES;
+        }
+        if (msg.type === "energy/info") {
+          return { cost_sensors: {}, solar_forecast_domains: [] };
+        }
+        return {};
+      }),
+    });
+    return hass;
+  };
+
+  it("derives a per-dashboard power collection key", () => {
+    assert.equal(
+      getDefaultPowerCollectionKey({
+        panelUrl: "master-bedroom",
+      } as HomeAssistant),
+      "energy_master-bedroom_now"
+    );
+    assert.equal(
+      getDefaultPowerCollectionKey({} as HomeAssistant),
+      DEFAULT_POWER_COLLECTION_KEY
+    );
+  });
+
+  it("uses a midnight-rolling power collection without a key", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+    const hass = createHass("master-bedroom");
+
+    const collection = getPowerEnergyDataCollection(hass);
+
+    assert.strictEqual(
+      (hass.connection as any)["_energy_master-bedroom_now"],
+      collection
+    );
+    // The dashboard's default (statistics) collection is left alone.
+    assert.isUndefined((hass.connection as any)["_energy_master-bedroom"]);
+    // Live data: today from midnight, no fallback to yesterday in hour 0.
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+  });
+
+  it("keeps the statistics behavior for an explicitly configured key", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
+    const hass = createHass("master-bedroom");
+
+    const collection = getPowerEnergyDataCollection(hass, "energy_shared");
+
+    assert.strictEqual((hass.connection as any)._energy_shared, collection);
+    assert.strictEqual(
+      getEnergyDataCollection(hass, { key: "energy_shared" }),
+      collection
+    );
+    // Shared with statistics cards: yesterday until 01:00, as before.
+    assert.equal(
+      collection.start.getTime(),
+      energyPeriodDay(new Date(), -1).start.getTime()
     );
   });
 });
