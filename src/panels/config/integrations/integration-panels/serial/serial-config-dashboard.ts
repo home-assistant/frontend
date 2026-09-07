@@ -17,6 +17,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
+import "../../../../../components/ha-app-icon";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
@@ -204,23 +205,12 @@ export class SerialConfigDashboard extends LitElement {
         });
   }
 
-  private _renderConsumerIcon(src: string, alt: string): TemplateResult {
-    return html`<img
-      slot="start"
-      .src=${src}
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-      alt=${alt}
-    />`;
-  }
-
   // The panel the integration behind this consumer is configured in, if it has
   // one. A stopped consumer has no panel loaded to send the user to.
   private _consumerPanel(consumer: SerialPortConsumer): string | undefined {
     if (!consumer.active) {
       return undefined;
     }
-
     const domain =
       consumer.kind === "config_entry"
         ? consumer.domain
@@ -253,22 +243,28 @@ export class SerialConfigDashboard extends LitElement {
       <ha-md-list-item type="link" href=${href} class="consumer">
         ${
           consumer.kind === "config_entry"
-            ? this._renderConsumerIcon(
-                brandsUrl(
+            ? html`<img
+                slot="start"
+                .src=${brandsUrl(
                   {
                     domain: consumer.domain!,
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   },
                   this.hass.auth.data.hassUrl
-                ),
-                consumer.domain!
-              )
+                )}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                alt=${consumer.domain!}
+              />`
             : consumer.kind === "app"
-              ? this._renderConsumerIcon(
-                  `/api/hassio/addons/${consumer.slug}/icon`,
-                  consumer.slug!
-                )
+              ? html`<ha-app-icon
+                  slot="start"
+                  .slug=${consumer.slug!}
+                  .alt=${consumer.title || consumer.slug!}
+                >
+                  <ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>
+                </ha-app-icon>`
               : html`<ha-svg-icon
                   slot="start"
                   .path=${mdiPuzzle}
@@ -673,7 +669,8 @@ export class SerialConfigDashboard extends LitElement {
           --md-list-item-leading-space: var(--ha-space-14);
         }
 
-        ha-md-list-item.consumer img[slot="start"] {
+        ha-md-list-item.consumer img[slot="start"],
+        ha-md-list-item.consumer ha-app-icon[slot="start"] {
           width: 24px;
           height: 24px;
         }
