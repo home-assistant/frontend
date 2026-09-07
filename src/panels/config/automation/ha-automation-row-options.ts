@@ -25,7 +25,7 @@ export class HaAutomationRowOptions extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   protected render() {
-    const supportedOptions = this._formatOptions(this.config);
+    const supportedOptions = this._formatOptions(this.config, this._i18n);
 
     if (!supportedOptions.length) {
       return nothing;
@@ -36,7 +36,10 @@ export class HaAutomationRowOptions extends LitElement {
   }
 
   private _formatOptions = memoizeOne(
-    (config: HaAutomationRowOptionsConfig): string[] => {
+    (
+      config: HaAutomationRowOptionsConfig,
+      _i18n: typeof this._i18n
+    ): string[] => {
       const parts: string[] = [];
 
       if ("options" in config && config.options) {
@@ -45,7 +48,12 @@ export class HaAutomationRowOptions extends LitElement {
         const forDuration = this._duration(options.for);
         if (forDuration) {
           parts.push(
-            `${this._i18n.localize("ui.panel.config.automation.editor.row_options.for")} ${forDuration}`
+            this._i18n.localize(
+              "ui.panel.config.automation.editor.row_options.for",
+              {
+                duration: forDuration,
+              }
+            )
           );
         }
 
@@ -66,7 +74,10 @@ export class HaAutomationRowOptions extends LitElement {
         const timeoutDuration = this._duration(config.timeout);
         if (timeoutDuration) {
           parts.push(
-            `${this._i18n.localize("ui.panel.config.automation.editor.row_options.timeout")} ${timeoutDuration}`
+            this._i18n.localize(
+              "ui.panel.config.automation.editor.row_options.timeout",
+              { duration: timeoutDuration }
+            )
           );
         }
       }

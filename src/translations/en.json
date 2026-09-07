@@ -5246,10 +5246,10 @@
               "add": "Add description"
             },
             "row_options": {
-              "for": "for",
+              "for": "for {duration}",
               "offset_before": "{offset} before",
               "offset_after": "{offset} after",
-              "timeout": "timeout"
+              "timeout": "timeout {duration}"
             },
             "note": {
               "label": "Note",
