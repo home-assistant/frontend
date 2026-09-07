@@ -31,7 +31,8 @@ export class HaAutomationRowOptions extends LitElement {
       return nothing;
     }
 
-    return html`<span class="option">- ${supportedOptions.join(", ")}</span>`;
+    return html`<span class="dot-separator"></span
+      >${supportedOptions.join(", ")}`;
   }
 
   private _formatOptions = memoizeOne(
@@ -88,8 +89,18 @@ export class HaAutomationRowOptions extends LitElement {
   }
 
   static styles = css`
-    .option {
+    :host {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      vertical-align: middle;
       color: var(--ha-color-text-secondary);
+    }
+    .dot-separator {
+      width: 2px;
+      height: 2px;
+      border-radius: var(--ha-border-radius-circle);
+      background-color: currentColor;
     }
   `;
 }
