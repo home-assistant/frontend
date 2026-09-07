@@ -192,7 +192,14 @@ export class HaListVirtualized extends HaListBase {
     this.rangeStart = ev.first;
     this.rangeEnd = ev.last;
 
-    await this.virtualizerElement?.layoutComplete;
+    try {
+      await this.virtualizerElement?.layoutComplete;
+    } catch (err) {
+      if (err === "disconnected") {
+        return;
+      }
+      throw err;
+    }
     this._applySetSize();
 
     if (!this.virtualizerElement) {

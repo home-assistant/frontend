@@ -77,8 +77,9 @@ export class HaFilterDevices extends LitElement {
     super.willUpdate(properties);
 
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      properties.has("type") ||
+      (properties.has("value") &&
+        !deepEqual(this.value, properties.get("value")))
     ) {
       this._findRelated();
     }
@@ -124,7 +125,7 @@ export class HaFilterDevices extends LitElement {
                   this._states,
                   this._i18n.locale.language
                 )}
-                .rowRenderer=${this._renderItem}
+                .rowRenderer=${this._renderItem(this.value)}
                 @ha-list-item-selected=${this._handleAdded}
                 @ha-list-item-deselected=${this._handleRemoved}
               ></ha-list-selectable-virtualized>
@@ -134,18 +135,20 @@ export class HaFilterDevices extends LitElement {
     `;
   }
 
-  private _renderItem = (item?: HaFilterDevicesItem) =>
-    !item
-      ? nothing
-      : html`<ha-list-item-option
-          style="width: 100%;"
-          appearance="checkbox"
-          selection-position="end"
-          .value=${item.id}
-          .selected=${this.value?.includes(item.id) ?? false}
-        >
-          <span slot="headline">${item.name}</span>
-        </ha-list-item-option>`;
+  private _renderItem = memoizeOne(
+    (value: string[] | undefined) => (item?: HaFilterDevicesItem) =>
+      !item
+        ? nothing
+        : html`<ha-list-item-option
+            style="width: 100%;"
+            appearance="checkbox"
+            selection-position="end"
+            .value=${item.id}
+            .selected=${value?.includes(item.id) ?? false}
+          >
+            <span slot="headline">${item.name}</span>
+          </ha-list-item-option>`
+  );
 
   private _handleAdded(ev: CustomEvent<number>) {
     this.value = [
@@ -211,9 +214,11 @@ export class HaFilterDevices extends LitElement {
   );
 
   private async _findRelated() {
+    const value = this.value;
+    const type = this.type;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
-    if (!this.value?.length) {
+    if (!value?.length) {
       this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
@@ -222,25 +227,25 @@ export class HaFilterDevices extends LitElement {
       return;
     }
 
-    const value: string[] = [];
-
-    for (const deviceId of this.value) {
-      value.push(deviceId);
-      if (this.type) {
+    for (const deviceId of value) {
+      if (type) {
         relatedPromises.push(findRelated(this._api, "device", deviceId));
       }
     }
     const results = await Promise.all(relatedPromises);
+    if (!deepEqual(value, this.value) || type !== this.type) {
+      return;
+    }
     const items = new Set<string>();
     for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
+      if (type && result[type]) {
+        result[type].forEach((item) => items.add(item));
       }
     }
 
     fireEvent(this, "data-table-filter-changed", {
       value,
-      items: this.type ? items : undefined,
+      items: type ? items : undefined,
     });
   }
 

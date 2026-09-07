@@ -79,8 +79,9 @@ export class HaFilterFloorAreas extends LitElement {
     super.willUpdate(properties);
 
     if (
-      properties.has("value") &&
-      !deepEqual(this.value, properties.get("value"))
+      properties.has("type") ||
+      (properties.has("value") &&
+        !deepEqual(this.value, properties.get("value")))
     ) {
       this._findRelated();
     }
@@ -278,12 +279,11 @@ export class HaFilterFloorAreas extends LitElement {
   );
 
   private async _findRelated() {
+    const value = this.value;
+    const type = this.type;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
-    if (
-      !this.value ||
-      (!this.value.areas?.length && !this.value.floors?.length)
-    ) {
+    if (!value || (!value.areas?.length && !value.floors?.length)) {
       this.value = {};
       fireEvent(this, "data-table-filter-changed", {
         value: {},
@@ -292,33 +292,36 @@ export class HaFilterFloorAreas extends LitElement {
       return;
     }
 
-    if (this.value.areas) {
-      for (const areaId of this.value.areas) {
-        if (this.type) {
+    if (value.areas) {
+      for (const areaId of value.areas) {
+        if (type) {
           relatedPromises.push(findRelated(this._api, "area", areaId));
         }
       }
     }
 
-    if (this.value.floors) {
-      for (const floorId of this.value.floors) {
-        if (this.type) {
+    if (value.floors) {
+      for (const floorId of value.floors) {
+        if (type) {
           relatedPromises.push(findRelated(this._api, "floor", floorId));
         }
       }
     }
 
     const results = await Promise.all(relatedPromises);
+    if (!deepEqual(value, this.value) || type !== this.type) {
+      return;
+    }
     const items = new Set<string>();
     for (const result of results) {
-      if (result[this.type!]) {
-        result[this.type!]!.forEach((item) => items.add(item));
+      if (type && result[type]) {
+        result[type].forEach((item) => items.add(item));
       }
     }
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
-      items: this.type ? items : undefined,
+      value,
+      items: type ? items : undefined,
     });
   }
 
