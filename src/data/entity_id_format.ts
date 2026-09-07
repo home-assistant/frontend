@@ -1,9 +1,11 @@
-export type EntityIdPart = "area" | "device" | "entity" | "floor";
+export type EntityIdPart =
+  "area" | "parent_device" | "device" | "entity" | "floor";
 
 export type EntityIdFormat = EntityIdPart[];
 
 export const DEFAULT_ENTITY_ID_FORMAT: EntityIdFormat = [
   "area",
+  "parent_device",
   "device",
   "entity",
 ];

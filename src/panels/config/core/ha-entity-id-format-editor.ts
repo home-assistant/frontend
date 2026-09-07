@@ -22,7 +22,13 @@ import type {
 } from "../../../data/entity_id_format";
 import type { ValueChangedEvent } from "../../../types";
 
-const STRUCTURAL_TYPES = ["area", "device", "entity", "floor"] as const;
+const STRUCTURAL_TYPES = [
+  "area",
+  "parent_device",
+  "device",
+  "entity",
+  "floor",
+] as const;
 
 const REQUIRED_TYPES: readonly EntityIdPart[] = ["device", "entity"];
 
