@@ -18,11 +18,11 @@ export const DEFAULT_ENTITY_NAME = [
 ] satisfies EntityNameItem[];
 
 export const ENTITY_NAME_TYPES = [
-  "entity",
-  "device",
-  "parent_device",
-  "area",
   "floor",
+  "area",
+  "parent_device",
+  "device",
+  "entity",
 ] as const;
 
 export type EntityNameType = (typeof ENTITY_NAME_TYPES)[number];

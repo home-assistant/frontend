@@ -171,6 +171,7 @@ export class HaEntityNamePicker extends LitElement {
         .getItems=${this._getFilteredItems}
         .rowRenderer=${rowRenderer}
         .value=${this._getPickerValue()}
+        no-sort
         allow-custom-value
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-name-picker.custom_name"
