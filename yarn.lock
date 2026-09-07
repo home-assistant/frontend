@@ -2452,12 +2452,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/state@npm:6.7.3, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.7.0":
-  version: 6.7.3
-  resolution: "@codemirror/state@npm:6.7.3"
+"@codemirror/state@npm:6.7.4, @codemirror/state@npm:^6.0.0, @codemirror/state@npm:^6.7.0":
+  version: 6.7.4
+  resolution: "@codemirror/state@npm:6.7.4"
   dependencies:
     "@marijn/find-cluster-break": "npm:^1.0.0"
-  checksum: 10/04e6b758d5d45e6e6b343d9f1916d0d1f7577c7c5842a81354ebf2412f160235ee736d0d2258241e3a8ba2457276c5cc8793fa385cff0d6d7032d81991652eba
+  checksum: 10/429b7ff6b617d3934eea001165228c3ed77df1943c0b2fdaf019ef3a6b616ada482c344ec46edf5c83121afe6973e9ce4931446922cc2b35f1dad2525eff5300
   languageName: node
   linkType: hard
 
@@ -10414,7 +10414,7 @@ __metadata:
     "@codemirror/language": "npm:6.12.4"
     "@codemirror/lint": "npm:6.9.7"
     "@codemirror/search": "npm:6.7.2"
-    "@codemirror/state": "npm:6.7.3"
+    "@codemirror/state": "npm:6.7.4"
     "@codemirror/view": "npm:6.43.11"
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
