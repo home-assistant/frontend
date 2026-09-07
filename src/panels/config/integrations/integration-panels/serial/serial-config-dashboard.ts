@@ -14,6 +14,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
@@ -23,7 +24,10 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { domainToName } from "../../../../../data/integration";
+import {
+  domainToName,
+  getConfigPanelPath,
+} from "../../../../../data/integration";
 import type {
   SerialPort,
   SerialPortConsumer,
@@ -51,6 +55,12 @@ const TYPE_ICONS: Record<SerialPortType, string> = {
   usb: mdiUsb,
   embedded: mdiMemory,
   unnamed: mdiMemory,
+};
+
+// A Thread radio is held by the Open Thread Border Router app rather than by a
+// config entry, so its panel is found through the integration behind the app
+const APP_INTEGRATIONS: Record<string, string> = {
+  core_openthread_border_router: "thread",
 };
 
 const getPortType = (port: SerialPort): SerialPortType => {
@@ -204,11 +214,40 @@ export class SerialConfigDashboard extends LitElement {
     />`;
   }
 
-  private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
-    const href =
+  // The panel the integration behind this consumer is configured in, if it has
+  // one. A stopped consumer has no panel loaded to send the user to.
+  private _consumerPanel(consumer: SerialPortConsumer): string | undefined {
+    if (!consumer.active) {
+      return undefined;
+    }
+
+    const domain =
       consumer.kind === "config_entry"
-        ? `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`
-        : `/config/app/${consumer.slug}/info`;
+        ? consumer.domain
+        : consumer.slug && APP_INTEGRATIONS[consumer.slug];
+
+    if (!domain || !isComponentLoaded(this.hass.config, domain)) {
+      return undefined;
+    }
+
+    return getConfigPanelPath(domain, this.hass.panels);
+  }
+
+  // Where the port's use is managed, falling back to the consumer's own page
+  private _consumerHref(consumer: SerialPortConsumer): string {
+    const panel = this._consumerPanel(consumer);
+
+    if (consumer.kind !== "config_entry") {
+      return panel ? `/${panel}` : `/config/app/${consumer.slug}/info`;
+    }
+
+    return panel
+      ? `/${panel}?config_entry=${consumer.config_entry_id}`
+      : `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`;
+  }
+
+  private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
+    const href = this._consumerHref(consumer);
 
     return html`
       <ha-md-list-item type="link" href=${href} class="consumer">

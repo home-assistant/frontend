@@ -1,11 +1,12 @@
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { mockBluetooth } from "./bluetooth/mock";
-import { mockSerial } from "./serial/mock";
-import { mockMqtt } from "./mqtt/mock";
 import { mockMatter } from "./matter/mock";
-import { mockZwaveJs } from "./zwave_js/mock";
-import { mockZha } from "./zha/mock";
+import { mockMqtt } from "./mqtt/mock";
 import { mockRadioFrequency } from "./radio_frequency/mock";
+import { mockSerial } from "./serial/mock";
+import { mockThread } from "./thread/mock";
+import { mockZha } from "./zha/mock";
+import { mockZwaveJs } from "./zwave_js/mock";
 
 // The WebSocket mocks, code-split into the config panel chunk.
 const MOCKS = [
@@ -16,6 +17,7 @@ const MOCKS = [
   mockZwaveJs,
   mockZha,
   mockRadioFrequency,
+  mockThread,
 ];
 
 export const mockConnectivity = (hass: MockHomeAssistant) => {

@@ -702,12 +702,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _selectAllIssues() {
-    this._dataTable.select(
-      this._data
-        .filter((statistic) => statistic.issues)
-        .map((statistic) => statistic.statistic_id),
-      true
-    );
+    this._dataTable.selectAll((statistic) => statistic.issues);
   }
 
   private _showStatisticsAdjustSumDialog(
