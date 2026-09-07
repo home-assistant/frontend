@@ -530,14 +530,6 @@ class HuiTemperatureForecastCardFeature
         flex-direction: column;
         justify-content: center;
         align-items: stretch;
-        border-bottom-right-radius: 8px;
-        border-bottom-left-radius: 8px;
-        overflow: hidden;
-      }
-
-      .container.with-labels {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
       }
 
       .bars {
@@ -564,6 +556,9 @@ class HuiTemperatureForecastCardFeature
         width: 100%;
         height: 100%;
         --accent-color: var(--feature-color);
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        overflow: hidden;
       }
     `,
   ];
