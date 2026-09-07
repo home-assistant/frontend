@@ -665,14 +665,17 @@
             "options": {
               "each": {
                 "label": "Each",
+                "row_label": "each of",
                 "description": "Triggers once for every target that changes"
               },
               "first": {
                 "label": "First",
+                "row_label": "first of",
                 "description": "Triggers the first time any target changes"
               },
               "all": {
                 "label": "All",
+                "row_label": "all of",
                 "description": "Triggers once all targets have changed"
               }
             }
@@ -681,10 +684,12 @@
             "options": {
               "any": {
                 "label": "Any",
+                "row_label": "any of",
                 "description": "Is true if any target matches the desired state"
               },
               "all": {
                 "label": "All",
+                "row_label": "all of",
                 "description": "Is true if all targets match the desired state"
               }
             }
@@ -5251,6 +5256,12 @@
               "label": "Description",
               "placeholder": "Optional description",
               "add": "Add description"
+            },
+            "row_options": {
+              "for": "for {duration}",
+              "offset_before": "{offset} before",
+              "offset_after": "{offset} after",
+              "timeout": "timeout {duration}"
             },
             "note": {
               "label": "Note",
