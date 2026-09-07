@@ -1,9 +1,6 @@
 import {
-  mdiAlertCircleOutline,
   mdiCableData,
-  mdiCheck,
   mdiLan,
-  mdiLanDisconnect,
   mdiPuzzle,
   mdiRefresh,
   mdiTransitConnectionVariant,
@@ -110,17 +107,8 @@ export class ModbusConfigDashboard extends LitElement {
     const [transport] = connection.endpoint;
     const serialDevice = modbusSerialDevice(connection.endpoint);
 
-    let icon: string;
-    if (!connection.connected) {
-      icon = mdiLanDisconnect;
-    } else if (serialDevice) {
-      icon = mdiCableData;
-    } else {
-      icon = mdiLan;
-    }
-
     return {
-      icon,
+      icon: serialDevice ? mdiCableData : mdiLan,
       primary: modbusEndpointTarget(connection.endpoint),
       transport: this._transportName(transport),
       serialDevice,
@@ -139,25 +127,12 @@ export class ModbusConfigDashboard extends LitElement {
       entries: Record<string, ConfigEntry>,
       _localize: HomeAssistant["localize"],
       language: string
-    ): {
-      connected: ConnectionListItem[];
-      disconnected: ConnectionListItem[];
-    } => {
-      const connected: ConnectionListItem[] = [];
-      const disconnected: ConnectionListItem[] = [];
-
-      for (const connection of connections) {
-        const bucket = connection.connected ? connected : disconnected;
-        bucket.push(this._connectionListItem(connection, entries));
-      }
-
-      const byPrimary = (a: ConnectionListItem, b: ConnectionListItem) =>
-        caseInsensitiveStringCompare(a.primary, b.primary, language);
-      connected.sort(byPrimary);
-      disconnected.sort(byPrimary);
-
-      return { connected, disconnected };
-    }
+    ): ConnectionListItem[] =>
+      connections
+        .map((connection) => this._connectionListItem(connection, entries))
+        .sort((a, b) =>
+          caseInsensitiveStringCompare(a.primary, b.primary, language)
+        )
   );
 
   private _renderUnits(holder: ConnectionHolder): TemplateResult {
@@ -226,16 +201,26 @@ export class ModbusConfigDashboard extends LitElement {
     `;
   }
 
+  // A closed link is not a fault: the library opens one when an integration
+  // next polls, and a device may drop an idle one in the meantime
+  private _renderState(connected: boolean): TemplateResult {
+    return html`
+      <div slot="end" class="state">
+        <span class="dot ${connected ? "online" : "offline"}"></span>
+        ${this.hass.localize(
+          `ui.panel.config.modbus.state_${connected ? "connected" : "not_connected"}`
+        )}
+      </div>
+    `;
+  }
+
   private _renderConnectionItem(item: ConnectionListItem): TemplateResult {
     return html`
       <ha-md-list-item class="connection">
-        <ha-svg-icon
-          slot="start"
-          class=${item.connection.connected ? "" : "disconnected"}
-          .path=${item.icon}
-        ></ha-svg-icon>
+        <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         <div slot="supporting-text">${item.transport}</div>
+        ${this._renderState(item.connection.connected)}
       </ha-md-list-item>
       ${item.holders.map((holder) => this._renderHolder(holder))}
       ${
@@ -246,16 +231,18 @@ export class ModbusConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderConnectionsCard(
-    header: string,
-    description: string,
-    items: ConnectionListItem[]
-  ): TemplateResult {
+  private _renderConnectionsCard(items: ConnectionListItem[]): TemplateResult {
     return html`
       <ha-card class="connections">
-        <div class="card-header">${header}</div>
+        <div class="card-header">
+          ${this.hass.localize("ui.panel.config.modbus.connections")}
+        </div>
         <div class="card-content">
-          <div class="description">${description}</div>
+          <div class="description">
+            ${this.hass.localize(
+              "ui.panel.config.modbus.connections_description"
+            )}
+          </div>
           <ha-md-list>
             ${items.map((item) => this._renderConnectionItem(item))}
           </ha-md-list>
@@ -264,46 +251,24 @@ export class ModbusConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderStatusCard(
-    connected: ConnectionListItem[],
-    disconnected: ConnectionListItem[]
-  ): TemplateResult {
-    const status = disconnected.length ? "disconnected" : "ok";
-    const items = [...connected, ...disconnected];
-
-    let summary = this.hass.localize("ui.panel.config.modbus.status_summary", {
-      units: items.reduce(
-        (total, item) => total + modbusUnitCount(item.connection),
-        0
-      ),
-      total: items.length,
-    });
-
-    if (disconnected.length) {
-      summary += ` · ${this.hass.localize(
-        "ui.panel.config.modbus.status_summary_disconnected",
-        { count: disconnected.length }
-      )}`;
-    }
-
+  // No health verdict: the summary is a count, since a closed link is normal
+  private _renderStatusCard(items: ConnectionListItem[]): TemplateResult {
     return html`
       <ha-card class="status">
         <div class="card-content">
           <div class="heading">
-            <div class="icon ${status}">
-              <ha-svg-icon
-                .path=${disconnected.length ? mdiAlertCircleOutline : mdiCheck}
-              ></ha-svg-icon>
+            <div class="icon">
+              <ha-svg-icon .path=${mdiTransitConnectionVariant}></ha-svg-icon>
             </div>
             <div class="details">
-              ${this.hass.localize(`ui.panel.config.modbus.status_${status}`)}
-              <br />
-              <small>${summary}</small>
+              ${this.hass.localize("ui.panel.config.modbus.status_summary", {
+                units: items.reduce(
+                  (total, item) => total + modbusUnitCount(item.connection),
+                  0
+                ),
+                total: items.length,
+              })}
             </div>
-            <ha-svg-icon
-              class="logo"
-              .path=${mdiTransitConnectionVariant}
-            ></ha-svg-icon>
           </div>
         </div>
       </ha-card>
@@ -349,14 +314,14 @@ export class ModbusConfigDashboard extends LitElement {
       `;
     }
 
-    const { connected, disconnected } = this._sortedConnections(
+    const items = this._sortedConnections(
       this._connections,
       this._entries,
       this.hass.localize,
       this.hass.locale.language
     );
 
-    if (!connected.length && !disconnected.length) {
+    if (!items.length) {
       return html`
         <ha-card>
           <div class="card-content">
@@ -375,29 +340,7 @@ export class ModbusConfigDashboard extends LitElement {
     }
 
     return html`
-      ${this._renderStatusCard(connected, disconnected)}
-      ${
-        connected.length
-          ? this._renderConnectionsCard(
-              this.hass.localize("ui.panel.config.modbus.connected"),
-              this.hass.localize(
-                "ui.panel.config.modbus.connected_description"
-              ),
-              connected
-            )
-          : nothing
-      }
-      ${
-        disconnected.length
-          ? this._renderConnectionsCard(
-              this.hass.localize("ui.panel.config.modbus.disconnected"),
-              this.hass.localize(
-                "ui.panel.config.modbus.disconnected_description"
-              ),
-              disconnected
-            )
-          : nothing
-      }
+      ${this._renderStatusCard(items)} ${this._renderConnectionsCard(items)}
     `;
   }
 
@@ -448,11 +391,6 @@ export class ModbusConfigDashboard extends LitElement {
           column-gap: var(--ha-space-4);
         }
 
-        .status div.heading .logo {
-          margin-inline-start: auto;
-          --mdc-icon-size: 40px;
-        }
-
         .status div.heading .icon {
           position: relative;
           border-radius: var(--ha-border-radius-2xl);
@@ -464,14 +402,6 @@ export class ModbusConfigDashboard extends LitElement {
           overflow: hidden;
           flex-shrink: 0;
           --icon-color: var(--primary-color);
-        }
-
-        .status div.heading .icon.ok {
-          --icon-color: var(--success-color);
-        }
-
-        .status div.heading .icon.disconnected {
-          --icon-color: var(--warning-color);
         }
 
         .status div.heading .icon::before {
@@ -523,8 +453,23 @@ export class ModbusConfigDashboard extends LitElement {
           --md-list-item-top-space: var(--ha-space-4);
         }
 
-        ha-md-list-item .disconnected {
-          color: var(--disabled-text-color);
+        .state {
+          display: flex;
+          align-items: center;
+          column-gap: var(--ha-space-2);
+          font-size: var(--ha-font-size-m);
+          color: var(--secondary-text-color);
+        }
+
+        .state .dot {
+          width: var(--ha-space-2);
+          height: var(--ha-space-2);
+          border-radius: var(--ha-border-radius-circle);
+          background-color: var(--disabled-text-color);
+        }
+
+        .state .dot.online {
+          background-color: var(--success-color);
         }
 
         ha-md-list-item.holder {
