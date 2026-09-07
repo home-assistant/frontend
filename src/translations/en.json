@@ -7646,6 +7646,8 @@
           "connections_description": "Every integration talking to a Modbus device shares one connection to it.",
           "state_connected": "Connected",
           "state_not_connected": "Not connected",
+          "state_open": "Open",
+          "state_closed": "Closed",
           "no_connections": "No Modbus connections",
           "no_connections_description": "A connection opens as soon as an integration starts talking to a Modbus device.",
           "loading_error": "Failed to load Modbus connections",

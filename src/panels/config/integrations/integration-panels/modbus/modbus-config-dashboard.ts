@@ -52,6 +52,7 @@ interface ConnectionListItem {
   icon: string;
   primary: string;
   transport: string;
+  state: string;
   serialDevice?: string;
   holders: ConnectionHolder[];
   connection: ModbusConnection;
@@ -100,6 +101,19 @@ export class ModbusConfigDashboard extends LitElement {
       : transport;
   }
 
+  // A serial port is open or closed. Opening one says nothing about whether a
+  // device answers on the wire, which a network connection's handshake does.
+  private _stateName(connected: boolean, serial: boolean): string {
+    if (serial) {
+      return this.hass.localize(
+        `ui.panel.config.modbus.state_${connected ? "open" : "closed"}`
+      );
+    }
+    return this.hass.localize(
+      `ui.panel.config.modbus.state_${connected ? "connected" : "not_connected"}`
+    );
+  }
+
   private _connectionListItem(
     connection: ModbusConnection,
     entries: Record<string, ConfigEntry>
@@ -111,6 +125,7 @@ export class ModbusConfigDashboard extends LitElement {
       icon: serialDevice ? mdiCableData : mdiLan,
       primary: modbusEndpointTarget(connection.endpoint),
       transport: this._transportName(transport),
+      state: this._stateName(connection.connected, serialDevice !== undefined),
       serialDevice,
       holders: Object.entries(connection.units).map(([entryId, units]) => ({
         entryId,
@@ -203,13 +218,13 @@ export class ModbusConfigDashboard extends LitElement {
 
   // A closed link is not a fault: the library opens one when an integration
   // next polls, and a device may drop an idle one in the meantime
-  private _renderState(connected: boolean): TemplateResult {
+  private _renderState(item: ConnectionListItem): TemplateResult {
     return html`
       <div slot="end" class="state">
-        <span class="dot ${connected ? "online" : "offline"}"></span>
-        ${this.hass.localize(
-          `ui.panel.config.modbus.state_${connected ? "connected" : "not_connected"}`
-        )}
+        <span
+          class="dot ${item.connection.connected ? "online" : "offline"}"
+        ></span>
+        ${item.state}
       </div>
     `;
   }
@@ -220,7 +235,7 @@ export class ModbusConfigDashboard extends LitElement {
         <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         <div slot="supporting-text">${item.transport}</div>
-        ${this._renderState(item.connection.connected)}
+        ${this._renderState(item)}
       </ha-md-list-item>
       ${item.holders.map((holder) => this._renderHolder(holder))}
       ${
