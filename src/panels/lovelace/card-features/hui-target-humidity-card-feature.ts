@@ -171,6 +171,7 @@ class HuiTargetHumidityCardFeature
         .min=${this._min}
         .max=${this._max}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
+        .step=${this._stateObj.attributes.target_humidity_step ?? 1}
         @value-changed=${this._valueChanged}
         .label=${this._formatters.formatEntityAttributeName(
           this._stateObj,
