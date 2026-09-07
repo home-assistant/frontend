@@ -14,7 +14,7 @@ export const voiceAssistants = {
   },
   google_assistant: {
     domain: "google_assistant",
-    name: "Google Assistant",
+    name: "Google Assistant (local)",
   },
 } as const;
 
@@ -62,6 +62,27 @@ export const listExposedEntities = (hass: HomeAssistant) =>
   }>({
     type: "homeassistant/expose_entity/list",
   });
+
+// Core rejects the whole batch if any (entity, assistant) pair passed to
+// exposeEntities is locked, so lock-aware callers must submit one assistant
+// at a time with only the entities that are unlocked for it.
+export const exposeUnlockedEntities = (
+  hass: HomeAssistant,
+  assistants: string[],
+  entity_ids: string[],
+  lockedEntities: Record<string, ExposeEntitySettings> | undefined,
+  should_expose: boolean
+) =>
+  Promise.all(
+    assistants.map((assistant) => {
+      const unlockedEntityIds = entity_ids.filter(
+        (entityId) => !lockedEntities?.[entityId]?.[assistant]
+      );
+      return unlockedEntityIds.length
+        ? exposeEntities(hass, [assistant], unlockedEntityIds, should_expose)
+        : undefined;
+    })
+  );
 
 export const getEntityVoiceAssistantsIds = (
   entityRegistry: EntityRegistryEntry[],

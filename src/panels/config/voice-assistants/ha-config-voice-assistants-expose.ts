@@ -38,7 +38,7 @@ import { entitiesContext } from "../../../data/context";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { getExtendedEntityRegistryEntries } from "../../../data/entity/entity_registry";
 import type { ExposeEntitySettings } from "../../../data/expose";
-import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import { exposeUnlockedEntities, voiceAssistants } from "../../../data/expose";
 import type { GoogleEntity } from "../../../data/google_assistant";
 import { fetchCloudGoogleEntities } from "../../../data/google_assistant";
 import { domainToName } from "../../../data/integration";
@@ -637,9 +637,13 @@ export class VoiceAssistantsExpose extends LitElement {
       exposedEntities: this.exposedEntities!,
       lockedEntities: this.lockedEntities,
       exposeEntities: (entities) => {
-        exposeEntities(this.hass, assistants, entities, true).then(() =>
-          fireEvent(this, "exposed-entities-changed")
-        );
+        exposeUnlockedEntities(
+          this.hass,
+          assistants,
+          entities,
+          this.lockedEntities,
+          true
+        ).then(() => fireEvent(this, "exposed-entities-changed"));
       },
     });
   }
@@ -654,37 +658,37 @@ export class VoiceAssistantsExpose extends LitElement {
     this._selectedEntities = ev.detail.value;
   }
 
-  private _unlockedSelectedEntities(assistants: string[]): string[] {
-    return this._selectedEntities.filter(
-      (entityId) =>
-        !assistants.some(
-          (assistant) => this.lockedEntities?.[entityId]?.[assistant]
-        )
+  private _actionableSelectedEntities(assistants: string[]): string[] {
+    return this._selectedEntities.filter((entityId) =>
+      assistants.some(
+        (assistant) => !this.lockedEntities?.[entityId]?.[assistant]
+      )
     );
   }
 
   private _removeEntity = (ev) => {
     ev.stopPropagation();
     const entityId = ev.currentTarget.closest(".mdc-data-table__row").rowId;
-    const locked = this.lockedEntities?.[entityId];
-    const assistants = (
-      this._searchParms.has("assistants")
-        ? this._searchParms.get("assistants")!.split(",")
-        : this._availableAssistants
-    ).filter((assistant) => !locked?.[assistant]);
-    if (!assistants.length) {
-      return;
-    }
-    exposeEntities(this.hass, assistants, [entityId], false).then(() =>
-      fireEvent(this, "exposed-entities-changed")
-    );
+    const assistants = this._searchParms.has("assistants")
+      ? this._searchParms.get("assistants")!.split(",")
+      : this._availableAssistants;
+    exposeUnlockedEntities(
+      this.hass,
+      assistants,
+      [entityId],
+      this.lockedEntities,
+      false
+    ).then(() => fireEvent(this, "exposed-entities-changed"));
   };
 
   private _unexposeSelected() {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
       : this._availableAssistants;
-    const entities = this._unlockedSelectedEntities(assistants);
+    const entities = this._actionableSelectedEntities(assistants);
+    if (!entities.length) {
+      return;
+    }
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
@@ -703,9 +707,13 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(this.hass, assistants, entities, false).then(() =>
-          fireEvent(this, "exposed-entities-changed")
-        );
+        exposeUnlockedEntities(
+          this.hass,
+          assistants,
+          entities,
+          this.lockedEntities,
+          false
+        ).then(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
@@ -715,7 +723,10 @@ export class VoiceAssistantsExpose extends LitElement {
     const assistants = this._searchParms.has("assistants")
       ? this._searchParms.get("assistants")!.split(",")
       : this._availableAssistants;
-    const entities = this._unlockedSelectedEntities(assistants);
+    const entities = this._actionableSelectedEntities(assistants);
+    if (!entities.length) {
+      return;
+    }
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.voice_assistants.expose.expose_confirm_title"
@@ -734,9 +745,13 @@ export class VoiceAssistantsExpose extends LitElement {
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirm: () => {
-        exposeEntities(this.hass, assistants, entities, true).then(() =>
-          fireEvent(this, "exposed-entities-changed")
-        );
+        exposeUnlockedEntities(
+          this.hass,
+          assistants,
+          entities,
+          this.lockedEntities,
+          true
+        ).then(() => fireEvent(this, "exposed-entities-changed"));
         this._clearSelection();
       },
     });
