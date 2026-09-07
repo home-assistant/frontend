@@ -111,10 +111,6 @@ class HuiTargetHumidityCardFeature
     }
   }
 
-  private get _step() {
-    return this._stateObj!.attributes.target_humidity_step ?? 1;
-  }
-
   private get _min() {
     return this._stateObj!.attributes.min_humidity ?? 0;
   }
@@ -149,20 +145,12 @@ class HuiTargetHumidityCardFeature
     }
 
     if (this._config.style === "buttons") {
-      const step = this._config.step ?? this._step;
-      const digits = step.toString().split(".")?.[1]?.length ?? 0;
-
       return html`
         <ha-control-button-group>
           <ha-control-number-buttons
-            .formatOptions=${{
-              maximumFractionDigits: digits,
-              minimumFractionDigits: digits,
-            }}
             .value=${this._stateObj.attributes.humidity}
             .min=${this._min}
             .max=${this._max}
-            .step=${step}
             .disabled=${this._stateObj.state === UNAVAILABLE}
             @value-changed=${this._valueChanged}
             .label=${this._formatters.formatEntityAttributeName(
@@ -181,7 +169,6 @@ class HuiTargetHumidityCardFeature
         .value=${this._stateObj.attributes.humidity}
         .min=${this._min}
         .max=${this._max}
-        .step=${this._step}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
         @value-changed=${this._valueChanged}
         .label=${this._formatters.formatEntityAttributeName(

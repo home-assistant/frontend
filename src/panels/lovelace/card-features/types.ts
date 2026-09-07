@@ -186,7 +186,6 @@ export interface NumericInputCardFeatureConfig {
 export interface TargetHumidityCardFeatureConfig {
   type: "target-humidity";
   style?: "buttons" | "slider";
-  step?: number;
 }
 
 export interface TargetTemperatureCardFeatureConfig {

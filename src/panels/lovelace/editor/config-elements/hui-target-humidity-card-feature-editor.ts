@@ -28,7 +28,7 @@ export class HuiTargetHumidityCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, showStep: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "style",
@@ -45,21 +45,6 @@ export class HuiTargetHumidityCardFeatureEditor
             },
           },
         },
-        ...(showStep
-          ? ([
-              {
-                name: "step",
-                selector: {
-                  number: {
-                    min: 1,
-                    max: 25,
-                    step: 1,
-                    mode: "box",
-                  },
-                },
-              },
-            ] as const)
-          : []),
       ] as const
   );
 
@@ -73,7 +58,7 @@ export class HuiTargetHumidityCardFeatureEditor
       ...this._config,
     };
 
-    const schema = this._schema(this.hass.localize, data.style === "buttons");
+    const schema = this._schema(this.hass.localize);
 
     return html`
       <ha-form
