@@ -430,7 +430,18 @@ export class HaScriptEditor extends SubscribeMixin(
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-script=${this._handleSaveScript}
-                            ></blueprint-script-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-script-editor>
                           `
                         : html`
                             <manual-script-editor
@@ -777,13 +788,14 @@ export class HaScriptEditor extends SubscribeMixin(
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {

@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../layouts/hass-subpage";
+import { ChildPanelReady } from "../../../layouts/panel-ready";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { configSections } from "../config-sections";
@@ -16,6 +17,11 @@ class HaConfigConnectivity extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  public constructor() {
+    super();
+    new ChildPanelReady(this);
+  }
 
   protected render(): TemplateResult {
     const title = this.hass.localize(

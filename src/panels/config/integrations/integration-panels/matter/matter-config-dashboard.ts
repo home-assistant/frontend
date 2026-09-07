@@ -21,6 +21,7 @@ import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
+import { fetchMatterNetworkTopology } from "../../../../../data/matter";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -36,6 +37,10 @@ export class MatterConfigDashboard extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _configEntry?: ConfigEntry;
+
+  @state() private _offlineDevices = 0;
+
+  @state() private _asyncDataLoaded = false;
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -118,6 +123,17 @@ export class MatterConfigDashboard extends LitElement {
                 ${this.hass.localize("ui.panel.config.matter.panel.devices", {
                   count: deviceCount,
                 })}
+              </small>
+
+              <small class="offline">
+                ${
+                  this._asyncDataLoaded && this._offlineDevices > 0
+                    ? html`(${this.hass.localize(
+                        "ui.panel.config.matter.panel.devices_offline",
+                        { count: this._offlineDevices }
+                      )})`
+                    : nothing
+                }
               </small>
             </div>
             <img
@@ -237,6 +253,30 @@ export class MatterConfigDashboard extends LitElement {
     this._configEntry = configEntries.find(
       (entry) => entry.disabled_by === null && entry.source !== "ignore"
     );
+
+    if (!this._configEntry) {
+      return;
+    }
+
+    const deviceIds = this._matterDeviceIds(
+      this.hass.devices,
+      this._configEntry.entry_id
+    );
+
+    try {
+      const topology = await fetchMatterNetworkTopology(this.hass);
+
+      this._offlineDevices = topology.nodes.filter(
+        (node) =>
+          node.ha_device_id &&
+          deviceIds.has(node.ha_device_id) &&
+          node.available === false
+      ).length;
+    } catch {
+      this._offlineDevices = 0;
+    } finally {
+      this._asyncDataLoaded = true;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -338,6 +378,10 @@ export class MatterConfigDashboard extends LitElement {
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.25px;
           color: var(--secondary-text-color);
+        }
+
+        .network-status small.offline {
+          animation: fade-in var(--ha-animation-duration-slow) ease-in;
         }
 
         .container {

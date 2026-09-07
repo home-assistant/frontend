@@ -219,7 +219,7 @@ const CONFIG_ROUTES = routeCases([
   ["/config/updates", "ha-config-section-updates"],
   ["/config/repairs", "ha-config-repairs-dashboard"],
   ["/config/analytics", "ha-config-section-analytics"],
-  ["/config/ai-tasks", "ha-config-section-ai-tasks"],
+  ["/config/ai", "ha-config-section-ai"],
   ["/config/labels", "ha-config-labels"],
   ["/config/zone", "ha-config-zone"],
   ["/config/network", "ha-config-section-network"],

@@ -155,43 +155,46 @@ class HaMoreInfoRelated extends LitElement {
         />`,
       });
     }
-    contextEntries.push({
-      translationKey: "ui.dialogs.more_info_control.labels",
-      value:
-        labels.map(({ id, entry }) => entry?.name ?? id).join(", ") ||
-        this.hass.localize("ui.dialogs.more_info_control.no_labels"),
-      displayValue: labels.length
-        ? html`<div class="labels">
-            ${labels.map(
-              ({ id, entry }) => html`
-                <ha-label
-                  class="text-ellipsis"
-                  .color=${entry?.color ?? undefined}
-                  .description=${entry?.description ?? undefined}
-                >
-                  ${
-                    entry?.icon
-                      ? html`<ha-icon
-                          slot="icon"
-                          .icon=${entry.icon}
-                        ></ha-icon>`
-                      : nothing
-                  }
-                  ${entry?.name ?? id}
-                </ha-label>
-              `
-            )}
-          </div>`
-        : undefined,
-    });
+    if (labels.length) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.labels",
+        value: labels.map(({ id, entry }) => entry?.name ?? id).join(", "),
+        displayValue: html`<div class="labels">
+          ${labels.map(
+            ({ id, entry }) => html`
+              <ha-label
+                class="text-ellipsis"
+                .color=${entry?.color ?? undefined}
+                .description=${entry?.description ?? undefined}
+              >
+                ${
+                  entry?.icon
+                    ? html`<ha-icon slot="icon" .icon=${entry.icon}></ha-icon>`
+                    : nothing
+                }
+                ${entry?.name ?? id}
+              </ha-label>
+            `
+          )}
+        </div>`,
+      });
+    }
 
     return html`
       <div class="content">
-        <ha-grouped-list
-          .header=${this.hass.localize("ui.dialogs.more_info_control.context")}
-        >
-          ${this._renderEntries(contextEntries)}
-        </ha-grouped-list>
+        ${
+          contextEntries.length
+            ? html`
+                <ha-grouped-list
+                  .header=${this.hass.localize(
+                    "ui.dialogs.more_info_control.context"
+                  )}
+                >
+                  ${this._renderEntries(contextEntries)}
+                </ha-grouped-list>
+              `
+            : nothing
+        }
         <ha-related-items
           .hass=${this.hass}
           .itemId=${this.params.entityId}
@@ -239,7 +242,7 @@ class HaMoreInfoRelated extends LitElement {
       padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-6));
     }
 
-    ha-related-items {
+    ha-grouped-list + ha-related-items {
       margin-top: var(--ha-space-6);
     }
 

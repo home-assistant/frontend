@@ -7,6 +7,7 @@ import { mockBlueprint } from "./blueprint";
 import { mockCloud } from "./cloud";
 import { mockConfig } from "./config";
 import { mockConfigEntries } from "./config_entries";
+import { mockConnectivity } from "./connectivity";
 import { mockDeviceAutomation } from "./device_automation";
 import { mockEntityRegistrySettings } from "./entity_registry_settings";
 import { mockEntitySources } from "./entity_sources";
@@ -26,6 +27,7 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockCloud(hass);
   mockConfig(hass);
   mockConfigEntries(hass);
+  mockConnectivity(hass);
   mockDeviceAutomation(hass);
   mockEntitySources(hass);
   mockBlueprint(hass);

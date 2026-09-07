@@ -478,7 +478,18 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               .saving=${this.saving}
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
-                            ></blueprint-automation-editor>
+                            >
+                              ${
+                                this.errors
+                                  ? html`<ha-alert
+                                      alert-type="error"
+                                      slot="alerts"
+                                    >
+                                      ${this.errors}
+                                    </ha-alert>`
+                                  : nothing
+                              }
+                            </blueprint-automation-editor>
                           `
                         : html`
                             <manual-automation-editor
@@ -869,13 +880,14 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this.errors = undefined;
   }
 
-  protected async confirmUnsavedChanged(): Promise<boolean> {
+  protected async confirmUnsavedChanged(addHistory = true): Promise<boolean> {
     if (!this.isDirtyState) {
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
       showAutomationSaveDialog(this, {
+        addHistory,
         config: this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {

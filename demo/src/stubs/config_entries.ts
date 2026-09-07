@@ -5,6 +5,7 @@ import type {
 import type { ConfigFlowInProgressMessage } from "../../../src/data/config_flow";
 import type { IntegrationType } from "../../../src/data/integration";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { connectivityConfigEntries } from "./connectivity/fixtures";
 
 const baseEntry = {
   source: "user",
@@ -90,6 +91,7 @@ export const demoConfigEntries: {
       supports_options: true,
     },
   },
+  ...connectivityConfigEntries,
 ];
 
 const filterEntries = (filters?: {

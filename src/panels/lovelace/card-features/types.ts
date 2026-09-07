@@ -176,6 +176,7 @@ export interface DateSetCardFeatureConfig {
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
+  style?: "dropdown" | "buttons";
 }
 
 export interface NumericInputCardFeatureConfig {

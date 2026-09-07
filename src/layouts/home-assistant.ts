@@ -4,7 +4,7 @@ import { html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { navigate } from "../common/navigate";
+import { handleHistoryPop, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
 import { extractSearchParamsObject } from "../common/url/search-params";
@@ -180,8 +180,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     window.addEventListener("location-changed", () => updateRoute());
 
-    // Handle history changes
-    window.addEventListener("popstate", () => updateRoute());
+    // A pop away from a page with unsaved changes is held until the user agrees.
+    window.addEventListener("popstate", () =>
+      handleHistoryPop(() => updateRoute())
+    );
 
     // Restore a more-info dialog deep-linked in the current URL, if any.
     window.addEventListener("location-changed", () =>

@@ -174,11 +174,14 @@ test("keeps the launch screen until initial panel content renders", async ({
     resolvers: (
       | "rejectMediaBrowse"
       | "resolveCalendarRegistry"
+      | "resolveConnectivityConfigEntries"
       | "resolveConfigEntries"
       | "resolveConfigEntriesInProgress"
       | "resolveGeneratedDashboard"
       | "resolveLovelaceConfig"
       | "resolveMediaBrowse"
+      | "resolveSerialPorts"
+      | "resolveStorageHostInfo"
     )[];
   }[] = [
     {
@@ -201,6 +204,27 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
       readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
       resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "connectivity",
+      path: "/?scenario=delayed-connectivity#/config/connectivity",
+      loadingSelector: "ha-config-connectivity ha-card",
+      readySelector: "ha-config-connectivity ha-list-item-button",
+      resolvers: ["resolveConnectivityConfigEntries"],
+    },
+    {
+      name: "serial",
+      path: "/?scenario=delayed-serial#/config/serial",
+      loadingSelector: "serial-config-dashboard ha-spinner",
+      readySelector: "serial-config-dashboard .empty",
+      resolvers: ["resolveSerialPorts"],
+    },
+    {
+      name: "storage",
+      path: "/?scenario=delayed-storage#/config/storage",
+      loadingSelector: "ha-config-section-storage",
+      readySelector: "ha-config-section-storage hass-subpage",
+      resolvers: ["resolveStorageHostInfo"],
     },
     {
       name: "media browser error",
