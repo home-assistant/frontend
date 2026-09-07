@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { mdiContentCopy, mdiRestore } from "@mdi/js";
+import { mdiContentCopy, mdiPencil, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,7 +8,10 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
@@ -21,10 +24,13 @@ import type {
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
+import "../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
@@ -193,6 +199,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _name!: string;
 
+  @state() private _useDeviceName = false;
+
   @state() private _icon!: string;
 
   @state() private _entityId!: EntitySettingsState["entityId"];
@@ -254,6 +262,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    this._device = this.entry.device_id
+      ? this.hass.devices[this.entry.device_id]
+      : undefined;
     if (
       !changedProperties.has("entry") ||
       changedProperties.get("entry")?.id === this.entry.id
@@ -262,6 +273,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || "";
+    this._useDeviceName =
+      !!this._device && !computeEntityEntryName(this.entry, this.hass.devices);
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -271,9 +284,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
     this._hiddenBy = this.entry.hidden_by;
-    this._device = this.entry.device_id
-      ? this.hass.devices[this.entry.device_id]
-      : undefined;
     this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
 
     const domain = computeDomain(this.entry.entity_id);
@@ -386,7 +396,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     this._dirtyState?.setState(
       {
-        name: this._name || null,
+        name: this._computeName(),
         icon: this._icon || null,
         entityId: this._entityId,
         areaId: this._areaId ?? null,
@@ -464,41 +474,74 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
+    const deviceName =
+      this._device && this._useDeviceName
+        ? computeDeviceNameDisplay(
+            this._device,
+            this.hass.localize,
+            this.hass.states
+          )
+        : undefined;
 
     return html`
       ${
         this.hideName
           ? nothing
-          : html`<ha-input
-              inset-label
-              class="name"
-              .value=${this._name}
-              .label=${this.hass.localize(
+          : html`<div
+              class="name-field"
+              role="group"
+              aria-label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.name"
               )}
-              .disabled=${this.disabled}
-              @input=${this._nameChanged}
             >
               ${
+                deviceName !== undefined
+                  ? html`<div class="device-name" id="entity-name">
+                      <span class="device-name-label">
+                        ${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.name"
+                        )}
+                      </span>
+                      <span class="device-name-value" title=${deviceName}>
+                        ${deviceName}
+                      </span>
+                      <ha-icon-button
+                        .path=${mdiPencil}
+                        .label=${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.edit_device_name"
+                        )}
+                        .disabled=${this.disabled}
+                        @click=${this._openDeviceSettings}
+                      ></ha-icon-button>
+                    </div>`
+                  : html`<ha-input
+                      inset-label
+                      class="name"
+                      id="entity-name"
+                      .value=${this._name}
+                      .placeholder=${this.entry.original_name || ""}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.name"
+                      )}
+                      .disabled=${this.disabled}
+                      @input=${this._nameChanged}
+                    ></ha-input>`
+              }
+              ${
                 this._device
-                  ? html`<span slot="hint"
-                      >${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.device_name_tip",
-                        {
-                          link: html`<button
-                            class="link"
-                            @click=${this._resetNameAndOpenDeviceSettings}
-                          >
-                            ${this.hass.localize(
-                              "ui.dialogs.entity_registry.editor.open_device_settings"
-                            )}
-                          </button>`,
-                        }
-                      )}</span
-                    >`
+                  ? html`<ha-checkbox
+                      .checked=${this._useDeviceName}
+                      .disabled=${this.disabled}
+                      aria-controls="entity-name"
+                      @change=${this._useDeviceNameChanged}
+                    >
+                      ${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.use_device_name"
+                      )}
+                    </ha-checkbox>`
                   : nothing
               }
-            </ha-input>`
+            </div>`
       }
       ${
         this.hideIcon
@@ -1245,7 +1288,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const params: Partial<EntityRegistryEntryUpdateParams> = {
-      name: this._name.trim() || null,
+      name: this._computeName(),
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
       labels: this._labels || [],
@@ -1692,9 +1735,23 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private _resetNameAndOpenDeviceSettings() {
-    this._name = this.entry.name || "";
-    this._openDeviceSettings();
+  private _useDeviceNameChanged(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox>
+  ): void {
+    this._useDeviceName = ev.currentTarget.checked;
+  }
+
+  private _computeName(): string | null {
+    if (this.hideName) {
+      return this.entry.name;
+    }
+    if (this._device && this._useDeviceName) {
+      // Preserve entities that already use the device name without an override.
+      return computeEntityEntryName(this.entry, this.hass.devices)
+        ? ""
+        : this.entry.name;
+    }
+    return this._name.trim() || null;
   }
 
   private _openDeviceSettings() {
@@ -1798,13 +1855,68 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
 
         ha-input.entityId,
-        ha-input.name {
+        ha-input.name,
+        .device-name {
           --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
         }
 
         ha-input.name {
           --ha-input-start-max-width: 35%;
+        }
+        .name-field {
+          margin: var(--ha-space-2) 0;
+        }
+        .name-field ha-input {
+          margin: 0;
+          --ha-input-padding-bottom: 0;
+        }
+        .device-name {
+          position: relative;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
+          height: 56px;
+          padding-inline: var(--ha-space-4);
+          background: var(--ha-color-form-background);
+          border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm) 0
+            0;
+          box-shadow: inset 0 -1px var(--ha-color-border-neutral-quiet);
+          font-family: var(--ha-font-family-body);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          cursor: default;
+        }
+        .device-name-label {
+          position: absolute;
+          top: var(--ha-space-3);
+          inset-inline-start: var(--ha-space-4);
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-xs);
+        }
+        .device-name-value {
+          flex: 1;
+          min-width: 0;
+          padding-top: var(--ha-space-3);
+          color: var(--primary-text-color);
+          font-size: var(--ha-font-size-m);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          user-select: text;
+        }
+        .device-name ha-icon-button {
+          flex: none;
+          color: var(--secondary-text-color);
+        }
+        .name-field ha-checkbox {
+          display: block;
+          width: fit-content;
+          padding-inline: var(--ha-space-4);
+          --wa-form-control-label-font-size: var(--ha-font-size-s);
+        }
+        .name-field ha-checkbox::part(base) {
+          min-height: 36px;
         }
         ha-input.entityId ha-icon-button:last-child {
           margin-inline-start: 0;

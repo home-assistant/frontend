@@ -1939,6 +1939,8 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
+          "use_device_name": "Use device name",
+          "edit_device_name": "Edit device name",
           "icon": "Icon",
           "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
           "default_code": "Default code",
