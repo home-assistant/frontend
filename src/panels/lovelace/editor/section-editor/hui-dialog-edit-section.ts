@@ -1,9 +1,4 @@
-import {
-  mdiClose,
-  mdiDotsVertical,
-  mdiFileMoveOutline,
-  mdiPlaylistEdit,
-} from "@mdi/js";
+import { mdiClose, mdiDotsVertical, mdiFileMoveOutline } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -12,6 +7,7 @@ import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
@@ -227,12 +223,6 @@ export class HuiDialogEditSection
               .label=${this.hass!.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-dropdown-item value="toggle-yaml">
-              <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
-              ${this.hass.localize(
-                `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
-              )}
-            </ha-dropdown-item>
             <ha-dropdown-item value="move-to-view">
               <ha-svg-icon
                 slot="icon"
@@ -267,6 +257,19 @@ export class HuiDialogEditSection
         </ha-dialog-header>
         ${this._yamlMode ? content : cache(content)}
         <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            class="gui-mode-button"
+            appearance="plain"
+            @click=${this._toggleMode}
+            .disabled=${this._yamlMode && this._yamlError}
+          >
+            ${this.hass.localize(
+              this._yamlMode
+                ? "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                : "ui.panel.lovelace.editor.edit_card.show_code_editor"
+            )}
+          </ha-button>
           <ha-button
             slot="secondaryAction"
             appearance="plain"
@@ -322,13 +325,17 @@ export class HuiDialogEditSection
   private async _handleAction(ev: HaDropdownSelectEvent) {
     const value = ev.detail.item.value;
     switch (value) {
-      case "toggle-yaml":
-        this._yamlMode = !this._yamlMode;
-        break;
       case "move-to-view":
         this._openSelectView();
         break;
     }
+  }
+
+  private _toggleMode(): void {
+    if (this._yamlMode && this._yamlError) return;
+    withViewTransition(() => {
+      this._yamlMode = !this._yamlMode;
+    });
   }
 
   private _openSelectView(): void {
@@ -519,6 +526,9 @@ export class HuiDialogEditSection
         }
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
+        }
+        .gui-mode-button {
+          margin-inline-end: auto;
         }
         ha-tab-group-tab {
           flex: 1;
