@@ -251,8 +251,10 @@ const fakes = vi.hoisted(() => {
       return { x: lng * 10000, y: -lat * 10000 };
     }
 
+    zoom = 12;
+
     getZoom() {
-      return 12;
+      return this.zoom;
     }
 
     getMaxZoom() {
@@ -634,6 +636,56 @@ describe("MapLibreMapEngine", () => {
       // A cluster of one is the marker itself
       expect(iconBuilder).toHaveBeenCalledOnce();
       expect(fakeMarker.all).toHaveLength(1);
+    });
+
+    const openBubble = () => {
+      expect(fakeMarker.all).toHaveLength(1);
+      const [bubble] = fakeMarker.all;
+      expect(bubble.options.anchor).toBe("bottom");
+      return (bubble.options.element as HTMLElement).querySelectorAll(
+        ".cluster-open-members > *"
+      );
+    };
+
+    it("opens a cluster whose members share a spot in a bubble", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      const elements = [
+        addMarker(engine, [52, 4]),
+        addMarker(engine, [52, 4]),
+        addMarker(engine, [52, 4]),
+      ];
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      // Zooming would change nothing; the members themselves sit in a
+      // bubble pointing at the spot
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(openBubble()).toHaveLength(elements.length);
+
+      // A refresh keeps it open; regrouping after the map moves closes it
+      engine.refreshClusters();
+      expect(openBubble()).toHaveLength(elements.length);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+      expect(fakeMarker.all).toHaveLength(1);
+      expect(fakeMarker.all[0].options.anchor).toBeUndefined();
+    });
+
+    it("opens a cluster at maximum zoom in a bubble", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(openBubble()).toHaveLength(2);
     });
 
     it("zooms in on a cluster's members when it is activated", async () => {

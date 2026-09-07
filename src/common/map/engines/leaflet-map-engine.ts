@@ -318,6 +318,9 @@ export class LeafletMapEngine implements MapEngine {
           latLng.lat,
           latLng.lng,
         ]);
+        // The element fills the divIcon wrapper, which gets the size
+        icon.element.style.width = `${icon.size[0]}px`;
+        icon.element.style.height = `${icon.size[1]}px`;
         // markercluster pins icons to the cluster, so a location override becomes an anchor shift
         let anchor = icon.anchor;
         if (icon.location) {

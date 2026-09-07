@@ -66,6 +66,16 @@ const WHEEL_ZOOM_RATE = 1 / 200;
 // Regroup clusters once continuous zooming settles, not on every wheel notch
 const CLUSTER_REBUILD_DELAY = 120;
 
+// A marker element keeps MapLibre's positioning once it leaves the map
+const resetMarkerElement = (element: HTMLElement): void => {
+  Array.from(element.classList)
+    .filter((name) => name.startsWith("maplibregl-marker"))
+    .forEach((name) => element.classList.remove(name));
+  element.style.transform = "";
+  element.style.opacity = "";
+  element.style.pointerEvents = "";
+};
+
 // A meter-radius circle as a polygon (spherical approximation)
 const circlePolygon = (
   center: MapLatLng,
@@ -101,6 +111,8 @@ interface ManagedMarker {
 }
 
 interface ClusterGroup {
+  /** Members are shown in a bubble at their spot instead of an icon */
+  open?: boolean;
   members: ManagedMarker[];
   center: MapLatLng;
   iconMarker?: MapLibreMarker;
@@ -780,6 +792,44 @@ export class MapLibreMapEngine implements MapEngine {
     this._rebuildClusters(false);
   }
 
+  // Zooming separates members unless they share a spot or the map is already
+  // at its maximum zoom
+  private _canSeparate(members: ManagedMarker[]): boolean {
+    const map = this._map!;
+    if (map.getZoom() >= map.getMaxZoom() - 0.01) {
+      return false;
+    }
+    const [first] = members;
+    return members.some(
+      (managed) =>
+        managed.location[0] !== first.location[0] ||
+        managed.location[1] !== first.location[1]
+    );
+  }
+
+  // Shows the members themselves in a bubble whose tail points at their
+  // spot, each reachable on its own; the next regroup closes it
+  private _openGroup(group: ClusterGroup): void {
+    const members = document.createElement("div");
+    members.className = "cluster-open-members";
+    for (const managed of group.members) {
+      this._hideMarker(managed);
+      resetMarkerElement(managed.element);
+      members.appendChild(managed.element);
+    }
+    const tail = document.createElement("div");
+    tail.className = "cluster-open-tail";
+    const root = document.createElement("div");
+    root.className = "cluster-open";
+    root.append(members, tail);
+    group.iconMarker = new this._maplibre!.Marker({
+      element: root,
+      anchor: "bottom",
+    })
+      .setLngLat([group.center[1], group.center[0]])
+      .addTo(this._map!);
+  }
+
   // Groups clusterable markers by screen distance
   private _rebuildClusters(regroup = true): void {
     if (!this._map) {
@@ -876,6 +926,10 @@ export class MapLibreMapEngine implements MapEngine {
         this._showMarker(group.members[0]);
         continue;
       }
+      if (group.open) {
+        this._openGroup(group);
+        continue;
+      }
       group.members.forEach((managed) => this._hideMarker(managed));
 
       const icon = this._clusterOptions.iconBuilder(
@@ -884,12 +938,19 @@ export class MapLibreMapEngine implements MapEngine {
       );
       icon.element.style.width = `${icon.size[0]}px`;
       icon.element.style.height = `${icon.size[1]}px`;
-      // Clicking a bubble zooms in on its members
+      // Clicking a bubble zooms in on its members; when zooming cannot
+      // separate them, they open in a bubble pointing at their spot instead
       const zoomToMembers = () => {
-        this.fitBounds(
-          group.members.map((managed) => managed.location),
-          { pad: 0.3, maxZoom: this._getMaxZoom() }
-        );
+        if (this._canSeparate(group.members)) {
+          this.fitBounds(
+            group.members.map((managed) => managed.location),
+            { pad: 0.3, maxZoom: this._getMaxZoom() }
+          );
+          return;
+        }
+        group.open = true;
+        group.iconMarker?.remove();
+        this._openGroup(group);
       };
       icon.element.tabIndex = 0;
       setMarkerAccessibility(

@@ -362,6 +362,7 @@ export class HaMap extends ReactiveElement {
     map.id = "map";
     this.shadowRoot!.append(map);
     this._loading = true;
+    let engine: MapEngine | undefined;
     try {
       // Without a connection or the tile proxy the map sets up without tiles
       const token = this._connection
@@ -369,7 +370,7 @@ export class HaMap extends ReactiveElement {
         : undefined;
 
       const rasterOnly = this._forceLeaflet;
-      const engine = await this._createEngine();
+      engine = await this._createEngine();
       await engine.init(map, {
         center: [
           this._config?.latitude ?? 52.3731339,
@@ -398,12 +399,10 @@ export class HaMap extends ReactiveElement {
       // Disconnected while the style was loading; disconnectedCallback had
       // nothing to tear down yet
       if (!this.isConnected) {
-        engine.destroy();
         return;
       }
       // A fatal event during setup asked for the fallback; _loadMap retries on it
       if (this._forceLeaflet && !rasterOnly) {
-        engine.destroy();
         throw new Error("Map engine failed during setup");
       }
       this._engine = engine;
@@ -411,6 +410,10 @@ export class HaMap extends ReactiveElement {
       this._loaded = true;
     } finally {
       this._loading = false;
+      // An engine that did not make it may already hold a map and a WebGL context
+      if (engine && engine !== this._engine) {
+        engine.destroy();
+      }
     }
   }
 
@@ -961,6 +964,32 @@ export class HaMap extends ReactiveElement {
     #map.clickable:active,
     #map:active {
       cursor: grabbing;
+    }
+    /* A cluster opened at its spot: the members in a bubble with a tail */
+    .cluster-open {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .cluster-open-members {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      padding: 6px;
+      /* Six markers per row */
+      max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
+      background: var(--card-background-color, #fff);
+      border-radius: 14px;
+      box-shadow: var(--ha-box-shadow-s);
+    }
+    .cluster-open-tail {
+      width: 10px;
+      height: 10px;
+      margin-top: -5px;
+      border-radius: 2px;
+      background: var(--card-background-color, #fff);
+      transform: rotate(45deg);
     }
     /* Only the raster fallback is inverted for dark mode, the vector style
        ships its own dark cartography. */

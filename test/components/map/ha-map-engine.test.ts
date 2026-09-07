@@ -181,9 +181,10 @@ describe("ha-map engine selection", () => {
     fakeEngine.failInit = true;
     const el = await createMap();
 
-    // MapLibre was tried once, then abandoned
+    // MapLibre was tried once, torn down, then abandoned
     expect(fakeEngine.instances).toHaveLength(1);
     expect(fakeEngine.instances[0].init).toHaveBeenCalledOnce();
+    expect(fakeEngine.instances[0].destroy).toHaveBeenCalledOnce();
     expect(leafletMap(el)).toBeDefined();
     // Entities are drawn on the fallback
     expect(entityHandles(el)).toHaveLength(2);
