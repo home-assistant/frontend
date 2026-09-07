@@ -1314,13 +1314,12 @@ export class HaMap extends ReactiveElement {
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
       avatar.entityPicture = member?.picture ?? "";
-      if (showColors || member?.selected) {
-        avatar.entityColor = member?.color;
-        if (!member?.color) {
-          avatar.style.setProperty("--ha-marker-color", "var(--primary-color)");
-        }
-      }
+      avatar.entityColor = member?.color;
       if (showColors) {
+        avatar.style.setProperty(
+          "--ha-marker-color",
+          member?.color ?? "var(--primary-color)"
+        );
         avatar.style.setProperty("--ha-marker-border-width", "2px");
       }
       if (member?.selected) {
@@ -1542,6 +1541,8 @@ export class HaMap extends ReactiveElement {
       box-shadow: var(--ha-box-shadow-s);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
       --ha-marker-color: transparent;
+      --ha-marker-border-width: 1px;
+      --ha-marker-shadow: none;
       --ha-marker-font-size: var(--ha-font-size-s);
       /* distinguish letter tiles from the bubble background */
       --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);
