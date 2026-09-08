@@ -4,8 +4,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
+import { afterNextRender } from "../../../../../common/util/render-status";
 import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import type { PlatformTrigger } from "../../../../../data/automation";
@@ -155,7 +156,10 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (oldValue?.target !== this.trigger?.target) {
-      this._updateResolvedTargetEntityCount(this.trigger?.target);
+      // set default behavior after next render to prevent race conditions with the initial render
+      afterNextRender(() => {
+        this._syncTargetBehavior();
+      });
     }
   }
 
@@ -466,7 +470,12 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
-  private _updateResolvedTargetEntityCount(target: PlatformTrigger["target"]) {
+  private _syncTargetBehavior() {
+    if (!this.isConnected) {
+      return;
+    }
+
+    const target = this.trigger?.target;
     this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     const behaviorFieldEntry = Object.entries(

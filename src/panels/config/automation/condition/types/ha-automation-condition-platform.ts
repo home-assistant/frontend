@@ -7,8 +7,9 @@ import { createDurationData } from "../../../../../common/datetime/create_durati
 import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
+import { afterNextRender } from "../../../../../common/util/render-status";
 import "../../../../../components/ha-checkbox";
+import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-selector-fallback-value";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
@@ -163,7 +164,10 @@ export class HaPlatformCondition extends LitElement {
     }
 
     if (oldValue?.target !== this.condition?.target) {
-      this._updateResolvedTargetEntityCount(this.condition?.target);
+      // set default behavior after next render to prevent race conditions with the initial render
+      afterNextRender(() => {
+        this._syncTargetBehavior();
+      });
     }
   }
 
@@ -476,9 +480,12 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
-  private _updateResolvedTargetEntityCount(
-    target: PlatformCondition["target"]
-  ) {
+  private _syncTargetBehavior() {
+    if (!this.isConnected) {
+      return;
+    }
+
+    const target = this.condition?.target;
     this._resolvedTargetEntityCount = getTargetEntityCount(target);
 
     const behaviorFieldEntry = Object.entries(
