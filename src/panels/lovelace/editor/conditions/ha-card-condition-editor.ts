@@ -401,9 +401,9 @@ export class HaCardConditionEditor extends LitElement {
       this.__observedEntityId = entityId;
       this.__clientInvalid = !validateConditionalConfig([this.condition]);
       const observed = entityId
-        ? addEntityToCondition(this.condition as Condition, entityId)
+        ? addEntityToCondition(this.condition, entityId)
         : this.condition;
-      this.__observed = [observed] as VisibilityCondition[];
+      this.__observed = [observed];
     }
 
     // Structural validation runs for every type (server-class types other
@@ -675,9 +675,11 @@ export class HaCardConditionEditor extends LitElement {
     }
     // Surface the evaluator's current live verdict as a transient chip. A
     // not-yet-reported (unknown) server result shows no chip rather than
-    // asserting a false failure.
+    // asserting a false failure, and neither does an invalid configuration
+    // (the evaluator reports it as hidden plus an error, which the live
+    // indicator already shows as invalid).
     const result = this._conditionEvaluator.result;
-    if (result === "unknown") {
+    if (result === "unknown" || this._conditionEvaluator.error !== undefined) {
       this._testingResult = undefined;
       return;
     }
