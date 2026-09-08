@@ -332,10 +332,11 @@ const NEVER_SATISFIED = Symbol("never-satisfied");
  *   is not JSON-serializable anyway.
  */
 const translateNumericBound = (
-  bound: string | number | undefined,
+  bound: string | number | null | undefined,
   side: "above" | "below"
 ): string | number | undefined | typeof NEVER_SATISFIED => {
-  if (bound === undefined) {
+  // YAML `above: null` (or an empty value) is absent for lovelace as well.
+  if (bound == null) {
     return undefined;
   }
   const numeric = typeof bound === "number" ? bound : Number(bound);

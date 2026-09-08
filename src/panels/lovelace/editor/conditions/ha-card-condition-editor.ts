@@ -220,10 +220,10 @@ const toCoreEditorCondition = (
     if (lovelace.attribute !== undefined) {
       core.attribute = lovelace.attribute;
     }
-    if (lovelace.above !== undefined) {
+    if (lovelace.above != null) {
       core.above = lovelace.above;
     }
-    if (lovelace.below !== undefined) {
+    if (lovelace.below != null) {
       core.below = lovelace.below;
     }
     return core;

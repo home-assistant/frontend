@@ -481,6 +481,23 @@ describe("translateToCoreCondition", () => {
       });
     });
 
+    it("treats a null bound as absent (matching lovelace's == null check)", () => {
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            above: null,
+            below: 10,
+          })
+        )
+      ).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        below: 10,
+      });
+    });
+
     it("coerces an empty-string bound to 0 (matching lovelace Number())", () => {
       expect(
         translateToCoreCondition(
