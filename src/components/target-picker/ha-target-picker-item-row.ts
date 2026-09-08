@@ -21,7 +21,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
@@ -133,9 +132,34 @@ export class HaTargetPickerItemRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry!: LabelRegistryEntry[];
 
+  private _loadedConfigEntryId?: string;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
+    }
+    if (
+      changedProps.has("itemId") ||
+      changedProps.has("type") ||
+      changedProps.has("hass")
+    ) {
+      this._updateDomain();
+    }
+  }
+
+  private _updateDomain() {
+    if (this.type === "entity") {
+      this._setDomainName(computeDomain(this.itemId));
+      return;
+    }
+    if (this.type !== "device") {
+      return;
+    }
+    const configEntryId =
+      this.hass.devices?.[this.itemId]?.primary_config_entry;
+    if (configEntryId && configEntryId !== this._loadedConfigEntryId) {
+      this._loadedConfigEntryId = configEntryId;
+      this._getDeviceDomain(configEntryId);
     }
   }
 
@@ -675,7 +699,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _itemData = memoizeOne((type: TargetType, item: string) => {
+  private _itemData(type: TargetType, item: string) {
     if (type === "floor") {
       const floor: FloorRegistryEntry | undefined = this.hass.floors?.[item];
       return {
@@ -697,10 +721,6 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     if (type === "device") {
       const device: DeviceRegistryEntry | undefined = this.hass.devices?.[item];
-
-      if (device?.primary_config_entry) {
-        this._getDeviceDomain(device.primary_config_entry);
-      }
 
       const area = device
         ? getDeviceArea(device, this.hass.areas, this.hass.devices)
@@ -736,8 +756,6 @@ export class HaTargetPickerItemRow extends LitElement {
       };
     }
     if (type === "entity") {
-      this._setDomainName(computeDomain(item));
-
       const stateObject: HassEntity | undefined = this.hass.states[item];
       const entityName = stateObject
         ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
@@ -788,7 +806,7 @@ export class HaTargetPickerItemRow extends LitElement {
       fallbackIconPath: mdiLabel,
       notFound: !label,
     };
-  });
+  }
 
   private _setDomainName(domain: string) {
     this._domainName = domainToName(this.hass.localize, domain);
