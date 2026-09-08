@@ -60,14 +60,20 @@ export const entityDisplay = (
     return {};
   }
 
-  const [entityName, deviceName, areaName] = computeEntityNameList(
-    stateObj,
-    [{ type: "entity" }, { type: "device" }, { type: "area" }],
-    hass.entities,
-    hass.devices,
-    hass.areas,
-    hass.floors
-  );
+  const [entityName, deviceName, parentDeviceName, areaName] =
+    computeEntityNameList(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "device" },
+        { type: "parent_device" },
+        { type: "area" },
+      ],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
   const primary = entityName || deviceName || entityId;
 
@@ -82,11 +88,11 @@ export const entityDisplay = (
       parts = [];
       break;
     case "device":
-      parts = [deviceQualifier];
+      parts = [parentDeviceName, deviceQualifier];
       break;
     case "area":
     default:
-      parts = [areaName, deviceQualifier];
+      parts = [areaName, parentDeviceName, deviceQualifier];
   }
 
   const filtered = parts.filter(Boolean) as string[];
