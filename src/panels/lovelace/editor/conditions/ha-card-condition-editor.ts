@@ -26,7 +26,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { formatListWithOrs } from "../../../../common/string/format-list";
+import {
+  formatListWithAnds,
+  formatListWithOrs,
+} from "../../../../common/string/format-list";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
@@ -58,6 +61,7 @@ import {
   CONDITION_ROW_CONFIG_KEYS,
   pickRowConfig,
 } from "../../../../data/automation";
+import { formatNumericLimitValue } from "../../../../data/automation_i18n";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
@@ -429,44 +433,78 @@ export class HaCardConditionEditor extends LitElement {
     };
   }
 
-  private _describeCondition(
-    condition: Condition,
-    entityId?: string
-  ): string | undefined {
-    const stateObj = entityId ? this.hass.states[entityId] : undefined;
-    const entity = stateObj ? computeStateName(stateObj) : entityId;
+  private _describeCondition(): string | undefined {
+    const condition = this.condition;
+    if (
+      !condition ||
+      typeof condition !== "object" ||
+      Array.isArray(condition) ||
+      ("condition" in condition &&
+        condition.condition !== "state" &&
+        condition.condition !== "numeric_state")
+    ) {
+      return undefined;
+    }
+
+    const entityIds = ensureArray(
+      ("entity_id" in condition
+        ? condition.entity_id
+        : "entity" in condition
+          ? condition.entity
+          : undefined) ||
+        (this._entityContext?.mode === "current"
+          ? this._entityContext.entityId
+          : undefined) ||
+        []
+    );
+    const entityNames = entityIds.map((entityId) =>
+      this.hass.states[entityId]
+        ? computeStateName(this.hass.states[entityId])
+        : entityId
+    );
+    const entity =
+      "match" in condition && condition.match === "any"
+        ? formatListWithOrs(this.hass.locale, entityNames)
+        : formatListWithAnds(this.hass.locale, entityNames);
     if (!entity) {
       return undefined;
     }
 
-    if (condition.condition === "state") {
-      const value = condition.state ?? condition.state_not;
+    const stateObj = this.hass.states[entityIds[0]];
+    const attributeName =
+      "attribute" in condition ? condition.attribute : undefined;
+    const attribute =
+      attributeName && stateObj
+        ? computeAttributeNameDisplay(
+            this.hass.localize,
+            stateObj,
+            this.hass.entities,
+            attributeName
+          )
+        : attributeName;
+
+    if (!("condition" in condition) || condition.condition === "state") {
+      const stateValue = "state" in condition ? condition.state : undefined;
+      const stateNot =
+        "state_not" in condition ? condition.state_not : undefined;
+      const value = stateValue ?? stateNot;
       const values = ensureArray(value ?? []).filter((v) => v !== "");
       if (!values.length) {
         return undefined;
       }
-      const attribute =
-        condition.attribute && stateObj
-          ? computeAttributeNameDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.entities,
-              condition.attribute
-            )
-          : condition.attribute;
       const states = formatListWithOrs(
         this.hass.locale,
         values.map((v) =>
           stateObj
-            ? condition.attribute
+            ? attributeName
               ? this.hass
-                  .formatEntityAttributeValue(stateObj, condition.attribute, v)
+                  .formatEntityAttributeValue(stateObj, attributeName, v)
                   .toString()
-              : this.hass.formatEntityState(stateObj, v)
-            : v
+              : this.hass.formatEntityState(stateObj, String(v))
+            : String(v)
         )
       );
-      const invert = condition.state_not !== undefined;
+      const invert = stateValue == null && stateNot !== undefined;
       const variant = invert ? "is_not" : "is";
       return this.hass.localize(
         `ui.panel.lovelace.editor.condition-editor.condition.state.description.${
@@ -477,19 +515,11 @@ export class HaCardConditionEditor extends LitElement {
     }
 
     if (condition.condition === "numeric_state") {
-      const { above, below } = condition;
+      const above = "above" in condition ? condition.above : undefined;
+      const below = "below" in condition ? condition.below : undefined;
       if (above === undefined && below === undefined) {
         return undefined;
       }
-      const attribute =
-        condition.attribute && stateObj
-          ? computeAttributeNameDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.entities,
-              condition.attribute
-            )
-          : condition.attribute;
       const variant =
         above !== undefined && below !== undefined
           ? "above_below"
@@ -500,7 +530,12 @@ export class HaCardConditionEditor extends LitElement {
         `ui.panel.lovelace.editor.condition-editor.condition.numeric_state.description.${
           attribute ? `${variant}_attribute` : variant
         }`,
-        { entity, above, below, attribute }
+        {
+          entity,
+          above: formatNumericLimitValue(this.hass, above),
+          below: formatNumericLimitValue(this.hass, below),
+          attribute,
+        }
       );
     }
 
@@ -514,17 +549,7 @@ export class HaCardConditionEditor extends LitElement {
 
     const hideLiveTest = this._hideLiveTest(condition);
 
-    const contextEntityId =
-      condition.condition === "state" || condition.condition === "numeric_state"
-        ? ("entity_id" in condition
-            ? (condition as { entity_id?: string }).entity_id
-            : (condition as StateCondition | NumericStateCondition).entity) ||
-          (this._entityContext?.mode === "current"
-            ? this._entityContext.entityId
-            : undefined)
-        : undefined;
-
-    const description = this._describeCondition(condition, contextEntityId);
+    const description = this._describeCondition();
 
     return html`
       <div class="container">

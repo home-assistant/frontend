@@ -133,7 +133,7 @@ const numericThresholdSuffix = (config: {
   return undefined;
 };
 
-const formatNumericLimitValue = (
+export const formatNumericLimitValue = (
   hass: HomeAssistant,
   value?: number | string
 ) => {
