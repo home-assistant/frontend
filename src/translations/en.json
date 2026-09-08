@@ -637,6 +637,12 @@
           "entity": "Entity",
           "from": "From",
           "to": "To",
+          "row_label": {
+            "above": "above {value}",
+            "below": "below {value}",
+            "between": "in range {value}",
+            "outside": "outside {value}"
+          },
           "crossed": {
             "type": "Fire when the value goes",
             "above": "Above",

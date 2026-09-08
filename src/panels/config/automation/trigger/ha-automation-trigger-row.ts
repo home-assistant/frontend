@@ -74,6 +74,7 @@ import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
+import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -257,6 +258,18 @@ export default class HaAutomationTriggerRow extends LitElement {
         )}
         ${
           type === "platform"
+            ? html`<ha-automation-row-threshold
+                .config=${this.trigger}
+                .description=${
+                  this.triggerDescriptions[
+                    (this.trigger as PlatformTrigger).trigger
+                  ]
+                }
+              ></ha-automation-row-threshold>`
+            : nothing
+        }
+        ${
+          type === "platform" && target !== undefined
             ? html`<ha-automation-row-behavior
                 .config=${this.trigger}
               ></ha-automation-row-behavior>`

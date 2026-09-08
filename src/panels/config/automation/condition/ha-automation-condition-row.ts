@@ -75,6 +75,7 @@ import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
+import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -230,6 +231,17 @@ export default class HaAutomationConditionRow extends LitElement {
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${
+          this._getType(this.condition, this.conditionDescriptions) ===
+          "platform"
+            ? html`<ha-automation-row-threshold
+                .config=${this.condition}
+                .description=${
+                  this.conditionDescriptions[this.condition.condition]
+                }
+              ></ha-automation-row-threshold>`
+            : nothing
+        }
         ${
           this._getType(this.condition, this.conditionDescriptions) ===
           "platform"
