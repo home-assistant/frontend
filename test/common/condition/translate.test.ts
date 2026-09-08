@@ -644,6 +644,39 @@ describe("translateToCoreCondition", () => {
       ).toEqual({ condition: "or", conditions: [] });
     });
 
+    it("preserves core row metadata on rebuilt logical conditions", () => {
+      // Core skips a disabled group; dropping `enabled` would evaluate it.
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "not",
+            enabled: false,
+            alias: "Night",
+            conditions: [
+              { entity: "light.a", state: "on" },
+              { entity: "light.b", state: "on" },
+            ],
+          })
+        )
+      ).toEqual({
+        condition: "not",
+        enabled: false,
+        alias: "Night",
+        conditions: [
+          {
+            condition: "and",
+            conditions: [
+              { condition: "state", entity_id: "light.a", state: "on" },
+              { condition: "state", entity_id: "light.b", state: "on" },
+            ],
+          },
+        ],
+      });
+      expect(
+        translateToCoreCondition(cond({ condition: "or", enabled: false }))
+      ).toEqual({ condition: "and", enabled: false, conditions: [] });
+    });
+
     it("treats a logical condition with no conditions key as vacuously true", () => {
       for (const condition of ["and", "or", "not"]) {
         expect(translateToCoreCondition(cond({ condition }))).toEqual({

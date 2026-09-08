@@ -5,7 +5,11 @@ import type {
 } from "../../panels/lovelace/common/validate-condition";
 import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../types";
-import { isClientCondition, isLogicalCondition } from "./translate";
+import {
+  isClientCondition,
+  isDisabledCondition,
+  isLogicalCondition,
+} from "./translate";
 
 // Three-valued combinators (true / false / undefined = unknown).
 const andOf = (values: (boolean | undefined)[]): boolean | undefined => {
@@ -69,8 +73,8 @@ const isLocallyEvaluableServerLeaf = (
  * Client-only leaves and server leaves whose semantics the legacy evaluator
  * reproduces (see {@link isLocallyEvaluableServerLeaf}) are evaluated with
  * `checkConditionsMet`; every other leaf (`template`, `sun`, `zone`, `device`,
- * integration conditions, core `state` with `for`, anything carrying
- * `enabled`, …) is unknown. Unknown
+ * integration conditions, core `state` with `for`, a template-valued
+ * `enabled`, …) is unknown, and `enabled: false` nodes are skipped. Unknown
  * propagates through `and` / `or` / `not` unless a sibling decides the result,
  * so e.g. `not: [template]` stays unknown rather than being inverted to true.
  *
@@ -94,10 +98,10 @@ export const evaluateConditionsLocally = (
   const evaluateNode = (
     condition: VisibilityCondition
   ): boolean | undefined => {
-    // Core treats a disabled condition (`enabled: false`, possibly a template)
-    // as neutral; the legacy evaluator ignores `enabled` altogether, so leave
-    // any node carrying it to the server.
-    if ("enabled" in condition) {
+    // A template-valued `enabled` can only be rendered by core; the legacy
+    // evaluator ignores `enabled` altogether, so leave such a node unknown.
+    // (`enabled: false` nodes are skipped by the parent, see below.)
+    if ("enabled" in condition && !isDisabledCondition(condition)) {
       return undefined;
     }
     if (isLogicalCondition(condition)) {
@@ -106,7 +110,9 @@ export const evaluateConditionsLocally = (
       if (condition.conditions === undefined) {
         return true;
       }
-      const values = condition.conditions.map(evaluateNode);
+      const values = condition.conditions
+        .filter((child) => !isDisabledCondition(child))
+        .map(evaluateNode);
       if (condition.condition === "or") {
         return orOf(values);
       }
@@ -127,6 +133,9 @@ export const evaluateConditionsLocally = (
     return undefined;
   };
 
-  // The top-level array is an implicit AND.
-  return andOf(conditions.map(evaluateNode));
+  // The top-level array is an implicit AND. Disabled nodes are skipped, as
+  // core does inside a compound.
+  return andOf(
+    conditions.filter((c) => !isDisabledCondition(c)).map(evaluateNode)
+  );
 };

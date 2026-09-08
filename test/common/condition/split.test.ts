@@ -288,6 +288,37 @@ describe("splitConditionTree", () => {
     expect(split.evaluate(withScreen(false), { "0": true })).toBe(undefined);
   });
 
+  it("skips disabled nodes rather than subscribing or combining them", () => {
+    // Core skips a disabled condition inside a compound (it neither passes nor
+    // fails), so it must not open a subscription, and a disabled client leaf
+    // must not decide the result either.
+    const user = cond({ condition: "user", users: ["u"], enabled: false });
+    const split = splitConditionTree([
+      user,
+      cond({
+        condition: "state",
+        entity_id: "light.a",
+        state: "on",
+        enabled: false,
+      }),
+      cond({
+        condition: "or",
+        conditions: [
+          { condition: "screen", media_query: "(min-width: 1px)" },
+          {
+            condition: "template",
+            value_template: "{{ true }}",
+            enabled: false,
+          },
+        ],
+      }),
+    ]);
+
+    expect(split.serverSubtrees).toHaveLength(0);
+    // The disabled user leaf would fail the implicit AND if it were consulted.
+    expect(split.evaluate((c) => c !== user, {})).toBe(true);
+  });
+
   it("treats an empty condition list as visible (vacuous AND)", () => {
     const split = splitConditionTree([]);
     expect(split.serverSubtrees).toHaveLength(0);

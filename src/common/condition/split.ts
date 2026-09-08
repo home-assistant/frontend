@@ -1,6 +1,7 @@
 import type { Condition as CoreCondition } from "../../data/automation";
 import type { VisibilityCondition } from "../../panels/lovelace/common/validate-condition";
 import {
+  isDisabledCondition,
   isLogicalCondition,
   isServerCondition,
   translateToCoreCondition,
@@ -94,7 +95,8 @@ const clientLeaf =
  * - an **`evaluate`** function that recombines those subtree results with
  *   locally-evaluated client leaves into the overall visibility.
  *
- * The top-level array is treated as an implicit `AND`. Sibling server
+ * The top-level array is treated as an implicit `AND`. Nodes with
+ * `enabled: false` are skipped, matching core. Sibling server
  * conditions sharing a logical parent (including that implicit top-level AND)
  * are grouped into a *single* subscription using the parent's operator, to
  * avoid subscription fan-out. A `not` combines its children with `AND` before
@@ -123,6 +125,11 @@ export const splitConditionTree = (
     const serverChildren: VisibilityCondition[] = [];
     const clientChildren: VisibilityCondition[] = [];
     for (const child of children) {
+      // A disabled node neither passes nor fails (core skips it inside a
+      // compound); leave it out so it is neither subscribed nor combined.
+      if (isDisabledCondition(child)) {
+        continue;
+      }
       (isServerCondition(child) ? serverChildren : clientChildren).push(child);
     }
 

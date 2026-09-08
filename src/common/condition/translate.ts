@@ -4,6 +4,10 @@ import type {
   StateCondition as CoreStateCondition,
   TemplateCondition as CoreTemplateCondition,
 } from "../../data/automation";
+import {
+  CONDITION_ROW_CONFIG_KEYS,
+  pickRowConfig,
+} from "../../data/automation";
 import type {
   LegacyCondition,
   NumericStateCondition as LovelaceNumericStateCondition,
@@ -55,6 +59,16 @@ export const isServerCondition = (condition: VisibilityCondition): boolean => {
   }
   return !CLIENT_CONDITION_TYPES.has(condition.condition);
 };
+
+/**
+ * Whether a node is disabled (`enabled: false`). Core skips such a node inside
+ * `and` / `or` / `not` (it neither passes nor fails), so client-side evaluation
+ * drops it from its parent's children before combining. A template-valued
+ * `enabled` cannot be evaluated here and is left to core (server nodes) or
+ * treated as enabled (client nodes).
+ */
+export const isDisabledCondition = (condition: VisibilityCondition): boolean =>
+  "enabled" in condition && condition.enabled === false;
 
 /** Inverse of {@link isServerCondition}. */
 export const isClientCondition = (condition: VisibilityCondition): boolean =>
@@ -258,10 +272,14 @@ const translateNumericBound = (
 const translateLogicalCondition = (
   condition: VisibilityLogicalCondition
 ): CoreCondition => {
+  // Core row metadata (`enabled`, `alias`, `note`) must survive the rebuild so
+  // core still skips a disabled group.
+  const rowConfig = pickRowConfig(condition, CONDITION_ROW_CONFIG_KEYS);
+
   // Lovelace treats a logical condition with no `conditions` key as vacuously
   // true (checkAnd/Or/NotCondition all early-return on a missing list).
   if (condition.conditions === undefined) {
-    return { condition: "and", conditions: [] };
+    return { ...rowConfig, condition: "and", conditions: [] };
   }
 
   const conditions = condition.conditions.map(translateToCoreCondition);
@@ -274,11 +292,15 @@ const translateLogicalCondition = (
     // unambiguous (¬(OR of one) = ¬(AND of one)) and left unwrapped for a
     // tidier persisted form.
     if (conditions.length === 1) {
-      return { condition: "not", conditions };
+      return { ...rowConfig, condition: "not", conditions };
     }
-    return { condition: "not", conditions: [{ condition: "and", conditions }] };
+    return {
+      ...rowConfig,
+      condition: "not",
+      conditions: [{ condition: "and", conditions }],
+    };
   }
 
   // Empty `and` (true) / `or` (false) already agree between lovelace and core.
-  return { condition: condition.condition, conditions };
+  return { ...rowConfig, condition: condition.condition, conditions };
 };

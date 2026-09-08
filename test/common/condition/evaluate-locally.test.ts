@@ -72,10 +72,11 @@ describe("evaluateConditionsLocally", () => {
     ).toBeUndefined();
   });
 
-  it("treats any node carrying enabled as unknown", () => {
-    // Core treats a disabled condition as neutral (passing); the legacy
-    // evaluator ignores `enabled`, so `not: [disabled failing state, ...]`
-    // would otherwise be seeded visible while core reports hidden.
+  it("skips disabled nodes and leaves a template-valued enabled unknown", () => {
+    // Core skips a disabled condition inside a compound (it neither passes nor
+    // fails); the legacy evaluator ignores `enabled`, so without this a
+    // `not: [disabled failing state, ...]` would be seeded visible while core
+    // reports hidden.
     expect(
       evaluate([
         cond({
@@ -85,7 +86,7 @@ describe("evaluateConditionsLocally", () => {
           enabled: false,
         }),
       ])
-    ).toBeUndefined();
+    ).toBe(true);
     expect(
       evaluate([
         cond({
@@ -96,7 +97,7 @@ describe("evaluateConditionsLocally", () => {
           ],
         }),
       ])
-    ).toBeUndefined();
+    ).toBe(false);
     expect(
       evaluate([
         cond({
