@@ -93,10 +93,13 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _markdownLoading = true;
 
-  @state() private _backupConfig: "loading" | "error" | BackupConfig =
-    "loading";
+  @state() private _backupConfigLoading = true;
 
-  @state() private _createBackup: "loading" | boolean = "loading";
+  @state() private _backupConfig?: BackupConfig;
+
+  @state() private _createBackupLoading = true;
+
+  @state() private _createBackup = false;
 
   @state() private _entitySources?: EntitySources;
 
@@ -108,7 +111,8 @@ class MoreInfoUpdate extends LitElement {
       // ignore error, because user will get a manual backup option
       // eslint-disable-next-line no-console
       console.error(err);
-      this._backupConfig = "error";
+    } finally {
+      this._backupConfigLoading = false;
     }
   }
 
@@ -119,6 +123,7 @@ class MoreInfoUpdate extends LitElement {
       // for home assistant and OS updates
       if (this._isHaOrOsUpdate(type)) {
         this._createBackup = config.core_backup_before_update;
+        this._createBackupLoading = false;
         return;
       }
 
@@ -130,6 +135,8 @@ class MoreInfoUpdate extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
       this._createBackup = false;
+    } finally {
+      this._createBackupLoading = false;
     }
   }
 
@@ -145,7 +152,7 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _computeCreateBackupTexts():
-    { title: string; description?: string } | undefined | "loading" {
+    { title: string; description?: string } | undefined {
     if (
       !this.stateObj ||
       !supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
@@ -158,54 +165,53 @@ class MoreInfoUpdate extends LitElement {
       : "generic";
 
     if (this._isHaOrOsUpdate(updateType)) {
-      if (this._backupConfig === "loading") {
-        return "loading";
+      if (this._backupConfigLoading) {
+        return undefined;
       }
 
-      if (this._backupConfig !== "error") {
-        const isBackupConfigValid =
-          !!this._backupConfig.automatic_backups_configured &&
-          !!this._backupConfig.create_backup.password &&
-          this._backupConfig.create_backup.agent_ids.length > 0;
+      const isBackupConfigValid =
+        !!this._backupConfig &&
+        !!this._backupConfig.automatic_backups_configured &&
+        !!this._backupConfig.create_backup.password &&
+        this._backupConfig.create_backup.agent_ids.length > 0;
 
-        if (!isBackupConfigValid) {
-          return {
-            title: this._localize(
-              "ui.dialogs.more_info_control.update.create_backup.manual"
-            ),
-            description: this._localize(
-              "ui.dialogs.more_info_control.update.create_backup.manual_description"
-            ),
-          };
-        }
-
-        const lastAutomaticBackupDate = this._backupConfig
-          ?.last_completed_automatic_backup
-          ? new Date(this._backupConfig?.last_completed_automatic_backup)
-          : null;
-        const now = new Date();
-
+      if (!isBackupConfigValid) {
         return {
           title: this._localize(
-            "ui.dialogs.more_info_control.update.create_backup.automatic"
+            "ui.dialogs.more_info_control.update.create_backup.manual"
           ),
-          description: lastAutomaticBackupDate
-            ? this._localize(
-                "ui.dialogs.more_info_control.update.create_backup.automatic_description_last",
-                {
-                  relative_time: relativeTime(
-                    lastAutomaticBackupDate,
-                    this._locale,
-                    now,
-                    true
-                  ),
-                }
-              )
-            : this._localize(
-                "ui.dialogs.more_info_control.update.create_backup.automatic_description_none"
-              ),
+          description: this._localize(
+            "ui.dialogs.more_info_control.update.create_backup.manual_description"
+          ),
         };
       }
+
+      const lastAutomaticBackupDate = this._backupConfig
+        ?.last_completed_automatic_backup
+        ? new Date(this._backupConfig?.last_completed_automatic_backup)
+        : null;
+      const now = new Date();
+
+      return {
+        title: this._localize(
+          "ui.dialogs.more_info_control.update.create_backup.automatic"
+        ),
+        description: lastAutomaticBackupDate
+          ? this._localize(
+              "ui.dialogs.more_info_control.update.create_backup.automatic_description_last",
+              {
+                relative_time: relativeTime(
+                  lastAutomaticBackupDate,
+                  this._locale,
+                  now,
+                  true
+                ),
+              }
+            )
+          : this._localize(
+              "ui.dialogs.more_info_control.update.create_backup.automatic_description_none"
+            ),
+      };
     }
 
     // App backup
@@ -342,34 +348,33 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="footer">
         ${
-          createBackupTexts
+          createBackupTexts || this._backupConfigLoading
             ? html`
                 <ha-row-item
-                  .headline=${createBackupTexts !== "loading" ? createBackupTexts.title : undefined}
-                  .supportingText=${createBackupTexts !== "loading" ? createBackupTexts.description : undefined}
+                  .headline=${createBackupTexts ? createBackupTexts.title : undefined}
+                  .supportingText=${createBackupTexts ? createBackupTexts.description : undefined}
                 >
                   ${
-                    createBackupTexts === "loading"
+                    !createBackupTexts
                       ? html`<ha-fade-in slot="headline" .delay=${500}
-                            ><wa-skeleton effect="sheen"></wa-skeleton
-                          ></ha-fade-in>
-                          <ha-fade-in
-                            class="skeleton-end"
-                            slot="end"
-                            .delay=${500}
-                            ><wa-skeleton effect="sheen"></wa-skeleton
-                          ></ha-fade-in>`
+                          ><wa-skeleton effect="sheen"></wa-skeleton
+                        ></ha-fade-in>`
                       : nothing
                   }
                   ${
-                    createBackupTexts !== "loading"
-                      ? html`<ha-switch
+                    this._createBackupLoading
+                      ? html`<ha-fade-in
+                          class="skeleton-end"
+                          slot="end"
+                          .delay=${500}
+                          ><wa-skeleton effect="sheen"></wa-skeleton
+                        ></ha-fade-in>`
+                      : html`<ha-switch
                           slot="end"
                           .checked=${this._createBackup}
                           @change=${this._createBackupChanged}
                           .disabled=${updateIsInstalling(this.stateObj)}
                         ></ha-switch>`
-                      : nothing
                   }
                 </ha-row-item>
               `
@@ -473,7 +478,7 @@ class MoreInfoUpdate extends LitElement {
     if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       return false;
     }
-    return this._createBackup === "loading" ? false : this._createBackup;
+    return this._createBackup;
   }
 
   private _handleInstall(): void {
