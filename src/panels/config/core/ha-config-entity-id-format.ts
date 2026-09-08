@@ -10,6 +10,8 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/chips/ha-filter-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -59,6 +61,8 @@ export class HaConfigEntityIdFormat extends LitElement {
   @state() private _previews?: string[];
 
   @state() private _previewError = false;
+
+  @state() private _selectedExample = 0;
 
   protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
@@ -193,7 +197,6 @@ export class HaConfigEntityIdFormat extends LitElement {
                     )}
                     @value-changed=${this._formatChanged}
                   ></ha-entity-id-format-editor>
-                  ${this._renderPreview()}
                 `
               : nothing
           }
@@ -216,63 +219,80 @@ export class HaConfigEntityIdFormat extends LitElement {
           </ha-progress-button>
         </div>
       </ha-card>
+      ${this._format ? this._renderExamples() : nothing}
     `;
   }
 
-  private _renderPreview() {
+  private _renderExamples() {
+    const examples = this._examples(this._localize);
+    const example = examples[this._selectedExample];
+    const parts = ENTITY_NAME_TYPES.filter((part) => example.parts[part]);
     return html`
-      <div class="preview">
-        <h2 class="preview-label">
-          ${this._localize("ui.panel.config.entity_id_format.card.preview")}
-        </h2>
-        ${
-          this._previewError
-            ? html`<ha-alert alert-type="error">
-                ${this._localize(
-                  "ui.panel.config.entity_id_format.card.preview_error"
-                )}
-              </ha-alert>`
-            : nothing
-        }
-        ${this._examples(this._localize).map((example, index) => {
-          const parts = ENTITY_NAME_TYPES.filter((part) => example.parts[part]);
-          return html`
-            <section class="example" aria-labelledby=${`example-${index}`}>
-              <h3 id=${`example-${index}`}>${example.name}</h3>
-              ${
-                this._previewError
-                  ? nothing
-                  : html`<code
-                      >${EXAMPLE_DOMAIN}.${this._previews?.[index] ?? "…"}</code
-                    >`
-              }
-              <dl>
-                ${parts.map((part) => {
-                  const used = this._format!.includes(part);
-                  return html`
-                    <dt>
-                      ${this._localize(
-                        `ui.components.entity.entity-name-picker.types.${part}`
-                      )}
-                    </dt>
-                    <dd class=${used ? "" : "unused"}>
-                      ${
-                        used
-                          ? example.parts[part]
-                          : this._localize(
-                              "ui.panel.config.entity_id_format.card.unused_part",
-                              { name: example.parts[part] }
-                            )
-                      }
-                    </dd>
-                  `;
-                })}
-              </dl>
-            </section>
-          `;
-        })}
-      </div>
+      <ha-card
+        outlined
+        .header=${this._localize(
+          "ui.panel.config.entity_id_format.card.preview"
+        )}
+      >
+        <div class="card-content examples">
+          <ha-chip-set>
+            ${examples.map(
+              (item, index) => html`
+                <ha-filter-chip
+                  no-leading-icon
+                  data-index=${index}
+                  .selected=${index === this._selectedExample}
+                  .label=${item.name}
+                  @click=${this._selectExample}
+                ></ha-filter-chip>
+              `
+            )}
+          </ha-chip-set>
+          ${
+            this._previewError
+              ? html`<ha-alert alert-type="error">
+                  ${this._localize(
+                    "ui.panel.config.entity_id_format.card.preview_error"
+                  )}
+                </ha-alert>`
+              : html`<code
+                  >${EXAMPLE_DOMAIN}.${
+                    this._previews?.[this._selectedExample] ?? "…"
+                  }</code
+                >`
+          }
+          <dl>
+            ${parts.map((part) => {
+              const used = this._format!.includes(part);
+              return html`
+                <dt>
+                  ${this._localize(
+                    `ui.components.entity.entity-name-picker.types.${part}`
+                  )}
+                </dt>
+                <dd class=${used ? "" : "unused"}>
+                  ${
+                    used
+                      ? example.parts[part]
+                      : this._localize(
+                          "ui.panel.config.entity_id_format.card.unused_part",
+                          { name: example.parts[part] }
+                        )
+                  }
+                </dd>
+              `;
+            })}
+          </dl>
+        </div>
+      </ha-card>
     `;
+  }
+
+  private _selectExample(ev: Event) {
+    ev.preventDefault();
+    this._selectedExample = Number(
+      (ev.currentTarget as HTMLElement).dataset.index
+    );
   }
 
   private _formatChanged(ev: CustomEvent) {
@@ -309,50 +329,34 @@ export class HaConfigEntityIdFormat extends LitElement {
     haStyle,
     css`
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: var(--ha-space-5);
       }
       .description {
         margin-top: 0;
         color: var(--secondary-text-color);
       }
-      .preview {
+      .examples {
         display: flex;
         flex-direction: column;
         gap: var(--ha-space-3);
-        margin-top: var(--ha-space-5);
       }
-      .preview-label,
-      .example h3 {
-        margin: 0;
-        font-size: var(--ha-font-size-m);
-      }
-      .example {
-        display: flex;
-        flex-direction: column;
-        gap: var(--ha-space-2);
-      }
-      .example + .example {
-        border-block-start: 1px solid var(--divider-color);
-        padding-block-start: var(--ha-space-3);
-      }
-      .example dl {
+      .examples dl {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
         column-gap: var(--ha-space-3);
         margin: 0;
         overflow-wrap: anywhere;
       }
-      .example dt,
-      .example .unused {
+      .examples dt,
+      .examples .unused {
         color: var(--secondary-text-color);
       }
-      .example dd {
+      .examples dd {
         margin: 0;
       }
-      .preview-label {
-        font-weight: 500;
-      }
-      .preview code {
+      .examples code {
         display: block;
         padding: var(--ha-space-2);
         border-radius: var(--ha-border-radius-md);
