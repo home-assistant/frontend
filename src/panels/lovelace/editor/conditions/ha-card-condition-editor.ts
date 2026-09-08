@@ -13,6 +13,7 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import {
   isLogicalCondition,
   logicalChildren,
@@ -90,11 +91,15 @@ const containsNoEntityCondition = (
 ): boolean =>
   noEntity &&
   CONTAINER_CONDITIONS.includes(condition.condition) &&
-  (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
+  (
+    ensureArray(
+      (condition as OrCondition | AndCondition | NotCondition).conditions
+    ) ?? []
+  ).some(
     (c) =>
       NO_ENTITY_CONDITIONS.includes(c.condition) ||
       containsNoEntityCondition(c, noEntity)
-  ) === true;
+  );
 
 // Server-class condition types with no lovelace editor; edited via the
 // automation condition editors (which already speak core format).
@@ -119,12 +124,18 @@ const FILTER_CONDITION_TYPES = new Set([
 // the locally evaluable types above (template / sun / zone / device and
 // integration-provided conditions, which the local evaluator would fail and
 // so filter everything out), or a core-format leaf pinned to its own
-// `entity_id`, is not usable there.
+// `entity_id`, is not usable there. Filter consumers also expect the lovelace
+// list shape for logical children, so core's single-child shorthand is not
+// accepted either.
 export const isFilterCompatibleCondition = (
   condition: VisibilityCondition
 ): boolean => {
   if (isLogicalCondition(condition)) {
-    return logicalChildren(condition).every(isFilterCompatibleCondition);
+    return (
+      (condition.conditions === undefined ||
+        Array.isArray(condition.conditions)) &&
+      logicalChildren(condition).every(isFilterCompatibleCondition)
+    );
   }
   // Legacy `{ entity, state }` is a lovelace state condition.
   if (!("condition" in condition)) {
