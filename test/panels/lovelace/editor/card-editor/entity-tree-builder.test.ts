@@ -237,6 +237,21 @@ describe("buildEntityTree", () => {
     expect(tree.otherAreas.find((a) => a.id === "office")).toBeUndefined();
   });
 
+  it("keeps a child device at the top level when its parent is disabled", () => {
+    const hass = makeHass({
+      states: { "switch.outlet_1": state("switch.outlet_1") },
+      entities: { "switch.outlet_1": entity({ device_id: "outlet_1" }) },
+      devices: {
+        strip: device("strip", { area_id: "office", disabled_by: "user" }),
+        outlet_1: device("outlet_1", { parent_device_id: "strip" }),
+      },
+      areas: { office: area("office") },
+    });
+
+    const tree = buildTree(hass);
+    expect(tree.otherAreas[0].devices.map((d) => d.id)).toEqual(["outlet_1"]);
+  });
+
   it("treats entities with their own area_id as direct area entities (not under device)", () => {
     const hass = makeHass({
       states: { "sensor.temp": state("sensor.temp") },

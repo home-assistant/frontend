@@ -151,6 +151,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
       : undefined;
     if (
       parent &&
+      !parent.disabled_by &&
       getDeviceAreaId(parent, deviceReg) === areaId &&
       (parent.entry_type === "service") === (device.entry_type === "service") &&
       !bucket.has(parent.id)
