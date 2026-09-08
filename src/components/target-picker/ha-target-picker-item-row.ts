@@ -528,34 +528,53 @@ export class HaTargetPickerItemRow extends LitElement {
 
       let referencedDevices = entries.referenced_devices;
       const hiddenDeviceIds: string[] = [];
+      // Parents kept only so a matching child device can nest under them;
+      // their own entities stay filtered out like a hidden device's.
+      const groupOnlyDeviceIds = new Set<string>();
       if (
         this.type === "floor" ||
         this.type === "area" ||
         this.type === "label"
       ) {
+        const matchingDeviceIds = new Set(
+          referencedDevices.filter((device_id) => {
+            const device = this.hass.devices[device_id];
+            return (
+              !!device &&
+              !hiddenAreaIds.includes(
+                getDeviceAreaId(device, this.hass.devices) || ""
+              ) &&
+              deviceMeetsFilter(
+                device,
+                this.hass.entities,
+                this.deviceFilter,
+                this.includeDomains,
+                this.includeDeviceClasses,
+                this.hass.states,
+                this.entityFilter,
+                !this.primaryEntitiesOnly
+              )
+            );
+          })
+        );
+        const parentsOfMatching = new Set(
+          [...matchingDeviceIds].map(
+            (device_id) => this.hass.devices[device_id].parent_device_id
+          )
+        );
         referencedDevices = referencedDevices.filter((device_id) => {
-          const device = this.hass.devices[device_id];
-          if (!device) {
+          // Absent from the registry is not a filter decision: drop the id
+          // without marking it hidden, like the area filtering above.
+          if (!this.hass.devices[device_id]) {
             return false;
           }
-          if (
-            !hiddenAreaIds.includes(
-              getDeviceAreaId(device, this.hass.devices) || ""
-            ) &&
-            deviceMeetsFilter(
-              device,
-              this.hass.entities,
-              this.deviceFilter,
-              this.includeDomains,
-              this.includeDeviceClasses,
-              this.hass.states,
-              this.entityFilter,
-              !this.primaryEntitiesOnly
-            )
-          ) {
+          if (matchingDeviceIds.has(device_id)) {
             return true;
           }
-
+          if (parentsOfMatching.has(device_id)) {
+            groupOnlyDeviceIds.add(device_id);
+            return true;
+          }
           hiddenDeviceIds.push(device_id);
           return false;
         });
@@ -569,7 +588,10 @@ export class HaTargetPickerItemRow extends LitElement {
           if (!entity) {
             return false;
           }
-          if (hiddenDeviceIds.includes(entity.device_id || "")) {
+          if (
+            hiddenDeviceIds.includes(entity.device_id || "") ||
+            groupOnlyDeviceIds.has(entity.device_id || "")
+          ) {
             return false;
           }
           if (
