@@ -298,6 +298,29 @@ describe("ConditionEvaluatorController", () => {
     expect(controller.result).toBe("unknown");
   });
 
+  it("subscribes once hass arrives after the conditions were observed", async () => {
+    const host = createHost();
+    const controller = new ConditionEvaluatorController(host, {
+      resubscribeDelay: 0,
+      onResult: () => undefined,
+    });
+    const conditions = [
+      cond({ condition: "state", entity: "light.a", state: "on" }),
+    ];
+    // Host connected with its config set, hass not yet provided.
+    controller.hostConnected();
+    controller.observe(conditions, undefined);
+    await tick();
+    expect(subs).toHaveLength(0);
+    expect(controller.result).toBe("unknown");
+
+    controller.observe(conditions, createHass());
+    await tick();
+    expect(subs).toHaveLength(1);
+    subs[0].push({ result: true });
+    expect(controller.result).toBe("visible");
+  });
+
   it("does not re-subscribe when only hass changes", async () => {
     const conditions = [
       cond({ condition: "state", entity: "light.a", state: "on" }),

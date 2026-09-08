@@ -218,14 +218,17 @@ export class ConditionEvaluatorController implements ReactiveController {
 
     const conditions = this._conditions;
     const hass = this._hass;
-    this._subscribedSignature = this._signatureOf(conditions);
     this._pendingSignature = undefined;
     this._hasPendingResubscribe = false;
 
     if (!conditions || !hass) {
+      // Nothing is subscribed, so leave the subscribed signature unset: a host
+      // that receives `hass` after connecting (a normal property-ordering
+      // lifecycle) must still trigger the subscription on that later observe.
       this._setResult("unknown", undefined);
       return;
     }
+    this._subscribedSignature = this._signatureOf(conditions);
 
     const split = splitConditionTree(conditions);
     this._split = split;
