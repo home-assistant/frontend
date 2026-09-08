@@ -37,7 +37,7 @@ Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives fi
 
 ## Project Skills
 
-Detailed guidance lives in project skills under `.agents/skills/`. Load the matching skill before detailed implementation or review:
+Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching skill before detailed implementation or review. For reviews, load `ha-frontend-review` alongside all companions that apply to the changed code or behavior:
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.

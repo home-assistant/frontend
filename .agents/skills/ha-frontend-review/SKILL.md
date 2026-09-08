@@ -7,6 +7,12 @@ description: Home Assistant frontend PR and review guidance, including implement
 
 Use this skill when reviewing Home Assistant frontend changes or preparing a pull request.
 
+## Review Preparation
+
+1. Establish the review scope from the diff and the behavior changed by it.
+2. Before identifying findings, use the [project skill catalogue](../../../AGENTS.md#project-skills) to load every matching companion's `SKILL.md`. Follow applicable companion references in those skills as well; this review skill supplies the workflow, and companions supply the domain-specific criteria.
+3. Apply all loaded guidance within that scope. Report only problems introduced or worsened by the changeset, anchored to changed lines. Read surrounding code to understand affected behavior, not to generate unrelated cleanup or migration requests.
+
 ## Pull Request Body
 
 When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body.
@@ -116,4 +122,3 @@ For user-facing changes, establish the existing design context as part of fronte
 - Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
-- Load the matching `ha-frontend-*` skill when a finding falls within its area.
