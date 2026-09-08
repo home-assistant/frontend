@@ -1272,31 +1272,45 @@ export default class HaAutomationAddFromTarget extends LitElement {
         return;
       }
 
-      let floor: string;
-      let area: string;
       const entity = this._registries.entities[id];
 
-      if (entity.area_id) {
-        floor = `floor${TARGET_SEPARATOR}${this._registries.areas[entity.area_id]?.floor_id || ""}`;
-        area = `area${TARGET_SEPARATOR}${entity.area_id}`;
-      } else {
-        const domain = id.split(".", 1)[0];
-        const isHelper = this.manifests![domain]?.integration_type === "helper";
-
-        floor = isHelper
-          ? `helper${TARGET_SEPARATOR}`
-          : `device${TARGET_SEPARATOR}`;
-        area = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
+      if (entity?.area_id) {
+        const floor = `floor${TARGET_SEPARATOR}${this._registries.areas[entity.area_id]?.floor_id || ""}`;
+        const area = `area${TARGET_SEPARATOR}${entity.area_id}`;
+        const floorEntry = this._entries[floor];
+        this._entries = {
+          ...this._entries,
+          [floor]: {
+            ...floorEntry,
+            open: true,
+            areas: {
+              ...floorEntry.areas,
+              [area]: {
+                ...floorEntry.areas![area],
+                open: true,
+              },
+            },
+          },
+        };
+        return;
       }
+
+      const domain = id.split(".", 1)[0];
+      const isHelper = this.manifests![domain]?.integration_type === "helper";
+      const group = isHelper
+        ? `helper${TARGET_SEPARATOR}`
+        : `device${TARGET_SEPARATOR}`;
+      const domainGroup = `${isHelper ? "helper_" : "entity_"}${domain}${TARGET_SEPARATOR}`;
+      const groupEntry = this._entries[group];
       this._entries = {
         ...this._entries,
-        [floor]: {
-          ...this._entries[floor],
+        [group]: {
+          ...groupEntry,
           open: true,
           devices: {
-            ...this._entries[floor].devices!,
-            [area]: {
-              ...this._entries[floor].devices![area],
+            ...groupEntry.devices,
+            [domainGroup]: {
+              ...groupEntry.devices![domainGroup],
               open: true,
             },
           },
