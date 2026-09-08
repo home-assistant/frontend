@@ -191,6 +191,25 @@ describe("evaluateConditionsLocally", () => {
     ).toBe(true);
   });
 
+  it("falls back to the context entity for an absent or empty entity", () => {
+    // matches checkStateCondition's `entity || context.entity_id`
+    expect(
+      evaluateConditionsLocally(
+        [cond({ condition: "state", entity: "", state: "on" })],
+        hass,
+        { entity_id: "light.on" }
+      )
+    ).toBe(true);
+    expect(
+      evaluateConditionsLocally([cond({ state: "on" })], hass, {
+        entity_id: "light.on",
+      })
+    ).toBe(true);
+    expect(
+      evaluateConditionsLocally([cond({ state: "on" })], hass, {})
+    ).toBeUndefined();
+  });
+
   it("treats core-only leaves as unknown", () => {
     expect(
       evaluate([cond({ condition: "template", value_template: "{{ true }}" })])

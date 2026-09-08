@@ -895,6 +895,10 @@ describe("translateToCoreCondition", () => {
         { condition: "state", entity: "light.a" },
       ],
       ["state with a value but no entity", { condition: "state", state: "on" }],
+      [
+        "state with an empty entity",
+        { condition: "state", entity: "", state: "on" },
+      ],
       ["legacy entity with no state", { entity: "light.a" }],
       ["empty object", {}],
       [

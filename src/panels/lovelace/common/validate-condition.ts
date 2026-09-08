@@ -573,7 +573,8 @@ export function addEntityToCondition<T extends VisibilityCondition>(
 
   // Lovelace `state` / `numeric_state` — including the legacy shape with no
   // `condition` key, which is a state condition — target the host entity when
-  // they carry none of their own.
+  // they carry none of their own. Like `checkStateCondition`, an empty
+  // `entity: ""` counts as none.
   const type = (condition as { condition?: string }).condition ?? "state";
   if (
     (type === "state" || type === "numeric_state") &&
@@ -583,8 +584,8 @@ export function addEntityToCondition<T extends VisibilityCondition>(
     !("entity_id" in condition)
   ) {
     return {
-      entity: entityId,
       ...condition,
+      entity: (condition as { entity?: string }).entity || entityId,
     };
   }
   return condition;

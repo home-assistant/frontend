@@ -147,6 +147,13 @@ describe("addEntityToCondition", () => {
       entity: "light.a",
       state: "on",
     });
+    // an empty entity is "none" for the legacy evaluator (`entity || context`)
+    expect(
+      addEntityToCondition(
+        cond({ condition: "state", entity: "", state: "on" }),
+        "light.a"
+      )
+    ).toEqual({ condition: "state", entity: "light.a", state: "on" });
     expect(
       addEntityToCondition(
         cond({ condition: "numeric_state", above: 1 }),

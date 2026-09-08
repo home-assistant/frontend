@@ -205,11 +205,12 @@ const translateStateCondition = (
   // emitted; for `state_not` it belongs on the outer `not`.
   const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
 
-  // Incomplete config: no entity, or no comparison value. checkConditionsMet
-  // returns false for these (and a `state` condition with no `entity_id` /
-  // `state` is invalid for core), so resolve to a clean always-false.
+  // Incomplete config: no (or an empty) entity, or no comparison value.
+  // checkConditionsMet returns false for these (and a `state` condition with
+  // no `entity_id` / `state` is invalid for core), so resolve to a clean
+  // always-false.
   if (
-    lovelace.entity === undefined ||
+    !lovelace.entity ||
     (lovelace.state === undefined && lovelace.state_not === undefined)
   ) {
     return { ...rowConfig, ...alwaysFalseCondition() };
@@ -256,10 +257,11 @@ const translateNumericStateCondition = (
   const lovelace = condition as LovelaceNumericStateCondition;
   const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
 
-  // Incomplete config: no entity. checkConditionsMet returns false (no state
-  // object → NaN), and core rejects a bound-less / entity-less condition, so
-  // resolve to a clean always-false rather than a schema-invalid leaf.
-  if (lovelace.entity === undefined) {
+  // Incomplete config: no (or an empty) entity. checkConditionsMet returns
+  // false (no state object → NaN), and core rejects a bound-less / entity-less
+  // condition, so resolve to a clean always-false rather than a schema-invalid
+  // leaf.
+  if (!lovelace.entity) {
     return { ...rowConfig, ...alwaysFalseCondition() };
   }
 

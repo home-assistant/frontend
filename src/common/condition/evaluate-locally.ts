@@ -62,11 +62,12 @@ const isLocallyEvaluableServerLeaf = (
   }
   if (!("entity_id" in condition)) {
     // Lovelace format (or legacy `{ entity, state }`): exact as long as the
-    // target entity exists.
+    // target entity exists. Same truthy fallback as `checkStateCondition`, so
+    // an empty `entity: ""` targets the host entity.
     const target =
-      ("entity" in condition ? condition.entity : undefined) ??
+      ("entity" in condition ? condition.entity : undefined) ||
       context.entity_id;
-    return target !== undefined && hass.states[target] !== undefined;
+    return !!target && hass.states[target] !== undefined;
   }
   const core = condition as {
     entity_id?: unknown;

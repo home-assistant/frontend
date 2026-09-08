@@ -184,7 +184,9 @@ const toCoreEditorCondition = (
   if (!("condition" in condition) || condition.condition === "state") {
     const lovelace = condition as StateCondition | LegacyCondition;
     const attribute = "attribute" in lovelace ? lovelace.attribute : undefined;
-    const entity_id = lovelace.entity ?? contextEntityId ?? "";
+    // Truthy fallback like the legacy evaluator: an empty `entity: ""` also
+    // targets the host entity.
+    const entity_id = lovelace.entity || contextEntityId || "";
     // Core has no `state_not`; represent it as `not(state)`, which routes to
     // the (lovelace) `not` editor wrapping a core `state` editor.
     if (lovelace.state === undefined && lovelace.state_not !== undefined) {
@@ -215,7 +217,7 @@ const toCoreEditorCondition = (
     const core: CoreNumericStateCondition = {
       ...rowConfig,
       condition: "numeric_state",
-      entity_id: lovelace.entity ?? contextEntityId ?? "",
+      entity_id: lovelace.entity || contextEntityId || "",
     };
     if (lovelace.attribute !== undefined) {
       core.attribute = lovelace.attribute;
