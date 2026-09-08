@@ -2446,15 +2446,16 @@ class DialogAddAutomationElement
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
           margin: var(--ha-space-3);
-        }
-
-        ha-automation-add-from-target,
-        .groups {
           overflow: auto;
-          /* Fixed-width left column so it does not resize as the right
-             panel's content width changes between groups. */
           flex: 0 0 360px;
           margin-inline-end: 0;
+        }
+
+        @media (max-width: 870px), (max-height: 500px) {
+          ha-automation-add-from-target,
+          .groups {
+            flex: 1 1 auto;
+          }
         }
 
         ha-automation-add-from-target.hidden {
