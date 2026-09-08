@@ -62,6 +62,7 @@ import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsStateCardFeature } from "../../card-features/hui-state-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsTimerActionsCardFeature } from "../../card-features/hui-timer-actions-card-feature";
@@ -128,6 +129,7 @@ const UI_FEATURE_TYPES = [
   "numeric-input",
   "precipitation-forecast",
   "select-options",
+  "state",
   "trend-graph",
   "target-humidity",
   "target-temperature",
@@ -173,6 +175,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "state",
   "timer-actions",
   "timer-presets",
   "trend-graph",
@@ -226,6 +229,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "numeric-input": supportsNumericInputCardFeature,
   "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  state: supportsStateCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,

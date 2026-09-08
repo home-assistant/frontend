@@ -11009,6 +11009,10 @@
                 "options": "Options",
                 "customize_options": "Customize options"
               },
+              "state": {
+                "label": "State",
+                "state_content": "[%key:ui::panel::lovelace::editor::card::tile::state_content%]"
+              },
               "toggle": {
                 "label": "Toggle"
               },
