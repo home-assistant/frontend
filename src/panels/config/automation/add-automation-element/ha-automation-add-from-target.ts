@@ -203,8 +203,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
               <ha-automation-add-element-paste
                 .automationElementType=${this.automationElementType}
                 .clipboardItem=${this.clipboardItem}
-              ></ha-automation-add-element-paste
-              >${this._renderFloors(this.narrow, this._entries, this.value)}
+              ></ha-automation-add-element-paste>
+              ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
                 this.timeLocationLabel,
@@ -355,28 +355,32 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 );
           });
 
-      return html`<ha-section-title
-          >${this._i18n.localize(
-            "ui.panel.config.automation.editor.home"
-          )}</ha-section-title
-        >
-        ${
-          emptyFloors
-            ? html`<ha-row-item>
-                <div slot="headline">
-                  ${this._i18n.localize("ui.components.area-picker.no_areas")}
-                </div>
-              </ha-row-item>`
-            : html`${
-                narrow
-                  ? html`<ha-list-base>${floorAreas}</ha-list-base>`
-                  : html`<wa-tree
-                      @wa-selection-change=${this._handleSelectionChange}
-                      @dblclick=${this._handleDoubleClick}
-                      >${floorAreas}</wa-tree
-                    >`
-              }`
-        }`;
+      return html`${
+        !narrow || (this._floorAreas.length >= 1 && this._floorAreas[0].id)
+          ? html`<ha-section-title
+              >${this._i18n.localize(
+                "ui.panel.config.automation.editor.home"
+              )}</ha-section-title
+            >`
+          : nothing
+      }
+      ${
+        emptyFloors
+          ? html`<ha-row-item>
+              <div slot="headline">
+                ${this._i18n.localize("ui.components.area-picker.no_areas")}
+              </div>
+            </ha-row-item>`
+          : html`${
+              narrow
+                ? html`<ha-list-base>${floorAreas}</ha-list-base>`
+                : html`<wa-tree
+                    @wa-selection-change=${this._handleSelectionChange}
+                    @dblclick=${this._handleDoubleClick}
+                    >${floorAreas}</wa-tree
+                  >`
+            }`
+      }`;
     }
   );
 
@@ -641,11 +645,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       });
 
     if (this.narrow) {
-      return html` <ha-automation-add-element-paste
-          .automationElementType=${this.automationElementType}
-          .clipboardItem=${this.clipboardItem}
-        ></ha-automation-add-element-paste>
-        <ha-section-title
+      return html`<ha-section-title
           >${this._i18n.localize(
             "ui.components.target-picker.type.areas"
           )}</ha-section-title

@@ -131,6 +131,7 @@ import {
   getAddAutomationElementTargetFromQuery,
 } from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
+import { shortcutStyles } from "./styles";
 
 const TYPES = {
   trigger: { collections: TRIGGER_COLLECTIONS, icons: TRIGGER_ICONS },
@@ -2325,6 +2326,7 @@ class DialogAddAutomationElement
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      shortcutStyles,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;
@@ -2481,21 +2483,6 @@ class DialogAddAutomationElement
 
         ha-svg-icon.plus {
           color: var(--primary-color);
-        }
-
-        .shortcut {
-          direction: ltr;
-          --mdc-icon-size: var(--ha-space-3);
-          display: inline-flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 2px;
-          margin-right: var(--ha-space-4);
-        }
-        .shortcut span {
-          font-size: var(--ha-font-size-s);
-          font-family: var(--ha-font-family-code);
-          color: var(--ha-color-text-secondary);
         }
 
         .section-title-wrapper {

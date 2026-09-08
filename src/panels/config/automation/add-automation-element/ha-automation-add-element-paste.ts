@@ -12,6 +12,7 @@ import {
 } from "../../../../data/context";
 import { isMac } from "../../../../util/is_mac";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import { shortcutStyles } from "../styles";
 
 @customElement("ha-automation-add-element-paste")
 export class HaAutomationAddElementPaste extends LitElement {
@@ -77,14 +78,27 @@ export class HaAutomationAddElementPaste extends LitElement {
     fireEvent(this, "paste-element");
   }
 
-  static styles = css`
-    :host {
-      display: block;
-    }
-    wa-divider {
-      --spacing: 0;
-    }
-  `;
+  static styles = [
+    shortcutStyles,
+    css`
+      :host {
+        display: block;
+      }
+
+      ha-list-item-button {
+        --ha-row-item-padding-block: var(--ha-space-1);
+        --ha-row-item-padding-inline: var(--ha-space-3);
+        --ha-row-item-min-height: 40px;
+      }
+      wa-divider {
+        --spacing: 0;
+      }
+
+      ha-svg-icon.plus {
+        color: var(--primary-color);
+      }
+    `,
+  ];
 }
 
 declare global {
