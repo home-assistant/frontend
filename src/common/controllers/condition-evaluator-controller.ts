@@ -32,6 +32,10 @@ export interface ConditionEvaluatorOptions {
 
 const DEFAULT_RESUBSCRIBE_DELAY = 50;
 
+const firstDefined = (
+  values: Record<string, string | undefined>
+): string | undefined => Object.values(values).find((value) => !!value);
+
 /**
  * Reactive controller that keeps a dashboard visibility condition tree
  * evaluated live by combining:
@@ -92,6 +96,11 @@ export class ConditionEvaluatorController implements ReactiveController {
   private _serverResults: ServerConditionResults = {};
 
   private _subtreeErrors: Record<string, string | undefined> = {};
+
+  // Template rendering errors core recorded while still producing a result.
+  // Surfaced through `error` so editors flag the condition, but unlike a hard
+  // error they do not override core's result.
+  private _subtreeTemplateErrors: Record<string, string | undefined> = {};
 
   private _subscriptions: Promise<UnsubscribeFunc>[] = [];
 
@@ -268,6 +277,10 @@ export class ConditionEvaluatorController implements ReactiveController {
             this._serverResults[subtree.id] = message.result;
             this._subtreeErrors[subtree.id] = undefined;
           }
+          this._subtreeTemplateErrors[subtree.id] = message.template_errors
+            ?.length
+            ? message.template_errors.join("\n")
+            : undefined;
           this._recompute();
         },
         subtree.coreCondition
@@ -312,7 +325,7 @@ export class ConditionEvaluatorController implements ReactiveController {
       }
     };
 
-    const error = this._combinedError();
+    const error = firstDefined(this._subtreeErrors);
     // An errored subtree is not a legitimate `false`: fed through the
     // combinators it would be inverted by a client-side `not` and show content
     // for an invalid configuration. Force hidden whenever any subtree errored.
@@ -325,16 +338,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     const result: ConditionEvaluation =
       value === undefined ? "unknown" : value ? "visible" : "hidden";
 
-    this._setResult(result, undefined);
-  }
-
-  private _combinedError(): string | undefined {
-    for (const error of Object.values(this._subtreeErrors)) {
-      if (error) {
-        return error;
-      }
-    }
-    return undefined;
+    this._setResult(result, firstDefined(this._subtreeTemplateErrors));
   }
 
   private _setResult(
@@ -370,6 +374,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     this._split = undefined;
     this._serverResults = {};
     this._subtreeErrors = {};
+    this._subtreeTemplateErrors = {};
     this._subscribedSignature = undefined;
     this._pendingSignature = undefined;
     this._hasPendingResubscribe = false;

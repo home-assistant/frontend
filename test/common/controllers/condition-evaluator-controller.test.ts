@@ -17,6 +17,7 @@ interface CapturedSubscription {
   push: (message: {
     result?: boolean;
     error?: string | { code: string; message: string };
+    template_errors?: string[];
   }) => void;
   unsub: ReturnType<typeof vi.fn>;
 }
@@ -182,6 +183,21 @@ describe("ConditionEvaluatorController", () => {
     subs[0].push({ error: { code: "invalid_format", message: "bad" } });
     expect(controller.result).toBe("hidden");
     expect(controller.error).toBe("bad");
+  });
+
+  it("surfaces template errors without overriding the result", async () => {
+    // Core still evaluates a result when a template inside the condition
+    // fails to render (e.g. an undefined variable); the editor should flag it,
+    // but visibility follows core's result rather than being forced hidden.
+    const { controller, last } = await setup([
+      cond({ condition: "template", value_template: "{{ x }}" }),
+    ]);
+    subs[0].push({ result: true, template_errors: ["'x' is undefined"] });
+    expect(controller.result).toBe("visible");
+    expect(controller.error).toBe("'x' is undefined");
+    expect(last()?.error).toBe("'x' is undefined");
+    subs[0].push({ result: true });
+    expect(controller.error).toBeUndefined();
   });
 
   it("clears the error once the subscription recovers", async () => {
