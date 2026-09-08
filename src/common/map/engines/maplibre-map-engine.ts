@@ -795,6 +795,11 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
+    // Skip one update echoing the pre-edit values (the save has not returned yet)
+    let dragging = false;
+    let staleCenter: MapLatLng | undefined;
+    let staleRadius: number | undefined;
+
     if (options.resizable) {
       const east = pointEastOf(center, options.radius);
       resizeHandle = createResizeHandleElement(options.resizeLabel);
@@ -831,6 +836,12 @@ export class MapLibreMapEngine implements MapEngine {
           return;
         }
         ev.preventDefault();
+        if (keyboardRadius === undefined) {
+          // Host updates treat a key resize like a drag
+          dragging = true;
+          staleCenter = currentCenter;
+          staleRadius = currentRadius;
+        }
         currentRadius = Math.max(
           1,
           currentRadius * (1 + direction * RESIZE_KEY_STEP)
@@ -842,6 +853,7 @@ export class MapLibreMapEngine implements MapEngine {
       const commitKeyboardResize = () => {
         if (keyboardRadius !== undefined) {
           keyboardRadius = undefined;
+          dragging = false;
           options.onResize?.(currentRadius);
         }
       };
@@ -850,10 +862,6 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle.addEventListener("blur", commitKeyboardResize);
     }
 
-    // Skip one update echoing the pre-drag values (the save has not returned yet)
-    let dragging = false;
-    let staleCenter: MapLatLng | undefined;
-    let staleRadius: number | undefined;
     [centerMarker, resizeMarker].forEach((handleMarker) => {
       handleMarker?.on("dragstart", () => {
         dragging = true;

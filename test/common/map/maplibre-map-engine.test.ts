@@ -949,6 +949,26 @@ describe("MapLibreMapEngine", () => {
       expect(onResize.mock.calls[0][0]).toBeCloseTo(121, 5);
     });
 
+    it("holds a keyboard resize against host updates like a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      // A re-render with the old radius while the key is held changes nothing
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBeCloseTo(110, 5);
+
+      element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
+      // The host echoes the old radius once before its save returns
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBeCloseTo(110, 5);
+      // A later identical update is a real change
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBe(100);
+    });
+
     it("raises the advertised maximum above a larger radius", async () => {
       const { engine, ready } = await createEngine();
       await ready;
