@@ -6,6 +6,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { ENTITY_NAME_TYPES } from "../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/chips/ha-chip-set";
@@ -22,14 +23,6 @@ import type {
 } from "../../../data/entity_id_format";
 import type { ValueChangedEvent } from "../../../types";
 
-const STRUCTURAL_TYPES = [
-  "floor",
-  "area",
-  "parent_device",
-  "device",
-  "entity",
-] as const;
-
 const REQUIRED_TYPES: readonly EntityIdPart[] = ["device", "entity"];
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
@@ -45,7 +38,7 @@ const decodeType = (value: string): EntityIdPart | undefined => {
     value.startsWith("___") && value.endsWith("___")
       ? value.slice(3, -3)
       : value;
-  return (STRUCTURAL_TYPES as readonly string[]).includes(type)
+  return (ENTITY_NAME_TYPES as readonly string[]).includes(type)
     ? (type as EntityIdPart)
     : undefined;
 };
@@ -228,7 +221,7 @@ export class HaEntityIdFormatEditor extends LitElement {
 
   private _getItems = memoizeOne(
     (localize: LocalizeFunc): PickerComboBoxItem[] =>
-      STRUCTURAL_TYPES.map((type) => {
+      ENTITY_NAME_TYPES.map((type) => {
         const primary = localize(
           `ui.components.entity.entity-name-picker.types.${type}`
         );

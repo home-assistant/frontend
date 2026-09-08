@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { ENTITY_NAME_TYPES } from "../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
@@ -30,18 +31,11 @@ import { documentationUrl } from "../../../util/documentation-url";
 import "./ha-entity-id-format-editor";
 
 const EXAMPLE_DOMAIN = "sensor";
-const EXAMPLE_CONTEXT_PARTS: EntityIdPart[] = [
-  "floor",
-  "area",
-  "parent_device",
-  "device",
-  "entity",
-];
 const PREVIEW_DEBOUNCE_MS = 200;
 
 interface EntityIdExample {
   name: string;
-  parts: Record<EntityIdPart, string>;
+  parts: Partial<Record<EntityIdPart, string>>;
 }
 
 @customElement("ha-config-entity-id-format")
@@ -94,19 +88,20 @@ export class HaConfigEntityIdFormat extends LitElement {
     (localize: LocalizeFunc): EntityIdExample[] => [
       {
         name: localize(
-          "ui.panel.config.entity_id_format.card.examples.thermostat"
+          "ui.panel.config.entity_id_format.card.examples.thermostat.name"
         ),
         parts: {
-          area: localize("ui.panel.config.entity_id_format.card.examples.area"),
-          parent_device: "",
+          floor: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.floor"
+          ),
+          area: localize(
+            "ui.panel.config.entity_id_format.card.examples.thermostat.area"
+          ),
           device: localize(
-            "ui.panel.config.entity_id_format.card.examples.device"
+            "ui.panel.config.entity_id_format.card.examples.thermostat.device"
           ),
           entity: localize(
-            "ui.panel.config.entity_id_format.card.examples.entity"
-          ),
-          floor: localize(
-            "ui.panel.config.entity_id_format.card.examples.floor"
+            "ui.panel.config.entity_id_format.card.examples.thermostat.entity"
           ),
         },
       },
@@ -115,6 +110,9 @@ export class HaConfigEntityIdFormat extends LitElement {
           "ui.panel.config.entity_id_format.card.examples.power_strip.name"
         ),
         parts: {
+          floor: localize(
+            "ui.panel.config.entity_id_format.card.examples.power_strip.floor"
+          ),
           area: localize(
             "ui.panel.config.entity_id_format.card.examples.power_strip.area"
           ),
@@ -126,9 +124,6 @@ export class HaConfigEntityIdFormat extends LitElement {
           ),
           entity: localize(
             "ui.panel.config.entity_id_format.card.examples.power_strip.entity"
-          ),
-          floor: localize(
-            "ui.panel.config.entity_id_format.card.examples.power_strip.floor"
           ),
         },
       },
@@ -239,8 +234,9 @@ export class HaConfigEntityIdFormat extends LitElement {
               </ha-alert>`
             : nothing
         }
-        ${this._examples(this._localize).map(
-          (example, index) => html`
+        ${this._examples(this._localize).map((example, index) => {
+          const parts = ENTITY_NAME_TYPES.filter((part) => example.parts[part]);
+          return html`
             <section class="example" aria-labelledby=${`example-${index}`}>
               <h3 id=${`example-${index}`}>${example.name}</h3>
               ${
@@ -251,9 +247,7 @@ export class HaConfigEntityIdFormat extends LitElement {
                     >`
               }
               <dl>
-                ${EXAMPLE_CONTEXT_PARTS.filter(
-                  (part) => example.parts[part]
-                ).map((part) => {
+                ${parts.map((part) => {
                   const used = this._format!.includes(part);
                   return html`
                     <dt>
@@ -275,8 +269,8 @@ export class HaConfigEntityIdFormat extends LitElement {
                 })}
               </dl>
             </section>
-          `
-        )}
+          `;
+        })}
       </div>
     `;
   }

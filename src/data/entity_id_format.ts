@@ -1,5 +1,6 @@
-export type EntityIdPart =
-  "area" | "parent_device" | "device" | "entity" | "floor";
+import type { EntityNameType } from "../common/entity/compute_entity_name_display";
+
+export type EntityIdPart = EntityNameType;
 
 export type EntityIdFormat = EntityIdPart[];
 

@@ -8926,18 +8926,20 @@
             "unused_part": "{name} (not used in format)",
             "reset": "Reset to default",
             "examples": {
-              "thermostat": "Thermostat temperature",
-              "area": "Living room",
-              "device": "Thermostat",
-              "entity": "Temperature",
-              "floor": "Ground floor",
+              "thermostat": {
+                "name": "Thermostat temperature",
+                "floor": "Ground floor",
+                "area": "Living room",
+                "device": "Thermostat",
+                "entity": "Temperature"
+              },
               "power_strip": {
                 "name": "Power strip outlet power",
+                "floor": "First floor",
                 "area": "Office",
                 "parent_device": "Power strip",
                 "device": "Outlet 1",
-                "entity": "Power",
-                "floor": "First floor"
+                "entity": "Power"
               }
             },
             "editor": {
