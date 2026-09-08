@@ -156,10 +156,8 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (oldValue?.target !== this.trigger?.target) {
-      // set default behavior after next render to prevent race conditions with the initial render
-      afterNextRender(() => {
-        this._syncTargetBehavior();
-      });
+      this._updateTargetEntityCount();
+      this._setDefaultBehavior();
     }
   }
 
@@ -470,44 +468,51 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
-  private _syncTargetBehavior() {
-    if (!this.isConnected) {
-      return;
-    }
-
+  private _updateTargetEntityCount() {
     const target = this.trigger?.target;
     this._resolvedTargetEntityCount = getTargetEntityCount(target);
+  }
 
-    const behaviorFieldEntry = Object.entries(
-      this.description?.fields ?? {}
-    ).find(
-      ([, field]) => field.selector && "automation_behavior" in field.selector
-    );
-
-    if (!behaviorFieldEntry) {
-      return;
-    }
-
-    const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
-
-    if (
-      target &&
-      this._resolvedTargetEntityCount > 1 &&
-      this.trigger.options?.[behaviorFieldName] === undefined
-    ) {
-      const behaviorDefault = behaviorField.default;
-      if (behaviorDefault !== undefined) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.trigger,
-            options: {
-              ...this.trigger.options,
-              [behaviorFieldName]: behaviorDefault,
-            },
-          },
-        });
+  private _setDefaultBehavior() {
+    // set default behavior after next render to prevent race conditions with the initial render
+    afterNextRender(() => {
+      if (!this.isConnected) {
+        return;
       }
-    }
+
+      const behaviorFieldEntry = Object.entries(
+        this.description?.fields ?? {}
+      ).find(
+        ([, field]) => field.selector && "automation_behavior" in field.selector
+      );
+
+      if (
+        !behaviorFieldEntry ||
+        this._resolvedTargetEntityCount === undefined
+      ) {
+        return;
+      }
+
+      const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+      if (
+        this.trigger?.target &&
+        this._resolvedTargetEntityCount > 1 &&
+        this.trigger.options?.[behaviorFieldName] === undefined
+      ) {
+        const behaviorDefault = behaviorField.default;
+        if (behaviorDefault !== undefined) {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this.trigger,
+              options: {
+                ...this.trigger.options,
+                [behaviorFieldName]: behaviorDefault,
+              },
+            },
+          });
+        }
+      }
+    });
   }
 
   static styles = css`
