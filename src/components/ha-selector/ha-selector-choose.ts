@@ -202,7 +202,17 @@ export class HaChooseSelector extends LitElement {
           ];
           return;
         }
-        if (typeofValue === "object" && selectorTypes.includes("duration")) {
+        if (
+          typeofValue === "object" &&
+          !Array.isArray(this.value) &&
+          Object.keys(this.value).length > 0 &&
+          Object.keys(this.value).every((key) =>
+            ["days", "hours", "minutes", "seconds", "milliseconds"].includes(
+              key
+            )
+          ) &&
+          selectorTypes.includes("duration")
+        ) {
           this._activeChoice = Object.keys(this.selector.choose.choices)[
             selectorTypes.indexOf("duration")
           ];
