@@ -546,13 +546,21 @@ export class HaTargetPickerItemRow extends LitElement {
             )
           : [];
 
-    const deviceRows =
+    const labeledDevices =
       this.type === "label" && entries
         ? entries.referenced_devices.filter(
             (device_id) =>
               !devicesInAreas.includes(device_id) &&
               this.hass.devices[device_id]?.labels.includes(this.itemId)
           )
+        : [];
+
+    const deviceRows =
+      this.type === "label"
+        ? labeledDevices.filter((device_id) => {
+            const parentId = parentOf(device_id);
+            return !parentId || !labeledDevices.includes(parentId);
+          })
         : childDevices;
 
     const deviceRowsEntries =
