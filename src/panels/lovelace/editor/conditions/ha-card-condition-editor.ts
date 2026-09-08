@@ -127,10 +127,11 @@ const FILTER_CONDITION_TYPES = new Set([
 // Whether a condition tree can be used as an entity filter. Anything outside
 // the locally evaluable types above (template / sun / zone / device and
 // integration-provided conditions, which the local evaluator would fail and
-// so filter everything out), or a core-format leaf pinned to its own
-// `entity_id`, is not usable there. Filter consumers also expect the lovelace
-// list shape for logical children, so core's single-child shorthand is not
-// accepted either.
+// so filter everything out), or a leaf pinned to its own entity (`entity_id`
+// or a non-empty `entity`, which the fold-in keeps, so every candidate would
+// be judged by the copied entity), is not usable there. Filter consumers also
+// expect the lovelace list shape for logical children, so core's single-child
+// shorthand is not accepted either.
 export const isFilterCompatibleCondition = (
   condition: VisibilityCondition
 ): boolean => {
@@ -141,14 +142,14 @@ export const isFilterCompatibleCondition = (
       logicalChildren(condition).every(isFilterCompatibleCondition)
     );
   }
+  if ("entity_id" in condition || !!(condition as { entity?: string }).entity) {
+    return false;
+  }
   // Legacy `{ entity, state }` is a lovelace state condition.
   if (!("condition" in condition)) {
     return true;
   }
-  return (
-    FILTER_CONDITION_TYPES.has(condition.condition) &&
-    !("entity_id" in condition)
-  );
+  return FILTER_CONDITION_TYPES.has(condition.condition);
 };
 
 // Condition types edited via the core automation condition editors. The
@@ -661,7 +662,6 @@ export class HaCardConditionEditor extends LitElement {
                         }
                       )}
                     `
-            }
             }
           </div>
         </ha-expansion-panel>
