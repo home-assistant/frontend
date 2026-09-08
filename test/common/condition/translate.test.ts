@@ -40,6 +40,88 @@ describe("isServerCondition / isClientCondition", () => {
     );
   });
 
+  it("keeps lovelace leaves with legacy-only semantics client-side", () => {
+    // Core compares raw attribute values, only dereferences input_* comparison
+    // values and errors on a missing bound entity, where lovelace stringifies,
+    // resolves any entity and ignores the bound. Existing dashboards must not
+    // change, so such leaves stay locally evaluated until the user edits them.
+    for (const c of [
+      {
+        condition: "state",
+        entity: "light.a",
+        attribute: "brightness",
+        state: "255",
+      },
+      { condition: "state", entity: "light.a", state: "sensor.b" },
+      { condition: "state", entity: "light.a", state_not: ["on", "sensor.b"] },
+      { entity: "light.a", state: "sensor.b" },
+      {
+        condition: "numeric_state",
+        entity: "sensor.a",
+        above: "input_number.b",
+      },
+    ]) {
+      expect(isServerCondition(cond(c))).toBe(false);
+      expect(isClientCondition(cond(c))).toBe(true);
+    }
+    // numeric literals are not entity references, and core-format leaves are
+    // core's to evaluate
+    for (const c of [
+      { condition: "state", entity: "sensor.a", state: "21.5" },
+      { condition: "numeric_state", entity: "sensor.a", above: "21.5" },
+      {
+        condition: "numeric_state",
+        entity: "sensor.a",
+        attribute: "x",
+        above: 1,
+      },
+      {
+        condition: "state",
+        entity_id: "light.a",
+        attribute: "brightness",
+        state: 255,
+      },
+      {
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        above: "input_number.b",
+      },
+    ]) {
+      expect(isServerCondition(cond(c))).toBe(true);
+    }
+  });
+
+  it("accepts a single condition as the children of a logical condition", () => {
+    // Core's LogicalCondition allows `conditions` to be one condition or a list.
+    expect(
+      isServerCondition(
+        cond({
+          condition: "and",
+          conditions: { entity: "light.a", state: "on" },
+        })
+      )
+    ).toBe(true);
+    expect(
+      isPureClientCondition(
+        cond({
+          condition: "not",
+          conditions: { condition: "user", users: ["u"] },
+        })
+      )
+    ).toBe(true);
+    expect(
+      translateToCoreCondition(
+        cond({
+          condition: "or",
+          conditions: { entity: "light.a", state: "on" },
+        })
+      )
+    ).toEqual({
+      condition: "or",
+      conditions: [{ condition: "state", entity_id: "light.a", state: "on" }],
+    });
+  });
+
   it("classifies newly-available core leaves as server", () => {
     for (const c of [
       { condition: "template", value_template: "{{ true }}" },
@@ -721,12 +803,11 @@ describe("translateToCoreCondition", () => {
     });
   });
 
-  describe("known limitations (documented, deferred)", () => {
-    it("passes a non-input_* entity-id comparison value through unchanged", () => {
-      // KNOWN LIMITATION: lovelace resolves any entity-id value to its live
-      // state; core's `state` condition only dereferences `input_*` entities.
-      // We pin the current passthrough behavior; a faithful fix would emit a
-      // `template` condition (see translate.ts).
+  describe("entity-id comparison values", () => {
+    it("passes the value through unchanged (such leaves are kept client-side)", () => {
+      // Core only dereferences input_* comparison values, lovelace any existing
+      // entity, so `isServerCondition` keeps this leaf client-evaluated; the
+      // translation is only what the editor persists once the user saves it.
       expect(
         translateToCoreCondition(
           cond({ condition: "state", entity: "light.a", state: "sensor.b" })

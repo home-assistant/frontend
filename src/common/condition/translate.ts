@@ -15,6 +15,7 @@ import type {
   VisibilityCondition,
   VisibilityLogicalCondition,
 } from "../../panels/lovelace/common/validate-condition";
+import { ensureArray } from "../array/ensure-array";
 import { isValidEntityId } from "../entity/valid_entity_id";
 
 /**
@@ -38,11 +39,57 @@ export const isLogicalCondition = (
   "condition" in condition && LOGICAL_CONDITION_TYPES.has(condition.condition);
 
 /**
+ * Children of a logical condition as a list. Core accepts a single condition
+ * as well as a list for `conditions`; a missing key yields an empty list.
+ */
+export const logicalChildren = (
+  condition: VisibilityLogicalCondition
+): VisibilityCondition[] => ensureArray(condition.conditions) ?? [];
+
+/** Whether a string is an entity-id reference rather than a numeric literal. */
+const isEntityReference = (value: unknown): value is string =>
+  typeof value === "string" && isNaN(Number(value)) && isValidEntityId(value);
+
+/**
+ * Whether a lovelace-format `state` / `numeric_state` leaf relies on semantics
+ * core's counterpart does not reproduce, so it must stay client-evaluated for
+ * an existing dashboard to keep behaving the same (read-both back-compat):
+ *
+ * - `state` with `attribute`: lovelace compares the *stringified* attribute
+ *   value, core the raw one (`5` vs `"5"` differ);
+ * - `state` / `state_not` values that are entity ids: lovelace resolves *any*
+ *   existing entity to its live state, core only dereferences `input_*`;
+ * - numeric bounds that are entity ids: lovelace ignores a missing entity,
+ *   core reports an error.
+ *
+ * Once the user edits such a condition it is saved in core format and
+ * evaluated by core (write-new).
+ */
+const hasLegacyOnlySemantics = (
+  condition:
+    LovelaceStateCondition | LovelaceNumericStateCondition | LegacyCondition
+): boolean => {
+  if ("condition" in condition && condition.condition === "numeric_state") {
+    return [condition.above, condition.below].some(isEntityReference);
+  }
+  const state = condition as LovelaceStateCondition | LegacyCondition;
+  if ("attribute" in state && state.attribute !== undefined) {
+    return true;
+  }
+  return [
+    ...(ensureArray(state.state) ?? []),
+    ...(ensureArray(state.state_not) ?? []),
+  ].some(isEntityReference);
+};
+
+/**
  * Whether a condition must be evaluated server-side (via `subscribe_condition`).
  *
  * Leaves: everything except the client-only lovelace types is server-class,
  * including legacy `{ entity, state }` conditions (treated as `state`) and any
- * integration-provided condition.
+ * integration-provided condition — with one carve-out: a lovelace-format
+ * `state` / `numeric_state` whose semantics core cannot reproduce stays
+ * client-side (see {@link hasLegacyOnlySemantics}).
  *
  * Compounds (`and` / `or` / `not`) are server-class only when *every*
  * descendant is, so a single client leaf anywhere forces the whole compound
@@ -51,13 +98,25 @@ export const isLogicalCondition = (
  */
 export const isServerCondition = (condition: VisibilityCondition): boolean => {
   if (isLogicalCondition(condition)) {
-    return (condition.conditions ?? []).every(isServerCondition);
+    return logicalChildren(condition).every(isServerCondition);
   }
   // Legacy lovelace condition without a `condition` key → treated as `state`.
   if (!("condition" in condition)) {
-    return true;
+    return !hasLegacyOnlySemantics(condition);
   }
-  return !CLIENT_CONDITION_TYPES.has(condition.condition);
+  if (CLIENT_CONDITION_TYPES.has(condition.condition)) {
+    return false;
+  }
+  if (
+    (condition.condition === "state" ||
+      condition.condition === "numeric_state") &&
+    !("entity_id" in condition)
+  ) {
+    return !hasLegacyOnlySemantics(
+      condition as LovelaceStateCondition | LovelaceNumericStateCondition
+    );
+  }
+  return true;
 };
 
 /**
@@ -84,7 +143,7 @@ export const isPureClientCondition = (
   condition: VisibilityCondition
 ): boolean =>
   isLogicalCondition(condition)
-    ? (condition.conditions ?? []).every(isPureClientCondition)
+    ? logicalChildren(condition).every(isPureClientCondition)
     : isClientCondition(condition);
 
 /**
@@ -160,14 +219,12 @@ const translateStateCondition = (
       : {}),
   };
 
-  // KNOWN LIMITATION: when the compared value is itself an entity id, lovelace
-  // (checkStateCondition -> getValueFromEntityId) resolves *any* entity to its
-  // live state, but core's `state` condition only dereferences `input_*`
-  // entities and compares everything else literally. A value referencing a
-  // non-`input_*` entity therefore changes meaning after delegation. This is
-  // niche (the visibility editor does not offer entity-as-value) and left as a
-  // future enhancement — a faithful, reactive fix would emit a `template`
-  // condition. See https://github.com/home-assistant/frontend/issues/52836.
+  // Attribute comparisons and entity-id comparison values are compared
+  // differently by core (raw attribute values; only `input_*` dereferenced),
+  // so leaves relying on them are never routed here for evaluation — they stay
+  // client-side (see `hasLegacyOnlySemantics`). The translation itself passes
+  // them through unchanged; it is also what the editor persists once the user
+  // saves such a condition, at which point core semantics apply.
 
   // `state` wins over `state_not` when both are present, mirroring
   // checkConditionsMet (`state ?? state_not`, positive branch when `state`).
@@ -297,7 +354,7 @@ const translateLogicalCondition = (
     return { ...rowConfig, condition: "and", conditions: [] };
   }
 
-  const conditions = condition.conditions.map(translateToCoreCondition);
+  const conditions = logicalChildren(condition).map(translateToCoreCondition);
 
   if (condition.condition === "not") {
     // Lovelace `not` means ¬(AND of children); core `not` means ¬(OR of
