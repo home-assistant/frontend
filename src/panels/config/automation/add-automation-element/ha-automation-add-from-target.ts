@@ -986,7 +986,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _loadUnassignedDevices() {
     const unassignedDevices = Object.values(this._registries.devices).filter(
-      (device) => !getDeviceAreaId(device, this._registries.devices)
+      (device) =>
+        !device.disabled_by &&
+        !getDeviceAreaId(device, this._registries.devices)
     );
 
     const devices = this._buildDeviceEntries(
@@ -1113,26 +1115,21 @@ export default class HaAutomationAddFromTarget extends LitElement {
         deviceEntityLookup[deviceId]?.map((entity) => entity.entity_id) || [],
     });
 
-    const present = new Set(devices.map((device) => device.id));
+    const deviceIds = new Set(devices.map((device) => device.id));
+    const nested = (device: DeviceRegistryEntry) =>
+      !!device.parent_device_id && deviceIds.has(device.parent_device_id);
+
+    const roots = devices.filter((device) => !nested(device));
+    const children = devices.filter(nested);
+
     const entries: Record<string, Level3Entries> = {};
-    const children: DeviceRegistryEntry[] = [];
-    for (const device of devices) {
-      if (device.disabled_by) {
-        continue;
-      }
-      if (device.parent_device_id && present.has(device.parent_device_id)) {
-        children.push(device);
-      } else {
-        entries[device.id] = entryFor(device.id);
-      }
+    for (const device of roots) {
+      entries[device.id] = entryFor(device.id);
     }
     for (const device of children) {
-      const parent = entries[device.parent_device_id!];
-      if (parent) {
-        (parent.devices ??= {})[device.id] = entryFor(device.id);
-      } else {
-        entries[device.id] = entryFor(device.id);
-      }
+      (entries[device.parent_device_id!].devices ??= {})[device.id] = entryFor(
+        device.id
+      );
     }
     return entries;
   }
