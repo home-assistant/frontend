@@ -457,7 +457,12 @@ export class HaTargetPickerItemRow extends LitElement {
       (nextType === "area"
         ? entries?.referenced_areas
         : nextType === "device" && this.type !== "label"
-          ? entries?.referenced_devices
+          ? entries?.referenced_devices.filter((device_id) => {
+              const parentId = parentOf(device_id);
+              return (
+                !parentId || !entries.referenced_devices.includes(parentId)
+              );
+            })
           : this.type === "device"
             ? entries.referenced_entities.filter(
                 (entity_id) => !childDevices.includes(deviceOf(entity_id) || "")
