@@ -77,6 +77,10 @@ export class ConditionEvaluatorController implements ReactiveController {
 
   private _hasPendingResubscribe = false;
 
+  // The connection the live subscriptions were opened on; a replacement
+  // connection object needs them re-opened even for an unchanged tree.
+  private _subscribedConnection?: Connection;
+
   // Memoize the signature for a stable array reference to avoid re-stringifying
   // on every host update.
   private _lastConditionsRef?: VisibilityCondition[];
@@ -177,11 +181,16 @@ export class ConditionEvaluatorController implements ReactiveController {
     }
     const signature = this._signatureOf(this._conditions);
     // Re-subscribe only when the tree we are (or are about to be) subscribed to
-    // actually differs by value — not merely by array reference.
+    // actually differs by value — not merely by array reference — or when the
+    // subscriptions are bound to a connection object that has been replaced.
     const targetSignature = this._hasPendingResubscribe
       ? this._pendingSignature
       : this._subscribedSignature;
-    if (signature !== targetSignature) {
+    const connectionReplaced =
+      this._subscribedConnection !== undefined &&
+      this._hass !== undefined &&
+      this._hass.connection !== this._subscribedConnection;
+    if (signature !== targetSignature || connectionReplaced) {
       // The old tree's subscriptions no longer back the result: drop them (and
       // their split) right away so neither a late push nor a recompute can
       // surface the previous tree's verdict while the new one is pending.
@@ -235,6 +244,7 @@ export class ConditionEvaluatorController implements ReactiveController {
 
     const generation = this._generation;
     const connection: Connection = hass.connection;
+    this._subscribedConnection = connection;
 
     for (const subtree of split.serverSubtrees) {
       this._serverResults[subtree.id] = undefined;
@@ -359,5 +369,6 @@ export class ConditionEvaluatorController implements ReactiveController {
     this._subscribedSignature = undefined;
     this._pendingSignature = undefined;
     this._hasPendingResubscribe = false;
+    this._subscribedConnection = undefined;
   }
 }

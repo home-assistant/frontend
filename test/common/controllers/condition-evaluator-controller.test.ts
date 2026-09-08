@@ -343,13 +343,30 @@ describe("ConditionEvaluatorController", () => {
     const conditions = [
       cond({ condition: "state", entity: "light.a", state: "on" }),
     ];
-    const { controller } = await setup(conditions);
+    const hass = createHass();
+    const { controller } = await setup(conditions, hass);
     expect(subs).toHaveLength(1);
 
-    // same conditions reference, new hass → recompute only, no new subscription
-    controller.observe(conditions, createHass());
+    // same conditions reference, new hass object on the same connection →
+    // recompute only, no new subscription
+    controller.observe(conditions, { ...hass, states: {} } as HomeAssistant);
     await tick();
     expect(subs).toHaveLength(1);
+  });
+
+  it("re-subscribes when the connection object is replaced", async () => {
+    const conditions = [
+      cond({ condition: "state", entity: "light.a", state: "on" }),
+    ];
+    const { controller } = await setup(conditions);
+    expect(subs).toHaveLength(1);
+    const firstUnsub = subs[0].unsub;
+
+    // a replacement connection carries none of the old subscriptions
+    controller.observe(conditions, createHass());
+    await tick();
+    expect(firstUnsub).toHaveBeenCalledTimes(1);
+    expect(subs).toHaveLength(2);
   });
 
   it("tears down subscriptions on host disconnect", async () => {
@@ -380,11 +397,12 @@ describe("ConditionEvaluatorController", () => {
     const make = () => [
       cond({ condition: "state", entity: "light.a", state: "on" }),
     ];
-    const { controller } = await setup(make());
+    const hass = createHass();
+    const { controller } = await setup(make(), hass);
     expect(subs).toHaveLength(1);
     const firstUnsub = subs[0].unsub;
 
-    controller.observe(make(), createHass());
+    controller.observe(make(), { ...hass, states: {} } as HomeAssistant);
     await tick();
 
     expect(subs).toHaveLength(1);
