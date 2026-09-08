@@ -30,6 +30,7 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
@@ -701,6 +702,26 @@ export class HaTargetPickerItemRow extends LitElement {
         this._getDeviceDomain(device.primary_config_entry);
       }
 
+      const area = device
+        ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+        : undefined;
+      const parentDevice = device?.parent_device_id
+        ? this.hass.devices[device.parent_device_id]
+        : undefined;
+      const context = [
+        area ? computeAreaName(area) : undefined,
+        parentDevice ? computeDeviceName(parentDevice) : undefined,
+      ]
+        .filter(Boolean)
+        .join(
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
+        );
+
       return {
         name: device
           ? computeDeviceNameDisplay(
@@ -709,7 +730,7 @@ export class HaTargetPickerItemRow extends LitElement {
               this.hass.states
             )
           : item,
-        context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
+        context,
         fallbackIconPath: mdiDevices,
         notFound: !device,
       };
