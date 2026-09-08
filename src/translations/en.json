@@ -8927,14 +8927,14 @@
             "reset": "Reset to default",
             "examples": {
               "thermostat": {
-                "name": "Thermostat temperature",
+                "name": "Thermostat",
                 "floor": "Ground floor",
                 "area": "Living room",
                 "device": "Thermostat",
                 "entity": "Temperature"
               },
               "power_strip": {
-                "name": "Power strip outlet power",
+                "name": "Power strip",
                 "floor": "First floor",
                 "area": "Office",
                 "parent_device": "Power strip",
