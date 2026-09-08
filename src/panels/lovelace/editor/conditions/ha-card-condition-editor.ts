@@ -13,7 +13,10 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isLogicalCondition } from "../../../../common/condition/translate";
+import {
+  isLogicalCondition,
+  logicalChildren,
+} from "../../../../common/condition/translate";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
@@ -121,7 +124,7 @@ export const isFilterCompatibleCondition = (
   condition: VisibilityCondition
 ): boolean => {
   if (isLogicalCondition(condition)) {
-    return (condition.conditions ?? []).every(isFilterCompatibleCondition);
+    return logicalChildren(condition).every(isFilterCompatibleCondition);
   }
   // Legacy `{ entity, state }` is a lovelace state condition.
   if (!("condition" in condition)) {
@@ -421,7 +424,13 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    this._override = undefined;
+    if (this._override !== undefined) {
+      // Leaving a pinned branch: the evaluator was cleared meanwhile (so it is
+      // already `unknown` and will not notify again until a result arrives);
+      // drop the pinned indicator ourselves rather than showing it stale.
+      this._override = undefined;
+      this._liveTestResult = { state: "unknown" };
+    }
     this._conditionEvaluator.observe(this.__observed, this.hass, () =>
       this._liveTestContext()
     );

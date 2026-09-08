@@ -160,7 +160,13 @@ export class HaVisibilityStatus extends LitElement {
       return;
     }
 
-    this._override = undefined;
+    if (this._override !== undefined) {
+      // Leaving a pinned branch: the evaluator was cleared meanwhile (so it is
+      // already `unknown` and will not notify again until a result arrives);
+      // drop the pinned state ourselves rather than showing it stale.
+      this._override = undefined;
+      this.state = "unknown";
+    }
     this._conditionEvaluator.observe(this.__observed, this.hass, () =>
       this._context()
     );
