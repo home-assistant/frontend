@@ -200,25 +200,28 @@ export default class HaAutomationAddFromTarget extends LitElement {
         this.narrow && this.value
           ? this._renderNarrow(this._entries, this.value)
           : html`
-              <ha-automation-add-element-paste
-                .automationElementType=${this.automationElementType}
-                .clipboardItem=${this.clipboardItem}
-              ></ha-automation-add-element-paste>
-              ${this._renderFloors(this.narrow, this._entries, this.value)}
-              ${this._renderTimeLocation(
-                this.narrow,
-                this.timeLocationLabel,
-                this.timeLocationGroups,
-                this.selectedGroup
-              )}
-              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
-              ${this._renderLabels(
-                this.narrow,
-                this.states,
-                this._registries,
-                this._labelRegistry,
-                this.value
-              )}
+                <ha-list-base>
+                  <ha-automation-add-element-paste
+                    .automationElementType=${this.automationElementType}
+                    .clipboardItem=${this.clipboardItem}
+                  ></ha-automation-add-element-paste>
+                </ha-list-base>
+                ${this._renderFloors(this.narrow, this._entries, this.value)}
+                ${this._renderTimeLocation(
+                  this.narrow,
+                  this.timeLocationLabel,
+                  this.timeLocationGroups,
+                  this.selectedGroup
+                )}
+                ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+                ${this._renderLabels(
+                  this.narrow,
+                  this.states,
+                  this._registries,
+                  this._labelRegistry,
+                  this.value
+                )}
+              </ha-list-base>
             `
       }
       ${
