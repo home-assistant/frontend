@@ -4,6 +4,7 @@ import {
   isDisabledCondition,
   isLogicalCondition,
   isServerCondition,
+  logicalChildren,
   translateToCoreCondition,
 } from "./translate";
 
@@ -168,7 +169,7 @@ export const splitConditionTree = (
       return unknownLeaf;
     }
     if (isLogicalCondition(condition)) {
-      const children = condition.conditions ?? [];
+      const children = logicalChildren(condition);
       if (condition.condition === "or") {
         return orNode(buildSiblings(children, "or"));
       }

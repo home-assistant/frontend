@@ -352,6 +352,18 @@ describe("splitConditionTree", () => {
     expect(orSplit.evaluate((c) => c === screen, {})).toBe(true);
   });
 
+  it("accepts a single condition as logical children", () => {
+    const user = cond({ condition: "user", users: ["u"] });
+    const split = splitConditionTree([
+      cond({
+        condition: "not",
+        conditions: { condition: "or", conditions: user },
+      }),
+    ]);
+    expect(split.serverSubtrees).toHaveLength(0);
+    expect(split.evaluate(() => true, {})).toBe(false);
+  });
+
   it("treats an empty condition list as visible (vacuous AND)", () => {
     const split = splitConditionTree([]);
     expect(split.serverSubtrees).toHaveLength(0);

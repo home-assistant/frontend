@@ -173,10 +173,14 @@ export type CoreVisibilityCondition =
   | DeviceCondition
   | CorePlatformCondition;
 
-/** `and` / `or` / `not` combinator whose children are the mixed union. */
+/**
+ * `and` / `or` / `not` combinator whose children are the mixed union. Like
+ * core's `LogicalCondition`, `conditions` may be a single condition or a list;
+ * traverse it through `logicalChildren` (`common/condition/translate.ts`).
+ */
 export interface VisibilityLogicalCondition extends BaseCondition {
   condition: "and" | "or" | "not";
-  conditions?: VisibilityCondition[];
+  conditions?: VisibilityCondition | VisibilityCondition[];
 }
 
 function getValueFromEntityId(
@@ -561,9 +565,9 @@ export function addEntityToCondition<T extends VisibilityCondition>(
   if ("conditions" in condition && condition.conditions) {
     return {
       ...condition,
-      conditions: (condition.conditions as VisibilityCondition[]).map((c) =>
-        addEntityToCondition(c, entityId)
-      ),
+      conditions: ensureArray(
+        condition.conditions as VisibilityCondition | VisibilityCondition[]
+      ).map((c) => addEntityToCondition(c, entityId)),
     } as T;
   }
 

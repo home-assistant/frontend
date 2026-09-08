@@ -9,6 +9,7 @@ import {
   isClientCondition,
   isDisabledCondition,
   isLogicalCondition,
+  logicalChildren,
 } from "./translate";
 
 // Three-valued combinators (true / false / undefined = unknown).
@@ -119,7 +120,7 @@ export const evaluateConditionsLocally = (
       if (condition.conditions === undefined) {
         return true;
       }
-      const values = condition.conditions
+      const values = logicalChildren(condition)
         .filter((child) => !isDisabledCondition(child))
         .map(evaluateNode);
       if (condition.condition === "or") {
