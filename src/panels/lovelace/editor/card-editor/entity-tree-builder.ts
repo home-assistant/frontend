@@ -12,9 +12,11 @@ import { computeDeviceName } from "../../../../common/entity/compute_device_name
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { stringCompare } from "../../../../common/string/compare";
 import { entityComboBoxKeys } from "../../../../data/entity/entity_picker";
+import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import { domainToName } from "../../../../data/integration";
 import { multiTermSortedSearch } from "../../../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../../../types";
@@ -24,6 +26,7 @@ export interface DeviceNode {
   id: string;
   name: string;
   entityIds: string[];
+  children: DeviceNode[];
 }
 
 export interface AreaNode {
@@ -132,6 +135,30 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   const unassignedEntityByDomain = new Map<string, string[]>();
   const searchableEntities: SearchableEntity[] = [];
 
+  const addDeviceEntity = (
+    bucket: Map<string, string[]>,
+    device: DeviceRegistryEntry,
+    entityId: string,
+    areaId: string | undefined
+  ) => {
+    const list = bucket.get(device.id) ?? [];
+    list.push(entityId);
+    bucket.set(device.id, list);
+    // A child device nests under its parent when both land in the same
+    // bucket, so the parent needs a row even without entities of its own.
+    const parent = device.parent_device_id
+      ? deviceReg[device.parent_device_id]
+      : undefined;
+    if (
+      parent &&
+      getDeviceAreaId(parent, deviceReg) === areaId &&
+      (parent.entry_type === "service") === (device.entry_type === "service") &&
+      !bucket.has(parent.id)
+    ) {
+      bucket.set(parent.id, []);
+    }
+  };
+
   for (const entityId of Object.keys(states)) {
     const stateObj = states[entityId];
     if (!stateObj) continue;
@@ -182,9 +209,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
         const target = isService
           ? unassignedServiceEntities
           : unassignedDeviceEntities;
-        const list = target.get(device.id) ?? [];
-        list.push(entityId);
-        target.set(device.id, list);
+        addDeviceEntity(target, device, entityId, undefined);
       } else if (isHelperDomain(domain)) {
         const list = unassignedHelperByDomain.get(domain) ?? [];
         list.push(entityId);
@@ -200,9 +225,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     const groupUnderDevice = device && !entry?.area_id;
     if (groupUnderDevice) {
       const byDevice = areaDeviceEntities.get(areaId) ?? new Map();
-      const list = byDevice.get(device!.id) ?? [];
-      list.push(entityId);
-      byDevice.set(device!.id, list);
+      addDeviceEntity(byDevice, device!, entityId, areaId);
       areaDeviceEntities.set(areaId, byDevice);
     } else {
       const list = areaDirectEntities.get(areaId) ?? [];
@@ -217,17 +240,35 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     return stringCompare(an, bn, language);
   };
 
-  const buildDeviceNodes = (source: Map<string, string[]>): DeviceNode[] =>
-    [...source.entries()]
-      .map(([id, ids]) => {
-        const device = deviceReg[id];
-        return {
-          id,
-          name: (device ? computeDeviceName(device) : undefined) ?? id,
-          entityIds: ids.sort(sortByName),
-        };
-      })
-      .sort((a, b) => stringCompare(a.name, b.name, language));
+  const sortDeviceNodes = (nodes: DeviceNode[]) => {
+    nodes.sort((a, b) => stringCompare(a.name, b.name, language));
+    nodes.forEach((node) => sortDeviceNodes(node.children));
+  };
+
+  const buildDeviceNodes = (source: Map<string, string[]>): DeviceNode[] => {
+    const nodes = new Map<string, DeviceNode>();
+    for (const [id, ids] of source) {
+      const device = deviceReg[id];
+      nodes.set(id, {
+        id,
+        name: (device ? computeDeviceName(device) : undefined) ?? id,
+        entityIds: ids.sort(sortByName),
+        children: [],
+      });
+    }
+    const roots: DeviceNode[] = [];
+    for (const node of nodes.values()) {
+      const parentId = deviceReg[node.id]?.parent_device_id;
+      const parent = parentId ? nodes.get(parentId) : undefined;
+      if (parent) {
+        parent.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+    sortDeviceNodes(roots);
+    return roots;
+  };
 
   const buildAreaNode = (areaId: string): AreaNode | undefined => {
     const area = areaReg[areaId];
@@ -325,17 +366,28 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   };
 }
 
+const devicePathToEntity = (
+  devices: DeviceNode[],
+  parentKey: string,
+  entityId: string
+): string[] | undefined => {
+  for (const device of devices) {
+    const key = deviceKey(parentKey, device.id);
+    if (device.entityIds.includes(entityId)) return [key];
+    const nested = devicePathToEntity(device.children, key, entityId);
+    if (nested) return [key, ...nested];
+  }
+  return undefined;
+};
+
 export function pathToEntity(tree: EntityTree, entityId: string): string[] {
   for (const floor of tree.floors) {
     const fKey = floorKey(floor.id);
     for (const area of floor.areas) {
       const aKey = areaKey(fKey, area.id);
       if (area.directEntityIds.includes(entityId)) return [fKey, aKey];
-      for (const device of area.devices) {
-        if (device.entityIds.includes(entityId)) {
-          return [fKey, aKey, deviceKey(aKey, device.id)];
-        }
-      }
+      const devicePath = devicePathToEntity(area.devices, aKey, entityId);
+      if (devicePath) return [fKey, aKey, ...devicePath];
     }
   }
 
@@ -345,21 +397,15 @@ export function pathToEntity(tree: EntityTree, entityId: string): string[] {
     if (area.directEntityIds.includes(entityId)) {
       return [otherAreasFloor, aKey];
     }
-    for (const device of area.devices) {
-      if (device.entityIds.includes(entityId)) {
-        return [otherAreasFloor, aKey, deviceKey(aKey, device.id)];
-      }
-    }
+    const devicePath = devicePathToEntity(area.devices, aKey, entityId);
+    if (devicePath) return [otherAreasFloor, aKey, ...devicePath];
   }
 
   for (const section of tree.unassignedSections) {
     const sKey = unassignedKey(section.id);
     if (section.devices) {
-      for (const device of section.devices) {
-        if (device.entityIds.includes(entityId)) {
-          return [sKey, deviceKey(sKey, device.id)];
-        }
-      }
+      const devicePath = devicePathToEntity(section.devices, sKey, entityId);
+      if (devicePath) return [sKey, ...devicePath];
     }
     if (section.domains) {
       for (const group of section.domains) {
