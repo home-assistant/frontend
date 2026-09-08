@@ -37,9 +37,8 @@ interface StateConditionData {
   state?: string | string[];
 }
 
-// Base class for the entity-filter (no-entity) state editor. The with-entity
-// dashboard editing path now uses the core automation condition editor, so this
-// class is not registered as an element on its own.
+// Base for the entity-filter (no-entity) state editor. Not registered itself;
+// dashboard editing uses the automation condition editor.
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 

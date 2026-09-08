@@ -105,15 +105,12 @@ const containsNoEntityCondition = (
       containsNoEntityCondition(c, noEntity)
   );
 
-// Server-class condition types with no lovelace editor; edited via the
-// automation condition editors (which already speak core format).
 export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
 
 export const isServerEditorCondition = (condition: string): boolean =>
   SERVER_EDITOR_CONDITIONS.includes(condition);
 
-// Leaf types the entity-filter consumers (map card, entity filter card/badge)
-// can evaluate locally against each filtered entity via `checkConditionsMet`.
+// Types entity filters can evaluate locally against each entity.
 const FILTER_CONDITION_TYPES = new Set([
   "state",
   "numeric_state",
@@ -124,14 +121,7 @@ const FILTER_CONDITION_TYPES = new Set([
   "time",
 ]);
 
-// Whether a condition tree can be used as an entity filter. Anything outside
-// the locally evaluable types above (template / sun / zone / device and
-// integration-provided conditions, which the local evaluator would fail and
-// so filter everything out), or a leaf pinned to its own entity (`entity_id`
-// or a non-empty `entity`, which the fold-in keeps, so every candidate would
-// be judged by the copied entity), is not usable there. Filter consumers also
-// expect the lovelace list shape for logical children, so core's single-child
-// shorthand is not accepted either.
+// Usable as an entity filter: local types only, no pinned entity, list-shaped `and`/`or`/`not`.
 export const isFilterCompatibleCondition = (
   condition: VisibilityCondition
 ): boolean => {
@@ -145,16 +135,14 @@ export const isFilterCompatibleCondition = (
   if ("entity_id" in condition || !!(condition as { entity?: string }).entity) {
     return false;
   }
-  // Legacy `{ entity, state }` is a lovelace state condition.
+  // `{ entity, state }` is a lovelace state condition.
   if (!("condition" in condition)) {
     return true;
   }
   return FILTER_CONDITION_TYPES.has(condition.condition);
 };
 
-// Condition types edited via the core automation condition editors. The
-// server-class types always are; `state` / `numeric_state` are too, except in
-// entity-filter mode, where they keep the lovelace no-entity syntax and editor.
+// Uses the automation editor. Entity-filter state/numeric_state keep the lovelace editor.
 export const usesAutomationConditionEditor = (
   conditionType: string,
   noEntity: boolean
@@ -163,14 +151,9 @@ export const usesAutomationConditionEditor = (
   (!noEntity &&
     (conditionType === "state" || conditionType === "numeric_state"));
 
-// Render-only translation: present a lovelace `state` / `numeric_state`
-// condition in the struct-valid core format the automation editor speaks. This
-// is edit-faithful — unlike the eval-oriented `translateToCoreCondition`, it
-// never collapses an incomplete config to always-false. Already-core conditions
-// (carrying `entity_id`) and every other type pass through unchanged. When the
-// lovelace condition is entity-less (it implicitly targets the host card's
-// entity), `contextEntityId` is folded in as the `entity_id` so the automation
-// editor shows the effective entity instead of an empty, invalid field.
+// Show lovelace state/numeric_state in core form for the automation editor.
+// Unlike `translateToCoreCondition`, incomplete configs stay editable.
+// Entity-less conditions get `contextEntityId` so the field isn't empty.
 const toCoreEditorCondition = (
   condition: VisibilityCondition,
   contextEntityId?: string
@@ -178,18 +161,14 @@ const toCoreEditorCondition = (
   if ("entity_id" in condition) {
     return condition;
   }
-  // Core row metadata (`enabled`, `alias`, `note`) must survive the rebuild,
-  // or editing a disabled legacy condition would silently re-enable it.
+  // Keep `enabled` / `alias` / `note` so editing a disabled condition doesn't re-enable it.
   const rowConfig = pickRowConfig(condition, CONDITION_ROW_CONFIG_KEYS);
-  // Legacy `{ entity, state }` has no `condition` key and is treated as `state`.
+  // `{ entity, state }` has no `condition` key.
   if (!("condition" in condition) || condition.condition === "state") {
     const lovelace = condition as StateCondition | LegacyCondition;
     const attribute = "attribute" in lovelace ? lovelace.attribute : undefined;
-    // Truthy fallback like the legacy evaluator: an empty `entity: ""` also
-    // targets the host entity.
     const entity_id = lovelace.entity || contextEntityId || "";
-    // Core has no `state_not`; represent it as `not(state)`, which routes to
-    // the (lovelace) `not` editor wrapping a core `state` editor.
+    // Core has no `state_not`; show `not` wrapping a state condition.
     if (lovelace.state === undefined && lovelace.state_not !== undefined) {
       const inner: CoreStateCondition = {
         condition: "state",
@@ -201,7 +180,7 @@ const toCoreEditorCondition = (
       }
       return { ...rowConfig, condition: "not", conditions: [inner] };
     }
-    // Incomplete configs keep an empty `state` so the editor stays usable.
+    // Keep an empty `state` so incomplete configs stay editable.
     const core: CoreStateCondition = {
       ...rowConfig,
       condition: "state",
@@ -271,19 +250,13 @@ export class HaCardConditionEditor extends LitElement {
     message?: string;
   } = { state: "unknown" };
 
-  // Live-test indicator, driven by the same server-backed evaluator the
-  // dashboard uses at runtime: client leaves locally, server-class subtrees via
-  // `subscribe_condition`, combined with three-valued logic.
   private _conditionEvaluator = new ConditionEvaluatorController(this, {
-    // Debounce so editing (e.g. typing a template) doesn't churn subscriptions.
+    // Debounce while typing (templates).
     resubscribeDelay: 500,
     onResult: (result, error) => this._setLiveTestResult(result, error),
   });
 
-  // Cache of the folded observation (and its client-validity) keyed by the
-  // source condition + entity context, so the evaluator's reference-based
-  // signature memo keeps hitting on hass-only ticks instead of rebuilding the
-  // array — mirrors ConditionalListenerMixin.
+  // Folded observation, rebuilt only when the source or entity id changes.
   private __observedSource?: VisibilityCondition;
 
   private __observedEntityId?: string;
@@ -292,9 +265,7 @@ export class HaCardConditionEditor extends LitElement {
 
   private __clientInvalid = false;
 
-  // Pins the live-test result for the hidden / client-invalid branches that
-  // bypass the evaluator, so its torn-down `unknown` callback can't clobber
-  // them — mirrors ha-visibility-status.
+  // Pins the indicator when we skip the evaluator (hidden / invalid).
   private _override?: LiveTestState;
 
   private get _editor() {
@@ -311,8 +282,7 @@ export class HaCardConditionEditor extends LitElement {
     );
   }
 
-  // No-entity (filter-mode) conditions have no entity to evaluate against, so
-  // the live-test indicator is suppressed for those.
+  // Filter-mode conditions have no entity to test against.
   private _hideLiveTest(condition: Condition): boolean {
     return (
       isNoEntityCondition(condition.condition, this._noEntity) ||
@@ -327,9 +297,7 @@ export class HaCardConditionEditor extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
-    // Recompute on entity-context change too: an entity-less condition folds in
-    // the host card's entity, which arrives via context (possibly after the
-    // condition is first set).
+    // Entity-less conditions pick up the card entity from context.
     if (
       changedProperties.has("condition") ||
       (changedProperties as Map<string, unknown>).has("_entityContext")
@@ -338,24 +306,16 @@ export class HaCardConditionEditor extends LitElement {
         condition: "state",
         ...this.condition,
       } as Condition;
-      // In "current" mode the card supplies the entity for entity-less
-      // conditions; fold it into the displayed core condition.
       const contextEntityId =
         this._entityContext?.mode === "current"
           ? this._entityContext.entityId
           : undefined;
-      // Present lovelace `state` / `numeric_state` in core format for the
-      // automation editor (read-both back-compat); every other type passes
-      // through unchanged. `_condition` always carries a `condition` key (core
-      // entries coexist as the wider runtime shape, narrowed here for display).
       this._condition = (
         usesAutomationConditionEditor(normalized.condition, this._noEntity)
           ? toCoreEditorCondition(normalized, contextEntityId)
           : normalized
       ) as Condition;
       if (this._usesAutomationEditor) {
-        // Rendered by the embedded automation condition editor, which provides
-        // its own UI for these core-format types.
         this._uiAvailable = true;
         this._uiWarnings = [];
       } else {
@@ -400,9 +360,6 @@ export class HaCardConditionEditor extends LitElement {
       : {};
   }
 
-  // Feed the condition (with the card's entity folded in when in "current"
-  // mode) to the evaluator, which subscribes server subtrees and evaluates
-  // client leaves locally. `onResult` maps its verdict to the indicator.
   private _updateLiveTest() {
     if (
       !this.condition ||
@@ -416,9 +373,6 @@ export class HaCardConditionEditor extends LitElement {
     }
 
     const entityId = this._liveTestContext().entity_id;
-    // Rebuild the folded observation + client-validity only when the source
-    // condition or entity context changes, so a fresh array isn't fed to the
-    // evaluator on every hass tick (which would defeat its signature memo).
     if (
       this.condition !== this.__observedSource ||
       entityId !== this.__observedEntityId
@@ -432,9 +386,6 @@ export class HaCardConditionEditor extends LitElement {
       this.__observed = [observed];
     }
 
-    // Structural validation runs for every type (server-class types other
-    // than state / numeric_state are accepted as-is and validated by core); a
-    // malformed config is surfaced as `invalid` here without a round-trip.
     if (this.__clientInvalid) {
       this._override = "invalid";
       this._conditionEvaluator.observe(undefined, this.hass);
@@ -448,9 +399,7 @@ export class HaCardConditionEditor extends LitElement {
     }
 
     if (this._override !== undefined) {
-      // Leaving a pinned branch: the evaluator was cleared meanwhile (so it is
-      // already `unknown` and will not notify again until a result arrives);
-      // drop the pinned indicator ourselves rather than showing it stale.
+      // Leaving a pinned branch; evaluator won't notify until a new result.
       this._override = undefined;
       this._liveTestResult = { state: "unknown" };
     }
@@ -460,16 +409,10 @@ export class HaCardConditionEditor extends LitElement {
   }
 
   private _setLiveTestResult(result: ConditionEvaluation, error?: string) {
-    // The hidden / client-invalid branches pin the result; ignore the
-    // evaluator's (torn-down) callback in those cases — mirrors
-    // ha-visibility-status.
     if (this._override !== undefined) {
       return;
     }
     if (error) {
-      // Surface the raw server error as the tooltip detail (the localized
-      // `invalid` label remains the indicator's aria-label) — matches how the
-      // automation condition editor reports validation/test errors.
       this._liveTestResult = { state: "invalid", message: error };
       return;
     }
@@ -704,11 +647,7 @@ export class HaCardConditionEditor extends LitElement {
       window.clearTimeout(this._timeout);
       this._timeout = undefined;
     }
-    // Surface the evaluator's current live verdict as a transient chip. A
-    // not-yet-reported (unknown) server result shows no chip rather than
-    // asserting a false failure, and neither does an invalid configuration
-    // (the evaluator reports it as hidden plus an error, which the live
-    // indicator already shows as invalid).
+    // Skip the chip when the result is still unknown or already invalid.
     const result = this._conditionEvaluator.result;
     if (result === "unknown" || this._conditionEvaluator.error !== undefined) {
       this._testingResult = undefined;
@@ -749,9 +688,7 @@ export class HaCardConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  // The embedded automation condition editors fire this when an existing core
-  // config fails their UI struct; fall back to YAML with the struct warnings,
-  // as the automation condition row does.
+  // Automation editors emit this when UI mode can't handle the config.
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     ev.stopPropagation();
     this._uiWarnings = handleStructError(this.hass, ev.detail).warnings;

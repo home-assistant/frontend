@@ -33,8 +33,7 @@ const STATE_ICONS: Record<VisibilityState, string> = {
  * @element ha-visibility-status
  *
  * @summary
- * Alert banner that surfaces the live visibility result for a set of
- * lovelace conditions.
+ * Alert banner for the live visibility result of a condition set.
  *
  * @attr {"visible"|"hidden"|"unknown"|"invalid"} state - Computed visibility state
  */
@@ -52,18 +51,12 @@ export class HaVisibilityStatus extends LitElement {
   @property()
   public state: VisibilityState = "visible";
 
-  // Evaluate the whole set through the same server-backed controller the
-  // dashboard uses at runtime, so server-class conditions report a real
-  // verdict instead of being flagged as an invalid configuration.
   private _conditionEvaluator = new ConditionEvaluatorController(this, {
     resubscribeDelay: 500,
     onResult: (result, error) => this._applyResult(result, error),
   });
 
-  // Cache the folded observation + client-validity keyed by (conditions ref,
-  // entity id) so the controller's signature memo keeps hitting on hass-only
-  // ticks. `_override` pins the state for the empty / client-invalid branches
-  // that bypass the controller.
+  // Folded observation; `_override` pins empty / invalid without the controller.
   private __observedSource?: VisibilityCondition[];
 
   private __observedEntityId?: string;
@@ -134,9 +127,6 @@ export class HaVisibilityStatus extends LitElement {
         ? this._entityContext.entityId
         : undefined;
 
-    // Rebuild the folded observation + client-validity only when the source
-    // set or entity context changes, so a fresh array isn't fed to the
-    // evaluator on every hass tick.
     if (
       conditions !== this.__observedSource ||
       entityId !== this.__observedEntityId
@@ -149,10 +139,6 @@ export class HaVisibilityStatus extends LitElement {
         : conditions;
     }
 
-    // Structural validation covers every type (server-class types other than
-    // state / numeric_state are accepted as-is and validated by core); a
-    // malformed server config additionally surfaces through the controller's
-    // error.
     if (this.__clientInvalid) {
       this._override = "invalid";
       this._conditionEvaluator.observe(undefined, this.hass);
@@ -161,9 +147,7 @@ export class HaVisibilityStatus extends LitElement {
     }
 
     if (this._override !== undefined) {
-      // Leaving a pinned branch: the evaluator was cleared meanwhile (so it is
-      // already `unknown` and will not notify again until a result arrives);
-      // drop the pinned state ourselves rather than showing it stale.
+      // Leaving a pinned branch; evaluator won't notify until a new result.
       this._override = undefined;
       this.state = "unknown";
     }
@@ -173,8 +157,7 @@ export class HaVisibilityStatus extends LitElement {
   }
 
   private _applyResult(result: ConditionEvaluation, error?: string) {
-    // The empty / client-invalid branches pin the state; ignore the
-    // controller's (torn-down) result in those cases.
+    // Empty / invalid branches pin the state; ignore the torn-down controller.
     if (this._override !== undefined) {
       return;
     }

@@ -20,13 +20,12 @@ import type {
 } from "../condition/split";
 import { splitConditionTree } from "../condition/split";
 
-/** Tri-state visibility outcome. `unknown` = a server subtree has not reported yet. */
+/** `unknown` until a server subtree reports. */
 export type ConditionEvaluation = "visible" | "hidden" | "unknown";
 
 export interface ConditionEvaluatorOptions {
-  /** Called whenever the combined result or error changes. */
   onResult: (result: ConditionEvaluation, error?: string) => void;
-  /** Debounce (ms) before (re)opening subscriptions when the tree changes. */
+  /** Wait this long before (re)opening subscriptions after the tree changes. */
   resubscribeDelay?: number;
 }
 
@@ -37,22 +36,9 @@ const firstDefined = (
 ): string | undefined => Object.values(values).find((value) => !!value);
 
 /**
- * Reactive controller that keeps a dashboard visibility condition tree
- * evaluated live by combining:
- *
- * - `subscribe_condition` subscriptions, one per maximal server subtree
- *   (`state`, `numeric_state`, `template`, `sun`, `zone`, `device`,
- *   integration conditions), and
- * - locally-evaluated client leaves (`screen`, `user`, `view_columns`,
- *   `location`, `time`), reacting to media-query / time-boundary / hass /
- *   context changes.
- *
- * The host calls {@link observe} whenever its inputs change; the controller
- * only (re)subscribes when the *condition tree* changes (debounced) and merely
- * recomputes for hass/context changes. Subscriptions are torn down on host
- * disconnect and re-opened on reconnect. The combined result uses three-valued
- * logic so the host can render an explicit `unknown` state without flashing
- * while server results are still pending.
+ * Live evaluation of a visibility tree: `subscribe_condition` for server
+ * subtrees, local checks for screen/user/time/etc. Call {@link observe} when
+ * inputs change. Result stays `unknown` until server replies so nothing flashes.
  */
 export class ConditionEvaluatorController implements ReactiveController {
   private _host: ReactiveControllerHost;
@@ -69,24 +55,19 @@ export class ConditionEvaluatorController implements ReactiveController {
 
   private _connected = false;
 
-  // Structural signature of the tree the live subscriptions/listeners are for,
-  // and of the tree a pending (debounced) re-subscribe will switch to. Compared
-  // by value (not array reference) so a host re-deriving the array each render
-  // does not starve the debounce or needlessly drop subscriptions. `undefined`
-  // is a valid signature (nothing observed), so a pending re-subscribe is
-  // tracked by its own flag rather than by the signature being set.
+  // Value of the live tree vs the tree a pending resubscribe will switch to.
+  // Compared by content so a new array each render does not churn subscriptions.
+  // `undefined` is a real signature, so pending work uses `_hasPendingResubscribe`.
   private _subscribedSignature?: string;
 
   private _pendingSignature?: string;
 
   private _hasPendingResubscribe = false;
 
-  // The connection the live subscriptions were opened on; a replacement
-  // connection object needs them re-opened even for an unchanged tree.
+  // Resubscribe if hass.connection is replaced even when the tree is unchanged.
   private _subscribedConnection?: Connection;
 
-  // Memoize the signature for a stable array reference to avoid re-stringifying
-  // on every host update.
+  // Skip JSON.stringify when the same array is observed again.
   private _lastConditionsRef?: VisibilityCondition[];
 
   private _lastSignature?: string;
@@ -97,16 +78,15 @@ export class ConditionEvaluatorController implements ReactiveController {
 
   private _subtreeErrors: Record<string, string | undefined> = {};
 
-  // Template rendering errors core recorded while still producing a result.
-  // Surfaced through `error` so editors flag the condition, but unlike a hard
-  // error they do not override core's result.
+  // Template errors from core that still produced a result. Shown in editors,
+  // but they do not force hidden.
   private _subtreeTemplateErrors: Record<string, string | undefined> = {};
 
   private _subscriptions: Promise<UnsubscribeFunc>[] = [];
 
   private _listeners: (() => void)[] = [];
 
-  // Bumped on every teardown so late-arriving async results are ignored.
+  // Ignore callbacks from a torn-down generation.
   private _generation = 0;
 
   private _resubscribeTimeout?: ReturnType<typeof setTimeout>;
@@ -139,9 +119,7 @@ export class ConditionEvaluatorController implements ReactiveController {
   }
 
   /**
-   * Provide the latest inputs. Cheap to call on every host update: it only
-   * (re)subscribes when the condition tree reference changes, otherwise it just
-   * recomputes the client-dependent parts.
+   * Update inputs. Resubscribes only when the tree (or connection) changes.
    */
   public observe(
     conditions: VisibilityCondition[] | undefined,
@@ -162,9 +140,7 @@ export class ConditionEvaluatorController implements ReactiveController {
   public hostDisconnected(): void {
     this._connected = false;
     this._teardown();
-    // Nothing backs the last result once subscriptions are closed; report
-    // `unknown` (and force the notification through) so a detached/reconnecting
-    // host never renders a stale, no-longer-live visibility.
+    // Subscriptions are gone; don't keep showing a stale result.
     this._notifiedResult = undefined;
     this._notifiedError = undefined;
     this._setResult("unknown", undefined);
@@ -180,11 +156,7 @@ export class ConditionEvaluatorController implements ReactiveController {
       return this._lastSignature;
     }
     this._lastConditionsRef = conditions;
-    // JSON serializes every non-finite number as `null`; append the ordered
-    // list of those values so ±Infinity (YAML `.inf` bounds) stay
-    // distinguishable and flipping one still re-subscribes. Appending keeps the
-    // encoding collision-free, unlike substituting a marker string a user value
-    // could also contain.
+    // JSON turns ±Infinity into null; append them so `.inf` bound flips resubscribe.
     const nonFinite: string[] = [];
     const json = JSON.stringify(conditions, (_key, value) => {
       if (typeof value === "number" && !isFinite(value)) {
@@ -203,9 +175,7 @@ export class ConditionEvaluatorController implements ReactiveController {
       return;
     }
     const signature = this._signatureOf(this._conditions);
-    // Re-subscribe only when the tree we are (or are about to be) subscribed to
-    // actually differs by value — not merely by array reference — or when the
-    // subscriptions are bound to a connection object that has been replaced.
+    // Resubscribe when the tree content or hass.connection changed.
     const targetSignature = this._hasPendingResubscribe
       ? this._pendingSignature
       : this._subscribedSignature;
@@ -214,9 +184,7 @@ export class ConditionEvaluatorController implements ReactiveController {
       this._hass !== undefined &&
       this._hass.connection !== this._subscribedConnection;
     if (signature !== targetSignature || connectionReplaced) {
-      // The old tree's subscriptions no longer back the result: drop them (and
-      // their split) right away so neither a late push nor a recompute can
-      // surface the previous tree's verdict while the new one is pending.
+      // Drop the old subscriptions immediately so their result can't leak through.
       this._teardown();
       this._hasPendingResubscribe = true;
       this._pendingSignature = signature;
@@ -224,14 +192,13 @@ export class ConditionEvaluatorController implements ReactiveController {
         this._conditions === undefined ||
         this._conditions.every(isPureClientCondition)
       ) {
-        // Nothing to debounce for: no server subscription is involved.
+        // All client-side; no server subscription to debounce.
         this._subscribe();
         return;
       }
       this._scheduleResubscribe();
     }
-    // Always recompute so client leaves stay live. While a re-subscribe is
-    // pending there is no split, so this publishes `unknown`.
+    // Keep client leaves live. Pending resubscribe has no split → `unknown`.
     this._recompute();
   }
 
@@ -254,9 +221,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     this._hasPendingResubscribe = false;
 
     if (!conditions || !hass) {
-      // Nothing is subscribed, so leave the subscribed signature unset: a host
-      // that receives `hass` after connecting (a normal property-ordering
-      // lifecycle) must still trigger the subscription on that later observe.
+      // Don't mark subscribed yet; hass often arrives after connect.
       this._setResult("unknown", undefined);
       return;
     }
@@ -327,8 +292,6 @@ export class ConditionEvaluatorController implements ReactiveController {
     const context = this._getContext?.() ?? {};
     const clientEvaluator: ClientConditionEvaluator = (condition) => {
       try {
-        // Only client-class leaves reach here, and those are all lovelace
-        // Condition members.
         return checkConditionsMet([condition as Condition], hass, context);
       } catch (_err) {
         return false;
@@ -336,9 +299,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     };
 
     const error = firstDefined(this._subtreeErrors);
-    // An errored subtree is not a legitimate `false`: fed through the
-    // combinators it would be inverted by a client-side `not` and show content
-    // for an invalid configuration. Force hidden whenever any subtree errored.
+    // Don't treat a server error as `false` that a client `not` would invert.
     if (error !== undefined) {
       this._setResult("hidden", error);
       return;
@@ -367,7 +328,6 @@ export class ConditionEvaluatorController implements ReactiveController {
   }
 
   private _teardown(): void {
-    // Invalidate any in-flight subscription callbacks.
     this._generation += 1;
     if (this._resubscribeTimeout !== undefined) {
       clearTimeout(this._resubscribeTimeout);

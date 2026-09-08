@@ -109,60 +109,27 @@ export interface NotCondition extends BaseCondition {
 }
 
 /**
- * Dashboard visibility conditions
- * ===============================
- *
- * Historically, dashboard visibility (`visibility` on cards/badges/sections/
- * views and `conditions` on the conditional card/row/element) used the
- * lovelace-only {@link Condition} format above, evaluated synchronously on the
- * client by {@link checkConditionsMet}.
- *
- * We are moving the *evaluation* of stateful conditions to core (see
- * https://github.com/home-assistant/frontend/issues/52836). The visibility
- * format therefore becomes the union of:
- *
- * - the **client-only** lovelace conditions that have no usable core
- *   equivalent for dashboards — `screen`, `user`, `view_columns`, `location`,
- *   and `time` (evaluated against the viewer's local context); and
- * - any **core** automation condition (`state`, `numeric_state`, `template`,
- *   `sun`, `zone`, `device`, and integration-provided conditions), which is
- *   evaluated server-side through `subscribe_condition`.
- *
- * The two may be mixed freely, including inside `and` / `or` / `not`.
- *
- * Back-compat is **read both / write new**: existing dashboards keep their
- * lovelace-format `state` / `numeric_state` conditions (`entity`, `state_not`,
- * …) and are translated to core format on the fly (see
- * `common/condition/translate.ts`); only conditions the user edits and saves
- * are persisted in core format.
- *
- * Note: lovelace `state` / `numeric_state` use `entity`, while their core
- * counterparts use `entity_id`. Both shapes coexist in this union and are
- * disambiguated by that field — centralized in `common/condition/translate.ts`.
+ * Dashboard visibility: client-only lovelace types (`screen`, `user`,
+ * `view_columns`, `location`, `time`) plus core automation conditions.
+ * Lovelace `state`/`numeric_state` (`entity`) and core (`entity_id`) both
+ * exist; existing dashboards keep the old shape until edited.
+ * See `common/condition/translate.ts`.
  */
 export type VisibilityCondition =
-  // Client-only lovelace conditions (no core equivalent for dashboards)
   | ScreenCondition
   | UserCondition
   | ViewColumnsCondition
   | LocationCondition
   | TimeCondition
-  // Lovelace stateful conditions (read-both back-compat; `entity`-based)
   | StateCondition
   | NumericStateCondition
   | LegacyCondition
-  // Core automation conditions (server-evaluated; `entity_id`-based)
   | CoreVisibilityCondition
-  // Logical combinators over the mixed union
   | VisibilityLogicalCondition;
 
 /**
- * Core automation conditions usable for dashboard visibility, evaluated
- * server-side. Mirrors `data/automation`'s condition types, minus the ones
- * kept client-side by decision (`time`) and the ones with no dashboard meaning
- * (`trigger`). The `PlatformCondition` member covers integration-provided
- * conditions and, being a `condition: string` catch-all, also subsumes the
- * already-core `state` / `numeric_state` shapes.
+ * Core conditions used for dashboard visibility. Omits client `time` and
+ * `trigger`. `PlatformCondition` also covers core `state` / `numeric_state`.
  */
 export type CoreVisibilityCondition =
   | CoreStateCondition
@@ -174,9 +141,7 @@ export type CoreVisibilityCondition =
   | CorePlatformCondition;
 
 /**
- * `and` / `or` / `not` combinator whose children are the mixed union. Like
- * core's `LogicalCondition`, `conditions` may be a single condition or a list;
- * traverse it through `logicalChildren` (`common/condition/translate.ts`).
+ * Mixed `and` / `or` / `not`. `conditions` may be one item or a list.
  */
 export interface VisibilityLogicalCondition extends BaseCondition {
   condition: "and" | "or" | "not";
@@ -198,9 +163,7 @@ function checkStateCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  // A core-format condition carries its own `entity_id`; prefer it over the
-  // lovelace `entity` and the host's context entity so the optimistic seed
-  // targets the same entity the server-side subscription does.
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
   const entityId =
     ("entity_id" in condition
       ? (condition as { entity_id?: string }).entity_id
@@ -249,8 +212,7 @@ function checkStateNumericCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  // See checkStateCondition: prefer a core-format `entity_id` over the lovelace
-  // `entity` and the host's context entity.
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
   const entityId =
     ("entity_id" in condition
       ? (condition as { entity_id?: string }).entity_id
@@ -517,8 +479,6 @@ export function validateConditionalConfig(
   conditions: VisibilityCondition[]
 ): boolean {
   return conditions.every((visibilityCondition) => {
-    // Narrow to the lovelace shapes for the switch below; anything else (the
-    // core-only types) falls through to the default branch.
     const c = visibilityCondition as Condition | LegacyCondition;
     if ("condition" in c) {
       switch (c.condition) {
@@ -543,8 +503,7 @@ export function validateConditionalConfig(
         case "or":
           return validateOrCondition(c);
         default:
-          // Server-evaluated conditions (template, sun, zone, device, and
-          // integration-provided types) are validated by core, not the client.
+          // template / sun / zone / device / integrations: core validates these.
           return true;
       }
     }
@@ -571,16 +530,11 @@ export function addEntityToCondition<T extends VisibilityCondition>(
     } as T;
   }
 
-  // Lovelace `state` / `numeric_state` — including the legacy shape with no
-  // `condition` key, which is a state condition — target the host entity when
-  // they carry none of their own. Like `checkStateCondition`, an empty
-  // `entity: ""` counts as none.
+  // Entity-less lovelace state/numeric_state (including `{ entity, state }`)
+  // target the host entity. Don't stamp `entity` onto a core `entity_id` leaf.
   const type = (condition as { condition?: string }).condition ?? "state";
   if (
     (type === "state" || type === "numeric_state") &&
-    // A core-format condition already targets its own `entity_id`; do not graft
-    // the host's context entity onto it (that would both mis-evaluate and emit a
-    // schema-invalid core condition carrying both `entity` and `entity_id`).
     !("entity_id" in condition)
   ) {
     return {

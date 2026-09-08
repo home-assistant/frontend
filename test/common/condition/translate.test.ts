@@ -41,10 +41,7 @@ describe("isServerCondition / isClientCondition", () => {
   });
 
   it("keeps lovelace leaves with legacy-only semantics client-side", () => {
-    // Core compares raw attribute values, only dereferences input_* comparison
-    // values and errors on a missing bound entity, where lovelace stringifies,
-    // resolves any entity and ignores the bound. Existing dashboards must not
-    // change, so such leaves stay locally evaluated until the user edits them.
+    // Attribute strings, any-entity comparison values, entity-id bounds.
     for (const c of [
       {
         condition: "state",
@@ -535,10 +532,7 @@ describe("translateToCoreCondition", () => {
       });
     });
 
-    // Core's numeric_state schema requires at least one bound, so a leaf left
-    // bound-less must not be emitted as-is: it would fail the whole grouped
-    // subscription. Lovelace only requires the value to be numeric in that
-    // case, which a template expresses faithfully.
+    // Core requires a bound; lovelace only needs a numeric value.
     it("falls back to a numeric-value template when every bound is dropped", () => {
       expect(
         translateToCoreCondition(
@@ -655,9 +649,7 @@ describe("translateToCoreCondition", () => {
     });
 
     it("wraps a single-child not in an and as well", () => {
-      // Core skips a disabled child; only the `and` wrapper turns that into
-      // ¬true = false (lovelace ¬(AND)) rather than core's bare-not ¬(OR of
-      // nothing) = true.
+      // Disabled child is skipped; without the `and`, core `not` of nothing is true.
       expect(
         translateToCoreCondition(
           cond({
@@ -881,9 +873,7 @@ describe("translateToCoreCondition", () => {
   });
 
   describe("incomplete conditions resolve to always-false", () => {
-    // ¬(AND of nothing) = ¬true = false; matches checkConditionsMet, which
-    // short-circuits incomplete state conditions to false, and avoids emitting
-    // a schema-invalid core condition.
+    // Matches checkConditionsMet and avoids a schema-invalid core condition.
     const ALWAYS_FALSE = {
       condition: "not",
       conditions: [{ condition: "and", conditions: [] }],
@@ -912,9 +902,7 @@ describe("translateToCoreCondition", () => {
 
   describe("entity-id comparison values", () => {
     it("passes the value through unchanged (such leaves are kept client-side)", () => {
-      // Core only dereferences input_* comparison values, lovelace any existing
-      // entity, so `isServerCondition` keeps this leaf client-evaluated; the
-      // translation is only what the editor persists once the user saves it.
+      // Translation is what the editor saves; evaluation stays client-side.
       expect(
         translateToCoreCondition(
           cond({ condition: "state", entity: "light.a", state: "sensor.b" })

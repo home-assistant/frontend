@@ -23,30 +23,14 @@ export interface ConditionalConfig {
 }
 
 /**
- * Mixin to handle conditional visibility control.
+ * Mixin for dashboard visibility.
  *
- * Visibility conditions are evaluated by a {@link ConditionEvaluatorController}:
- * stateful conditions (`state`, `numeric_state`, `template`, `sun`, `zone`,
- * `device`, integration conditions) are delegated to core via
- * `subscribe_condition`, while client-only conditions (`screen`, `user`,
- * `view_columns`, `location`, `time`) are evaluated locally. The host stays
- * declarative — it never evaluates conditions itself.
+ * Stateful conditions go to core via `subscribe_condition`; screen/user/time
+ * stay local. Call `_conditionsVisible()` from `_updateVisibility` /
+ * `_updateElement`.
  *
- * Usage:
- * 1. Extend with `ConditionalListenerMixin<YourConfigType>(ReactiveElement)`.
- * 2. Provide conditions via `config.visibility` / `_config.visibility`, or by
- *    overriding `setupConditionalListeners()` and calling
- *    `super.setupConditionalListeners(customConditions)`.
- * 3. Implement `_updateVisibility()` (or `_updateElement()`) and have it derive
- *    visibility from {@link _conditionsVisible} rather than evaluating
- *    conditions directly.
- *
- * The mixin automatically:
- * - feeds the evaluator on connect and whenever `hass`, the config, or the
- *   column count change;
- * - notifies the host (`_updateVisibility` / `_updateElement`) when the verdict
- *   changes; and
- * - tears down subscriptions on disconnect (handled by the controller).
+ * Override `setupConditionalListeners()` to pass a custom list (e.g. a
+ * conditional card's `conditions`).
  */
 export const ConditionalListenerMixin = <
   TConfig extends ConditionalConfig = ConditionalConfig,
@@ -66,39 +50,28 @@ export const ConditionalListenerMixin = <
 
     protected _conditionContext: ConditionContext = {};
 
-    // The conditions currently being evaluated (a card/badge/section/view
-    // `visibility`, or the conditional card/row `conditions`). Retained so the
-    // optimistic synchronous seed evaluates exactly what the evaluator
-    // subscribed to.
+    // What the evaluator is currently watching; used for the local seed.
     private __conditions?: VisibilityCondition[];
 
-    // Latest server-aware verdict from the evaluator. `unknown` until a server
-    // subtree first reports (or immediately for an all-client tree).
+    // `unknown` until a server subtree reports (or immediately if all client).
     private __conditionResult: ConditionEvaluation = "unknown";
 
-    // Cache for the entity-folded array fed to the evaluator. Rebuilt only when
-    // the source tree reference or the entity context changes, so the
-    // evaluator's reference-based signature memo keeps hitting on hass-only
-    // updates instead of re-stringifying every tick.
+    // Folded conditions, rebuilt only when the source or entity id changes.
     private __observedSource?: VisibilityCondition[];
 
     private __observedEntityId?: string;
 
     private __observed?: VisibilityCondition[];
 
-    // Value signature of the source tree, used to drop the cached verdict when
-    // the tree changes by value so `_conditionsVisible` re-seeds for it.
+    // Drop the cached verdict when the tree content changes.
     private __conditionsSignature?: string;
 
     private __conditionEvaluator = new ConditionEvaluatorController(this, {
-      // The synchronous seed in `_conditionsVisible` covers the initial frame,
-      // so there is no need to delay (re)subscribing.
+      // Local seed covers the first frame; no need to debounce.
       resubscribeDelay: 0,
       onResult: (result) => {
         this.__conditionResult = result;
-        // The forced `unknown` on disconnect only matters to hosts that render
-        // the evaluator's result; we drive visibility imperatively, so ignore
-        // notifications once detached.
+        // We set visibility ourselves; ignore the disconnect `unknown`.
         if (!this.isConnected) {
           return;
         }
@@ -132,10 +105,7 @@ export const ConditionalListenerMixin = <
 
     protected updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);
-      // Re-feed the evaluator after the host has settled its inputs (e.g.
-      // `_conditionContext.entity_id`, which consumers set in `willUpdate`).
-      // The evaluator only re-subscribes when the *tree* changes; a
-      // hass/context change merely recomputes.
+      // After willUpdate so consumers can set `_conditionContext.entity_id`.
       if (
         changedProperties.has("hass") ||
         changedProperties.has("config") ||
@@ -147,20 +117,9 @@ export const ConditionalListenerMixin = <
     }
 
     /**
-     * Resolve the observed conditions to a visibility boolean.
-     *
-     * Prefers the evaluator's server-aware verdict; while a server subtree is
-     * still pending (`unknown`) it falls back to an optimistic synchronous
-     * client evaluation with three-valued logic: leaves the legacy evaluator
-     * reproduces exactly (client-only types and lovelace `state` /
-     * `numeric_state`) are evaluated locally, so existing dashboards never
-     * flash, while core-only leaves (`template` / `sun` / … or core `state`
-     * with `for`) stay unknown through `and` / `or` / `not`. An outcome that
-     * still depends on such a leaf resolves to hidden until the server
-     * reports — erring toward hiding rather than leaking content.
-     *
-     * Consumers call this from `_updateVisibility` instead of evaluating
-     * `checkConditionsMet` themselves.
+     * True if the observed conditions currently pass.
+     * Uses the server result when known; otherwise a local seed that stays
+     * unknown (treated as hidden) for anything only core can evaluate.
      */
     protected _conditionsVisible(): boolean {
       const conditions = this.__conditions;
@@ -183,38 +142,25 @@ export const ConditionalListenerMixin = <
     }
 
     /**
-     * Feed the current conditions to the evaluator.
-     *
-     * Override to supply a custom condition set (e.g. the conditional card's
-     * `conditions`) and call `super.setupConditionalListeners(customConditions)`.
-     *
-     * @param conditions - Optional conditions. Defaults to
-     * `config.visibility` / `_config.visibility`.
+     * Pass conditions to the evaluator.
+     * Override to supply a custom list, then call `super.setupConditionalListeners(...)`.
      */
     protected setupConditionalListeners(
       conditions?: VisibilityCondition[]
     ): void {
-      // Prefer the resolved `_config` (e.g. a strategy-generated section config)
-      // over the raw `config`, matching the pre-refactor evaluation source.
+      // Prefer resolved `_config` (strategy sections) over the raw `config`.
       const config = this._config || this.config;
       const finalConditions = conditions ?? config?.visibility;
       const entityId = this._conditionContext.entity_id;
 
       this.__conditions = finalConditions;
 
-      // Re-derive the entity-folded array only when the source tree reference or
-      // the entity context actually changes — not on every hass tick — so the
-      // evaluator keeps seeing a stable array reference and its signature memo
-      // keeps hitting. The evaluator translates to core format with no notion of
-      // the host's `entity_id` context, so fold it in here (mirroring
-      // `checkConditionsMet`, which reads `entity_id || entity || context`).
+      // Fold in the host entity and keep a stable array across hass updates.
       if (
         finalConditions !== this.__observedSource ||
         entityId !== this.__observedEntityId
       ) {
-        // When the tree changes by *value*, drop the cached verdict so
-        // `_conditionsVisible` re-seeds for the new tree instead of reusing the
-        // previous tree's result for a frame.
+        // Tree content changed; don't keep the previous result for a frame.
         const signature = finalConditions
           ? JSON.stringify(finalConditions)
           : undefined;

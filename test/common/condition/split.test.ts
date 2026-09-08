@@ -289,9 +289,7 @@ describe("splitConditionTree", () => {
   });
 
   it("skips disabled nodes rather than subscribing or combining them", () => {
-    // Core skips a disabled condition inside a compound (it neither passes nor
-    // fails), so it must not open a subscription, and a disabled client leaf
-    // must not decide the result either.
+    // Core skips disabled nodes; don't subscribe them or let them decide.
     const user = cond({ condition: "user", users: ["u"], enabled: false });
     const split = splitConditionTree([
       user,
@@ -320,8 +318,7 @@ describe("splitConditionTree", () => {
   });
 
   it("keeps a client-side node with a template-valued enabled unknown", () => {
-    // Only core can render `enabled: "{{ ... }}"`, and core never sees a mixed
-    // node; treating it as enabled would let its children decide visibility.
+    // Template `enabled` on a mixed node must not let children decide.
     const screen = cond({
       condition: "screen",
       media_query: "(min-width: 1px)",

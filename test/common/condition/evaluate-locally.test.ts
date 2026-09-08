@@ -16,9 +16,8 @@ const hass = {
 const evaluate = (conditions: VisibilityCondition[]) =>
   evaluateConditionsLocally(conditions, hass, {});
 
-// The mixin uses this as the optimistic seed while a `subscribe_condition`
-// result is pending; anything it cannot evaluate exactly must stay unknown so
-// a `not` around a server-only leaf is not inverted into a false "visible".
+// Optimistic seed while waiting on core. Unknown leaves stay unknown so
+// `not: [template]` is not treated as visible.
 describe("evaluateConditionsLocally", () => {
   it("evaluates client-only and lovelace stateful leaves", () => {
     expect(evaluate([cond({ condition: "user", users: ["user1"] })])).toBe(
@@ -144,10 +143,7 @@ describe("evaluateConditionsLocally", () => {
   });
 
   it("skips disabled nodes and leaves a template-valued enabled unknown", () => {
-    // Core skips a disabled condition inside a compound (it neither passes nor
-    // fails); the legacy evaluator ignores `enabled`, so without this a
-    // `not: [disabled failing state, ...]` would be seeded visible while core
-    // reports hidden.
+    // Core skips disabled nodes; checkConditionsMet still ignores `enabled`.
     expect(
       evaluate([
         cond({

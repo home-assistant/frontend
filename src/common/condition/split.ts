@@ -8,31 +8,25 @@ import {
   translateToCoreCondition,
 } from "./translate";
 
-/** A maximal server subtree, to be opened as one `subscribe_condition`. */
+/** One `subscribe_condition` (largest server subtree we can group). */
 export interface ServerSubtree {
   id: string;
   coreCondition: CoreCondition;
 }
 
-/**
- * Evaluate a single client-only condition leaf (`screen`, `user`,
- * `view_columns`, `location`, `time`). Returns `undefined` when the outcome is
- * not yet determinable (e.g. context not available).
- */
+/** Evaluate a client-only leaf. `undefined` if it cannot be decided yet. */
 export type ClientConditionEvaluator = (
   condition: VisibilityCondition
 ) => boolean | undefined;
 
-/** Server subtree results keyed by {@link ServerSubtree.id}; `undefined` = not yet reported. */
+/** Results by subtree id. `undefined` means not reported yet. */
 export type ServerConditionResults = Record<string, boolean | undefined>;
 
 export interface SplitConditionTree {
-  /** Maximal server subtrees, each to be opened as one `subscribe_condition`. */
   serverSubtrees: ServerSubtree[];
   /**
-   * Combine client + server results into the overall visibility using
-   * three-valued (Kleene) logic. Returns `undefined` while the outcome still
-   * depends on a server subtree that has not reported yet.
+   * Combine client and server results. Returns `undefined` while a needed
+   * server subtree has not reported.
    */
   evaluate: (
     clientEvaluator: ClientConditionEvaluator,
@@ -45,8 +39,7 @@ type EvalNode = (
   serverResults: ServerConditionResults
 ) => boolean | undefined;
 
-// Three-valued logic combinators (true / false / undefined = unknown). `false`
-// dominates AND and `true` dominates OR regardless of any unknown sibling.
+// false wins AND, true wins OR, even if a sibling is still unknown.
 const andNode =
   (children: EvalNode[]): EvalNode =>
   (clientEvaluator, serverResults) => {
@@ -91,21 +84,11 @@ const clientLeaf =
 const unknownLeaf: EvalNode = () => undefined;
 
 /**
- * Split a dashboard visibility condition tree into:
+ * Split a visibility tree into server subscriptions and a local combiner.
  *
- * - a flat list of **maximal server subtrees** (`serverSubtrees`), each
- *   translated to core format and meant to back one `subscribe_condition`; and
- * - an **`evaluate`** function that recombines those subtree results with
- *   locally-evaluated client leaves into the overall visibility.
- *
- * The top-level array is treated as an implicit `AND`. Nodes with
- * `enabled: false` are skipped, matching core; a client-side node whose
- * `enabled` is a template (which only core could render) stays unknown.
- * Sibling server
- * conditions sharing a logical parent (including that implicit top-level AND)
- * are grouped into a *single* subscription using the parent's operator, to
- * avoid subscription fan-out. A `not` combines its children with `AND` before
- * negating, matching lovelace `not` semantics (¬(AND of children)).
+ * Sibling server conditions under the same parent share one subscription.
+ * `enabled: false` is skipped. A template `enabled` on a client node stays
+ * unknown. Lovelace `not` is NOT(AND of children).
  */
 export const splitConditionTree = (
   conditions: VisibilityCondition[]
@@ -120,9 +103,7 @@ export const splitConditionTree = (
     return serverLeaf(id);
   };
 
-  // Partition children into client/server, group the server siblings into one
-  // subscription, and recurse into the client ones. `groupOperator` is the
-  // operator used to combine the grouped server siblings.
+  // Group server siblings into one subscription; recurse into client children.
   const buildSiblings = (
     children: VisibilityCondition[],
     groupOperator: "and" | "or"
@@ -130,8 +111,7 @@ export const splitConditionTree = (
     const serverChildren: VisibilityCondition[] = [];
     const clientChildren: VisibilityCondition[] = [];
     for (const child of children) {
-      // A disabled node neither passes nor fails (core skips it inside a
-      // compound); leave it out so it is neither subscribed nor combined.
+      // Core skips disabled nodes; don't subscribe or combine them.
       if (isDisabledCondition(child)) {
         continue;
       }
@@ -158,13 +138,8 @@ export const splitConditionTree = (
     return nodes;
   };
 
-  // Only ever reached for client-class nodes (server subtrees are grouped and
-  // translated whole by `buildSiblings`).
   const build = (condition: VisibilityCondition): EvalNode => {
-    // A template-valued `enabled` can only be rendered by core, which never
-    // sees a client-side node. Rather than silently treating the node as
-    // enabled, keep it unknown (so the tree errs toward hiding), matching the
-    // optimistic seed in `evaluateConditionsLocally`.
+    // Template `enabled` on a client node can't be rendered here; stay unknown.
     if ("enabled" in condition && typeof condition.enabled !== "boolean") {
       return unknownLeaf;
     }
@@ -178,7 +153,7 @@ export const splitConditionTree = (
       }
       return andNode(buildSiblings(children, "and"));
     }
-    // Defensive: a server leaf reaching here still becomes a subscription.
+    // Should only happen if a server leaf slipped past grouping.
     if (isServerCondition(condition)) {
       return addSubtree(translateToCoreCondition(condition));
     }

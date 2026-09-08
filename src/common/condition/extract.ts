@@ -37,8 +37,7 @@ export function extractTimeConditions(
       array.push(...extractTimeConditions(ensureArray(c.conditions)));
     }
     if ("condition" in c && c.condition === "time") {
-      // Dashboard `time` is always the client-side lovelace shape; core `time`
-      // is intentionally excluded from VisibilityCondition.
+      // Dashboard `time` is always the client lovelace shape.
       array.push(c as TimeCondition);
     }
     return array;

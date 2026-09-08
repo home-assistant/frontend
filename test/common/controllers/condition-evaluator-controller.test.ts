@@ -168,8 +168,7 @@ describe("ConditionEvaluatorController", () => {
   });
 
   it("stays hidden on a subscription error even under a client-side not", async () => {
-    // The errored subtree must not act as a `false` that the mixed `not`
-    // inverts into visible; an invalid configuration always hides.
+    // Don't treat an error as `false` that `not` would invert to visible.
     const { controller } = await setup([
       cond({
         condition: "not",
@@ -186,9 +185,7 @@ describe("ConditionEvaluatorController", () => {
   });
 
   it("surfaces template errors without overriding the result", async () => {
-    // Core still evaluates a result when a template inside the condition
-    // fails to render (e.g. an undefined variable); the editor should flag it,
-    // but visibility follows core's result rather than being forced hidden.
+    // Template render errors are flagged; they don't force hidden.
     const { controller, last } = await setup([
       cond({ condition: "template", value_template: "{{ x }}" }),
     ]);
@@ -264,10 +261,7 @@ describe("ConditionEvaluatorController", () => {
       stale.push({ result: true });
       expect(controller.result).toBe("visible");
 
-      // A different tree: the old verdict no longer applies. The old
-      // subscription is dropped right away and the result is unknown until the
-      // debounced re-subscribe reports, rather than showing the previous tree's
-      // result (which a stale push must not revive either).
+      // Drop the old subscription immediately; don't keep its result.
       controller.observe(
         [cond({ condition: "state", entity: "light.a", state: "off" })],
         hass
@@ -320,9 +314,7 @@ describe("ConditionEvaluatorController", () => {
     });
     expect(subs).toHaveLength(1);
 
-    // Clearing while hass keeps updating faster than the debounce used to
-    // reschedule the timer forever (undefined doubled as "nothing pending"),
-    // leaving the old subscription alive.
+    // Clearing used to keep rescheduling because `undefined` meant "nothing pending".
     controller.observe(undefined, createHass());
     controller.observe(undefined, createHass());
     controller.observe(undefined, createHass());
@@ -356,8 +348,7 @@ describe("ConditionEvaluatorController", () => {
   });
 
   it("re-subscribes when a non-finite bound flips sign", async () => {
-    // JSON.stringify turns both Infinity and -Infinity into null, which would
-    // make the two trees indistinguishable by signature.
+    // JSON.stringify maps both infinities to null, so the signature would match.
     const hass = createHass();
     const { controller } = await setup(
       [
@@ -439,8 +430,7 @@ describe("ConditionEvaluatorController", () => {
   });
 
   it("does not re-subscribe when a fresh array of equal content is passed", async () => {
-    // A host re-deriving `config.visibility ?? []` each render passes a NEW
-    // array reference with identical content; that must not churn subscriptions.
+    // A new array with the same content must not churn subscriptions.
     const make = () => [
       cond({ condition: "state", entity: "light.a", state: "on" }),
     ];

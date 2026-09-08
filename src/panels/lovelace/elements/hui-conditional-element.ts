@@ -63,9 +63,6 @@ class HuiConditionalElement
       return;
     }
 
-    // The evaluator delegates the stateful conditions (state, numeric_state,
-    // template, sun, zone, device, integration) to core and evaluates the
-    // client-only ones locally, including legacy `{ entity, state }`.
     super.setupConditionalListeners(this._config.conditions);
   }
 

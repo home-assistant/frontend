@@ -45,7 +45,6 @@ const UI_CONDITION = [
   "screen",
   "time",
   "user",
-  // Server-class types, edited via the automation condition editors.
   "template",
   "sun",
   "zone",
@@ -80,9 +79,7 @@ export class HaCardConditionsEditor extends LitElement {
   private _focusLastConditionOnChange = false;
 
   protected firstUpdated() {
-    // The reused automation condition editors (state / numeric_state / template
-    // / sun / zone / device) label their form fields from the `config`
-    // translation fragment, which the dashboard editor does not otherwise load.
+    // Automation condition editors read labels from the config fragment.
     this.hass.loadFragmentTranslation("config");
 
     // Expand the condition if there is only one
@@ -114,17 +111,14 @@ export class HaCardConditionsEditor extends LitElement {
     }
   }
 
-  // Entity-filter consumers (map card, entity filter) still evaluate their
-  // conditions locally, where the server-only types would silently evaluate to
-  // false and filter out every entity, so don't offer them there.
+  // Entity filters still evaluate locally; don't offer server-only types there.
   private get _availableConditions(): readonly string[] {
     return this._noEntity
       ? UI_CONDITION.filter((condition) => !isServerEditorCondition(condition))
       : UI_CONDITION;
   }
 
-  // The clipboard is shared across all condition editors in the session, so a
-  // condition copied from a visibility editor may not be usable as a filter.
+  // Clipboard is shared; a visibility condition may not be valid as a filter.
   private get _canPaste(): boolean {
     return (
       this._clipboard !== undefined &&
@@ -202,9 +196,7 @@ export class HaCardConditionsEditor extends LitElement {
       const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
     } else if (usesAutomationConditionEditor(value, this._noEntity)) {
-      // Authored in core format via the automation condition editors (server
-      // types, plus state/numeric_state outside entity-filter mode); seed with
-      // that editor's default config.
+      // Seed from the automation editor's default config.
       const elClass = customElements.get(`ha-automation-condition-${value}`) as
         { defaultConfig?: object } | undefined;
       const defaultConfig = elClass?.defaultConfig;

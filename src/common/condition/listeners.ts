@@ -15,11 +15,8 @@ import { calculateNextTimeUpdate } from "./time-calculator";
 const MAX_TIMEOUT_DELAY = 2147483647;
 
 /**
- * Schedule a callback to fire at the next boundary of a time condition,
- * rescheduling itself afterwards. Delays beyond the setTimeout maximum are
- * capped and re-scheduled without firing (so the boundary is only reported
- * once it is actually reached). Registers a single cleanup function that
- * clears the pending timeout.
+ * Fire onChange at the next time-condition boundary, then reschedule.
+ * Delays past the setTimeout max are capped and retried without firing.
  */
 function scheduleTimeBoundaryListener(
   getHass: () => HomeAssistant,
@@ -30,7 +27,7 @@ function scheduleTimeBoundaryListener(
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const scheduleUpdate = () => {
-    // Read hass lazily so timezone changes are picked up on the next boundary.
+    // Read hass here so a timezone change applies at the next boundary.
     const delay = calculateNextTimeUpdate(getHass(), timeCondition);
 
     if (delay === undefined) return;
