@@ -72,6 +72,42 @@ describe("evaluateConditionsLocally", () => {
     ).toBeUndefined();
   });
 
+  it("treats any node carrying enabled as unknown", () => {
+    // Core treats a disabled condition as neutral (passing); the legacy
+    // evaluator ignores `enabled`, so `not: [disabled failing state, ...]`
+    // would otherwise be seeded visible while core reports hidden.
+    expect(
+      evaluate([
+        cond({
+          condition: "state",
+          entity_id: "light.on",
+          state: "off",
+          enabled: false,
+        }),
+      ])
+    ).toBeUndefined();
+    expect(
+      evaluate([
+        cond({
+          condition: "not",
+          conditions: [
+            { entity: "light.on", state: "off", enabled: false },
+            { entity: "light.on", state: "on" },
+          ],
+        }),
+      ])
+    ).toBeUndefined();
+    expect(
+      evaluate([
+        cond({
+          condition: "and",
+          enabled: "{{ false }}",
+          conditions: [{ entity: "light.on", state: "on" }],
+        }),
+      ])
+    ).toBeUndefined();
+  });
+
   it("treats core-only leaves as unknown", () => {
     expect(
       evaluate([cond({ condition: "template", value_template: "{{ true }}" })])

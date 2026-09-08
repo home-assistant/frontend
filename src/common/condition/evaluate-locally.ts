@@ -69,7 +69,8 @@ const isLocallyEvaluableServerLeaf = (
  * Client-only leaves and server leaves whose semantics the legacy evaluator
  * reproduces (see {@link isLocallyEvaluableServerLeaf}) are evaluated with
  * `checkConditionsMet`; every other leaf (`template`, `sun`, `zone`, `device`,
- * integration conditions, core `state` with `for`, …) is unknown. Unknown
+ * integration conditions, core `state` with `for`, anything carrying
+ * `enabled`, …) is unknown. Unknown
  * propagates through `and` / `or` / `not` unless a sibling decides the result,
  * so e.g. `not: [template]` stays unknown rather than being inverted to true.
  *
@@ -93,6 +94,12 @@ export const evaluateConditionsLocally = (
   const evaluateNode = (
     condition: VisibilityCondition
   ): boolean | undefined => {
+    // Core treats a disabled condition (`enabled: false`, possibly a template)
+    // as neutral; the legacy evaluator ignores `enabled` altogether, so leave
+    // any node carrying it to the server.
+    if ("enabled" in condition) {
+      return undefined;
+    }
     if (isLogicalCondition(condition)) {
       // Lovelace treats a logical condition with no `conditions` key as
       // vacuously true (matches checkAnd/Or/NotCondition).
