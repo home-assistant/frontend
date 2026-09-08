@@ -100,22 +100,36 @@ export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
 export const isServerEditorCondition = (condition: string): boolean =>
   SERVER_EDITOR_CONDITIONS.includes(condition);
 
-// Whether a condition tree can be used as an entity filter (map card, entity
-// filter card/badge). Those consumers still evaluate locally against each
-// filtered entity, so a server-only type (which would evaluate to false and
-// filter everything out) or a core-format leaf pinned to its own `entity_id`
-// is not usable there.
+// Leaf types the entity-filter consumers (map card, entity filter card/badge)
+// can evaluate locally against each filtered entity via `checkConditionsMet`.
+const FILTER_CONDITION_TYPES = new Set([
+  "state",
+  "numeric_state",
+  "screen",
+  "user",
+  "view_columns",
+  "location",
+  "time",
+]);
+
+// Whether a condition tree can be used as an entity filter. Anything outside
+// the locally evaluable types above (template / sun / zone / device and
+// integration-provided conditions, which the local evaluator would fail and
+// so filter everything out), or a core-format leaf pinned to its own
+// `entity_id`, is not usable there.
 export const isFilterCompatibleCondition = (
   condition: VisibilityCondition
 ): boolean => {
   if (isLogicalCondition(condition)) {
     return (condition.conditions ?? []).every(isFilterCompatibleCondition);
   }
+  // Legacy `{ entity, state }` is a lovelace state condition.
   if (!("condition" in condition)) {
     return true;
   }
   return (
-    !isServerEditorCondition(condition.condition) && !("entity_id" in condition)
+    FILTER_CONDITION_TYPES.has(condition.condition) &&
+    !("entity_id" in condition)
   );
 };
 
