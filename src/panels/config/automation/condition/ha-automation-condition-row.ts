@@ -234,17 +234,6 @@ export default class HaAutomationConditionRow extends LitElement {
         )}
         ${
           this._getType(this.condition, this.conditionDescriptions) ===
-          "platform"
-            ? html`<ha-automation-row-threshold
-                .config=${this.condition}
-                .description=${
-                  this.conditionDescriptions[this.condition.condition]
-                }
-              ></ha-automation-row-threshold>`
-            : nothing
-        }
-        ${
-          this._getType(this.condition, this.conditionDescriptions) ===
             "platform" && targetRequired
             ? html`<ha-automation-row-behavior
                 mode="condition"
@@ -260,6 +249,17 @@ export default class HaAutomationConditionRow extends LitElement {
                 conditionTargetSpec,
                 this.condition.condition !== "device"
               )
+            : nothing
+        }
+        ${
+          this._getType(this.condition, this.conditionDescriptions) ===
+          "platform"
+            ? html`<ha-automation-row-threshold
+                .config=${this.condition}
+                .description=${
+                  this.conditionDescriptions[this.condition.condition]
+                }
+              ></ha-automation-row-threshold>`
             : nothing
         }
         ${

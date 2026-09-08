@@ -117,9 +117,11 @@ export class HaAutomationRowThreshold extends LitElement {
           return undefined;
         }
 
-        const unit = threshold.value_min?.unit_of_measurement ?? "";
+        const separateUnits =
+          threshold.value_min?.unit_of_measurement !==
+          threshold.value_max?.unit_of_measurement;
 
-        const range = `${min}-${max}${this._unit(unit)}`;
+        const range = `${min}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""}-${max}${this._unit(threshold.value_max?.unit_of_measurement)}`;
 
         return i18n.localize(
           `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
@@ -127,19 +129,19 @@ export class HaAutomationRowThreshold extends LitElement {
         );
       }
 
-      if (threshold?.value === undefined) {
+      if (isNaN(Number(threshold.value?.number))) {
         return undefined;
       }
       return i18n.localize(
         `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
         {
-          value: `${threshold.value.number}${this._unit(threshold.value.unit_of_measurement ?? "")}`,
+          value: `${threshold.value!.number}${this._unit(threshold.value!.unit_of_measurement ?? "")}`,
         }
       );
     }
   );
 
-  private _unit(unit: string): string {
+  private _unit(unit?: string): string {
     if (!unit) {
       return "";
     }

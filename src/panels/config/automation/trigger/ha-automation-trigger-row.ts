@@ -258,18 +258,6 @@ export default class HaAutomationTriggerRow extends LitElement {
           describeTrigger(this.trigger, this.hass, this._entityReg)
         )}
         ${
-          type === "platform"
-            ? html`<ha-automation-row-threshold
-                .config=${this.trigger}
-                .description=${
-                  this.triggerDescriptions[
-                    (this.trigger as PlatformTrigger).trigger
-                  ]
-                }
-              ></ha-automation-row-threshold>`
-            : nothing
-        }
-        ${
           type === "platform" && targetRequired
             ? html`<ha-automation-row-behavior
                 .config=${getTargetEntityCount(target) > 1 ? this.trigger : undefined}
@@ -284,6 +272,18 @@ export default class HaAutomationTriggerRow extends LitElement {
                 triggerTargetSpec,
                 type !== "device"
               )
+            : nothing
+        }
+        ${
+          type === "platform"
+            ? html`<ha-automation-row-threshold
+                .config=${this.trigger}
+                .description=${
+                  this.triggerDescriptions[
+                    (this.trigger as PlatformTrigger).trigger
+                  ]
+                }
+              ></ha-automation-row-threshold>`
             : nothing
         }
         ${

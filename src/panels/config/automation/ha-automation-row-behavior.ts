@@ -1,5 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
-import { html, LitElement } from "lit";
+import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { internationalizationContext } from "../../../data/context";
 import type {
@@ -27,7 +27,7 @@ export class HaAutomationRowBehavior extends LitElement {
   private get _label(): string | undefined {
     const behavior = this.config?.options?.behavior;
     if (!behavior) {
-      return "";
+      return undefined;
     }
     return (
       (this.mode === "condition"
@@ -36,8 +36,14 @@ export class HaAutomationRowBehavior extends LitElement {
           )
         : this._i18n?.localize(
             `ui.components.selectors.automation_behavior.trigger.options.${behavior as AutomationBehaviorTriggerMode}.row_label`
-          )) || ""
+          )) || undefined
     );
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // Collapse the host when empty so the parent flex gap is not reserved.
+    this.toggleAttribute("hidden", !this._label);
   }
 
   protected render() {
