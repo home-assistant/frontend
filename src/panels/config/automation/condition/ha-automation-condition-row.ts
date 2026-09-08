@@ -65,6 +65,7 @@ import {
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
+import { getTargetEntityCount } from "../../../../data/target";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -244,10 +245,10 @@ export default class HaAutomationConditionRow extends LitElement {
         }
         ${
           this._getType(this.condition, this.conditionDescriptions) ===
-          "platform"
+            "platform" && targetRequired
             ? html`<ha-automation-row-behavior
                 mode="condition"
-                .config=${this.condition}
+                .config=${getTargetEntityCount(target) > 1 ? this.condition : undefined}
               ></ha-automation-row-behavior>`
             : nothing
         }

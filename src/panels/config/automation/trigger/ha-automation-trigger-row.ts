@@ -62,6 +62,7 @@ import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
+import { getTargetEntityCount } from "../../../../data/target";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -269,9 +270,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             : nothing
         }
         ${
-          type === "platform" && target !== undefined
+          type === "platform" && targetRequired
             ? html`<ha-automation-row-behavior
-                .config=${this.trigger}
+                .config=${getTargetEntityCount(target) > 1 ? this.trigger : undefined}
               ></ha-automation-row-behavior>`
             : nothing
         }

@@ -16,7 +16,7 @@ interface HaAutomationRowBehaviorConfig {
 
 @customElement("ha-automation-row-behavior")
 export class HaAutomationRowBehavior extends LitElement {
-  @property({ attribute: false }) public config!: HaAutomationRowBehaviorConfig;
+  @property({ attribute: false }) public config?: HaAutomationRowBehaviorConfig;
 
   @property() public mode: "trigger" | "condition" = "trigger";
 
