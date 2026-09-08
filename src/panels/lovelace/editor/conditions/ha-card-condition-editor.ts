@@ -13,6 +13,7 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isLogicalCondition } from "../../../../common/condition/translate";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
@@ -98,6 +99,25 @@ export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
 
 export const isServerEditorCondition = (condition: string): boolean =>
   SERVER_EDITOR_CONDITIONS.includes(condition);
+
+// Whether a condition tree can be used as an entity filter (map card, entity
+// filter card/badge). Those consumers still evaluate locally against each
+// filtered entity, so a server-only type (which would evaluate to false and
+// filter everything out) or a core-format leaf pinned to its own `entity_id`
+// is not usable there.
+export const isFilterCompatibleCondition = (
+  condition: VisibilityCondition
+): boolean => {
+  if (isLogicalCondition(condition)) {
+    return (condition.conditions ?? []).every(isFilterCompatibleCondition);
+  }
+  if (!("condition" in condition)) {
+    return true;
+  }
+  return (
+    !isServerEditorCondition(condition.condition) && !("entity_id" in condition)
+  );
+};
 
 // Condition types edited via the core automation condition editors. The
 // server-class types always are; `state` / `numeric_state` are too, except in

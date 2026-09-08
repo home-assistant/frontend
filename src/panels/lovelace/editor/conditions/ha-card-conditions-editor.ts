@@ -23,6 +23,7 @@ import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,
+  isFilterCompatibleCondition,
   isServerEditorCondition,
   usesAutomationConditionEditor,
 } from "./ha-card-condition-editor";
@@ -122,6 +123,15 @@ export class HaCardConditionsEditor extends LitElement {
       : UI_CONDITION;
   }
 
+  // The clipboard is shared across all condition editors in the session, so a
+  // condition copied from a visibility editor may not be usable as a filter.
+  private get _canPaste(): boolean {
+    return (
+      this._clipboard !== undefined &&
+      (!this._noEntity || isFilterCompatibleCondition(this._clipboard))
+    );
+  }
+
   protected render() {
     return html`
       <div class="conditions">
@@ -145,7 +155,7 @@ export class HaCardConditionsEditor extends LitElement {
               )}
             </ha-button>
             ${
-              this._clipboard
+              this._canPaste
                 ? html`
                     <ha-dropdown-item value="paste">
                       ${this.hass.localize(
@@ -184,7 +194,7 @@ export class HaCardConditionsEditor extends LitElement {
     const value = ev.detail.item.value as string;
     const conditions = [...this.conditions];
 
-    if (!value || (value === "paste" && !this._clipboard)) {
+    if (!value || (value === "paste" && !this._canPaste)) {
       return;
     }
 
