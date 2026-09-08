@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/home-assistant/service-hub/main/schemas/service-hub/v1.json
+version: 1
+
+additional-checks:
+  blocking-labels:
+    type: blocking-labels
+    additional-labels:
+      - Needs UX
+      - Do Not Review
+      - Blocked
+      - has-parent
