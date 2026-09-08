@@ -21,7 +21,7 @@ type Constructor<T> = abstract new (...args: any[]) => T;
  * Base config type that can be used with conditional listeners
  */
 export interface ConditionalConfig {
-  visibility?: Condition[];
+  visibility?: VisibilityCondition[];
   [key: string]: any;
 }
 
@@ -195,8 +195,7 @@ export const ConditionalListenerMixin = <
       // Prefer the resolved `_config` (e.g. a strategy-generated section config)
       // over the raw `config`, matching the pre-refactor evaluation source.
       const config = this._config || this.config;
-      const finalConditions =
-        conditions ?? (config?.visibility as VisibilityCondition[] | undefined);
+      const finalConditions = conditions ?? config?.visibility;
       const entityId = this._conditionContext.entity_id;
 
       this.__conditions = finalConditions;

@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
-import type { VisibilityCondition } from "../common/validate-condition";
 import { validateConditionalConfig } from "../common/validate-condition";
 import type { LovelacePictureElementEditor } from "../types";
 import type {
@@ -67,9 +66,7 @@ class HuiConditionalElement
     // The evaluator delegates the stateful conditions (state, numeric_state,
     // template, sun, zone, device, integration) to core and evaluates the
     // client-only ones locally, including legacy `{ entity, state }`.
-    super.setupConditionalListeners(
-      this._config.conditions as VisibilityCondition[]
-    );
+    super.setupConditionalListeners(this._config.conditions);
   }
 
   protected update(changed: PropertyValues): void {

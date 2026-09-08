@@ -5,7 +5,6 @@ import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
-import type { VisibilityCondition } from "../common/validate-condition";
 import { validateConditionalConfig } from "../common/validate-condition";
 import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 
@@ -76,9 +75,7 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
 
     // The evaluator handles every condition type, including legacy
     // `{ entity, state }` conditions, so feed them all through.
-    super.setupConditionalListeners(
-      this._config.conditions as VisibilityCondition[]
-    );
+    super.setupConditionalListeners(this._config.conditions);
   }
 
   protected update(changed: PropertyValues): void {

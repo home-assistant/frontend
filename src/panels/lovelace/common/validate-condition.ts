@@ -510,9 +510,12 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
  * @returns true if conditions are validated
  */
 export function validateConditionalConfig(
-  conditions: (Condition | LegacyCondition)[]
+  conditions: VisibilityCondition[]
 ): boolean {
-  return conditions.every((c) => {
+  return conditions.every((visibilityCondition) => {
+    // Narrow to the lovelace shapes for the switch below; anything else (the
+    // core-only types) falls through to the default branch.
+    const c = visibilityCondition as Condition | LegacyCondition;
     if ("condition" in c) {
       switch (c.condition) {
         case "view_columns":
