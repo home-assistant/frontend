@@ -995,6 +995,20 @@ describe("MapLibreMapEngine", () => {
       expect(handle.radius).toBe(100);
     });
 
+    it("keeps a click on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("click", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new MouseEvent("click", { bubbles: true })
+      );
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("click", reachedMap);
+    });
+
     it("raises the advertised maximum above a larger radius", async () => {
       const { engine, ready } = await createEngine();
       await ready;

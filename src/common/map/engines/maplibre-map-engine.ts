@@ -868,6 +868,8 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle.addEventListener("keyup", commitKeyboardResize);
       // Focus can leave while a key is still held
       resizeHandle.addEventListener("blur", commitKeyboardResize);
+      // Like the other markers: a click on the handle is not a map click
+      resizeHandle.addEventListener("click", (ev) => ev.stopPropagation());
     }
 
     [centerMarker, resizeMarker].forEach((handleMarker) => {

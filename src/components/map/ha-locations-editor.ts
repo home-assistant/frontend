@@ -104,29 +104,31 @@ export class HaLocationsEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-map
-        .editableLocations=${this._editableLocations(this.locations)}
-        .zoom=${this.zoom}
-        .autoFit=${this.autoFit}
-        .themeMode=${this.themeMode}
-        .clickable=${this.pinOnClick}
-        @map-clicked=${this._mapClicked}
-        @editable-location-moved=${this._locationMoved}
-        @editable-location-resized=${this._radiusChanged}
-        @editable-location-clicked=${this._markerClicked}
-        @editing-available-changed=${this._editingAvailableChanged}
-      ></ha-map>
-      ${
-        !this._editingAvailable &&
-        this._i18n &&
-        this.locations?.some(
-          (location) => location.location_editable || location.radius_editable
-        )
-          ? html`<ha-alert alert-type="warning">
-              ${this._i18n.localize("ui.components.map.editing_unavailable")}
-            </ha-alert>`
-          : ""
-      }
+      <div class="map">
+        <ha-map
+          .editableLocations=${this._editableLocations(this.locations)}
+          .zoom=${this.zoom}
+          .autoFit=${this.autoFit}
+          .themeMode=${this.themeMode}
+          .clickable=${this.pinOnClick}
+          @map-clicked=${this._mapClicked}
+          @editable-location-moved=${this._locationMoved}
+          @editable-location-resized=${this._radiusChanged}
+          @editable-location-clicked=${this._markerClicked}
+          @editing-available-changed=${this._editingAvailableChanged}
+        ></ha-map>
+        ${
+          !this._editingAvailable &&
+          this._i18n &&
+          this.locations?.some(
+            (location) => location.location_editable || location.radius_editable
+          )
+            ? html`<ha-alert alert-type="warning">
+                ${this._i18n.localize("ui.components.map.editing_unavailable")}
+              </ha-alert>`
+            : ""
+        }
+      </div>
       ${
         this.helper
           ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
@@ -283,9 +285,21 @@ export class HaLocationsEditor extends LitElement {
   }
 
   static styles = css`
+    .map {
+      position: relative;
+      height: 100%;
+    }
     ha-map {
       display: block;
       height: 100%;
+    }
+    /* Over the map, clear of the zoom control, so a fixed-height host shows it */
+    ha-alert {
+      position: absolute;
+      top: var(--ha-space-2);
+      inset-inline-start: 56px;
+      inset-inline-end: var(--ha-space-2);
+      z-index: 1;
     }
   `;
 }
