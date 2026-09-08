@@ -34,41 +34,35 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
 };
 
 /**
- * Whether a server-class leaf has semantics the legacy client evaluator
- * reproduces exactly: a lovelace-format (`entity`-based or legacy) `state` /
- * `numeric_state` whose target entity is present (a missing entity is an
- * error for core, which hides the tree, while the legacy evaluator compares
- * against the literal `unknown`), or a core-format one restricted to the subset
- * `checkConditionsMet` evaluates identically — a single `entity_id` whose
- * entity is present (core errors on a missing entity, the client evaluates
- * it as `unknown`), no `for` / `match` / `value_template`, no `attribute`
- * (core compares the raw attribute value while the client stringifies it),
- * no entity-id comparison value (core only dereferences `input_*`, the client
- * any existing entity), and, for `numeric_state`, at least one bound, both
- * numeric rather than entity-valued (core rejects a bound-less condition and
- * errors on a missing bound entity, while the client passes / ignores them).
+ * Whether the legacy client evaluator reproduces core's result for this
+ * server-class leaf exactly, so it can serve as the optimistic seed.
+ *
+ * Only `state` / `numeric_state` qualify, and only while the target entity
+ * exists (core errors on a missing entity, the client compares against
+ * `unknown`). A core-format leaf must also stay within what
+ * `checkConditionsMet` implements: a single `entity_id`, none of `for`,
+ * `match`, `value_template` or `attribute`, no entity-id comparison values,
+ * and at least one bound, both numeric rather than entity-valued.
  */
 const isLocallyEvaluableServerLeaf = (
   condition: VisibilityCondition,
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   context: ConditionContext
 ): boolean => {
-  if (
-    "condition" in condition &&
-    condition.condition !== "state" &&
-    condition.condition !== "numeric_state"
-  ) {
+  const type = "condition" in condition ? condition.condition : "state";
+  if (type !== "state" && type !== "numeric_state") {
     return false;
   }
+
   if (!("entity_id" in condition)) {
-    // Lovelace format (or legacy `{ entity, state }`): exact as long as the
-    // target entity exists. Same truthy fallback as `checkStateCondition`, so
-    // an empty `entity: ""` targets the host entity.
+    // Lovelace format: same truthy fallback to the host entity as
+    // checkStateCondition, so an empty `entity: ""` counts as none.
     const target =
       ("entity" in condition ? condition.entity : undefined) ||
       context.entity_id;
-    return !!target && hass.states[target] !== undefined;
+    return !!target && target in states;
   }
+
   const core = condition as {
     entity_id?: unknown;
     attribute?: unknown;
@@ -81,7 +75,7 @@ const isLocallyEvaluableServerLeaf = (
   };
   if (
     typeof core.entity_id !== "string" ||
-    hass.states[core.entity_id] === undefined ||
+    !(core.entity_id in states) ||
     core.attribute !== undefined ||
     core.for !== undefined ||
     core.match !== undefined ||
@@ -89,14 +83,11 @@ const isLocallyEvaluableServerLeaf = (
   ) {
     return false;
   }
-  if (condition.condition === "numeric_state") {
-    return (
-      (typeof core.above === "number" || typeof core.below === "number") &&
-      (core.above === undefined || typeof core.above === "number") &&
-      (core.below === undefined || typeof core.below === "number")
-    );
+  if (type === "numeric_state") {
+    const bounds = [core.above, core.below].filter((b) => b !== undefined);
+    return bounds.length > 0 && bounds.every((b) => typeof b === "number");
   }
-  return !(ensureArray(core.state as string | string[] | undefined) ?? []).some(
+  return !ensureArray(core.state as string | string[] | undefined)?.some(
     isEntityReference
   );
 };
@@ -161,7 +152,7 @@ export const evaluateConditionsLocally = (
     }
     if (
       isClientCondition(condition) ||
-      isLocallyEvaluableServerLeaf(condition, hass, context)
+      isLocallyEvaluableServerLeaf(condition, hass.states, context)
     ) {
       return evaluateLeaf(condition);
     }
