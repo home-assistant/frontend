@@ -131,7 +131,6 @@ import {
   getAddAutomationElementTargetFromQuery,
 } from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
-import { shortcutStyles } from "./styles";
 
 const TYPES = {
   trigger: { collections: TRIGGER_COLLECTIONS, icons: TRIGGER_ICONS },
@@ -2326,7 +2325,6 @@ class DialogAddAutomationElement
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
-      shortcutStyles,
       css`
         ha-bottom-sheet {
           --ha-bottom-sheet-height: 90vh;
