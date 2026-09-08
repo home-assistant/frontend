@@ -1035,21 +1035,22 @@ export class HaMap extends ReactiveElement {
     .dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
       filter: invert(1);
     }
+    /* MapLibre's stylesheet, linked into this root, wins on equal specificity */
     .maplibregl-popup-content {
-      padding: 8px;
+      padding: 8px !important;
       font-size: var(--ha-font-size-s);
       font-family: var(--ha-font-family-body);
-      background: rgba(80, 80, 80, 0.9);
-      color: white;
-      border-radius: var(--ha-border-radius-sm);
-      box-shadow: none;
+      background: rgba(80, 80, 80, 0.9) !important;
+      color: white !important;
+      border-radius: var(--ha-border-radius-sm) !important;
+      box-shadow: none !important;
       text-align: center;
     }
     .maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
-      border-top-color: rgba(80, 80, 80, 0.9);
+      border-top-color: rgba(80, 80, 80, 0.9) !important;
     }
     .maplibregl-popup-anchor-top .maplibregl-popup-tip {
-      border-bottom-color: rgba(80, 80, 80, 0.9);
+      border-bottom-color: rgba(80, 80, 80, 0.9) !important;
     }
     .dark .leaflet-bar a {
       background-color: #1c1c1c;
