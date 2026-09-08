@@ -34,7 +34,9 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
 /**
  * Whether a server-class leaf has semantics the legacy client evaluator
  * reproduces exactly: a lovelace-format (`entity`-based or legacy) `state` /
- * `numeric_state`, or a core-format one restricted to the subset
+ * `numeric_state` whose target entity is present (a missing entity is an
+ * error for core, which hides the tree, while the legacy evaluator compares
+ * against the literal `unknown`), or a core-format one restricted to the subset
  * `checkConditionsMet` evaluates identically — a single `entity_id` whose
  * entity is present (core errors on a missing entity, the client evaluates
  * it as `unknown`), no `for` / `match` / `value_template`, no `attribute`
@@ -45,19 +47,23 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
  */
 const isLocallyEvaluableServerLeaf = (
   condition: VisibilityCondition,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  context: ConditionContext
 ): boolean => {
-  if (!("condition" in condition)) {
-    return true;
-  }
   if (
+    "condition" in condition &&
     condition.condition !== "state" &&
     condition.condition !== "numeric_state"
   ) {
     return false;
   }
   if (!("entity_id" in condition)) {
-    return true;
+    // Lovelace format (or legacy `{ entity, state }`): exact as long as the
+    // target entity exists.
+    const target =
+      ("entity" in condition ? condition.entity : undefined) ??
+      context.entity_id;
+    return target !== undefined && hass.states[target] !== undefined;
   }
   const core = condition as {
     entity_id?: unknown;
@@ -148,7 +154,7 @@ export const evaluateConditionsLocally = (
     }
     if (
       isClientCondition(condition) ||
-      isLocallyEvaluableServerLeaf(condition, hass)
+      isLocallyEvaluableServerLeaf(condition, hass, context)
     ) {
       return evaluateLeaf(condition);
     }

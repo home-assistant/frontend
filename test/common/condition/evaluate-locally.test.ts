@@ -110,6 +110,18 @@ describe("evaluateConditionsLocally", () => {
         cond({ condition: "state", entity_id: "light.gone", state: "unknown" }),
       ])
     ).toBeUndefined();
+    // same for a lovelace-format leaf: core will report an error and hide
+    expect(
+      evaluate([cond({ entity: "light.gone", state_not: "unavailable" })])
+    ).toBeUndefined();
+    expect(
+      evaluate([
+        cond({
+          condition: "not",
+          conditions: [{ entity: "light.gone", state: "on" }],
+        }),
+      ])
+    ).toBeUndefined();
   });
 
   it("skips disabled nodes and leaves a template-valued enabled unknown", () => {
