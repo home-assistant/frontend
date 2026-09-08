@@ -15,6 +15,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import {
+  isEntityReference,
   isLogicalCondition,
   logicalChildren,
 } from "../../../../common/condition/translate";
@@ -85,6 +86,9 @@ import type { LovelaceConditionEditorConstructor } from "./types";
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
 
 const CONTAINER_CONDITIONS = ["and", "or", "not"];
+
+const CORE_STATE_ENTITY_ID =
+  /^input_(?:select|text|number|boolean|datetime)\.(?!.+__)(?!_)[\da-z_]+(?<!_)$/;
 
 const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
   NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
@@ -488,7 +492,24 @@ export class HaCardConditionEditor extends LitElement {
       const stateNot =
         "state_not" in condition ? condition.state_not : undefined;
       const value = stateValue ?? stateNot;
-      const values = ensureArray(value ?? []).filter((v) => v !== "");
+      const values = ensureArray(value ?? [])
+        .filter((v) => v !== "")
+        .flatMap<string | number>((v) => {
+          if (!isEntityReference(v)) {
+            return [v];
+          }
+          const referencedState = this.hass.states[v]?.state;
+          if (referencedState === undefined) {
+            return [v];
+          }
+          // Core resolves helper references; legacy conditions also match the literal.
+          if ("entity_id" in condition) {
+            return CORE_STATE_ENTITY_ID.test(v) ? [referencedState] : [v];
+          }
+          return Array.isArray(value) || referencedState
+            ? [v, referencedState]
+            : [v];
+        });
       if (!values.length) {
         return undefined;
       }
