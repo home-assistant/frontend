@@ -13,7 +13,6 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isPureClientCondition } from "../../../../common/condition/translate";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
@@ -366,17 +365,16 @@ export class HaCardConditionEditor extends LitElement {
     ) {
       this.__observedSource = this.condition;
       this.__observedEntityId = entityId;
-      this.__clientInvalid =
-        isPureClientCondition(this.condition) &&
-        !validateConditionalConfig([this.condition] as Condition[]);
+      this.__clientInvalid = !validateConditionalConfig([this.condition]);
       const observed = entityId
         ? addEntityToCondition(this.condition as Condition, entityId)
         : this.condition;
       this.__observed = [observed] as VisibilityCondition[];
     }
 
-    // The server-backed path only reports errors for server-class subtrees, so
-    // surface a malformed client-only config as `invalid` here.
+    // Structural validation runs for every type (server-class types other
+    // than state / numeric_state are accepted as-is and validated by core); a
+    // malformed config is surfaced as `invalid` here without a round-trip.
     if (this.__clientInvalid) {
       this._override = "invalid";
       this._conditionEvaluator.observe(undefined, this.hass);
@@ -583,6 +581,7 @@ export class HaCardConditionEditor extends LitElement {
                         .hass=${this.hass}
                         .condition=${condition}
                         .uiSupported=${true}
+                        @ui-mode-not-available=${this._handleUiModeNotAvailable}
                       ></ha-automation-condition-editor>
                     `
                   : html`
@@ -681,6 +680,18 @@ export class HaCardConditionEditor extends LitElement {
     }
     // @ts-ignore
     fireEvent(this, "value-changed", { value: ev.detail.value });
+  }
+
+  // The embedded automation condition editors fire this when an existing core
+  // config fails their UI struct; fall back to YAML with the struct warnings,
+  // as the automation condition row does.
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    ev.stopPropagation();
+    this._uiWarnings = handleStructError(this.hass, ev.detail).warnings;
+    this._uiAvailable = false;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   static styles = [

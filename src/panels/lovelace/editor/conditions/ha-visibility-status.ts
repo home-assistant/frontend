@@ -3,7 +3,6 @@ import { mdiAlertCircle, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isPureClientCondition } from "../../../../common/condition/translate";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import "../../../../components/ha-alert";
@@ -145,9 +144,7 @@ export class HaVisibilityStatus extends LitElement {
     ) {
       this.__observedSource = conditions;
       this.__observedEntityId = entityId;
-      this.__clientInvalid =
-        conditions.every((c) => isPureClientCondition(c)) &&
-        !validateConditionalConfig(conditions as Condition[]);
+      this.__clientInvalid = !validateConditionalConfig(conditions);
       this.__observed = (
         entityId
           ? conditions.map((c) =>
@@ -157,8 +154,10 @@ export class HaVisibilityStatus extends LitElement {
       ) as VisibilityCondition[];
     }
 
-    // `validateConditionalConfig` only understands client types; a malformed
-    // server config surfaces through the controller's error instead.
+    // Structural validation covers every type (server-class types other than
+    // state / numeric_state are accepted as-is and validated by core); a
+    // malformed server config additionally surfaces through the controller's
+    // error.
     if (this.__clientInvalid) {
       this._override = "invalid";
       this._conditionEvaluator.observe(undefined, this.hass);
