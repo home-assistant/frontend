@@ -1,12 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
-import {
-  mdiAppleKeyboardCommand,
-  mdiClose,
-  mdiContentPaste,
-  mdiHelpCircleOutline,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -122,8 +116,8 @@ import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { isMac } from "../../../util/is_mac";
 import { showToast } from "../../../util/toast";
+import "./add-automation-element/ha-automation-add-element-paste";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
@@ -724,6 +718,9 @@ class DialogAddAutomationElement
                       (this._narrow && !!this._selectedGroup),
                   })}
                   .manifests=${this._manifests}
+                  .clipboardItem=${this._params!.clipboardItem}
+                  .automationElementType=${automationElementType}
+                  @paste-element=${this._paste}
                 ></ha-automation-add-from-target>`
               : html`
                   <ha-list-base
@@ -733,56 +730,12 @@ class DialogAddAutomationElement
                       "ha-scrollbar": true,
                     })}
                   >
-                    ${
-                      this._params!.clipboardItem
-                        ? html`<ha-list-item-button
-                              class="paste"
-                              @click=${this._paste}
-                            >
-                              <div slot="headline" class="label">
-                                ${this.hass.localize(
-                                  `ui.panel.config.automation.editor.${automationElementType}s.paste`
-                                )}
-                              </div>
-                              <div slot="supporting-text">
-                                ${this.hass.localize(
-                                  // @ts-ignore
-                                  `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
-                                )}
-                              </div>
-                              ${
-                                !this._narrow
-                                  ? html`<span slot="end" class="shortcut">
-                                      <span
-                                        >${
-                                          isMac
-                                            ? html`<ha-svg-icon
-                                                slot="start"
-                                                .path=${mdiAppleKeyboardCommand}
-                                              ></ha-svg-icon>`
-                                            : this.hass.localize(
-                                                "ui.panel.config.automation.editor.ctrl"
-                                              )
-                                        }</span
-                                      >
-                                      <span>+</span>
-                                      <span>V</span>
-                                    </span>`
-                                  : nothing
-                              }
-                              <ha-svg-icon
-                                slot="start"
-                                .path=${mdiContentPaste}
-                              ></ha-svg-icon
-                              ><ha-svg-icon
-                                class="plus"
-                                slot="end"
-                                .path=${mdiPlus}
-                              ></ha-svg-icon>
-                            </ha-list-item-button>
-                            <wa-divider></wa-divider>`
-                        : nothing
-                    }
+                    <ha-automation-add-element-paste
+                      .automationElementType=${automationElementType}
+                      .clipboardItem=${this._params!.clipboardItem}
+                      @paste-element=${this._paste}
+                      divider
+                    ></ha-automation-add-element-paste>
                     ${collections.map(
                       (collection) => html`
                         ${
@@ -2524,10 +2477,6 @@ class DialogAddAutomationElement
 
         ha-icon-next {
           width: var(--ha-space-6);
-        }
-
-        wa-divider {
-          --spacing: 0;
         }
 
         ha-svg-icon.plus {

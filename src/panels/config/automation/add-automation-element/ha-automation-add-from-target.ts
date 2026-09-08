@@ -65,6 +65,8 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
+import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import "./ha-automation-add-element-paste";
 
 interface Level1Entries {
   open: boolean;
@@ -104,6 +106,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public timeLocationGroups?: AddAutomationElementListItem[];
 
   @property({ attribute: false }) public selectedGroup?: string;
+
+  @property({ attribute: false }) public clipboardItem?: string;
+
+  @property({ attribute: "automation-element-type" })
+  public automationElementType!: AddAutomationElementDialogParams["type"];
 
   // #endregion properties
 
@@ -193,7 +200,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
         this.narrow && this.value
           ? this._renderNarrow(this._entries, this.value)
           : html`
-              ${this._renderFloors(this.narrow, this._entries, this.value)}
+              <ha-automation-add-element-paste
+                .automationElementType=${this.automationElementType}
+                .clipboardItem=${this.clipboardItem}
+              ></ha-automation-add-element-paste
+              >${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
                 this.timeLocationLabel,
@@ -630,7 +641,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
       });
 
     if (this.narrow) {
-      return html`<ha-section-title
+      return html` <ha-automation-add-element-paste
+          .automationElementType=${this.automationElementType}
+          .clipboardItem=${this.clipboardItem}
+        ></ha-automation-add-element-paste>
+        <ha-section-title
           >${this._i18n.localize(
             "ui.components.target-picker.type.areas"
           )}</ha-section-title
