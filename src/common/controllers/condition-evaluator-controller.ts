@@ -171,7 +171,11 @@ export class ConditionEvaluatorController implements ReactiveController {
       return this._lastSignature;
     }
     this._lastConditionsRef = conditions;
-    this._lastSignature = JSON.stringify(conditions);
+    // JSON serializes every non-finite number as `null`; keep ±Infinity (YAML
+    // `.inf` bounds) distinguishable so flipping one still re-subscribes.
+    this._lastSignature = JSON.stringify(conditions, (_key, value) =>
+      typeof value === "number" && !isFinite(value) ? `<${value}>` : value
+    );
     return this._lastSignature;
   }
 

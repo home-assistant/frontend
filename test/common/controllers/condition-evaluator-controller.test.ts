@@ -339,6 +339,37 @@ describe("ConditionEvaluatorController", () => {
     expect(controller.result).toBe("visible");
   });
 
+  it("re-subscribes when a non-finite bound flips sign", async () => {
+    // JSON.stringify turns both Infinity and -Infinity into null, which would
+    // make the two trees indistinguishable by signature.
+    const hass = createHass();
+    const { controller } = await setup(
+      [
+        cond({
+          condition: "numeric_state",
+          entity: "sensor.a",
+          above: 5,
+          below: Infinity,
+        }),
+      ],
+      hass
+    );
+    expect(subs).toHaveLength(1);
+    controller.observe(
+      [
+        cond({
+          condition: "numeric_state",
+          entity: "sensor.a",
+          above: 5,
+          below: -Infinity,
+        }),
+      ],
+      hass
+    );
+    await tick();
+    expect(subs).toHaveLength(2);
+  });
+
   it("does not re-subscribe when only hass changes", async () => {
     const conditions = [
       cond({ condition: "state", entity: "light.a", state: "on" }),
