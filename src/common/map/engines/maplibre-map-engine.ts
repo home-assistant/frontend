@@ -46,7 +46,11 @@ import type {
   MapPath,
 } from "../map-engine";
 import { distanceMeters, pointEastOf } from "../map-engine";
-import { createResizeHandleElement, RESIZE_KEY_STEP } from "../editable-circle";
+import {
+  createResizeHandleElement,
+  RADIUS_ARIA_MAX,
+  RESIZE_KEY_STEP,
+} from "../editable-circle";
 
 type MapLibreModule = typeof maplibregl;
 
@@ -424,12 +428,14 @@ export class MapLibreMapEngine implements MapEngine {
   }
 
   private _carryCustomLayers(
-    previous: StyleSpecification | undefined,
+    _previous: StyleSpecification | undefined,
     next: StyleSpecification
   ): StyleSpecification {
     const sources = { ...next.sources };
+    // Our record, not MapLibre's serialization: an update made while the
+    // style was unloaded only reached the record
     for (const [id, source] of this._customSources) {
-      sources[id] = previous?.sources?.[id] ?? source;
+      sources[id] = source;
     }
     const nextIds = new Set(next.layers.map((layer) => layer.id));
     const customLayers = [...this._customLayers.values()].filter(
@@ -768,6 +774,10 @@ export class MapLibreMapEngine implements MapEngine {
       const east = pointEastOf(currentCenter, currentRadius);
       resizeMarker?.setLngLat([east[1], east[0]]);
       const radiusText = String(Math.round(currentRadius));
+      resizeHandle?.setAttribute(
+        "aria-valuemax",
+        String(Math.max(RADIUS_ARIA_MAX, Math.round(currentRadius)))
+      );
       resizeHandle?.setAttribute("aria-valuenow", radiusText);
       // Without a value text the value is read as a percentage of the range
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
@@ -878,7 +888,8 @@ export class MapLibreMapEngine implements MapEngine {
         options.onClick!();
       };
       const onKeydown = (ev: KeyboardEvent) => {
-        if (ev.key === "Enter") {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
           options.onClick!();
         }
       };

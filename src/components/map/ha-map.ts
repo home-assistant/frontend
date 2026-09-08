@@ -134,15 +134,25 @@ const staticEditing = (engine: MapEngine): MapEditingSupport => ({
     if (!options.centerElement) {
       centerEl.className = "editable-circle-center";
     }
-    // The center element may be reused for a rebuilt circle; the listener goes with this one
-    let removeClick: (() => void) | undefined;
+    // The center element may be reused for a rebuilt circle; the listeners go with this one
+    let removeListeners: (() => void) | undefined;
     if (options.onClick) {
       const onClick = (ev: Event) => {
         ev.stopPropagation();
         options.onClick!();
       };
+      const onKeydown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          options.onClick!();
+        }
+      };
       centerEl.addEventListener("click", onClick);
-      removeClick = () => centerEl.removeEventListener("click", onClick);
+      centerEl.addEventListener("keydown", onKeydown);
+      removeListeners = () => {
+        centerEl.removeEventListener("click", onClick);
+        centerEl.removeEventListener("keydown", onKeydown);
+      };
     }
     let current = { center, radius: options.radius };
     let items: MapItemHandle[] = [];
@@ -173,7 +183,7 @@ const staticEditing = (engine: MapEngine): MapEditingSupport => ({
         draw();
       },
       remove: () => {
-        removeClick?.();
+        removeListeners?.();
         items.forEach((item) => item.remove());
       },
     };
@@ -741,6 +751,9 @@ export class HaMap extends ReactiveElement {
       getComputedStyle(this).getPropertyValue("--accent-color");
     for (const editable of this.editableLocations) {
       const { id } = editable;
+      // Markers are buttons, so an unnamed location still gets a name
+      const title =
+        editable.title ?? this._i18n?.localize("ui.components.map.location");
       const existing = this._editableHandles.get(id);
       const kind = editable.radius ? "circle" : "marker";
 
@@ -773,7 +786,7 @@ export class HaMap extends ReactiveElement {
             color: editable.color || defaultColor,
             centerElement: editable.element,
             centerSize: editable.elementSize,
-            title: editable.title,
+            title,
             moveable: editable.locationEditable,
             resizable: editable.radiusEditable,
             resizeLabel: editable.title
@@ -806,8 +819,15 @@ export class HaMap extends ReactiveElement {
         }
         fireEvent(this, "editable-location-clicked", { id });
       };
+      const onKeydown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          fireEvent(this, "editable-location-clicked", { id });
+        }
+      };
       element.addEventListener("pointerdown", onPointerDown);
       element.addEventListener("click", onClick);
+      element.addEventListener("keydown", onKeydown);
       // A location that cannot be dragged is static on any engine
       const support = editable.locationEditable ? editing : staticSupport;
       this._editableHandles.set(id, {
@@ -816,11 +836,12 @@ export class HaMap extends ReactiveElement {
         cleanup: () => {
           element.removeEventListener("pointerdown", onPointerDown);
           element.removeEventListener("click", onClick);
+          element.removeEventListener("keydown", onKeydown);
         },
         handle: support.addDraggableMarker(element, editable.location, {
           size: editable.elementSize ?? [16, 16],
           interactive: true,
-          title: editable.title,
+          title,
           onDragEnd: (location) => {
             dragged = true;
             fireEvent(this, "editable-location-moved", { id, location });

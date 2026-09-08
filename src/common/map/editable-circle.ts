@@ -9,14 +9,16 @@ export const RESIZE_HANDLE_DOT_SIZE = 12;
 /** Relative radius change per arrow key press on the handle */
 export const RESIZE_KEY_STEP = 0.1;
 
+/** Advertised slider maximum; a larger radius raises it (see the engine) */
+export const RADIUS_ARIA_MAX = 100000;
+
 export const createResizeHandleElement = (label?: string): HTMLElement => {
   const element = document.createElement("div");
   element.className = "editable-circle-resize";
   element.tabIndex = 0;
   element.setAttribute("role", "slider");
   element.setAttribute("aria-valuemin", "1");
-  // A slider needs a maximum; no zone comes near 100 km
-  element.setAttribute("aria-valuemax", "100000");
+  element.setAttribute("aria-valuemax", String(RADIUS_ARIA_MAX));
   if (label) {
     element.setAttribute("aria-label", label);
   }

@@ -1156,6 +1156,7 @@
       "map": {
         "error": "Unable to load map",
         "editing_unavailable": "This browser can't edit locations on the map.",
+        "location": "Location",
         "radius": "Radius in meters",
         "radius_of": "Radius of {name} in meters"
       },

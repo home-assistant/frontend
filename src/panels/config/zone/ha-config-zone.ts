@@ -1,3 +1,4 @@
+import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -364,17 +365,34 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  // Selecting an item in code (from the map) fires the same "property"
-  // request-selected event a click ends with, but with _activeEntry already set
-  private _isProgrammaticSelection(ev: CustomEvent): boolean {
-    return (
-      ev.detail.source === "property" &&
-      (ev.currentTarget! as any).value === this._activeEntry
-    );
+  // Selecting a row in code (from the map, or after saving) re-renders the
+  // list, which fires the same request-selected event a click ends with;
+  // that one event must not zoom
+  private _skipNextSelection = false;
+
+  private _selectInCode(id: string) {
+    if (id !== this._activeEntry) {
+      this._activeEntry = id;
+      this._skipNextSelection = true;
+    }
+  }
+
+  private _isCodeSelection(ev: CustomEvent): boolean {
+    if (
+      !this._skipNextSelection ||
+      ev.detail.source !== "property" ||
+      !ev.detail.selected
+    ) {
+      return false;
+    }
+    this._skipNextSelection = false;
+    // As the shared helper does, so a later click on this row fires again
+    (ev.currentTarget as ListItem).selected = false;
+    return true;
   }
 
   private async _locationUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
+    this._selectInCode(ev.detail.id);
     if (ev.detail.id === "zone.home" && this._canEditCore) {
       await saveCoreConfig(this.hass, {
         latitude: ev.detail.location[0],
@@ -393,7 +411,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _radiusUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
+    this._selectInCode(ev.detail.id);
     if (ev.detail.id === "zone.home" && this._canEditCore) {
       await saveCoreConfig(this.hass, {
         radius: Math.round(ev.detail.radius),
@@ -410,7 +428,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private _markerClicked(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
+    this._selectInCode(ev.detail.id);
   }
 
   private _createZone() {
@@ -418,10 +436,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private _itemClicked(ev: CustomEvent) {
-    if (
-      this._isProgrammaticSelection(ev) ||
-      !shouldHandleRequestSelectedEvent(ev)
-    ) {
+    if (this._isCodeSelection(ev) || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
 
@@ -435,10 +450,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private _stateItemClicked(ev: CustomEvent) {
-    if (
-      this._isProgrammaticSelection(ev) ||
-      !shouldHandleRequestSelectedEvent(ev)
-    ) {
+    if (this._isCodeSelection(ev) || !shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
 
@@ -493,7 +505,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow) {
       return;
     }
-    this._activeEntry = created.id;
+    this._selectInCode(created.id);
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
@@ -520,7 +532,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow || !fitMap) {
       return;
     }
-    this._activeEntry = entry.id;
+    this._selectInCode(entry.id);
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(entry.id);
