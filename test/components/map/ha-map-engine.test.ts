@@ -1,12 +1,19 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
+  MapEditableCircleHandle,
+  MapEditableCircleOptions,
+  MapEditableMarkerHandle,
+  MapEditingSupport,
   MapEngine,
   MapEngineOptions,
   MapMarkerHandle,
 } from "../../../src/common/map/map-engine";
 import "../../../src/components/map/ha-map";
-import type { HaMap } from "../../../src/components/map/ha-map";
+import type {
+  HaMap,
+  HaMapEditableLocation,
+} from "../../../src/components/map/ha-map";
 
 // ha-map picks its engine at runtime: MapLibre GL where WebGL2 is available,
 // Leaflet otherwise or after MapLibre fails. jsdom has no WebGL2 and cannot
@@ -89,6 +96,47 @@ const fakeEngine = vi.hoisted(() => {
     setClustering = vi.fn();
 
     refreshClusters = vi.fn();
+
+    /** Editable circles and markers, with the callbacks ha-map passed */
+    circles: (MapEditableCircleHandle & {
+      options: MapEditableCircleOptions;
+    })[] = [];
+
+    draggables: (MapEditableMarkerHandle & {
+      element: HTMLElement;
+      options: { onDragEnd?: (location: [number, number]) => void };
+    })[] = [];
+
+    editing: MapEditingSupport = {
+      addDraggableMarker: vi.fn((element, location, options) => {
+        const handle = {
+          location,
+          element,
+          options,
+          clusterData: options.clusterData,
+          setLocation: vi.fn((next: [number, number]) => {
+            handle.location = next;
+          }),
+          remove: vi.fn(),
+        };
+        this.draggables.push(handle);
+        return handle;
+      }),
+      addEditableCircle: vi.fn((center, options) => {
+        const handle = {
+          center,
+          radius: options.radius,
+          options,
+          update: vi.fn((nextCenter: [number, number], nextRadius: number) => {
+            handle.center = nextCenter;
+            handle.radius = nextRadius;
+          }),
+          remove: vi.fn(),
+        };
+        this.circles.push(handle);
+        return handle;
+      }),
+    };
   }
   return FakeMapLibreEngine;
 });
@@ -273,5 +321,147 @@ describe("ha-map engine selection", () => {
     // Entities are redrawn on the new engine, not carried over
     expect(entityHandles(el)).toHaveLength(2);
     expect(entityHandles(el)).not.toBe(handlesBefore);
+  });
+});
+
+describe("ha-map editable locations", () => {
+  const HOME: HaMapEditableLocation = {
+    id: "home",
+    location: [52, 4],
+    radius: 100,
+    title: "Home",
+    locationEditable: true,
+    radiusEditable: true,
+  };
+  const PIN: HaMapEditableLocation = {
+    id: "pin",
+    location: [52, 5],
+    locationEditable: true,
+  };
+
+  beforeEach(() => {
+    vi.stubGlobal("ResizeObserver", MockResizeObserver);
+    webgl2.supported = true;
+    fakeEngine.failInit = false;
+    fakeEngine.initGate = undefined;
+    fakeEngine.instances.length = 0;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.unstubAllGlobals();
+  });
+
+  const createEditor = async (locations: HaMapEditableLocation[]) => {
+    const el = document.createElement("ha-map");
+    el.editableLocations = locations;
+    (el as any)._config = {
+      config: { latitude: 52.3731339, longitude: 4.8903147 },
+    };
+    const availability: boolean[] = [];
+    el.addEventListener("editing-available-changed", (ev) => {
+      availability.push((ev as CustomEvent).detail.available);
+    });
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
+    await el.updateComplete;
+    return { el, engine: fakeEngine.instances[0], availability };
+  };
+
+  it("draws circles and markers through the engine's editing support", async () => {
+    const { engine, availability } = await createEditor([HOME, PIN]);
+
+    expect(availability).toEqual([true]);
+    expect(engine.circles).toHaveLength(1);
+    expect(engine.circles[0].center).toEqual([52, 4]);
+    expect(engine.circles[0].radius).toBe(100);
+    expect(engine.circles[0].options.title).toBe("Home");
+    expect(engine.circles[0].options.moveable).toBe(true);
+    expect(engine.circles[0].options.resizable).toBe(true);
+    expect(engine.draggables).toHaveLength(1);
+    expect(engine.draggables[0].location).toEqual([52, 5]);
+  });
+
+  it("moves existing handles instead of recreating them", async () => {
+    const { el, engine } = await createEditor([HOME, PIN]);
+
+    el.editableLocations = [
+      { ...HOME, location: [52.1, 4.1], radius: 250 },
+      { ...PIN, location: [52.2, 5.2] },
+    ];
+    await el.updateComplete;
+
+    expect(engine.editing.addEditableCircle).toHaveBeenCalledOnce();
+    expect(engine.circles[0].update).toHaveBeenCalledWith([52.1, 4.1], 250);
+    expect(engine.editing.addDraggableMarker).toHaveBeenCalledOnce();
+    expect(engine.draggables[0].setLocation).toHaveBeenCalledWith([52.2, 5.2]);
+  });
+
+  it("rebuilds a handle whose appearance changed and removes dropped ones", async () => {
+    const { el, engine } = await createEditor([HOME, PIN]);
+
+    el.editableLocations = [{ ...HOME, title: "Work" }];
+    await el.updateComplete;
+
+    expect(engine.circles[0].remove).toHaveBeenCalledOnce();
+    expect(engine.circles).toHaveLength(2);
+    expect(engine.circles[1].options.title).toBe("Work");
+    expect(engine.draggables[0].remove).toHaveBeenCalledOnce();
+  });
+
+  it("forwards moves, resizes, and activation with the location id", async () => {
+    const { el, engine } = await createEditor([HOME, PIN]);
+    const events: { type: string; detail: unknown }[] = [];
+    for (const type of [
+      "editable-location-moved",
+      "editable-location-resized",
+      "editable-location-clicked",
+    ]) {
+      el.addEventListener(type, (ev) => {
+        events.push({ type, detail: (ev as CustomEvent).detail });
+      });
+    }
+
+    engine.circles[0].options.onMove!([52.1, 4.1]);
+    engine.circles[0].options.onResize!(250);
+    engine.circles[0].options.onClick!();
+    engine.draggables[0].options.onDragEnd!([52.2, 5.2]);
+    engine.draggables[0].element.dispatchEvent(new MouseEvent("pointerdown"));
+    engine.draggables[0].element.click();
+    engine.draggables[0].element.dispatchEvent(
+      new KeyboardEvent("keydown", { key: " " })
+    );
+
+    expect(events).toEqual([
+      {
+        type: "editable-location-moved",
+        detail: { id: "home", location: [52.1, 4.1] },
+      },
+      {
+        type: "editable-location-resized",
+        detail: { id: "home", radius: 250 },
+      },
+      { type: "editable-location-clicked", detail: { id: "home" } },
+      {
+        type: "editable-location-moved",
+        detail: { id: "pin", location: [52.2, 5.2] },
+      },
+      { type: "editable-location-clicked", detail: { id: "pin" } },
+      { type: "editable-location-clicked", detail: { id: "pin" } },
+    ]);
+  });
+
+  it("shows locations statically on an engine without editing support", async () => {
+    webgl2.supported = false;
+    const { el, availability } = await createEditor([HOME, PIN]);
+
+    expect(availability).toEqual([false]);
+    // Drawn with the plain viewing primitives: a circle plus two markers
+    expect(leafletMap(el)).toBeDefined();
+    let layers = 0;
+    leafletMap(el).eachLayer(() => {
+      layers++;
+    });
+    expect(layers).toBeGreaterThanOrEqual(3);
   });
 });
