@@ -6,8 +6,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
@@ -15,7 +18,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   Condition,
@@ -182,7 +185,7 @@ export class HaCardConditionsEditor extends LitElement {
                   aria-label=${this.hass.localize("ui.common.move")}
                   aria-pressed=${this._rowSortSelected === idx}
                   .index=${idx}
-                  @click=${stopPropagation}
+                  @click=${this._handleDragClick}
                   @keydown=${this._handleDragKeydown}
                 >
                   <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
@@ -324,8 +327,21 @@ export class HaCardConditionsEditor extends LitElement {
     }
   }
 
-  private _handleDragKeydown(ev: KeyboardEvent) {
-    const handle = ev.currentTarget as HTMLElement & { index: number };
+  private _handleDragClick(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { index: number }>
+  ) {
+    ev.stopPropagation();
+    this._rowSortSelected =
+      this._rowSortSelected === ev.currentTarget.index
+        ? undefined
+        : ev.currentTarget.index;
+  }
+
+  private _handleDragKeydown(
+    ev: KeyboardEvent &
+      HASSDomCurrentTargetEvent<HTMLElement & { index: number }>
+  ) {
+    const handle = ev.currentTarget;
     const selected = this._rowSortSelected === handle.index;
 
     if (ev.key === "Escape" && selected) {
@@ -337,8 +353,7 @@ export class HaCardConditionsEditor extends LitElement {
 
     if (ev.key === "Enter" || ev.key === " ") {
       ev.preventDefault();
-      ev.stopPropagation();
-      this._rowSortSelected = selected ? undefined : handle.index;
+      this._handleDragClick(ev);
       return;
     }
 
@@ -402,11 +417,21 @@ export class HaCardConditionsEditor extends LitElement {
     fireEvent(this, "value-changed", { value: conditions });
   }
 
-  private _conditionChanged(ev: CustomEvent) {
+  private _conditionChanged(
+    ev: ValueChangedEvent<VisibilityCondition | null> &
+      HASSDomTargetEvent<HaCardConditionEditor>
+  ) {
     ev.stopPropagation();
-    const conditions = [...this.conditions];
     const newValue = ev.detail.value;
-    const index = (ev.target as any).index;
+    if (
+      newValue !== null &&
+      (typeof newValue !== "object" || Array.isArray(newValue))
+    ) {
+      return;
+    }
+
+    const conditions = [...this.conditions];
+    const index = ev.target.index;
 
     if (newValue === null) {
       conditions.splice(index, 1);
