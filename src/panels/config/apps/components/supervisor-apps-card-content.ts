@@ -3,6 +3,7 @@ import { mdiCheckCircle, mdiHelpCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../../components/ha-app-icon";
 import "../../../../components/ha-svg-icon";
 import type { AddonStage, AddonState } from "../../../../data/hassio/addon";
 import type { HomeAssistant } from "../../../../types";
@@ -41,21 +42,28 @@ class SupervisorAppsCardContent extends LitElement {
 
   @property() public icon = mdiHelpCircleOutline;
 
-  @property({ attribute: false }) public iconImage?: string;
+  @property({ attribute: false }) public appSlug?: string;
+
+  @property({ attribute: false }) public hasAppIcon?: boolean;
 
   protected render(): TemplateResult {
     return html`
       <div class="app">
         <div class="icon-wrapper">
           ${
-            this.iconImage
+            this.appSlug
               ? html`
-                  <img
-                    class="icon-image"
-                    src=${this.iconImage}
-                    .title=${this.iconTitle}
-                    alt=${this.iconTitle ?? ""}
-                  />
+                  <ha-app-icon
+                    .slug=${this.appSlug}
+                    .hasIcon=${this.hasAppIcon}
+                    .alt=${this.iconTitle ?? ""}
+                    .title=${this.iconTitle ?? ""}
+                  >
+                    <ha-svg-icon
+                      class="app-icon"
+                      .path=${this.icon}
+                    ></ha-svg-icon>
+                  </ha-app-icon>
                 `
               : html`
                   <ha-svg-icon
@@ -134,15 +142,15 @@ class SupervisorAppsCardContent extends LitElement {
       width: 40px;
       height: 40px;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .app-icon {
-      margin-left: var(--ha-space-2);
-      margin-top: var(--ha-space-2);
       color: var(--secondary-text-color);
     }
-    .icon-image {
-      max-height: 40px;
-      max-width: 40px;
+    ha-app-icon {
+      --ha-app-icon-size: 40px;
     }
     .title {
       flex: 1;

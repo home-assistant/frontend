@@ -86,6 +86,7 @@ import type { HassioStats } from "../../../../../data/hassio/common";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
+  supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import {
@@ -205,7 +206,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     <img
                       class="logo"
                       alt=""
-                      src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                      src=${supervisorUrl(
+                        `addons/${this._currentAddon.slug}/logo`
+                      )}
                     />
                   `
                 : nothing
