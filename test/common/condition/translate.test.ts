@@ -734,6 +734,55 @@ describe("translateToCoreCondition", () => {
       ).toEqual({ condition: "or", conditions: [] });
     });
 
+    it("preserves core row metadata on translated lovelace leaves", () => {
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "state",
+            entity: "light.a",
+            state: "on",
+            enabled: "{{ is_state('input_boolean.x', 'on') }}",
+            alias: "Lit",
+          })
+        )
+      ).toEqual({
+        condition: "state",
+        entity_id: "light.a",
+        state: "on",
+        enabled: "{{ is_state('input_boolean.x', 'on') }}",
+        alias: "Lit",
+      });
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "state",
+            entity: "light.a",
+            state_not: "on",
+            alias: "Dark",
+          })
+        )
+      ).toEqual({
+        condition: "not",
+        alias: "Dark",
+        conditions: [{ condition: "state", entity_id: "light.a", state: "on" }],
+      });
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            above: 1,
+            note: "n",
+          })
+        )
+      ).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        above: 1,
+        note: "n",
+      });
+    });
+
     it("preserves core row metadata on rebuilt logical conditions", () => {
       // Core skips a disabled group; dropping `enabled` would evaluate it.
       expect(

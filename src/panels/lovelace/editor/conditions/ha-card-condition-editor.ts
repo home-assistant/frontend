@@ -51,6 +51,10 @@ import type {
   NumericStateCondition as CoreNumericStateCondition,
   StateCondition as CoreStateCondition,
 } from "../../../../data/automation";
+import {
+  CONDITION_ROW_CONFIG_KEYS,
+  pickRowConfig,
+} from "../../../../data/automation";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
@@ -173,6 +177,9 @@ const toCoreEditorCondition = (
   if ("entity_id" in condition) {
     return condition;
   }
+  // Core row metadata (`enabled`, `alias`, `note`) must survive the rebuild,
+  // or editing a disabled legacy condition would silently re-enable it.
+  const rowConfig = pickRowConfig(condition, CONDITION_ROW_CONFIG_KEYS);
   // Legacy `{ entity, state }` has no `condition` key and is treated as `state`.
   if (!("condition" in condition) || condition.condition === "state") {
     const lovelace = condition as StateCondition | LegacyCondition;
@@ -189,10 +196,11 @@ const toCoreEditorCondition = (
       if (attribute !== undefined) {
         inner.attribute = attribute;
       }
-      return { condition: "not", conditions: [inner] };
+      return { ...rowConfig, condition: "not", conditions: [inner] };
     }
     // Incomplete configs keep an empty `state` so the editor stays usable.
     const core: CoreStateCondition = {
+      ...rowConfig,
       condition: "state",
       entity_id,
       state: lovelace.state ?? [],
@@ -205,6 +213,7 @@ const toCoreEditorCondition = (
   if (condition.condition === "numeric_state") {
     const lovelace = condition as NumericStateCondition;
     const core: CoreNumericStateCondition = {
+      ...rowConfig,
       condition: "numeric_state",
       entity_id: lovelace.entity ?? contextEntityId ?? "",
     };

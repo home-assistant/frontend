@@ -47,7 +47,7 @@ export const logicalChildren = (
 ): VisibilityCondition[] => ensureArray(condition.conditions) ?? [];
 
 /** Whether a string is an entity-id reference rather than a numeric literal. */
-const isEntityReference = (value: unknown): value is string =>
+export const isEntityReference = (value: unknown): value is string =>
   typeof value === "string" && isNaN(Number(value)) && isValidEntityId(value);
 
 /**
@@ -211,6 +211,9 @@ const translateStateCondition = (
     return alwaysFalseCondition();
   }
 
+  // Core row metadata (`enabled`, `alias`, `note`) rides along; for
+  // `state_not` it belongs on the outer `not`.
+  const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
   const base = {
     condition: "state" as const,
     entity_id: lovelace.entity,
@@ -229,11 +232,16 @@ const translateStateCondition = (
   // `state` wins over `state_not` when both are present, mirroring
   // checkConditionsMet (`state ?? state_not`, positive branch when `state`).
   if (lovelace.state !== undefined) {
-    return { ...base, state: lovelace.state } as CoreStateCondition;
+    return {
+      ...rowConfig,
+      ...base,
+      state: lovelace.state,
+    } as CoreStateCondition;
   }
 
   // Core has no `state_not`; wrap a positive `state` in `not`.
   return {
+    ...rowConfig,
     condition: "not",
     conditions: [{ ...base, state: lovelace.state_not } as CoreStateCondition],
   };
@@ -272,6 +280,7 @@ const translateNumericStateCondition = (
   }
 
   const core: CoreNumericStateCondition = {
+    ...pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS),
     condition: "numeric_state",
     entity_id: lovelace.entity,
   };
