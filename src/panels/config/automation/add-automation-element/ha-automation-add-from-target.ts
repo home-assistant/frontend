@@ -20,6 +20,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
@@ -30,10 +31,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/item/ha-row-item";
 import "../../../../components/list/ha-list-base";
-import {
-  getAreaDeviceLookup,
-  getAreaEntityLookup,
-} from "../../../../data/area/area_registry";
+import { getAreaEntityLookup } from "../../../../data/area/area_registry";
 import {
   getAreasNestedInFloors,
   type AreaFloorValue,
@@ -86,6 +84,7 @@ interface Level2Entries {
 interface Level3Entries {
   open: boolean;
   entities: string[];
+  devices?: Record<string, Level3Entries>;
 }
 
 @customElement("ha-automation-add-from-target")
@@ -285,9 +284,18 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
       if (valueId && valueType === "device") {
         const entry = this._getDeviceEntry(entries, valueId);
-        return entry?.entities.length
-          ? this._renderEntities(entry.entities)
-          : nothing;
+        if (!entry) {
+          return nothing;
+        }
+        const numberOfDevices = Object.keys(entry.devices ?? {}).length;
+        return html`
+          ${numberOfDevices ? this._renderDevices(entry.devices!) : nothing}
+          ${
+            entry.entities.length
+              ? this._renderEntities(entry.entities)
+              : nothing
+          }
+        `;
       }
 
       if (valueType === "device" || valueType === "helper") {
@@ -670,7 +678,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
         stringCompare(deviceNameA, deviceNameB, this.hass.locale.language)
       )
       .map(([deviceId, deviceName, domain]) => {
-        const { open, entities } = devices[deviceId];
+        const { open, entities, devices: children } = devices[deviceId];
+        const numberOfChildren = Object.keys(children ?? {}).length;
 
         return this._renderItem(
           deviceName || deviceId,
@@ -678,10 +687,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
           false,
           this._getSelectedTargetId(this.value) ===
             `device${TARGET_SEPARATOR}${deviceId}`,
-          !open && !!entities.length,
+          !open && !!(entities.length || numberOfChildren),
           open,
           domain ? this._renderDomainIcon(domain) : undefined,
-          open ? this._renderEntities(entities) : undefined
+          open
+            ? html`
+                ${numberOfChildren ? this._renderDevices(children!) : nothing}
+                ${this._renderEntities(entities)}
+              `
+            : undefined
         );
       });
 
@@ -889,8 +903,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
   // #region memoized data helpers
 
   private _getAreaDeviceLookupMemoized = memoizeOne(
-    (devices: HomeAssistant["devices"]) =>
-      getAreaDeviceLookup(Object.values(devices))
+    (devices: HomeAssistant["devices"]) => {
+      const lookup: Record<string, DeviceRegistryEntry[]> = {};
+      for (const device of Object.values(devices)) {
+        const areaId = getDeviceAreaId(device, devices);
+        if (areaId) {
+          (lookup[areaId] ??= []).push(device);
+        }
+      }
+      return lookup;
+    }
   );
 
   private _getAreaEntityLookupMemoized = memoizeOne(
@@ -964,32 +986,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _loadUnassignedDevices() {
     const unassignedDevices = Object.values(this._registries.devices).filter(
-      (device) => !device.area_id
+      (device) => !getDeviceAreaId(device, this._registries.devices)
     );
 
-    const devices: Record<string, Level3Entries> = {};
+    const devices = this._buildDeviceEntries(
+      unassignedDevices.filter((device) => device.entry_type !== "service")
+    );
 
-    const services: Record<string, Level3Entries> = {};
-
-    unassignedDevices.forEach(({ id: deviceId, entry_type }) => {
-      const device = this._registries.devices[deviceId];
-      if (!device || device.disabled_by) {
-        return;
-      }
-      const deviceEntry = {
-        open: false,
-        entities:
-          this._getDeviceEntityLookupMemoized(this._registries.entities)[
-            deviceId
-          ]?.map((entity) => entity.entity_id) || [],
-      };
-      if (entry_type === "service") {
-        services[deviceId] = deviceEntry;
-        return;
-      }
-
-      devices[deviceId] = deviceEntry;
-    });
+    const services = this._buildDeviceEntries(
+      unassignedDevices.filter((device) => device.entry_type === "service")
+    );
 
     if (Object.keys(devices).length) {
       this._entries = {
@@ -1069,31 +1075,21 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _loadArea(area: FloorComboBoxItem) {
     const [, id] = area.id.split(TARGET_SEPARATOR, 2);
-    const referenced_devices =
-      this._getAreaDeviceLookupMemoized(this._registries.devices)[id] || [];
+    const referenced_devices = (
+      this._getAreaDeviceLookupMemoized(this._registries.devices)[id] || []
+    ).filter((device) => !device.disabled_by);
     const referenced_entities =
       this._getAreaEntityLookupMemoized(this._registries.entities)[id] || [];
 
-    const devices: Record<string, Level3Entries> = {};
-
-    referenced_devices.forEach(({ id: deviceId }) => {
-      const device = this._registries.devices[deviceId];
-      if (!device || device.disabled_by) {
-        return;
-      }
-      devices[deviceId] = {
-        open: false,
-        entities:
-          this._getDeviceEntityLookupMemoized(this._registries.entities)[
-            deviceId
-          ]?.map((entity) => entity.entity_id) || [],
-      };
-    });
+    const devices = this._buildDeviceEntries(referenced_devices);
+    const areaDeviceIds = new Set(
+      referenced_devices.map((device) => device.id)
+    );
 
     const entities: string[] = [];
 
     referenced_entities.forEach((entity) => {
-      if (!entity.device_id || !devices[entity.device_id]) {
+      if (!entity.device_id || !areaDeviceIds.has(entity.device_id)) {
         entities.push(entity.entity_id);
       }
     });
@@ -1105,13 +1101,50 @@ export default class HaAutomationAddFromTarget extends LitElement {
     };
   }
 
+  private _buildDeviceEntries(
+    devices: DeviceRegistryEntry[]
+  ): Record<string, Level3Entries> {
+    const deviceEntityLookup = this._getDeviceEntityLookupMemoized(
+      this._registries.entities
+    );
+    const entryFor = (deviceId: string): Level3Entries => ({
+      open: false,
+      entities:
+        deviceEntityLookup[deviceId]?.map((entity) => entity.entity_id) || [],
+    });
+
+    const present = new Set(devices.map((device) => device.id));
+    const entries: Record<string, Level3Entries> = {};
+    const children: DeviceRegistryEntry[] = [];
+    for (const device of devices) {
+      if (device.disabled_by) {
+        continue;
+      }
+      if (device.parent_device_id && present.has(device.parent_device_id)) {
+        children.push(device);
+      } else {
+        entries[device.id] = entryFor(device.id);
+      }
+    }
+    for (const device of children) {
+      const parent = entries[device.parent_device_id!];
+      if (parent) {
+        (parent.devices ??= {})[device.id] = entryFor(device.id);
+      } else {
+        entries[device.id] = entryFor(device.id);
+      }
+    }
+    return entries;
+  }
+
   private _deviceGroupPath(
     device: DeviceRegistryEntry
   ): [level1: string, level2?: string] {
-    if (device.area_id) {
+    const areaId = getDeviceAreaId(device, this._registries.devices);
+    if (areaId) {
       return [
-        `floor${TARGET_SEPARATOR}${this._registries.areas[device.area_id]?.floor_id || ""}`,
-        `area${TARGET_SEPARATOR}${device.area_id}`,
+        `floor${TARGET_SEPARATOR}${this._registries.areas[areaId]?.floor_id || ""}`,
+        `area${TARGET_SEPARATOR}${areaId}`,
       ];
     }
     return [
@@ -1128,12 +1161,32 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return level2 ? entry?.areas?.[level2]?.devices : entry?.devices;
   }
 
+  private _deviceChain(
+    group: Record<string, Level3Entries> | undefined,
+    device: DeviceRegistryEntry
+  ): string[] {
+    const parentId = device.parent_device_id;
+    return parentId && group?.[parentId]?.devices?.[device.id]
+      ? [parentId, device.id]
+      : [device.id];
+  }
+
   private _getDeviceEntry(
     entries: Record<string, Level1Entries>,
     deviceId: string
   ): Level3Entries | undefined {
     const device = this._registries.devices[deviceId];
-    return device ? this._deviceGroup(entries, device)?.[deviceId] : undefined;
+    if (!device) {
+      return undefined;
+    }
+    const group = this._deviceGroup(entries, device);
+    let level = group;
+    let entry: Level3Entries | undefined;
+    for (const key of this._deviceChain(group, device)) {
+      entry = level?.[key];
+      level = entry?.devices;
+    }
+    return entry;
   }
 
   private _setDeviceOpen(
@@ -1150,12 +1203,31 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (!group) {
       return;
     }
+    const chain = this._deviceChain(group, device);
 
-    const entry = group[deviceId];
-    const devices =
-      deviceOpen === undefined || !entry
-        ? group
-        : { ...group, [deviceId]: { ...entry, open: deviceOpen } };
+    const updateGroup = (
+      devices: Record<string, Level3Entries>,
+      [key, ...rest]: string[]
+    ): Record<string, Level3Entries> => {
+      const entry = devices[key];
+      if (!entry) {
+        return devices;
+      }
+      const isTarget = !rest.length;
+      return {
+        ...devices,
+        [key]: {
+          ...entry,
+          open: isTarget
+            ? (deviceOpen ?? entry.open)
+            : openAncestors || entry.open,
+          devices:
+            isTarget || !entry.devices
+              ? entry.devices
+              : updateGroup(entry.devices, rest),
+        },
+      };
+    };
 
     const level1Entry = this._entries[level1];
     if (!level2) {
@@ -1164,7 +1236,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         [level1]: {
           ...level1Entry,
           open: openAncestors || level1Entry.open,
-          devices,
+          devices: updateGroup(group, chain),
         },
       };
       return;
@@ -1181,7 +1253,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
           [level2]: {
             ...level2Entry,
             open: openAncestors || level2Entry.open,
-            devices,
+            devices: updateGroup(group, chain),
           },
         },
       },
