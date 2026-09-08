@@ -179,7 +179,6 @@ export class HaLocationsEditor extends LitElement {
       location.iconPath,
       location.name,
       location.radius_color,
-      location.location_editable,
     ]);
     const cached = this._elements.get(location.id);
     if (cached?.key === key) {
@@ -194,7 +193,7 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private _createZoneMarker(location: MarkerLocation): HTMLElement {
-    const element = createZoneMarkerElement({
+    return createZoneMarkerElement({
       color:
         location.radius_color ||
         getComputedStyle(this).getPropertyValue("--accent-color"),
@@ -202,8 +201,6 @@ export class HaLocationsEditor extends LitElement {
       iconPath: location.iconPath,
       name: location.name ?? "",
     });
-    element.classList.toggle("draggable", !!location.location_editable);
-    return element;
   }
 
   private _createIcon(location: MarkerLocation): HTMLElement | undefined {
@@ -211,9 +208,7 @@ export class HaLocationsEditor extends LitElement {
       return undefined;
     }
     const el = document.createElement("div");
-    el.className = `named-icon ${
-      location.location_editable ? "draggable" : ""
-    }`;
+    el.className = "named-icon";
     if (location.name !== undefined) {
       el.innerText = location.name;
     }

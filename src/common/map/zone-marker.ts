@@ -64,7 +64,4 @@ export const zoneMarkerStyles = `
     font-weight: var(--ha-font-weight-medium);
     --mdc-icon-size: ${ZONE_CIRCLE_SIZE / 2}px;
   }
-  .zone-circle.draggable {
-    cursor: move;
-  }
 `;
