@@ -1,0 +1,125 @@
+import type {
+  Condition,
+  ConditionContext,
+  VisibilityCondition,
+} from "../../panels/lovelace/common/validate-condition";
+import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
+import type { HomeAssistant } from "../../types";
+import { isClientCondition, isLogicalCondition } from "./translate";
+
+// Three-valued combinators (true / false / undefined = unknown).
+const andOf = (values: (boolean | undefined)[]): boolean | undefined => {
+  let unknown = false;
+  for (const value of values) {
+    if (value === false) return false;
+    if (value === undefined) unknown = true;
+  }
+  return unknown ? undefined : true;
+};
+
+const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
+  let unknown = false;
+  for (const value of values) {
+    if (value === true) return true;
+    if (value === undefined) unknown = true;
+  }
+  return unknown ? undefined : false;
+};
+
+/**
+ * Whether a server-class leaf has semantics the legacy client evaluator
+ * reproduces exactly: a lovelace-format (`entity`-based or legacy) `state` /
+ * `numeric_state`, or a core-format one restricted to the subset
+ * `checkConditionsMet` understands (a single `entity_id`, and none of `for`,
+ * `match` or `value_template`).
+ */
+const isLocallyEvaluableServerLeaf = (
+  condition: VisibilityCondition
+): boolean => {
+  if (!("condition" in condition)) {
+    return true;
+  }
+  if (
+    condition.condition !== "state" &&
+    condition.condition !== "numeric_state"
+  ) {
+    return false;
+  }
+  if (!("entity_id" in condition)) {
+    return true;
+  }
+  const core = condition as {
+    entity_id?: unknown;
+    for?: unknown;
+    match?: unknown;
+    value_template?: unknown;
+  };
+  return (
+    typeof core.entity_id === "string" &&
+    core.for === undefined &&
+    core.match === undefined &&
+    core.value_template === undefined
+  );
+};
+
+/**
+ * Evaluate a visibility condition tree on the client as far as it can be
+ * evaluated *exactly*, using three-valued logic.
+ *
+ * Client-only leaves and server leaves whose semantics the legacy evaluator
+ * reproduces (see {@link isLocallyEvaluableServerLeaf}) are evaluated with
+ * `checkConditionsMet`; every other leaf (`template`, `sun`, `zone`, `device`,
+ * integration conditions, core `state` with `for`, …) is unknown. Unknown
+ * propagates through `and` / `or` / `not` unless a sibling decides the result,
+ * so e.g. `not: [template]` stays unknown rather than being inverted to true.
+ *
+ * Returns `undefined` when the outcome depends on a leaf that only core can
+ * evaluate. Intended as the optimistic seed while a `subscribe_condition`
+ * result is pending.
+ */
+export const evaluateConditionsLocally = (
+  conditions: VisibilityCondition[],
+  hass: HomeAssistant,
+  context: ConditionContext
+): boolean | undefined => {
+  const evaluateLeaf = (condition: VisibilityCondition): boolean => {
+    try {
+      return checkConditionsMet([condition as Condition], hass, context);
+    } catch (_err) {
+      return false;
+    }
+  };
+
+  const evaluateNode = (
+    condition: VisibilityCondition
+  ): boolean | undefined => {
+    if (isLogicalCondition(condition)) {
+      // Lovelace treats a logical condition with no `conditions` key as
+      // vacuously true (matches checkAnd/Or/NotCondition).
+      if (condition.conditions === undefined) {
+        return true;
+      }
+      const values = condition.conditions.map(evaluateNode);
+      if (condition.condition === "or") {
+        return orOf(values);
+      }
+      const all = andOf(values);
+      // Lovelace `not` is ¬(AND of children).
+      return condition.condition === "not"
+        ? all === undefined
+          ? undefined
+          : !all
+        : all;
+    }
+    if (
+      isClientCondition(condition) ||
+      isLocallyEvaluableServerLeaf(condition)
+    ) {
+      return evaluateLeaf(condition);
+    }
+    return undefined;
+  };
+
+  // The top-level array is an implicit AND.
+  return andOf(conditions.map(evaluateNode));
+};

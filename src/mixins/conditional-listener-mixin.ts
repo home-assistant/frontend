@@ -4,15 +4,13 @@ import { state } from "lit/decorators";
 import type { ConditionEvaluation } from "../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../common/controllers/condition-evaluator-controller";
 import { maxColumnsContext } from "../panels/lovelace/common/context";
+import { evaluateConditionsLocally } from "../common/condition/evaluate-locally";
 import type {
   Condition,
   ConditionContext,
   VisibilityCondition,
 } from "../panels/lovelace/common/validate-condition";
-import {
-  addEntityToCondition,
-  checkConditionsMet,
-} from "../panels/lovelace/common/validate-condition";
+import { addEntityToCondition } from "../panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../types";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
@@ -154,9 +152,12 @@ export const ConditionalListenerMixin = <
      *
      * Prefers the evaluator's server-aware verdict; while a server subtree is
      * still pending (`unknown`) it falls back to an optimistic synchronous
-     * client evaluation. That fallback is exact for the legacy lovelace
-     * condition types (so existing dashboards never flash) and resolves to
-     * hidden for core-only conditions (`template` / `sun` / …) until the server
+     * client evaluation with three-valued logic: leaves the legacy evaluator
+     * reproduces exactly (client-only types and lovelace `state` /
+     * `numeric_state`) are evaluated locally, so existing dashboards never
+     * flash, while core-only leaves (`template` / `sun` / … or core `state`
+     * with `for`) stay unknown through `and` / `or` / `not`. An outcome that
+     * still depends on such a leaf resolves to hidden until the server
      * reports — erring toward hiding rather than leaking content.
      *
      * Consumers call this from `_updateVisibility` instead of evaluating
@@ -173,10 +174,12 @@ export const ConditionalListenerMixin = <
       if (!this.hass) {
         return true;
       }
-      return checkConditionsMet(
-        conditions as Condition[],
-        this.hass,
-        this._conditionContext
+      return (
+        evaluateConditionsLocally(
+          conditions,
+          this.hass,
+          this._conditionContext
+        ) === true
       );
     }
 
