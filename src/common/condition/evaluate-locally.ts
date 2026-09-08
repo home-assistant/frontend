@@ -5,9 +5,11 @@ import type {
 } from "../../panels/lovelace/common/validate-condition";
 import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../types";
+import { ensureArray } from "../array/ensure-array";
 import {
   isClientCondition,
   isDisabledCondition,
+  isEntityReference,
   isLogicalCondition,
   logicalChildren,
 } from "./translate";
@@ -41,9 +43,10 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
  * entity is present (core errors on a missing entity, the client evaluates
  * it as `unknown`), no `for` / `match` / `value_template`, no `attribute`
  * (core compares the raw attribute value while the client stringifies it),
- * and, for `numeric_state`, at least one bound, both numeric rather than
- * entity-valued (core rejects a bound-less condition and errors on a missing
- * bound entity, while the client passes / ignores them).
+ * no entity-id comparison value (core only dereferences `input_*`, the client
+ * any existing entity), and, for `numeric_state`, at least one bound, both
+ * numeric rather than entity-valued (core rejects a bound-less condition and
+ * errors on a missing bound entity, while the client passes / ignores them).
  */
 const isLocallyEvaluableServerLeaf = (
   condition: VisibilityCondition,
@@ -71,6 +74,7 @@ const isLocallyEvaluableServerLeaf = (
     for?: unknown;
     match?: unknown;
     value_template?: unknown;
+    state?: unknown;
     above?: unknown;
     below?: unknown;
   };
@@ -91,7 +95,9 @@ const isLocallyEvaluableServerLeaf = (
       (core.below === undefined || typeof core.below === "number")
     );
   }
-  return true;
+  return !(ensureArray(core.state as string | string[] | undefined) ?? []).some(
+    isEntityReference
+  );
 };
 
 /**

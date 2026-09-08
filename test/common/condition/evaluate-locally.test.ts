@@ -100,6 +100,25 @@ describe("evaluateConditionsLocally", () => {
         }),
       ])
     ).toBe(true);
+    // core only dereferences input_* comparison values, the client any entity
+    expect(
+      evaluate([
+        cond({
+          condition: "state",
+          entity_id: "light.on",
+          state: "sensor.temp",
+        }),
+      ])
+    ).toBeUndefined();
+    expect(
+      evaluate([
+        cond({
+          condition: "state",
+          entity_id: "light.on",
+          state: ["off", "sensor.temp"],
+        }),
+      ])
+    ).toBeUndefined();
     // core rejects a bound-less numeric_state, the client passes any number
     expect(
       evaluate([cond({ condition: "numeric_state", entity_id: "sensor.temp" })])
