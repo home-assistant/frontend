@@ -1889,6 +1889,7 @@ const DOCUMENTED_NAMES = new Set<string>([
   "timedelta",
   "timestamp_custom",
   "timestamp_local",
+  "timedelta_string",
   "timestamp_utc",
   "title",
   "to_json",
