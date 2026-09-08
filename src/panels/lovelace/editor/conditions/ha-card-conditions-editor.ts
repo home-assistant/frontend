@@ -23,6 +23,7 @@ import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,
+  isServerEditorCondition,
   usesAutomationConditionEditor,
 } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
@@ -112,6 +113,15 @@ export class HaCardConditionsEditor extends LitElement {
     }
   }
 
+  // Entity-filter consumers (map card, entity filter) still evaluate their
+  // conditions locally, where the server-only types would silently evaluate to
+  // false and filter out every entity, so don't offer them there.
+  private get _availableConditions(): readonly string[] {
+    return this._noEntity
+      ? UI_CONDITION.filter((condition) => !isServerEditorCondition(condition))
+      : UI_CONDITION;
+  }
+
   protected render() {
     return html`
       <div class="conditions">
@@ -149,7 +159,7 @@ export class HaCardConditionsEditor extends LitElement {
                   `
                 : nothing
             }
-            ${UI_CONDITION.map(
+            ${this._availableConditions.map(
               (condition) => html`
                 <ha-dropdown-item .value=${condition}>
                   ${
