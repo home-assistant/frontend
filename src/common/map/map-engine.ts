@@ -229,6 +229,16 @@ export interface MapEngine {
 
 const EARTH_RADIUS = 6371008.8;
 
+// One conversion for drawing, fitting, and handle placement, so they agree
+// with each other and with distanceMeters; only the pole itself is guarded
+export const metersToLatDegrees = (meters: number): number =>
+  (meters / EARTH_RADIUS) * (180 / Math.PI);
+
+export const metersToLngDegrees = (latitude: number, meters: number): number =>
+  (meters /
+    (EARTH_RADIUS * Math.max(Math.cos((latitude * Math.PI) / 180), 1e-6))) *
+  (180 / Math.PI);
+
 /** Great-circle distance in meters */
 export const distanceMeters = (a: MapLatLng, b: MapLatLng): number => {
   const toRad = (deg: number) => (deg * Math.PI) / 180;
@@ -245,13 +255,10 @@ export const pointEastOf = (
   center: MapLatLng,
   distanceInMeters: number
 ): MapLatLng => {
-  // Only the pole itself is guarded, so the handle's distance still agrees
-  // with distanceMeters at any latitude a zone can have
-  const lngOffset =
-    (distanceInMeters /
-      (EARTH_RADIUS * Math.max(Math.cos((center[0] * Math.PI) / 180), 1e-6))) *
-    (180 / Math.PI);
-  return [center[0], center[1] + lngOffset];
+  return [
+    center[0],
+    center[1] + metersToLngDegrees(center[0], distanceInMeters),
+  ];
 };
 
 /** Bounding box corners of a circle, for fitting a radius into view */
@@ -259,9 +266,8 @@ export const circleBoundsPoints = (
   center: MapLatLng,
   radiusMeters: number
 ): MapLatLng[] => {
-  const latOffset = radiusMeters / 111320;
-  const lngOffset =
-    latOffset / Math.max(Math.cos((center[0] * Math.PI) / 180), 0.01);
+  const latOffset = metersToLatDegrees(radiusMeters);
+  const lngOffset = metersToLngDegrees(center[0], radiusMeters);
   return [
     [center[0] - latOffset, center[1] - lngOffset],
     [center[0] + latOffset, center[1] + lngOffset],

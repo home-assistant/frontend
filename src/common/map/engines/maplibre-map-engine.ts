@@ -45,7 +45,12 @@ import type {
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
-import { distanceMeters, pointEastOf } from "../map-engine";
+import {
+  distanceMeters,
+  metersToLatDegrees,
+  metersToLngDegrees,
+  pointEastOf,
+} from "../map-engine";
 import {
   createResizeHandleElement,
   RADIUS_ARIA_MAX,
@@ -100,9 +105,8 @@ const circlePolygon = (
   radiusMeters: number
 ): Feature<Polygon> => {
   const steps = 64;
-  const latOffset = radiusMeters / 111320;
-  const lngOffset =
-    latOffset / Math.max(Math.cos((center[0] * Math.PI) / 180), 0.01);
+  const latOffset = metersToLatDegrees(radiusMeters);
+  const lngOffset = metersToLngDegrees(center[0], radiusMeters);
   const ring: [number, number][] = [];
   for (let i = 0; i <= steps; i++) {
     const theta = (2 * Math.PI * i) / steps;
@@ -844,6 +848,8 @@ export class MapLibreMapEngine implements MapEngine {
           return;
         }
         ev.preventDefault();
+        // MapLibre pans on arrow keys reaching the map
+        ev.stopPropagation();
         if (keyboardRadius === undefined) {
           // Host updates treat a key resize like a drag
           dragging = true;

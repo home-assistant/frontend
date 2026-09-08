@@ -1,7 +1,11 @@
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CONTEXT_RESTORE_GRACE } from "../../../src/common/map/base-layer";
-import { pointEastOf } from "../../../src/common/map/map-engine";
+import {
+  circleBoundsPoints,
+  distanceMeters,
+  pointEastOf,
+} from "../../../src/common/map/map-engine";
 import { MapLibreMapEngine } from "../../../src/common/map/engines/maplibre-map-engine";
 import type {
   MapEngineEvents,
@@ -993,6 +997,31 @@ describe("MapLibreMapEngine", () => {
       // A later identical update is a real change
       handle.update([52, 4], 100);
       expect(handle.radius).toBe(100);
+    });
+
+    it("keeps arrow keys on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("keydown", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true })
+      );
+      expect(handle.radius).toBeCloseTo(110, 5);
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("keydown", reachedMap);
+    });
+
+    it("places the handle on the drawn circle at any latitude", () => {
+      for (const latitude of [0, 52, 89.9]) {
+        const center: [number, number] = [latitude, 4];
+        const east = pointEastOf(center, 1000);
+        expect(distanceMeters(center, east)).toBeCloseTo(1000, 0);
+        // The fitted bounds and the polygon share this longitude offset
+        expect(circleBoundsPoints(center, 1000)[1][1]).toBeCloseTo(east[1], 9);
+      }
     });
 
     it("keeps a click on the resize handle from reaching the map", async () => {
