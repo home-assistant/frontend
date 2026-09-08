@@ -2,6 +2,7 @@ import type {
   Condition as CoreCondition,
   NumericStateCondition as CoreNumericStateCondition,
   StateCondition as CoreStateCondition,
+  TemplateCondition as CoreTemplateCondition,
 } from "../../data/automation";
 import type {
   LegacyCondition,
@@ -174,23 +175,54 @@ const translateNumericStateCondition = (
     return condition as CoreNumericStateCondition;
   }
   const lovelace = condition as LovelaceNumericStateCondition;
+
+  // Incomplete config: no entity. checkConditionsMet returns false (no state
+  // object → NaN), and core rejects a bound-less / entity-less condition, so
+  // resolve to a clean always-false rather than a schema-invalid leaf.
+  if (lovelace.entity === undefined) {
+    return alwaysFalseCondition();
+  }
+
+  const above = translateNumericBound(lovelace.above);
+  const below = translateNumericBound(lovelace.below);
+
+  if (above === undefined && below === undefined) {
+    // Every configured bound was junk (non-numeric, non-entity) or none was
+    // configured. Lovelace ignores such bounds and only requires the value to
+    // be numeric; core requires at least one bound, so express that check as
+    // a template instead of emitting a condition its schema would reject
+    // (which would fail the whole grouped subscription).
+    return numericValueCondition(lovelace.entity, lovelace.attribute);
+  }
+
   const core: CoreNumericStateCondition = {
     condition: "numeric_state",
-    entity_id: lovelace.entity as string,
+    entity_id: lovelace.entity,
   };
   if (lovelace.attribute !== undefined) {
     core.attribute = lovelace.attribute;
   }
-  const above = translateNumericBound(lovelace.above);
   if (above !== undefined) {
     core.above = above;
   }
-  const below = translateNumericBound(lovelace.below);
   if (below !== undefined) {
     core.below = below;
   }
   return core;
 };
+
+// "The entity's state (or attribute) is numeric" — lovelace's residual check
+// for a numeric_state condition whose bounds are all ignored.
+const numericValueCondition = (
+  entityId: string,
+  attribute?: string
+): CoreTemplateCondition => ({
+  condition: "template",
+  value_template:
+    attribute === undefined
+      ? `{{ is_number(states(${JSON.stringify(entityId)})) }}`
+      : `{{ is_number(state_attr(${JSON.stringify(entityId)}, ${JSON.stringify(attribute)})) }}`,
+});
 
 /**
  * Reconcile a lovelace numeric bound with core's interpretation. Lovelace
@@ -204,7 +236,8 @@ const translateNumericStateCondition = (
  * - a genuine entity-id reference passes through for core to resolve;
  * - anything else (junk like `"foo"`, or non-finite like `"1e400"`) is dropped,
  *   matching lovelace's "NaN ⇒ ignored" and never emitting a non-finite number
- *   (which is not JSON-serializable).
+ *   (which is not JSON-serializable). When that leaves no bound at all, the
+ *   caller falls back to a numeric-value check (see `numericValueCondition`).
  */
 const translateNumericBound = (
   bound: string | number | undefined

@@ -418,9 +418,55 @@ describe("translateToCoreCondition", () => {
             condition: "numeric_state",
             entity: "sensor.a",
             above: "1e400",
+            below: 10,
           })
         )
-      ).toEqual({ condition: "numeric_state", entity_id: "sensor.a" });
+      ).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        below: 10,
+      });
+    });
+
+    // Core's numeric_state schema requires at least one bound, so a leaf left
+    // bound-less must not be emitted as-is: it would fail the whole grouped
+    // subscription. Lovelace only requires the value to be numeric in that
+    // case, which a template expresses faithfully.
+    it("falls back to a numeric-value template when every bound is dropped", () => {
+      expect(
+        translateToCoreCondition(
+          cond({ condition: "numeric_state", entity: "sensor.a", above: "foo" })
+        )
+      ).toEqual({
+        condition: "template",
+        value_template: '{{ is_number(states("sensor.a")) }}',
+      });
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            attribute: "temperature",
+            above: "1e400",
+            below: "bar",
+          })
+        )
+      ).toEqual({
+        condition: "template",
+        value_template:
+          '{{ is_number(state_attr("sensor.a", "temperature")) }}',
+      });
+    });
+
+    it("falls back to a numeric-value template when no bound is configured", () => {
+      expect(
+        translateToCoreCondition(
+          cond({ condition: "numeric_state", entity: "sensor.a" })
+        )
+      ).toEqual({
+        condition: "template",
+        value_template: '{{ is_number(states("sensor.a")) }}',
+      });
     });
 
     it("passes an already-core numeric_state condition through", () => {
@@ -625,6 +671,10 @@ describe("translateToCoreCondition", () => {
       ["state with a value but no entity", { condition: "state", state: "on" }],
       ["legacy entity with no state", { entity: "light.a" }],
       ["empty object", {}],
+      [
+        "numeric_state with a bound but no entity",
+        { condition: "numeric_state", above: 5 },
+      ],
     ])("resolves %s to always-false", (_label, input) => {
       expect(translateToCoreCondition(cond(input))).toEqual(ALWAYS_FALSE);
     });
