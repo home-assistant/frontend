@@ -210,7 +210,7 @@ class HaConfigSectionStorage extends LitElement {
                               ${mount.name}
                             </span>
                             <span slot="secondary">
-<span class="mount-address">
+                              <span class="mount-address">
                                 ${supervisorMountDescription(mount)}
                               </span>
                               ${this._renderMountUsage(mount)}
@@ -480,6 +480,7 @@ class HaConfigSectionStorage extends LitElement {
     .mount-state-failed {
       color: var(--error-color);
     }
+    .mount-state-inactive,
     .mount-state-unknown {
       color: var(--warning-color);
     }

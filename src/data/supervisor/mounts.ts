@@ -16,6 +16,7 @@ export enum SupervisorMountUsage {
 export enum SupervisorMountState {
   ACTIVE = "active",
   FAILED = "failed",
+  INACTIVE = "inactive",
   UNKNOWN = "unknown",
 }
 
@@ -78,10 +79,12 @@ interface SupervisorDiskMountRequestParamsBase {
   read_only?: boolean;
 }
 
-// Create from a candidate with device; round-trip a resolved mount with uuid.
+// At least one identifier is required. Both may be sent together, as a
+// candidate carries both; Supervisor then resolves by uuid and checks the
+// device agrees with it.
 export type SupervisorDiskMountRequestParams =
-  | (SupervisorDiskMountRequestParamsBase & { device: string; uuid?: never })
-  | (SupervisorDiskMountRequestParamsBase & { uuid: string; device?: never });
+  | (SupervisorDiskMountRequestParamsBase & { device: string; uuid?: string })
+  | (SupervisorDiskMountRequestParamsBase & { uuid: string; device?: string });
 
 export type SupervisorMountRequestParams =
   | SupervisorNFSMountRequestParams

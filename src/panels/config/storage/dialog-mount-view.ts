@@ -289,10 +289,19 @@ class ViewMountDialog extends DirtyStateProviderMixin<
       const { candidates } = await fetchSupervisorMountCandidates(this.hass);
       this._candidates = candidates;
       this._diskSupported = true;
-    } catch (_err: any) {
-      // Older Supervisors return 404. Hide the option rather than show it broken.
-      this._candidates = [];
-      this._diskSupported = false;
+    } catch (err: any) {
+      if (err?.status_code === 404) {
+        // Older Supervisors have no candidates endpoint. Hide the option
+        // rather than show it broken.
+        this._candidates = [];
+        this._diskSupported = false;
+        return;
+      }
+      // Any other failure is transient or a real error: keep the option and
+      // report it instead of pretending there are no disks.
+      this._candidates = undefined;
+      this._diskSupported = true;
+      this._error = extractApiErrorMessage(err);
     }
   }
 
