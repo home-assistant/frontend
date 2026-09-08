@@ -51,6 +51,19 @@ import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
+interface PendingEdit {
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+}
+
+// How close the saved value must come to a pending one to count as saved
+const PENDING_TOLERANCE: Record<keyof PendingEdit, number> = {
+  latitude: 1e-7,
+  longitude: 1e-7,
+  radius: 0.5,
+};
+
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -64,6 +77,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   @state() private _storageItems?: Zone[];
 
   @state() private _stateItems?: HassEntity[];
+
+  // Values dragged on the map, shown until the saved data reflects them, so
+  // a re-render while the save is in flight does not move the marker back.
+  // A failed save drops them and the marker returns to the saved values.
+  @state() private _pendingEdits: Record<string, PendingEdit> = {};
 
   @state() private _canEditCore = false;
 
@@ -82,6 +100,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       storageItems: Zone[],
       stateItems: HassEntity[],
       zoneEntityIds: Record<string, string>,
+      pendingEdits: Record<string, PendingEdit>,
       _colorVersion: number
     ): MarkerLocation[] => {
       const computedStyles = getComputedStyle(this);
@@ -94,6 +113,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
+          ...pendingEdits[entityState.entity_id],
           radius_color: zoneColor(
             entityState.entity_id,
             !!entityState.attributes.passive,
@@ -107,6 +127,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
+        ...pendingEdits[zone.id],
         radius_color: zoneColor(
           zoneEntityIds[zone.id] ?? `zone.${zone.id}`,
           !!zone.passive,
@@ -290,6 +311,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       this._storageItems,
                       this._stateItems,
                       this._zoneEntityIds,
+                      this._pendingEdits,
                       this._colorVersion
                     )}
                     @location-updated=${this._locationUpdated}
@@ -343,6 +365,52 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
     }
+    this._settlePendingEdits();
+  }
+
+  // A pending edit is done once the saved data carries its values
+  private _settlePendingEdits() {
+    for (const [id, pending] of Object.entries(this._pendingEdits)) {
+      const saved =
+        this._storageItems?.find((zone) => zone.id === id) ??
+        this.hass.states[id]?.attributes;
+      if (
+        saved &&
+        (Object.keys(pending) as (keyof PendingEdit)[]).every(
+          (key) =>
+            Math.abs((saved[key] as number) - pending[key]!) <
+            PENDING_TOLERANCE[key]
+        )
+      ) {
+        this._dropPendingEdit(id);
+      }
+    }
+  }
+
+  private _dropPendingEdit(id: string) {
+    const { [id]: _done, ...rest } = this._pendingEdits;
+    this._pendingEdits = rest;
+  }
+
+  private async _saveEdit(id: string, pending: PendingEdit) {
+    this._pendingEdits = {
+      ...this._pendingEdits,
+      [id]: { ...this._pendingEdits[id], ...pending },
+    };
+    try {
+      if (id === "zone.home") {
+        await saveCoreConfig(this.hass, pending);
+        return;
+      }
+      const entry = this._storageItems!.find((item) => item.id === id);
+      if (entry) {
+        await this._updateEntry(entry, pending);
+      }
+    } catch (err) {
+      // The saved values are the truth again; the marker moves back
+      this._dropPendingEdit(id);
+      throw err;
+    }
   }
 
   private async _fetchData() {
@@ -384,37 +452,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _locationUpdated(ev: CustomEvent) {
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        latitude: ev.detail.location[0],
-        longitude: ev.detail.location[1],
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
+  private _locationUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
       latitude: ev.detail.location[0],
       longitude: ev.detail.location[1],
     });
   }
 
-  private async _radiusUpdated(ev: CustomEvent) {
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        radius: Math.round(ev.detail.radius),
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
-      radius: ev.detail.radius,
+  private _radiusUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
+      radius:
+        ev.detail.id === "zone.home"
+          ? Math.round(ev.detail.radius)
+          : ev.detail.radius,
     });
   }
 
