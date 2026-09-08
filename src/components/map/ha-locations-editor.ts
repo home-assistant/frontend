@@ -10,6 +10,7 @@ import type { MapLatLng } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { internationalizationContext } from "../../data/context";
 import type { HomeAssistantInternationalization, ThemeMode } from "../../types";
+import "../ha-alert";
 import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap, HaMapEditableLocation } from "./ha-map";
@@ -121,11 +122,9 @@ export class HaLocationsEditor extends LitElement {
         this.locations?.some(
           (location) => location.location_editable || location.radius_editable
         )
-          ? html`<ha-input-helper-text
-              >${this._i18n.localize(
-                "ui.components.map.editing_unavailable"
-              )}</ha-input-helper-text
-            >`
+          ? html`<ha-alert alert-type="warning">
+              ${this._i18n.localize("ui.components.map.editing_unavailable")}
+            </ha-alert>`
           : ""
       }
       ${

@@ -897,9 +897,11 @@ describe("MapLibreMapEngine", () => {
 
     beforeEach(() => {
       // The circle redraws once per frame; run frames synchronously
+      // Returning a frame id here would land in the engine's pending frame
+      // after the callback already cleared it, suppressing later redraws
       vi.stubGlobal("requestAnimationFrame", (callback: () => void) => {
         callback();
-        return 1;
+        return undefined;
       });
       vi.stubGlobal("cancelAnimationFrame", () => undefined);
     });
