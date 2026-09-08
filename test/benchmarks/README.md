@@ -118,9 +118,9 @@ Work on **one target at a time**:
 5. **Verify correctness** — `yarn test` and `yarn lint` must pass. Never run
    `yarn lint:types` with file arguments.
 6. **Measure**: run `yarn test:bench --reporter=json --outputFile=.../after.json`
-   and compare matching benchmarks against the baseline report.
-7. **Report** — include a before/after table (`mean`, `hz`, `rme`) for every
-   affected benchmark, generated from the two JSON files.
+   and compare matching test and benchmark task names against the baseline report.
+7. **Report** — include a before/after table (`latency.mean`, `throughput.mean`,
+   `latency.rme`) for every affected benchmark, generated from the two JSON files.
 
 ### Guardrails
 
