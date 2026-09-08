@@ -87,6 +87,8 @@ const clientLeaf =
   (clientEvaluator) =>
     clientEvaluator(condition);
 
+const unknownLeaf: EvalNode = () => undefined;
+
 /**
  * Split a dashboard visibility condition tree into:
  *
@@ -96,7 +98,9 @@ const clientLeaf =
  *   locally-evaluated client leaves into the overall visibility.
  *
  * The top-level array is treated as an implicit `AND`. Nodes with
- * `enabled: false` are skipped, matching core. Sibling server
+ * `enabled: false` are skipped, matching core; a client-side node whose
+ * `enabled` is a template (which only core could render) stays unknown.
+ * Sibling server
  * conditions sharing a logical parent (including that implicit top-level AND)
  * are grouped into a *single* subscription using the parent's operator, to
  * avoid subscription fan-out. A `not` combines its children with `AND` before
@@ -156,6 +160,13 @@ export const splitConditionTree = (
   // Only ever reached for client-class nodes (server subtrees are grouped and
   // translated whole by `buildSiblings`).
   const build = (condition: VisibilityCondition): EvalNode => {
+    // A template-valued `enabled` can only be rendered by core, which never
+    // sees a client-side node. Rather than silently treating the node as
+    // enabled, keep it unknown (so the tree errs toward hiding), matching the
+    // optimistic seed in `evaluateConditionsLocally`.
+    if ("enabled" in condition && typeof condition.enabled !== "boolean") {
+      return unknownLeaf;
+    }
     if (isLogicalCondition(condition)) {
       const children = condition.conditions ?? [];
       if (condition.condition === "or") {

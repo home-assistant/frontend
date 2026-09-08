@@ -319,6 +319,39 @@ describe("splitConditionTree", () => {
     expect(split.evaluate((c) => c !== user, {})).toBe(true);
   });
 
+  it("keeps a client-side node with a template-valued enabled unknown", () => {
+    // Only core can render `enabled: "{{ ... }}"`, and core never sees a mixed
+    // node; treating it as enabled would let its children decide visibility.
+    const screen = cond({
+      condition: "screen",
+      media_query: "(min-width: 1px)",
+    });
+    const split = splitConditionTree([
+      cond({
+        condition: "and",
+        enabled: "{{ false }}",
+        conditions: [
+          screen,
+          { condition: "state", entity_id: "light.a", state: "on" },
+        ],
+      }),
+    ]);
+    // the mixed node's children are not subscribed or consulted
+    expect(split.serverSubtrees).toHaveLength(0);
+    expect(split.evaluate(() => true, {})).toBeUndefined();
+    // a decided sibling still short-circuits
+    const orSplit = splitConditionTree([
+      cond({
+        condition: "or",
+        conditions: [
+          screen,
+          { condition: "user", users: ["u"], enabled: "{{ true }}" },
+        ],
+      }),
+    ]);
+    expect(orSplit.evaluate((c) => c === screen, {})).toBe(true);
+  });
+
   it("treats an empty condition list as visible (vacuous AND)", () => {
     const split = splitConditionTree([]);
     expect(split.serverSubtrees).toHaveLength(0);
