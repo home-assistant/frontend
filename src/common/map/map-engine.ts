@@ -245,10 +245,11 @@ export const pointEastOf = (
   center: MapLatLng,
   distanceInMeters: number
 ): MapLatLng => {
-  // Clamped like circleBoundsPoints, so the handle stays near polar circles
+  // Only the pole itself is guarded, so the handle's distance still agrees
+  // with distanceMeters at any latitude a zone can have
   const lngOffset =
     (distanceInMeters /
-      (EARTH_RADIUS * Math.max(Math.cos((center[0] * Math.PI) / 180), 0.01))) *
+      (EARTH_RADIUS * Math.max(Math.cos((center[0] * Math.PI) / 180), 1e-6))) *
     (180 / Math.PI);
   return [center[0], center[1] + lngOffset];
 };

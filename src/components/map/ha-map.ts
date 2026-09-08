@@ -1329,9 +1329,6 @@ export class HaMap extends ReactiveElement {
       text-align: center;
       color: var(--primary-text-color);
     }
-    .named-icon.draggable {
-      cursor: move;
-    }
     .leaflet-pane {
       z-index: 0 !important;
     }
