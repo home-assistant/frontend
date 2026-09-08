@@ -2,8 +2,6 @@
 
 You are helping develop the Home Assistant frontend. This repository is a TypeScript application built from Lit-based Web Components for the Home Assistant web UI.
 
-For gallery-specific documentation, demos, page structure, and examples, read `gallery/AGENTS.md` when working under `gallery/`.
-
 ## Essential Commands
 
 ```bash
@@ -35,6 +33,7 @@ Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives fi
 - Do not query or manipulate DOM manually when Lit decorators, component refs, or render state are appropriate.
 - Scope styles to components, use theme custom properties, and keep layouts mobile-first and RTL-safe.
 - All user-facing text must be localized through the translation system.
+- Do not write tests just because you changed some code. Write a test when there is real logic that could break without anyone noticing, and explain what the test protects.
 
 ## Project Skills
 
@@ -42,10 +41,16 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 
 - `ha-frontend-contexts`: Lit contexts, `hass` migration, and rerender-sensitive state access.
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
+- `ha-frontend-events`: event handler typing, custom event dispatch, and event-map declarations.
+- `ha-frontend-types`: backend data contracts, optional schemas, shared types, assertions, and lifecycle types.
+- `ha-frontend-lit`: reactive fields, DOM queries, lifecycle behavior, and render-derived state.
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
-- `ha-frontend-review`: PR template use, review checklist, and recurring review issues.
+- `ha-frontend-review`: PR template use, existing review feedback, review checklist, recurring issues, and UI/UX evidence including gallery specifications.
+- `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.
+- `ha-frontend-gallery`: gallery pages, demos, sidebar structure, content, and verification.
+- `ha-frontend-demo`: standalone demo structure, configurations, navigation, shared stubs, and verification.
 
 ## Pull Requests
 

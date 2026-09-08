@@ -34,9 +34,9 @@ gulp.task("gen-service-worker-app-dev", async () => {
   );
 });
 
-gulp.task("gen-service-worker-app-prod", () =>
+const genServiceWorker = (builds) =>
   Promise.all(
-    Object.entries(SW_MAP).map(async ([outPath, build]) => {
+    builds.map(async ([outPath, build]) => {
       const manifest = JSON.parse(
         await readFile(join(outPath, "manifest.json"), "utf-8")
       );
@@ -83,5 +83,12 @@ gulp.task("gen-service-worker-app-prod", () =>
         await symlink(basename(swDest), swOld);
       }
     })
-  )
+  );
+
+gulp.task("gen-service-worker-app-prod", () =>
+  genServiceWorker(Object.entries(SW_MAP))
+);
+
+gulp.task("gen-service-worker-app-prod-modern", () =>
+  genServiceWorker([[paths.app_output_latest, "modern"]])
 );

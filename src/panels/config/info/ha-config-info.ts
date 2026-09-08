@@ -24,6 +24,7 @@ import { fetchHassioInfo } from "../../../data/hassio/supervisor";
 import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import "../../../layouts/hass-subpage";
+import { panelIsReady } from "../../../layouts/panel-ready";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -289,6 +290,7 @@ class HaConfigInfo extends LitElement {
       if (info?.homeassistant) {
         this._installationMethod = info.homeassistant.info.installation_type;
         unsubSystemHealth.then((unsub) => unsub());
+        panelIsReady(this);
       }
     });
   }

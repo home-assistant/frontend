@@ -1,7 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { consume } from "@lit/context";
 import "@material/mwc-list/mwc-list";
-import { mdiPlus, mdiTextureBox } from "@mdi/js";
+import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
@@ -98,7 +98,15 @@ export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   },
 ];
 
+const MAX_SEARCH_ITEMS_PER_SECTION = 5;
+
 type SearchSection = "item" | "block" | "entity" | "device" | "area" | "label";
+
+interface SearchMoreComboBoxItem extends PickerComboBoxItem {
+  type: "more";
+  section: "entity" | "device" | "item";
+  label: string;
+}
 
 @customElement("ha-automation-add-search")
 export class HaAutomationAddSearch extends LitElement {
@@ -288,7 +296,8 @@ export class HaAutomationAddSearch extends LitElement {
       | (FloorComboBoxItem & { last?: boolean | undefined })
       | EntityComboBoxItem
       | DevicePickerItem
-      | AutomationItemComboBoxItem,
+      | AutomationItemComboBoxItem
+      | SearchMoreComboBoxItem,
     index: number
   ) => {
     if (!item) {
@@ -297,6 +306,24 @@ export class HaAutomationAddSearch extends LitElement {
 
     if (typeof item === "string") {
       return html`<ha-section-title>${item}</ha-section-title>`;
+    }
+
+    if ("type" in item && item.type === "more") {
+      return html`<ha-combo-box-item
+        id=${`search-list-item-${index}`}
+        type="button"
+        tabindex="-1"
+        .section-id=${item.section}
+        .value=${`more-${item.section}`}
+        @click=${this._toggleSection}
+      >
+        <ha-svg-icon
+          slot="start"
+          .path=${mdiUnfoldMoreHorizontal}
+        ></ha-svg-icon>
+        <span slot="headline"></span>
+        <span slot="supporting-text">${item.label}</span>
+      </ha-combo-box-item>`;
     }
 
     const type = ["trigger", "condition", "action", "block"].includes(
@@ -343,6 +370,7 @@ export class HaAutomationAddSearch extends LitElement {
                     width: "var(--ha-space-12)",
                     position: "absolute",
                     top: "0",
+                    height: "100%",
                     left: rtl ? undefined : "var(--ha-space-1)",
                     right: rtl ? "var(--ha-space-1)" : undefined,
                     transform: rtl ? "scaleX(-1)" : "",
@@ -512,10 +540,17 @@ export class HaAutomationAddSearch extends LitElement {
       selectedSection?: SearchSection,
       relatedIdSets?: RelatedIdSets
     ) => {
-      const resultItems: (
-        string | FloorComboBoxItem | EntityComboBoxItem | PickerComboBoxItem
-      )[] = [];
-
+      type ResultItem =
+        | string
+        | FloorComboBoxItem
+        | EntityComboBoxItem
+        | PickerComboBoxItem
+        | SearchMoreComboBoxItem;
+      const resultSections: {
+        title: string;
+        type: string;
+        items: ResultItem[];
+      }[] = [];
       if (!selectedSection || selectedSection === "item") {
         let items = this._convertItemsToComboBoxItems(automationItems, type);
         if (searchTerm) {
@@ -526,15 +561,13 @@ export class HaAutomationAddSearch extends LitElement {
             ITEM_SEARCH_KEYS
           ) as AutomationItemComboBoxItem[];
         }
-
-        if (!selectedSection && items.length) {
-          // show group title
-          resultItems.push(
-            localize(`ui.panel.config.automation.editor.${type}s.name`)
-          );
+        if (items.length) {
+          resultSections.push({
+            title: localize(`ui.panel.config.automation.editor.${type}s.name`),
+            type: "item",
+            items: items,
+          });
         }
-
-        resultItems.push(...items);
       }
 
       if (
@@ -564,13 +597,13 @@ export class HaAutomationAddSearch extends LitElement {
           ) as AutomationItemComboBoxItem[];
         }
 
-        if (!selectedSection && blocks.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.panel.config.automation.editor.blocks")
-          );
+        if (blocks.length) {
+          resultSections.push({
+            title: localize("ui.panel.config.automation.editor.blocks"),
+            type: "block",
+            items: blocks,
+          });
         }
-        resultItems.push(...blocks);
       }
 
       if (!selectedSection || selectedSection === "entity") {
@@ -601,14 +634,13 @@ export class HaAutomationAddSearch extends LitElement {
           entityItems = sortRelatedFirst(entityItems) as EntityComboBoxItem[];
         }
 
-        if (!selectedSection && entityItems.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.components.target-picker.type.entities")
-          );
+        if (entityItems.length) {
+          resultSections.push({
+            title: localize("ui.components.target-picker.type.entities"),
+            type: "entity",
+            items: entityItems,
+          });
         }
-
-        resultItems.push(...entityItems);
       }
 
       if (!selectedSection || selectedSection === "device") {
@@ -640,14 +672,13 @@ export class HaAutomationAddSearch extends LitElement {
           deviceItems = sortRelatedFirst(deviceItems);
         }
 
-        if (!selectedSection && deviceItems.length) {
-          // show group title
-          resultItems.push(
-            localize("ui.components.target-picker.type.devices")
-          );
+        if (deviceItems.length) {
+          resultSections.push({
+            title: localize("ui.components.target-picker.type.devices"),
+            type: "device",
+            items: deviceItems,
+          });
         }
-
-        resultItems.push(...deviceItems);
       }
 
       if (!selectedSection || selectedSection === "area") {
@@ -697,15 +728,9 @@ export class HaAutomationAddSearch extends LitElement {
           ) as FloorComboBoxItem[];
         }
 
-        if (!selectedSection && areasAndFloors.length) {
-          // show group title
-          resultItems.push(localize("ui.components.target-picker.type.areas"));
-        }
-
-        resultItems.push(
-          ...areasAndFloors.map((item, index) => {
+        if (areasAndFloors.length) {
+          const areaItems = areasAndFloors.map((item, index) => {
             const nextItem = areasAndFloors[index + 1];
-
             if (
               !nextItem ||
               (item.type === "area" && nextItem.type === "floor")
@@ -715,10 +740,15 @@ export class HaAutomationAddSearch extends LitElement {
                 last: true,
               };
             }
-
             return item;
-          })
-        );
+          });
+
+          resultSections.push({
+            title: localize("ui.components.target-picker.type.areas"),
+            type: "area",
+            items: areaItems,
+          });
+        }
       }
 
       if (!selectedSection || selectedSection === "label") {
@@ -746,13 +776,47 @@ export class HaAutomationAddSearch extends LitElement {
           );
         }
 
-        if (!selectedSection && labels.length) {
-          // show group title
-          resultItems.push(localize("ui.components.target-picker.type.labels"));
+        if (labels.length) {
+          resultSections.push({
+            title: localize("ui.components.target-picker.type.labels"),
+            type: "label",
+            items: labels,
+          });
         }
-
-        resultItems.push(...labels);
       }
+
+      const resultItems: ResultItem[] = [];
+      resultSections.forEach((section, index) => {
+        if (selectedSection) {
+          resultItems.push(...section.items);
+          return;
+        }
+        resultItems.push(section.title);
+        if (
+          index !== resultSections.length - 1 &&
+          (section.type === "item" ||
+            section.type === "entity" ||
+            section.type === "device") &&
+          section.items.length > MAX_SEARCH_ITEMS_PER_SECTION + 1
+        ) {
+          resultItems.push(
+            ...section.items.slice(0, MAX_SEARCH_ITEMS_PER_SECTION)
+          );
+          const typeKey = section.type === "item" ? type : section.type;
+          resultItems.push({
+            primary: "",
+            id: `search-more-${section.type}`,
+            type: "more",
+            section: section.type,
+            label: localize(
+              `ui.panel.config.automation.editor.show_more_search.${typeKey}`,
+              { count: section.items.length - MAX_SEARCH_ITEMS_PER_SECTION }
+            ),
+          });
+        } else {
+          resultItems.push(...section.items);
+        }
+      });
 
       return resultItems;
     }
@@ -790,18 +854,22 @@ export class HaAutomationAddSearch extends LitElement {
     );
   }
 
-  private _toggleSection(ev: Event) {
+  private _toggleSection = (ev: Event) => {
     ev.stopPropagation();
     // this._resetSelectedItem();
     this._searchSectionTitle = undefined;
-    const section = (ev.target as HTMLElement)["section-id"] as string;
+    const section = (ev.currentTarget as HTMLElement)["section-id"] as string;
     if (!section) {
       return;
     }
-    if (this._selectedSearchSection === section) {
+    this._toggleSectionType(section);
+  };
+
+  private _toggleSectionType(type: string) {
+    if (this._selectedSearchSection === type) {
       this._selectedSearchSection = undefined;
     } else {
-      this._selectedSearchSection = section as SearchSection;
+      this._selectedSearchSection = type as SearchSection;
     }
 
     // Reset scroll position when filter changes
@@ -1019,9 +1087,13 @@ export class HaAutomationAddSearch extends LitElement {
 
     const item = this._virtualizerElement?.items[
       this._selectedSearchItemIndex
-    ] as PickerComboBoxItem;
+    ] as PickerComboBoxItem | SearchMoreComboBoxItem;
     if (item) {
-      this._selectSearchItem(item);
+      if ("type" in item && item.type === "more") {
+        this._toggleSectionType((item as SearchMoreComboBoxItem).section);
+      } else {
+        this._selectSearchItem(item as PickerComboBoxItem);
+      }
     }
   };
 

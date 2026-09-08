@@ -93,6 +93,7 @@ const cardConfigStruct = assign(
     dark_mode: optional(boolean()), // legacy option
     theme_mode: optional(string()),
     conditions: optional(any()),
+    scale_ruler: optional(boolean()),
   })
 );
 
@@ -163,6 +164,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
                   default: DEFAULT_HOURS_TO_SHOW,
                   selector: { number: { mode: "box", min: 0 } },
                 },
+                { name: "scale_ruler", selector: { boolean: {} } },
                 { name: "auto_fit", selector: { boolean: {} } },
                 { name: "fit_zones", selector: { boolean: {} } },
                 { name: "cluster", default: true, selector: { boolean: {} } },
@@ -529,6 +531,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     switch (schema.name) {
       case "theme_mode":
       case "default_zoom":
+      case "scale_ruler":
       case "auto_fit":
       case "fit_zones":
       case "cluster":

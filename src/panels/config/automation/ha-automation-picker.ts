@@ -2,10 +2,12 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
+  mdiCloseThick,
   mdiCog,
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
+  mdiExclamationThick,
   mdiHelpCircleOutline,
   mdiInformationOutline,
   mdiMenuDown,
@@ -128,6 +130,28 @@ import {
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
+
+const renderIconBadge = (path: string, color: string) => html`
+  <div
+    style=${styleMap({
+      position: "absolute",
+      top: "-5px",
+      insetInlineEnd: "-7px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "18px",
+      height: "18px",
+      borderRadius: "50%",
+      backgroundColor: color,
+      boxShadow: "0 0 0 2px var(--data-table-background-color)",
+      color: "var(--data-table-background-color)",
+      "--mdc-icon-size": "12px",
+    })}
+  >
+    <ha-svg-icon style="margin: 0;" .path=${path}></ha-svg-icon>
+  </div>
+`;
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -303,6 +327,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       entitiesToCheck?: any[]
     ): DataTableColumnContainer<AutomationItem> => {
+      const triggeredAtColumn = getTriggeredAtTableColumn<AutomationItem>(
+        localize,
+        this.hass
+      );
+
       const columns: DataTableColumnContainer<AutomationItem> = {
         icon: {
           title: "",
@@ -310,16 +339,34 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           type: "icon",
           moveable: false,
           showNarrow: true,
-          template: (automation) =>
-            html`<ha-state-icon
-              .stateObj=${automation}
-              style=${styleMap({
-                color:
-                  automation.state === UNAVAILABLE
+          template: (automation) => {
+            const unavailable = automation.state === UNAVAILABLE;
+            const disabled = automation.state === "off";
+            return html`<div
+              style="position: relative; display: inline-flex; width: 24px; height: 24px;"
+            >
+              <ha-state-icon
+                .stateObj=${automation}
+                .stateValue=${unavailable || disabled ? "on" : undefined}
+                style=${styleMap({
+                  display: "flex",
+                  margin: "0",
+                  color: unavailable
                     ? "var(--error-color)"
-                    : "unset",
-              })}
-            ></ha-state-icon>`,
+                    : disabled
+                      ? "var(--disabled-color)"
+                      : "unset",
+                })}
+              ></ha-state-icon>
+              ${
+                unavailable
+                  ? renderIconBadge(mdiExclamationThick, "var(--error-color)")
+                  : disabled
+                    ? renderIconBadge(mdiCloseThick, "var(--disabled-color)")
+                    : nothing
+              }
+            </div>`;
+          },
         },
         entity_id: getEntityIdHiddenTableColumn(),
         name: {
@@ -340,23 +387,33 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         area: getAreaTableColumn(localize),
         category: getCategoryTableColumn(localize),
         labels: getLabelsTableColumn(),
-        last_triggered: getTriggeredAtTableColumn(localize, this.hass),
+        last_triggered: {
+          ...triggeredAtColumn,
+          template: (automation) =>
+            narrow && automation.state === "off"
+              ? nothing
+              : triggeredAtColumn.template!(automation),
+        },
         formatted_state: {
           minWidth: "82px",
           maxWidth: "82px",
           sortable: true,
           groupable: true,
-          hidden: narrow,
           type: "overflow",
           title: this.hass.localize("ui.panel.config.automation.picker.state"),
-          template: (automation) => html`
-            <ha-switch
-              @click=${stopPropagation}
-              @change=${this._handleSwitchToggle}
-              .automation=${automation}
-              .checked=${automation.state === "on"}
-            ></ha-switch>
-          `,
+          template: (automation) =>
+            narrow
+              ? automation.state === "off"
+                ? localize("ui.panel.config.automation.picker.disabled")
+                : nothing
+              : html`
+                  <ha-switch
+                    @click=${stopPropagation}
+                    @change=${this._handleSwitchToggle}
+                    .automation=${automation}
+                    .checked=${automation.state === "on"}
+                  ></ha-switch>
+                `,
         },
         actions: {
           lastFixed: true,
@@ -441,9 +498,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         id="entity_id"
         .route=${this.route}
         .tabs=${configSections.automations}

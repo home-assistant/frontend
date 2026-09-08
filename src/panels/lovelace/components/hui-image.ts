@@ -4,6 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
@@ -378,9 +382,11 @@ export class HuiImage extends LitElement {
     this._loadState = LoadState.Error;
   }
 
-  private async _onImageLoad(ev: Event): Promise<void> {
+  private async _onImageLoad(
+    ev: HASSDomTargetEvent<HTMLImageElement>
+  ): Promise<void> {
     this._loadState = LoadState.Loaded;
-    const imgEl = ev.target as HTMLImageElement;
+    const imgEl = ev.target;
     if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
       this._loadedImageSrc = imgEl.src;
     }
@@ -388,9 +394,11 @@ export class HuiImage extends LitElement {
     this._lastImageHeight = imgEl.offsetHeight;
   }
 
-  private async _onVideoLoad(ev: Event): Promise<void> {
+  private async _onVideoLoad(
+    ev: HASSDomCurrentTargetEvent<HaCameraStream>
+  ): Promise<void> {
     this._loadState = LoadState.Loaded;
-    const videoEl = ev.currentTarget as HaCameraStream;
+    const videoEl = ev.currentTarget;
     await this.updateComplete;
     this._lastImageHeight = videoEl.offsetHeight;
   }

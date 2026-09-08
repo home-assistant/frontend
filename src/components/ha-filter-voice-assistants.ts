@@ -2,8 +2,13 @@ import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
@@ -34,16 +39,15 @@ export class HaFilterVoiceAssistants extends LitElement {
 
   @state() private _voiceAssistantOptions: string[] = [];
 
-  @state() private _shouldRender = false;
+  private _content = createRef<HTMLElement>();
 
-  @query("ha-list") private _list?: HTMLElement;
+  private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
     return html`
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
@@ -58,9 +62,11 @@ export class HaFilterVoiceAssistants extends LitElement {
               : nothing
           }
         </div>
-        ${
-          this._shouldRender
-            ? html`<ha-list
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`<div class="content" ${ref(this._content)}>
+              <ha-list
                 @selected=${this._assistantsSelected}
                 class="ha-scrollbar"
                 multi
@@ -83,29 +89,16 @@ export class HaFilterVoiceAssistants extends LitElement {
                       ${voiceAssistants[voiceAssistantId].name}
                     </ha-check-list-item>`
                 )}
-              </ha-list> `
-            : nothing
-        }
-      </ha-expansion-panel>
+              </ha-list>
+            </div>`
+          : nothing
+      }
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._voiceAssistantOptions = Object.keys(voiceAssistants);
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - 49}px`;
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -148,18 +141,11 @@ export class HaFilterVoiceAssistants extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          position: relative;
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;

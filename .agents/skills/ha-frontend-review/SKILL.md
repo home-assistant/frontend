@@ -1,6 +1,6 @@
 ---
 name: ha-frontend-review
-description: Home Assistant frontend PR and review guidance. Use when reviewing frontend changes, preparing a PR, checking recurring review issues, or applying the PR template.
+description: Home Assistant frontend PR and review guidance, including implementation quality, existing review feedback, established design patterns, and the authority of UI/UX evidence. Use when reviewing frontend changes, preparing a PR, checking recurring review issues, or applying the PR template.
 ---
 
 # HA Frontend Review
@@ -22,7 +22,7 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 
 - `yarn lint` passes when practical for the scope.
 - `yarn test` or focused relevant tests are green when practical for the scope.
-- Tests are added or updated for new data processing and utilities where applicable.
+- Each test added by the change protects real logic, not the look of a component.
 - User-facing text is localized and follows `ha-frontend-user-facing-text` guidance.
 - Components handle loading, error, unavailable, and missing-entity states.
 - Entity existence is checked before property access.
@@ -30,6 +30,33 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 - UI is accessible to screen readers and keyboard users.
 
 ## Recurring Review Issues
+
+Scope and public surface:
+
+- Keep changes independently reviewable and limited to the requested area.
+- Prefer existing Home Assistant helpers, Lit primitives, and component seams over parallel implementations.
+- Challenge new public properties and optional feature surface when transient options or existing seams meet the requirement with less lifecycle and consistency cost.
+
+Stateful and asynchronous UI:
+
+- Review transitions in both directions, not only individual rendered states.
+- When controls reappear, restore valid defaults instead of retaining state that was only valid while they were hidden.
+- Establish immutable dirty-state baselines before asynchronous work, guard against stale responses, and preserve unsaved state in mounted editors.
+- Determine an action's current meaning before applying dirty-state checks, especially when an action can change between Save and Close.
+
+Readiness and invalidation:
+
+- Treat readiness as the first displayable terminal result, including stable empty and error states.
+- Register child readiness before resolving the parent, do not treat fallback work as terminal, and replay readiness correctly for cached or reused panels.
+- Ensure every value read by memoized output participates in its invalidation.
+
+Repository-owned contracts:
+
+- Consult the public [frontend developer documentation](https://developers.home-assistant.io/docs/frontend/) for documented architecture, data flow, design, and development workflows.
+- For new leaf components, load `ha-frontend-contexts` and verify they consume narrow contexts instead of introducing a broad `hass` property; containers and external APIs may still require `hass`.
+- Verify backend assumptions against the owning Core, Supervisor, or WebSocket implementation, and component assumptions against the exported component contract.
+- Prefer canonical repository helpers and test setup over duplicate local implementations.
+- Promote AI-review concerns into durable guidance only when supported by code evidence, reproduced behavior, an accepted corrective commit, or human-maintainer validation.
 
 User experience and accessibility:
 
@@ -65,9 +92,28 @@ Configuration and props:
 - Keep APIs extensible without adding speculative abstractions.
 - Validate configuration before applying changes.
 
+## UI/UX Evidence
+
+For user-facing changes, establish the existing design context as part of frontend review:
+
+- Treat an applicable gallery specification as the authoritative repository source for the documented component or interaction. Inspect its written guidance and demos when present.
+- Note relevant production designs, approved designs, and shared `ha-*` components so the implementation can also be compared with established frontend behaviour.
+- Require the applicable gallery documentation or demo to change when the implementation intentionally changes behaviour documented there.
+- Prefer an established input layout or appropriate shared component over a raw input or ad hoc control.
+- Treat explicit UI/UX approval, current repository guidance, and direct human or workflow instructions as stronger evidence than inference.
+- Treat linked tasks as evidence of the problem and stated requirements, not automatic UI/UX approval.
+- When the direction remains uncertain, search frontend pull requests that carry or previously carried **Needs UX**. Inspect their label history, comments, and reviews rather than relying on the current label alone.
+- Judge relevant feedback by its content and surrounding discussion. When GitHub provides `author_association`, prioritise feedback marked `MEMBER`.
+- Prefer recent feedback about similar interactions or components. Label removal can show that a workflow gate moved on, but does not prove approval without the surrounding discussion.
+- Summarise the applicable guidance instead of maintaining a reviewer list or treating one historical decision as a permanent rule.
+
 ## Review Flow
 
+- Before reviewing a pull request, read its existing comments, reviews, and threads, including their status, resolver, and Copilot resolution reason when available.
+- Prioritise substantive human feedback, especially from authors marked `MEMBER`, and validate agent-generated feedback against the code and repository guidance.
+- Do not duplicate unresolved findings as new inline comments; reference any that still need action in the review summary. Treat resolved feedback as closed only when the resolution reason or surrounding discussion supports that outcome; otherwise validate it against the current code before suppressing it. Respect **Won't fix** and **Incorrect** reasons.
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
+- Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
-- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-user-facing-text` when a finding falls in that area.
+- Load the matching `ha-frontend-*` skill when a finding falls within its area.

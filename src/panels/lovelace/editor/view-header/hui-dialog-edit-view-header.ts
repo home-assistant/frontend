@@ -44,6 +44,7 @@ export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceVie
   @state() private _open = false;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       const config = {
         ...this._config,

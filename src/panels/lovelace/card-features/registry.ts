@@ -26,6 +26,7 @@ import { supportsLawnMowerCommandCardFeature } from "./hui-lawn-mower-commands-c
 import { supportsLightBrightnessCardFeature } from "./hui-light-brightness-card-feature";
 import { supportsLightColorFavoritesCardFeature } from "./hui-light-color-favorites-card-feature";
 import { supportsLightColorTempCardFeature } from "./hui-light-color-temp-card-feature";
+import { supportsLightEffectCardFeature } from "./hui-light-effect-card-feature";
 import { supportsLockCommandsCardFeature } from "./hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "./hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "./hui-media-player-playback-card-feature";
@@ -39,10 +40,13 @@ import { supportsSelectOptionsCardFeature } from "./hui-select-options-card-feat
 import { supportsTemperatureForecastCardFeature } from "./hui-temperature-forecast-card-feature";
 import { supportsTargetHumidityCardFeature } from "./hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "./hui-target-temperature-card-feature";
+import { supportsTimerActionsCardFeature } from "./hui-timer-actions-card-feature";
+import { supportsTimerPresetsCardFeature } from "./hui-timer-presets-card-feature";
 import { supportsToggleCardFeature } from "./hui-toggle-card-feature";
 import { supportsTrendGraphCardFeature } from "./hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "./hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "./hui-vacuum-commands-card-feature";
+import { supportsVacuumFanSpeedCardFeature } from "./hui-vacuum-fan-speed-card-feature";
 import { supportsValveOpenCloseCardFeature } from "./hui-valve-open-close-card-feature";
 import { supportsValvePositionFavoriteCardFeature } from "./hui-valve-position-favorite-card-feature";
 import { supportsValvePositionCardFeature } from "./hui-valve-position-card-feature";
@@ -87,6 +91,7 @@ export const UI_FEATURE_TYPES = [
   "light-brightness",
   "light-color-temp",
   "light-color-favorites",
+  "light-effect",
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
@@ -101,9 +106,12 @@ export const UI_FEATURE_TYPES = [
   "trend-graph",
   "target-humidity",
   "target-temperature",
+  "timer-actions",
+  "timer-presets",
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "vacuum-fan-speed",
   "valve-open-close",
   "valve-position-favorite",
   "valve-position",
@@ -141,6 +149,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "light-brightness": supportsLightBrightnessCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "light-color-favorites": supportsLightColorFavoritesCardFeature,
+  "light-effect": supportsLightEffectCardFeature,
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
@@ -155,9 +164,12 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "temperature-forecast": supportsTemperatureForecastCardFeature,
+  "timer-actions": supportsTimerActionsCardFeature,
+  "timer-presets": supportsTimerPresetsCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "vacuum-fan-speed": supportsVacuumFanSpeedCardFeature,
   "valve-open-close": supportsValveOpenCloseCardFeature,
   "valve-position-favorite": supportsValvePositionFavoriteCardFeature,
   "valve-position": supportsValvePositionCardFeature,

@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -15,11 +15,22 @@ export class HaTileContainer extends LitElement {
   @property({ type: Boolean })
   public vertical = false;
 
+  /* reserve a consistent height for the info block instead of sizing to content, so sibling tiles stay aligned */
+  @property({ type: Boolean, attribute: "fixed-info-height" })
+  public fixedInfoHeight = false;
+
   @property({ attribute: false })
   public interactive = false;
 
   @property({ attribute: false })
   public actionHandlerOptions?: ActionHandlerOptions;
+
+  @state() private _hasFeatures = false;
+
+  private _handleFeaturesSlotChange(ev: Event) {
+    this._hasFeatures =
+      (ev.target as HTMLSlotElement).assignedElements().length > 0;
+  }
 
   private _handleFocus(ev: FocusEvent) {
     if ((ev.target as HTMLElement).matches(":focus-visible")) {
@@ -32,9 +43,16 @@ export class HaTileContainer extends LitElement {
   }
 
   protected render() {
-    const containerOrientationClass =
-      this.featurePosition === "inline" ? "horizontal" : "";
-    const contentClasses = { vertical: this.vertical };
+    const isInline = this.featurePosition === "inline";
+    const containerClasses = {
+      inline: isInline,
+      "has-features-below": isInline && this._hasFeatures,
+      "fixed-height": this.fixedInfoHeight,
+    };
+    const contentClasses = {
+      vertical: this.vertical,
+      "fixed-info-height": this.fixedInfoHeight,
+    };
 
     return html`
       <div
@@ -49,15 +67,21 @@ export class HaTileContainer extends LitElement {
         <ha-ripple .disabled=${!this.interactive}></ha-ripple>
       </div>
       <div
-        class="container ${containerOrientationClass}"
+        class="container ${classMap(containerClasses)}"
         @action=${stopPropagation}
         @click=${stopPropagation}
       >
-        <div class="content ${classMap(contentClasses)}">
-          <slot name="icon"></slot>
-          <slot name="info" id="info"></slot>
+        <div class="row">
+          <div class="content ${classMap(contentClasses)}">
+            <slot name="icon"></slot>
+            <slot name="info" id="info"></slot>
+          </div>
+          <slot name="features-inline"></slot>
         </div>
-        <slot name="features"></slot>
+        <slot
+          name="features"
+          @slotchange=${this._handleFeaturesSlotChange}
+        ></slot>
       </div>
     `;
   }
@@ -90,7 +114,13 @@ export class HaTileContainer extends LitElement {
       flex-direction: column;
       flex: 1;
     }
-    .container.horizontal {
+    .row {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .container.inline .row {
       flex-direction: row;
     }
 
@@ -112,7 +142,15 @@ export class HaTileContainer extends LitElement {
       flex-direction: column;
       text-align: center;
       justify-content: center;
-      padding: 10px 0;
+      padding: 10px var(--ha-space-2);
+    }
+    .vertical.fixed-info-height {
+      /* pin sizing so every tile in a grid reserves the same height, wrapping or not, secondary or not */
+      gap: 2px;
+      --ha-tile-info-gap: 2px;
+      --ha-tile-info-primary-line-height: var(--ha-space-4);
+      --ha-tile-info-primary-min-height: var(--ha-space-8);
+      --ha-tile-info-min-height: var(--ha-space-12);
     }
     .vertical ::slotted([slot="info"]) {
       width: 100%;
@@ -138,12 +176,29 @@ export class HaTileContainer extends LitElement {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
     }
 
-    .container.horizontal ::slotted([slot="features"]) {
+    .container.inline ::slotted([slot="features-inline"]) {
+      /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
       flex: none;
-      --feature-height: var(--ha-space-9);
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
+    }
+    /* the inline feature keeps the icon height, unless the card reserves a row it can fill */
+    .container.inline:not(.has-features-below)
+      ::slotted([slot="features-inline"]),
+    .container.inline:not(.fixed-height) ::slotted([slot="features-inline"]) {
+      --feature-height: var(--ha-space-9);
+    }
+
+    .container.inline.has-features-below ::slotted([slot="features"]) {
+      /* keep both columns under the inline feature, which sits on the grid track */
+      --ha-card-feature-column-gap: calc(
+        var(--column-gap, 0px) + var(--ha-space-3) * 2
+      );
+      --ha-card-feature-divider: 1px solid var(--ha-color-border-neutral-quiet);
+      --ha-card-feature-divider-inset: calc(
+        var(--ha-space-3) + var(--column-gap, 0px) / 2
+      );
     }
     [role="button"] {
       cursor: pointer;

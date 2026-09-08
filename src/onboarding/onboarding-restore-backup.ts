@@ -2,6 +2,7 @@ import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { removeSearchParam } from "../common/url/search-params";
@@ -280,7 +281,9 @@ class OnboardingRestoreBackup extends LitElement {
     setTimeout(() => this._loadBackupInfo(), delay);
   }
 
-  private async _backupUploaded(ev: CustomEvent) {
+  private async _backupUploaded(
+    ev: HASSDomEvent<HASSDomEvents["backup-uploaded"]>
+  ) {
     this._backupId = ev.detail.backupId;
     await this._loadBackupInfo();
   }

@@ -1,12 +1,9 @@
 import { customElement } from "lit/decorators";
-import type { EntityCardConfig } from "../cards/types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
+import { applyDefaultColor } from "../common/entity-color-config";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createRowElement } from "../create-element/create-row-element";
-import type {
-  ConditionalRowConfig,
-  EntityConfig,
-  LovelaceRow,
-} from "../entity-rows/types";
+import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
@@ -23,13 +20,10 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
       throw new Error("No row configured");
     }
 
+    const { color } = config as EntitiesCardEntityConfig;
+
     this._element = createRowElement(
-      (config as EntityCardConfig).state_color
-        ? ({
-            state_color: true,
-            ...(config.row as EntityConfig),
-          } as EntityConfig)
-        : config.row
+      applyDefaultColor(config.row as EntitiesCardEntityConfig, color)
     ) as LovelaceRow;
   }
 

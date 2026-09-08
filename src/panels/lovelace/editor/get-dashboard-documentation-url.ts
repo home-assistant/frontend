@@ -1,3 +1,4 @@
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import {
   getCustomBadgeEntry,
   getCustomCardEntry,
@@ -38,7 +39,9 @@ export const getCardDocumentationURL = (
   type: string
 ): string | undefined => {
   if (isCustomType(type)) {
-    return getCustomCardEntry(stripCustomPrefix(type))?.documentationURL;
+    return sanitizeHttpUrl(
+      getCustomCardEntry(stripCustomPrefix(type))?.documentationURL
+    );
   }
 
   return `${documentationUrl(hass, "/dashboards/")}${NON_STANDARD_CARD_URLS[type] || type}`;
@@ -49,7 +52,9 @@ export const getBadgeDocumentationURL = (
   type: string
 ): string | undefined => {
   if (isCustomType(type)) {
-    return getCustomBadgeEntry(stripCustomPrefix(type))?.documentationURL;
+    return sanitizeHttpUrl(
+      getCustomBadgeEntry(stripCustomPrefix(type))?.documentationURL
+    );
   }
 
   return `${documentationUrl(hass, "/dashboards/")}${NON_STANDARD_BADGE_URLS[type] || "badges"}`;

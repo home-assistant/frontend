@@ -1,9 +1,10 @@
 /**
  * Deterministic `HomeAssistant` stub covering exactly what the chart data
- * transforms read: states, entities, locale, config, localize, and entity
- * state formatting. Everything is stable across runs.
+ * transforms read: states, registries, locale, config, localize, and entity
+ * state/name formatting. Everything is stable across runs.
  */
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { computeEntityNameDisplay } from "../../src/common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../src/common/translations/localize";
 import {
   DateFormat,
@@ -43,21 +44,43 @@ export const createMockEntityState = (
   context: { id: "fixture", parent_id: null, user_id: null },
 });
 
-export const createMockHass = (states: HassEntities = {}): HomeAssistant =>
-  ({
+export const createMockHass = (
+  states: HassEntities = {},
+  registries: Partial<
+    Pick<HomeAssistant, "entities" | "devices" | "areas" | "floors">
+  > = {}
+): HomeAssistant => {
+  const entities = registries.entities ?? {};
+  const devices = registries.devices ?? {};
+  const areas = registries.areas ?? {};
+  const floors = registries.floors ?? {};
+
+  return {
     states,
-    entities: {},
-    devices: {},
-    areas: {},
-    floors: {},
+    entities,
+    devices,
+    areas,
+    floors,
     config: demoConfig,
     locale: mockLocale,
     language: "en",
     localize: mockLocalize,
+    translationMetadata: { translations: {} },
     formatEntityState: (stateObj: HassEntity, state?: string) =>
       state ?? stateObj.state,
     formatEntityAttributeValue: (stateObj: HassEntity, attribute: string) =>
       String(stateObj.attributes[attribute]),
     formatEntityAttributeName: (_stateObj: HassEntity, attribute: string) =>
       attribute,
-  }) as unknown as HomeAssistant;
+    formatEntityName: ((stateObj, name, options) =>
+      computeEntityNameDisplay(
+        stateObj,
+        name,
+        entities,
+        devices,
+        areas,
+        floors,
+        options
+      )) satisfies HomeAssistant["formatEntityName"],
+  } as unknown as HomeAssistant;
+};

@@ -1393,7 +1393,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
             invert: this._switchAsInvert,
             target_domain: this._switchAsDomain,
           }
-        )) as DataEntryFlowStepCreateEntry;
+        )) as DataEntryFlowStepCreateEntry<ConfigEntry>;
         if (configFlowResult.result?.entry_id) {
           try {
             const entry = await this._waitForEntityRegistryUpdate(
@@ -1459,7 +1459,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
               invert: this._switchAsInvert,
               target_domain: this._switchAsDomain,
             }
-          )) as DataEntryFlowStepCreateEntry;
+          )) as DataEntryFlowStepCreateEntry<ConfigEntry>;
           if (configFlowResult.result?.entry_id) {
             try {
               const entry = await this._waitForEntityRegistryUpdate(

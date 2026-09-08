@@ -13,6 +13,7 @@ import type { ObjectSelector } from "../../data/selector";
 import { formatSelectorValue } from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
+import { computeInitialHaFormData } from "../ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../ha-form/types";
 import "../ha-input-helper-text";
 import "../ha-md-list";
@@ -237,10 +238,14 @@ export class HaObjectSelector extends LitElement {
   private async _addItem(ev) {
     ev.stopPropagation();
 
+    const schema = this._schema(this.selector);
+
     const newItem = await showFormDialog(this, {
       title: this.hass.localize("ui.common.add"),
-      schema: this._schema(this.selector),
-      data: {},
+      schema,
+      data: computeInitialHaFormData(schema, {
+        skipUnsupportedSelectors: true,
+      }),
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
       submitText: this.hass.localize("ui.common.add"),
@@ -293,7 +298,7 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     if (!this.selector.object!.multiple) {
-      fireEvent(this, "value-changed", { value: undefined });
+      fireEvent(this, "value-changed", { value: "" });
       return;
     }
 

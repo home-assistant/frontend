@@ -18,6 +18,8 @@ export class HaProgressButton extends LitElement {
 
   @property() appearance: Appearance = "accent";
 
+  @property() size: "xs" | "s" | "m" | "l" | "xl" = "m";
+
   @property({ attribute: false }) public iconPath?: string;
 
   @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
@@ -32,6 +34,7 @@ export class HaProgressButton extends LitElement {
     return html`
       <ha-button
         .appearance=${appearance}
+        .size=${this.size}
         .disabled=${this.disabled}
         .loading=${this.progress}
         .variant=${
@@ -118,15 +121,26 @@ export class HaProgressButton extends LitElement {
       width: 100%;
     }
 
+    /* The icon lives in this shadow root, so callers cannot size it themselves. */
+    ha-button[size="xs"] ha-svg-icon[slot="start"],
+    ha-button[size="s"] ha-svg-icon[slot="start"] {
+      --mdc-icon-size: 16px;
+    }
+
+    /* Fade the content out rather than hiding it, so the button keeps its
+       accessible name while the result icon covers it. */
     ha-button.result::part(start),
     ha-button.result::part(end),
     ha-button.result::part(label),
-    ha-button.result::part(caret),
+    ha-button.result::part(caret) {
+      opacity: 0;
+    }
+
     ha-button.result::part(spinner) {
       visibility: hidden;
     }
 
-    :host([appearance="brand"]) ha-svg-icon {
+    .progress ha-svg-icon {
       color: var(--white-color);
     }
   `;

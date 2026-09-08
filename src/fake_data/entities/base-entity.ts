@@ -27,6 +27,12 @@ export class MockBaseEntity {
 
   public state: string;
 
+  public areaId?: string;
+
+  public deviceId?: string;
+
+  public platform?: string;
+
   public baseAttributes: EntityAttributes;
 
   public attributes: EntityAttributes;
@@ -47,6 +53,9 @@ export class MockBaseEntity {
     this.domain = domain;
     this.objectId = objectId;
     this.state = input.state;
+    this.areaId = input.area_id;
+    this.deviceId = input.device_id;
+    this.platform = input.platform;
     this.lastChanged = randomTime();
     this.lastUpdated = randomTime();
 
@@ -127,6 +136,8 @@ export class MockBaseEntity {
       "entity_picture",
       "assumed_state",
       "device_class",
+      "state_class",
+      "unit_of_measurement",
       "supported_features",
     ]) {
       if (key in attrs) {

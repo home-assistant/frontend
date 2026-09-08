@@ -1,5 +1,5 @@
 import { ListItemEl } from "@material/web/list/internal/listitem/list-item";
-import { styles } from "@material/web/list/internal/listitem/list-item-styles";
+import { styles } from "@material/web/list/internal/listitem/list-item-styles.cssresult.js";
 import { css, html, nothing, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "./ha-ripple";

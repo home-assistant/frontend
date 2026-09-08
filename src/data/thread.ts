@@ -4,7 +4,7 @@ export interface ThreadRouter {
   instance_name: string;
   addresses: [string];
   border_agent_id: string | null;
-  brand: "google" | "apple" | "homeassistant";
+  brand: string | null;
   extended_address: string;
   extended_pan_id: string;
   model_name: string | null;
@@ -20,7 +20,7 @@ export interface ThreadDataSet {
   created: string;
   dataset_id: string;
   extended_pan_id: string;
-  network_name: string;
+  network_name: string | null;
   pan_id: string | null;
   preferred_border_agent_id: string | null;
   preferred_extended_address: string | null;

@@ -1,16 +1,19 @@
 import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import {
   consumeEntityState,
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-action-result";
+import type { HaActionResult } from "../../../components/ha-action-result";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import { apiContext, servicesContext } from "../../../data/context";
+import { forwardHaptic } from "../../../data/haptics";
 import {
   hasRequiredScriptFieldsForServices,
   requiredScriptFieldsFilledForServices,
@@ -62,8 +65,10 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: ButtonCardFeatureConfig;
 
+  @query("ha-action-result") private _result!: HaActionResult;
+
   private _pressButton() {
-    if (!this._stateObj) return;
+    if (!this._stateObj || this._result.busy) return;
 
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
@@ -96,7 +101,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
         : {}),
     };
 
-    this._api.callService(domain, service, serviceData);
+    forwardHaptic(this, "light");
+
+    this._result.run(this._api.callService(domain, service, serviceData));
   }
 
   static getStubConfig(): ButtonCardFeatureConfig {
@@ -129,7 +136,9 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this._config.action_name ?? this._localize("ui.card.button.press")}
+          <ha-action-result>
+            ${this._config.action_name ?? this._localize("ui.card.button.press")}
+          </ha-action-result>
         </ha-control-button>
       </ha-control-button-group>
     `;

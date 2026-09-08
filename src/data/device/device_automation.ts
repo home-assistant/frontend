@@ -2,9 +2,10 @@ import type { HassEntities } from "home-assistant-js-websocket";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import type { CallWS } from "../../types";
+import type { CallWS, HomeAssistant } from "../../types";
 import type { BaseTrigger } from "../automation";
 import { migrateAutomationTrigger } from "../automation";
+import type { DeviceCompositeSplits } from "./device_registry";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import {
   entityRegistryByEntityId,
@@ -156,6 +157,94 @@ export const deviceAutomationsEqual = (
   }
 
   return true;
+};
+
+// Decides how a device automation editor should handle its referenced device.
+// A missing device that was replaced by a split device stays editable so the
+// device picker can offer to fix the reference; a genuinely unknown device
+// cannot be edited visually. Returns "loading" while the split map is unknown.
+export const deviceAutomationEditorMode = (
+  hass: HomeAssistant,
+  deviceId: string | undefined,
+  compositeSplits: DeviceCompositeSplits | undefined
+): "editable" | "loading" | "unknown-device" => {
+  if (!deviceId || deviceId in hass.devices) {
+    return "editable";
+  }
+  if (compositeSplits === undefined) {
+    return "loading";
+  }
+  // Only editable if at least one of the split (replacement) devices still
+  // exists; otherwise the reference is stale and cannot be fixed here.
+  const split = compositeSplits[deviceId];
+  return split?.split_ids.some((id) => id in hass.devices)
+    ? "editable"
+    : "unknown-device";
+};
+
+const deviceAutomationsSameType = (a: DeviceAutomation, b: DeviceAutomation) =>
+  deviceAutomationIdentifiers
+    .filter((property) => property !== "device_id" && property !== "entity_id")
+    .every((property) => Object.is(a[property], b[property]));
+
+// An entity can be referenced by its registry id or by its entity id, and the
+// two sides do not have to agree.
+const deviceAutomationsSameEntity = (
+  entityRegistry: EntityRegistryEntry[],
+  a: DeviceAutomation,
+  b: DeviceAutomation
+) => {
+  if (!a.entity_id && !b.entity_id) {
+    return true;
+  }
+  if (!a.entity_id || !b.entity_id) {
+    return false;
+  }
+  return (
+    a.entity_id === b.entity_id ||
+    compareEntityIdWithEntityRegId(entityRegistry, a.entity_id, b.entity_id)
+  );
+};
+
+// A device exposes the same automation type once per entity, so the same type
+// on another entity is a different automation, not an equivalent one.
+export const findEquivalentDeviceAutomation = <T extends DeviceAutomation>(
+  entityRegistry: EntityRegistryEntry[],
+  automations: T[],
+  automation: DeviceAutomation
+): T | undefined =>
+  automations.find(
+    (candidate) =>
+      deviceAutomationsSameType(candidate, automation) &&
+      deviceAutomationsSameEntity(entityRegistry, candidate, automation)
+  );
+
+// Among the split devices that replaced a removed device, the ones that offer
+// the given automation. Nothing in the registry says which of them took it over,
+// so each candidate has to be asked.
+export const fetchReplacementDevices = async <T extends DeviceAutomation>(
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[],
+  automation: DeviceAutomation,
+  compositeSplits: DeviceCompositeSplits,
+  fetchDeviceAutomations: (callWS: CallWS, deviceId: string) => Promise<T[]>
+): Promise<string[]> => {
+  const candidates =
+    compositeSplits[automation.device_id]?.split_ids.filter(
+      (id) => id in hass.devices
+    ) ?? [];
+  const automationsPerCandidate = await Promise.all(
+    candidates.map((id) =>
+      fetchDeviceAutomations(hass.callWS, id).catch(() => [] as T[])
+    )
+  );
+  return candidates.filter((_id, index) =>
+    findEquivalentDeviceAutomation(
+      entityRegistry,
+      automationsPerCandidate[index],
+      automation
+    )
+  );
 };
 
 const compareEntityIdWithEntityRegId = (

@@ -1,8 +1,8 @@
 import { InputChip } from "@material/web/chips/internal/input-chip";
-import { styles } from "@material/web/chips/internal/input-styles";
-import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
-import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
+import { styles } from "@material/web/chips/internal/input-styles.cssresult.js";
+import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles.cssresult.js";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
+import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
@@ -15,6 +15,7 @@ export class HaInputChip extends InputChip {
     styles,
     css`
       :host {
+        max-width: 100%;
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--primary-text-color);
@@ -27,6 +28,7 @@ export class HaInputChip extends InputChip {
         );
         --ha-input-chip-selected-container-opacity: 1;
         --md-input-chip-label-text-font: Roboto, sans-serif;
+        --md-input-chip-label-text-weight: 400;
       }
       /** Set the size of mdc icons **/
       ::slotted([slot="icon"]) {

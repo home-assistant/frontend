@@ -1,6 +1,6 @@
 import { OutlinedField } from "@material/web/field/internal/outlined-field";
-import { styles } from "@material/web/field/internal/outlined-styles";
-import { styles as sharedStyles } from "@material/web/field/internal/shared-styles";
+import { styles } from "@material/web/field/internal/outlined-styles.cssresult.js";
+import { styles as sharedStyles } from "@material/web/field/internal/shared-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { literal } from "lit/static-html";

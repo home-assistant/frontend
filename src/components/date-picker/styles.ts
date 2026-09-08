@@ -8,6 +8,7 @@ export const datePickerStyles = css`
   }
   calendar-date::part(button),
   calendar-range::part(button) {
+    color: var(--primary-text-color);
     border: none;
     background-color: unset;
     border-radius: var(--ha-border-radius-circle);

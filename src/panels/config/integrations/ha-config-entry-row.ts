@@ -45,12 +45,13 @@ import {
 } from "../../../data/config_entries";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
+import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
-  integrationsWithPanel,
+  getConfigPanelPath,
 } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -479,14 +480,16 @@ export class HaConfigEntryRow extends LitElement {
                       </ha-md-list-item>
                       ${
                         this._devicesExpanded
-                          ? ownDevices.map(
-                              (device) =>
+                          ? groupDevicesByParent(ownDevices).map(
+                              ({ device, isChild, isLastChild }) =>
                                 html`<ha-config-entry-device-row
                                   .hass=${this.hass}
                                   .narrow=${this.narrow}
                                   .entry=${item}
                                   .device=${device}
                                   .entities=${entities}
+                                  .isChild=${isChild}
+                                  .isLastChild=${isLastChild}
                                 ></ha-config-entry-device-row>`
                             )
                           : nothing
@@ -509,14 +512,16 @@ export class HaConfigEntryRow extends LitElement {
                 `
               )}`
             : html`
-                ${ownDevices.map(
-                  (device) =>
+                ${groupDevicesByParent(ownDevices).map(
+                  ({ device, isChild, isLastChild }) =>
                     html`<ha-config-entry-device-row
                       .hass=${this.hass}
                       .narrow=${this.narrow}
                       .entry=${item}
                       .device=${device}
                       .entities=${entities}
+                      .isChild=${isChild}
+                      .isLastChild=${isLastChild}
                     ></ha-config-entry-device-row>`
                 )}
               `
@@ -525,12 +530,7 @@ export class HaConfigEntryRow extends LitElement {
     </ha-md-list>`;
   }
 
-  private _configPanel = memoizeOne(
-    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
-      Object.values(panels).find(
-        (panel) => panel.config_panel_domain === domain
-      )?.url_path || integrationsWithPanel[domain]
-  );
+  private _configPanel = memoizeOne(getConfigPanelPath);
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities.filter(

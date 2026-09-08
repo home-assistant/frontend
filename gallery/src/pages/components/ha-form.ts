@@ -2,7 +2,10 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import {
+  mockAreaRegistry,
+  type DemoArea,
+} from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
@@ -10,7 +13,6 @@ import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervis
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
-import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -85,6 +87,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: "backyard",
@@ -109,6 +112,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
   {
     area_id: null,
@@ -133,48 +137,24 @@ const DEVICES: DeviceRegistryEntry[] = [
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
 ];
 
-const AREAS: AreaRegistryEntry[] = [
+const AREAS: DemoArea[] = [
   {
     area_id: "backyard",
-    floor_id: null,
     name: "Backyard",
-    icon: null,
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "bedroom",
-    floor_id: null,
     name: "Bedroom",
     icon: "mdi:bed",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
   {
     area_id: "livingroom",
-    floor_id: null,
     name: "Livingroom",
     icon: "mdi:sofa",
-    picture: null,
-    aliases: [],
-    labels: [],
-    temperature_entity_id: null,
-    humidity_entity_id: null,
-    created_at: 0,
-    modified_at: 0,
   },
 ];
 

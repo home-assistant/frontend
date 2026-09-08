@@ -1,4 +1,5 @@
 import deepClone from "deep-clone-simple";
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,6 +20,10 @@ import type {
 } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import "../badges/hui-badge";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../cards/hui-card";
@@ -95,6 +100,15 @@ export class HUIView extends ReactiveElement {
 
   private _config?: LovelaceViewConfig;
 
+  private _resolveInitialRender?: () => void;
+
+  private _initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
+  @consume({ context: childPanelReadyContext })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
+
   @storage({
     key: "dashboardCardClipboard",
     state: false,
@@ -150,6 +164,11 @@ export class HUIView extends ReactiveElement {
 
   protected createRenderRoot() {
     return this;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._registerChildPanelReady?.(this._initialRenderComplete);
   }
 
   public willUpdate(changedProperties: PropertyValues<this>): void {
@@ -324,6 +343,13 @@ export class HUIView extends ReactiveElement {
     const viewConfig = await this._generateConfig(rawConfig);
 
     this._setConfig(viewConfig, isStrategy);
+    await customElements.whenDefined(this._layoutElement!.localName);
+    if (this._layoutElement instanceof ReactiveElement) {
+      await this._layoutElement.updateComplete;
+    }
+    await this._layoutElement!.initialRenderComplete;
+    this._resolveInitialRender?.();
+    this._resolveInitialRender = undefined;
   }
 
   private _createLayoutElement(config: LovelaceViewConfig): void {

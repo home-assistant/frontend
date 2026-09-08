@@ -43,15 +43,6 @@ declare global {
   interface Window {
     // Custom panel entry point url
     customPanelJS: string;
-    ShadyCSS: {
-      nativeCss: boolean;
-      nativeShadow: boolean;
-      prepareTemplate(templateElement, elementName, elementExtension);
-      styleElement(element);
-      styleSubtree(element, overrideProperties);
-      styleDocument(overrideProperties);
-      getComputedStyleValue(element, propertyName);
-    };
   }
 
   // for fire event

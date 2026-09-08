@@ -179,12 +179,15 @@ export abstract class HaDeviceAutomationPicker<
       (a, idx) => value === `${a.device_id}_${idx}`
     );
 
-    const text = automation
+    const described =
+      automation ?? (this.value?.domain ? this.value : undefined);
+
+    const text = described
       ? this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
           this._entityReg,
-          automation
+          described
         )
       : value === NO_AUTOMATION_KEY
         ? this.NO_AUTOMATION_TEXT
@@ -194,9 +197,14 @@ export abstract class HaDeviceAutomationPicker<
   };
 
   private async _updateDeviceInfo() {
+    // Asking a removed device for its automations fails rather than returning
+    // an empty list.
     this._automations = this.deviceId
       ? (
-          await this._fetchDeviceAutomations(this.hass.callWS, this.deviceId)
+          await this._fetchDeviceAutomations(
+            this.hass.callWS,
+            this.deviceId
+          ).catch(() => [] as T[])
         ).sort(sortDeviceAutomations)
       : // No device, clear the list of automations
         [];

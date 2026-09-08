@@ -16,6 +16,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/item/ha-list-item-base";
@@ -208,7 +209,6 @@ class HaRefreshTokens extends LitElement {
           <ha-button
             variant="danger"
             appearance="filled"
-            size="s"
             @click=${this._deleteAllTokens}
           >
             ${this.hass.localize(
@@ -221,7 +221,9 @@ class HaRefreshTokens extends LitElement {
   }
 
   private _handleDropdownSelect(
-    ev: CustomEvent<{ item: { action: string; token: RefreshToken } }>
+    ev: HaDropdownSelectEvent<string> & {
+      detail: { item: { action: string; token: RefreshToken } };
+    }
   ) {
     if (ev.detail.item.action === "toggle_expiration") {
       this._toggleTokenExpiration(ev.detail.item.token);
@@ -348,6 +350,10 @@ class HaRefreshTokens extends LitElement {
           background-color: var(--success-color);
           border-radius: var(--ha-border-radius-circle);
           margin-right: 6px;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

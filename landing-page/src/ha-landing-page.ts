@@ -182,12 +182,10 @@ class HaLandingPage extends LandingPageBaseElement {
       this._networkInfoError = false;
       this._coreStatusChecked = false;
     } catch (err: any) {
-      if (!this._coreStatusChecked) {
-        // wait before show errors, because we assume that core is starting
-        this._coreCheckActive = true;
-        this._scheduleTurnOffCoreCheck();
+      if (await this._checkCoreAvailability()) {
+        // core is available, page reload in progress -> don't show an error
+        return;
       }
-      await this._checkCoreAvailability();
 
       // assume supervisor update if ping fails -> don't show an error
       if (!this._coreCheckActive && err.message !== "ping-failed") {
@@ -217,7 +215,10 @@ class HaLandingPage extends LandingPageBaseElement {
         this._progress = -1;
       }
     } catch (err: any) {
-      await this._checkCoreAvailability();
+      if (await this._checkCoreAvailability()) {
+        // core is available, page reload in progress -> stop polling
+        return;
+      }
 
       if (!this._coreCheckActive) {
         this._progress = -1;
@@ -229,16 +230,22 @@ class HaLandingPage extends LandingPageBaseElement {
     this._scheduleFetchSupervisorJobsInfo();
   }
 
-  private async _checkCoreAvailability() {
+  private async _checkCoreAvailability(): Promise<boolean> {
     try {
       const response = await fetch("/manifest.json");
-      if (response.ok) {
-        location.reload();
-      } else {
+      if (!response.ok) {
         throw new Error("Failed to fetch manifest");
       }
+      location.reload();
+      return true;
     } catch (_err) {
-      this._coreStatusChecked = true;
+      if (!this._coreStatusChecked) {
+        // wait before showing errors, because we assume that core is starting
+        this._coreStatusChecked = true;
+        this._coreCheckActive = true;
+        this._scheduleTurnOffCoreCheck();
+      }
+      return false;
     }
   }
 

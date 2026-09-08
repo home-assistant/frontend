@@ -2,6 +2,7 @@
 import type { ReactiveElement, PropertyValues } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
+import { updateHistoryState } from "../common/navigate";
 import { closeLastDialog } from "../dialogs/make-dialog-manager";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import type { Constructor } from "../types";
@@ -20,10 +21,7 @@ export const urlSyncMixin = <
         public connectedCallback(): void {
           super.connectedCallback();
           if (mainWindow.history.length === 1) {
-            mainWindow.history.replaceState(
-              { ...mainWindow.history.state, root: true },
-              ""
-            );
+            updateHistoryState({ root: true });
           }
           mainWindow.addEventListener("popstate", this._popstateChangeListener);
         }

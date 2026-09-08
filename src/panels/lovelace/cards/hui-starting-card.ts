@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-card";
 import "../../../components/ha-spinner";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -38,7 +39,9 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
 
     return html`
       <div class="content">
-        <ha-spinner></ha-spinner>
+        <ha-fade-in .delay=${500}>
+          <ha-spinner></ha-spinner>
+        </ha-fade-in>
         ${this.hass.localize("ui.panel.lovelace.cards.starting.description")}
       </div>
     `;

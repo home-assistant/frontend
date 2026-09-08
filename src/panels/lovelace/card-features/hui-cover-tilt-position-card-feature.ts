@@ -171,7 +171,7 @@ class HuiCoverTiltPositionCardFeature
       cardFeatureStyles,
       css`
         .gradient {
-          background: -webkit-linear-gradient(left, ${GRADIENT});
+          background: linear-gradient(to right, ${GRADIENT});
           opacity: 0.6;
         }
       `,

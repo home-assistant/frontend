@@ -1,6 +1,6 @@
 import { AttachableController } from "@material/web/internal/controller/attachable-controller";
 import { Ripple } from "@material/web/ripple/internal/ripple";
-import { styles } from "@material/web/ripple/internal/ripple-styles";
+import { styles } from "@material/web/ripple/internal/ripple-styles.cssresult.js";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

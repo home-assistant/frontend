@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
@@ -153,7 +154,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     );
   }
 
-  private _handleCheckboxChange(ev: Event) {
+  private _handleCheckboxChange(ev: HASSDomTargetEvent<HaCheckbox>) {
     const checked = (ev.target as HaCheckbox).checked;
     let value: HaFormIntegerData | undefined;
     if (checked) {
@@ -178,7 +179,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     });
   }
 
-  private _valueChanged(ev: InputEvent) {
+  private _valueChanged(
+    ev: InputEvent & HASSDomTargetEvent<HaInput | HTMLInputElement>
+  ) {
     const source = ev.target as HaInput | HTMLInputElement;
     const rawValue = source.value;
 

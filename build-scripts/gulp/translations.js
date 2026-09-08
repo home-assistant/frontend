@@ -1,10 +1,7 @@
-/* eslint-disable max-classes-per-file */
-
 import { deleteAsync } from "del";
 import { glob } from "glob";
 import gulp from "gulp";
 import rename from "gulp-rename";
-import merge from "lodash.merge";
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
@@ -12,6 +9,7 @@ import { PassThrough, Transform } from "node:stream";
 import { finished } from "node:stream/promises";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
+import { mergeTranslations } from "./merge-translations.js";
 import "./fetch-nightly-translations.js";
 
 const inFrontendDir = "translations/frontend";
@@ -58,11 +56,12 @@ class CustomJSON extends Transform {
 class MergeJSON extends Transform {
   _objects = [];
 
-  constructor(stem, startObj = {}, reviver = null) {
+  constructor(stem, startObj = {}, reviver = null, prune = false) {
     super({ objectMode: true, allowHalfOpen: false });
     this._stem = stem;
     this._startObj = structuredClone(startObj);
     this._reviver = reviver;
+    this._prune = prune;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -74,7 +73,11 @@ class MergeJSON extends Transform {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   async _flush(callback) {
-    const mergedObj = merge(this._startObj, ...this._objects);
+    const mergedObj = mergeTranslations(
+      this._startObj,
+      this._objects,
+      this._prune
+    );
     this._outFile.contents = Buffer.from(JSON.stringify(mergedObj));
     this._outFile.stem = this._stem;
     callback(null, this._outFile);
@@ -259,7 +262,7 @@ const createTranslations = async () => {
     }
     const mergeStream = gulp
       .src(mergeFiles, { allowEmpty: true })
-      .pipe(new MergeJSON(locale, enMaster, emptyReviver));
+      .pipe(new MergeJSON(locale, enMaster, emptyReviver, true));
     mergesFinished.push(finished(mergeStream));
     mergeStream.pipe(hashStream, { end: false });
   }

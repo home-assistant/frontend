@@ -135,6 +135,7 @@ export class HuiDialogEditCard
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._cardConfig || !changedProps.has("_cardConfig")) {
       return;
     }

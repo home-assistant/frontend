@@ -148,7 +148,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.navigation.general"
         )}
-        back-path="/config"
+        back-path="/config/connectivity"
         has-fab
       >
         <ha-icon-button
@@ -640,7 +640,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _handleBack(): void {
-    goBack("/config");
+    goBack("/config/integrations/integration/zwave_js");
   }
 
   private _fetchData = async () => {

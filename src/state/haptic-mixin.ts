@@ -1,6 +1,5 @@
 import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import type { HapticType } from "../data/haptics";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -16,7 +15,7 @@ declare global {
   }
   // for add event listener
   interface HTMLElementEventMap {
-    "hass-vibrate": HASSDomEvent<VibrateParams>;
+    "hass-vibrate": HASSDomEvent<HASSDomEvents["hass-vibrate"]>;
   }
 }
 
@@ -30,7 +29,9 @@ const hapticPatterns = {
   selection: [20],
 };
 
-const handleHaptic = (hapticTypeEvent: HASSDomEvent<HapticType>) => {
+const handleHaptic = (
+  hapticTypeEvent: HASSDomEvent<HASSDomEvents["haptic"]>
+) => {
   navigator.vibrate(hapticPatterns[hapticTypeEvent.detail]);
 };
 

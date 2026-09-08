@@ -112,11 +112,29 @@ class HuiEnergyDistrubutionCard
     ) {
       return true;
     }
-    const oldStates = changedProps.get("hass").states;
+    const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
+    const oldStates = oldHass.states;
     if (
       this._data?.co2SignalEntity &&
       this.hass.states[this._data.co2SignalEntity] !==
         oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
     ) {
       return true;
     }
@@ -155,15 +173,30 @@ class HuiEnergyDistrubutionCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    const hasGrid =
-      !!types.grid?.[0] &&
-      (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
+    const hasGrid = types.grid?.some(
+      (g) => g.stat_energy_from || g.stat_energy_to
+    );
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
+    const gasUnit = this._data.gasUnit;
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === gasUnit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
     const hasReturnToGrid =
-      types.grid?.some((source) => !!source.stat_energy_to) ?? false;
+      types.grid?.some((source) => source.stat_energy_to) ?? false;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
@@ -210,16 +243,37 @@ class HuiEnergyDistrubutionCard
       // card's data when the selected period extends to now. For historical
       // periods (yesterday, last week, ...) fall back to the generic icon.
       if (periodIncludesNow(this._data)) {
-        const socValues = types
-          .battery!.map((source) =>
-            source.stat_soc
+        const socBatteries = types
+          .battery!.map((source) => ({
+            soc: source.stat_soc
               ? Number(this.hass.states[source.stat_soc]?.state)
-              : NaN
-          )
-          .filter((value) => Number.isFinite(value));
-        if (socValues.length) {
-          averageBatterySoc =
-            socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
+              : NaN,
+            capacity: source.capacity,
+          }))
+          .filter((battery) => Number.isFinite(battery.soc));
+        if (socBatteries.length) {
+          // Weight each battery's SOC by its capacity so the combined value
+          // reflects the total stored energy. Batteries without a configured
+          // capacity assume the mean of the configured ones; when none are
+          // configured this falls back to an equally weighted (simple) average.
+          const configuredCapacities = socBatteries
+            .map((battery) => battery.capacity)
+            .filter((capacity) => capacity != null && capacity > 0) as number[];
+          const meanCapacity = configuredCapacities.length
+            ? configuredCapacities.reduce((sum, value) => sum + value, 0) /
+              configuredCapacities.length
+            : 1;
+          let weightSum = 0;
+          let weightedSocSum = 0;
+          socBatteries.forEach((battery) => {
+            const capacity =
+              battery.capacity != null && battery.capacity > 0
+                ? battery.capacity
+                : meanCapacity;
+            weightSum += capacity;
+            weightedSocSum += battery.soc * capacity;
+          });
+          averageBatterySoc = weightedSocSum / weightSum;
           batteryIconPath = batteryLevelIconPath(averageBatterySoc);
         }
       }
@@ -416,7 +470,9 @@ class HuiEnergyDistrubutionCard
                             ${formatConsumptionShort(
                               this.hass,
                               gasUsage,
-                              this._data.gasUnit
+                              this._data.gasUnit,
+                              undefined,
+                              gasDisplayPrecision
                             )}
                           </div>
                           <svg width="80" height="30">

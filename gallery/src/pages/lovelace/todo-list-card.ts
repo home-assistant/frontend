@@ -4,6 +4,8 @@ import { customElement, query } from "lit/decorators";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { mockTodo } from "../../../../demo/src/stubs/todo";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { TodoListCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { DemoCardConfig } from "../../components/demo-card";
 import "../../components/demo-cards";
 
 const ENTITIES = [
@@ -27,20 +29,20 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "List example",
-    config: `
-- type: todo-list
-  entity: todo.shopping_list
-    `,
+    config: {
+      type: "todo-list",
+      entity: "todo.shopping_list",
+    },
   },
   {
     heading: "List with title example",
-    config: `
-- type: todo-list
-  title: Shopping List
-  entity: todo.read_only
-    `,
+    config: {
+      type: "todo-list",
+      title: "Shopping List",
+      entity: "todo.read_only",
+    },
   },
-];
+] satisfies DemoCardConfig<TodoListCardConfig>[];
 
 @customElement("demo-lovelace-todo-list-card")
 class DemoTodoListEntity extends LitElement {

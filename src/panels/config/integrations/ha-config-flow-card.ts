@@ -10,6 +10,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  isHomeAssistantUrl,
+  sanitizeLinkUrl,
+} from "../../../common/url/sanitize-http-url";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -46,6 +50,15 @@ export class HaConfigFlowCard extends LitElement {
 
   protected render(): TemplateResult {
     const attention = ATTENTION_SOURCES.includes(this.flow.context.source);
+    const configurationUrlIsHomeAssistant = isHomeAssistantUrl(
+      this.flow.context.configuration_url
+    );
+    const configurationUrl = sanitizeLinkUrl(
+      this.flow.context.configuration_url
+    );
+    const documentationLink = this.manifest?.is_built_in
+      ? documentationUrl(this.hass, `/integrations/${this.manifest.domain}`)
+      : this.manifest?.documentation;
     return html`
       <ha-integration-action-card
         class=${classMap({
@@ -78,7 +91,7 @@ export class HaConfigFlowCard extends LitElement {
           )}
         </ha-button>
         ${
-          this.flow.context.configuration_url || this.manifest || attention
+          configurationUrl || documentationLink || attention
             ? html`<ha-dropdown
                 slot="header-button"
                 placement="bottom-end"
@@ -90,19 +103,12 @@ export class HaConfigFlowCard extends LitElement {
                   .path=${mdiDotsVertical}
                 ></ha-icon-button>
                 ${
-                  this.flow.context.configuration_url
+                  configurationUrl
                     ? html`<a
-                        href=${this.flow.context.configuration_url.replace(
-                          /^homeassistant:\/\//,
-                          "/"
-                        )}
+                        href=${configurationUrl}
                         rel="noreferrer"
                         target=${
-                          this.flow.context.configuration_url.startsWith(
-                            "homeassistant://"
-                          )
-                            ? "_self"
-                            : "_blank"
+                          configurationUrlIsHomeAssistant ? "_self" : "_blank"
                         }
                       >
                         <ha-dropdown-item>
@@ -122,16 +128,9 @@ export class HaConfigFlowCard extends LitElement {
                     : nothing
                 }
                 ${
-                  this.manifest
+                  documentationLink
                     ? html`<a
-                        href=${
-                          this.manifest.is_built_in
-                            ? documentationUrl(
-                                this.hass,
-                                `/integrations/${this.manifest.domain}`
-                              )
-                            : this.manifest.documentation
-                        }
+                        href=${documentationLink}
                         rel="noreferrer"
                         target="_blank"
                       >

@@ -16,10 +16,10 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import {
-  getStatisticIds,
   getStatisticLabel,
   type StatisticsMetaData,
 } from "../../data/recorder";
+import { getStatisticIds } from "../../data/recorder_statistic_ids";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box-item";
@@ -84,6 +84,10 @@ export class HaStatisticPicker extends LitElement {
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property({ attribute: "error-message" }) public errorMessage?: string;
+
+  @property({ type: Boolean }) public invalid = false;
 
   @property() public placeholder?: string;
 
@@ -526,6 +530,9 @@ export class HaStatisticPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .disabled=${this.disabled}
+        .required=${this.required}
+        .invalid=${this.invalid}
+        .errorMessage=${this.errorMessage}
         .label=${this.label}
         use-top-label
         .placeholder=${placeholder}

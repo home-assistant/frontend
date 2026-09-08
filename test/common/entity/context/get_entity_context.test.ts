@@ -93,6 +93,62 @@ describe("getEntityContext", () => {
     });
   });
 
+  it("should inherit the parent device's area for an entity on a child device", () => {
+    const entity = mockEntity({
+      entity_id: "switch.outlet_1",
+      device_id: "child_1",
+    });
+    const childDevice = mockDevice({
+      id: "child_1",
+      parent_device_id: "parent_1",
+    });
+    const parentDevice = mockDevice({
+      id: "parent_1",
+      area_id: "area_1",
+    });
+    const area = mockArea({
+      area_id: "area_1",
+      floor_id: "floor_1",
+    });
+    const floor = mockFloor({
+      floor_id: "floor_1",
+    });
+    const stateObj = mockStateObj({
+      entity_id: "switch.outlet_1",
+    });
+
+    const hass = {
+      entities: {
+        "switch.outlet_1": entity,
+      },
+      devices: {
+        child_1: childDevice,
+        parent_1: parentDevice,
+      },
+      areas: {
+        area_1: area,
+      },
+      floors: {
+        floor_1: floor,
+      },
+    } as unknown as HomeAssistant;
+
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+
+    expect(result).toEqual({
+      entity,
+      device: childDevice,
+      area,
+      floor,
+    });
+  });
+
   it("should return the correct context when the entity has an area but no device", () => {
     const entity = mockEntity({
       entity_id: "sensor.kitchen",

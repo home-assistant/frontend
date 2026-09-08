@@ -11,6 +11,7 @@ import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { transform } from "../../../common/decorators/transform";
 import { formatNumber } from "../../../common/number/format_number";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-spinner";
@@ -32,7 +33,6 @@ import type {
   WeatherEntity,
 } from "../../../data/weather";
 import {
-  getDefaultForecastType,
   getForecast,
   getSecondaryWeatherAttribute,
   getSupportedForecastTypes,
@@ -76,7 +76,9 @@ class MoreInfoWeather extends LitElement {
 
   @state() private _forecastType?: ModernForecastType;
 
-  @state() private _subscribed?: Promise<() => void>;
+  private _subscribed?: Promise<() => void>;
+
+  private _subscribedTo?: string;
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".forecast",
@@ -88,24 +90,30 @@ class MoreInfoWeather extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._subscribedTo = undefined;
     this._forecastEvent = undefined;
   }
 
-  private async _subscribeForecastEvents() {
-    this._unsubscribeForecastEvents();
-    if (
-      !this.isConnected ||
-      !this._connection ||
-      !this.stateObj ||
-      !this._forecastType
-    ) {
+  private _updateForecastSubscription() {
+    const stateObj = this.stateObj;
+    const forecastType = this._forecastType;
+
+    if (!this.isConnected || !this._connection || !stateObj || !forecastType) {
+      this._unsubscribeForecastEvents();
       return;
     }
 
+    const target = `${stateObj.entity_id}-${forecastType}`;
+    if (target === this._subscribedTo) {
+      return;
+    }
+
+    this._unsubscribeForecastEvents();
+    this._subscribedTo = target;
     this._subscribed = subscribeForecast(
       this._connection.connection,
-      this.stateObj.entity_id,
-      this._forecastType,
+      stateObj.entity_id,
+      forecastType,
       (event) => {
         this._forecastEvent = event;
       }
@@ -115,7 +123,7 @@ class MoreInfoWeather extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated) {
-      this._subscribeForecastEvents();
+      this._updateForecastSubscription();
     }
   }
 
@@ -127,19 +135,9 @@ class MoreInfoWeather extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if ((changedProps.has("stateObj") || !this._subscribed) && this.stateObj) {
-      const oldState = changedProps.get("stateObj") as
-        WeatherEntity | undefined;
-      if (
-        oldState?.entity_id !== this.stateObj?.entity_id ||
-        !this._subscribed
-      ) {
-        this._forecastType = getDefaultForecastType(this.stateObj);
-        this._subscribeForecastEvents();
-      }
-    } else if (changedProps.has("_forecastType")) {
-      this._subscribeForecastEvents();
-    }
+    this._forecastType = this._selectedForecastType();
+
+    this._updateForecastSubscription();
   }
 
   protected updated(_changedProps: PropertyValues<this>): void {
@@ -159,6 +157,16 @@ class MoreInfoWeather extends LitElement {
   private _supportedForecasts = memoizeOne((stateObj: WeatherEntity) =>
     getSupportedForecastTypes(stateObj)
   );
+
+  private _selectedForecastType(): ModernForecastType | undefined {
+    if (!this.stateObj) {
+      return undefined;
+    }
+    const supported = this._supportedForecasts(this.stateObj);
+    return (
+      supported.find((type) => type === this._forecastType) ?? supported[0]
+    );
+  }
 
   private _groupForecastByDay = memoizeOne((forecast: ForecastAttribute[]) => {
     if (!forecast) return [];
@@ -509,7 +517,9 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  private _handleForecastTypeChanged(ev: CustomEvent): void {
+  private _handleForecastTypeChanged(
+    ev: HASSDomEvent<{ name: ModernForecastType }>
+  ): void {
     this._forecastType = ev.detail.name;
   }
 

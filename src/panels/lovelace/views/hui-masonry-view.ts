@@ -58,6 +58,12 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _mqlListenerRef?: () => void;
 
+  private _resolveInitialRender?: () => void;
+
+  public initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
   public connectedCallback() {
     super.connectedCallback();
     this._initMqls();
@@ -166,7 +172,13 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       root.removeChild(root.lastChild);
     }
 
-    columns.forEach((column) => root.appendChild(column));
+    columns.forEach((column) => {
+      root.appendChild(column);
+    });
+    if (this.cards.length === 0 || columns.some((column) => column.lastChild)) {
+      this._resolveInitialRender?.();
+      this._resolveInitialRender = undefined;
+    }
   }
 
   private async _createColumns() {
@@ -234,6 +246,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         index,
         this.lovelace!.editMode
       );
+      if (columnElements.some((column) => column.isConnected)) {
+        this._resolveInitialRender?.();
+        this._resolveInitialRender = undefined;
+      }
     }
 
     // Remove empty columns

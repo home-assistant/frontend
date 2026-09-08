@@ -151,11 +151,8 @@ export class HaConfigAppsInstalled extends LitElement {
                                     "ui.panel.config.apps.installed.app_running"
                                   )
                           }
-                          .iconImage=${
-                            addon.icon
-                              ? `/api/hassio/addons/${addon.slug}/icon`
-                              : undefined
-                          }
+                          .appSlug=${addon.slug}
+                          .hasAppIcon=${addon.icon}
                         ></supervisor-apps-card-content>
                       </div>
                     </ha-card>

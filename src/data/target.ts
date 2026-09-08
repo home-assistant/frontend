@@ -7,10 +7,14 @@ import type { CallWS, HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area/area_registry";
 import type { FloorComboBoxItem } from "./area_floor_picker";
 import type { DevicePickerItem } from "./device/device_picker";
-import type { DeviceRegistryEntry } from "./device/device_registry";
+import {
+  devicesInEffectiveArea,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/entity";
 import type { EntityComboBoxItem } from "./entity/entity_picker";
 import type { EntityRegistryDisplayEntry } from "./entity/entity_registry";
+import { shareInFlightRequest } from "../common/util/share-in-flight-request";
 
 export const TARGET_SEPARATOR = "________";
 
@@ -51,13 +55,18 @@ export const extractFromTarget = async (
   target: HassServiceTarget,
   expandGroup = false,
   primaryEntitiesOnly = true
-) =>
-  callWS<ExtractFromTargetResult>({
-    type: "extract_from_target",
+) => {
+  const request = {
+    type: "extract_from_target" as const,
     target,
     expand_group: expandGroup,
     primary_entities_only: primaryEntitiesOnly,
-  });
+  };
+
+  return shareInFlightRequest(callWS, JSON.stringify(request), () =>
+    callWS<ExtractFromTargetResult>(request)
+  );
+};
 
 export const getTargetEntityCount = (target?: HassServiceTarget): number => {
   const tempTarget = {
@@ -125,9 +134,7 @@ export const areaMeetsFilter = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   includeSecondary = false
 ): boolean => {
-  const areaDevices = Object.values(devices).filter(
-    (device) => device.area_id === area.area_id
-  );
+  const areaDevices = devicesInEffectiveArea(devices, area.area_id);
 
   if (
     areaDevices.some((device) =>
@@ -178,6 +185,9 @@ export const deviceMeetsFilter = (
   entityFilter?: HaEntityPickerEntityFilterFunc,
   includeSecondary = false
 ): boolean => {
+  // Only the device's own entities: child devices are targeted through the
+  // device itself (see core's target resolution), not by making a parent match
+  // on behalf of a child.
   const devEntities = Object.values(entities).filter(
     (entity) => entity.device_id === device.id
   );

@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-selector/ha-selector-select";
 import type {
   HaFormElement,
@@ -78,7 +78,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let value: HaFormSelectData | undefined = ev.detail.value;
 

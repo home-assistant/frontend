@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { computeStateDomain } from "./compute_state_domain";
+import { getToggleAction } from "./get_toggle_action";
 
 export const computeGroupEntitiesState = (states: HassEntity[]): string => {
   if (!states.length) {
@@ -57,14 +58,11 @@ export const toggleGroupEntities = (
 
   const isOn = state === "on" || state === "open";
 
-  let service = isOn ? "turn_off" : "turn_on";
+  let service = getToggleAction(domain, !isOn);
   if (domain === "cover") {
     if (state === "opening" || state === "closing") {
       // If the cover is opening or closing, we toggle it to stop it
       service = "stop_cover";
-    } else {
-      // For covers, we use the open/close service
-      service = isOn ? "close_cover" : "open_cover";
     }
   }
 

@@ -81,6 +81,7 @@ export class HaChooseSelector extends LitElement {
         .required=${this.required}
         @value-changed=${this._handleValueChanged}
         .helper=${this.helper}
+        .localizeValue=${this.localizeValue}
       ></ha-selector>`;
   }
 
@@ -107,7 +108,12 @@ export class HaChooseSelector extends LitElement {
         : {
             [this._activeChoice!]: this.value,
           };
-    this._activeChoice = ev.detail?.value || ev.target.value;
+    const choice = ev.detail?.value || ev.target.value;
+    this._activeChoice = choice;
+    if (choice && "constant" in this.selector.choose.choices[choice].selector) {
+      value[choice] =
+        this.selector.choose.choices[choice].selector.constant?.value;
+    }
     fireEvent(this, "value-changed", {
       value: {
         ...value,
@@ -141,7 +147,7 @@ export class HaChooseSelector extends LitElement {
   }
 
   private _value(choice?: string): any {
-    if (!this.value) {
+    if (this.value === null || this.value === undefined) {
       return undefined;
     }
     return typeof this.value === "object"

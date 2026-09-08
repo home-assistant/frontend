@@ -159,23 +159,6 @@ class MoreInfoVacuum extends LitElement {
       `;
     }
 
-    // Use deprecated battery_level and battery_icon attributes
-    if (
-      supportsFeature(this.stateObj, VacuumEntityFeature.BATTERY) &&
-      this.stateObj.attributes.battery_level
-    ) {
-      return html`
-        <span class="battery" slot="after-time">
-          <span
-            >${Math.round(
-              this.stateObj.attributes.battery_level
-            )}${blankBeforePercent(this._i18n.locale)}%</span
-          >
-          <ha-icon .icon=${this.stateObj.attributes.battery_icon}></ha-icon>
-        </span>
-      `;
-    }
-
     return nothing;
   }
 

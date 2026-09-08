@@ -136,6 +136,10 @@ export class HuiShortcutBadgeEditor
               },
             },
             {
+              name: "",
+              type: "divider",
+            },
+            {
               name: "double_tap_action",
               selector: {
                 ui_action: {

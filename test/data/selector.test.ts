@@ -1,7 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
-import { filterSelectorEntities } from "../../src/data/selector";
+import {
+  filterSelectorEntities,
+  resolveEntityIDs,
+} from "../../src/data/selector";
 import type { HomeAssistant } from "../../src/types";
 
 const entity = {
@@ -130,5 +133,64 @@ describe("filterSelectorEntities device filter", () => {
         devices
       )
     ).toBe(false);
+  });
+});
+
+describe("resolveEntityIDs", () => {
+  const areaHass = {
+    states: {
+      "light.kitchen": { entity_id: "light.kitchen", state: "on" },
+      "sensor.kitchen_hub_temp": {
+        entity_id: "sensor.kitchen_hub_temp",
+        state: "20",
+      },
+      "sensor.hallway_probe": { entity_id: "sensor.hallway_probe", state: "5" },
+    },
+    entities: {
+      "light.kitchen": { entity_id: "light.kitchen", device_id: "hub" },
+      "sensor.kitchen_hub_temp": {
+        entity_id: "sensor.kitchen_hub_temp",
+        device_id: "hub",
+      },
+      "sensor.hallway_probe": {
+        entity_id: "sensor.hallway_probe",
+        device_id: "hub",
+        area_id: "hallway",
+      },
+    },
+    devices: { hub: { id: "hub", area_id: "kitchen" } },
+    areas: { kitchen: { area_id: "kitchen" }, hallway: { area_id: "hallway" } },
+  } as unknown as HomeAssistant;
+
+  const resolve = (target) =>
+    resolveEntityIDs(
+      areaHass,
+      target,
+      areaHass.entities,
+      areaHass.devices,
+      areaHass.areas
+    ).sort();
+
+  it("skips entities of an area device that are assigned to another area", () => {
+    expect(resolve({ area_id: "kitchen" })).toEqual([
+      "light.kitchen",
+      "sensor.kitchen_hub_temp",
+    ]);
+  });
+
+  it("keeps every entity of a directly targeted device", () => {
+    expect(resolve({ device_id: "hub" })).toEqual([
+      "light.kitchen",
+      "sensor.hallway_probe",
+      "sensor.kitchen_hub_temp",
+    ]);
+  });
+
+  it("keeps the entity when its own area is targeted as well", () => {
+    expect(resolve({ area_id: ["kitchen", "hallway"] })).toEqual([
+      "light.kitchen",
+      "sensor.hallway_probe",
+      "sensor.kitchen_hub_temp",
+    ]);
   });
 });

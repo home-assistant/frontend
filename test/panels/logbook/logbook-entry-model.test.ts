@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   computeLogbookItem,
+  computeTraceLink,
   classifyLogbookEntry,
   entityDisplay,
   computeLogbookCause,
   computeLogbookGlyph,
+  isSameLogbookEntry,
 } from "../../../src/panels/logbook/logbook-entry-model";
 import type { LogbookEntry } from "../../../src/data/logbook";
 import type { HomeAssistant } from "../../../src/types";
@@ -241,7 +243,7 @@ describe("computeLogbookCause", () => {
     const cause = computeLogbookCause(
       hass,
       entry({ context_user_id: "person_1" }),
-      { person_1: "Paul" },
+      { person_1: "Alice" },
       new Set(["cloud_user"])
     );
     expect(cause?.type).toBe("user");
@@ -401,5 +403,146 @@ describe("computeLogbookItem", () => {
       {}
     );
     expect(model.value).toEqual({ text: "Ran", type: "state" });
+  });
+});
+
+describe("isSameLogbookEntry", () => {
+  const a = entry({
+    when: 1.234567,
+    entity_id: "light.x",
+    state: "on",
+    name: "Light",
+  });
+
+  it("matches an identical entry", () => {
+    expect(isSameLogbookEntry(a, { ...a })).toBe(true);
+  });
+
+  it("rejects an entry differing by any field", () => {
+    expect(isSameLogbookEntry(a, { ...a, when: 1.234568 })).toBe(false);
+    expect(isSameLogbookEntry(a, { ...a, entity_id: "light.y" })).toBe(false);
+    expect(isSameLogbookEntry(a, { ...a, state: "off" })).toBe(false);
+    expect(isSameLogbookEntry(a, { ...a, name: "Other" })).toBe(false);
+    expect(isSameLogbookEntry(a, { ...a, message: "turned on" })).toBe(false);
+  });
+
+  it("matches entity-less entries on name/message/when", () => {
+    const b = entry({ when: 2, name: "HACS", message: "2 updates available" });
+    expect(isSameLogbookEntry(b, { ...b })).toBe(true);
+    expect(isSameLogbookEntry(b, { ...b, message: "other" })).toBe(false);
+  });
+});
+
+describe("computeTraceLink", () => {
+  const traceContexts = {
+    ctx_1: { run_id: "run_9", domain: "automation", item_id: "auto_1" },
+  };
+
+  it("builds the trace URL for a known context", () => {
+    expect(computeTraceLink(traceContexts, "ctx_1")).toBe(
+      "/config/automation/trace/auto_1?run_id=run_9"
+    );
+  });
+
+  it("returns undefined for an unknown or missing context", () => {
+    expect(computeTraceLink(traceContexts, "ctx_2")).toBeUndefined();
+    expect(computeTraceLink(traceContexts, undefined)).toBeUndefined();
+    expect(computeTraceLink({}, "ctx_1")).toBeUndefined();
+  });
+});
+
+describe("computeLogbookItem cause", () => {
+  const hass = baseHass({ localize: (() => "") as HomeAssistant["localize"] });
+  const users = { user_1: "Alice" };
+
+  it("prefers the automation over the user who ran it", () => {
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "light.ceiling",
+        state: "on",
+        context_user_id: "user_1",
+        context_event_type: "automation_triggered",
+        context_entity_id: "automation.wake_up",
+        context_name: "Wake up",
+      }),
+      { userIdToName: users }
+    );
+    expect(model.cause?.type).toBe("automation");
+    expect(model.cause?.name).toBe("Wake up");
+  });
+
+  it("keeps the user for a direct action call", () => {
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "light.ceiling",
+        state: "on",
+        context_user_id: "user_1",
+        context_event_type: "call_service",
+        context_domain: "light",
+        context_service: "turn_on",
+      }),
+      { userIdToName: users }
+    );
+    expect(model.cause?.type).toBe("user");
+    expect(model.cause?.name).toBe("Alice");
+  });
+
+  it("falls back to the context cause without a user", () => {
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "light.ceiling",
+        state: "on",
+        context_event_type: "automation_triggered",
+        context_name: "Wake up",
+      }),
+      { userIdToName: users }
+    );
+    expect(model.cause?.type).toBe("automation");
+  });
+
+  it("leaves the cause empty without any context", () => {
+    const model = computeLogbookItem(
+      hass,
+      entry({ entity_id: "light.ceiling", state: "on" }),
+      { userIdToName: users }
+    );
+    expect(model.cause).toBeUndefined();
+  });
+});
+
+describe("computeLogbookItem run rows", () => {
+  it("uses the run label instead of the raw backend message", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "triggered",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "ui.components.logbook.automation_triggered",
+      type: "state",
+    });
+  });
+
+  it("keeps the custom message of a domain-only entry (logbook.log)", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({ domain: "script", name: "Backup", message: "Backup finished" }),
+      {}
+    );
+    expect(model.value).toEqual({ text: "Backup finished", type: "message" });
   });
 });

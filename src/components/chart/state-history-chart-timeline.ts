@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
-  ECElementEvent,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -13,7 +12,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import { sideTooltipPosition } from "./chart-tooltip-position";
+import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import { computeTimelineColor } from "./timeline-color";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
@@ -21,7 +20,10 @@ import echarts from "../../resources/echarts/echarts";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+
+const ROW_HEIGHT = 30;
+const GRID_BOTTOM = 30;
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -68,7 +70,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${`${this.data.length * 30 + 30}px`}
+        .height=${`${this.data.length * ROW_HEIGHT + GRID_BOTTOM}px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
@@ -253,13 +255,13 @@ export class StateHistoryChartTimeline extends LitElement {
       },
       grid: {
         top: 10,
-        bottom: 30,
+        bottom: GRID_BOTTOM,
         left: rtl ? 1 : labelWidth,
         right: rtl ? labelWidth : 1,
       },
       tooltip: {
         renderMode: "html",
-        position: sideTooltipPosition,
+        position: itemTooltipPosition,
         confine: true,
         formatter: this._renderTooltip,
       },
@@ -271,7 +273,7 @@ export class StateHistoryChartTimeline extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
@@ -385,7 +387,9 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartData = datasets;
   }
 
-  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+  private _handleChartClick(
+    e: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ): void {
     if (e.detail.targetType === "axisLabel") {
       const dataset = this._chartData[e.detail.dataIndex];
       if (dataset) {

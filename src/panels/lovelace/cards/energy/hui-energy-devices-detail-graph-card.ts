@@ -149,6 +149,7 @@ export class HuiEnergyDevicesDetailGraphCard
               this._yAxisFractionDigits,
               this._legendData
             )}
+            .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}

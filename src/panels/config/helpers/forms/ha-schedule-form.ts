@@ -188,12 +188,6 @@ class HaScheduleForm extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       firstDay: firstWeekdayIndex(this.hass.locale),
-      slotLabelFormat: {
-        hour: "numeric",
-        minute: undefined,
-        hour12: useAmPm(this.hass.locale),
-        meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
-      },
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
@@ -300,6 +294,7 @@ class HaScheduleForm extends LitElement {
     const newValue = { ...this._item };
 
     const endFormatted = formatTime24h(end, this.hass.locale, this.hass.config);
+    newValue[day] = [...newValue[day]];
     newValue[day][index] = {
       ...newValue[day][index],
       from: value.from,
@@ -337,6 +332,7 @@ class HaScheduleForm extends LitElement {
     };
 
     if (newDay === day) {
+      newValue[day] = [...newValue[day]];
       newValue[day][index] = event;
     } else {
       newValue[day].splice(index, 1);
@@ -432,8 +428,6 @@ class HaScheduleForm extends LitElement {
           margin: var(--ha-space-2) 0;
           height: 450px;
           width: 100%;
-          -webkit-user-select: none;
-          -ms-user-select: none;
           user-select: none;
           --fc-border-color: var(--divider-color);
           --fc-event-border-color: var(--divider-color);

@@ -1,6 +1,7 @@
 import { assert, describe, it } from "vitest";
 
 import { canToggleState } from "../../../src/common/entity/can_toggle_state";
+import { ClimateEntityFeature } from "../../../src/data/climate";
 
 describe("canToggleState", () => {
   const hass: any = {
@@ -48,7 +49,8 @@ describe("canToggleState", () => {
     const stateObj: any = {
       entity_id: "climate.bla",
       attributes: {
-        supported_features: 4096,
+        supported_features:
+          ClimateEntityFeature.TURN_ON + ClimateEntityFeature.TURN_OFF,
       },
     };
     assert.isTrue(canToggleState(hass, stateObj));

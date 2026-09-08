@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume, type ContextType } from "@lit/context";
@@ -360,6 +361,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   ? html`<ha-list-base>${floorAreas}</ha-list-base>`
                   : html`<wa-tree
                       @wa-selection-change=${this._handleSelectionChange}
+                      @dblclick=${this._handleDoubleClick}
                       >${floorAreas}</wa-tree
                     >`
               }`
@@ -1442,6 +1444,26 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _collapseItem(ev) {
     const targetId = ev.target.target;
     this._toggleItem(targetId, false);
+  }
+
+  private _handleDoubleClick(ev: MouseEvent) {
+    // the expand button and non-selectable items already toggle on single click
+    if (
+      ev
+        .composedPath()
+        .some((el) => (el as HTMLElement).classList?.contains("expand-button"))
+    ) {
+      return;
+    }
+    const item = (ev.target as HTMLElement).closest<
+      WaTreeItem & { target: string }
+    >("wa-tree-item");
+    if (!item || item.isLeaf || item.preventSelection) {
+      return;
+    }
+    // avoid leaving the label text selected by the double click
+    window.getSelection()?.removeAllRanges();
+    this._toggleItem(item.target, !item.expanded);
   }
 
   private async _loadConfigEntries() {

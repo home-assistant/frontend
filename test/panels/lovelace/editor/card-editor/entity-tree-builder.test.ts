@@ -52,6 +52,7 @@ const device = (id: string, overrides: Record<string, unknown> = {}) =>
     area_id: null,
     entry_type: null,
     primary_config_entry: null,
+    parent_device_id: null,
     config_entries: [],
     config_entries_subentries: {},
     connections: [],

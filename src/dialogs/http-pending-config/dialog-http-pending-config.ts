@@ -43,12 +43,19 @@ export class DialogHttpPendingConfig
 
   private _interval?: number;
 
+  // This dialog must only be dismissed through its own footer buttons
+  // (confirm / revert / close). This flag is flipped right before such a
+  // button closes the dialog, so `closeDialog()` can refuse every other
+  // close request (navigation, back button, `closeAllDialogs`, …).
+  private _resolved = false;
+
   public showDialog(params: HttpPendingConfigDialogParams): void {
     this._params = params;
     this._open = true;
     this._busy = undefined;
     this._error = undefined;
     this._reverted = false;
+    this._resolved = false;
     this._startCountdown();
     // The field labels live in the config panel fragment, which is not loaded
     // yet when this dialog pops up on startup. Load it so the changed-field
@@ -57,6 +64,12 @@ export class DialogHttpPendingConfig
   }
 
   public closeDialog(): boolean {
+    // Refuse programmatic close requests (navigation, back button,
+    // `closeAllDialogs`) so a pending HTTP config is never left silently
+    // unresolved. The dialog only closes once the user picks a footer action.
+    if (!this._resolved) {
+      return false;
+    }
     this._open = false;
     this._stopCountdown();
     return true;
@@ -337,6 +350,9 @@ export class DialogHttpPendingConfig
   }
 
   private _notifyResolved(): void {
+    // Mark the dialog as user-resolved so `closeDialog()` is allowed to close
+    // it; every footer action calls this before setting `_open = false`.
+    this._resolved = true;
     this._params?.onResolved?.();
     // The form on Settings > System > Network may be mounted and showing
     // stale state; let it know to refetch.

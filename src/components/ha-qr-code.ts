@@ -4,6 +4,23 @@ import { customElement, property, query, state } from "lit/decorators";
 import QRCode from "qrcode";
 import "./ha-alert";
 import { rgb2hex } from "../common/color/convert-color";
+import {
+  getContrastedColorHex,
+  getRGBContrastRatio,
+} from "../common/color/rgb";
+
+// Minimum contrast ratio (WCAG non-text minimum) below which we substitute a
+// legible foreground so the QR code never renders unscannable.
+const MIN_CONTRAST_RATIO = 3;
+
+const parseRgbVariable = (
+  value: string
+): [number, number, number] | undefined => {
+  const parts = value.split(",").map((part) => parseInt(part, 10));
+  return parts.length === 3 && parts.every((part) => !Number.isNaN(part))
+    ? (parts as [number, number, number])
+    : undefined;
+};
 
 @customElement("ha-qr-code")
 export class HaQrCode extends LitElement {
@@ -60,26 +77,26 @@ export class HaQrCode extends LitElement {
         changedProperties.has("centerImage"))
     ) {
       const computedStyles = getComputedStyle(this);
-      const textRgb = computedStyles.getPropertyValue(
-        "--rgb-primary-text-color"
+      const textRgb = parseRgbVariable(
+        computedStyles.getPropertyValue("--rgb-primary-text-color")
       );
-      const backgroundRgb = computedStyles.getPropertyValue(
-        "--rgb-card-background-color"
+      const backgroundRgb = parseRgbVariable(
+        computedStyles.getPropertyValue("--rgb-card-background-color")
       );
-      const textHex = rgb2hex(
-        textRgb.split(",").map((a) => parseInt(a, 10)) as [
-          number,
-          number,
-          number,
-        ]
-      );
-      const backgroundHex = rgb2hex(
-        backgroundRgb.split(",").map((a) => parseInt(a, 10)) as [
-          number,
-          number,
-          number,
-        ]
-      );
+
+      const backgroundHex = backgroundRgb ? rgb2hex(backgroundRgb) : "#ffffff";
+      let textHex = textRgb ? rgb2hex(textRgb) : "#000000";
+
+      // If the theme colors are missing/invalid or don't contrast enough, the
+      // QR code would be unscannable (e.g. white-on-white). Fall back to a
+      // foreground guaranteed to contrast the resolved background.
+      if (
+        !textRgb ||
+        !backgroundRgb ||
+        getRGBContrastRatio(textRgb, backgroundRgb) < MIN_CONTRAST_RATIO
+      ) {
+        textHex = getContrastedColorHex(backgroundHex);
+      }
 
       QRCode.toCanvas(canvas, this.data, {
         errorCorrectionLevel:

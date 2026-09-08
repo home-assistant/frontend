@@ -21,6 +21,7 @@ import { isTiltOnly } from "../../../data/cover";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
+import { showNumberSlider } from "../../../data/number";
 import "../../../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -249,15 +250,9 @@ class EntityPreviewRow extends LitElement {
     }
 
     if (domain === "number") {
-      const showNumberSlider =
-        stateObj.attributes.mode === "slider" ||
-        (stateObj.attributes.mode === "auto" &&
-          (Number(stateObj.attributes.max) - Number(stateObj.attributes.min)) /
-            Number(stateObj.attributes.step) <=
-            256);
       return html`
         ${
-          showNumberSlider
+          showNumberSlider(stateObj)
             ? html`
                 <div class="numberflex">
                   <ha-slider

@@ -4,6 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { WindowWithPreloads } from "../../../data/preloads";
 import type {
@@ -268,8 +269,8 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     `;
   }
 
-  private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
   private _filterStrategies = memoizeOne(

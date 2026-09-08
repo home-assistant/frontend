@@ -9,6 +9,7 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -232,6 +233,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     const createBackupTexts = this._computeCreateBackupTexts();
+    const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
 
     return html`
       <div class="content">
@@ -283,14 +285,10 @@ class MoreInfoUpdate extends LitElement {
           </div>
 
           ${
-            this.stateObj.attributes.release_url
+            releaseUrl
               ? html`<div class="row">
                   <div class="key">
-                    <a
-                      href=${this.stateObj.attributes.release_url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href=${releaseUrl} target="_blank" rel="noreferrer">
                       ${this._localize(
                         "ui.dialogs.more_info_control.update.release_announcement"
                       )}

@@ -4,8 +4,9 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { getCommonControlsUsagePrediction } from "../../../../data/usage_prediction";
 import type { HomeAssistant } from "../../../../types";
-import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
+import type { HeadingCardConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
+import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
 import type { LovelaceStrategyDependency } from "../types";
 
 const DEFAULT_LIMIT = 8;
@@ -24,13 +25,6 @@ export interface CommonControlsSectionStrategyConfig {
   /** @deprecated Use `heading` instead */
   title_visibilty?: Condition[];
 }
-
-const toTileCard = (entity: string): TileCardConfig => ({
-  type: "tile",
-  entity,
-  state_content: ["state", "area_name"],
-  show_entity_picture: true,
-});
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
@@ -63,7 +57,9 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
 
     // Pinned entities already fill the section, skip the prediction call.
     if (includedEntities.length >= limit) {
-      section.cards!.push(...includedEntities.slice(0, limit).map(toTileCard));
+      section.cards!.push(
+        ...includedEntities.slice(0, limit).map(computeFavoriteCardConfig)
+      );
       return section;
     }
 
@@ -110,7 +106,7 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       return section;
     }
 
-    section.cards!.push(...entities.map(toTileCard));
+    section.cards!.push(...entities.map(computeFavoriteCardConfig));
     return section;
   }
 }

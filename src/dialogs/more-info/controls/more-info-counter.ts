@@ -3,8 +3,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
+import type { HaButton } from "../../../components/ha-button";
 import { apiContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistantApi } from "../../../types";
@@ -67,8 +69,10 @@ class MoreInfoCounter extends LitElement {
     `;
   }
 
-  private _handleActionClick(e: MouseEvent): void {
-    const action = (e.currentTarget as any).action;
+  private _handleActionClick(
+    e: MouseEvent & HASSDomCurrentTargetEvent<HaButton & { action: string }>
+  ): void {
+    const action = e.currentTarget.action;
     this._api.callService("counter", action, {
       entity_id: this.stateObj!.entity_id,
     });

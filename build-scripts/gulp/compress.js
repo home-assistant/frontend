@@ -2,9 +2,10 @@
 
 import { constants } from "node:zlib";
 import gulp from "gulp";
-import brotli from "gulp-brotli";
-import zopfli from "gulp-zopfli-green";
+import brotli from "../brotli.mjs";
+import { pruneCache } from "../compress-cache.mjs";
 import paths from "../paths.cjs";
+import zopfli from "../zopfli.mjs";
 
 const filesGlob = "*.{js,json,css,svg,xml}";
 const brotliOptions = {
@@ -57,3 +58,7 @@ gulp.task(
     compressAppOtherZopfli
   )
 );
+
+// Keep the compression cache under its size budget (LRU, this build pinned).
+// No-op unless COMPRESS_CACHE_DIR is set.
+gulp.task("prune-compress-cache", () => pruneCache());

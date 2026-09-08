@@ -6,14 +6,20 @@ import type { ByWeekday, Options, WeekdayStr } from "rrule";
 import { RRule, Weekday } from "rrule";
 import { formatDate, formatTime } from "../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/chips/ha-chip-set";
 import "../../components/chips/ha-filter-chip";
+import type { HaFilterChip } from "../../components/chips/ha-filter-chip";
 import "../../components/ha-date-input";
 import "../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/input/ha-input";
-import type { HomeAssistant } from "../../types";
+import type { HaInput } from "../../components/input/ha-input";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type {
   MonthlyRepeatItem,
   RepeatEnd,
@@ -321,8 +327,8 @@ export class RecurrenceRuleEditor extends LitElement {
     `;
   }
 
-  private _onIntervalChange(e: Event) {
-    this._interval = (e.target! as any).value;
+  private _onIntervalChange(e: HASSDomTargetEvent<HaInput>) {
+    this._interval = Number(e.target.value);
   }
 
   private _onRepeatSelected(e: HaSelectSelectEvent<RepeatFrequency>) {
@@ -351,9 +357,12 @@ export class RecurrenceRuleEditor extends LitElement {
     this._monthday = selectedItem.bymonthday;
   }
 
-  private _onWeekdayToggle(e: MouseEvent) {
-    const target = e.currentTarget as any;
-    const value = target.value as WeekdayStr;
+  private _onWeekdayToggle(
+    e: MouseEvent &
+      HASSDomCurrentTargetEvent<HaFilterChip & { value: WeekdayStr }>
+  ) {
+    const target = e.currentTarget;
+    const value = target.value;
     if (this._weekday.has(value)) {
       this._weekday.delete(value);
     } else {
@@ -385,11 +394,11 @@ export class RecurrenceRuleEditor extends LitElement {
     e.stopPropagation();
   }
 
-  private _onCountChange(e: Event) {
-    this._count = (e.target! as any).value;
+  private _onCountChange(e: HASSDomTargetEvent<HaInput>) {
+    this._count = Number(e.target.value);
   }
 
-  private _onUntilChange(e: CustomEvent) {
+  private _onUntilChange(e: ValueChangedEvent<string>) {
     e.stopPropagation();
     this._untilDay = new Date(
       new TZDate(e.detail.value + "T00:00:00", this.timezone).getTime()
@@ -436,7 +445,7 @@ export class RecurrenceRuleEditor extends LitElement {
       );
       // rrule.js can't compute some UNTIL variations so we compute that ourself. Must be
       // in the same format as dtstart.
-      let newUntilValue;
+      let newUntilValue: string;
       if (this.allDay) {
         // For all-day events, only use the date part
         newUntilValue = until.toISOString().split("T")[0].replace(/-/g, "");

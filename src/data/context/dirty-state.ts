@@ -36,3 +36,13 @@ export interface DirtyStateContext<
  * boundary.
  */
 export const dirtyStateContext = createContext<DirtyStateContext>("dirtyState");
+
+declare global {
+  interface Window {
+    isDirtyState?: boolean;
+  }
+
+  interface HASSDomEvents {
+    "dirty-state-changed": { isDirty: boolean };
+  }
+}

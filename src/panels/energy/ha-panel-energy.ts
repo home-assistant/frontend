@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../common/navigate";
+import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -161,7 +162,9 @@ class PanelEnergy extends LitElement {
         .route=${this.route}
         .panel=${this.panel}
         .backButton=${this._searchParms.has("historyBack")}
-        .backPath=${this._searchParms.get("backPath") || "/"}
+        .backPath=${
+          sanitizeNavigationPath(this._searchParms.get("backPath")) || "/"
+        }
         @reload-energy-panel=${this._reloadConfig}
       >
       </hui-root>
@@ -193,9 +196,7 @@ class PanelEnergy extends LitElement {
       css`
         :host {
           --ha-view-sections-column-max-width: 100%;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         .centered {
           width: 100%;
