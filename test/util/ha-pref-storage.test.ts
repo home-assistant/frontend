@@ -10,10 +10,11 @@ describe("ha-pref-storage", () => {
   };
 
   beforeEach(() => {
-    window.localStorage = new FallbackStorage();
+    vi.stubGlobal("localStorage", new FallbackStorage());
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.resetModules();
     vi.resetAllMocks();
   });

@@ -261,15 +261,16 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     };
 
     protected async promptDiscardChanges() {
-      return this.confirmUnsavedChanged();
+      return this.confirmUnsavedChanged(false);
     }
 
     /**
      * Asks whether unsaved changes should be discarded.
      * Subclasses must override this to show a confirmation dialog.
+     * @param addHistory false while a navigation is already in flight.
      * @returns true to proceed (discard/save changes), false to cancel.
      */
-    protected confirmUnsavedChanged(): Promise<boolean> {
+    protected confirmUnsavedChanged(_addHistory = true): Promise<boolean> {
       return Promise.resolve(true);
     }
 
@@ -278,6 +279,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       const domain = hooks.domain;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
+        if (!this.isConnected) {
+          return;
+        }
         this.readOnly = false;
         const report: AutomationMigrationReport = { deprecated: false };
         this.config = hooks.normalizeConfig(config, report);
@@ -294,6 +298,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         );
         hooks.checkValidation();
       } catch (err: any) {
+        if (!this.isConnected) {
+          return;
+        }
         if (err.status_code !== 404) {
           const alertText =
             err.body?.message || err.body || err.error || "Unknown error";

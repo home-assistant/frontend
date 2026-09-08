@@ -9,7 +9,7 @@ import "../../../../src/components/ha-svg-icon";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
-const appearances = ["accent", "filled", "plain"];
+const appearances = ["accent", "filled", "outlined", "plain"];
 const variants = ["brand", "danger", "neutral", "warning", "success"];
 
 @customElement("demo-components-ha-button")

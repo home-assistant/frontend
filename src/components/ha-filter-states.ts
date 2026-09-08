@@ -1,8 +1,13 @@
-import type { List, SelectedDetail } from "@material/mwc-list";
+import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-check-list-item";
@@ -27,9 +32,9 @@ export class HaFilterStates extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _shouldRender = false;
+  private _content = createRef<HTMLElement>();
 
-  @query("ha-list") private _list!: List;
+  private _panel = new FilterPanelController(this, this._content);
 
   protected render() {
     if (!this.states) {
@@ -40,7 +45,6 @@ export class HaFilterStates extends LitElement {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
@@ -55,9 +59,11 @@ export class HaFilterStates extends LitElement {
               : nothing
           }
         </div>
-        ${
-          this._shouldRender
-            ? html`
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`
+              <div class="content" ${ref(this._content)}>
                 <ha-list
                   @selected=${this._statesSelected}
                   multi
@@ -82,34 +88,11 @@ export class HaFilterStates extends LitElement {
                       </ha-check-list-item>`
                   )}
                 </ha-list>
-              `
-            : nothing
-        }
-      </ha-expansion-panel>
+              </div>
+            `
+          : nothing
+      }
     `;
-  }
-
-  protected willUpdate(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      this._shouldRender = true;
-    }
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if ((changed.has("expanded") || changed.has("states")) && this.expanded) {
-      setTimeout(async () => {
-        if (!this.expanded) return;
-        const list = this._list;
-        if (!list) {
-          return;
-        }
-        list.style.height = `${this.clientHeight - 49}px`;
-      }, 300);
-    }
-  }
-
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
   }
 
   private _expandedChanged(ev) {
@@ -152,17 +135,11 @@ export class HaFilterStates extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          border-bottom: 1px solid var(--divider-color);
-        }
-        :host([expanded]) {
+        ha-list {
           flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
+          min-height: 0;
         }
         .header {
           display: flex;

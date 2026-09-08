@@ -2,7 +2,7 @@ import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import memoizeOne from "memoize-one";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
@@ -60,6 +60,8 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
+  @state() private _firstVisibleIndex = 0;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && this.virtualize) ||
@@ -80,9 +82,11 @@ class HaLogbookRenderer extends LitElement {
 
     return (
       changedProps.has("entries") ||
+      changedProps.has("traceContexts") ||
       changedProps.has("noDetail") ||
       changedProps.has("userIdToName") ||
       changedProps.has("systemUserIds") ||
+      changedProps.has("_firstVisibleIndex" as never) ||
       languageChanged
     );
   }
@@ -96,12 +100,24 @@ class HaLogbookRenderer extends LitElement {
       `;
     }
 
+    // Rows positioned by the virtualizer cannot carry a sticky date header.
+    const floatingEntry = this.virtualize
+      ? this.entries[this._firstVisibleIndex]
+      : undefined;
+
     return html`
       <div
         class="container ha-scrollbar"
         @scroll=${this._saveScrollPos}
         @logbook-entry-selected=${this._handleEntrySelected}
       >
+        ${
+          floatingEntry
+            ? html`<h4 class="date floating-date">
+                ${this._formatDateHeader(new Date(floatingEntry.when * 1000))}
+              </h4>`
+            : nothing
+        }
         ${
           this.virtualize
             ? html`<lit-virtualizer
@@ -176,6 +192,11 @@ class HaLogbookRenderer extends LitElement {
     });
   }
 
+  private _dayOf(index: number): number | undefined {
+    const entry = this.entries[index];
+    return entry ? new Date(entry.when * 1000).setHours(0, 0, 0, 0) : undefined;
+  }
+
   private _formatDateHeader(date: Date): string {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -200,6 +221,10 @@ class HaLogbookRenderer extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(e: VisibilityChangedEvent) {
+    const first = Math.max(0, e.first);
+    if (this._dayOf(first) !== this._dayOf(this._firstVisibleIndex)) {
+      this._firstVisibleIndex = first;
+    }
     fireEvent(this, "hass-logbook-live", {
       enable: e.first === 0,
     });
@@ -226,12 +251,23 @@ class HaLogbookRenderer extends LitElement {
           font-weight: var(--ha-font-weight-medium);
         }
 
+        .floating-date {
+          position: absolute;
+          top: 0;
+          inset-inline: 0;
+          z-index: 2;
+          margin: 0;
+          padding-bottom: var(--ha-space-2);
+          background-color: var(--card-background-color);
+        }
+
         .no-entries {
           text-align: center;
           color: var(--secondary-text-color);
         }
 
         .container {
+          position: relative;
           max-height: var(--logbook-max-height);
         }
 

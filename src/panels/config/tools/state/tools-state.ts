@@ -12,6 +12,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
@@ -414,28 +415,28 @@ class HaPanelDevState extends LitElement {
     this._expanded = true;
   }
 
-  private _stateChanged(ev: InputEvent) {
-    this._state = (ev.target as HaInput).value ?? "";
+  private _stateChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._state = ev.target.value ?? "";
   }
 
-  private _entityFilterChanged(ev: InputEvent) {
-    this._entityFilter = (ev.target as HaInputSearch).value ?? "";
+  private _entityFilterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._entityFilter = ev.target.value ?? "";
   }
 
-  private _stateFilterChanged(ev: InputEvent) {
-    this._stateFilter = (ev.target as HaInputSearch).value ?? "";
+  private _stateFilterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._stateFilter = ev.target.value ?? "";
   }
 
-  private _attributeFilterChanged(ev: InputEvent) {
-    this._attributeFilter = (ev.target as HaInputSearch).value ?? "";
+  private _attributeFilterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._attributeFilter = ev.target.value ?? "";
   }
 
-  private _deviceFilterChanged(ev: InputEvent) {
-    this._deviceFilter = (ev.target as HaInputSearch).value ?? "";
+  private _deviceFilterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._deviceFilter = ev.target.value ?? "";
   }
 
-  private _areaFilterChanged(ev: InputEvent) {
-    this._areaFilter = (ev.target as HaInputSearch).value ?? "";
+  private _areaFilterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._areaFilter = ev.target.value ?? "";
   }
 
   private _getHistoryURL(entityId, inputDate) {
@@ -650,9 +651,7 @@ class HaPanelDevState extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: initial;
           display: block;
           padding: var(--ha-space-4);
         }

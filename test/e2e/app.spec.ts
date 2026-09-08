@@ -14,6 +14,7 @@ import {
   defineRouteSmokeTests,
   ensureAppSidebarPanelVisible,
   goToPanel,
+  openMoreInfoDialog,
 } from "./app/src/helpers";
 import {
   expectNoPageErrors,
@@ -25,6 +26,7 @@ import {
 import {
   appRouteSmokeGroups,
   configLinks,
+  connectivityLinks,
   moreInfoViewElements,
 } from "./app/src/smoke";
 
@@ -172,11 +174,14 @@ test("keeps the launch screen until initial panel content renders", async ({
     resolvers: (
       | "rejectMediaBrowse"
       | "resolveCalendarRegistry"
+      | "resolveConnectivityConfigEntries"
       | "resolveConfigEntries"
       | "resolveConfigEntriesInProgress"
       | "resolveGeneratedDashboard"
       | "resolveLovelaceConfig"
       | "resolveMediaBrowse"
+      | "resolveSerialPorts"
+      | "resolveStorageHostInfo"
     )[];
   }[] = [
     {
@@ -199,6 +204,27 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
       readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
       resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "connectivity",
+      path: "/?scenario=delayed-connectivity#/config/connectivity",
+      loadingSelector: "ha-config-connectivity ha-card",
+      readySelector: "ha-config-connectivity ha-list-item-button",
+      resolvers: ["resolveConnectivityConfigEntries"],
+    },
+    {
+      name: "serial",
+      path: "/?scenario=delayed-serial#/config/serial",
+      loadingSelector: "serial-config-dashboard ha-spinner",
+      readySelector: "serial-config-dashboard .empty",
+      resolvers: ["resolveSerialPorts"],
+    },
+    {
+      name: "storage",
+      path: "/?scenario=delayed-storage#/config/storage",
+      loadingSelector: "ha-config-section-storage",
+      readySelector: "ha-config-section-storage hass-subpage",
+      resolvers: ["resolveStorageHostInfo"],
     },
     {
       name: "media browser error",
@@ -370,34 +396,16 @@ test.describe("Light more-info dialog", () => {
       // The light-more-info scenario seeds light.test_light synchronously.
       await goToPanel(page, "/?scenario=light-more-info#/lovelace");
 
-      const dialog = page.locator("ha-more-info-dialog");
-
       // Fire the standard hass-more-info event from the app root with an
       // explicit view. The HA shell opens ha-more-info-dialog on the requested
       // view directly, so the test does not depend on the admin/demo-hidden
       // header controls.
-      //
-      // The event is one-shot: if it lands before the shell's hass-more-info
-      // listener is attached it is silently dropped. Re-dispatching is
-      // idempotent (showDialog just resets the dialog to the requested view),
-      // so poll the dispatch until the requested view actually renders.
-      await expect(async () => {
-        await page.evaluate((v) => {
-          const el = document.querySelector("ha-test");
-          el?.dispatchEvent(
-            new CustomEvent("hass-more-info", {
-              detail: { entityId: "light.test_light", view: v },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }, view);
-
-        await expect(dialog).toBeAttached({ timeout: QUICK_TIMEOUT });
-        await expect(dialog.locator(element)).toBeAttached({
-          timeout: QUICK_TIMEOUT,
-        });
-      }).toPass({ timeout: SHELL_TIMEOUT });
+      const dialog = await openMoreInfoDialog(
+        page,
+        "light.test_light",
+        view,
+        element
+      );
 
       // Each view should render its own characteristic content, not just an
       // empty shell.
@@ -406,8 +414,10 @@ test.describe("Light more-info dialog", () => {
   }
 });
 
-test.describe("Weather more-info deep link", () => {
-  test("opens and synchronizes the selected forecast", async ({ page }) => {
+test.describe("Weather more-info forecast", () => {
+  test("switches the rendered forecast when a tab is selected", async ({
+    page,
+  }) => {
     await goToPanel(
       page,
       "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
@@ -423,44 +433,111 @@ test.describe("Weather more-info deep link", () => {
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
     ).toBeAttached();
 
-    await page.locator("ha-test").evaluate((el) => {
-      el.dispatchEvent(
-        new CustomEvent("hass-more-info", {
-          detail: {
-            entityId: "weather.test_weather",
-            hash: new URLSearchParams({ forecast: "hourly" }),
-          },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    // Only the hourly and twice daily forecasts group their items under a day
+    // header, so it tells the rendered forecast apart from the daily one.
+    await expect(weather.locator(".forecast-day-header")).toHaveCount(0);
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Hourly" })
+      .click();
 
     await expect(
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
     ).toBeAttached();
+    await expect(weather.locator(".forecast-day-header").first()).toBeVisible();
 
     await dialog.getByRole("button", { name: "History" }).click();
     await expect(page).toHaveURL(/more-info-view=history/);
 
     await dialog.getByRole("button", { name: "Back" }).click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
-
-    await weather
-      .locator("ha-tab-group-tab")
-      .filter({ hasText: "Daily" })
-      .click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
+    await expect(page).toHaveURL(/more-info-view=info/);
 
     await dialog.getByRole("button", { name: "Close" }).click();
     await expect(dialog).toBeHidden();
     await expect(page).not.toHaveURL(/more-info-entity-id/);
+  });
+});
+
+test.describe("More-info dialog URL cleanup", () => {
+  test("strips the deep-link params on a plain close", async ({ page }) => {
+    const errors = trackPageErrors(page);
+
+    // An exact route so no default-page redirect races the dialog open.
+    await goToPanel(page, "/?scenario=light-more-info#/config/dashboard");
+
+    const dialog = await openMoreInfoDialog(page, "light.test_light");
+
+    await expect(page).toHaveURL(/more-info-entity-id=light\.test_light/);
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+
+    // The dialog re-renders empty once its close cleanup has run.
+    await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(0, {
+      timeout: QUICK_TIMEOUT,
+    });
+
+    await expect(page).not.toHaveURL(/more-info-entity-id/);
+    await expect(page).toHaveURL(/#\/config\/dashboard/);
+    expectNoPageErrors(errors);
+  });
+
+  test.describe("when navigation closes the dialog", () => {
+    // --ha-dialog-hide-duration only applies in dialog mode; the bottom sheet
+    // hardcodes its animation duration, so pin a desktop viewport on every
+    // project to keep the slow-close setup below effective.
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("keeps the new URL when navigation outpaces the close transition", async ({
+      page,
+    }) => {
+      const errors = trackPageErrors(page);
+
+      // An exact route so no default-page redirect races the dialog open.
+      await goToPanel(page, "/?scenario=light-more-info#/config/dashboard");
+
+      const dialog = await openMoreInfoDialog(page, "light.test_light");
+
+      await expect(page).toHaveURL(/more-info-entity-id=light\.test_light/);
+
+      // Make the hide transition outlast navigate()'s dialog-close wait so
+      // the navigation commits its URL while the dialog is still closing,
+      // like on a slow device or with a long themed animation.
+      await page.evaluate(() => {
+        document.documentElement.style.setProperty(
+          "--ha-dialog-hide-duration",
+          "1200ms"
+        );
+      });
+
+      // Navigate through a synthetic same-origin link: the dialog scrim
+      // blocks real link clicks and the dialog's own edit/device actions are
+      // hidden in the demo build, while navigate() closes open dialogs the
+      // same way for all of them.
+      await page.evaluate(() => {
+        const anchor = document.createElement("a");
+        anchor.href = "/history";
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+      });
+
+      await expect(page).toHaveURL(/#\/history/, { timeout: QUICK_TIMEOUT });
+
+      // The navigation must commit while the dialog is still closing,
+      // otherwise this test no longer covers the regression.
+      await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(1);
+
+      // The dialog re-renders empty once its close cleanup has run.
+      await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(0, {
+        timeout: QUICK_TIMEOUT,
+      });
+
+      // The cleanup must not rewrite the URL back to the pre-dialog page.
+      await expect(page).toHaveURL(/#\/history/);
+      await expect(page).not.toHaveURL(/more-info-entity-id/);
+      expectNoPageErrors(errors);
+    });
   });
 });
 
@@ -538,5 +615,21 @@ test.describe("Config panel", () => {
     "config links point to expected pages",
     configLinks,
     getDashboard
+  );
+
+  // Reached by clicking through from the dashboard: the e2e harness only
+  // resolves config panel translations once the dashboard has mounted.
+  const getConnectivity = async (page) => {
+    const dashboard = await getDashboard(page);
+    await dashboard.getByRole("link", { name: /^Connectivity\b/ }).click();
+    const connectivity = page.locator("ha-config-connectivity");
+    await expect(connectivity).toBeAttached({ timeout: PANEL_TIMEOUT });
+    return connectivity;
+  };
+
+  defineLinkSmokeTests(
+    "connectivity links point to expected pages",
+    connectivityLinks,
+    getConnectivity
   );
 });

@@ -42,6 +42,24 @@ export const climateEntityFilters: EntityFilter[] = [
   },
 ];
 
+export const hasClimateEntities = (hass: HomeAssistant): boolean => {
+  const hasAreaSensor = Object.values(hass.areas).some(
+    (area) =>
+      (area.temperature_entity_id && hass.states[area.temperature_entity_id]) ||
+      (area.humidity_entity_id && hass.states[area.humidity_entity_id])
+  );
+
+  if (hasAreaSensor) {
+    return true;
+  }
+
+  const entityIds = Object.keys(hass.states);
+
+  return climateEntityFilters.some((filter) =>
+    entityIds.some(generateEntityFilter(hass, filter))
+  );
+};
+
 const processAreasForClimate = (
   areaIds: string[],
   hass: HomeAssistant,

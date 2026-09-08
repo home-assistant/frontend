@@ -1,13 +1,32 @@
+import { intervalScaleEnsureValidExtent } from "echarts/lib/scale/helper";
+import { getPrecision, nice, round } from "echarts/lib/util/number";
+
 // A range smaller than this fraction of the axis magnitude is floating-point
 // noise (e.g. from summed statistics), not real precision.
 const NEGLIGIBLE_RANGE_RATIO = 1e-10;
 
+// Intervals the axis aims for. Passed to ECharts rather than assumed, so the
+// precision derived here cannot drift from the ticks it renders.
+const SPLIT_NUMBER = 5;
+
+// How thin a gap between the data and the plot edge counts as no gap at all,
+// as a fraction of the data span. ECharts floors the axis minimum and ceils the
+// maximum to a tick multiple, which usually leaves headroom, but quantized
+// states often land exactly on a tick and get none — collapsing area-filled
+// series, which are drawn from their value down to the axis minimum. Widening
+// the extent by this much before that rounding bumps any axis with less
+// headroom out to a full tick, and leaves the rest where they are.
+const GAP_FRACTION_OF_SPAN = 0.02;
+
+// A percentage has a real ceiling the way zero is a real floor, so the gap must
+// not push the axis past it. Not every `%` sensor is bounded — power factor is
+// signed and can read over 100 — so this only applies while the data stays under.
+const PERCENT_MAX = 100;
+
 // Derive the number of decimal digits to use for Y-axis labels from the
-// observed data range. We mirror how ECharts sizes its ticks: it splits the
-// range into ~5 intervals (its default `splitNumber`) and rounds that raw
-// interval to a "nice" 1/2/3/5×10ⁿ value, then reports the decimals that nice
-// interval needs. This matches the precision ECharts actually renders, so
-// labels are neither truncated to identical values nor padded with extra zeros.
+// observed data range, by asking ECharts for the same tick interval it will
+// render. This matches the precision it actually draws, so labels are neither
+// truncated to identical values nor padded with extra zeros.
 export function computeYAxisFractionDigits(
   min: number,
   max: number,
@@ -22,13 +41,7 @@ export function computeYAxisFractionDigits(
   // with a tail of zeros (e.g. "0.20000000000000"), so treat it as flat.
   const magnitude = Math.max(Math.abs(lo), Math.abs(hi));
   if (range <= magnitude * NEGLIGIBLE_RANGE_RATIO) return 1;
-  const rawInterval = range / 5;
-  const exponent = Math.floor(Math.log10(rawInterval));
-  const mantissa = rawInterval / 10 ** exponent; // in [1, 10)
-  // Rounding the mantissa to a nice value only ever carries to the next power
-  // of ten (mantissa ≥ 7 → 10), which needs one fewer decimal.
-  const niceExponent = mantissa >= 7 ? exponent + 1 : exponent;
-  return Math.max(0, -niceExponent);
+  return getPrecision(nice(range / SPLIT_NUMBER, true));
 }
 
 interface YAxisExtentValues {
@@ -44,34 +57,116 @@ const resolveYAxisBound = (
   values: YAxisExtentValues
 ): number | undefined => (typeof bound === "function" ? bound(values) : bound);
 
-// Wrap the Y-axis `min`/`max` options in callbacks so the tick-label precision
-// tracks the currently visible axis extent. ECharts re-invokes these callbacks
-// with the extent of the visible (zoom-filtered) data on every dataZoom, and
-// always before the label formatter runs, so recomputing the fraction digits
-// here keeps zoomed-in labels distinct. The callbacks return the original
-// bounds unchanged, so auto-scaling still applies when a bound is not set.
+// A constant series has no span for the gap to be a fraction of, so ECharts
+// falls back to `Math.abs(min)` when sizing it. That makes the extent unequal,
+// which in turn stops `intervalScaleEnsureValidExtent` from applying the ±|v|/2
+// expansion a flat series relies on for its window. Run that expansion here and
+// return fixed bounds, which also suppresses the gap.
+const flatSeriesExtent = (value: number, fixed: [boolean, boolean]) => {
+  const [lo, hi] = intervalScaleEnsureValidExtent([value, value], fixed);
+  const interval = nice((hi - lo) / SPLIT_NUMBER, true);
+  const precision = getPrecision(interval);
+  return {
+    min: round(Math.floor(lo / interval) * interval, precision),
+    max: round(Math.ceil(hi / interval) * interval, precision),
+  };
+};
+
+// Build the `yAxis` options that keep tick-label precision and the plot-edge gap
+// in agreement with the extent ECharts renders. It re-invokes the `min`/`max`
+// callbacks with the extent of the visible (zoom-filtered) data on every
+// dataZoom, and always before the label formatter runs, so the fraction digits
+// recomputed here track the zoomed range. A callback returns `undefined`
+// wherever auto-scaling should stand, and a number only where the axis has to be
+// pinned: an explicit bound, the zero anchor, or a constant series.
 export function createYAxisPrecisionBounds(options: {
   min?: YAxisBound;
   max?: YAxisBound;
   // Set for bar axes anchored at 0, so precision reflects the 0-based range.
+  // Such an axis also gets no gap: pushing it below zero would defeat the zero
+  // anchoring and leave the bars floating above the axis.
   includeZero?: boolean;
+  // Used to recognise a bounded quantity, so the gap cannot widen the axis past
+  // a limit the data itself never crosses.
+  unit?: string;
   onFractionDigits: (digits: number) => void;
 }): {
   min: (values: YAxisExtentValues) => number | undefined;
   max: (values: YAxisExtentValues) => number | undefined;
+  boundaryGap: [number, number];
+  splitNumber: number;
 } {
-  const { min, max, includeZero, onFractionDigits } = options;
+  const { min, max, includeZero, unit, onFractionDigits } = options;
+  const naturalMax = unit === "%" ? PERCENT_MAX : undefined;
+
+  const resolveBounds = (values: YAxisExtentValues) => {
+    const resolvedMin = resolveYAxisBound(min, values);
+    const resolvedMax = resolveYAxisBound(max, values);
+    if (
+      includeZero ||
+      !Number.isFinite(values.min) ||
+      !Number.isFinite(values.max)
+    ) {
+      return { min: resolvedMin, max: resolvedMax, gap: 0 };
+    }
+    if (values.min === values.max) {
+      const flat = flatSeriesExtent(values.min, [
+        resolvedMin !== undefined,
+        resolvedMax !== undefined,
+      ]);
+      // The expansion is a fraction of the magnitude, so a constant series near
+      // the ceiling would otherwise overshoot it too.
+      const flatMax =
+        naturalMax !== undefined && values.max <= naturalMax
+          ? Math.min(flat.max, naturalMax)
+          : flat.max;
+      return {
+        min: resolvedMin ?? flat.min,
+        max: resolvedMax ?? flatMax,
+        gap: 0,
+      };
+    }
+    const gap = (values.max - values.min) * GAP_FRACTION_OF_SPAN;
+    // Never let the gap carry a series past a boundary it does not itself cross.
+    const floor = values.min >= 0 ? 0 : undefined;
+    const ceiling =
+      naturalMax !== undefined && values.max <= naturalMax
+        ? naturalMax
+        : values.max <= 0
+          ? 0
+          : undefined;
+    return {
+      min:
+        resolvedMin ??
+        (floor !== undefined && values.min - floor < gap ? floor : undefined),
+      max:
+        resolvedMax ??
+        (ceiling !== undefined && ceiling - values.max < gap
+          ? ceiling
+          : undefined),
+      gap,
+    };
+  };
+
   return {
+    // Always emit the key. `setOption` merges the Y axis rather than replacing
+    // it, so a conditionally spread gap would survive a chart switching to a
+    // zero-anchored type and leave its bars floating.
+    boundaryGap: includeZero
+      ? [0, 0]
+      : [GAP_FRACTION_OF_SPAN, GAP_FRACTION_OF_SPAN],
+    splitNumber: SPLIT_NUMBER,
     min: (values) => {
-      const resolvedMin = resolveYAxisBound(min, values);
-      const resolvedMax = resolveYAxisBound(max, values);
-      const extentMin = resolvedMin ?? values.min;
-      const extentMax = resolvedMax ?? values.max;
+      const bounds = resolveBounds(values);
       onFractionDigits(
-        computeYAxisFractionDigits(extentMin, extentMax, includeZero)
+        computeYAxisFractionDigits(
+          bounds.min ?? values.min - bounds.gap,
+          bounds.max ?? values.max + bounds.gap,
+          includeZero
+        )
       );
-      return resolvedMin;
+      return bounds.min;
     },
-    max: (values) => resolveYAxisBound(max, values),
+    max: (values) => resolveBounds(values).max,
   };
 }

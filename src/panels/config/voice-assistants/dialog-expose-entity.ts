@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -172,8 +173,8 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
     listItem.selected = !listItem.selected;
   }
 
-  private _filterChanged(e: InputEvent) {
-    this._filter = (e.target as HaInputSearch).value;
+  private _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = e.target.value;
   }
 
   private _filterEntities = memoizeOne(

@@ -204,41 +204,13 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
-  public selectAll(): void {
+  public selectAll(extraFilter?: (row: DataTableRowData) => boolean): void {
     this._checkedRows = (this._filteredData || [])
-      .filter((data) => data.selectable !== false)
+      .filter(
+        (data) =>
+          data.selectable !== false && (!extraFilter || extraFilter(data))
+      )
       .map((data) => data[this.id]);
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public select(ids: string[], clear?: boolean): void {
-    if (clear) {
-      this._checkedRows = [];
-    }
-    // Map + Set keep a large selection O(rows + ids) instead of O(rows × ids).
-    const rowLookup = new Map(
-      (this._filteredData || []).map((data) => [data[this.id], data])
-    );
-    const checkedRows = new Set(this._checkedRows);
-    ids.forEach((id) => {
-      const row = rowLookup.get(id);
-      if (row?.selectable !== false && !checkedRows.has(id)) {
-        this._checkedRows.push(id);
-        checkedRows.add(id);
-      }
-    });
-    this._lastSelectedRowId = null;
-    this._checkedRowsChanged();
-  }
-
-  public unselect(ids: string[]): void {
-    ids.forEach((id) => {
-      const index = this._checkedRows.indexOf(id);
-      if (index > -1) {
-        this._checkedRows.splice(index, 1);
-      }
-    });
     this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
@@ -1235,10 +1207,8 @@ export class HaDataTable extends LitElement {
           display: none;
         }
 
-        /* Hide scrollbar for IE, Edge and Firefox */
         .mdc-data-table__header-row {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
+          scrollbar-width: none;
         }
 
         .mdc-data-table__cell,

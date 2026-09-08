@@ -55,17 +55,20 @@ export const timeCachePromiseFunc = async <T, H = HomeAssistant>(
   }
 
   const resultPromise = func(hass, ...args);
-  anyHass[cacheKey] = resultPromise;
+  const cachePromise = resultPromise.then((result) => ({
+    result,
+    cacheKey: generateCacheKey?.(hass, result),
+  }));
+  anyHass[cacheKey] = cachePromise;
 
-  resultPromise.then(
+  cachePromise.then(
     // When successful, set timer to clear cache
     (result) => {
-      anyHass[cacheKey] = {
-        result,
-        cacheKey: generateCacheKey?.(hass, result),
-      };
+      anyHass[cacheKey] = result;
       setTimeout(() => {
-        anyHass[cacheKey] = undefined;
+        if (anyHass[cacheKey] === result) {
+          anyHass[cacheKey] = undefined;
+        }
       }, cacheTime);
     },
     // On failure, clear cache right away

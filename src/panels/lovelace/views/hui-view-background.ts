@@ -5,7 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
 import {
   isMediaSourceContentId,
-  resolveMediaSource,
+  resolveMediaSourceWithCache,
 } from "../../../data/media_source";
 
 @customElement("hui-view-background")
@@ -21,20 +21,37 @@ export class HUIViewBackground extends LitElement {
     return nothing;
   }
 
-  private _fetchMedia() {
-    const backgroundImage =
-      typeof this.background === "string"
-        ? this.background
-        : typeof this.background?.image === "object"
-          ? this.background.image.media_content_id
-          : this.background?.image;
+  private _getBackgroundImage(
+    background?: string | LovelaceViewBackgroundConfig
+  ): string | undefined {
+    if (typeof background === "string") {
+      return background;
+    }
+    if (typeof background?.image === "object") {
+      return background.image.media_content_id;
+    }
+    return background?.image;
+  }
 
-    if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
-      resolveMediaSource(this.hass, backgroundImage).then((result) => {
-        this.resolvedImage = result.url;
-      });
-    } else {
+  private async _fetchMedia() {
+    const backgroundImage = this._getBackgroundImage(this.background);
+
+    if (!backgroundImage || !isMediaSourceContentId(backgroundImage)) {
       this.resolvedImage = undefined;
+      return;
+    }
+
+    let resolvedUrl: string | undefined;
+    try {
+      resolvedUrl = (
+        await resolveMediaSourceWithCache(this.hass, backgroundImage)
+      ).url;
+    } catch {
+      resolvedUrl = undefined;
+    }
+    // Discard if the background changed while resolving
+    if (this._getBackgroundImage(this.background) === backgroundImage) {
+      this.resolvedImage = resolvedUrl;
     }
   }
 
@@ -73,10 +90,7 @@ export class HUIViewBackground extends LitElement {
     background?: string | LovelaceViewBackgroundConfig
   ) {
     if (typeof background === "object" && background.image) {
-      const image =
-        typeof background.image === "object"
-          ? background.image.media_content_id || ""
-          : background.image;
+      const image = this._getBackgroundImage(background) || "";
       if (isMediaSourceContentId(image) && !this.resolvedImage) {
         return null;
       }

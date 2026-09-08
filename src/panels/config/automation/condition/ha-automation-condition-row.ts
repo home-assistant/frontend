@@ -35,9 +35,9 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
-import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
@@ -73,6 +73,8 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
+import "../ha-automation-row-behavior";
+import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -226,10 +228,17 @@ export default class HaAutomationConditionRow extends LitElement {
       }
       <h3 slot="header">
         ${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg, {
-            hideEntities: true,
-          })
+          describeCondition(this.condition, this.hass, this._entityReg)
         )}
+        ${
+          this._getType(this.condition, this.conditionDescriptions) ===
+          "platform"
+            ? html`<ha-automation-row-behavior
+                mode="condition"
+                .config=${this.condition}
+              ></ha-automation-row-behavior>`
+            : nothing
+        }
         ${
           target !== undefined || targetRequired
             ? this._renderTargets(
@@ -238,6 +247,14 @@ export default class HaAutomationConditionRow extends LitElement {
                 conditionTargetSpec,
                 this.condition.condition !== "device"
               )
+            : nothing
+        }
+        ${
+          this._getType(this.condition, this.conditionDescriptions) ===
+          "platform"
+            ? html`<ha-automation-row-options
+                .config=${this.condition}
+              ></ha-automation-row-options>`
             : nothing
         }
         ${

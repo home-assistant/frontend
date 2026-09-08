@@ -25,6 +25,9 @@ title: Button
   <ha-button appearance="filled">
     filled button
   </ha-button>
+  <ha-button appearance="outlined">
+    outlined button
+  </ha-button>
 
   <ha-button size="s">
     small
@@ -65,7 +68,7 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 
 | Name       | Type                                           | Default  | Description                                                                       |
 | ---------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| appearance | "accent"/"filled"/"plain"                      | "accent" | Sets the button appearance.                                                       |
+| appearance | "accent"/"filled"/"outlined"/"plain"           | "accent" | Sets the button appearance.                                                       |
 | variants   | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
 | size       | "xs"/"s"/"m"/"l"/"xl"                          | "m"      | Sets the button size.                                                             |
 | loading    | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |

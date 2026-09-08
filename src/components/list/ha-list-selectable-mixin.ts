@@ -10,6 +10,8 @@ export const SelectableMixin = <T extends Constructor<HaListBase>>(
   class SelectableClass extends superClass {
     @property({ type: Boolean, reflect: true }) public multi = false;
 
+    @property({ type: Boolean, reflect: true }) public controlled = false;
+
     protected override readonly hostRole = "listbox";
 
     public connectedCallback(): void {
@@ -67,15 +69,19 @@ export const SelectableMixin = <T extends Constructor<HaListBase>>(
               `ha-list-item-${el.selected ? "deselected" : "selected"}`,
               index
             );
-            el.toggleAttribute("selected");
+            if (!this.controlled) {
+              el.toggleAttribute("selected");
+            }
             return;
           }
 
           if (!el.selected) {
             fireEvent(this, "ha-list-item-selected", index);
-            // deselect the other optional selected item
-            this.clearSelection();
-            el.toggleAttribute("selected", true);
+            if (!this.controlled) {
+              // deselect the other optional selected item
+              this.clearSelection();
+              el.toggleAttribute("selected", true);
+            }
           }
         }
       }

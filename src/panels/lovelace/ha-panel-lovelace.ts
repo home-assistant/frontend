@@ -49,6 +49,8 @@ interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
 
+const EXTERNALLY_UPDATED_TOAST_ID = "lovelace-externally-updated";
+
 let editorLoaded = false;
 let resourcesLoaded = false;
 
@@ -265,6 +267,7 @@ export class LovelacePanel extends LitElement {
       return;
     }
     showToast(this, {
+      id: EXTERNALLY_UPDATED_TOAST_ID,
       message: this.hass!.localize(
         "ui.panel.lovelace.externally_updated_toast.message"
       ),
