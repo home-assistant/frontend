@@ -100,6 +100,16 @@ describe("evaluateConditionsLocally", () => {
         }),
       ])
     ).toBe(true);
+    // core rejects a bound-less numeric_state, the client passes any number
+    expect(
+      evaluate([cond({ condition: "numeric_state", entity_id: "sensor.temp" })])
+    ).toBeUndefined();
+    // core errors on a missing entity, the client evaluates it as unknown
+    expect(
+      evaluate([
+        cond({ condition: "state", entity_id: "light.gone", state: "unknown" }),
+      ])
+    ).toBeUndefined();
   });
 
   it("skips disabled nodes and leaves a template-valued enabled unknown", () => {

@@ -35,14 +35,17 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
  * Whether a server-class leaf has semantics the legacy client evaluator
  * reproduces exactly: a lovelace-format (`entity`-based or legacy) `state` /
  * `numeric_state`, or a core-format one restricted to the subset
- * `checkConditionsMet` evaluates identically — a single `entity_id`, no
- * `for` / `match` / `value_template`, no `attribute` (core compares the raw
- * attribute value while the client stringifies it), and numeric rather than
- * entity-valued bounds (core errors on a missing bound entity while the
- * client ignores it).
+ * `checkConditionsMet` evaluates identically — a single `entity_id` whose
+ * entity is present (core errors on a missing entity, the client evaluates
+ * it as `unknown`), no `for` / `match` / `value_template`, no `attribute`
+ * (core compares the raw attribute value while the client stringifies it),
+ * and, for `numeric_state`, at least one bound, both numeric rather than
+ * entity-valued (core rejects a bound-less condition and errors on a missing
+ * bound entity, while the client passes / ignores them).
  */
 const isLocallyEvaluableServerLeaf = (
-  condition: VisibilityCondition
+  condition: VisibilityCondition,
+  hass: HomeAssistant
 ): boolean => {
   if (!("condition" in condition)) {
     return true;
@@ -65,15 +68,24 @@ const isLocallyEvaluableServerLeaf = (
     above?: unknown;
     below?: unknown;
   };
-  return (
-    typeof core.entity_id === "string" &&
-    core.attribute === undefined &&
-    core.for === undefined &&
-    core.match === undefined &&
-    core.value_template === undefined &&
-    (core.above === undefined || typeof core.above === "number") &&
-    (core.below === undefined || typeof core.below === "number")
-  );
+  if (
+    typeof core.entity_id !== "string" ||
+    hass.states[core.entity_id] === undefined ||
+    core.attribute !== undefined ||
+    core.for !== undefined ||
+    core.match !== undefined ||
+    core.value_template !== undefined
+  ) {
+    return false;
+  }
+  if (condition.condition === "numeric_state") {
+    return (
+      (typeof core.above === "number" || typeof core.below === "number") &&
+      (core.above === undefined || typeof core.above === "number") &&
+      (core.below === undefined || typeof core.below === "number")
+    );
+  }
+  return true;
 };
 
 /**
@@ -136,7 +148,7 @@ export const evaluateConditionsLocally = (
     }
     if (
       isClientCondition(condition) ||
-      isLocallyEvaluableServerLeaf(condition)
+      isLocallyEvaluableServerLeaf(condition, hass)
     ) {
       return evaluateLeaf(condition);
     }
