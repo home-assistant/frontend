@@ -554,22 +554,25 @@ export function validateConditionalConfig(
  * @param entityId base the condition on that entity
  * @returns a new condition with entity id
  */
-export function addEntityToCondition(
-  condition: Condition,
+export function addEntityToCondition<T extends VisibilityCondition>(
+  condition: T,
   entityId: string
-): Condition {
+): T {
   if ("conditions" in condition && condition.conditions) {
     return {
       ...condition,
-      conditions: condition.conditions.map((c) =>
+      conditions: (condition.conditions as VisibilityCondition[]).map((c) =>
         addEntityToCondition(c, entityId)
       ),
-    };
+    } as T;
   }
 
+  // Lovelace `state` / `numeric_state` — including the legacy shape with no
+  // `condition` key, which is a state condition — target the host entity when
+  // they carry none of their own.
+  const type = (condition as { condition?: string }).condition ?? "state";
   if (
-    (condition.condition === "state" ||
-      condition.condition === "numeric_state") &&
+    (type === "state" || type === "numeric_state") &&
     // A core-format condition already targets its own `entity_id`; do not graft
     // the host's context entity onto it (that would both mis-evaluate and emit a
     // schema-invalid core condition carrying both `entity` and `entity_id`).

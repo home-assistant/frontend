@@ -6,7 +6,6 @@ import { ConditionEvaluatorController } from "../common/controllers/condition-ev
 import { maxColumnsContext } from "../panels/lovelace/common/context";
 import { evaluateConditionsLocally } from "../common/condition/evaluate-locally";
 import type {
-  Condition,
   ConditionContext,
   VisibilityCondition,
 } from "../panels/lovelace/common/validate-condition";
@@ -227,9 +226,7 @@ export const ConditionalListenerMixin = <
         this.__observedEntityId = entityId;
         this.__observed =
           finalConditions && entityId
-            ? ((finalConditions as Condition[]).map((c) =>
-                addEntityToCondition(c, entityId)
-              ) as VisibilityCondition[])
+            ? finalConditions.map((c) => addEntityToCondition(c, entityId))
             : finalConditions;
       }
 

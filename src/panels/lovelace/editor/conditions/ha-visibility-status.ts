@@ -10,7 +10,6 @@ import "../../../../components/ha-svg-icon";
 import { HaRowItem } from "../../../../components/item/ha-row-item";
 import type { HomeAssistant } from "../../../../types";
 import type {
-  Condition,
   ConditionContext,
   VisibilityCondition,
 } from "../../common/validate-condition";
@@ -145,13 +144,9 @@ export class HaVisibilityStatus extends LitElement {
       this.__observedSource = conditions;
       this.__observedEntityId = entityId;
       this.__clientInvalid = !validateConditionalConfig(conditions);
-      this.__observed = (
-        entityId
-          ? conditions.map((c) =>
-              addEntityToCondition(c as Condition, entityId)
-            )
-          : conditions
-      ) as VisibilityCondition[];
+      this.__observed = entityId
+        ? conditions.map((c) => addEntityToCondition(c, entityId))
+        : conditions;
     }
 
     // Structural validation covers every type (server-class types other than
