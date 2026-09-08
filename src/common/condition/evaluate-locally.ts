@@ -101,7 +101,7 @@ export const evaluateConditionsLocally = (
     // A template-valued `enabled` can only be rendered by core; the legacy
     // evaluator ignores `enabled` altogether, so leave such a node unknown.
     // (`enabled: false` nodes are skipped by the parent, see below.)
-    if ("enabled" in condition && !isDisabledCondition(condition)) {
+    if ("enabled" in condition && typeof condition.enabled !== "boolean") {
       return undefined;
     }
     if (isLogicalCondition(condition)) {

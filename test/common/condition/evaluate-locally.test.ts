@@ -107,6 +107,17 @@ describe("evaluateConditionsLocally", () => {
         }),
       ])
     ).toBeUndefined();
+    // an explicitly enabled node is evaluated normally, not left unknown
+    expect(
+      evaluate([
+        cond({
+          condition: "state",
+          entity_id: "light.on",
+          state: "on",
+          enabled: true,
+        }),
+      ])
+    ).toBe(true);
   });
 
   it("treats core-only leaves as unknown", () => {
