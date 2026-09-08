@@ -166,6 +166,24 @@ describe("ConditionEvaluatorController", () => {
     expect(last()?.error).toBe("Invalid condition");
   });
 
+  it("stays hidden on a subscription error even under a client-side not", async () => {
+    // The errored subtree must not act as a `false` that the mixed `not`
+    // inverts into visible; an invalid configuration always hides.
+    const { controller } = await setup([
+      cond({
+        condition: "not",
+        conditions: [
+          { condition: "user", users: ["other"] },
+          { condition: "template", value_template: "{{ broken" },
+        ],
+      }),
+    ]);
+    expect(subs).toHaveLength(1);
+    subs[0].push({ error: { code: "invalid_format", message: "bad" } });
+    expect(controller.result).toBe("hidden");
+    expect(controller.error).toBe("bad");
+  });
+
   it("clears the error once the subscription recovers", async () => {
     const { controller } = await setup([
       cond({ condition: "state", entity: "light.a", state: "on" }),

@@ -298,11 +298,20 @@ export class ConditionEvaluatorController implements ReactiveController {
       }
     };
 
+    const error = this._combinedError();
+    // An errored subtree is not a legitimate `false`: fed through the
+    // combinators it would be inverted by a client-side `not` and show content
+    // for an invalid configuration. Force hidden whenever any subtree errored.
+    if (error !== undefined) {
+      this._setResult("hidden", error);
+      return;
+    }
+
     const value = this._split.evaluate(clientEvaluator, this._serverResults);
     const result: ConditionEvaluation =
       value === undefined ? "unknown" : value ? "visible" : "hidden";
 
-    this._setResult(result, this._combinedError());
+    this._setResult(result, undefined);
   }
 
   private _combinedError(): string | undefined {
