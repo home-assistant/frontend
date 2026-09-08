@@ -228,6 +228,11 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
 
     this._config = sectionConfig;
+    // `_config` is not reactive, and for a strategy section it is assigned
+    // after the Lit update that last fed the visibility evaluator; re-feed it
+    // so a generated or refreshed `visibility` takes effect now rather than on
+    // the next hass update.
+    this.setupConditionalListeners();
     // Apply theme now that config is set (after potential strategy await)
     applyThemesOnElement(this, this.hass!.themes, this._config.theme);
 
