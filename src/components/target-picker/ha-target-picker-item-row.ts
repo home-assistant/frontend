@@ -29,7 +29,10 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import {
+  getDeviceArea,
+  getDeviceAreaId,
+} from "../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
@@ -536,7 +539,9 @@ export class HaTargetPickerItemRow extends LitElement {
             return false;
           }
           if (
-            !hiddenAreaIds.includes(device.area_id || "") &&
+            !hiddenAreaIds.includes(
+              getDeviceAreaId(device, this.hass.devices) || ""
+            ) &&
             deviceMeetsFilter(
               device,
               this.hass.entities,
