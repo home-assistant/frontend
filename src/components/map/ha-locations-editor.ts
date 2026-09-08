@@ -116,7 +116,11 @@ export class HaLocationsEditor extends LitElement {
         @editing-available-changed=${this._editingAvailableChanged}
       ></ha-map>
       ${
-        !this._editingAvailable && this._i18n
+        !this._editingAvailable &&
+        this._i18n &&
+        this.locations?.some(
+          (location) => location.location_editable || location.radius_editable
+        )
           ? html`<ha-input-helper-text
               >${this._i18n.localize(
                 "ui.components.map.editing_unavailable"
