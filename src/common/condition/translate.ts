@@ -201,6 +201,10 @@ const translateStateCondition = (
 
   const lovelace = condition as LovelaceStateCondition;
 
+  // Core row metadata (`enabled`, `alias`, `note`) rides along on whatever is
+  // emitted; for `state_not` it belongs on the outer `not`.
+  const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
+
   // Incomplete config: no entity, or no comparison value. checkConditionsMet
   // returns false for these (and a `state` condition with no `entity_id` /
   // `state` is invalid for core), so resolve to a clean always-false.
@@ -208,12 +212,8 @@ const translateStateCondition = (
     lovelace.entity === undefined ||
     (lovelace.state === undefined && lovelace.state_not === undefined)
   ) {
-    return alwaysFalseCondition();
+    return { ...rowConfig, ...alwaysFalseCondition() };
   }
-
-  // Core row metadata (`enabled`, `alias`, `note`) rides along; for
-  // `state_not` it belongs on the outer `not`.
-  const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
   const base = {
     condition: "state" as const,
     entity_id: lovelace.entity,
@@ -254,12 +254,13 @@ const translateNumericStateCondition = (
     return condition as CoreNumericStateCondition;
   }
   const lovelace = condition as LovelaceNumericStateCondition;
+  const rowConfig = pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS);
 
   // Incomplete config: no entity. checkConditionsMet returns false (no state
   // object → NaN), and core rejects a bound-less / entity-less condition, so
   // resolve to a clean always-false rather than a schema-invalid leaf.
   if (lovelace.entity === undefined) {
-    return alwaysFalseCondition();
+    return { ...rowConfig, ...alwaysFalseCondition() };
   }
 
   const above = translateNumericBound(lovelace.above, "above");
@@ -267,7 +268,7 @@ const translateNumericStateCondition = (
 
   if (typeof above === "symbol" || typeof below === "symbol") {
     // An infinite bound lovelace can never satisfy (`above: +∞`, `below: -∞`).
-    return alwaysFalseCondition();
+    return { ...rowConfig, ...alwaysFalseCondition() };
   }
 
   if (above === undefined && below === undefined) {
@@ -276,11 +277,14 @@ const translateNumericStateCondition = (
     // be numeric; core requires at least one bound, so express that check as
     // a template instead of emitting a condition its schema would reject
     // (which would fail the whole grouped subscription).
-    return numericValueCondition(lovelace.entity, lovelace.attribute);
+    return {
+      ...rowConfig,
+      ...numericValueCondition(lovelace.entity, lovelace.attribute),
+    };
   }
 
   const core: CoreNumericStateCondition = {
-    ...pickRowConfig(lovelace, CONDITION_ROW_CONFIG_KEYS),
+    ...rowConfig,
     condition: "numeric_state",
     entity_id: lovelace.entity,
   };
@@ -370,12 +374,10 @@ const translateLogicalCondition = (
     // Lovelace `not` means ¬(AND of children); core `not` means ¬(OR of
     // children). Wrapping the children in an `and` preserves the lovelace
     // meaning for any arity — including an empty `not`, which becomes ¬(AND of
-    // nothing) = ¬true = false, matching checkConditionsMet. A single child is
-    // unambiguous (¬(OR of one) = ¬(AND of one)) and left unwrapped for a
-    // tidier persisted form.
-    if (conditions.length === 1) {
-      return { ...rowConfig, condition: "not", conditions };
-    }
+    // nothing) = ¬true = false, matching checkConditionsMet. The wrapper is
+    // kept for a single child too: a disabled child is skipped by core, and
+    // only the `and` turns that into ¬true = false rather than ¬(OR of nothing)
+    // = true.
     return {
       ...rowConfig,
       condition: "not",

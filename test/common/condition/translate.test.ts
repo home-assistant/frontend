@@ -654,7 +654,10 @@ describe("translateToCoreCondition", () => {
       });
     });
 
-    it("keeps a single-child not as a plain not", () => {
+    it("wraps a single-child not in an and as well", () => {
+      // Core skips a disabled child; only the `and` wrapper turns that into
+      // ¬true = false (lovelace ¬(AND)) rather than core's bare-not ¬(OR of
+      // nothing) = true.
       expect(
         translateToCoreCondition(
           cond({
@@ -666,7 +669,14 @@ describe("translateToCoreCondition", () => {
         )
       ).toEqual({
         condition: "not",
-        conditions: [{ condition: "state", entity_id: "light.a", state: "on" }],
+        conditions: [
+          {
+            condition: "and",
+            conditions: [
+              { condition: "state", entity_id: "light.a", state: "on" },
+            ],
+          },
+        ],
       });
     });
 
@@ -797,6 +807,33 @@ describe("translateToCoreCondition", () => {
         entity_id: "sensor.a",
         above: 1,
         note: "n",
+      });
+    });
+
+    it("preserves core row metadata on the fallback translations", () => {
+      const enabled = "{{ is_state('input_boolean.x', 'on') }}";
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            above: "foo",
+            enabled,
+          })
+        )
+      ).toEqual({
+        condition: "template",
+        value_template: '{{ is_number(states("sensor.a")) }}',
+        enabled,
+      });
+      expect(
+        translateToCoreCondition(
+          cond({ condition: "state", entity: "light.a", enabled })
+        )
+      ).toEqual({
+        condition: "not",
+        conditions: [{ condition: "and", conditions: [] }],
+        enabled,
       });
     });
 
