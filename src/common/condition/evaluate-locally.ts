@@ -34,8 +34,11 @@ const orOf = (values: (boolean | undefined)[]): boolean | undefined => {
  * Whether a server-class leaf has semantics the legacy client evaluator
  * reproduces exactly: a lovelace-format (`entity`-based or legacy) `state` /
  * `numeric_state`, or a core-format one restricted to the subset
- * `checkConditionsMet` understands (a single `entity_id`, and none of `for`,
- * `match` or `value_template`).
+ * `checkConditionsMet` evaluates identically — a single `entity_id`, no
+ * `for` / `match` / `value_template`, no `attribute` (core compares the raw
+ * attribute value while the client stringifies it), and numeric rather than
+ * entity-valued bounds (core errors on a missing bound entity while the
+ * client ignores it).
  */
 const isLocallyEvaluableServerLeaf = (
   condition: VisibilityCondition
@@ -54,15 +57,21 @@ const isLocallyEvaluableServerLeaf = (
   }
   const core = condition as {
     entity_id?: unknown;
+    attribute?: unknown;
     for?: unknown;
     match?: unknown;
     value_template?: unknown;
+    above?: unknown;
+    below?: unknown;
   };
   return (
     typeof core.entity_id === "string" &&
+    core.attribute === undefined &&
     core.for === undefined &&
     core.match === undefined &&
-    core.value_template === undefined
+    core.value_template === undefined &&
+    (core.above === undefined || typeof core.above === "number") &&
+    (core.below === undefined || typeof core.below === "number")
   );
 };
 

@@ -70,6 +70,36 @@ describe("evaluateConditionsLocally", () => {
         }),
       ])
     ).toBeUndefined();
+    // core compares a raw attribute value, the client stringifies it
+    expect(
+      evaluate([
+        cond({
+          condition: "state",
+          entity_id: "light.on",
+          attribute: "brightness",
+          state: "5",
+        }),
+      ])
+    ).toBeUndefined();
+    // core errors on a missing bound entity, the client ignores the bound
+    expect(
+      evaluate([
+        cond({
+          condition: "numeric_state",
+          entity_id: "sensor.temp",
+          above: "input_number.threshold",
+        }),
+      ])
+    ).toBeUndefined();
+    expect(
+      evaluate([
+        cond({
+          condition: "numeric_state",
+          entity_id: "sensor.temp",
+          above: 20,
+        }),
+      ])
+    ).toBe(true);
   });
 
   it("skips disabled nodes and leaves a template-valued enabled unknown", () => {
