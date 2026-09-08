@@ -776,7 +776,6 @@
             "entity": "Entity",
             "area_missing": "No area assigned",
             "floor_missing": "No floor assigned",
-            "parent_device_missing": "No parent device",
             "device_missing": "No related device"
           },
           "mode_composed": "Composed",
