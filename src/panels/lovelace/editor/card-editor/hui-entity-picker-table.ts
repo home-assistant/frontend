@@ -54,12 +54,16 @@ export class HuiEntityPickerTable extends LitElement {
   private _data = memoizeOne(
     (
       states: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"],
       localize: LocalizeFunc,
       entities?: string[]
     ): EntityPickerTableRowData[] =>
       (entities || Object.keys(states)).map<EntityPickerTableRowData>(
         (entity) => {
-          const stateObj = this.hass.states[entity];
+          const stateObj = states[entity];
 
           const [entityName, deviceName, parentDeviceName, areaName] =
             computeEntityNameList(
@@ -70,10 +74,10 @@ export class HuiEntityPickerTable extends LitElement {
                 { type: "parent_device" },
                 { type: "area" },
               ],
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
+              entityRegistry,
+              devices,
+              areas,
+              floors
             );
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
@@ -97,6 +101,10 @@ export class HuiEntityPickerTable extends LitElement {
   protected render(): TemplateResult {
     const data = this._data(
       this.hass.states,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors,
       this.hass.localize,
       this.entities
     );
