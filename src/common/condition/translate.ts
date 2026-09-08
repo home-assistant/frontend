@@ -197,8 +197,13 @@ const translateNumericStateCondition = (
     return alwaysFalseCondition();
   }
 
-  const above = translateNumericBound(lovelace.above);
-  const below = translateNumericBound(lovelace.below);
+  const above = translateNumericBound(lovelace.above, "above");
+  const below = translateNumericBound(lovelace.below, "below");
+
+  if (typeof above === "symbol" || typeof below === "symbol") {
+    // An infinite bound lovelace can never satisfy (`above: +∞`, `below: -∞`).
+    return alwaysFalseCondition();
+  }
 
   if (above === undefined && below === undefined) {
     // Every configured bound was junk (non-numeric, non-entity) or none was
@@ -238,6 +243,10 @@ const numericValueCondition = (
       : `{{ is_number(state_attr(${JSON.stringify(entityId)}, ${JSON.stringify(attribute)})) }}`,
 });
 
+// Sentinel for a bound that makes the lovelace comparison fail whatever the
+// state is (see `translateNumericBound`).
+const NEVER_SATISFIED = Symbol("never-satisfied");
+
 /**
  * Reconcile a lovelace numeric bound with core's interpretation. Lovelace
  * resolves a string bound to an entity's state only when that entity exists,
@@ -248,25 +257,31 @@ const numericValueCondition = (
  * - a finite numeric string (`"5"`, `"10.5"`, even `""` → 0) coerces to a
  *   number (the entity-id regex matches `"10.5"`, so test `Number()` first);
  * - a genuine entity-id reference passes through for core to resolve;
- * - anything else (junk like `"foo"`, or non-finite like `"1e400"`) is dropped,
- *   matching lovelace's "NaN ⇒ ignored" and never emitting a non-finite number
- *   (which is not JSON-serializable). When that leaves no bound at all, the
- *   caller falls back to a numeric-value check (see `numericValueCondition`).
+ * - junk like `"foo"` is dropped, matching lovelace's "NaN ⇒ ignored"; when
+ *   that leaves no bound at all, the caller falls back to a numeric-value
+ *   check (see `numericValueCondition`);
+ * - an infinite value (`"1e400"`, YAML `.inf`) is *not* ignored by lovelace:
+ *   `above: +∞` / `below: -∞` can never be satisfied ({@link NEVER_SATISFIED}),
+ *   while `above: -∞` / `below: +∞` always are and are dropped, since Infinity
+ *   is not JSON-serializable anyway.
  */
 const translateNumericBound = (
-  bound: string | number | undefined
-): string | number | undefined => {
-  if (typeof bound !== "string") {
-    return bound;
+  bound: string | number | undefined,
+  side: "above" | "below"
+): string | number | undefined | typeof NEVER_SATISFIED => {
+  if (bound === undefined) {
+    return undefined;
   }
-  const numeric = Number(bound);
-  if (!isNaN(numeric) && isFinite(numeric)) {
-    return numeric;
+  const numeric = typeof bound === "number" ? bound : Number(bound);
+  if (isNaN(numeric)) {
+    return typeof bound === "string" && isValidEntityId(bound)
+      ? bound
+      : undefined;
   }
-  if (isValidEntityId(bound)) {
-    return bound;
+  if (!isFinite(numeric)) {
+    return (side === "above") === numeric > 0 ? NEVER_SATISFIED : undefined;
   }
-  return undefined;
+  return numeric;
 };
 
 const translateLogicalCondition = (

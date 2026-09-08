@@ -411,20 +411,28 @@ describe("translateToCoreCondition", () => {
       });
     });
 
-    it("drops a non-finite numeric bound rather than emitting Infinity", () => {
-      expect(
+    it("keeps the lovelace outcome for infinite bounds instead of emitting Infinity", () => {
+      // Lovelace does not ignore Infinity (isNaN is false): `above: +∞` and
+      // `below: -∞` can never pass, while `above: -∞` and `below: +∞` always do.
+      const ALWAYS_FALSE = {
+        condition: "not",
+        conditions: [{ condition: "and", conditions: [] }],
+      };
+      const numeric = (bounds: Record<string, unknown>) =>
         translateToCoreCondition(
-          cond({
-            condition: "numeric_state",
-            entity: "sensor.a",
-            above: "1e400",
-            below: 10,
-          })
-        )
-      ).toEqual({
+          cond({ condition: "numeric_state", entity: "sensor.a", ...bounds })
+        );
+      expect(numeric({ above: "1e400", below: 10 })).toEqual(ALWAYS_FALSE);
+      expect(numeric({ above: 5, below: -Infinity })).toEqual(ALWAYS_FALSE);
+      expect(numeric({ above: "-1e400", below: 10 })).toEqual({
         condition: "numeric_state",
         entity_id: "sensor.a",
         below: 10,
+      });
+      expect(numeric({ above: 5, below: Infinity })).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        above: 5,
       });
     });
 
@@ -447,7 +455,7 @@ describe("translateToCoreCondition", () => {
             condition: "numeric_state",
             entity: "sensor.a",
             attribute: "temperature",
-            above: "1e400",
+            above: "-1e400",
             below: "bar",
           })
         )
