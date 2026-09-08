@@ -200,6 +200,10 @@ export class MapLibreMapEngine implements MapEngine {
 
   private _settleInit?: () => void;
 
+  // Caller-owned elements on the map, reset when they leave it: a host may
+  // reuse them on another engine after a fallback
+  private _placedElements = new Set<HTMLElement>();
+
   public async init(
     container: HTMLElement,
     options: MapEngineOptions
@@ -365,6 +369,8 @@ export class MapLibreMapEngine implements MapEngine {
     this._clusterGroups = [];
     this._markers = [];
     this._pendingStyleOps = [];
+    this._placedElements.forEach((element) => resetMarkerElement(element));
+    this._placedElements.clear();
     this._map?.remove();
     this._map = undefined;
   }
@@ -573,6 +579,7 @@ export class MapLibreMapEngine implements MapEngine {
       element.style.pointerEvents = "none";
     }
     setMarkerAccessibility(element, options.title, options.interactive ?? true);
+    this._placedElements.add(element);
 
     const managed: ManagedMarker = {
       element,
@@ -607,6 +614,10 @@ export class MapLibreMapEngine implements MapEngine {
       remove: () => {
         managed.removed = true;
         this._hideMarker(managed);
+        // Still inside an open cluster bubble otherwise
+        element.remove();
+        resetMarkerElement(element);
+        this._placedElements.delete(element);
         const index = this._markers.indexOf(managed);
         if (index !== -1) {
           this._markers.splice(index, 1);
@@ -761,6 +772,7 @@ export class MapLibreMapEngine implements MapEngine {
       centerEl.tabIndex = 0;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
+    this._placedElements.add(centerEl);
     const centerMarker = new maplibre.Marker({
       element: centerEl,
       draggable: options.moveable ?? false,
@@ -932,6 +944,8 @@ export class MapLibreMapEngine implements MapEngine {
         }
         removeCenterListeners?.();
         centerMarker.remove();
+        resetMarkerElement(centerEl);
+        this._placedElements.delete(centerEl);
         resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
@@ -1076,10 +1090,14 @@ export class MapLibreMapEngine implements MapEngine {
     id: string,
     data: Feature<Polygon> | FeatureCollection
   ): void {
+    // Recorded now, so an update while the style loads reaches the record and
+    // a swap in between carries it; the map itself may already have it then
+    const source: GeoJSONSourceSpecification = { type: "geojson", data };
+    this._customSources.set(id, source);
     this._whenStyleLoaded(() => {
-      const source: GeoJSONSourceSpecification = { type: "geojson", data };
-      this._map!.addSource(id, source);
-      this._customSources.set(id, source);
+      if (!this._map!.getSource(id)) {
+        this._map!.addSource(id, source);
+      }
     });
   }
 
@@ -1095,32 +1113,35 @@ export class MapLibreMapEngine implements MapEngine {
   }
 
   private _addCustomLayer(layer: LayerSpecification): void {
+    this._customLayers.set(layer.id, layer);
     this._whenStyleLoaded(() => {
+      if (this._map!.getLayer(layer.id)) {
+        return;
+      }
       // Under the labels, over the base cartography
       const symbolLayer = this._map!.getStyle().layers.find(
         (styleLayer) =>
           styleLayer.type === "symbol" && !this._customLayers.has(styleLayer.id)
       );
       this._map!.addLayer(layer, symbolLayer?.id);
-      this._customLayers.set(layer.id, layer);
     });
   }
 
   private _removeCustomLayer(id: string): void {
+    this._customLayers.delete(id);
     this._whenStyleLoaded(() => {
       if (this._map!.getLayer(id)) {
         this._map!.removeLayer(id);
       }
-      this._customLayers.delete(id);
     });
   }
 
   private _removeCustomSource(id: string): void {
+    this._customSources.delete(id);
     this._whenStyleLoaded(() => {
       if (this._map!.getSource(id)) {
         this._map!.removeSource(id);
       }
-      this._customSources.delete(id);
     });
   }
 

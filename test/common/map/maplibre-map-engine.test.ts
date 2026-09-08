@@ -57,7 +57,13 @@ const fakes = vi.hoisted(() => {
     addTo() {
       this.onMap = true;
       FakeMarker.all.push(this);
-      document.body.appendChild(this.options.element);
+      const element = this.options.element as HTMLElement;
+      element.classList.add(
+        "maplibregl-marker",
+        "maplibregl-marker-anchor-center"
+      );
+      element.style.transform = "translate(10px, 10px)";
+      document.body.appendChild(element);
       return this;
     }
 
@@ -595,6 +601,36 @@ describe("MapLibreMapEngine", () => {
   });
 
   describe("markers", () => {
+    it("hands a removed element back without MapLibre's positioning", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      const handle = engine.addMarker(element, [52, 4], { size: [36, 36] });
+      expect(element.classList.contains("maplibregl-marker")).toBe(true);
+
+      handle.remove();
+      expect(element.className).toBe("");
+      expect(element.style.transform).toBe("");
+    });
+
+    it("resets every element it placed when destroyed", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], { size: [36, 36] });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+      });
+
+      engine.destroy();
+      expect(element.className).toBe("");
+      expect(center.className).toBe("");
+      expect(center.style.transform).toBe("");
+    });
+
     it("lets input through non-interactive markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -964,6 +1000,28 @@ describe("MapLibreMapEngine", () => {
       center.fire("dragend");
       element.click();
       expect(onClick).toHaveBeenCalledTimes(3);
+    });
+
+    it("keeps a circle moved while a swapped style was loading", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      engine.setDarkMode(true);
+      await flush();
+      expect(map.isStyleLoaded()).toBe(false);
+
+      const handle = engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+      });
+      handle.update([53, 5], 200);
+      map.loadStyle();
+
+      const source = circleSource(map)!;
+      const ring = (source.data as { geometry: { coordinates: number[][][] } })
+        .geometry.coordinates[0];
+      // The polygon sits around the moved center, not the original one
+      expect(ring[0][1]).toBeCloseTo(53, 1);
+      expect(ring[0][0]).toBeCloseTo(5, 1);
     });
 
     it("removes its markers, layers, and listeners", async () => {
