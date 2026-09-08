@@ -2,6 +2,7 @@ import { consume, type ContextType } from "@lit/context";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { formatNumber } from "../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import type {
   NumericThresholdValue,
@@ -121,7 +122,7 @@ export class HaAutomationRowThreshold extends LitElement {
           threshold.value_min?.unit_of_measurement !==
           threshold.value_max?.unit_of_measurement;
 
-        const range = `${min}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""}-${max}${this._unit(threshold.value_max?.unit_of_measurement)}`;
+        const range = `${formatNumber(min, this._i18n.locale)}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""}-${formatNumber(max, this._i18n.locale)}${this._unit(threshold.value_max?.unit_of_measurement)}`;
 
         return i18n.localize(
           `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
@@ -135,7 +136,7 @@ export class HaAutomationRowThreshold extends LitElement {
       return i18n.localize(
         `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
         {
-          value: `${threshold.value!.number}${this._unit(threshold.value!.unit_of_measurement ?? "")}`,
+          value: `${formatNumber(threshold.value!.number!, this._i18n.locale)}${this._unit(threshold.value!.unit_of_measurement ?? "")}`,
         }
       );
     }
