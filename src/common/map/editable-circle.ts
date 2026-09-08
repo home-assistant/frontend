@@ -38,7 +38,6 @@ export const editableCircleStyles = `
     border: 2px solid var(--card-background-color, #fff);
     box-sizing: border-box;
     box-shadow: var(--ha-box-shadow-s);
-    cursor: move;
   }
   .editable-circle-resize {
     width: ${RESIZE_HANDLE_SIZE}px;

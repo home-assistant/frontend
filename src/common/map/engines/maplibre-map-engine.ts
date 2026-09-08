@@ -91,6 +91,7 @@ const resetMarkerElement = (element: HTMLElement): void => {
   element.style.transform = "";
   element.style.opacity = "";
   element.style.pointerEvents = "";
+  element.style.cursor = "";
 };
 
 // A meter-radius circle as a polygon (spherical approximation)
@@ -579,6 +580,10 @@ export class MapLibreMapEngine implements MapEngine {
       element.style.pointerEvents = "none";
     }
     setMarkerAccessibility(element, options.title, options.interactive ?? true);
+    if (draggable) {
+      // The engine, not the host, knows whether this element really drags
+      element.style.cursor = "move";
+    }
     this._placedElements.add(element);
 
     const managed: ManagedMarker = {
@@ -772,6 +777,9 @@ export class MapLibreMapEngine implements MapEngine {
       centerEl.tabIndex = 0;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
+    if (options.moveable) {
+      centerEl.style.cursor = "move";
+    }
     this._placedElements.add(centerEl);
     const centerMarker = new maplibre.Marker({
       element: centerEl,

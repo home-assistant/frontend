@@ -65,6 +65,7 @@ export class HaLocationsEditor extends LitElement {
 
   @state() private _editingAvailable = true;
 
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 

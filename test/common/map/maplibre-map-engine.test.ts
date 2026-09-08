@@ -631,6 +631,30 @@ describe("MapLibreMapEngine", () => {
       expect(center.style.transform).toBe("");
     });
 
+    it("shows a move cursor only on elements it made draggable", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const plain = document.createElement("div");
+      engine.addMarker(plain, [52, 4], { size: [36, 36] });
+      const draggable = document.createElement("div");
+      const handle = engine.editing.addDraggableMarker(draggable, [52, 4], {
+        size: [36, 36],
+      });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+        moveable: true,
+      });
+
+      expect(plain.style.cursor).toBe("");
+      expect(draggable.style.cursor).toBe("move");
+      expect(center.style.cursor).toBe("move");
+      handle.remove();
+      expect(draggable.style.cursor).toBe("");
+    });
+
     it("lets input through non-interactive markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;
