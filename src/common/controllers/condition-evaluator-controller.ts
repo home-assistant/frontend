@@ -12,6 +12,7 @@ import type {
 import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../types";
 import { observeConditionChanges } from "../condition/listeners";
+import { isPureClientCondition } from "../condition/translate";
 import type {
   ClientConditionEvaluator,
   ServerConditionResults,
@@ -67,10 +68,14 @@ export class ConditionEvaluatorController implements ReactiveController {
   // Structural signature of the tree the live subscriptions/listeners are for,
   // and of the tree a pending (debounced) re-subscribe will switch to. Compared
   // by value (not array reference) so a host re-deriving the array each render
-  // does not starve the debounce or needlessly drop subscriptions.
+  // does not starve the debounce or needlessly drop subscriptions. `undefined`
+  // is a valid signature (nothing observed), so a pending re-subscribe is
+  // tracked by its own flag rather than by the signature being set.
   private _subscribedSignature?: string;
 
   private _pendingSignature?: string;
+
+  private _hasPendingResubscribe = false;
 
   // Memoize the signature for a stable array reference to avoid re-stringifying
   // on every host update.
@@ -173,13 +178,28 @@ export class ConditionEvaluatorController implements ReactiveController {
     const signature = this._signatureOf(this._conditions);
     // Re-subscribe only when the tree we are (or are about to be) subscribed to
     // actually differs by value — not merely by array reference.
-    const targetSignature = this._pendingSignature ?? this._subscribedSignature;
+    const targetSignature = this._hasPendingResubscribe
+      ? this._pendingSignature
+      : this._subscribedSignature;
     if (signature !== targetSignature) {
+      // The old tree's subscriptions no longer back the result: drop them (and
+      // their split) right away so neither a late push nor a recompute can
+      // surface the previous tree's verdict while the new one is pending.
+      this._teardown();
+      this._hasPendingResubscribe = true;
       this._pendingSignature = signature;
+      if (
+        this._conditions === undefined ||
+        this._conditions.every(isPureClientCondition)
+      ) {
+        // Nothing to debounce for: no server subscription is involved.
+        this._subscribe();
+        return;
+      }
       this._scheduleResubscribe();
     }
-    // Always recompute so client leaves (and the current split) stay live, even
-    // while a re-subscribe is pending.
+    // Always recompute so client leaves stay live. While a re-subscribe is
+    // pending there is no split, so this publishes `unknown`.
     this._recompute();
   }
 
@@ -200,6 +220,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     const hass = this._hass;
     this._subscribedSignature = this._signatureOf(conditions);
     this._pendingSignature = undefined;
+    this._hasPendingResubscribe = false;
 
     if (!conditions || !hass) {
       this._setResult("unknown", undefined);
@@ -325,5 +346,6 @@ export class ConditionEvaluatorController implements ReactiveController {
     this._subtreeErrors = {};
     this._subscribedSignature = undefined;
     this._pendingSignature = undefined;
+    this._hasPendingResubscribe = false;
   }
 }

@@ -209,6 +209,95 @@ describe("ConditionEvaluatorController", () => {
     });
   });
 
+  it("publishes unknown and ignores stale pushes while a re-subscribe is pending", async () => {
+    vi.useFakeTimers();
+    try {
+      const hass = createHass();
+      const host = createHost();
+      const results: ConditionEvaluation[] = [];
+      const controller = new ConditionEvaluatorController(host, {
+        resubscribeDelay: 1000,
+        onResult: (result) => results.push(result),
+      });
+      controller.hostConnected();
+
+      controller.observe(
+        [cond({ condition: "state", entity: "light.a", state: "on" })],
+        hass
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+      const stale = subs[0];
+      stale.push({ result: true });
+      expect(controller.result).toBe("visible");
+
+      // A different tree: the old verdict no longer applies. The old
+      // subscription is dropped right away and the result is unknown until the
+      // debounced re-subscribe reports, rather than showing the previous tree's
+      // result (which a stale push must not revive either).
+      controller.observe(
+        [cond({ condition: "state", entity: "light.a", state: "off" })],
+        hass
+      );
+      await vi.advanceTimersByTimeAsync(0);
+      expect(stale.unsub).toHaveBeenCalledTimes(1);
+      expect(controller.result).toBe("unknown");
+      expect(results[results.length - 1]).toBe("unknown");
+      stale.push({ result: true });
+      expect(controller.result).toBe("unknown");
+      expect(subs).toHaveLength(1);
+
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(subs).toHaveLength(2);
+      subs[1].push({ result: false });
+      expect(controller.result).toBe("hidden");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("re-subscribes an all-client tree change immediately", async () => {
+    const hass = createHass();
+    const host = createHost();
+    const controller = new ConditionEvaluatorController(host, {
+      resubscribeDelay: 1000,
+      onResult: () => undefined,
+    });
+    controller.hostConnected();
+    controller.observe([cond({ condition: "user", users: ["user1"] })], hass);
+    expect(controller.result).toBe("visible");
+    controller.observe([cond({ condition: "user", users: ["other"] })], hass);
+    // no debounce for a tree with nothing to subscribe to
+    expect(controller.result).toBe("hidden");
+  });
+
+  it("drops the subscription when observation is cleared, even under hass churn", async () => {
+    const host = createHost();
+    const controller = new ConditionEvaluatorController(host, {
+      resubscribeDelay: 20,
+      onResult: () => undefined,
+    });
+    controller.hostConnected();
+    controller.observe(
+      [cond({ condition: "state", entity: "light.a", state: "on" })],
+      createHass()
+    );
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 30);
+    });
+    expect(subs).toHaveLength(1);
+
+    // Clearing while hass keeps updating faster than the debounce used to
+    // reschedule the timer forever (undefined doubled as "nothing pending"),
+    // leaving the old subscription alive.
+    controller.observe(undefined, createHass());
+    controller.observe(undefined, createHass());
+    controller.observe(undefined, createHass());
+    await tick();
+    expect(subs[0].unsub).toHaveBeenCalledTimes(1);
+    expect(subs).toHaveLength(1);
+    expect(controller.result).toBe("unknown");
+  });
+
   it("does not re-subscribe when only hass changes", async () => {
     const conditions = [
       cond({ condition: "state", entity: "light.a", state: "on" }),
