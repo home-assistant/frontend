@@ -24,6 +24,8 @@ export class MoreInfoViewVoiceAssistants extends LitElement {
 
   @state() private _error = false;
 
+  private _fetchGeneration = 0;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("entry") && this.entry) {
       this._exposed = undefined;
@@ -33,21 +35,21 @@ export class MoreInfoViewVoiceAssistants extends LitElement {
   }
 
   private _fetchExposed = async () => {
-    const entityId = this.entry.entity_id;
+    const generation = ++this._fetchGeneration;
     this._error = false;
     try {
       const { exposed_entities, locked_entities } = await listExposedEntities(
         this.hass
       );
-      if (entityId !== this.entry.entity_id) {
-        // The entry moved on to another entity while this was in flight;
-        // that newer entity already has its own fetch in progress.
+      if (generation !== this._fetchGeneration) {
+        // A newer request has since been issued; let it win instead.
         return;
       }
+      const entityId = this.entry.entity_id;
       this._exposed = exposed_entities[entityId] ?? {};
       this._locked = locked_entities[entityId];
     } catch (_err) {
-      if (entityId !== this.entry.entity_id) {
+      if (generation !== this._fetchGeneration) {
         return;
       }
       this._error = true;

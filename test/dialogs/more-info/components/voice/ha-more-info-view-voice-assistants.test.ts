@@ -145,6 +145,84 @@ describe("ha-more-info-view-voice-assistants", () => {
     expect(view._exposed).toEqual({ conversation: true });
   });
 
+  it("ignores a stale response for the same entity after an A -> B -> A sequence", async () => {
+    const firstA = deferred<ExposedEntitiesResult>();
+    const b = deferred<ExposedEntitiesResult>();
+    const secondA = deferred<ExposedEntitiesResult>();
+    listExposedEntitiesMock
+      .mockReturnValueOnce(firstA.promise)
+      .mockReturnValueOnce(b.promise)
+      .mockReturnValueOnce(secondA.promise);
+
+    const view = makeView();
+
+    view.entry = makeEntry("light.a");
+    const firstAFetch = view._fetchExposed();
+
+    view.entry = makeEntry("light.b");
+    const bFetch = view._fetchExposed();
+
+    // Back to the original entity: a same-entity-ID comparison alone would
+    // not distinguish this from the still-pending firstA request.
+    view.entry = makeEntry("light.a");
+    const secondAFetch = view._fetchExposed();
+
+    b.resolve({
+      exposed_entities: { "light.b": { conversation: true } },
+      locked_entities: {},
+    });
+    await bFetch;
+
+    secondA.resolve({
+      exposed_entities: { "light.a": { conversation: true } },
+      locked_entities: {},
+    });
+    await secondAFetch;
+
+    expect(view._exposed).toEqual({ conversation: true });
+
+    // The stalest request for "light.a" lands last of all.
+    firstA.resolve({
+      exposed_entities: { "light.a": { conversation: false } },
+      locked_entities: {},
+    });
+    await firstAFetch;
+
+    expect(view._exposed).toEqual({ conversation: true });
+  });
+
+  it("ignores a stale response from an earlier retry of the same entity", async () => {
+    const first = deferred<ExposedEntitiesResult>();
+    const retry = deferred<ExposedEntitiesResult>();
+    listExposedEntitiesMock
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(retry.promise);
+
+    const view = makeView();
+    view.entry = makeEntry("light.kitchen");
+
+    // Two overlapping fetches for the same, unchanged entity (e.g. a
+    // double-clicked retry button).
+    const firstFetch = view._fetchExposed();
+    const retryFetch = view._fetchExposed();
+
+    retry.resolve({
+      exposed_entities: { "light.kitchen": { conversation: true } },
+      locked_entities: {},
+    });
+    await retryFetch;
+
+    expect(view._exposed).toEqual({ conversation: true });
+
+    first.resolve({
+      exposed_entities: { "light.kitchen": { conversation: false } },
+      locked_entities: {},
+    });
+    await firstFetch;
+
+    expect(view._exposed).toEqual({ conversation: true });
+  });
+
   describe("willUpdate", () => {
     it("fetches and clears prior state when the entry changes", () => {
       const view = makeView();
