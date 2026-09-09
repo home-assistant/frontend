@@ -9,6 +9,7 @@ import { domainToName } from "../../data/integration";
 import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
+  loadFlowStepTranslations,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
 
@@ -31,9 +32,8 @@ export const showConfigFlowDialog = (
         hass.loadBackendTranslation("selector", handler),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", handler),
-        // Shared abort reasons live in the homeassistant integration
-        hass.loadBackendTranslation("config", "homeassistant"),
       ]);
+      await loadFlowStepTranslations(hass, step);
       return step;
     },
     fetchFlow: async (hass, flowId) => {
@@ -46,12 +46,15 @@ export const showConfigFlowDialog = (
         hass.loadBackendTranslation("selector", step.handler),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", step.handler),
-        // Shared abort reasons live in the homeassistant integration
-        hass.loadBackendTranslation("config", "homeassistant"),
       ]);
+      await loadFlowStepTranslations(hass, step);
       return step;
     },
-    handleFlowStep: handleConfigFlowStep,
+    handleFlowStep: async (hass, flowId, data) => {
+      const step = await handleConfigFlowStep(hass, flowId, data);
+      await loadFlowStepTranslations(hass, step);
+      return step;
+    },
     deleteFlow: deleteConfigFlow,
 
     renderAbortDescription(hass, step) {
