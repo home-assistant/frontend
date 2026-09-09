@@ -94,6 +94,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _mapEntities: HaMapEntity[] = [];
 
+  // Bumped when entity colors change, so memoized trail colors recompute
+  @state() private _colorVersion = 0;
+
   private _filteredMapEntities: HaMapEntity[] = [];
 
   @state() private _error?: { code: string; message: string };
@@ -243,7 +246,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             })}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
-            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
+            .paths=${this._getHistoryPaths(
+              this._config,
+              this._stateHistory,
+              this._colorVersion
+            )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
             .zoomPosition=${
@@ -460,6 +467,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._colorsConnection = connection;
     this._unsubscribeColors = subscribeEntityMapColors(connection, () => {
       this._mapEntities = this._getMapEntities();
+      this._colorVersion++;
     });
   }
 
@@ -686,7 +694,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HistoryStates
+      history: HistoryStates | undefined,
+      _colorVersion: number
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
