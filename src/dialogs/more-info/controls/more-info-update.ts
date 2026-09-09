@@ -441,23 +441,31 @@ class MoreInfoUpdate extends LitElement {
       this._fetchReleaseNotes();
     }
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      this._fetchEntitySources().then(() => {
-        const type = getUpdateType(this.stateObj!, this._entitySources!);
-        if (
-          isComponentLoaded(this._config, "hassio") &&
-          ["addon", "home_assistant", "home_assistant_os"].includes(type)
-        ) {
-          this._fetchUpdateBackupConfig(type);
-        } else {
-          this._createBackupLoading = false;
-        }
+      this._fetchEntitySources()
+        .then(() => {
+          const type = getUpdateType(this.stateObj!, this._entitySources!);
+          if (
+            isComponentLoaded(this._config, "hassio") &&
+            ["addon", "home_assistant", "home_assistant_os"].includes(type)
+          ) {
+            this._fetchUpdateBackupConfig(type);
+          } else {
+            this._createBackupLoading = false;
+          }
 
-        if (this._isHaOrOsUpdate(type)) {
-          this._fetchBackupConfig();
-        } else {
+          if (this._isHaOrOsUpdate(type)) {
+            this._fetchBackupConfig();
+          } else {
+            this._backupConfigLoading = false;
+          }
+        })
+        .catch((err) => {
+          // ignore error, because the generic backup option remains available
+          // eslint-disable-next-line no-console
+          console.error(err);
+          this._createBackupLoading = false;
           this._backupConfigLoading = false;
-        }
-      });
+        });
     } else {
       this._createBackupLoading = false;
       this._backupConfigLoading = false;
