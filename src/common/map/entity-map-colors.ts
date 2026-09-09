@@ -18,6 +18,7 @@ const ORDERED_DOMAINS = ["zone", "person", "device_tracker"];
 let creationIndex: Record<string, number> = {};
 let subscribers = 0;
 let unsubscribe: UnsubscribeFunc | undefined;
+let subscribedConnection: Connection | undefined;
 const listeners = new Set<() => void>();
 
 const rebuildIndex = (entries: EntityRegistryEntry[]) => {
@@ -49,7 +50,10 @@ export const subscribeEntityMapColors = (
 ): UnsubscribeFunc => {
   listeners.add(onChange);
   subscribers++;
-  if (!unsubscribe) {
+  // One registry stream, shared by every map; a replaced connection takes over
+  if (!unsubscribe || subscribedConnection !== connection) {
+    unsubscribe?.();
+    subscribedConnection = connection;
     unsubscribe = subscribeEntityRegistry(connection, rebuildIndex);
   }
   return () => {
@@ -58,6 +62,7 @@ export const subscribeEntityMapColors = (
     if (subscribers === 0 && unsubscribe) {
       unsubscribe();
       unsubscribe = undefined;
+      subscribedConnection = undefined;
       creationIndex = {};
     }
   };
