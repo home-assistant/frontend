@@ -10,6 +10,21 @@ const membership = (items: CompactSection[], columns = 2, gap = 24) =>
   );
 
 describe("computeCompactLayout", () => {
+  it("checks section 2 below section 1 before filling the next column", () => {
+    expect(membership(sections([100, 100, 500]), 3)).toEqual([[[0, 1], [2]]]);
+  });
+  it("walks six sections against the layout produced by each previous move", () => {
+    expect(membership(sections([100, 100, 500, 100, 100, 100]), 3)).toEqual([
+      [[0, 1], [2], [3, 4, 5]],
+    ]);
+  });
+  it("uses the new row height after unprocessed sections shift into the row", () => {
+    // 2 joins 1, bringing the 800px section into the first row. The expanded
+    // gap then fits 3 beneath the existing 1/2 stack. 6 eventually joins 5.
+    expect(membership(sections([100, 100, 500, 800, 100, 100]), 3)).toEqual([
+      [[0, 1, 2], [3], [4, 5]],
+    ]);
+  });
   it("packs the basic A/C/D example", () => {
     expect(membership(sections([500, 200, 250]))).toEqual([[[0], [1, 2]]]);
   });
@@ -29,7 +44,7 @@ describe("computeCompactLayout", () => {
   });
   it("requires an exact span match and does not merge adjacent lanes", () => {
     expect(membership(sections([500, 100, 100, 100], [1, 1, 1, 2]), 3)).toEqual(
-      [[[0], [1], [2]], [[3]]]
+      [[[0], [1, 2]], [[3]]]
     );
     expect(membership(sections([500, 100, 100], [2, 2, 2]), 4)).toEqual([
       [[0], [1, 2]],
@@ -42,16 +57,16 @@ describe("computeCompactLayout", () => {
   });
   it("only stacks below the immediate predecessor, even when earlier lanes are shorter", () => {
     expect(membership(sections([500, 150, 100, 100]), 3)).toEqual([
-      [[0], [1], [2, 3]],
+      [[0], [1, 2, 3]],
     ]);
     expect(membership(sections([500, 100, 100, 100]), 3)).toEqual([
-      [[0], [1], [2, 3]],
+      [[0], [1, 2, 3]],
     ]);
   });
-  it("starts a new row if only an earlier lane has space or a matching span", () => {
+  it("uses the next horizontal slot or row when stacking is not possible", () => {
     expect(membership(sections([100, 500, 100]))).toEqual([[[0], [1]], [[2]]]);
     expect(membership(sections([500, 100, 300, 100]), 3)).toEqual([
-      [[0], [1], [2, 3]],
+      [[0], [1, 2], [3]],
     ]);
     expect(membership(sections([100, 500, 100], [2, 1, 2]), 3)).toEqual([
       [[0], [1]],
@@ -60,8 +75,7 @@ describe("computeCompactLayout", () => {
   });
   it("does not return to an earlier lane after a consecutive stack fills", () => {
     expect(membership(sections([500, 100, 200, 200, 100]), 3)).toEqual([
-      [[0], [1], [2, 3]],
-      [[4]],
+      [[0], [1, 2], [3, 4]],
     ]);
   });
   it("preserves source order across measurements, widths, and hidden sections", () => {

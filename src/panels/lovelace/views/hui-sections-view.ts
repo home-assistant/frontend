@@ -47,6 +47,7 @@ import { computeSectionsBackgroundAlignment } from "./sections-background-alignm
 import { computeCompactLayout } from "./sections-compact-layout";
 import type { CompactRow } from "./sections-compact-layout";
 import { measureSectionFootprint } from "./sections-compact-measurement";
+import { waitForSectionRender } from "./sections-compact-readiness";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -89,6 +90,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _compactLayoutPending = false;
 
   private _compactFrame?: number;
+
+  private _compactReadyController?: AbortController;
 
   @query(".content") private _content?: HTMLDivElement;
 
@@ -251,6 +254,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   private _invalidateCompactLayout() {
     this._compactLayoutGeneration++;
+    this._compactReadyController?.abort();
+    this._compactReadyController = undefined;
     if (this._compactFrame !== undefined) {
       cancelAnimationFrame(this._compactFrame);
     }
@@ -274,10 +279,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const columnCount = this._contentColumnCount;
     this._compactLayoutColumnCount = columnCount;
     this._compactLayoutPending = true;
-    void this.updateComplete.then(() => {
+    const controller = new AbortController();
+    this._compactReadyController = controller;
+    void this.updateComplete.then(async () => {
+      await waitForSectionRender(this.sections, controller.signal);
       if (!this.isConnected || generation !== this._compactLayoutGeneration) {
         return;
       }
+      this._compactReadyController = undefined;
       this._compactFrame = requestAnimationFrame(() => {
         if (!this.isConnected || generation !== this._compactLayoutGeneration) {
           return;

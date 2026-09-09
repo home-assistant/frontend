@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../../../../src/types";
 import { SectionsView } from "../../../../src/panels/lovelace/views/hui-sections-view";
 import * as packing from "../../../../src/panels/lovelace/views/sections-compact-layout";
 import * as measurement from "../../../../src/panels/lovelace/views/sections-compact-measurement";
+import * as readiness from "../../../../src/panels/lovelace/views/sections-compact-readiness";
 
 // Keep unrelated child components out of this layout lifecycle test.
 vi.mock("../../../../src/components/ha-icon-button", () => ({}));
@@ -48,10 +49,12 @@ let frames: Map<number, FrameRequestCallback>;
 let frameId: number;
 let measure: ReturnType<typeof vi.spyOn>;
 let pack: ReturnType<typeof vi.spyOn>;
+let ready: ReturnType<typeof vi.spyOn>;
 
 const update = async () => {
   element.requestUpdate();
   await element.updateComplete;
+  await Promise.resolve();
   await Promise.resolve();
 };
 const flushFrame = async () => {
@@ -86,6 +89,7 @@ const assignments = () =>
   );
 
 beforeEach(() => {
+  ready = vi.spyOn(readiness, "waitForSectionRender").mockResolvedValue();
   resize.columns = 2;
   frames = new Map();
   frameId = 0;
@@ -122,6 +126,41 @@ afterEach(() => {
 });
 
 describe("Sections compact lifecycle", () => {
+  it("waits for card rendering before measuring and packing", async () => {
+    let finish!: () => void;
+    ready.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      })
+    );
+    resize.columns = 3;
+    await mount({ compact_section_placement: true }, [0, 0, 0]);
+    expect(frames.size).toBe(0);
+    expect(pack).not.toHaveBeenCalled();
+    for (const [index, height] of [100, 100, 500].entries()) {
+      element.sections[index].dataset.height = String(height);
+    }
+    finish();
+    await update();
+    await flushFrame();
+    expect(assignments()).toEqual([["0", "1"], ["2"]]);
+  });
+  it("aborts pending readiness work on disconnect", async () => {
+    let finish!: () => void;
+    ready.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      })
+    );
+    await mount();
+    const signal = ready.mock.calls[0][1] as AbortSignal;
+    element.remove();
+    expect(signal.aborted).toBe(true);
+    finish();
+    await update();
+    expect(frames.size).toBe(0);
+    expect(pack).not.toHaveBeenCalled();
+  });
   it("initializes once, retains section instances, and never measures after content updates", async () => {
     await mount();
     const original = [...element.sections];

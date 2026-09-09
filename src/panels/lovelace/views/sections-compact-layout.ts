@@ -19,16 +19,80 @@ export interface CompactLane {
 }
 
 export interface CompactRow {
-  /** Initial packing capacity only; never used as a CSS height. */
+  /** Height at initialization only; never used as a CSS height. */
   initialHeight: number;
   lanes: CompactLane[];
   alignedSectionIndices: number[];
 }
 
+interface SectionGroup {
+  columnSpan: number;
+  sections: CompactSection[];
+}
+
+/** Lay out consecutive groups as the native, non-dense grid would. */
+function arrangeGroups(
+  groups: SectionGroup[],
+  columnCount: number,
+  rowGap: number
+) {
+  const rows: CompactRow[] = [];
+  const positions = new Map<
+    SectionGroup,
+    { row: CompactRow; lane: CompactLane }
+  >();
+  let next = 0;
+  while (next < groups.length) {
+    // Hidden sections retain their source position and stop compaction across
+    // that position. Their standalone rows collapse until they become visible.
+    const hidden = Boolean(groups[next].sections[0].hidden);
+    let end = hidden ? next + 1 : sectionsRowEnd(groups, next, columnCount);
+    for (let index = next + 1; index < end; index++) {
+      if (groups[index].sections[0].hidden) {
+        end = index;
+        break;
+      }
+    }
+    const peers = groups.slice(next, end);
+    const hasBackground = peers.some(
+      (group) => group.sections[0].hasBackground
+    );
+    const row: CompactRow = {
+      initialHeight: 0,
+      lanes: [],
+      alignedSectionIndices: [],
+    };
+    let columnStart = 1;
+    for (const group of peers) {
+      const first = group.sections[0];
+      const aligned = !hidden && hasBackground && !first.hasBackground;
+      const height = hidden
+        ? 0
+        : group.sections.reduce((total, section) => total + section.height, 0) +
+          rowGap * (group.sections.length - 1) +
+          (aligned ? (first.alignmentMargin ?? 0) : 0);
+      const lane: CompactLane = {
+        columnStart,
+        columnSpan: group.columnSpan,
+        initialUsedHeight: height,
+        sectionIndices: group.sections.map((section) => section.index),
+      };
+      row.lanes.push(lane);
+      positions.set(group, { row, lane });
+      if (aligned) row.alignedSectionIndices.push(first.index);
+      columnStart += group.columnSpan;
+      row.initialHeight = Math.max(row.initialHeight, height);
+    }
+    rows.push(row);
+    next = end;
+  }
+  return { rows, positions };
+}
+
 /**
- * One-row compaction in source order. A section can only stack below its
- * immediate predecessor, in the final lane, with the same column span.
- * Never increase a row's initial capacity or backfill an older row.
+ * Walk sections from the second onward, testing only the immediate predecessor.
+ * After each merge, shift the remaining groups through the grid before testing
+ * the next section, so every fit uses the fully condensed layout so far.
  * Undefined means the native renderer must handle this configuration.
  */
 export function computeCompactLayout(
@@ -40,79 +104,29 @@ export function computeCompactLayout(
     return undefined;
   }
 
-  const normalized = sections.map((section) => ({
-    ...section,
+  const groups: SectionGroup[] = sections.map((section) => ({
     columnSpan: sectionColumnSpan(section.columnSpan, columnCount),
+    sections: [section],
   }));
-  const rows: CompactRow[] = [];
-  let next = 0;
-  while (next < normalized.length) {
-    const first = normalized[next];
-    if (first.hidden) {
-      // Keep hidden sections mounted at their source position. This collapsed
-      // row is a boundary: later sections must not jump ahead when it appears.
-      rows.push({
-        initialHeight: 0,
-        alignedSectionIndices: [],
-        lanes: [
-          {
-            columnStart: 1,
-            columnSpan: first.columnSpan,
-            initialUsedHeight: 0,
-            sectionIndices: [first.index],
-          },
-        ],
-      });
+  let layout = arrangeGroups(groups, columnCount, rowGap);
+  let next = 1;
+  while (next < groups.length) {
+    const previous = groups[next - 1];
+    const candidate = groups[next];
+    const section = candidate.sections[0];
+    const { row, lane } = layout.positions.get(previous)!;
+    if (
+      previous.sections[0].hidden ||
+      section.hidden ||
+      previous.columnSpan !== candidate.columnSpan ||
+      lane.initialUsedHeight + rowGap + section.height > row.initialHeight
+    ) {
       next++;
       continue;
     }
-    let end = sectionsRowEnd(normalized, next, columnCount);
-    for (let index = next; index < end; index++) {
-      if (normalized[index].hidden) {
-        end = index;
-        break;
-      }
-    }
-    const top = normalized.slice(next, end);
-    const hasBackground = top.some((section) => section.hasBackground);
-    const row: CompactRow = {
-      initialHeight: 0,
-      lanes: [],
-      alignedSectionIndices: [],
-    };
-    let columnStart = 1;
-    for (const section of top) {
-      const aligned = hasBackground && !section.hasBackground;
-      const height =
-        section.height + (aligned ? (section.alignmentMargin ?? 0) : 0);
-      row.lanes.push({
-        columnStart,
-        columnSpan: section.columnSpan,
-        initialUsedHeight: height,
-        sectionIndices: [section.index],
-      });
-      if (aligned) row.alignedSectionIndices.push(section.index);
-      columnStart += section.columnSpan;
-      row.initialHeight = Math.max(row.initialHeight, height);
-    }
-    rows.push(row);
-    next = end;
-
-    const target = row.lanes[row.lanes.length - 1];
-    while (next < normalized.length) {
-      const candidate = normalized[next];
-      if (
-        candidate.hidden ||
-        target.columnSpan !== candidate.columnSpan ||
-        target.initialUsedHeight + rowGap + candidate.height > row.initialHeight
-      ) {
-        break;
-      }
-      target.sectionIndices.push(candidate.index);
-      target.initialUsedHeight += rowGap + candidate.height;
-      next++;
-    }
+    previous.sections.push(section);
+    groups.splice(next, 1);
+    layout = arrangeGroups(groups, columnCount, rowGap);
   }
-
-  return rows;
+  return layout.rows;
 }
