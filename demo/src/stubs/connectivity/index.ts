@@ -1,6 +1,7 @@
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { mockBluetooth } from "./bluetooth/mock";
 import { mockMatter } from "./matter/mock";
+import { mockModbus } from "./modbus/mock";
 import { mockMqtt } from "./mqtt/mock";
 import { mockRadioFrequency } from "./radio_frequency/mock";
 import { mockSerial } from "./serial/mock";
@@ -12,6 +13,7 @@ import { mockZwaveJs } from "./zwave_js/mock";
 const MOCKS = [
   mockBluetooth,
   mockSerial,
+  mockModbus,
   mockMatter,
   mockMqtt,
   mockZwaveJs,
