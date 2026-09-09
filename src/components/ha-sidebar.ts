@@ -141,11 +141,11 @@ const insertDividers = (
   const placed = new Set<string>();
   const result: SidebarItem[] = [];
   panelsOrder.forEach((id) => {
-    if (isDividerId(id)) {
-      result.push({ url_path: id, divider: true });
-      placed.add(id);
-    } else if (itemsByUrlPath.has(id) && !placed.has(id)) {
+    if (itemsByUrlPath.has(id) && !placed.has(id)) {
       result.push(itemsByUrlPath.get(id)!);
+      placed.add(id);
+    } else if (isDividerId(id)) {
+      result.push({ url_path: id, divider: true });
       placed.add(id);
     }
   });
