@@ -30,7 +30,7 @@ class HaEntityMarker extends LitElement {
     return html`
       <div
         class="marker ${this.entityPicture ? "picture" : ""}"
-        style=${styleMap({ "outline-color": this.entityColor })}
+        style=${styleMap({ "--ha-marker-selected-color": this.entityColor })}
         @click=${this._badgeTap}
       >
         ${
@@ -110,7 +110,7 @@ class HaEntityMarker extends LitElement {
     }
     /* A ring in the entity color outside the frame marks the selected marker */
     :host([selected]) .marker {
-      outline: 3px solid var(--primary-color);
+      outline: 3px solid var(--ha-marker-selected-color, var(--primary-color));
     }
     .entity-picture {
       background-size: cover;
