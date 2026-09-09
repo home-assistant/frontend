@@ -9,7 +9,7 @@ import type {
   Marker as MapLibreMarker,
   StyleSpecification,
 } from "maplibre-gl";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import {
   clearMarkerAccessibility,
   setMarkerAccessibility,
@@ -17,6 +17,7 @@ import {
 import {
   CONTEXT_RESTORE_GRACE,
   ensureRTLTextPlugin,
+  ensureWorkerUrl,
   loadStyle,
   MAP_MAX_ZOOM,
   MAP_MIN_ZOOM,
@@ -207,8 +208,9 @@ export class MapLibreMapEngine implements MapEngine {
     if (options.rasterOnly) {
       throw new Error("The MapLibre engine cannot render without WebGL");
     }
-    const maplibre = (await import("maplibre-gl")).default;
+    const maplibre = await import("maplibre-gl");
     this._maplibre = maplibre;
+    ensureWorkerUrl(maplibre.setWorkerUrl);
     ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
 
     // MapLibre's stylesheet for controls and popups; one link per root
