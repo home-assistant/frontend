@@ -131,12 +131,12 @@ export const isDividerId = (id: string): boolean => DIVIDER_ID_REGEX.test(id);
 
 const insertDividers = (
   items: PanelInfo[],
-  panelsOrder: string[]
+  panelsOrder: string[],
+  allPanelUrlPaths: Set<string>
 ): SidebarItem[] => {
   if (!panelsOrder.some(isDividerId)) {
     return items;
   }
-
   const itemsByUrlPath = new Map(items.map((item) => [item.url_path, item]));
   const placed = new Set<string>();
   const result: SidebarItem[] = [];
@@ -144,7 +144,11 @@ const insertDividers = (
     if (itemsByUrlPath.has(id) && !placed.has(id)) {
       result.push(itemsByUrlPath.get(id)!);
       placed.add(id);
-    } else if (isDividerId(id)) {
+    } else if (
+      isDividerId(id) &&
+      !allPanelUrlPaths.has(id) &&
+      !placed.has(id)
+    ) {
       result.push({ url_path: id, divider: true });
       placed.add(id);
     }
@@ -198,7 +202,10 @@ export const computePanels = memoizeOne(
       panelSorter(reverseSort, defaultPanel, a, b, locale.language)
     );
 
-    return [insertDividers(beforeSpacer, panelsOrder), []];
+    return [
+      insertDividers(beforeSpacer, panelsOrder, new Set(Object.keys(panels))),
+      [],
+    ];
   }
 );
 

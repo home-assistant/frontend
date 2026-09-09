@@ -206,7 +206,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <ha-dropdown-item @click=${this._addDivider}>
+          <ha-dropdown-item
+            .disabled=${!this._order || !this._hidden}
+            @click=${this._addDivider}
+          >
             <ha-svg-icon slot="icon" .path=${mdiMinus}></ha-svg-icon>
             ${this.hass.localize("ui.sidebar.add_divider")}
           </ha-dropdown-item>
@@ -244,9 +247,12 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   }
 
   private _addDivider = () => {
+    if (!this._order || !this._hidden) {
+      return;
+    }
     const id = `divider-${generateUuidV4()}`;
-    this._order = [...(this._order ?? []), id];
-    this._updateDirtyState({ order: this._order, hidden: this._hidden ?? [] });
+    this._order = [...this._order, id];
+    this._updateDirtyState({ order: this._order, hidden: this._hidden });
   };
 
   private _removeDivider = (ev: CustomEvent<{ value: string }>): void => {
