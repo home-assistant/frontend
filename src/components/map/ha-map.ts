@@ -1250,10 +1250,10 @@ export class HaMap extends ReactiveElement {
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this._connection.hassUrl(entityPicture)
           : "";
+      // A host may leave the color to the map
       const entityColor =
-        typeof entity !== "string"
-          ? entity.color
-          : entityMapColor(getEntityId(entity), computedStyles);
+        (typeof entity !== "string" ? entity.color : undefined) ||
+        entityMapColor(getEntityId(entity), computedStyles);
       entityMarker.entityColor = entityColor;
       if (typeof entity !== "string") {
         entityMarker.selected = entity.selected ?? false;
