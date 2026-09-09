@@ -1,7 +1,7 @@
-import type { Connection } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
-import type { HassioAddonsInfo } from "../hassio/addon";
+import type { AddonState, HassioAddonsInfo } from "../hassio/addon";
 import type { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import type { NetworkInfo } from "../hassio/network";
 import type { HassioResolution } from "../hassio/resolution";
@@ -56,6 +56,12 @@ export interface SupervisorEvent {
   [key: string]: any;
 }
 
+export interface SupervisorAppEvent {
+  event: "app" | "addon";
+  slug: string;
+  state: AddonState;
+}
+
 export interface Supervisor {
   host: HassioHostInfo;
   supervisor: HassioSupervisorInfo;
@@ -100,16 +106,35 @@ async function processEvent(
   store.setState(event.data);
 }
 
+const subscribeSupervisorEvents = (
+  conn: Connection,
+  callback: (event: SupervisorEvent) => void
+): Promise<UnsubscribeFunc> =>
+  conn.subscribeMessage<SupervisorEvent>(callback, {
+    type: "supervisor/subscribe",
+  });
+
+/**
+ * Subscribe to app state transitions. Supervisor names the event "addon" until
+ * its websocket v2 API is enabled, so both names are accepted.
+ */
+export const subscribeSupervisorAppEvents = (
+  conn: Connection,
+  callback: (event: SupervisorAppEvent) => void
+): Promise<UnsubscribeFunc> =>
+  subscribeSupervisorEvents(conn, (event) => {
+    if (event.event === "app" || event.event === "addon") {
+      callback(event as SupervisorAppEvent);
+    }
+  });
+
 const subscribeSupervisorEventUpdates = (
   conn: Connection,
   store: Store<unknown>,
   key: string
 ) =>
-  conn.subscribeMessage(
-    (event) => processEvent(conn, store, event as SupervisorEvent, key),
-    {
-      type: "supervisor/subscribe",
-    }
+  subscribeSupervisorEvents(conn, (event) =>
+    processEvent(conn, store, event, key)
   );
 
 export const getSupervisorEventCollection = (
