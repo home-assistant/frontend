@@ -57,7 +57,6 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
-            node_modules/.cache/prettier
             node_modules/.cache/eslint
             node_modules/.cache/typescript
           key: lint-${{ github.sha }}
