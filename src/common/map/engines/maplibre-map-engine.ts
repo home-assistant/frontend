@@ -516,13 +516,26 @@ export class MapLibreMapEngine implements MapEngine {
       options?.maxZoom !== undefined
         ? options.maxZoom - ZOOM_OFFSET
         : undefined;
+    // Passed per fit: easeTo's padding would stick to the map
+    const padding = {
+      top: options?.padding?.top ?? 0,
+      right: options?.padding?.right ?? 0,
+      bottom: options?.padding?.bottom ?? 0,
+      left: options?.padding?.left ?? 0,
+    };
     if (minLat === maxLat && minLng === maxLng) {
-      // Zero-area bounds: center on the point
-      this._map.easeTo({
-        center: [minLng, minLat],
-        zoom: maxZoom ?? this._map.getZoom(),
-        animate: options?.animate,
-      });
+      // Zero-area bounds: center on the point, keeping the zoom unless given
+      this._map.fitBounds(
+        [
+          [minLng, minLat],
+          [minLng, minLat],
+        ],
+        {
+          maxZoom: maxZoom ?? this._map.getZoom(),
+          animate: options?.animate,
+          padding,
+        }
+      );
       return;
     }
     const pad = options?.pad ?? 0.5;
@@ -533,7 +546,7 @@ export class MapLibreMapEngine implements MapEngine {
         [minLng - lngPad, minLat - latPad],
         [maxLng + lngPad, maxLat + latPad],
       ],
-      { maxZoom, animate: options?.animate }
+      { maxZoom, animate: options?.animate, padding }
     );
   }
 
