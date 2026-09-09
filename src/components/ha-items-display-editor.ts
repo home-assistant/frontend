@@ -1,5 +1,5 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
+import { mdiClose, mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -29,6 +29,7 @@ export interface DisplayItem {
   description?: string;
   disableSorting?: boolean;
   disableHiding?: boolean;
+  type?: "divider";
 }
 
 export interface DisplayValue {
@@ -42,6 +43,7 @@ declare global {
   }
   interface HASSDomEvents {
     "item-display-navigate-clicked": { value: string };
+    "item-display-remove": { value: string };
   }
 }
 
@@ -97,6 +99,9 @@ export class HaItemDisplayEditor extends LitElement {
             allItems,
             (item) => item.value,
             (item: DisplayItem, idx) => {
+              if (item.type === "divider") {
+                return this._renderDividerItem(item, idx);
+              }
               const isVisible = !this.value.hidden.includes(item.value);
               const {
                 label,
@@ -214,6 +219,44 @@ export class HaItemDisplayEditor extends LitElement {
         </ha-md-list>
       </ha-sortable>
     `;
+  }
+
+  private _renderDividerItem(item: DisplayItem, idx: number) {
+    return html`
+      <ha-md-list-item
+        type="button"
+        .value=${item.value}
+        class=${classMap({
+          draggable: true,
+          "drag-selected": this._dragIndex === idx,
+        })}
+        @keydown=${this._listElementKeydown}
+        .idx=${idx}
+      >
+        <div slot="headline" class="divider-line"></div>
+        <ha-icon-button
+          .path=${mdiClose}
+          slot="end"
+          .label=${this._localize("ui.components.items-display-editor.remove")}
+          .value=${item.value}
+          @click=${this._remove}
+        ></ha-icon-button>
+        <ha-svg-icon
+          tabindex="0"
+          .idx=${idx}
+          @keydown=${this._dragHandleKeydown}
+          class="handle"
+          .path=${mdiDragHorizontalVariant}
+          slot="end"
+        ></ha-svg-icon>
+      </ha-md-list-item>
+    `;
+  }
+
+  private _remove(ev) {
+    ev.stopPropagation();
+    const value = ev.currentTarget.value;
+    fireEvent(this, "item-display-remove", { value });
   }
 
   private _toggle(ev) {
@@ -405,6 +448,11 @@ export class HaItemDisplayEditor extends LitElement {
       background-color: var(--divider-color);
       height: 21px;
       margin: 0 -4px;
+    }
+    .divider-line {
+      height: 1px;
+      background-color: var(--divider-color);
+      width: 100%;
     }
     ha-md-list {
       padding: 0;

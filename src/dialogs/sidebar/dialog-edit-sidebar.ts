@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiRestart } from "@mdi/js";
+import { mdiDotsVertical, mdiMinus, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,7 +15,7 @@ import type {
   DisplayItem,
   DisplayValue,
 } from "../../components/ha-items-display-editor";
-import { computePanels } from "../../components/ha-sidebar";
+import { computePanels, isSidebarDivider } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/ha-dialog";
@@ -155,15 +155,19 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       ...beforeSpacer,
       ...panels.filter((panel) => hiddenPanels.includes(panel.url_path)),
       ...afterSpacer,
-    ].map<DisplayItem>((panel) => ({
-      value: panel.url_path,
-      label:
-        (getPanelTitle(this.hass, panel) || panel.url_path) +
-        `${defaultPanel === panel.url_path ? ` (${this.hass.localize("ui.sidebar.default")})` : ""}`,
-      icon: getPanelIcon(panel),
-      iconPath: getPanelIconPath(panel),
-      disableHiding: panel.url_path === defaultPanel,
-    }));
+    ].map<DisplayItem>((item) =>
+      isSidebarDivider(item)
+        ? { value: item.url_path, label: "", type: "divider" }
+        : {
+            value: item.url_path,
+            label:
+              (getPanelTitle(this.hass, item) || item.url_path) +
+              `${defaultPanel === item.url_path ? ` (${this.hass.localize("ui.sidebar.default")})` : ""}`,
+            icon: getPanelIcon(item),
+            iconPath: getPanelIconPath(item),
+            disableHiding: item.url_path === defaultPanel,
+          }
+    );
 
     return html`
       <ha-items-display-editor
@@ -173,6 +177,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
         }}
         .items=${items}
         @value-changed=${this._changed}
+        @item-display-remove=${this._removeDivider}
         dont-sort-visible
       >
       </ha-items-display-editor>
@@ -200,6 +205,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+          <ha-dropdown-item @click=${this._addDivider}>
+            <ha-svg-icon slot="icon" .path=${mdiMinus}></ha-svg-icon>
+            ${this.hass.localize("ui.sidebar.add_divider")}
+          </ha-dropdown-item>
           <ha-dropdown-item @click=${this._resetToDefaults}>
             <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
             ${this.hass.localize("ui.sidebar.reset_to_defaults")}
@@ -232,6 +241,18 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
     this._hidden = [...hidden];
     this._updateDirtyState({ order: this._order, hidden: this._hidden });
   }
+
+  private _addDivider = () => {
+    const id = `divider-${crypto.randomUUID()}`;
+    this._order = [...(this._order ?? []), id];
+    this._updateDirtyState({ order: this._order, hidden: this._hidden ?? [] });
+  };
+
+  private _removeDivider = (ev: CustomEvent<{ value: string }>): void => {
+    const { value } = ev.detail;
+    this._order = (this._order ?? []).filter((id) => id !== value);
+    this._updateDirtyState({ order: this._order, hidden: this._hidden ?? [] });
+  };
 
   private _resetToDefaults = async () => {
     const confirmation = await showConfirmationDialog(this, {

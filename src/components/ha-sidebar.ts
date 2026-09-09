@@ -114,6 +114,45 @@ const defaultPanelSorter = (
   return stringCompare(a.title!, b.title!, language);
 };
 
+export interface SidebarDivider {
+  url_path: string;
+  divider: true;
+}
+
+export type SidebarItem = PanelInfo | SidebarDivider;
+
+export const isSidebarDivider = (item: SidebarItem): item is SidebarDivider =>
+  "divider" in item;
+
+const insertDividers = (
+  items: PanelInfo[],
+  panelsOrder: string[]
+): SidebarItem[] => {
+  const result: SidebarItem[] = [...items];
+
+  panelsOrder
+    .filter((id) => id.startsWith("divider-"))
+    .forEach((dividerId) => {
+      const dividerIndex = panelsOrder.indexOf(dividerId);
+      let precedingUrlPath: string | undefined;
+      for (let i = dividerIndex - 1; i >= 0; i--) {
+        if (!panelsOrder[i].startsWith("divider-")) {
+          precedingUrlPath = panelsOrder[i];
+          break;
+        }
+      }
+      const insertIndex = precedingUrlPath
+        ? result.findIndex(
+            (item) =>
+              !isSidebarDivider(item) && item.url_path === precedingUrlPath
+          ) + 1
+        : 0;
+      result.splice(insertIndex, 0, { url_path: dividerId, divider: true });
+    });
+
+  return result;
+};
+
 export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
@@ -121,7 +160,7 @@ export const computePanels = memoizeOne(
     panelsOrder: string[],
     hiddenPanels: string[],
     locale: HomeAssistant["locale"]
-  ): [PanelInfo[], PanelInfo[]] => {
+  ): [SidebarItem[], SidebarItem[]] => {
     if (!panels) {
       return [[], []];
     }
@@ -154,7 +193,7 @@ export const computePanels = memoizeOne(
       panelSorter(reverseSort, defaultPanel, a, b, locale.language)
     );
 
-    return [beforeSpacer, []];
+    return [insertDividers(beforeSpacer, panelsOrder), []];
   }
 );
 
@@ -435,10 +474,16 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
+  private _renderPanels(panels: SidebarItem[], selectedPanel: string) {
     return panels.map((panel) =>
-      this._renderPanel(panel, panel.url_path === selectedPanel)
+      isSidebarDivider(panel)
+        ? this._renderDivider(panel)
+        : this._renderPanel(panel, panel.url_path === selectedPanel)
     );
+  }
+
+  private _renderDivider(_divider: SidebarDivider) {
+    return html`<div class="sidebar-divider" role="separator"></div>`;
   }
 
   private _renderPanel(panel: PanelInfo, isSelected: boolean) {
@@ -891,6 +936,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .spacer {
           margin-top: auto;
           pointer-events: none;
+        }
+
+        .sidebar-divider {
+          height: 1px;
+          margin: var(--ha-space-2) var(--ha-space-3);
+          background-color: var(--divider-color);
         }
 
         .menu ha-icon-button {
