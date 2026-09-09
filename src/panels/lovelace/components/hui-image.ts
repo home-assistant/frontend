@@ -85,6 +85,23 @@ export class HuiImage extends LitElement {
 
   private _cameraUpdater?: number;
 
+  private _cameraImageEtag?: string;
+
+  private _cameraImageObjectUrl?: string;
+
+  // Previous object URL still used by <img> or the aspect-ratio CSS
+  // background. Revoked after the replacement image has loaded and rendered.
+  private _pendingRevokeObjectUrl?: string;
+
+  private _cameraImageRequestId = 0;
+
+  // Last _cameraImageSrc that the <img> actually rendered. A 304 may only
+  // restore Loaded when it still matches; otherwise a decode failure would
+  // be hidden the next time the server confirms those bytes.
+  private _loadedCameraImageSrc?: string;
+
+  private _clearCameraImageTimeout?: number;
+
   private _ratio: {
     w: number;
     h: number;
@@ -92,6 +109,10 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (this._clearCameraImageTimeout) {
+      clearTimeout(this._clearCameraImageTimeout);
+      this._clearCameraImageTimeout = undefined;
+    }
     if (this._loadState === undefined) {
       this._loadState = LoadState.Loading;
     }
@@ -105,6 +126,11 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
     this._imageVisible = undefined;
+    // Re-parent (edit-mode drag) reconnects immediately; keep the last frame.
+    this._clearCameraImageTimeout = window.setTimeout(
+      () => this._clearCameraImage(),
+      1
+    );
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
@@ -121,8 +147,7 @@ export class HuiImage extends LitElement {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
         this._loadState = LoadState.Loading;
-        this._cameraImageSrc = undefined;
-        this._loadedImageSrc = undefined;
+        this._clearCameraImage();
       }
     }
     if (changedProps.has("_imageVisible")) {
@@ -386,12 +411,16 @@ export class HuiImage extends LitElement {
     ev: HASSDomTargetEvent<HTMLImageElement>
   ): Promise<void> {
     this._loadState = LoadState.Loaded;
+    this._loadedCameraImageSrc = this._cameraImageSrc;
     const imgEl = ev.target;
     if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
       this._loadedImageSrc = imgEl.src;
     }
     await this.updateComplete;
     this._lastImageHeight = imgEl.offsetHeight;
+    // The aspect-ratio background (and the previous <img> decode) still
+    // referenced the old object URL until this render. Safe to drop now.
+    this._revokePendingCameraObjectUrl();
   }
 
   private async _onVideoLoad(
@@ -442,15 +471,142 @@ export class HuiImage extends LitElement {
     } else {
       height = Math.ceil(this._lastImageHeight * devicePixelRatio);
     }
-    this._cameraImageSrc = await fetchThumbnailUrlWithCache(
-      this.hass,
-      this.cameraImage,
-      width,
-      height
-    );
-    if (this._cameraImageSrc === undefined) {
-      this._onImageError();
+    // Identifies this poll so a response that resolves after a newer poll
+    // started, or after _clearCameraImage() ran, can be told apart from the
+    // current one instead of clobbering it or reviving a cleared image.
+    const requestId = ++this._cameraImageRequestId;
+
+    let url: string;
+    try {
+      url = await fetchThumbnailUrlWithCache(
+        this.hass,
+        this.cameraImage,
+        width,
+        height
+      );
+    } catch (_err) {
+      if (requestId === this._cameraImageRequestId) {
+        this._onImageError();
+      }
+      return;
     }
+    // The signed URL is regenerated on every poll, so the browser cache can
+    // never revalidate it. Send If-None-Match ourselves instead.
+    const headers: Record<string, string> = {};
+    if (this._cameraImageEtag) {
+      headers["If-None-Match"] = this._cameraImageEtag;
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(url, { headers });
+    } catch (_err) {
+      if (requestId === this._cameraImageRequestId) {
+        // fetch is CORS-mode; <img src> is not. If fetch is blocked
+        // (e.g. Cast without CORS), load the signed URL directly.
+        this._cameraImageSrc = url;
+      }
+      return;
+    }
+
+    if (requestId !== this._cameraImageRequestId) {
+      // Superseded by a newer poll or a clear while this request was in
+      // flight. Drain the body so the connection can still be reused, but
+      // leave all state alone - a newer request owns it now.
+      await this._drainCameraImageResponse(response);
+      return;
+    }
+
+    // Unchanged since the last poll. Keeping the current object URL avoids
+    // restarting animated images (GIF/WebP) part-way through playback. The
+    // empty body still has to be consumed, or the request is torn down as
+    // aborted and the connection cannot be reused.
+    if (response.status === 304) {
+      await this._drainCameraImageResponse(response);
+      // A 304 confirms the bytes we already have are current. Only restore
+      // Loaded if those bytes actually rendered; a decode/@error failure
+      // must not be hidden by the next unchanged poll.
+      if (this._cameraImageSrc === this._loadedCameraImageSrc) {
+        this._loadState = LoadState.Loaded;
+      }
+      return;
+    }
+
+    if (!response.ok) {
+      await this._drainCameraImageResponse(response);
+      this._onImageError();
+      return;
+    }
+
+    let blob: Blob;
+    try {
+      blob = await response.blob();
+    } catch (_err) {
+      this._onImageError();
+      return;
+    }
+
+    if (requestId !== this._cameraImageRequestId) {
+      return;
+    }
+
+    // Only commit the ETag once the body has actually been read.
+    // Otherwise a failed read here would leave the old image displayed
+    // while future polls send the new ETag and the server keeps
+    // confirming it with 304, so this image version would never actually
+    // be shown.
+    this._cameraImageEtag = response.headers.get("etag") ?? undefined;
+
+    const previousObjectUrl = this._cameraImageObjectUrl;
+    this._cameraImageObjectUrl = URL.createObjectURL(blob);
+    this._cameraImageSrc = this._cameraImageObjectUrl;
+    if (previousObjectUrl) {
+      if (this._pendingRevokeObjectUrl) {
+        // Still holding the last displayed image for the aspect-ratio
+        // background. The blob we are replacing never became visible.
+        URL.revokeObjectURL(previousObjectUrl);
+      } else {
+        this._pendingRevokeObjectUrl = previousObjectUrl;
+      }
+    }
+  }
+
+  private async _drainCameraImageResponse(response: Response): Promise<void> {
+    // An unconsumed body is torn down as aborted and the connection
+    // cannot be reused, including empty 304 and error responses.
+    try {
+      await response.arrayBuffer();
+    } catch (_err) {
+      // Already consumed or the connection was dropped.
+    }
+  }
+
+  private _revokePendingCameraObjectUrl(): void {
+    if (this._pendingRevokeObjectUrl) {
+      URL.revokeObjectURL(this._pendingRevokeObjectUrl);
+      this._pendingRevokeObjectUrl = undefined;
+    }
+  }
+
+  private _clearCameraImage(): void {
+    if (this._clearCameraImageTimeout) {
+      clearTimeout(this._clearCameraImageTimeout);
+      this._clearCameraImageTimeout = undefined;
+    }
+    // Invalidate any in-flight request so it can't recreate state (or an
+    // object URL that never gets revoked) after we've just cleared it.
+    this._cameraImageRequestId++;
+    this._revokePendingCameraObjectUrl();
+    if (this._cameraImageObjectUrl) {
+      URL.revokeObjectURL(this._cameraImageObjectUrl);
+      this._cameraImageObjectUrl = undefined;
+    }
+    this._cameraImageEtag = undefined;
+    this._cameraImageSrc = undefined;
+    this._loadedCameraImageSrc = undefined;
+    // May still point at a blob URL we just revoked (aspect-ratio cards
+    // render the last loaded src as the container background).
+    this._loadedImageSrc = undefined;
   }
 
   static styles = css`
