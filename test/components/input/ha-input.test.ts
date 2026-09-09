@@ -83,9 +83,9 @@ describe("ha-input password-manager autofill", () => {
 });
 
 describe("ha-input native ids", () => {
-  // Native id remapping is implemented in @home-assistant/webawesome (home-assistant/webawesome#52).
-  // Until that package is published, assert that ha-input forwards input-id onto wa-input.
-  it("forwards input-id onto the inner wa-input", async () => {
+  // Unique native ids help password managers tell login fields apart (#51620 /
+  // home-assistant/webawesome#52).
+  it("remaps the native input id and label for from input-id", async () => {
     const el = await mountInput({
       label: "Username",
       inputId: "username",
@@ -95,6 +95,8 @@ describe("ha-input native ids", () => {
       inputId?: string;
     };
     expect(waInput.inputId).toBe("username");
+    expect(nativeInput(el).id).toBe("username");
+    expect(nativeLabel(el).htmlFor).toBe("username");
   });
 
   it("keeps the default native id when input-id is omitted", async () => {
