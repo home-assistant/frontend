@@ -232,7 +232,7 @@ export class HaSankeyChart extends LitElement {
           const label = node?.label ?? nodeData.id;
           if (!showValues || !nodeData.id) return label;
           const formatted = this.valueFormatter
-            ? this.valueFormatter(nodeData.value).replace(/\s+/g, " ").trim()
+            ? this.valueFormatter(nodeData.value).trim()
             : String(nodeData.value);
           // LRM keeps numeric values LTR on the canvas without creating wrap points.
           return `${label}\n\u200E${formatted}`;
@@ -247,7 +247,7 @@ export class HaSankeyChart extends LitElement {
           // reduce the label font size so the longest word fits on one line
           const longestWord = params.text
             .replace(BIDI_MARKS, "")
-            .split(/\s+/)
+            .split(/[ \n]+/)
             .reduce((longest, current) => {
               if (!current) {
                 return longest;
