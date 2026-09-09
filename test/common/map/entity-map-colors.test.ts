@@ -94,6 +94,20 @@ describe("entity map colors", () => {
     expect(entityMapColor("zone.other_yaml_zone", styles)).not.toBe(color);
   });
 
+  it("counts a reused callback per subscription and ignores a repeated unsubscribe", () => {
+    const shared = vi.fn();
+    const first = subscribeEntityMapColors(connection, shared);
+    const second = subscribeEntityMapColors(connection, shared);
+    registry.callback!([entry("zone.work", 1)]);
+    expect(shared).toHaveBeenCalledTimes(2);
+
+    first();
+    first();
+    second();
+    // The subscription from beforeEach still holds the stream
+    expect(registry.unsubscribe).not.toHaveBeenCalled();
+  });
+
   it("shares one registry stream and releases it with the last subscriber", () => {
     const notified = vi.fn();
     const second = subscribeEntityMapColors(connection, notified);
