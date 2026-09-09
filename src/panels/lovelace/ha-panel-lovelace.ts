@@ -32,7 +32,7 @@ import type { ShowToastParams } from "../../managers/notification-manager";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { checkLovelaceConfig } from "./common/check-lovelace-config";
-import { loadLovelaceResources } from "./common/load-resources";
+import { loadLovelaceResourcesAndWait } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import {
@@ -52,7 +52,7 @@ interface LovelacePanelConfig {
 const EXTERNALLY_UPDATED_TOAST_ID = "lovelace-externally-updated";
 
 let editorLoaded = false;
-let resourcesLoaded = false;
+let resourcesLoadPromise: Promise<void> | undefined;
 
 @customElement("ha-panel-lovelace")
 export class LovelacePanel extends LitElement {
@@ -309,12 +309,9 @@ export class LovelacePanel extends LitElement {
       confProm = preloadWindow.llConfProm;
       preloadWindow.llConfProm = undefined;
     }
-    if (!resourcesLoaded) {
-      resourcesLoaded = true;
-      (preloadWindow.llResProm || fetchResources(this.hass!.connection)).then(
-        (resources) => loadLovelaceResources(resources, this.hass!)
-      );
-    }
+    resourcesLoadPromise ??= (
+      preloadWindow.llResProm || fetchResources(this.hass!.connection)
+    ).then((resources) => loadLovelaceResourcesAndWait(resources, this.hass!));
     if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
       // all update events while fetching the config and for 2 seconds after the config is back.
@@ -331,7 +328,7 @@ export class LovelacePanel extends LitElement {
     }
 
     try {
-      rawConf = await confProm;
+      [rawConf] = await Promise.all([confProm, resourcesLoadPromise]);
 
       // If strategy defined, apply it here.
       if (isStrategyDashboard(rawConf)) {
