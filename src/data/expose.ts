@@ -14,7 +14,7 @@ export const voiceAssistants = {
   },
   google_assistant: {
     domain: "google_assistant",
-    name: "Google Assistant (local)",
+    name: "Google Assistant",
   },
 } as const;
 

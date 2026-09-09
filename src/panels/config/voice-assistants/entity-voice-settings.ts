@@ -40,6 +40,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import { showsLocalGoogleAssistant } from "./expose/available-assistants";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -135,7 +136,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._cloudStatus.prefs.alexa_enabled === true;
 
     const showAssistants = [...Object.keys(voiceAssistants)];
-    const uiAssistants = [...showAssistants];
+    let uiAssistants = [...showAssistants];
 
     const alexaManual =
       alexaEnabled &&
@@ -165,23 +166,16 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("cloud.alexa"), 1);
     }
 
-    // The local Google Assistant integration is an alternative to cloud's
-    // Google Assistant support, so only show one of the two.
-    if (
-      googleEnabled ||
-      !isComponentLoaded(this.hass.config, "google_assistant")
-    ) {
+    if (!showsLocalGoogleAssistant(this.hass, googleEnabled)) {
       showAssistants.splice(showAssistants.indexOf("google_assistant"), 1);
       uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
     }
 
     const uiExposed = uiAssistants.some((key) => this.exposed[key]);
 
-    for (const key of uiAssistants.filter(
-      (assistant) => this.locked?.[assistant]
-    )) {
-      uiAssistants.splice(uiAssistants.indexOf(key), 1);
-    }
+    uiAssistants = uiAssistants.filter(
+      (assistant) => !this.locked?.[assistant]
+    );
 
     let manFilterFuncs:
       | {
@@ -202,15 +196,22 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       googleManual && manFilterFuncs!.google(this.entityId);
 
     const anyExposed = uiExposed || manExposedAlexa || manExposedGoogle;
+    // A locked-off assistant (YAML expose: false) has no entry in `exposed`,
+    // so it wouldn't otherwise make anyExposed true; show its row anyway so
+    // the "Managed in configuration.yaml" explanation isn't hidden.
+    const anyLocked = showAssistants.some(
+      (key) => this.locked?.[key] !== undefined
+    );
 
     const exposedToAlexa =
       showAssistants.includes("cloud.alexa") &&
       (alexaManual ? manExposedAlexa : this.exposed["cloud.alexa"]);
     const exposedToGoogle =
-      showAssistants.includes("cloud.google_assistant") &&
-      (googleManual
-        ? manExposedGoogle
-        : this.exposed["cloud.google_assistant"]);
+      (showAssistants.includes("cloud.google_assistant") &&
+        (googleManual
+          ? manExposedGoogle
+          : this.exposed["cloud.google_assistant"])) ||
+      Boolean(this.exposed.google_assistant);
     const exposedToAssist = this.exposed.conversation;
 
     return html`
@@ -226,7 +227,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         ></ha-switch>
       </ha-md-list-item>
       ${
-        anyExposed
+        anyExposed || anyLocked
           ? showAssistants.map((key) => {
               const supported = !this._unsupported[key];
 
@@ -240,7 +241,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               const manualConfig =
                 (alexaManual && key === "cloud.alexa") ||
                 (googleManual && key === "cloud.google_assistant") ||
-                Boolean(this.locked?.[key]);
+                this.locked?.[key] !== undefined;
 
               const support2fa =
                 key === "cloud.google_assistant" &&
