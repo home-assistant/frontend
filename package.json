@@ -67,7 +67,7 @@
     "@fullcalendar/list": "6.1.21",
     "@fullcalendar/luxon3": "6.1.21",
     "@fullcalendar/timegrid": "6.1.21",
-    "@home-assistant/webawesome": "patch:@home-assistant/webawesome@npm%3A3.7.0-ha.0#~/.yarn/patches/@home-assistant-webawesome-npm-3.7.0-ha.0-7130d7e369.patch",
+    "@home-assistant/webawesome": "3.7.0-ha.0",
     "@lezer/highlight": "1.2.3",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
