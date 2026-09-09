@@ -365,6 +365,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
     }
+    // Zone colors come from theme variables
+    if (oldHass && oldHass.themes !== this.hass.themes) {
+      this._colorVersion++;
+    }
     this._settlePendingEdits();
   }
 
