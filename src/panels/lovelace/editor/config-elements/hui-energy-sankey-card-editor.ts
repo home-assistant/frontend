@@ -58,79 +58,70 @@ export class HuiEnergySankeyCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (localize: LocalizeFunc, showValuesSupported: boolean) => {
-      const schema: HaFormSchema[] = [
-        { name: "title", selector: { text: {} } },
-        {
-          name: "",
-          type: "grid",
-          schema: [
-            {
-              name: "layout",
-              required: false,
-              selector: {
-                select: {
-                  options: layoutDirections.map((direction) => ({
-                    value: direction,
-                    label: localize(
-                      `ui.panel.lovelace.editor.card.energy-sankey.layout_directions.${direction}`
-                    ),
-                  })),
-                },
+  private _schema = memoizeOne((localize: LocalizeFunc) => {
+    const schema: HaFormSchema[] = [
+      { name: "title", selector: { text: {} } },
+      {
+        name: "",
+        type: "grid",
+        schema: [
+          {
+            name: "layout",
+            required: false,
+            selector: {
+              select: {
+                options: layoutDirections.map((direction) => ({
+                  value: direction,
+                  label: localize(
+                    `ui.panel.lovelace.editor.card.energy-sankey.layout_directions.${direction}`
+                  ),
+                })),
               },
             },
-            {
-              name: "",
-              type: "grid",
-              schema: [
-                {
-                  name: "group_by_floor",
-                  required: false,
-                  selector: { boolean: {} },
-                },
-                {
-                  name: "group_by_area",
-                  required: false,
-                  selector: { boolean: {} },
-                },
-                ...(showValuesSupported
-                  ? [
-                      {
-                        name: "show_values",
-                        required: false,
-                        selector: { boolean: {} },
-                      } as const,
-                    ]
-                  : []),
-              ],
-            },
-            {
-              name: "max_devices",
-              required: false,
-              selector: { number: { min: 1, mode: "box" } },
-            },
-            {
-              type: "string",
-              name: "collection_key",
-              required: false,
-            },
-          ],
-        },
-      ];
-      return schema;
-    }
-  );
+          },
+          {
+            name: "",
+            type: "grid",
+            schema: [
+              {
+                name: "group_by_floor",
+                required: false,
+                selector: { boolean: {} },
+              },
+              {
+                name: "group_by_area",
+                required: false,
+                selector: { boolean: {} },
+              },
+              {
+                name: "show_values",
+                required: false,
+                selector: { boolean: {} },
+              },
+            ],
+          },
+          {
+            name: "max_devices",
+            required: false,
+            selector: { number: { min: 1, mode: "box" } },
+          },
+          {
+            type: "string",
+            name: "collection_key",
+            required: false,
+          },
+        ],
+      },
+    ];
+    return schema;
+  });
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const showValuesSupported =
-      this._config.type === "energy-sankey" ||
-      this._config.type === "power-sankey";
-    const schema = this._schema(this.hass.localize, showValuesSupported);
+    const schema = this._schema(this.hass.localize);
 
     const data = {
       ...this._config,
