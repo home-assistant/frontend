@@ -448,12 +448,19 @@ class MoreInfoUpdate extends LitElement {
           ["addon", "home_assistant", "home_assistant_os"].includes(type)
         ) {
           this._fetchUpdateBackupConfig(type);
+        } else {
+          this._createBackupLoading = false;
         }
 
         if (this._isHaOrOsUpdate(type)) {
           this._fetchBackupConfig();
+        } else {
+          this._backupConfigLoading = false;
         }
       });
+    } else {
+      this._createBackupLoading = false;
+      this._backupConfigLoading = false;
     }
   }
 
