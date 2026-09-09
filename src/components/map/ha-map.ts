@@ -427,6 +427,9 @@ export class HaMap extends ReactiveElement {
     super.update(changedProps);
 
     if (changedProps.has("_connection")) {
+      // A new connection needs its own subscription
+      this._unsubscribeColors?.();
+      this._unsubscribeColors = undefined;
       this._subscribeColors();
     }
 

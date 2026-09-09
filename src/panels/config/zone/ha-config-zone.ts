@@ -360,7 +360,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   public willUpdate(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
+    super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
