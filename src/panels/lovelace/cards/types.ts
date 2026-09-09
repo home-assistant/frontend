@@ -259,10 +259,12 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
   type: "energy-sankey";
+  show_values?: boolean;
 }
 
 export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "power-sankey";
+  show_values?: boolean;
 }
 
 export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
@@ -272,6 +274,12 @@ export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
 export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-flow-sankey";
 }
+
+export type SankeyCardConfig =
+  | EnergySankeyCardConfig
+  | PowerSankeyCardConfig
+  | WaterSankeyCardConfig
+  | WaterFlowSankeyCardConfig;
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
