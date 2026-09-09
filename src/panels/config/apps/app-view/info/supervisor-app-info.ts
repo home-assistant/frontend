@@ -193,8 +193,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubEvents?.then((unsub) => unsub());
-    this._unsubEvents = undefined;
+    this._unsubscribeStateChanges();
   }
 
   private _renderInfoCard() {
@@ -1039,7 +1038,26 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         }
       }
     );
+    this.connection.connection.addEventListener(
+      "ready",
+      this._handleConnectionReady
+    );
   }
+
+  private _unsubscribeStateChanges() {
+    this._unsubEvents?.then((unsub) => unsub());
+    this._unsubEvents = undefined;
+    this.connection.connection.removeEventListener(
+      "ready",
+      this._handleConnectionReady
+    );
+  }
+
+  // Transitions during a websocket outage are not replayed, so the state shown
+  // can be stale once the subscription is restored.
+  private _handleConnectionReady = () => {
+    this._refreshAddonInfo();
+  };
 
   private async _refreshAddonInfo(): Promise<void> {
     const addon = this._currentAddon;
