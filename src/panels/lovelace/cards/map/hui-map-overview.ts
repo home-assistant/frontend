@@ -352,7 +352,7 @@ export class HuiMapOverview extends LitElement {
             type="button"
             class="detail-name"
             .title=${this._i18n.localize(
-              "ui.panel.lovelace.cards.map.overview.show_more_info"
+              "ui.panel.lovelace.cards.show_more_info"
             )}
             @click=${this._handleMoreInfo}
           >
