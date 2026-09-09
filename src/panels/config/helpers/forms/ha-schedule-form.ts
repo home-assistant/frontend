@@ -1,8 +1,8 @@
-import type { CalendarOptions } from "@fullcalendar/core";
-import { Calendar } from "@fullcalendar/core";
-import allLocales from "@fullcalendar/core/locales-all";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
+import type { CalendarOptions } from "fullcalendar";
+import { Calendar } from "fullcalendar";
+import allLocales from "fullcalendar/locales-all";
+import interactionPlugin from "fullcalendar/interaction";
+import timeGridPlugin from "fullcalendar/timegrid";
 import type { Day } from "date-fns";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -188,12 +188,6 @@ class HaScheduleForm extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       firstDay: firstWeekdayIndex(this.hass.locale),
-      slotLabelFormat: {
-        hour: "numeric",
-        minute: undefined,
-        hour12: useAmPm(this.hass.locale),
-        meridiem: useAmPm(this.hass.locale) ? "narrow" : false,
-      },
       eventTimeFormat: {
         hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
