@@ -87,8 +87,10 @@ const mountSchema = memoizeOne(
         localize("ui.panel.config.storage.network_mounts.mount_type.nfs"),
       ],
     ];
-    // Hide on Supervisors without disk mounts; always show when editing one.
-    if (showDisk || mountType === SupervisorMountType.DISK) {
+    // Offered when creating on a Supervisor with disk mounts, and kept when
+    // editing one. An existing network mount cannot become a disk mount: the
+    // edit form has no device picker to identify the disk with.
+    if ((showDisk && !existing) || mountType === SupervisorMountType.DISK) {
       typeOptions.push([
         SupervisorMountType.DISK,
         localize("ui.panel.config.storage.network_mounts.mount_type.disk"),
@@ -277,7 +279,10 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         .join(" • ");
     }
     this._initDirtyTracking({ type: "deep" }, this._data ?? {});
-    this._loadCandidates();
+    // Candidates only matter when picking a disk for a new mount.
+    if (!this._existing) {
+      this._loadCandidates();
+    }
   }
 
   public closeDialog(): void {
