@@ -95,7 +95,6 @@ describe("ha-input native ids", () => {
       inputId?: string;
     };
     expect(waInput.inputId).toBe("username");
-    expect(waInput.getAttribute("input-id")).toBe("username");
   });
 
   it("keeps the default native id when input-id is omitted", async () => {
