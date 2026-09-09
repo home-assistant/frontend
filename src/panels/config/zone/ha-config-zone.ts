@@ -406,10 +406,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       if (entry) {
         await this._updateEntry(entry, pending);
       }
-    } catch (err) {
+    } catch (err: any) {
       // The saved values are the truth again; the marker moves back
       this._dropPendingEdit(id);
-      throw err;
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
+        text: err.message,
+      });
     }
   }
 
