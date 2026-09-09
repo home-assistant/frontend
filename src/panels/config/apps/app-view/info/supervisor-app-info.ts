@@ -29,7 +29,7 @@ import {
   mdiShield,
   mdiStop,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -61,6 +61,7 @@ import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-row-item";
 import {
   apiContext,
+  connectionContext,
   internationalizationContext,
   registriesContext,
 } from "../../../../../data/context";
@@ -90,6 +91,7 @@ import {
   supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
+import { subscribeSupervisorAppEvents } from "../../../../../data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -126,8 +128,6 @@ const RATING_ICON = {
 
 const MAX_RATING = 8;
 
-const POLL_INTERVAL_SECONDS = 5;
-
 @customElement("supervisor-app-info")
 class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
@@ -151,6 +151,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @consume({ context: apiContext, subscribe: true })
   private api!: ContextType<typeof apiContext>;
 
+  @consume({ context: connectionContext, subscribe: true })
+  private connection!: ContextType<typeof connectionContext>;
+
   @state() private _metrics?: HassioStats;
 
   @state() private _error?: string;
@@ -167,7 +170,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   })
   private _updateState?: HassEntity;
 
-  private _pollInterval?: number;
+  private _unsubEvents?: Promise<UnsubscribeFunc>;
 
   protected mobileSizeQuery =
     "all and (max-width: 1120px), all and (max-height: 500px)";
@@ -178,7 +181,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._startPolling();
+    this._subscribeStateChanges();
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -194,7 +197,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._stopPolling();
+    this._unsubEvents?.then((unsub) => unsub());
+    this._unsubEvents = undefined;
   }
 
   private _renderInfoCard() {
@@ -1029,20 +1033,18 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     }
   }
 
-  private _startPolling() {
-    if (this._pollInterval) {
+  private _subscribeStateChanges() {
+    if (this._unsubEvents) {
       return;
     }
-    this._pollInterval = window.setInterval(() => {
-      this._refreshAddonInfo();
-    }, POLL_INTERVAL_SECONDS * 1000);
-  }
-
-  private _stopPolling() {
-    if (this._pollInterval) {
-      clearInterval(this._pollInterval);
-      this._pollInterval = undefined;
-    }
+    this._unsubEvents = subscribeSupervisorAppEvents(
+      this.connection.connection,
+      (event) => {
+        if (event.slug === this._currentAddon.slug) {
+          this._refreshAddonInfo();
+        }
+      }
+    );
   }
 
   private async _refreshAddonInfo(): Promise<void> {
@@ -1438,7 +1440,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
     try {
       await startHassioAddon(this.api.callWS, addon.slug);
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
       const eventdata = {
         success: true,
         response: undefined,
