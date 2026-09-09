@@ -15,7 +15,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import {
-  isEntityReference,
   isLogicalCondition,
   logicalChildren,
 } from "../../../../common/condition/translate";
@@ -25,13 +24,9 @@ import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { computeAttributeNameDisplay } from "../../../../common/entity/compute_attribute_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import {
-  formatListWithAnds,
-  formatListWithOrs,
-} from "../../../../common/string/format-list";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import "../../../../components/automation/ha-automation-condition-summary";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
@@ -62,7 +57,13 @@ import {
   CONDITION_ROW_CONFIG_KEYS,
   pickRowConfig,
 } from "../../../../data/automation";
-import { formatNumericLimitValue } from "../../../../data/automation_i18n";
+import { describeCondition } from "../../../../data/automation_i18n";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import {
+  conditionDescriptionsContext,
+  fullEntitiesContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
@@ -86,9 +87,6 @@ import type { LovelaceConditionEditorConstructor } from "./types";
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
 
 const CONTAINER_CONDITIONS = ["and", "or", "not"];
-
-const CORE_STATE_ENTITY_ID =
-  /^input_(?:select|text|number|boolean|datetime)\.(?!.+__)(?!_)[\da-z_]+(?<!_)$/;
 
 const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
   NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
@@ -229,6 +227,14 @@ export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: VisibilityCondition;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
+
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -437,132 +443,6 @@ export class HaCardConditionEditor extends LitElement {
     };
   }
 
-  private _describeCondition(): string | undefined {
-    const condition = this.condition;
-    if (
-      !condition ||
-      typeof condition !== "object" ||
-      Array.isArray(condition) ||
-      ("condition" in condition &&
-        condition.condition !== "state" &&
-        condition.condition !== "numeric_state")
-    ) {
-      return undefined;
-    }
-
-    const entityIds = ensureArray(
-      ("entity_id" in condition
-        ? condition.entity_id
-        : "entity" in condition
-          ? condition.entity
-          : undefined) ||
-        (this._entityContext?.mode === "current"
-          ? this._entityContext.entityId
-          : undefined) ||
-        []
-    );
-    const entityNames = entityIds.map((entityId) =>
-      this.hass.states[entityId]
-        ? computeStateName(this.hass.states[entityId])
-        : entityId
-    );
-    const entity =
-      "match" in condition && condition.match === "any"
-        ? formatListWithOrs(this.hass.locale, entityNames)
-        : formatListWithAnds(this.hass.locale, entityNames);
-    if (!entity) {
-      return undefined;
-    }
-
-    const stateObj = this.hass.states[entityIds[0]];
-    const attributeName =
-      "attribute" in condition ? condition.attribute : undefined;
-    const attribute =
-      attributeName && stateObj
-        ? computeAttributeNameDisplay(
-            this.hass.localize,
-            stateObj,
-            this.hass.entities,
-            attributeName
-          )
-        : attributeName;
-
-    if (!("condition" in condition) || condition.condition === "state") {
-      const stateValue = "state" in condition ? condition.state : undefined;
-      const stateNot =
-        "state_not" in condition ? condition.state_not : undefined;
-      const value = stateValue ?? stateNot;
-      const values = ensureArray(value ?? [])
-        .filter((v) => v !== "")
-        .flatMap<string | number>((v) => {
-          if (!isEntityReference(v)) {
-            return [v];
-          }
-          const referencedState = this.hass.states[v]?.state;
-          if (referencedState === undefined) {
-            return [v];
-          }
-          // Core resolves helper references; legacy conditions also match the literal.
-          if ("entity_id" in condition) {
-            return CORE_STATE_ENTITY_ID.test(v) ? [referencedState] : [v];
-          }
-          return Array.isArray(value) || referencedState
-            ? [v, referencedState]
-            : [v];
-        });
-      if (!values.length) {
-        return undefined;
-      }
-      const states = formatListWithOrs(
-        this.hass.locale,
-        values.map((v) =>
-          stateObj
-            ? attributeName
-              ? this.hass
-                  .formatEntityAttributeValue(stateObj, attributeName, v)
-                  .toString()
-              : this.hass.formatEntityState(stateObj, String(v))
-            : String(v)
-        )
-      );
-      const invert = stateValue == null && stateNot !== undefined;
-      const variant = invert ? "is_not" : "is";
-      return this.hass.localize(
-        `ui.panel.lovelace.editor.condition-editor.condition.state.description.${
-          attribute ? `${variant}_attribute` : variant
-        }`,
-        { entity, state: states, attribute }
-      );
-    }
-
-    if (condition.condition === "numeric_state") {
-      const above = "above" in condition ? condition.above : undefined;
-      const below = "below" in condition ? condition.below : undefined;
-      if (above === undefined && below === undefined) {
-        return undefined;
-      }
-      const variant =
-        above !== undefined && below !== undefined
-          ? "above_below"
-          : above !== undefined
-            ? "above"
-            : "below";
-      return this.hass.localize(
-        `ui.panel.lovelace.editor.condition-editor.condition.numeric_state.description.${
-          attribute ? `${variant}_attribute` : variant
-        }`,
-        {
-          entity,
-          above: formatNumericLimitValue(this.hass, above),
-          below: formatNumericLimitValue(this.hass, below),
-          attribute,
-        }
-      );
-    }
-
-    return undefined;
-  }
-
   protected render() {
     const condition = this._condition;
 
@@ -570,7 +450,15 @@ export class HaCardConditionEditor extends LitElement {
 
     const hideLiveTest = this._hideLiveTest(condition);
 
-    const description = this._describeCondition();
+    const summaryCondition =
+      condition.condition === "time"
+        ? { ...condition, weekday: condition.weekdays }
+        : this._usesAutomationEditor ||
+            CONTAINER_CONDITIONS.includes(condition.condition) ||
+            (!isNoEntityCondition(condition.condition, this._noEntity) &&
+              condition.condition in this._conditionDescriptions)
+          ? condition
+          : undefined;
 
     return html`
       <div class="container">
@@ -601,15 +489,28 @@ export class HaCardConditionEditor extends LitElement {
                 >`
               : nothing
           }
-          <h3 slot="header">
-            ${
-              description ||
-              this.hass.localize(
-                `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
-              ) ||
-              condition.condition
+          <ha-automation-condition-summary
+            slot="header"
+            .condition=${summaryCondition}
+            .description=${
+              summaryCondition
+                ? this._conditionDescriptions[condition.condition]
+                : undefined
             }
-          </h3>
+            .label=${
+              summaryCondition
+                ? capitalizeFirstLetter(
+                    describeCondition(
+                      summaryCondition,
+                      this.hass,
+                      this._entityReg
+                    )
+                  )
+                : this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
+                  ) || condition.condition
+            }
+          ></ha-automation-condition-summary>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}
             .variant=${this._testingResult ? "success" : "warning"}
@@ -854,11 +755,6 @@ export class HaCardConditionEditor extends LitElement {
         position: relative;
         color: var(--secondary-text-color);
         opacity: 0.9;
-      }
-      h3 {
-        margin: 0;
-        font-size: inherit;
-        font-weight: inherit;
       }
       .content {
         padding: 12px;
