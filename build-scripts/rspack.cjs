@@ -274,12 +274,20 @@ const createRspackConfig = ({
           ) {
             return false;
           }
+          if (!ignorePackages.length) {
+            return false;
+          }
           let fullPath;
           try {
             fullPath = resource.startsWith(".")
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
+            // ESM-only packages have no CommonJS entry to resolve. The ignore
+            // list holds resolved CommonJS paths, so they can never match.
+            if (err.code === "ERR_PACKAGE_PATH_NOT_EXPORTED") {
+              return false;
+            }
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,

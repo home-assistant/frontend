@@ -40,7 +40,9 @@ const emitToken = (token: string) =>
 
 const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
 
-vi.mock("maplibre-gl", () => ({ setRTLTextPlugin }));
+const setWorkerUrl = vi.hoisted(() => vi.fn());
+
+vi.mock("maplibre-gl", () => ({ setRTLTextPlugin, setWorkerUrl }));
 
 const STYLE = {
   version: 8,
