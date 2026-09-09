@@ -659,6 +659,30 @@ describe("MapLibreMapEngine", () => {
       expect(draggable.style.cursor).toBe("");
     });
 
+    it("relabels a reused element and leaves the caller's own attributes alone", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine
+        .addMarker(element, [52, 4], { size: [36, 36], title: "Thuis" })
+        .remove();
+      expect(element.hasAttribute("aria-label")).toBe(false);
+      expect(element.tabIndex).toBe(-1);
+
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Home",
+        focusable: false,
+      });
+      expect(element.getAttribute("aria-label")).toBe("Home");
+      expect(element.getAttribute("role")).toBe("img");
+
+      const named = document.createElement("div");
+      named.setAttribute("aria-label", "Mine");
+      engine.addMarker(named, [52, 4], { size: [36, 36], title: "Engine" });
+      expect(named.getAttribute("aria-label")).toBe("Mine");
+    });
+
     it("gives button semantics only to focusable markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -1030,13 +1054,24 @@ describe("MapLibreMapEngine", () => {
     });
 
     it("places the handle on the drawn circle at any latitude", () => {
-      for (const latitude of [0, 52, 89.9]) {
+      for (const [latitude, radius] of [
+        [0, 1000],
+        [52, 1000],
+        [89.9, 1000],
+        [89.9, 100000],
+      ]) {
         const center: [number, number] = [latitude, 4];
-        const east = pointEastOf(center, 1000);
-        expect(distanceMeters(center, east)).toBeCloseTo(1000, 0);
-        // The fitted bounds and the polygon share this longitude offset
-        expect(circleBoundsPoints(center, 1000)[1][1]).toBeCloseTo(east[1], 9);
+        const east = pointEastOf(center, radius);
+        expect(distanceMeters(center, east)).toBeCloseTo(radius, 0);
+        const [southWest, northEast] = circleBoundsPoints(center, radius);
+        // Valid bounds that contain the handle
+        expect(southWest[0]).toBeGreaterThanOrEqual(-90);
+        expect(northEast[0]).toBeLessThanOrEqual(90);
+        expect(east[1]).toBeGreaterThanOrEqual(southWest[1] - 1e-9);
+        expect(east[1]).toBeLessThanOrEqual(northEast[1] + 1e-9);
       }
+      // A circle over the pole covers every longitude
+      expect(circleBoundsPoints([89.9, 4], 100000)[1]).toEqual([90, 180]);
     });
 
     it("keeps a click on the resize handle from reaching the map", async () => {

@@ -231,24 +231,42 @@ export interface MapEngine {
 
 const EARTH_RADIUS = 6371008.8;
 
-// One conversion for drawing, fitting, and handle placement, so they agree
-// with each other and with distanceMeters; only the pole itself is guarded
-export const metersToLatDegrees = (meters: number): number =>
-  (meters / EARTH_RADIUS) * (180 / Math.PI);
+const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 
-export const metersToLngDegrees = (latitude: number, meters: number): number =>
-  (meters /
-    (EARTH_RADIUS * Math.max(Math.cos((latitude * Math.PI) / 180), 1e-6))) *
-  (180 / Math.PI);
+/**
+ * The point a distance away from center along a bearing (degrees clockwise
+ * from north), on the great circle. Longitude is left unwrapped so a ring of
+ * points stays continuous across the antimeridian.
+ */
+export const destinationPoint = (
+  center: MapLatLng,
+  distanceInMeters: number,
+  bearingDegrees: number
+): MapLatLng => {
+  const angular = distanceInMeters / EARTH_RADIUS;
+  const lat = toRadians(center[0]);
+  const bearing = toRadians(bearingDegrees);
+  const destLat = Math.asin(
+    Math.sin(lat) * Math.cos(angular) +
+      Math.cos(lat) * Math.sin(angular) * Math.cos(bearing)
+  );
+  const dLng = Math.atan2(
+    Math.sin(bearing) * Math.sin(angular) * Math.cos(lat),
+    Math.cos(angular) - Math.sin(lat) * Math.sin(destLat)
+  );
+  return [toDegrees(destLat), center[1] + toDegrees(dLng)];
+};
 
 /** Great-circle distance in meters */
 export const distanceMeters = (a: MapLatLng, b: MapLatLng): number => {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(b[0] - a[0]);
-  const dLng = toRad(b[1] - a[1]);
+  const dLat = toRadians(b[0] - a[0]);
+  const dLng = toRadians(b[1] - a[1]);
   const h =
     Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(a[0])) * Math.cos(toRad(b[0])) * Math.sin(dLng / 2) ** 2;
+    Math.cos(toRadians(a[0])) *
+      Math.cos(toRadians(b[0])) *
+      Math.sin(dLng / 2) ** 2;
   return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(h));
 };
 
@@ -256,22 +274,29 @@ export const distanceMeters = (a: MapLatLng, b: MapLatLng): number => {
 export const pointEastOf = (
   center: MapLatLng,
   distanceInMeters: number
-): MapLatLng => {
-  return [
-    center[0],
-    center[1] + metersToLngDegrees(center[0], distanceInMeters),
-  ];
-};
+): MapLatLng => destinationPoint(center, distanceInMeters, 90);
 
-/** Bounding box corners of a circle, for fitting a radius into view */
+/**
+ * Bounding box corners of a circle, for fitting a radius into view. A circle
+ * that reaches a pole spans every longitude.
+ */
 export const circleBoundsPoints = (
   center: MapLatLng,
   radiusMeters: number
 ): MapLatLng[] => {
-  const latOffset = metersToLatDegrees(radiusMeters);
-  const lngOffset = metersToLngDegrees(center[0], radiusMeters);
+  const angular = radiusMeters / EARTH_RADIUS;
+  const latMin = Math.max(-90, center[0] - toDegrees(angular));
+  const latMax = Math.min(90, center[0] + toDegrees(angular));
+  const sinRatio = Math.sin(angular) / Math.cos(toRadians(center[0]));
+  if (latMin <= -90 || latMax >= 90 || Math.abs(sinRatio) >= 1) {
+    return [
+      [latMin, -180],
+      [latMax, 180],
+    ];
+  }
+  const dLng = toDegrees(Math.asin(sinRatio));
   return [
-    [center[0] - latOffset, center[1] - lngOffset],
-    [center[0] + latOffset, center[1] + lngOffset],
+    [latMin, center[1] - dLng],
+    [latMax, center[1] + dLng],
   ];
 };

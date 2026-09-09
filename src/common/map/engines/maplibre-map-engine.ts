@@ -10,7 +10,10 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
-import { setMarkerAccessibility } from "../marker-accessibility";
+import {
+  clearMarkerAccessibility,
+  setMarkerAccessibility,
+} from "../marker-accessibility";
 import {
   CONTEXT_RESTORE_GRACE,
   ensureRTLTextPlugin,
@@ -45,12 +48,7 @@ import type {
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
-import {
-  distanceMeters,
-  metersToLatDegrees,
-  metersToLngDegrees,
-  pointEastOf,
-} from "../map-engine";
+import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
 import {
   createResizeHandleElement,
   RADIUS_ARIA_MAX,
@@ -105,15 +103,10 @@ const circlePolygon = (
   radiusMeters: number
 ): Feature<Polygon> => {
   const steps = 64;
-  const latOffset = metersToLatDegrees(radiusMeters);
-  const lngOffset = metersToLngDegrees(center[0], radiusMeters);
   const ring: [number, number][] = [];
   for (let i = 0; i <= steps; i++) {
-    const theta = (2 * Math.PI * i) / steps;
-    ring.push([
-      center[1] + lngOffset * Math.sin(theta),
-      center[0] + latOffset * Math.cos(theta),
-    ]);
+    const point = destinationPoint(center, radiusMeters, (360 * i) / steps);
+    ring.push([point[1], point[0]]);
   }
   return {
     type: "Feature",
@@ -374,7 +367,10 @@ export class MapLibreMapEngine implements MapEngine {
     this._clusterGroups = [];
     this._markers = [];
     this._pendingStyleOps = [];
-    this._placedElements.forEach((element) => resetMarkerElement(element));
+    this._placedElements.forEach((element) => {
+      resetMarkerElement(element);
+      clearMarkerAccessibility(element);
+    });
     this._placedElements.clear();
     this._map?.remove();
     this._map = undefined;
@@ -579,9 +575,6 @@ export class MapLibreMapEngine implements MapEngine {
     }
     const interactive = options.interactive ?? true;
     const focusable = options.focusable ?? interactive;
-    if (focusable) {
-      element.tabIndex = 0;
-    }
     if (!interactive) {
       // Leaflet lets input through non-interactive markers; MapLibre does not
       element.style.pointerEvents = "none";
@@ -629,6 +622,7 @@ export class MapLibreMapEngine implements MapEngine {
         // Still inside an open cluster bubble otherwise
         element.remove();
         resetMarkerElement(element);
+        clearMarkerAccessibility(element);
         this._placedElements.delete(element);
         const index = this._markers.indexOf(managed);
         if (index !== -1) {
@@ -779,9 +773,6 @@ export class MapLibreMapEngine implements MapEngine {
     centerEl.style.height = `${centerSize[1]}px`;
     if (options.title) {
       centerEl.title = options.title;
-    }
-    if (options.onClick) {
-      centerEl.tabIndex = 0;
     }
     setMarkerAccessibility(centerEl, options.title, !!options.onClick);
     if (options.moveable) {
@@ -972,6 +963,7 @@ export class MapLibreMapEngine implements MapEngine {
         removeCenterListeners?.();
         centerMarker.remove();
         resetMarkerElement(centerEl);
+        clearMarkerAccessibility(centerEl);
         this._placedElements.delete(centerEl);
         resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
@@ -1348,7 +1340,6 @@ export class MapLibreMapEngine implements MapEngine {
         group.iconMarker?.remove();
         this._openGroup(group);
       };
-      icon.element.tabIndex = 0;
       setMarkerAccessibility(
         icon.element,
         group.members

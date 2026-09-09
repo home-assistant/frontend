@@ -214,9 +214,6 @@ export class LeafletMapEngine implements MapEngine {
     // activation handlers never hear a key; the element itself takes focus
     const interactive = options.interactive ?? true;
     const focusable = options.focusable ?? interactive;
-    if (focusable) {
-      element.tabIndex = 0;
-    }
     setMarkerAccessibility(element, options.title, focusable);
     const marker: HandledMarker = new DecoratedMarker(location, decoration, {
       icon: this.Leaflet!.divIcon({
