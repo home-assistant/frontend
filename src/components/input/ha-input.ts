@@ -22,9 +22,6 @@ import "../ha-svg-icon";
 import "../ha-tooltip";
 import { WaInputMixin, waInputStyles } from "./wa-input-mixin";
 
-const AUTOFILL_ANIMATION_NAME = "ha-input-autofill";
-const AUTOFILL_STYLE_ID = "ha-input-autofill-detect";
-
 export type InputType =
   | "date"
   | "datetime-local"
@@ -137,8 +134,6 @@ export class HaInput extends WaInputMixin(LitElement) {
 
   private _startSlotResizeObserver?: ResizeObserver;
 
-  private _nativeListenerRoot?: ShadowRoot;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected i18n?: ContextType<typeof internationalizationContext>;
@@ -201,7 +196,6 @@ export class HaInput extends WaInputMixin(LitElement) {
   public override connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener("focusin", this._syncFromNativeInput);
-    this._attachNativeInputListeners();
   }
 
   protected override async firstUpdated(
@@ -209,12 +203,9 @@ export class HaInput extends WaInputMixin(LitElement) {
   ): Promise<void> {
     super.firstUpdated(changedProperties);
 
-    // Wait for wa-input to finish its first render
-    await this._input?.updateComplete;
-    this._injectAutofillDetectionStyle();
-    this._attachNativeInputListeners();
-
     if (!this.insetLabel) {
+      // Wait for wa-input to finish its first render
+      await this._input?.updateComplete;
       this._syncStartSlotWidth();
       this._observeStartSlot();
     }
@@ -223,7 +214,6 @@ export class HaInput extends WaInputMixin(LitElement) {
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("focusin", this._syncFromNativeInput);
-    this._detachNativeInputListeners();
     this._startSlotResizeObserver?.disconnect();
   }
 
@@ -403,68 +393,6 @@ export class HaInput extends WaInputMixin(LitElement) {
   private _syncFromNativeInput = (): void => {
     this.syncFromNativeInput();
   };
-
-  private _handleAutofillAnimation = (ev: Event): void => {
-    if (
-      ev instanceof AnimationEvent &&
-      ev.animationName !== AUTOFILL_ANIMATION_NAME
-    ) {
-      return;
-    }
-    this.syncFromNativeInput();
-  };
-
-  private _injectAutofillDetectionStyle(): void {
-    const root = this._input?.shadowRoot;
-    if (!root || root.getElementById(AUTOFILL_STYLE_ID)) {
-      return;
-    }
-    const style = document.createElement("style");
-    style.id = AUTOFILL_STYLE_ID;
-    style.textContent = `
-      @keyframes ${AUTOFILL_ANIMATION_NAME} {
-        from { opacity: 0.99; }
-        to { opacity: 1; }
-      }
-      [part~="input"]:-webkit-autofill,
-      [part~="input"]:autofill {
-        animation-name: ${AUTOFILL_ANIMATION_NAME};
-        animation-duration: 1ms;
-      }
-    `;
-    root.append(style);
-  }
-
-  private _attachNativeInputListeners(): void {
-    const root = this._input?.shadowRoot;
-    if (!root || this._nativeListenerRoot === root) {
-      return;
-    }
-    this._detachNativeInputListeners();
-    this._nativeListenerRoot = root;
-    root.addEventListener("input", this._syncFromNativeInput, true);
-    root.addEventListener("change", this._syncFromNativeInput, true);
-    root.addEventListener(
-      "animationstart",
-      this._handleAutofillAnimation,
-      true
-    );
-  }
-
-  private _detachNativeInputListeners(): void {
-    const root = this._nativeListenerRoot;
-    if (!root) {
-      return;
-    }
-    root.removeEventListener("input", this._syncFromNativeInput, true);
-    root.removeEventListener("change", this._syncFromNativeInput, true);
-    root.removeEventListener(
-      "animationstart",
-      this._handleAutofillAnimation,
-      true
-    );
-    this._nativeListenerRoot = undefined;
-  }
 
   static styles = [
     waInputStyles,
