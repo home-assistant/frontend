@@ -16,7 +16,6 @@ export const HOME_ZONE_ENTITY_ID = "zone.home";
 const ORDERED_DOMAINS = ["zone", "person", "device_tracker"];
 
 let creationIndex: Record<string, number> = {};
-let subscribers = 0;
 let unsubscribe: UnsubscribeFunc | undefined;
 let subscribedConnection: Connection | undefined;
 const listeners = new Set<() => void>();
@@ -48,8 +47,10 @@ export const subscribeEntityMapColors = (
   connection: Connection,
   onChange: () => void
 ): UnsubscribeFunc => {
-  listeners.add(onChange);
-  subscribers++;
+  // Each subscription is its own entry, so a callback subscribed twice
+  // counts twice and an unsubscribe only ever removes itself
+  const listener = () => onChange();
+  listeners.add(listener);
   // One registry stream, shared by every map; a replaced connection takes over
   if (!unsubscribe || subscribedConnection !== connection) {
     unsubscribe?.();
@@ -57,9 +58,10 @@ export const subscribeEntityMapColors = (
     unsubscribe = subscribeEntityRegistry(connection, rebuildIndex);
   }
   return () => {
-    listeners.delete(onChange);
-    subscribers--;
-    if (subscribers === 0 && unsubscribe) {
+    if (!listeners.delete(listener)) {
+      return;
+    }
+    if (listeners.size === 0 && unsubscribe) {
       unsubscribe();
       unsubscribe = undefined;
       subscribedConnection = undefined;
