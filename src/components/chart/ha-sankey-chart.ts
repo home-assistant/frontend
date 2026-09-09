@@ -43,6 +43,8 @@ const OVERFLOW_MARGIN = 5;
 const FONT_SIZE = 12;
 const NODE_GAP = 6;
 const LABEL_DISTANCE = 5;
+const LABEL_MIN_MARGIN = 5;
+const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 
 @customElement("ha-sankey-chart")
 export class HaSankeyChart extends LitElement {
@@ -228,28 +230,40 @@ export class HaSankeyChart extends LitElement {
           const formatted = this.valueFormatter
             ? this.valueFormatter(nodeData.value).replace(/\s+/g, " ").trim()
             : String(nodeData.value);
-          return `${label}\n\u2066${formatted}\u2069`;
+          // LRM keeps numeric values LTR on the canvas without creating wrap points.
+          return `${label}\n\u200E${formatted}`;
         },
         position: this.vertical ? "bottom" : "right",
         distance: LABEL_DISTANCE,
-        minMargin: 5,
+        minMargin: LABEL_MIN_MARGIN,
         overflow: "break",
       },
       labelLayout: (params) => {
         if (this.vertical) {
           // reduce the label font size so the longest word fits on one line
           const longestWord = params.text
+            .replace(BIDI_MARKS, "")
             .split(/\s+/)
-            .reduce(
-              (longest, current) =>
-                longest.length > current.length ? longest : current,
-              ""
-            );
-          const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
+            .reduce((longest, current) => {
+              if (!current) {
+                return longest;
+              }
+              if (!longest) {
+                return current;
+              }
+              return measureTextWidth(current, FONT_SIZE) >
+                measureTextWidth(longest, FONT_SIZE)
+                ? current
+                : longest;
+            }, "");
+          const wordWidth = measureTextWidth(longestWord, FONT_SIZE) || 1;
           const availableWidth = (params.rect.width + 6) * this._currentZoom;
+          // minMargin is applied as padding on the label box, so words must
+          // fit in the inner wrap width or overflow:break splits them.
+          const wrapWidth = Math.max(availableWidth - LABEL_MIN_MARGIN, 1);
           const fontSize = Math.min(
             FONT_SIZE,
-            (availableWidth / wordWidth) * FONT_SIZE
+            (wrapWidth / wordWidth) * FONT_SIZE
           );
           return {
             fontSize: fontSize > 1 ? fontSize : 0,
