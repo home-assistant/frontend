@@ -495,6 +495,11 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._validationError = {};
     this._validationWarning = {};
     this._data = ev.detail.value;
+    // Network forms have no read-only control, so a value forced by a
+    // write-protected disk must not survive switching a new mount's type.
+    if (!this._existing && this._data?.type !== SupervisorMountType.DISK) {
+      delete (this._data as Partial<SupervisorMountRequestParams>).read_only;
+    }
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
     }
@@ -526,6 +531,16 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     const mountData = { ...this._data! };
     if (mountData.type === "cifs" && mountData.version === "auto") {
       mountData.version = undefined;
+    }
+    // Send the candidate's uuid alongside its device path: Supervisor resolves
+    // by uuid and rejects the request if the path now names a different disk.
+    if (mountData.type === SupervisorMountType.DISK && !this._existing) {
+      const candidate = this._candidates?.find(
+        (c) => c.device === mountData.device
+      );
+      if (candidate) {
+        mountData.uuid = candidate.uuid;
+      }
     }
     try {
       if (this._existing) {
