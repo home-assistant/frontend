@@ -58,6 +58,24 @@ class HaEntityMarker extends LitElement {
     `;
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keydown", this._handleKeydown);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeydown);
+  }
+
+  // The map engines make the marker a focusable button
+  private _handleKeydown = (ev: KeyboardEvent) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._badgeTap(ev);
+    }
+  };
+
   private _badgeTap(ev: Event) {
     ev.stopPropagation();
     if (this.entityId) {
