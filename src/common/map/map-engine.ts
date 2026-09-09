@@ -42,6 +42,15 @@ export interface MapFitOptions {
   pad?: number;
   /** Ease the camera to the bounds instead of jumping; defaults to true */
   animate?: boolean;
+  /** Viewport pixels covered by overlays; the bounds fit inside the rest */
+  padding?: MapFitPadding;
+}
+
+export interface MapFitPadding {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
 }
 
 export interface MapMarkerOptions {

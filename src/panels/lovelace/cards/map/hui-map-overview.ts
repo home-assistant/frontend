@@ -62,8 +62,8 @@ const ACTIVITY_MAX_ENTRIES = 20;
 declare global {
   interface HASSDomEvents {
     "map-overview-select": { entityId?: string };
-    /** Rendered height, so the host can keep map controls clear of it */
-    "map-overview-resize": { height: number };
+    /** Rendered size, so the host keeps controls and focused markers clear of it */
+    "map-overview-resize": { width: number; height: number };
   }
 }
 
@@ -116,9 +116,8 @@ export class HuiMapOverview extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     this._resizeObserver ??= new ResizeObserver(() => {
-      fireEvent(this, "map-overview-resize", {
-        height: this.getBoundingClientRect().height,
-      });
+      const { width, height } = this.getBoundingClientRect();
+      fireEvent(this, "map-overview-resize", { width, height });
     });
     this._resizeObserver.observe(this);
   }
@@ -126,7 +125,7 @@ export class HuiMapOverview extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._resizeObserver?.disconnect();
-    fireEvent(this, "map-overview-resize", { height: 0 });
+    fireEvent(this, "map-overview-resize", { width: 0, height: 0 });
   }
 
   private _getPeople(): HassEntity[] {
