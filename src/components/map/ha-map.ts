@@ -803,6 +803,9 @@ export class HaMap extends ReactiveElement {
     boundingbox: MapLatLng[],
     options?: { zoom?: number; pad?: number }
   ) {
+    // An explicit fit is user intent, even while it waits for the engine or
+    // a size; an auto-fit must not take its place in the meantime
+    this._pauseAutoFit = true;
     if (!this._engine) {
       // Engine still loading (see _loadMap); runs once it is
       this._pendingFit = () => this.fitBounds(boundingbox, options);
@@ -811,8 +814,6 @@ export class HaMap extends ReactiveElement {
     if (this._deferIfUnsized(() => this.fitBounds(boundingbox, options))) {
       return;
     }
-    // An explicit fit is user intent; the reset focus control resumes auto-fit
-    this._pauseAutoFit = true;
     this._withProgrammaticFit(() => {
       this._engine!.fitBounds(boundingbox, {
         maxZoom: options?.zoom || this.zoom,
