@@ -31,6 +31,8 @@ export const showConfigFlowDialog = (
         hass.loadBackendTranslation("selector", handler),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", handler),
+        // Shared abort reasons live in the homeassistant integration
+        hass.loadBackendTranslation("config", "homeassistant"),
       ]);
       return step;
     },
@@ -44,6 +46,8 @@ export const showConfigFlowDialog = (
         hass.loadBackendTranslation("selector", step.handler),
         // Used as fallback if no header defined for step
         hass.loadBackendTranslation("title", step.handler),
+        // Shared abort reasons live in the homeassistant integration
+        hass.loadBackendTranslation("config", "homeassistant"),
       ]);
       return step;
     },
