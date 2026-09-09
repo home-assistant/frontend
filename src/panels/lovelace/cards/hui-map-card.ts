@@ -33,7 +33,7 @@ import type {
   HaMapPaths,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
-import type { MapLatLng } from "../../../common/map/map-engine";
+import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
 import {
   entityMapColor,
   subscribeEntityMapColors,
@@ -62,6 +62,9 @@ export const DEFAULT_ZOOM = 14;
 
 // GPS accuracy (meters) above which the selected person's circle is shown
 const IMPRECISE_GPS_ACCURACY = 100;
+
+// Margin around the overview (--ha-space-3), in pixels
+const OVERVIEW_GAP = 12;
 
 const FOCUS_PERSON_ZOOM = 19;
 const FOCUS_ZONE_MAX_ZOOM = 18;
@@ -106,7 +109,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _overviewSelected?: string;
 
   // Height of the overview drawer when it sits over the bottom of the map
-  @state() private _overviewHeight = 0;
+  @state() private _overviewSize = { width: 0, height: 0 };
 
   private _overviewLoaded = false;
 
@@ -242,7 +245,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         >
           <ha-map
             style=${styleMap({
-              "--overview-height": `${this._overviewHeight}px`,
+              "--overview-height": `${this._overviewSize.height}px`,
             })}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
@@ -580,8 +583,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._focusEntity(entityId);
   }
 
-  private _handleOverviewResize(ev: HASSDomEvent<{ height: number }>) {
-    this._overviewHeight = ev.detail.height;
+  private _handleOverviewResize(
+    ev: HASSDomEvent<{ width: number; height: number }>
+  ) {
+    this._overviewSize = ev.detail;
   }
 
   private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
@@ -607,7 +612,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           [latitude - latOffset, longitude - lngOffset],
           [latitude + latOffset, longitude + lngOffset],
         ],
-        { pad: 0.2, zoom: FOCUS_ZONE_MAX_ZOOM }
+        {
+          pad: 0.2,
+          zoom: FOCUS_ZONE_MAX_ZOOM,
+          padding: this._overviewPadding(),
+        }
       );
       return;
     }
@@ -615,8 +624,29 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (location) {
       this._map?.fitBounds([[location.latitude, location.longitude]], {
         zoom: FOCUS_PERSON_ZOOM,
+        padding: this._overviewPadding(),
       });
     }
+  }
+
+  // The part of the map the overview covers, so a focused marker lands next
+  // to it rather than under it: the bottom sheet on phones, the start side
+  // otherwise (see the #overview styles)
+  private _overviewPadding(): MapFitPadding | undefined {
+    const { width, height } = this._overviewSize;
+    if (!width || !height) {
+      return undefined;
+    }
+    if (window.matchMedia("(max-width: 600px)").matches) {
+      return { bottom: height + OVERVIEW_GAP };
+    }
+    const side = width + 2 * OVERVIEW_GAP;
+    return computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    )
+      ? { right: side }
+      : { left: side };
   }
 
   private _toggleClusterMarkers() {

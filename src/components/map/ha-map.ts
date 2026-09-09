@@ -20,6 +20,7 @@ import type {
   MapClusterIcon,
   MapControlPosition,
   MapEngine,
+  MapFitPadding,
   MapItemHandle,
   MapLatLng,
   MapMarkerHandle,
@@ -801,7 +802,7 @@ export class HaMap extends ReactiveElement {
 
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number }
+    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
   ) {
     // An explicit fit is user intent, even while it waits for the engine or
     // a size; an auto-fit must not take its place in the meantime
@@ -819,6 +820,7 @@ export class HaMap extends ReactiveElement {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
+        padding: options?.padding,
       });
     });
     this._hasFitted = true;
