@@ -3,12 +3,15 @@ import type {
   EnergyPreferences,
   EnergySource,
 } from "../../../../src/data/energy";
+import type { HomeAssistant } from "../../../../src/types";
 import {
   applicableEnergyCardKeys,
   ENERGY_CARD_CATALOG,
   energyCardKey,
   hasEnergySource,
   hasGasRateSource,
+  hasLocation,
+  hasSolarPower,
   hasWaterRateSource,
   isEnergyCardHidden,
   isEnergyCardVisible,
@@ -223,5 +226,44 @@ describe("isEnergyCardVisible", () => {
         isEnergyCardVisible(card.view, cardType, richPrefs, [card.key])
       ).toBe(false);
     }
+  });
+});
+
+describe("hasSolarPower", () => {
+  const SOLAR_RATE = source({
+    type: "solar",
+    stat_energy_from: "sensor.solar",
+    stat_rate: "sensor.solar_power",
+  });
+
+  it("requires a solar source with a live rate sensor", () => {
+    expect(hasSolarPower(makePrefs({ energy_sources: [SOLAR_RATE] }))).toBe(
+      true
+    );
+    // Solar configured for energy only (no stat_rate) -> nothing live for the "now" card.
+    expect(hasSolarPower(makePrefs({ energy_sources: [SOLAR] }))).toBe(false);
+    // No solar source at all.
+    expect(hasSolarPower(makePrefs({ energy_sources: [GRID_RETURN] }))).toBe(
+      false
+    );
+  });
+});
+
+describe("hasLocation", () => {
+  const hassAt = (latitude: number, longitude: number): HomeAssistant =>
+    ({ config: { latitude, longitude } }) as unknown as HomeAssistant;
+
+  it("is true for real coordinates, including negative ones", () => {
+    expect(hasLocation(hassAt(52.37, 4.9))).toBe(true);
+    expect(hasLocation(hassAt(-33.87, -70.66))).toBe(true);
+  });
+
+  it("is false at the meaningless (0, 0) origin", () => {
+    expect(hasLocation(hassAt(0, 0))).toBe(false);
+  });
+
+  it("is false when a coordinate is not finite", () => {
+    expect(hasLocation(hassAt(NaN, 4.9))).toBe(false);
+    expect(hasLocation(hassAt(52.37, Infinity))).toBe(false);
   });
 });

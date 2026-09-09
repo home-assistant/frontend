@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
   hasGasRateSource,
+  hasLocation,
   hasPowerDevices,
   hasPowerSources,
   hasWaterRateDevices,
@@ -69,6 +70,21 @@ export class PowerViewStrategy extends ReactiveElement {
         !hasGasSrc)
     ) {
       return view;
+    }
+
+    // Solar scene (snapshot): a live, present-instant 3D view, pinned to the top of the Now tab. Needs a home
+    // location to place the house, so it is skipped entirely when none is configured.
+    if (
+      hasLocation(hass) &&
+      isEnergyCardVisible("now", "energy-solar-scene-now", prefs, hidden)
+    ) {
+      chartsSection.cards!.push({
+        type: "energy-solar-scene-now",
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 36,
+        },
+      });
     }
 
     if (hasPowerSrc) {

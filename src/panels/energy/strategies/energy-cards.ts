@@ -4,6 +4,7 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { HomeAssistant } from "../../../types";
 
 /** Strategy config shared by the per-view energy strategies. */
 export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
@@ -35,6 +36,22 @@ export const hasReturn = (prefs: EnergyPreferences): boolean =>
 
 export const hasSolar = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "solar");
+
+/** Solar source with a live power sensor (`stat_rate`); the "now" scene card shows live power only. */
+export const hasSolarPower = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some(
+    (source) => source.type === "solar" && !!source.stat_rate
+  );
+
+/** A home location is configured when both coordinates are finite and not the meaningless (0, 0) origin. */
+export const hasLocation = (hass: HomeAssistant): boolean => {
+  const { latitude, longitude } = hass.config;
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    !(latitude === 0 && longitude === 0)
+  );
+};
 
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
@@ -262,6 +279,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   ),
 
   // --- Now (power) ---
+  entry(
+    "now",
+    "energy-solar-scene-now",
+    "ui.panel.energy.cards.energy_solar_scene_title",
+    (p) => hasSolarPower(p)
+  ),
   entry(
     "now",
     "power-sources-graph",
