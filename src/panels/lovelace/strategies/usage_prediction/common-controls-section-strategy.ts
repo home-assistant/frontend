@@ -64,10 +64,6 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     }
 
     if (!isComponentLoaded(hass.config, "usage_prediction")) {
-      if (includedEntities.length > 0) {
-        section.cards!.push(...includedEntities.map(toTileCard));
-        return section;
-      }
       section.cards!.push({
         type: "markdown",
         content: hass.localize(

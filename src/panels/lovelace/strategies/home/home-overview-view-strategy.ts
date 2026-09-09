@@ -37,7 +37,11 @@ import type {
   UpdatesCardConfig,
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
-import { computeSecurityAlertCardConfig } from "../../../security/strategies/security-alerts";
+import {
+  computeDefaultSecurityAlertVisibility,
+  filterSecurityAlertEntities,
+  resolveSecurityAlertSeverity,
+} from "../../../security/strategies/security-alerts";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -116,6 +120,28 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     "floors",
     "panels",
   ];
+
+  static shouldRegenerate(
+    config: HomeOverviewViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ) {
+    return (
+      this.registryDependencies.some((key) => oldHass[key] !== newHass[key]) ||
+      (config.alert_entities?.some(
+        (alertEntity) =>
+          resolveSecurityAlertSeverity(
+            alertEntity,
+            oldHass.states[alertEntity.entity]
+          ) !==
+          resolveSecurityAlertSeverity(
+            alertEntity,
+            newHass.states[alertEntity.entity]
+          )
+      ) ??
+        false)
+    );
+  }
 
   static async generate(
     config: HomeOverviewViewStrategyConfig,
@@ -319,6 +345,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       hass.panels.maintenance &&
       findEntities(allEntities, maintenanceFilters).length > 0;
 
+    const alertEntities = config.alert_entities ?? [];
+    const alertSeverityEntities = filterSecurityAlertEntities(
+      alertEntities,
+      hass,
+      "alert"
+    );
+    const alertActiveConditions = alertSeverityEntities.map((alertEntity) => ({
+      condition: "and" as const,
+      conditions: computeDefaultSecurityAlertVisibility(alertEntity.entity),
+    }));
+
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
       entity_category: "none",
@@ -364,17 +401,23 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
               },
             } satisfies HomeSummaryCard)
           : undefined,
-      security: () =>
-        hasSecurity
-          ? ({
-              type: "home-summary",
-              summary: "security",
-              tap_action: {
-                action: "navigate",
-                navigation_path: "/security?historyBack=1",
-              },
-            } satisfies HomeSummaryCard)
-          : undefined,
+      security: () => {
+        if (!hasSecurity) {
+          return undefined;
+        }
+        const card: HomeSummaryCard = {
+          type: "home-summary",
+          summary: "security",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/security?historyBack=1",
+          },
+        };
+        if (alertEntities.length) {
+          card.alert_entities = alertEntities;
+        }
+        return card;
+      },
       media_players: () =>
         hasMediaPlayers
           ? ({
@@ -492,6 +535,33 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       heading_style: "title",
     };
 
+    const alertsCard: HomeSummaryCard | undefined = alertSeverityEntities.length
+      ? ({
+          type: "home-summary",
+          summary: "alerts",
+          alert_entities: alertSeverityEntities,
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/security?historyBack=1",
+          },
+          visibility: [
+            {
+              condition: "or",
+              conditions: alertActiveConditions,
+            },
+          ],
+        } satisfies HomeSummaryCard)
+      : undefined;
+
+    const mobileAlertsSection: LovelaceSectionConfig | undefined = alertsCard
+      ? {
+          type: "grid",
+          column_span: maxColumns,
+          visibility: [SMALL_SCREEN_CONDITION],
+          cards: [{ ...alertsCard, grid_options: { columns: 6 } }],
+        }
+      : undefined;
+
     // Mobile summary section (visible on small screens only)
     const mobileSummarySection: LovelaceSectionConfig | undefined =
       mobileSummaryCards.length > 0
@@ -505,7 +575,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Sidebar section
     const sidebarSection: LovelaceSectionConfig | undefined =
-      sidebarSummaryCards.length > 0
+      sidebarSummaryCards.length > 0 || alertsCard
         ? {
             type: "grid",
             cards: [
@@ -513,44 +583,13 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                 ...summaryHeadingCard,
                 grid_options: { rows: "auto" }, // Compact style
               },
+              ...(alertsCard
+                ? [{ ...alertsCard, grid_options: { columns: 12 } }]
+                : []),
               ...sidebarSummaryCards,
             ],
           }
         : undefined;
-
-    const alertCards = config.alert_entities?.map((alertEntity) =>
-      computeSecurityAlertCardConfig(
-        hass.states[alertEntity.entity],
-        alertEntity
-      )
-    );
-
-    const alertsSection: LovelaceSectionConfig | undefined = alertCards?.length
-      ? {
-          type: "grid",
-          column_span: maxColumns,
-          visibility: [
-            {
-              condition: "or",
-              conditions: alertCards.map((alertCard) => ({
-                condition: "and",
-                conditions: alertCard.visibility!,
-              })),
-            },
-          ],
-          cards: [
-            {
-              type: "heading",
-              heading: hass.localize(
-                "ui.panel.lovelace.strategy.security.active_alerts"
-              ),
-              heading_style: "title",
-              grid_options: { columns: "full" },
-            },
-            ...alertCards,
-          ],
-        }
-      : undefined;
 
     const emptyStateCard = {
       type: "empty-state",
@@ -593,7 +632,12 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     } as EmptyStateCardConfig;
 
     // No sections, show empty state
-    if (floorsSections.length === 0 && !alertsSection) {
+    if (
+      floorsSections.length === 0 &&
+      !alertsCard &&
+      !favoritesSection &&
+      !hasVisibleSummaryCards
+    ) {
       return {
         type: "panel",
         cards: [emptyStateCard],
@@ -604,7 +648,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       floorsSections.length === 0 &&
       !favoritesSection &&
       !hasVisibleSummaryCards &&
-      alertCards?.length
+      alertSeverityEntities.length
         ? {
             type: "grid",
             column_span: maxColumns,
@@ -617,10 +661,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                     conditions: [
                       {
                         condition: "or",
-                        conditions: alertCards.map((alertCard) => ({
-                          condition: "and",
-                          conditions: alertCard.visibility!,
-                        })),
+                        conditions: alertActiveConditions,
                       },
                     ],
                   },
@@ -633,8 +674,8 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [
-        alertsSection,
         emptyStateSection,
+        mobileAlertsSection,
         favoritesSection,
         mobileSummarySection,
         ...floorsSections,
