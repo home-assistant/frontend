@@ -165,6 +165,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   private _pollInterval?: number;
 
+  private _refreshCount = 0;
+
   protected mobileSizeQuery =
     "all and (max-width: 1120px), all and (max-height: 500px)";
 
@@ -1044,8 +1046,16 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     if (!addon?.slug) {
       return;
     }
+    const refresh = ++this._refreshCount;
     try {
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      const info = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      // The Supervisor answers slowly while it starts an app, so these requests
+      // overlap and can come back out of order. Drop an answer that a newer
+      // request already beat, or the app falls back to its previous state.
+      if (refresh !== this._refreshCount) {
+        return;
+      }
+      this._addon = info;
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Failed to fetch addon info", err);
@@ -1431,7 +1441,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
     try {
       await startHassioAddon(this.api.callWS, addon.slug);
-      this._addon = await fetchHassioAddonInfo(this.api.callWS, addon.slug);
+      await this._refreshAddonInfo();
       const eventdata = {
         success: true,
         response: undefined,
