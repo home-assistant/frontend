@@ -74,6 +74,17 @@ async function copyMapPanel(staticDir) {
     staticPath("images/leaflet/images/")
   );
 
+  // MapLibre 6 ships its worker as a separate module that imports the shared
+  // chunk next to it, so both are served as-is rather than bundled.
+  copyFileDir(
+    npmPath("maplibre-gl/dist/maplibre-gl-worker.mjs"),
+    staticPath("map/")
+  );
+  copyFileDir(
+    npmPath("maplibre-gl/dist/maplibre-gl-shared.mjs"),
+    staticPath("map/")
+  );
+
   // Style, glyphs and sprites for the vector base map
   await ensureMapAssets();
   fs.copySync(mapAssetsDir, staticPath("map/"));
