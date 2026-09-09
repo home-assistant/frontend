@@ -3060,6 +3060,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@home-assistant/webawesome@patch:@home-assistant/webawesome@npm%3A3.7.0-ha.0#~/.yarn/patches/@home-assistant-webawesome-npm-3.7.0-ha.0-7130d7e369.patch":
+  version: 3.7.0-ha.0
+  resolution: "@home-assistant/webawesome@patch:@home-assistant/webawesome@npm%3A3.7.0-ha.0#~/.yarn/patches/@home-assistant-webawesome-npm-3.7.0-ha.0-7130d7e369.patch::version=3.7.0-ha.0&hash=c21a8a"
+  dependencies:
+    "@ctrl/tinycolor": "npm:4.1.0"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@lit/react": "npm:^1.0.8"
+    "@shoelace-style/animations": "npm:^1.2.0"
+    "@shoelace-style/localize": "npm:^3.2.2"
+    composed-offset-position: "npm:^0.0.6"
+    lit: "npm:^3.2.1"
+    marked: "npm:^11.2.0"
+    nanoid: "npm:^5.1.5"
+    qr-creator: "npm:^1.0.0"
+  checksum: 10/e6c45ae8969b7a576a99fe0c2d06cd00347a2fab7018d4f4a7ea5cb0f0492901df543507fed4215113a7f6c455bf88a25337835ea3ea02ae7c98cb97cab4905a
+  languageName: node
+  linkType: hard
+
 "@html-eslint/core@npm:^0.65.0":
   version: 0.65.0
   resolution: "@html-eslint/core@npm:0.65.0"
@@ -10394,7 +10412,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.21"
     "@fullcalendar/timegrid": "npm:6.1.21"
     "@gfx/zopfli": "npm:1.0.15"
-    "@home-assistant/webawesome": "npm:3.7.0-ha.0"
+    "@home-assistant/webawesome": "patch:@home-assistant/webawesome@npm%3A3.7.0-ha.0#~/.yarn/patches/@home-assistant-webawesome-npm-3.7.0-ha.0-7130d7e369.patch"
     "@html-eslint/eslint-plugin": "npm:0.65.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
