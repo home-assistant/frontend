@@ -171,11 +171,11 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       uiAssistants.splice(uiAssistants.indexOf("google_assistant"), 1);
     }
 
-    const uiExposed = uiAssistants.some((key) => this.exposed[key]);
-
     uiAssistants = uiAssistants.filter(
       (assistant) => !this.locked?.[assistant]
     );
+
+    const uiExposed = uiAssistants.some((key) => this.exposed[key]);
 
     let manFilterFuncs:
       | {
