@@ -109,6 +109,8 @@ export class HuiMapOverview extends LitElement {
 
   @state() private _activity?: ActivityEntry[];
 
+  @state() private _activityFailed = false;
+
   private _touchStartY?: number;
 
   private _resizeObserver?: ResizeObserver;
@@ -203,6 +205,7 @@ export class HuiMapOverview extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("selected")) {
       this._activity = undefined;
+      this._activityFailed = false;
       if (this.selected) {
         this._expanded = true;
         this._loadActivity(this.selected);
@@ -210,20 +213,25 @@ export class HuiMapOverview extends LitElement {
     }
   }
 
+  // The window's start; history before it only seeds the previous state
+  private _activitySince(): number {
+    return Date.now() - ACTIVITY_HOURS * 3600 * 1000;
+  }
+
+  /** Resolves to null when history could not be loaded */
   private async _fetchHistory(
-    entityIds: string[]
-  ): Promise<HistoryStates | undefined> {
-    const end = new Date();
-    const start = new Date(end.getTime() - ACTIVITY_HOURS * 3600 * 1000);
+    entityIds: string[],
+    since: number
+  ): Promise<HistoryStates | undefined | null> {
     try {
       return await fetchDateWS(
         { states: this._states, callWS: this._api.callWS },
-        start,
-        end,
+        new Date(since),
+        new Date(),
         entityIds
       );
     } catch (_err) {
-      return undefined;
+      return null;
     }
   }
 
@@ -236,17 +244,27 @@ export class HuiMapOverview extends LitElement {
   }
 
   private async _loadPersonActivity(entityId: string): Promise<void> {
-    const history = await this._fetchHistory([entityId]);
+    const since = this._activitySince();
+    const history = await this._fetchHistory([entityId], since);
     if (this.selected !== entityId) {
       // Selection changed while loading
       return;
     }
+    if (history === null) {
+      this._activityFailed = true;
+      this._activity = [];
+      return;
+    }
     const entries: ActivityEntry[] = [];
+    let previous: string | undefined;
     for (const entry of history?.[entityId] || []) {
       if (entry.s === "unavailable") {
         continue;
       }
-      if (entries.length && entries[entries.length - 1].state === entry.s) {
+      const changed = entry.s !== previous;
+      previous = entry.s;
+      // The first sample is the state at the window's start, not an event
+      if (!changed || entry.lu * 1000 < since) {
         continue;
       }
       entries.push({ state: entry.s, when: new Date(entry.lu * 1000) });
@@ -261,9 +279,17 @@ export class HuiMapOverview extends LitElement {
       return;
     }
     const personIds = this._getPeople().map((person) => person.entity_id);
-    const history = personIds.length ? await this._fetchHistory(personIds) : {};
+    const since = this._activitySince();
+    const history = personIds.length
+      ? await this._fetchHistory(personIds, since)
+      : {};
     if (this.selected !== entityId) {
       // Selection changed while loading
+      return;
+    }
+    if (history === null) {
+      this._activityFailed = true;
+      this._activity = [];
       return;
     }
     // A person's state is "home" for the home zone, the zone name otherwise
@@ -277,7 +303,13 @@ export class HuiMapOverview extends LitElement {
           continue;
         }
         const inZone = entry.s === zoneState;
-        if (wasInZone !== undefined && inZone !== wasInZone) {
+        // Only changes inside the window are events; the first sample is the
+        // state at its start
+        if (
+          wasInZone !== undefined &&
+          inZone !== wasInZone &&
+          entry.lu * 1000 >= since
+        ) {
           entries.push({
             state: entry.s,
             personId,
@@ -393,7 +425,9 @@ export class HuiMapOverview extends LitElement {
               : !this._activity.length
                 ? html`<span class="activity-empty">
                     ${this._i18n.localize(
-                      "ui.panel.lovelace.cards.map.overview.no_activity"
+                      this._activityFailed
+                        ? "ui.panel.lovelace.cards.map.overview.activity_unavailable"
+                        : "ui.panel.lovelace.cards.map.overview.no_activity"
                     )}
                   </span>`
                 : html`<ol class="timeline">
