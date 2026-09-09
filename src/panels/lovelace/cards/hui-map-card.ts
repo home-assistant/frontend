@@ -3,7 +3,11 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -428,6 +432,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _unsubscribeColors?: () => void;
 
+  private _colorsConnection?: Connection;
+
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
@@ -441,18 +447,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._unsubscribeHistory();
     this._unsubscribeColors?.();
     this._unsubscribeColors = undefined;
+    this._colorsConnection = undefined;
   }
 
   private _subscribeColors(): void {
-    if (this._unsubscribeColors || !this.hass?.connection) {
+    const connection = this.hass?.connection;
+    if (!connection || this._colorsConnection === connection) {
       return;
     }
-    this._unsubscribeColors = subscribeEntityMapColors(
-      this.hass.connection,
-      () => {
-        this._mapEntities = this._getMapEntities();
-      }
-    );
+    // A replaced connection needs its own subscription
+    this._unsubscribeColors?.();
+    this._colorsConnection = connection;
+    this._unsubscribeColors = subscribeEntityMapColors(connection, () => {
+      this._mapEntities = this._getMapEntities();
+    });
   }
 
   private _subscribeHistory() {
