@@ -1628,23 +1628,6 @@ export class HaMap extends ReactiveElement {
     ha-icon {
       --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
-
-    .marker-cluster div {
-      background-clip: padding-box;
-      background-color: var(--primary-color);
-      border: 3px solid rgba(var(--rgb-primary-color), 0.2);
-      width: calc(var(--ha-marker-size, 48px) * 0.667);
-      height: calc(var(--ha-marker-size, 48px) * 0.667);
-      border-radius: 50%;
-      text-align: center;
-      align-content: center;
-      color: var(--text-primary-color);
-      font-size: var(--ha-font-size-m);
-    }
-
-    .marker-cluster span {
-      line-height: var(--ha-line-height-expanded);
-    }
   `;
 }
 
