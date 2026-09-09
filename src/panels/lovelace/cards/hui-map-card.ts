@@ -230,7 +230,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           <ha-map
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
-            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
+            .paths=${this._getHistoryPaths(
+              this._config,
+              this._stateHistory,
+              this._entityReg
+            )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
@@ -521,7 +525,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HistoryStates
+      history: HistoryStates | undefined,
+      // Trail colors follow the registry order like the markers
+      _entityReg: EntityRegistryEntry[]
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
