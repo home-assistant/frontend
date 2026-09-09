@@ -213,10 +213,11 @@ export class LeafletMapEngine implements MapEngine {
     // Leaflet's keyboard support focuses its own wrapper, where the element's
     // activation handlers never hear a key; the element itself takes focus
     const interactive = options.interactive ?? true;
-    if (interactive) {
+    const focusable = options.focusable ?? interactive;
+    if (focusable) {
       element.tabIndex = 0;
     }
-    setMarkerAccessibility(element, options.title, interactive);
+    setMarkerAccessibility(element, options.title, focusable);
     const marker: HandledMarker = new DecoratedMarker(location, decoration, {
       icon: this.Leaflet!.divIcon({
         html: element,

@@ -96,6 +96,8 @@ export interface HaMapEditableLocation {
   color?: string;
   locationEditable?: boolean;
   radiusEditable?: boolean;
+  /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
+  activatable?: boolean;
 }
 
 // Geometry is updated in place; a change to anything else rebuilds the marker
@@ -108,6 +110,7 @@ const sameAppearance = (
   a.color === b.color &&
   a.locationEditable === b.locationEditable &&
   a.radiusEditable === b.radiusEditable &&
+  a.activatable === b.activatable &&
   a.elementSize?.[0] === b.elementSize?.[0] &&
   a.elementSize?.[1] === b.elementSize?.[1];
 
@@ -405,6 +408,10 @@ export class HaMap extends ReactiveElement {
       if (this._drawEditableLocations()) {
         autoFitRequired = true;
       }
+    } else if (changedProps.has("_i18n") && this._editableHandles.size) {
+      // Titles and handle labels are localized when drawn
+      this._removeEditableLocations();
+      this._drawEditableLocations();
     }
 
     if (changedProps.has("_loaded") && this._pendingFit) {
@@ -798,7 +805,9 @@ export class HaMap extends ReactiveElement {
               fireEvent(this, "editable-location-moved", { id, location }),
             onResize: (radius) =>
               fireEvent(this, "editable-location-resized", { id, radius }),
-            onClick: () => fireEvent(this, "editable-location-clicked", { id }),
+            onClick: editable.activatable
+              ? () => fireEvent(this, "editable-location-clicked", { id })
+              : undefined,
           }),
         });
         continue;
@@ -807,40 +816,45 @@ export class HaMap extends ReactiveElement {
       if (!editable.element) {
         element.className = "editable-circle-center";
       }
-      // A drag can end in a click; only one with its own pointer down counts
       let dragged = false;
-      const onPointerDown = () => {
-        dragged = false;
-      };
-      const onClick = (ev: Event) => {
-        ev.stopPropagation();
-        if (dragged) {
-          return;
-        }
-        fireEvent(this, "editable-location-clicked", { id });
-      };
-      const onKeydown = (ev: KeyboardEvent) => {
-        if (ev.key === "Enter" || ev.key === " ") {
-          ev.preventDefault();
+      let cleanup: (() => void) | undefined;
+      if (editable.activatable) {
+        // A drag can end in a click; only one with its own pointer down counts
+        const onPointerDown = () => {
+          dragged = false;
+        };
+        const onClick = (ev: Event) => {
+          ev.stopPropagation();
+          if (dragged) {
+            return;
+          }
           fireEvent(this, "editable-location-clicked", { id });
-        }
-      };
-      element.addEventListener("pointerdown", onPointerDown);
-      element.addEventListener("click", onClick);
-      element.addEventListener("keydown", onKeydown);
+        };
+        const onKeydown = (ev: KeyboardEvent) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            fireEvent(this, "editable-location-clicked", { id });
+          }
+        };
+        element.addEventListener("pointerdown", onPointerDown);
+        element.addEventListener("click", onClick);
+        element.addEventListener("keydown", onKeydown);
+        cleanup = () => {
+          element.removeEventListener("pointerdown", onPointerDown);
+          element.removeEventListener("click", onClick);
+          element.removeEventListener("keydown", onKeydown);
+        };
+      }
       // A location that cannot be dragged is static on any engine
       const support = editable.locationEditable ? editing : staticSupport;
       this._editableHandles.set(id, {
         kind,
         source: editable,
-        cleanup: () => {
-          element.removeEventListener("pointerdown", onPointerDown);
-          element.removeEventListener("click", onClick);
-          element.removeEventListener("keydown", onKeydown);
-        },
+        cleanup,
         handle: support.addDraggableMarker(element, editable.location, {
           size: editable.elementSize ?? [16, 16],
           interactive: true,
+          focusable: !!editable.activatable,
           title,
           onDragEnd: (location) => {
             dragged = true;

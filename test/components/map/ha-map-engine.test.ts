@@ -332,11 +332,13 @@ describe("ha-map editable locations", () => {
     title: "Home",
     locationEditable: true,
     radiusEditable: true,
+    activatable: true,
   };
   const PIN: HaMapEditableLocation = {
     id: "pin",
     location: [52, 5],
     locationEditable: true,
+    activatable: true,
   };
 
   beforeEach(() => {
@@ -449,6 +451,36 @@ describe("ha-map editable locations", () => {
       { type: "editable-location-clicked", detail: { id: "pin" } },
       { type: "editable-location-clicked", detail: { id: "pin" } },
     ]);
+  });
+
+  it("makes markers buttons only when they act on activation", async () => {
+    const { el, engine } = await createEditor([
+      { ...HOME, activatable: false },
+      { ...PIN, activatable: false },
+    ]);
+    const clicked = vi.fn();
+    el.addEventListener("editable-location-clicked", clicked);
+
+    expect(engine.circles[0].options.onClick).toBeUndefined();
+    expect((engine.draggables[0].options as any).focusable).toBe(false);
+    engine.draggables[0].element.click();
+    engine.draggables[0].element.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Enter" })
+    );
+    expect(clicked).not.toHaveBeenCalled();
+  });
+
+  it("relabels its handles when the language changes", async () => {
+    const { el, engine } = await createEditor([PIN]);
+    expect((engine.draggables[0].options as any).title).toBeUndefined();
+
+    (el as any)._i18n = { localize: (key: string) => `nl:${key}` };
+    await el.updateComplete;
+
+    expect(engine.draggables[0].remove).toHaveBeenCalledOnce();
+    expect((engine.draggables[1].options as any).title).toBe(
+      "nl:ui.components.map.location"
+    );
   });
 
   it("shows locations statically on an engine without editing support", async () => {

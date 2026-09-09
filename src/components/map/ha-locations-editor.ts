@@ -38,6 +38,8 @@ export interface MarkerLocation {
   radius_color?: string;
   location_editable?: boolean;
   radius_editable?: boolean;
+  /** Clicking or activating the marker fires marker-clicked */
+  clickable?: boolean;
 }
 
 const ICON_SIZE = 24;
@@ -155,6 +157,7 @@ export class HaLocationsEditor extends LitElement {
         color: location.radius_color,
         locationEditable: location.location_editable,
         radiusEditable: location.radius_editable,
+        activatable: location.clickable,
       }));
     }
   );

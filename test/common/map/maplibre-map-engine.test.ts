@@ -659,6 +659,21 @@ describe("MapLibreMapEngine", () => {
       expect(draggable.style.cursor).toBe("");
     });
 
+    it("gives button semantics only to focusable markers", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Pin",
+        focusable: false,
+      });
+
+      expect(element.tabIndex).toBe(-1);
+      expect(element.getAttribute("role")).toBe("img");
+      expect(element.style.pointerEvents).toBe("");
+    });
+
     it("lets input through non-interactive markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;

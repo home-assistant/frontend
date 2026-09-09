@@ -577,13 +577,16 @@ export class MapLibreMapEngine implements MapEngine {
     if (options.title) {
       element.title = options.title;
     }
-    if (options.interactive ?? true) {
+    const interactive = options.interactive ?? true;
+    const focusable = options.focusable ?? interactive;
+    if (focusable) {
       element.tabIndex = 0;
-    } else {
+    }
+    if (!interactive) {
       // Leaflet lets input through non-interactive markers; MapLibre does not
       element.style.pointerEvents = "none";
     }
-    setMarkerAccessibility(element, options.title, options.interactive ?? true);
+    setMarkerAccessibility(element, options.title, focusable);
     if (draggable) {
       // The engine, not the host, knows whether this element really drags
       element.style.cursor = "move";
