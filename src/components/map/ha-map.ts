@@ -508,13 +508,15 @@ export class HaMap extends ReactiveElement {
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
-      (!changedProps.has("_ui") ||
-        (oldUi && oldUi.themes?.darkMode === this._ui.themes?.darkMode))
+      (!changedProps.has("_ui") || (oldUi && oldUi.themes === this._ui.themes))
     ) {
       return;
     }
 
     this._updateMapStyle();
+    // Marker and trail colors were resolved from the theme when drawn
+    this._drawEntities();
+    this._drawPaths();
   }
 
   private get _darkMode() {
