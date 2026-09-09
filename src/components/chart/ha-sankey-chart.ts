@@ -196,6 +196,10 @@ export class HaSankeyChart extends LitElement {
     const links = this._processLinks(filteredNodes, data.links);
     const sectionWidth = width / indexes.length;
     const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
+    // Two-line values can wrap the unit onto a third line; keep that text inside the chart.
+    const verticalBottom = showValues
+      ? LABEL_DISTANCE + FONT_SIZE * 3 + OVERFLOW_MARGIN
+      : 25;
 
     return {
       id: "sankey",
@@ -286,7 +290,7 @@ export class HaSankeyChart extends LitElement {
         };
       },
       top: this.vertical ? 0 : OVERFLOW_MARGIN,
-      bottom: this.vertical ? 25 : OVERFLOW_MARGIN,
+      bottom: this.vertical ? verticalBottom : OVERFLOW_MARGIN,
       left: this.vertical ? OVERFLOW_MARGIN : 0,
       right: this.vertical ? OVERFLOW_MARGIN : labelSpace + LABEL_DISTANCE,
       emphasis: {
