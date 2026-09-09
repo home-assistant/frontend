@@ -364,8 +364,14 @@ export class HaMap extends ReactiveElement {
     this._subscribeColors();
   }
 
+  // Only maps that draw entities need the registry's creation order; an
+  // editor's map, as in onboarding, never asks for it
   private _subscribeColors(): void {
-    if (this._unsubscribeColors || !this._connection?.connection) {
+    if (
+      this._unsubscribeColors ||
+      !this._connection?.connection ||
+      !this.entities?.length
+    ) {
       return;
     }
     this._unsubscribeColors = subscribeEntityMapColors(
@@ -1097,6 +1103,7 @@ export class HaMap extends ReactiveElement {
       engine.setClustering(null);
       return;
     }
+    this._subscribeColors();
 
     const computedStyles = getComputedStyle(this);
     // A person's state is "home" for the home zone, the zone name otherwise
