@@ -190,6 +190,15 @@ const CONFIGS = [
     },
   },
   {
+    heading: "No state color",
+    config: {
+      type: "tile",
+      entity: "cover.kitchen_shutter",
+      color: "none",
+      features: [{ type: "cover-open-close" }],
+    },
+  },
+  {
     heading: "Whole tile tap action",
     config: {
       type: "tile",
