@@ -24,7 +24,9 @@ import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import "../../../../components/automation/ha-automation-condition-summary";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
@@ -55,6 +57,13 @@ import {
   CONDITION_ROW_CONFIG_KEYS,
   pickRowConfig,
 } from "../../../../data/automation";
+import { describeCondition } from "../../../../data/automation_i18n";
+import type { ConditionDescriptions } from "../../../../data/condition";
+import {
+  conditionDescriptionsContext,
+  fullEntitiesContext,
+} from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
@@ -218,6 +227,14 @@ export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: VisibilityCondition;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
+
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -433,6 +450,16 @@ export class HaCardConditionEditor extends LitElement {
 
     const hideLiveTest = this._hideLiveTest(condition);
 
+    const summaryCondition =
+      condition.condition === "time"
+        ? { ...condition, weekday: condition.weekdays }
+        : this._usesAutomationEditor ||
+            CONTAINER_CONDITIONS.includes(condition.condition) ||
+            (!isNoEntityCondition(condition.condition, this._noEntity) &&
+              condition.condition in this._conditionDescriptions)
+          ? condition
+          : undefined;
+
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
@@ -462,13 +489,28 @@ export class HaCardConditionEditor extends LitElement {
                 >`
               : nothing
           }
-          <h3 slot="header">
-            ${
-              this.hass.localize(
-                `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
-              ) || condition.condition
+          <ha-automation-condition-summary
+            slot="header"
+            .condition=${summaryCondition}
+            .description=${
+              summaryCondition
+                ? this._conditionDescriptions[condition.condition]
+                : undefined
             }
-          </h3>
+            .label=${
+              summaryCondition
+                ? capitalizeFirstLetter(
+                    describeCondition(
+                      summaryCondition,
+                      this.hass,
+                      this._entityReg
+                    )
+                  )
+                : this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
+                  ) || condition.condition
+            }
+          ></ha-automation-condition-summary>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}
             .variant=${this._testingResult ? "success" : "warning"}
@@ -713,11 +755,6 @@ export class HaCardConditionEditor extends LitElement {
         position: relative;
         color: var(--secondary-text-color);
         opacity: 0.9;
-      }
-      h3 {
-        margin: 0;
-        font-size: inherit;
-        font-weight: inherit;
       }
       .content {
         padding: 12px;
