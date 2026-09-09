@@ -9365,6 +9365,7 @@
               "zones": "Zones",
               "activity": "Activity",
               "no_activity": "No recent activity",
+              "activity_unavailable": "Activity couldn't be loaded",
               "person_arrived": "{name} arrived",
               "person_left": "{name} left",
               "show_list": "Show list",
