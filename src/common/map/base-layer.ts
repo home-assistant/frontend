@@ -1,6 +1,10 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
-import type { setRTLTextPlugin, StyleSpecification } from "maplibre-gl";
+import type {
+  setRTLTextPlugin,
+  setWorkerUrl,
+  StyleSpecification,
+} from "maplibre-gl";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import {
   MAP_TILES_PATH,
@@ -20,6 +24,10 @@ const VECTOR_STYLES = {
 // Without it Arabic and Hebrew labels render reversed. Loaded by MapLibre's
 // worker, hence a URL rather than an import.
 const RTL_TEXT_PLUGIN_URL = "/static/map/mapbox-gl-rtl-text.js";
+
+// MapLibre's worker, served as a file because a bundler cannot resolve it
+// from `import.meta.url`. Its sibling shared chunk is copied next to it.
+export const MAPLIBRE_WORKER_URL = "/static/map/maplibre-gl-worker.mjs";
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
 // OSM serves no @2x variant.
@@ -107,6 +115,16 @@ const loadStyle = async (url: string): Promise<StyleSpecification> => {
     }));
   }
   return style;
+};
+
+// Global to MapLibre; set once before the first map is created.
+let workerUrlSet = false;
+export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
+  if (workerUrlSet) {
+    return;
+  }
+  workerUrlSet = true;
+  setUrl(new URL(MAPLIBRE_WORKER_URL, location.href).href);
 };
 
 // Global to MapLibre, and it throws when set twice.
@@ -312,6 +330,7 @@ export const createBaseLayer = async (
         import("@maplibre/maplibre-gl-leaflet"),
         import("maplibre-gl"),
       ]);
+      ensureWorkerUrl(maplibre.setWorkerUrl);
       ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
       vectorLayer = await createVectorLayer(
         createLayer,
