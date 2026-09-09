@@ -159,17 +159,12 @@ function getValueFromEntityId(
 }
 
 function checkStateCondition(
-  condition: StateCondition | LegacyCondition,
+  condition: (StateCondition | LegacyCondition) & { entity_id?: string },
   hass: HomeAssistant,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
-  const entityId =
-    ("entity_id" in condition
-      ? (condition as { entity_id?: string }).entity_id
-      : undefined) ||
-    condition.entity ||
-    context.entity_id;
+  const entityId = condition.entity_id || condition.entity || context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const attribute = "attribute" in condition ? condition.attribute : undefined;
   let state: string;
@@ -208,17 +203,12 @@ function checkStateCondition(
 }
 
 function checkStateNumericCondition(
-  condition: NumericStateCondition,
+  condition: NumericStateCondition & { entity_id?: string },
   hass: HomeAssistant,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
-  const entityId =
-    ("entity_id" in condition
-      ? (condition as { entity_id?: string }).entity_id
-      : undefined) ||
-    condition.entity ||
-    context.entity_id;
+  const entityId = condition.entity_id || condition.entity || context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const state = condition.attribute
     ? stateObj?.attributes[condition.attribute]
@@ -480,35 +470,60 @@ export function validateConditionalConfig(
 ): boolean {
   return conditions.every((visibilityCondition) => {
     const c = visibilityCondition as Condition | LegacyCondition;
-    if ("condition" in c) {
-      switch (c.condition) {
-        case "view_columns":
-          return validateViewColumnsCondition(c);
-        case "screen":
-          return validateScreenCondition(c);
-        case "time":
-          return validateTimeCondition(c);
-        case "user":
-          return validateUserCondition(c);
-        case "location":
-          return validateLocationCondition(c);
-        case "numeric_state":
-          return validateNumericStateCondition(c);
-        case "state":
-          return validateStateCondition(c);
-        case "and":
-          return validateAndCondition(c);
-        case "not":
-          return validateNotCondition(c);
-        case "or":
-          return validateOrCondition(c);
-        default:
-          // template / sun / zone / device / integrations: core validates these.
-          return true;
-      }
+    if (!("condition" in c)) {
+      return validateStateCondition(c);
     }
-    return validateStateCondition(c);
+    switch (c.condition) {
+      case "view_columns":
+        return validateViewColumnsCondition(c);
+      case "screen":
+        return validateScreenCondition(c);
+      case "time":
+        return validateTimeCondition(c);
+      case "user":
+        return validateUserCondition(c);
+      case "location":
+        return validateLocationCondition(c);
+      case "numeric_state":
+        return validateNumericStateCondition(c);
+      case "state":
+        return validateStateCondition(c);
+      case "and":
+        return validateAndCondition(c);
+      case "not":
+        return validateNotCondition(c);
+      case "or":
+        return validateOrCondition(c);
+      default:
+        // template / sun / zone / device / integrations: core validates these.
+        return true;
+    }
   });
+}
+
+function isNestedCondition(
+  condition: Condition | VisibilityCondition
+): condition is
+  AndCondition | OrCondition | NotCondition | VisibilityLogicalCondition {
+  return (
+    "condition" in condition &&
+    (condition.condition === "and" ||
+      condition.condition === "or" ||
+      condition.condition === "not")
+  );
+}
+
+function isLovelaceEntityCondition(
+  condition: Condition | VisibilityCondition
+): condition is StateCondition | NumericStateCondition | LegacyCondition {
+  if (!("condition" in condition)) {
+    return true;
+  }
+  return (
+    (condition.condition === "state" ||
+      condition.condition === "numeric_state") &&
+    !("entity_id" in condition)
+  );
 }
 
 /**
@@ -517,29 +532,41 @@ export function validateConditionalConfig(
  * @param entityId base the condition on that entity
  * @returns a new condition with entity id
  */
-export function addEntityToCondition<T extends VisibilityCondition>(
-  condition: T,
+export function addEntityToCondition(
+  condition: Condition,
   entityId: string
-): T {
-  if ("conditions" in condition && condition.conditions) {
+): Condition;
+export function addEntityToCondition(
+  condition: VisibilityCondition,
+  entityId: string
+): VisibilityCondition;
+export function addEntityToCondition(
+  condition: Condition | VisibilityCondition,
+  entityId: string
+): Condition | VisibilityCondition {
+  return stampHostEntity(condition, entityId);
+}
+
+function stampHostEntity(
+  condition: Condition | VisibilityCondition,
+  entityId: string
+): Condition | VisibilityCondition {
+  if (isNestedCondition(condition) && condition.conditions) {
+    const children = Array.isArray(condition.conditions)
+      ? condition.conditions
+      : [condition.conditions];
     return {
       ...condition,
-      conditions: ensureArray(
-        condition.conditions as VisibilityCondition | VisibilityCondition[]
-      ).map((c) => addEntityToCondition(c, entityId)),
-    } as T;
+      conditions: children.map((child) => stampHostEntity(child, entityId)),
+    };
   }
 
   // Entity-less lovelace state/numeric_state (including `{ entity, state }`)
   // target the host entity. Don't stamp `entity` onto a core `entity_id` leaf.
-  const type = (condition as { condition?: string }).condition ?? "state";
-  if (
-    (type === "state" || type === "numeric_state") &&
-    !("entity_id" in condition)
-  ) {
+  if (isLovelaceEntityCondition(condition)) {
     return {
       ...condition,
-      entity: (condition as { entity?: string }).entity || entityId,
+      entity: condition.entity || entityId,
     };
   }
   return condition;
