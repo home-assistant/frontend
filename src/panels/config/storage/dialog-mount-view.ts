@@ -250,6 +250,10 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   @state() private _diskSupported = false;
 
+  private _originalType?: SupervisorMountType;
+
+  private _candidatesRequest = 0;
+
   @state() private _diskIdentity?: string;
 
   @state() private _reloadMounts?: () => void;
@@ -261,6 +265,7 @@ class ViewMountDialog extends DirtyStateProviderMixin<
   ): Promise<Promise<void>> {
     this._data = dialogParams.mount;
     this._existing = dialogParams.mount !== undefined;
+    this._originalType = dialogParams.mount?.type;
     this._reloadMounts = dialogParams.reloadMounts;
     this._open = true;
     if (
@@ -289,12 +294,21 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._open = false;
   }
 
+  // The dialog element is reused, so a slow response must not land in a
+  // later session.
   private async _loadCandidates(): Promise<void> {
+    const request = ++this._candidatesRequest;
     try {
       const { candidates } = await fetchSupervisorMountCandidates(this.hass);
+      if (request !== this._candidatesRequest) {
+        return;
+      }
       this._candidates = candidates;
       this._diskSupported = true;
     } catch (err: any) {
+      if (request !== this._candidatesRequest) {
+        return;
+      }
       if (err?.status_code === 404) {
         // Older Supervisors have no candidates endpoint. Hide the option
         // rather than show it broken.
@@ -317,7 +331,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._validationError = undefined;
     this._validationWarning = undefined;
     this._existing = undefined;
+    this._originalType = undefined;
     this._showCIFSVersion = undefined;
+    this._candidatesRequest++;
     this._candidates = undefined;
     this._diskSupported = false;
     this._diskIdentity = undefined;
@@ -495,9 +511,13 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._validationError = {};
     this._validationWarning = {};
     this._data = ev.detail.value;
-    // Network forms have no read-only control, so a value forced by a
-    // write-protected disk must not survive switching a new mount's type.
-    if (!this._existing && this._data?.type !== SupervisorMountType.DISK) {
+    // Network forms have no read-only control, so a disk's read-only value
+    // must not survive switching to a network type. A network mount that was
+    // already read-only keeps it.
+    if (
+      this._data?.type !== SupervisorMountType.DISK &&
+      (!this._existing || this._originalType === SupervisorMountType.DISK)
+    ) {
       delete (this._data as Partial<SupervisorMountRequestParams>).read_only;
     }
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
