@@ -124,31 +124,36 @@ export type SidebarItem = PanelInfo | SidebarDivider;
 export const isSidebarDivider = (item: SidebarItem): item is SidebarDivider =>
   "divider" in item;
 
+const DIVIDER_ID_REGEX =
+  /^divider-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export const isDividerId = (id: string): boolean => DIVIDER_ID_REGEX.test(id);
+
 const insertDividers = (
   items: PanelInfo[],
   panelsOrder: string[]
 ): SidebarItem[] => {
-  const result: SidebarItem[] = [...items];
+  if (!panelsOrder.some(isDividerId)) {
+    return items;
+  }
 
-  panelsOrder
-    .filter((id) => id.startsWith("divider-"))
-    .forEach((dividerId) => {
-      const dividerIndex = panelsOrder.indexOf(dividerId);
-      let precedingUrlPath: string | undefined;
-      for (let i = dividerIndex - 1; i >= 0; i--) {
-        if (!panelsOrder[i].startsWith("divider-")) {
-          precedingUrlPath = panelsOrder[i];
-          break;
-        }
-      }
-      const insertIndex = precedingUrlPath
-        ? result.findIndex(
-            (item) =>
-              !isSidebarDivider(item) && item.url_path === precedingUrlPath
-          ) + 1
-        : 0;
-      result.splice(insertIndex, 0, { url_path: dividerId, divider: true });
-    });
+  const itemsByUrlPath = new Map(items.map((item) => [item.url_path, item]));
+  const placed = new Set<string>();
+  const result: SidebarItem[] = [];
+  panelsOrder.forEach((id) => {
+    if (isDividerId(id)) {
+      result.push({ url_path: id, divider: true });
+      placed.add(id);
+    } else if (itemsByUrlPath.has(id) && !placed.has(id)) {
+      result.push(itemsByUrlPath.get(id)!);
+      placed.add(id);
+    }
+  });
+  items.forEach((item) => {
+    if (!placed.has(item.url_path)) {
+      result.push(item);
+    }
+  });
 
   return result;
 };

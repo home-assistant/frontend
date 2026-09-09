@@ -225,6 +225,9 @@ export class HaItemDisplayEditor extends LitElement {
     return html`
       <ha-md-list-item
         type="button"
+        aria-label=${this._localize(
+          "ui.components.items-display-editor.divider"
+        )}
         .value=${item.value}
         class=${classMap({
           draggable: true,
@@ -242,9 +245,11 @@ export class HaItemDisplayEditor extends LitElement {
           @click=${this._remove}
         ></ha-icon-button>
         <ha-svg-icon
-          tabindex="0"
+          tabindex=${ifDefined(this.showNavigationButton ? "0" : undefined)}
           .idx=${idx}
-          @keydown=${this._dragHandleKeydown}
+          @keydown=${
+            this.showNavigationButton ? this._dragHandleKeydown : undefined
+          }
           class="handle"
           .path=${mdiDragHorizontalVariant}
           slot="end"
@@ -255,6 +260,7 @@ export class HaItemDisplayEditor extends LitElement {
 
   private _remove(ev) {
     ev.stopPropagation();
+    this._dragIndex = null;
     const value = ev.currentTarget.value;
     fireEvent(this, "item-display-remove", { value });
   }

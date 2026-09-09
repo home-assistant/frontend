@@ -1482,7 +1482,8 @@
       "items-display-editor": {
         "show": "Show {label}",
         "hide": "Hide {label}",
-        "remove": "Remove divider"
+        "remove": "Remove divider",
+        "divider": "Divider"
       },
       "form-optional-actions": {
         "add": "Add interaction"

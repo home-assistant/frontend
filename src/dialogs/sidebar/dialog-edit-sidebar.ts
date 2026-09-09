@@ -2,6 +2,7 @@ import { mdiDotsVertical, mdiMinus, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { generateUuidV4 } from "../../common/util/uuid";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -243,7 +244,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   }
 
   private _addDivider = () => {
-    const id = `divider-${crypto.randomUUID()}`;
+    const id = `divider-${generateUuidV4()}`;
     this._order = [...(this._order ?? []), id];
     this._updateDirtyState({ order: this._order, hidden: this._hidden ?? [] });
   };
