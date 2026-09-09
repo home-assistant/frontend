@@ -458,12 +458,13 @@ export class HuiMapOverview extends LitElement {
       zones,
     };
     const tabs = Object.keys(itemsPerTab) as OverviewTab[];
-    const tab = tabs.includes(this._tab) ? this._tab : "people";
+    const wanted = tabs.includes(this._tab) ? this._tab : "people";
+    // An empty tab is disabled, so the selection falls back to the first tab
+    // that has anything to show
+    const tab = itemsPerTab[wanted]!.length
+      ? wanted
+      : (tabs.find((tabId) => itemsPerTab[tabId]!.length) ?? wanted);
     const items = itemsPerTab[tab]!;
-    // The tab stop is on the selected tab, or the first non-empty one when it is disabled
-    const tabStop = items.length
-      ? tab
-      : (tabs.find((tabId) => itemsPerTab[tabId]!.length) ?? tab);
 
     return html`
       <div class="tabs">
@@ -484,7 +485,7 @@ export class HuiMapOverview extends LitElement {
                 id="tab-${tabId}"
                 aria-controls="tabpanel"
                 aria-selected=${tab === tabId}
-                tabindex=${tabStop === tabId ? 0 : -1}
+                tabindex=${tab === tabId ? 0 : -1}
                 data-tab=${tabId}
                 .disabled=${!itemsPerTab[tabId]!.length}
                 @click=${this._handleTabClick}
