@@ -40,13 +40,50 @@ describe("computeCompactLayout", () => {
       [[0], [1, 2]],
     ]);
   });
-  it("chooses the shortest compatible lane, with leftmost winning ties", () => {
+  it("only stacks below the immediate predecessor, even when earlier lanes are shorter", () => {
     expect(membership(sections([500, 150, 100, 100]), 3)).toEqual([
       [[0], [1], [2, 3]],
     ]);
     expect(membership(sections([500, 100, 100, 100]), 3)).toEqual([
-      [[0], [1, 3], [2]],
+      [[0], [1], [2, 3]],
     ]);
+  });
+  it("starts a new row if only an earlier lane has space or a matching span", () => {
+    expect(membership(sections([100, 500, 100]))).toEqual([[[0], [1]], [[2]]]);
+    expect(membership(sections([500, 100, 300, 100]), 3)).toEqual([
+      [[0], [1], [2, 3]],
+    ]);
+    expect(membership(sections([100, 500, 100], [2, 1, 2]), 3)).toEqual([
+      [[0], [1]],
+      [[2]],
+    ]);
+  });
+  it("does not return to an earlier lane after a consecutive stack fills", () => {
+    expect(membership(sections([500, 100, 200, 200, 100]), 3)).toEqual([
+      [[0], [1], [2, 3]],
+      [[4]],
+    ]);
+  });
+  it("preserves source order across measurements, widths, and hidden sections", () => {
+    for (const heights of [
+      [500, 100, 200, 50, 100, 300],
+      [100, 500, 50, 200, 300, 100],
+    ]) {
+      for (const columns of [2, 3, 4]) {
+        for (const spans of [[], [1, 2, 1, 2, 1, 1]]) {
+          for (let hiddenMask = 0; hiddenMask < 64; hiddenMask++) {
+            const items = sections(heights, spans).map((section, index) => ({
+              ...section,
+              index: index * 3 + 2,
+              hidden: Math.floor(hiddenMask / 2 ** index) % 2 === 1,
+            }));
+            expect(membership(items, columns)?.flat(2)).toEqual(
+              items.map((s) => s.index)
+            );
+          }
+        }
+      }
+    }
   });
   it("never skips a candidate or searches an older row", () => {
     expect(membership(sections([500, 200, 600, 100, 100]))).toEqual([
@@ -106,10 +143,10 @@ describe("computeCompactLayout", () => {
     expect(result[1].alignedSectionIndices).toEqual([]);
     expect(result[1].initialHeight).toBe(400);
   });
-  it("retains initially hidden sections without consuming visible row capacity", () => {
+  it("retains initially hidden sections as source-order boundaries", () => {
     const items = sections([500, 900, 200, 250]);
     items[1].hidden = true;
-    expect(membership(items)).toEqual([[[0], [2, 3]], [[1]]]);
+    expect(membership(items)).toEqual([[[0]], [[1]], [[2], [3]]]);
   });
   it("handles no sections and does not mutate its inputs", () => {
     expect(computeCompactLayout([], 4, 24)).toEqual([]);

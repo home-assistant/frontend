@@ -9642,7 +9642,7 @@
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
             "compact_section_placement": "Compact section placement",
-            "compact_section_placement_helper": "Place later sections below shorter sections when they fit within the existing row height. Takes precedence over dense section placement.",
+            "compact_section_placement_helper": "Place sections below the immediately preceding section when they fit within the existing row height. Takes precedence over dense section placement.",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "top_margin": "Add additional space above",

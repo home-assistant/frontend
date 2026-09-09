@@ -281,7 +281,7 @@ describe("Sections compact lifecycle", () => {
     await update();
     await flushFrame();
     expect(pack).toHaveBeenCalledTimes(2);
-    expect(assignments()).toEqual([["2", "1"], ["0"]]);
+    expect(assignments()).toEqual([["2"], ["0"], ["1"]]);
   });
   it("keeps initially hidden sections mounted and visibility does not repack at the same column count", async () => {
     await mount({ compact_section_placement: true }, [500, 100, 200, 250]);
@@ -289,7 +289,7 @@ describe("Sections compact lifecycle", () => {
     element.dispatchEvent(new CustomEvent("section-visibility-changed"));
     await update();
     await flushFrame();
-    expect(assignments()).toEqual([["0"], ["2", "3"], ["1"]]);
+    expect(assignments()).toEqual([["0"], ["1"], ["2"], ["3"]]);
     const before = assignments();
     element.sections[1].hidden = false;
     element.dispatchEvent(new CustomEvent("section-visibility-changed"));
@@ -298,6 +298,19 @@ describe("Sections compact lifecycle", () => {
     expect(pack).toHaveBeenCalledTimes(1);
     expect(element.sections[1].isConnected).toBe(true);
   });
+  it.each([
+    [500, 100, 100, 100],
+    [100, 500, 100, 100],
+    [100, 100, 500, 100],
+  ])(
+    "preserves rendered source order on a fresh mount with heights %s/%s/%s/%s",
+    async (...heights) => {
+      resize.columns = 3;
+      await mount({ compact_section_placement: true }, heights);
+      await flushFrame();
+      expect(assignments().flat()).toEqual(["0", "1", "2", "3"]);
+    }
+  );
   it("includes measured background margins at the fitting boundary", async () => {
     await mount({ compact_section_placement: true }, [500, 200, 276]);
     element.sections[0].config.background = { color: "red" };

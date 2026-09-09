@@ -26,8 +26,8 @@ export interface CompactRow {
 }
 
 /**
- * One-row compaction in source order. Only equal-span lanes are compatible.
- * Choose the shortest compatible lane, then the leftmost lane on ties.
+ * One-row compaction in source order. A section can only stack below its
+ * immediate predecessor, in the final lane, with the same column span.
  * Never increase a row's initial capacity or backfill an older row.
  * Undefined means the native renderer must handle this configuration.
  */
@@ -40,17 +40,40 @@ export function computeCompactLayout(
     return undefined;
   }
 
-  const visible = sections
-    .filter((section) => !section.hidden)
-    .map((section) => ({
-      ...section,
-      columnSpan: sectionColumnSpan(section.columnSpan, columnCount),
-    }));
-  const rowsByFirstSection = new Map<number, CompactRow>();
+  const normalized = sections.map((section) => ({
+    ...section,
+    columnSpan: sectionColumnSpan(section.columnSpan, columnCount),
+  }));
+  const rows: CompactRow[] = [];
   let next = 0;
-  while (next < visible.length) {
-    const end = sectionsRowEnd(visible, next, columnCount);
-    const top = visible.slice(next, end);
+  while (next < normalized.length) {
+    const first = normalized[next];
+    if (first.hidden) {
+      // Keep hidden sections mounted at their source position. This collapsed
+      // row is a boundary: later sections must not jump ahead when it appears.
+      rows.push({
+        initialHeight: 0,
+        alignedSectionIndices: [],
+        lanes: [
+          {
+            columnStart: 1,
+            columnSpan: first.columnSpan,
+            initialUsedHeight: 0,
+            sectionIndices: [first.index],
+          },
+        ],
+      });
+      next++;
+      continue;
+    }
+    let end = sectionsRowEnd(normalized, next, columnCount);
+    for (let index = next; index < end; index++) {
+      if (normalized[index].hidden) {
+        end = index;
+        break;
+      }
+    }
+    const top = normalized.slice(next, end);
     const hasBackground = top.some((section) => section.hasBackground);
     const row: CompactRow = {
       initialHeight: 0,
@@ -72,50 +95,24 @@ export function computeCompactLayout(
       columnStart += section.columnSpan;
       row.initialHeight = Math.max(row.initialHeight, height);
     }
-    rowsByFirstSection.set(visible[next].index, row);
+    rows.push(row);
     next = end;
 
-    while (next < visible.length) {
-      const candidate = visible[next];
-      let target: CompactLane | undefined;
-      for (const lane of row.lanes) {
-        if (
-          lane.columnSpan === candidate.columnSpan &&
-          lane.initialUsedHeight + rowGap + candidate.height <=
-            row.initialHeight &&
-          (!target || lane.initialUsedHeight < target.initialUsedHeight)
-        ) {
-          target = lane;
-        }
+    const target = row.lanes[row.lanes.length - 1];
+    while (next < normalized.length) {
+      const candidate = normalized[next];
+      if (
+        candidate.hidden ||
+        target.columnSpan !== candidate.columnSpan ||
+        target.initialUsedHeight + rowGap + candidate.height > row.initialHeight
+      ) {
+        break;
       }
-      if (!target) break;
       target.sectionIndices.push(candidate.index);
       target.initialUsedHeight += rowGap + candidate.height;
       next++;
     }
   }
 
-  // Initially hidden sections retain mounted elements and a fixed standalone
-  // row. They can become visible without requiring a new packing calculation.
-  // Empty rows collapse in CSS. Keep these rows in source order where possible.
-  const rows: CompactRow[] = [];
-  for (const section of sections) {
-    const row = rowsByFirstSection.get(section.index);
-    if (row) rows.push(row);
-    if (section.hidden) {
-      rows.push({
-        initialHeight: 0,
-        alignedSectionIndices: [],
-        lanes: [
-          {
-            columnStart: 1,
-            columnSpan: sectionColumnSpan(section.columnSpan, columnCount),
-            initialUsedHeight: 0,
-            sectionIndices: [section.index],
-          },
-        ],
-      });
-    }
-  }
   return rows;
 }
