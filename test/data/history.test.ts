@@ -1,10 +1,7 @@
 import { describe, it, assert, expect, vi } from "vitest";
 import { HistoryStream, computeHistory } from "../../src/data/history";
 import type { HomeAssistant } from "../../src/types";
-import {
-  mockDevice,
-  mockEntity,
-} from "../common/entity/context/context-mock";
+import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
 import {
   createMockEntityState,
   createMockHass,
