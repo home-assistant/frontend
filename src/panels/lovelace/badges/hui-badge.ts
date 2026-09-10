@@ -67,6 +67,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     if (this.hass) {
       this._element.hass = this.hass;
     }
+    this._element.preview = this.preview;
     // Update element when the visibility of the badge changes, e.g. custom badge
     this._element.addEventListener("badge-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
@@ -128,11 +129,12 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
           }
         }
       }
-      if (changedProps.has("hass")) {
+      if (changedProps.has("hass") || changedProps.has("preview")) {
         try {
           if (this.hass) {
             this._element.hass = this.hass;
           }
+          this._element.preview = this.preview;
         } catch (e: any) {
           this._loadElement(createErrorBadgeConfig(e.message, null));
         }
