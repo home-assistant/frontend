@@ -196,6 +196,7 @@ export class HaTimeDuration extends LitElement {
     }
     ev.stopPropagation();
     const type = this._offsetType(this._data(this.value));
+    this._pendingOffsetType = type;
     fireEvent(this, "value-changed", {
       value: this._withOffsetType(type, ev.detail.value),
     });
