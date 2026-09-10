@@ -8,8 +8,11 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../common/color/colors";
 import { resolveThemeColor } from "../../../common/color/compute-color";
+import {
+  entityMapColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -75,10 +78,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @state() private _mapEntities: HaMapEntity[] = [];
 
   private _filteredMapEntities: HaMapEntity[] = [];
-
-  private _colorDict: Record<string, string> = {};
-
-  private _colorIndex = 0;
 
   @state() private _error?: { code: string; message: string };
 
@@ -432,18 +431,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._clusterMarkers = !this._clusterMarkers;
   }
 
+  // The same color for an entity on every map; a config color still wins
   private _getColor(entityId: string): string {
-    let color = this._colorDict[entityId];
-    if (color) {
-      return color;
-    }
     const computedStyles = getComputedStyle(this);
-    color = getColorByIndex(this._colorIndex, computedStyles);
-    if (color) {
-      this._colorIndex++;
-      this._colorDict[entityId] = color;
+    if (computeDomain(entityId) === "zone") {
+      const stateObj = this.hass?.states[entityId];
+      return zoneColor(
+        entityId,
+        !!stateObj?.attributes.passive,
+        computedStyles
+      );
     }
-    return color;
+    return entityMapColor(entityId, computedStyles);
   }
 
   private _getSourceEntities(states?: HassEntities): GeoEntity[] {
