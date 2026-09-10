@@ -51,7 +51,7 @@ export class HaTimeDuration extends LitElement {
 
   @query("ha-duration-input") private _input?: HaDurationInput;
 
-  @state() private _pendingOffsetType?: OffsetType;
+  @state() private _offsetType?: OffsetType;
 
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
@@ -80,7 +80,7 @@ export class HaTimeDuration extends LitElement {
       );
     }
 
-    const offsetType = this._offsetType(data);
+    const offsetType = this._getOffsetType(data);
     return html`
       <div class="container">
         ${
@@ -152,7 +152,7 @@ export class HaTimeDuration extends LitElement {
     `;
   }
 
-  private _offsetType(data?: HaDurationData): OffsetType {
+  private _getOffsetType(data?: HaDurationData): OffsetType {
     if (data?.negative !== undefined) {
       return data.negative ? "before" : "after";
     }
@@ -160,7 +160,7 @@ export class HaTimeDuration extends LitElement {
       ? normalizeDuration(data)
       : { negative: false };
     if (durationDataToSeconds(components) === 0) {
-      return this._pendingOffsetType ?? "none";
+      return this._offsetType ?? "none";
     }
     return negative ? "before" : "after";
   }
@@ -195,8 +195,8 @@ export class HaTimeDuration extends LitElement {
       return;
     }
     ev.stopPropagation();
-    const type = this._offsetType(this._data(this.value));
-    this._pendingOffsetType = type;
+    const type = this._getOffsetType(this._data(this.value));
+    this._offsetType = type;
     fireEvent(this, "value-changed", {
       value: this._withOffsetType(type, ev.detail.value),
     });
@@ -206,10 +206,10 @@ export class HaTimeDuration extends LitElement {
     ev.stopPropagation();
     const type = ev.detail.value;
     const data = this._data(this.value);
-    if (!type || type === this._offsetType(data)) {
+    if (!type || type === this._getOffsetType(data)) {
       return;
     }
-    this._pendingOffsetType = type;
+    this._offsetType = type;
     fireEvent(this, "value-changed", {
       value: this._withOffsetType(type, data),
     });
