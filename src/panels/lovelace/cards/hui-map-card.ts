@@ -8,6 +8,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ContextConsumer } from "@lit/context";
 import { resolveThemeColor } from "../../../common/color/compute-color";
 import {
   entityMapColor,
@@ -34,6 +35,8 @@ import type {
 import type { MapLatLng } from "../../../common/map/map-engine";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import {
@@ -61,6 +64,18 @@ interface GeoEntity {
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
+  constructor() {
+    super();
+    new ContextConsumer(this, {
+      context: fullEntitiesContext,
+      subscribe: true,
+      callback: (entries) => {
+        this._entityReg = entries;
+        this._mapEntities = this._getMapEntities();
+      },
+    });
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
@@ -80,6 +95,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _filteredMapEntities: HaMapEntity[] = [];
 
   @state() private _error?: { code: string; message: string };
+
+  // Registry creation order decides the palette colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _clusterMarkers = true;
 
@@ -439,10 +457,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return zoneColor(
         entityId,
         !!stateObj?.attributes.passive,
+        this._entityReg,
         computedStyles
       );
     }
-    return entityMapColor(entityId, computedStyles);
+    return entityMapColor(entityId, this._entityReg, computedStyles);
   }
 
   private _getSourceEntities(states?: HassEntities): GeoEntity[] {

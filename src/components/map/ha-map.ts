@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, ContextConsumer } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -31,11 +31,7 @@ import type {
 } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { editableCircleStyles } from "../../common/map/editable-circle";
-import {
-  entityMapColor,
-  subscribeEntityMapColors,
-  zoneColor,
-} from "../../common/map/entity-map-colors";
+import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
 import {
   createZoneMarkerElement,
   ZONE_CIRCLE_SIZE,
@@ -46,10 +42,12 @@ import {
   configContext,
   connectionContext,
   formattersContext,
+  fullEntitiesContext,
   internationalizationContext,
   statesContext,
   uiContext,
 } from "../../data/context";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
 import type {
   HomeAssistantConfig,
@@ -336,7 +334,10 @@ export class HaMap extends ReactiveElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _unsubscribeColors?: () => void;
+  // Registry creation order decides the palette colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  private _registryConsumer?: ContextConsumer<typeof fullEntitiesContext, this>;
 
   private _entityHandles: MapMarkerHandle[] = [];
 
@@ -363,32 +364,21 @@ export class HaMap extends ReactiveElement {
     super.connectedCallback();
     this._loadMap();
     this._attachObserver();
-    this._subscribeColors();
   }
 
-  // Only maps that draw entities need the registry's creation order; an
-  // editor's map, as in onboarding, never asks for it
-  private _subscribeColors(): void {
-    if (
-      this._unsubscribeColors ||
-      !this._connection?.connection ||
-      !this.entities?.length
-    ) {
+  // Only maps that draw entities ask for the registry; an editor's map, as in
+  // onboarding, never does. The context provider shares one subscription.
+  private _watchRegistry(): void {
+    if (this._registryConsumer || !this.entities?.length) {
       return;
     }
-    this._unsubscribeColors = subscribeEntityMapColors(
-      this._connection.connection,
-      () => {
-        if (this._loaded) {
-          this._drawEntities();
-        }
-      }
-    );
-  }
-
-  private _releaseColors(): void {
-    this._unsubscribeColors?.();
-    this._unsubscribeColors = undefined;
+    this._registryConsumer = new ContextConsumer(this, {
+      context: fullEntitiesContext,
+      subscribe: true,
+      callback: (entries) => {
+        this._entityReg = entries;
+      },
+    });
   }
 
   private _handleVisibilityChange = async () => {
@@ -405,7 +395,6 @@ export class HaMap extends ReactiveElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
-    this._releaseColors();
     this._engine?.destroy();
     this._engine = undefined;
     // An engine still setting up goes too; its setup notices and stops
@@ -432,12 +421,6 @@ export class HaMap extends ReactiveElement {
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
 
-    if (changedProps.has("_connection")) {
-      // A new connection needs its own subscription
-      this._releaseColors();
-      this._subscribeColors();
-    }
-
     if (!this._loaded) {
       return;
     }
@@ -460,7 +443,7 @@ export class HaMap extends ReactiveElement {
       }
     }
 
-    if (changedProps.has("clusterMarkers")) {
+    if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
       this._drawEntities();
     }
 
@@ -1109,15 +1092,11 @@ export class HaMap extends ReactiveElement {
     this._zoneHandles = [];
     this._focusZonePoints = [];
 
-    if (!this.entities?.length) {
-      // Nothing left to color; let the shared registry stream go
-      this._releaseColors();
-    }
     if (!this.entities) {
       engine.setClustering(null);
       return;
     }
-    this._subscribeColors();
+    this._watchRegistry();
 
     const computedStyles = getComputedStyle(this);
     // A person's state is "home" for the home zone, the zone name otherwise
@@ -1180,7 +1159,12 @@ export class HaMap extends ReactiveElement {
         const markerColor =
           !passive && typeof entity !== "string" && entity.color
             ? entity.color
-            : zoneColor(stateObj.entity_id, !!passive, computedStyles);
+            : zoneColor(
+                stateObj.entity_id,
+                !!passive,
+                this._entityReg,
+                computedStyles
+              );
 
         if (!hideRadius && radius) {
           this._zoneHandles.push(
@@ -1269,7 +1253,7 @@ export class HaMap extends ReactiveElement {
       // A host may leave the color to the map
       const entityColor =
         (typeof entity !== "string" ? entity.color : undefined) ||
-        entityMapColor(getEntityId(entity), computedStyles);
+        entityMapColor(getEntityId(entity), this._entityReg, computedStyles);
       entityMarker.entityColor = entityColor;
       if (typeof entity !== "string") {
         entityMarker.selected = entity.selected ?? false;
