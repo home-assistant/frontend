@@ -104,6 +104,13 @@ export const formatSelectorValue = (
       .join(", ");
   }
 
+  if ("media" in selector) {
+    const media = ensureArray(value);
+    return media
+      .map((item) => item.metadata?.title || item.media_content_id)
+      .join(", ");
+  }
+
   if ("object" in selector) {
     const { fields } = selector.object ?? {};
     const items = ensureArray(value);
