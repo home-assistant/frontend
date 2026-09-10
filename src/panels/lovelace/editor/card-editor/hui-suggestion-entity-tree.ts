@@ -287,7 +287,9 @@ export class HuiSuggestionEntityTree extends LitElement {
       this.hass.translationMetadata.translations
     );
     const separator = rtl ? " ◂ " : " ▸ ";
-    const secondary = [item.area, item.device].filter(Boolean).join(separator);
+    const secondary = [item.area, item.parentDevice, item.device]
+      .filter(Boolean)
+      .join(separator);
     return html`
       <ha-combo-box-item
         type="button"

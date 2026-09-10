@@ -21,7 +21,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
@@ -30,6 +29,7 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
@@ -132,9 +132,34 @@ export class HaTargetPickerItemRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry!: LabelRegistryEntry[];
 
+  private _loadedConfigEntryId?: string;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.subEntry && changedProps.has("itemId")) {
       this._updateItemData();
+    }
+    if (
+      changedProps.has("itemId") ||
+      changedProps.has("type") ||
+      changedProps.has("hass")
+    ) {
+      this._updateDomain();
+    }
+  }
+
+  private _updateDomain() {
+    if (this.type === "entity") {
+      this._setDomainName(computeDomain(this.itemId));
+      return;
+    }
+    if (this.type !== "device") {
+      return;
+    }
+    const configEntryId =
+      this.hass.devices?.[this.itemId]?.primary_config_entry;
+    if (configEntryId && configEntryId !== this._loadedConfigEntryId) {
+      this._loadedConfigEntryId = configEntryId;
+      this._getDeviceDomain(configEntryId);
     }
   }
 
@@ -674,7 +699,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
-  private _itemData = memoizeOne((type: TargetType, item: string) => {
+  private _itemData(type: TargetType, item: string) {
     if (type === "floor") {
       const floor: FloorRegistryEntry | undefined = this.hass.floors?.[item];
       return {
@@ -697,9 +722,25 @@ export class HaTargetPickerItemRow extends LitElement {
     if (type === "device") {
       const device: DeviceRegistryEntry | undefined = this.hass.devices?.[item];
 
-      if (device?.primary_config_entry) {
-        this._getDeviceDomain(device.primary_config_entry);
-      }
+      const area = device
+        ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+        : undefined;
+      const parentDevice = device?.parent_device_id
+        ? this.hass.devices[device.parent_device_id]
+        : undefined;
+      const context = [
+        area ? computeAreaName(area) : undefined,
+        parentDevice ? computeDeviceName(parentDevice) : undefined,
+      ]
+        .filter(Boolean)
+        .join(
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
+        );
 
       return {
         name: device
@@ -709,19 +750,17 @@ export class HaTargetPickerItemRow extends LitElement {
               this.hass.states
             )
           : item,
-        context: device?.area_id && this.hass.areas?.[device.area_id]?.name,
+        context,
         fallbackIconPath: mdiDevices,
         notFound: !device,
       };
     }
     if (type === "entity") {
-      this._setDomainName(computeDomain(item));
-
       const stateObject: HassEntity | undefined = this.hass.states[item];
       const entityName = stateObject
         ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
         : item;
-      const { area, device } = stateObject
+      const { area, device, parentDevice } = stateObject
         ? getEntityContext(
             stateObject,
             this.hass.entities,
@@ -729,10 +768,17 @@ export class HaTargetPickerItemRow extends LitElement {
             this.hass.areas,
             this.hass.floors
           )
-        : { area: undefined, device: undefined };
+        : { area: undefined, device: undefined, parentDevice: undefined };
       const deviceName = device ? computeDeviceName(device) : undefined;
+      const parentDeviceName = parentDevice
+        ? computeDeviceName(parentDevice)
+        : undefined;
       const areaName = area ? computeAreaName(area) : undefined;
-      const context = [areaName, entityName ? deviceName : undefined]
+      const context = [
+        areaName,
+        parentDeviceName,
+        entityName ? deviceName : undefined,
+      ]
         .filter(Boolean)
         .join(
           computeRTL(
@@ -760,7 +806,7 @@ export class HaTargetPickerItemRow extends LitElement {
       fallbackIconPath: mdiLabel,
       notFound: !label,
     };
-  });
+  }
 
   private _setDomainName(domain: string) {
     this._domainName = domainToName(this.hass.localize, domain);

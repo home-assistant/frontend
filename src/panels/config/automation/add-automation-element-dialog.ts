@@ -13,9 +13,11 @@ import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { isNumericState } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
 import type {
@@ -901,6 +903,12 @@ class DialogAddAutomationElement
       const [targetType, targetId] = this._extractTypeAndIdFromTarget(
         this._selectedTarget
       );
+      const separator = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      )
+        ? " ◂ "
+        : " ▸ ";
 
       if (targetId) {
         if (targetType === "area") {
@@ -913,11 +921,21 @@ class DialogAddAutomationElement
             );
           }
         } else if (targetType === "device") {
-          const areaId = this.hass.devices[targetId]?.area_id;
-          if (areaId) {
-            subtitle = computeAreaName(this.hass.areas[areaId]) || areaId;
+          const device = this.hass.devices[targetId];
+          const area = device
+            ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+            : undefined;
+          const parentDevice = device?.parent_device_id
+            ? this.hass.devices[device.parent_device_id]
+            : undefined;
+          if (area) {
+            subtitle = [
+              computeAreaName(area) || area.area_id,
+              parentDevice ? computeDeviceName(parentDevice) : undefined,
+            ]
+              .filter(Boolean)
+              .join(separator);
           } else {
-            const device = this.hass.devices[targetId];
             subtitle = this.hass.localize(
               `ui.panel.config.automation.editor.${device?.entry_type === "service" ? "services" : "unassigned_devices"}`
             );
@@ -933,25 +951,28 @@ class DialogAddAutomationElement
             );
           } else {
             const stateObj = this.hass.states[targetId];
-            const [entityName, deviceName, areaName] = computeEntityNameList(
-              stateObj,
-              [{ type: "entity" }, { type: "device" }, { type: "area" }],
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
-            );
-
-            subtitle = [areaName, entityName ? deviceName : undefined]
-              .filter(Boolean)
-              .join(
-                computeRTL(
-                  this.hass.language,
-                  this.hass.translationMetadata.translations
-                )
-                  ? " ◂ "
-                  : " ▸ "
+            const [entityName, deviceName, parentDeviceName, areaName] =
+              computeEntityNameList(
+                stateObj,
+                [
+                  { type: "entity" },
+                  { type: "device" },
+                  { type: "parent_device" },
+                  { type: "area" },
+                ],
+                this.hass.entities,
+                this.hass.devices,
+                this.hass.areas,
+                this.hass.floors
               );
+
+            subtitle = [
+              areaName,
+              parentDeviceName,
+              entityName ? deviceName : undefined,
+            ]
+              .filter(Boolean)
+              .join(separator);
           }
         }
 
