@@ -188,6 +188,7 @@ export interface EntityRegistryOptions {
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
   "cloud.google_assistant"?: Record<string, unknown>;
+  google_assistant?: Record<string, unknown>;
 }
 
 export interface EntityRegistryEntryUpdateParams {

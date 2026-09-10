@@ -39,6 +39,8 @@ class HaConfigVoiceAssistants extends HassRouterPage {
 
   @state() private _exposedEntities?: Record<string, ExposeEntitySettings>;
 
+  @state() private _lockedEntities?: Record<string, ExposeEntitySettings>;
+
   public connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
@@ -86,6 +88,7 @@ class HaConfigVoiceAssistants extends HassRouterPage {
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
     pageEl.exposedEntities = this._exposedEntities;
+    pageEl.lockedEntities = this._lockedEntities;
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
@@ -95,11 +98,12 @@ class HaConfigVoiceAssistants extends HassRouterPage {
   }
 
   private _fetchExposedEntities = async () => {
-    this._exposedEntities = (
-      await listExposedEntities(this.hass)
-    ).exposed_entities;
+    const result = await listExposedEntities(this.hass);
+    this._exposedEntities = result.exposed_entities;
+    this._lockedEntities = result.locked_entities;
     if (this.lastChild) {
       (this.lastChild as any).exposedEntities = this._exposedEntities;
+      (this.lastChild as any).lockedEntities = this._lockedEntities;
     }
   };
 }

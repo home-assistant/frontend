@@ -5,6 +5,7 @@ import type { ExposeEntitySettings } from "../../../data/expose";
 export interface VoiceSettingsDialogParams {
   entityId: string;
   exposed: ExposeEntitySettings;
+  locked?: ExposeEntitySettings;
   extEntityReg?: ExtEntityRegistryEntry;
   exposedEntitiesChanged?: () => void;
 }
