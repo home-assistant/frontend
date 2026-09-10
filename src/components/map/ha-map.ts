@@ -1107,10 +1107,12 @@ export class HaMap extends ReactiveElement {
     this._zoneHandles = [];
     this._focusZonePoints = [];
 
-    if (!this.entities) {
-      engine.setClustering(null);
+    if (!this.entities?.length) {
       // Nothing left to color; let the shared registry stream go
       this._releaseColors();
+    }
+    if (!this.entities) {
+      engine.setClustering(null);
       return;
     }
     this._subscribeColors();
@@ -1121,7 +1123,12 @@ export class HaMap extends ReactiveElement {
     this._zonePositions = {};
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
-      if (stateObj && computeStateDomain(stateObj) === "zone") {
+      // A zone that is not drawn cannot anchor a bubble either
+      if (
+        stateObj &&
+        computeStateDomain(stateObj) === "zone" &&
+        (this.renderPassive || !stateObj.attributes.passive)
+      ) {
         zoneByState[
           stateObj.entity_id === "zone.home"
             ? "home"
