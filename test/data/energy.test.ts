@@ -22,7 +22,6 @@ import {
   getEnergyDefaultPeriodStorageKey,
   getEnergyLiveDayPeriod,
   getEnergyDataCollection,
-  getSuggestedPeriod,
   EMPTY_PREFERENCES,
 } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
@@ -935,60 +934,6 @@ describe("getNextEnergyPeriodStart", () => {
       next.getTime(),
       new Date("2026-06-21T00:00:00-04:00").getTime()
     );
-  });
-});
-
-describe("getSuggestedPeriod", () => {
-  it("uses 5minute for today during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = energyPeriodDay(now);
-    assert.equal(getSuggestedPeriod(start, end, false, now), "5minute");
-  });
-
-  it("uses hour for today after 01:00", () => {
-    const now = new Date("2026-06-20T01:30:00-04:00");
-    const { start, end } = energyPeriodDay(now);
-    assert.equal(getSuggestedPeriod(start, end, false, now), "hour");
-  });
-
-  it("uses hour for a completed yesterday day viewed during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = energyPeriodDay(now, -1);
-    assert.equal(getSuggestedPeriod(start, end, false, now), "hour");
-  });
-
-  it("uses hour for a year-ago short range during hour 0", () => {
-    // YoY compare of "today" during hour 0 is also < 1 hour long, but those
-    // hours completed a year ago so hourly long-term stats already exist.
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const start = new Date("2025-06-20T00:00:00-04:00");
-    const end = new Date("2025-06-20T00:30:00-04:00");
-    assert.equal(getSuggestedPeriod(start, end, false, now), "hour");
-  });
-
-  it("keeps day and month for longer ranges during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const weekStart = calcDate(
-      now,
-      addDays,
-      energyPeriodLocale,
-      energyPeriodConfig,
-      -6
-    );
-    assert.equal(
-      getSuggestedPeriod(
-        calcDate(weekStart, startOfDay, energyPeriodLocale, energyPeriodConfig),
-        energyPeriodDay(now).end,
-        false,
-        now
-      ),
-      "day"
-    );
-
-    // Noon offsets so first/last-of-month checks are stable across UTC CI.
-    const monthStart = new Date("2026-04-01T12:00:00-04:00");
-    const monthEnd = new Date("2026-05-31T12:00:00-04:00");
-    assert.equal(getSuggestedPeriod(monthStart, monthEnd, false, now), "month");
   });
 });
 

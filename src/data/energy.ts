@@ -9,7 +9,6 @@ import {
   isFirstDayOfMonth,
   isLastDayOfMonth,
   startOfDay,
-  startOfHour,
 } from "date-fns";
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
@@ -601,9 +600,6 @@ const getEnergyData = async (
   let statsCompare;
   let startCompare;
   let endCompare;
-  // Compare ranges are completed/historical; pick their period independently so
-  // hour-0's live "5minute" choice is not reused for YoY/previous compare.
-  let periodCompare = period;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
@@ -650,14 +646,13 @@ const getEnergyData = async (
       startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
       endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
-    periodCompare = getSuggestedPeriod(startCompare!, endCompare);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
         startCompare,
         endCompare,
         energyStatIds,
-        periodCompare,
+        period,
         energyUnits,
         ["change"]
       );
@@ -668,7 +663,7 @@ const getEnergyData = async (
         startCompare,
         endCompare,
         waterStatIds,
-        periodCompare,
+        period,
         waterUnits,
         ["change"]
       );
@@ -679,27 +674,22 @@ const getEnergyData = async (
   let _fossilEnergyConsumptionCompare:
     undefined | Promise<FossilEnergyConsumption>;
   if (co2SignalEntity !== undefined) {
-    // Fossil consumption always queries hourly recorder data; "5minute" is
-    // accepted by the schema but does not produce usable results.
-    const fossilPeriod = period === "5minute" ? "hour" : period;
     _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,
       start,
       consumptionStatIDs,
       co2SignalEntity,
       end,
-      fossilPeriod
+      period
     );
     if (compare) {
-      const fossilPeriodCompare =
-        periodCompare === "5minute" ? "hour" : periodCompare;
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
         startCompare,
         consumptionStatIDs,
         co2SignalEntity,
         endCompare,
-        fossilPeriodCompare
+        period
       );
     }
   }
@@ -868,8 +858,9 @@ export const getEnergyDefaultPeriodStorageKey = (
 };
 
 // Live day used while a rollover timer is scheduled. Custom dates do not use
-// this. Always today — kWh fetches use 5-minute stats in hour 0 via
-// getSuggestedPeriod, so the graph is not empty after the first bucket.
+// this. Always today — Core fills the unfinished current hour from short-term
+// stats in statistics_during_period, so hour/day charts are not empty after
+// the first short-term bucket.
 export const getEnergyLiveDayPeriod = (
   now: Date,
   locale: HomeAssistant["locale"],
@@ -1793,36 +1784,20 @@ export const formatPowerShort = (
 export function getSuggestedPeriod(
   start: Date,
   end?: Date,
-  fine = false,
-  now = new Date()
+  fine = false
 ): "5minute" | "hour" | "day" | "month" {
-  const dayDifference = differenceInDays(end || now, start);
+  const dayDifference = differenceInDays(end || new Date(), start);
 
   if (fine) {
     return dayDifference > 64 ? "day" : dayDifference > 8 ? "hour" : "5minute";
   }
-  const coarse =
-    isFirstDayOfMonth(start) &&
+  return isFirstDayOfMonth(start) &&
     (!end || isLastDayOfMonth(end)) &&
     dayDifference > 35
-      ? "month"
-      : dayDifference > 2
-        ? "day"
-        : "hour";
-
-  // Hourly long-term stats for the current hour do not exist until it ends.
-  // Use 5-minute short-term stats only for the live incomplete hour — not for
-  // historical short ranges (e.g. year-over-year compare during hour 0).
-  if (coarse === "hour") {
-    const rangeEnd = Math.min((end ?? now).getTime(), now.getTime());
-    if (
-      start.getTime() >= startOfHour(now).getTime() &&
-      rangeEnd - start.getTime() < 60 * 60 * 1000
-    ) {
-      return "5minute";
-    }
-  }
-  return coarse;
+    ? "month"
+    : dayDifference > 2
+      ? "day"
+      : "hour";
 }
 
 export const downloadEnergyData = (
