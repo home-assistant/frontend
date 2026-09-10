@@ -176,7 +176,8 @@ export class HaDurationInput extends LitElement {
   }
 
   private _withSign(value: HaDurationData, negative: boolean): HaDurationData {
-    return { ...normalizeDuration(value), negative };
+    const { negative: _negative, ...components } = normalizeDuration(value);
+    return negative ? { negative: true, ...components } : components;
   }
 
   static styles = css`
