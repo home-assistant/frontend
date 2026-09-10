@@ -502,9 +502,13 @@ export class HaMap extends ReactiveElement {
     }
 
     this._updateMapStyle();
-    // Marker and trail colors were resolved from the theme when drawn
+    // Marker, trail and circle colors were resolved from the theme when drawn
     this._drawEntities();
     this._drawPaths();
+    if (this._editableHandles.size) {
+      this._removeEditableLocations();
+      this._drawEditableLocations();
+    }
   }
 
   private get _darkMode() {

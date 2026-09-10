@@ -1189,13 +1189,16 @@ export class MapLibreMapEngine implements MapEngine {
     const clusterable = this._markers.filter(
       (managed) => managed.options.cluster && !managed.removed
     );
-    // A member that had focus hands it to the icon replacing it; read before
-    // the open bubble holding it is removed
+    // A member or bubble that had focus hands it to the icon replacing it;
+    // read before the bubble holding it is removed
     const active = (
       this._map.getContainer().getRootNode() as Document | ShadowRoot
     ).activeElement;
     const focusedMember = active
-      ? clusterable.find((managed) => managed.element.contains(active))
+      ? (clusterable.find((managed) => managed.element.contains(active)) ??
+        this._clusterGroups.find((group) =>
+          group.iconMarker?.getElement().contains(active)
+        )?.members[0])
       : undefined;
     this._clusterGroups.forEach((group) => group.iconMarker?.remove());
 
