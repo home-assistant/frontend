@@ -4,8 +4,12 @@ import type {
   SecurityAlertEntityConfig,
   SecurityAlertSeverity,
 } from "../../../data/frontend";
-import type { StateCondition } from "../../lovelace/common/validate-condition";
+import type { HomeAssistant } from "../../../types";
 import type { AlertCardConfig } from "../../lovelace/cards/types";
+import {
+  checkConditionsMet,
+  type StateCondition,
+} from "../../lovelace/common/validate-condition";
 
 const DANGER_BINARY_SENSOR_DEVICE_CLASSES = [
   "carbon_monoxide",
@@ -74,12 +78,36 @@ export const computeDefaultSecurityAlertVisibility = (
   return [condition];
 };
 
+export const resolveSecurityAlertSeverity = (
+  alertEntity: SecurityAlertEntityConfig,
+  stateObj?: HassEntity
+): SecurityAlertSeverity =>
+  alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
+
+export const isSecurityAlertActive = (
+  hass: HomeAssistant,
+  entityId: string
+): boolean =>
+  checkConditionsMet(computeDefaultSecurityAlertVisibility(entityId), hass, {});
+
+export const filterSecurityAlertEntities = (
+  alertEntities: SecurityAlertEntityConfig[],
+  hass: HomeAssistant,
+  severity: SecurityAlertSeverity
+): SecurityAlertEntityConfig[] =>
+  alertEntities.filter(
+    (alertEntity) =>
+      resolveSecurityAlertSeverity(
+        alertEntity,
+        hass.states[alertEntity.entity]
+      ) === severity
+  );
+
 export const computeSecurityAlertCardConfig = (
   stateObj: HassEntity | undefined,
   alertEntity: SecurityAlertEntityConfig
 ): AlertCardConfig => {
-  const severity =
-    alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
+  const severity = resolveSecurityAlertSeverity(alertEntity, stateObj);
   return {
     type: "alert",
     entity: alertEntity.entity,
