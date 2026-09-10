@@ -1,6 +1,11 @@
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CONTEXT_RESTORE_GRACE } from "../../../src/common/map/base-layer";
+import {
+  circleBoundsPoints,
+  distanceMeters,
+  pointEastOf,
+} from "../../../src/common/map/map-engine";
 import { MapLibreMapEngine } from "../../../src/common/map/engines/maplibre-map-engine";
 import type {
   MapEngineEvents,
@@ -34,8 +39,14 @@ const fakes = vi.hoisted(() => {
 
     onMap = false;
 
+    handlers: Record<string, Listener[]> = {};
+
     constructor(options: any) {
       this.options = options;
+    }
+
+    fire(type: string) {
+      (this.handlers[type] ?? []).forEach((handler) => handler());
     }
 
     setLngLat(lngLat: [number, number]) {
@@ -50,7 +61,13 @@ const fakes = vi.hoisted(() => {
     addTo() {
       this.onMap = true;
       FakeMarker.all.push(this);
-      document.body.appendChild(this.options.element);
+      const element = this.options.element as HTMLElement;
+      element.classList.add(
+        "maplibregl-marker",
+        "maplibregl-marker-anchor-center"
+      );
+      element.style.transform = "translate(10px, 10px)";
+      document.body.appendChild(element);
       return this;
     }
 
@@ -68,7 +85,8 @@ const fakes = vi.hoisted(() => {
       return this.options.element as HTMLElement;
     }
 
-    on() {
+    on(type: string, handler: Listener) {
+      (this.handlers[type] ??= []).push(handler);
       return this;
     }
   }
@@ -226,8 +244,17 @@ const fakes = vi.hoisted(() => {
       this.style.sources[id] = source;
     }
 
+    // A live source updates the spec it was created from, as MapLibre's does
     getSource(id: string) {
-      return this.style.sources[id];
+      const spec = this.style.sources[id] as { data?: unknown } | undefined;
+      return spec
+        ? {
+            ...spec,
+            setData: (data: unknown) => {
+              spec.data = data;
+            },
+          }
+        : undefined;
     }
 
     removeSource(id: string) {
@@ -368,6 +395,7 @@ describe("MapLibreMapEngine", () => {
   afterEach(() => {
     document.body.innerHTML = "";
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   describe("style lifecycle", () => {
@@ -577,6 +605,99 @@ describe("MapLibreMapEngine", () => {
   });
 
   describe("markers", () => {
+    it("hands a removed element back without MapLibre's positioning", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      const handle = engine.addMarker(element, [52, 4], { size: [36, 36] });
+      expect(element.classList.contains("maplibregl-marker")).toBe(true);
+
+      handle.remove();
+      expect(element.className).toBe("");
+      expect(element.style.transform).toBe("");
+    });
+
+    it("resets every element it placed when destroyed", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], { size: [36, 36] });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+      });
+
+      engine.destroy();
+      expect(element.className).toBe("");
+      expect(center.className).toBe("");
+      expect(center.style.transform).toBe("");
+    });
+
+    it("shows a move cursor only on elements it made draggable", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const plain = document.createElement("div");
+      engine.addMarker(plain, [52, 4], { size: [36, 36] });
+      const draggable = document.createElement("div");
+      const handle = engine.editing.addDraggableMarker(draggable, [52, 4], {
+        size: [36, 36],
+      });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+        moveable: true,
+      });
+
+      expect(plain.style.cursor).toBe("");
+      expect(draggable.style.cursor).toBe("move");
+      expect(center.style.cursor).toBe("move");
+      handle.remove();
+      expect(draggable.style.cursor).toBe("");
+    });
+
+    it("relabels a reused element and leaves the caller's own attributes alone", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine
+        .addMarker(element, [52, 4], { size: [36, 36], title: "Thuis" })
+        .remove();
+      expect(element.hasAttribute("aria-label")).toBe(false);
+      expect(element.tabIndex).toBe(-1);
+
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Home",
+        focusable: false,
+      });
+      expect(element.getAttribute("aria-label")).toBe("Home");
+      expect(element.getAttribute("role")).toBe("img");
+
+      const named = document.createElement("div");
+      named.setAttribute("aria-label", "Mine");
+      engine.addMarker(named, [52, 4], { size: [36, 36], title: "Engine" });
+      expect(named.getAttribute("aria-label")).toBe("Mine");
+    });
+
+    it("gives button semantics only to focusable markers", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Pin",
+        focusable: false,
+      });
+
+      expect(element.tabIndex).toBe(-1);
+      expect(element.getAttribute("role")).toBe("img");
+      expect(element.style.pointerEvents).toBe("");
+    });
+
     it("lets input through non-interactive markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -784,6 +905,278 @@ describe("MapLibreMapEngine", () => {
       expect(map.fitBounds).toHaveBeenCalledOnce();
       icon.click();
       expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("editing", () => {
+    const circleSource = (map: InstanceType<typeof fakeMap>) =>
+      Object.entries(map.style.sources).find(([id]) =>
+        id.startsWith("ha-map-editable")
+      )?.[1] as { data: unknown } | undefined;
+
+    const addCircle = (
+      engine: MapLibreMapEngine,
+      overrides: Partial<
+        Parameters<typeof engine.editing.addEditableCircle>[1]
+      > = {}
+    ) => {
+      const callbacks = {
+        onMove: vi.fn(),
+        onResize: vi.fn(),
+        onClick: vi.fn(),
+      };
+      const handle = engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        moveable: true,
+        resizable: true,
+        title: "Home",
+        ...callbacks,
+        ...overrides,
+      });
+      const [center, resize] = fakeMarker.all;
+      return { handle, center, resize, ...callbacks };
+    };
+
+    beforeEach(() => {
+      // The circle redraws once per frame; run frames synchronously
+      // Returning a frame id here would land in the engine's pending frame
+      // after the callback already cleared it, suppressing later redraws
+      vi.stubGlobal("requestAnimationFrame", (callback: () => void) => {
+        callback();
+        return undefined;
+      });
+      vi.stubGlobal("cancelAnimationFrame", () => undefined);
+    });
+
+    it("draws a circle with a draggable center and a resize handle", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { center, resize } = addCircle(engine);
+
+      expect(fakeMarker.all).toHaveLength(2);
+      expect(center.options.draggable).toBe(true);
+      expect(center.options.element.getAttribute("role")).toBe("button");
+      expect(resize.options.draggable).toBe(true);
+      expect(resize.options.element.getAttribute("role")).toBe("slider");
+      expect(resize.options.element.getAttribute("aria-valuenow")).toBe("100");
+      expect(circleSource(map)).toBeDefined();
+      expect(
+        layerIds(map).filter((id) => id.startsWith("ha-map-editable"))
+      ).toHaveLength(2);
+    });
+
+    it("moves with its center and reports the drop", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { handle, center, resize, onMove } = addCircle(engine);
+      const before = circleSource(map)!.data;
+
+      center.lngLat = [4.01, 52];
+      center.fire("dragstart");
+      center.fire("drag");
+      expect(onMove).not.toHaveBeenCalled();
+      // The circle and the handle follow while dragging
+      expect(circleSource(map)!.data).not.toBe(before);
+      expect(resize.lngLat![0]).toBeCloseTo(pointEastOf([52, 4.01], 100)[1], 6);
+
+      center.fire("dragend");
+      expect(onMove).toHaveBeenCalledWith([52, 4.01]);
+      expect(handle.center).toEqual([52, 4.01]);
+    });
+
+    it("resizes from the handle and snaps it back onto the edge", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize, onResize } = addCircle(engine);
+
+      const east = pointEastOf([52, 4], 250);
+      resize.lngLat = [east[1], east[0]];
+      resize.fire("dragstart");
+      resize.fire("drag");
+      resize.fire("dragend");
+
+      expect(onResize).toHaveBeenCalledOnce();
+      expect(onResize.mock.calls[0][0]).toBeCloseTo(250, 0);
+      expect(handle.radius).toBeCloseTo(250, 0);
+      expect(resize.options.element.getAttribute("aria-valuenow")).toBe("250");
+    });
+
+    it("resizes in steps with the arrow keys, committing on key release", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize, onResize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      expect(handle.radius).toBeCloseTo(121, 5);
+      expect(onResize).not.toHaveBeenCalled();
+
+      element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
+      expect(onResize).toHaveBeenCalledOnce();
+      expect(onResize.mock.calls[0][0]).toBeCloseTo(121, 5);
+    });
+
+    it("holds a keyboard resize against host updates like a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      // A re-render with the old radius while the key is held changes nothing
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBeCloseTo(110, 5);
+
+      element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
+      // The host echoes the old radius once before its save returns
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBeCloseTo(110, 5);
+      // A later identical update is a real change
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBe(100);
+    });
+
+    it("keeps arrow keys on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("keydown", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true })
+      );
+      expect(handle.radius).toBeCloseTo(110, 5);
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("keydown", reachedMap);
+    });
+
+    it("places the handle on the drawn circle at any latitude", () => {
+      for (const [latitude, radius] of [
+        [0, 1000],
+        [52, 1000],
+        [89.9, 1000],
+        [89.9, 100000],
+      ]) {
+        const center: [number, number] = [latitude, 4];
+        const east = pointEastOf(center, radius);
+        expect(distanceMeters(center, east)).toBeCloseTo(radius, 0);
+        const [southWest, northEast] = circleBoundsPoints(center, radius);
+        // Valid bounds that contain the handle
+        expect(southWest[0]).toBeGreaterThanOrEqual(-90);
+        expect(northEast[0]).toBeLessThanOrEqual(90);
+        expect(east[1]).toBeGreaterThanOrEqual(southWest[1] - 1e-9);
+        expect(east[1]).toBeLessThanOrEqual(northEast[1] + 1e-9);
+      }
+      // A circle over the pole covers every longitude
+      expect(circleBoundsPoints([89.9, 4], 100000)[1]).toEqual([90, 180]);
+    });
+
+    it("keeps a click on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("click", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new MouseEvent("click", { bubbles: true })
+      );
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("click", reachedMap);
+    });
+
+    it("raises the advertised maximum above a larger radius", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+      expect(element.getAttribute("aria-valuemax")).toBe("100000");
+
+      handle.update([52, 4], 150000);
+      expect(element.getAttribute("aria-valuemax")).toBe("150000");
+      expect(element.getAttribute("aria-valuenow")).toBe("150000");
+    });
+
+    it("ignores one update echoing the values from before a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, center } = addCircle(engine);
+
+      center.lngLat = [4.01, 52];
+      center.fire("dragstart");
+      // Nothing moves while a drag is in progress
+      handle.update([53, 5], 500);
+      expect(handle.center).toEqual([52, 4]);
+      center.fire("drag");
+      center.fire("dragend");
+
+      // The host saves and echoes the old values once; that is not a move back
+      handle.update([52, 4], 100);
+      expect(handle.center).toEqual([52, 4.01]);
+      // A later identical update is a real change
+      handle.update([52, 4], 100);
+      expect(handle.center).toEqual([52, 4]);
+    });
+
+    it("activates the center by click, Enter and Space, but not after a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { center, onClick } = addCircle(engine);
+      const element = center.options.element as HTMLElement;
+
+      element.dispatchEvent(new MouseEvent("pointerdown"));
+      element.click();
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: " " }));
+      expect(onClick).toHaveBeenCalledTimes(3);
+
+      // A drag ends with a click on the element; that one is not an activation
+      element.dispatchEvent(new MouseEvent("pointerdown"));
+      center.fire("dragstart");
+      center.fire("dragend");
+      element.click();
+      expect(onClick).toHaveBeenCalledTimes(3);
+    });
+
+    it("keeps a circle moved while a swapped style was loading", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      engine.setDarkMode(true);
+      await flush();
+      expect(map.isStyleLoaded()).toBe(false);
+
+      const handle = engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+      });
+      handle.update([53, 5], 200);
+      map.loadStyle();
+
+      const source = circleSource(map)!;
+      const ring = (source.data as { geometry: { coordinates: number[][][] } })
+        .geometry.coordinates[0];
+      // The polygon sits around the moved center, not the original one
+      expect(ring[0][1]).toBeCloseTo(53, 1);
+      expect(ring[0][0]).toBeCloseTo(5, 1);
+    });
+
+    it("removes its markers, layers, and listeners", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { handle, center, onClick } = addCircle(engine);
+      const element = center.options.element as HTMLElement;
+
+      handle.remove();
+      expect(fakeMarker.all).toHaveLength(0);
+      expect(circleSource(map)).toBeUndefined();
+      expect(
+        layerIds(map).filter((id) => id.startsWith("ha-map-editable"))
+      ).toHaveLength(0);
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      expect(onClick).not.toHaveBeenCalled();
     });
   });
 });

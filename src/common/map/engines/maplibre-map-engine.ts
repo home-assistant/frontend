@@ -1,5 +1,6 @@
 import type { Feature, FeatureCollection, Polygon } from "geojson";
 import type {
+  GeoJSONSource,
   IControl,
   LayerSpecification,
   Map as MapLibreMap,
@@ -9,7 +10,10 @@ import type {
   StyleSpecification,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
-import { setMarkerAccessibility } from "../marker-accessibility";
+import {
+  clearMarkerAccessibility,
+  setMarkerAccessibility,
+} from "../marker-accessibility";
 import {
   CONTEXT_RESTORE_GRACE,
   ensureRTLTextPlugin,
@@ -29,16 +33,27 @@ import type {
   MapCircleOptions,
   MapClusterOptions,
   MapControlPosition,
+  MapDraggableMarkerOptions,
+  MapEditableCircleHandle,
+  MapEditableCircleOptions,
+  MapEditableMarkerHandle,
+  MapEditingSupport,
   MapEngine,
+  MapMarkerHandle,
   MapEngineEvents,
   MapEngineOptions,
   MapFitOptions,
   MapItemHandle,
   MapLatLng,
-  MapMarkerHandle,
   MapMarkerOptions,
   MapPath,
 } from "../map-engine";
+import { destinationPoint, distanceMeters, pointEastOf } from "../map-engine";
+import {
+  createResizeHandleElement,
+  RADIUS_ARIA_MAX,
+  RESIZE_KEY_STEP,
+} from "../editable-circle";
 
 type MapLibreModule = typeof maplibregl;
 
@@ -79,6 +94,7 @@ const resetMarkerElement = (element: HTMLElement): void => {
   element.style.transform = "";
   element.style.opacity = "";
   element.style.pointerEvents = "";
+  element.style.cursor = "";
 };
 
 // A meter-radius circle as a polygon (spherical approximation)
@@ -87,16 +103,10 @@ const circlePolygon = (
   radiusMeters: number
 ): Feature<Polygon> => {
   const steps = 64;
-  const latOffset = radiusMeters / 111320;
-  const lngOffset =
-    latOffset / Math.max(Math.cos((center[0] * Math.PI) / 180), 0.01);
   const ring: [number, number][] = [];
   for (let i = 0; i <= steps; i++) {
-    const theta = (2 * Math.PI * i) / steps;
-    ring.push([
-      center[1] + lngOffset * Math.sin(theta),
-      center[0] + latOffset * Math.cos(theta),
-    ]);
+    const point = destinationPoint(center, radiusMeters, (360 * i) / steps);
+    ring.push([point[1], point[0]]);
   }
   return {
     type: "Feature",
@@ -109,7 +119,12 @@ interface ManagedMarker {
   element: HTMLElement;
   location: MapLatLng;
   options: MapMarkerOptions;
-  handle: MapMarkerHandle;
+  handle: MapEditableMarkerHandle;
+  draggable?: boolean;
+  onDragEnd?: (location: MapLatLng) => void;
+  dragging?: boolean;
+  /** Pre-drag location; the next update echoing it is ignored (see setLocation) */
+  staleLocation?: MapLatLng;
   mlMarker?: MapLibreMarker;
   decoration?: MapItemHandle;
   removed?: boolean;
@@ -182,6 +197,10 @@ export class MapLibreMapEngine implements MapEngine {
   private _resizing = false;
 
   private _settleInit?: () => void;
+
+  // Caller-owned elements on the map, reset when they leave it: a host may
+  // reuse them on another engine after a fallback
+  private _placedElements = new Set<HTMLElement>();
 
   public async init(
     container: HTMLElement,
@@ -348,6 +367,11 @@ export class MapLibreMapEngine implements MapEngine {
     this._clusterGroups = [];
     this._markers = [];
     this._pendingStyleOps = [];
+    this._placedElements.forEach((element) => {
+      resetMarkerElement(element);
+      clearMarkerAccessibility(element);
+    });
+    this._placedElements.clear();
     this._map?.remove();
     this._map = undefined;
   }
@@ -411,12 +435,14 @@ export class MapLibreMapEngine implements MapEngine {
   }
 
   private _carryCustomLayers(
-    previous: StyleSpecification | undefined,
+    _previous: StyleSpecification | undefined,
     next: StyleSpecification
   ): StyleSpecification {
     const sources = { ...next.sources };
+    // Our record, not MapLibre's serialization: an update made while the
+    // style was unloaded only reached the record
     for (const [id, source] of this._customSources) {
-      sources[id] = previous?.sources?.[id] ?? source;
+      sources[id] = source;
     }
     const nextIds = new Set(next.layers.map((layer) => layer.id));
     const customLayers = [...this._customLayers.values()].filter(
@@ -513,36 +539,91 @@ export class MapLibreMapEngine implements MapEngine {
     );
   }
 
+  public panTo(location: MapLatLng): void {
+    this._map?.panTo([location[1], location[0]]);
+  }
+
+  public containsLocation(location: MapLatLng): boolean {
+    return this._map?.getBounds().contains([location[1], location[0]]) ?? false;
+  }
+
   public addMarker(
     element: HTMLElement,
     location: MapLatLng,
     options: MapMarkerOptions
   ): MapMarkerHandle {
+    return this._addMarker(element, location, options);
+  }
+
+  public editing: MapEditingSupport = {
+    addDraggableMarker: (element, location, options) =>
+      this._addMarker(element, location, options, true),
+    addEditableCircle: (center, options) =>
+      this._addEditableCircle(center, options),
+  };
+
+  private _addMarker(
+    element: HTMLElement,
+    location: MapLatLng,
+    options: MapDraggableMarkerOptions,
+    draggable = false
+  ): MapEditableMarkerHandle {
     element.style.width = `${options.size[0]}px`;
     element.style.height = `${options.size[1]}px`;
     if (options.title) {
       element.title = options.title;
     }
-    if (options.interactive ?? true) {
-      element.tabIndex = 0;
-    } else {
+    const interactive = options.interactive ?? true;
+    const focusable = options.focusable ?? interactive;
+    if (!interactive) {
       // Leaflet lets input through non-interactive markers; MapLibre does not
       element.style.pointerEvents = "none";
     }
-    setMarkerAccessibility(element, options.title, options.interactive ?? true);
+    setMarkerAccessibility(element, options.title, focusable);
+    if (draggable) {
+      // The engine, not the host, knows whether this element really drags
+      element.style.cursor = "move";
+    }
+    this._placedElements.add(element);
 
     const managed: ManagedMarker = {
       element,
       location,
       options,
-      handle: undefined as unknown as MapMarkerHandle,
+      draggable,
+      onDragEnd: options.onDragEnd,
+      handle: undefined as unknown as MapEditableMarkerHandle,
     };
     managed.handle = {
-      location,
+      get location() {
+        return managed.location;
+      },
       clusterData: options.clusterData,
+      setLocation: (newLocation) => {
+        if (managed.dragging) {
+          return;
+        }
+        // Skip one update echoing the pre-drag location (the save has not returned yet)
+        const stale = managed.staleLocation;
+        managed.staleLocation = undefined;
+        if (
+          stale &&
+          newLocation[0] === stale[0] &&
+          newLocation[1] === stale[1]
+        ) {
+          return;
+        }
+        managed.location = newLocation;
+        managed.mlMarker?.setLngLat([newLocation[1], newLocation[0]]);
+      },
       remove: () => {
         managed.removed = true;
         this._hideMarker(managed);
+        // Still inside an open cluster bubble otherwise
+        element.remove();
+        resetMarkerElement(element);
+        clearMarkerAccessibility(element);
+        this._placedElements.delete(element);
         const index = this._markers.indexOf(managed);
         if (index !== -1) {
           this._markers.splice(index, 1);
@@ -566,6 +647,7 @@ export class MapLibreMapEngine implements MapEngine {
       const { options } = managed;
       managed.mlMarker = new this._maplibre.Marker({
         element: managed.element,
+        draggable: managed.draggable ?? false,
         ...(options.anchor
           ? {
               anchor: "top-left" as const,
@@ -578,6 +660,18 @@ export class MapLibreMapEngine implements MapEngine {
       })
         .setLngLat([managed.location[1], managed.location[0]])
         .addTo(this._map);
+      if (managed.draggable) {
+        managed.mlMarker.on("dragstart", () => {
+          managed.dragging = true;
+          managed.staleLocation = managed.location;
+        });
+        managed.mlMarker.on("dragend", () => {
+          managed.dragging = false;
+          const lngLat = managed.mlMarker!.getLngLat();
+          managed.location = [lngLat.lat, lngLat.lng];
+          managed.onDragEnd?.(managed.location);
+        });
+      }
     }
     if (managed.options.decoration && !managed.decoration) {
       managed.decoration = this.addCircle(
@@ -617,6 +711,261 @@ export class MapLibreMapEngine implements MapEngine {
     });
     return {
       remove: () => {
+        this._removeCustomLayer(`${id}-fill`);
+        this._removeCustomLayer(`${id}-line`);
+        this._removeCustomSource(id);
+      },
+    };
+  }
+
+  private _addEditableCircle(
+    center: MapLatLng,
+    options: MapEditableCircleOptions
+  ): MapEditableCircleHandle {
+    if (!this._map || !this._maplibre) {
+      return {
+        center,
+        radius: options.radius,
+        update: () => undefined,
+        remove: () => undefined,
+      };
+    }
+    const map = this._map;
+    const maplibre = this._maplibre;
+    let currentCenter = center;
+    let currentRadius = options.radius;
+
+    const id = `${CUSTOM_PREFIX}editable-${this._idCounter++}`;
+    this._addCustomSource(id, circlePolygon(center, options.radius));
+    this._addCustomLayer({
+      id: `${id}-fill`,
+      type: "fill",
+      source: id,
+      paint: { "fill-color": options.color, "fill-opacity": 0.2 },
+    });
+    this._addCustomLayer({
+      id: `${id}-line`,
+      type: "line",
+      source: id,
+      paint: { "line-color": options.color, "line-width": 3 },
+    });
+    // Redraw at most once per frame while dragging
+    let frame: number | undefined;
+    const redraw = () => {
+      if (frame !== undefined) {
+        return;
+      }
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+        this._setCustomSourceData(
+          id,
+          circlePolygon(currentCenter, currentRadius)
+        );
+      });
+    };
+
+    const centerSize = options.centerSize ?? [16, 16];
+    const centerEl = options.centerElement ?? document.createElement("div");
+    if (!options.centerElement) {
+      centerEl.className = "editable-circle-center";
+    }
+    centerEl.style.width = `${centerSize[0]}px`;
+    centerEl.style.height = `${centerSize[1]}px`;
+    if (options.title) {
+      centerEl.title = options.title;
+    }
+    setMarkerAccessibility(centerEl, options.title, !!options.onClick);
+    if (options.moveable) {
+      centerEl.style.cursor = "move";
+    }
+    this._placedElements.add(centerEl);
+    const centerMarker = new maplibre.Marker({
+      element: centerEl,
+      draggable: options.moveable ?? false,
+    })
+      .setLngLat([center[1], center[0]])
+      .addTo(map);
+
+    let resizeMarker: MapLibreMarker | undefined;
+    let resizeHandle: HTMLElement | undefined;
+    const placeResizeHandle = () => {
+      const east = pointEastOf(currentCenter, currentRadius);
+      resizeMarker?.setLngLat([east[1], east[0]]);
+      const radiusText = String(Math.round(currentRadius));
+      resizeHandle?.setAttribute(
+        "aria-valuemax",
+        String(Math.max(RADIUS_ARIA_MAX, Math.round(currentRadius)))
+      );
+      resizeHandle?.setAttribute("aria-valuenow", radiusText);
+      // Without a value text the value is read as a percentage of the range
+      resizeHandle?.setAttribute("aria-valuetext", radiusText);
+    };
+
+    // Skip one update echoing the pre-edit values (the save has not returned yet)
+    let dragging = false;
+    let staleCenter: MapLatLng | undefined;
+    let staleRadius: number | undefined;
+
+    if (options.resizable) {
+      const east = pointEastOf(center, options.radius);
+      resizeHandle = createResizeHandleElement(options.resizeLabel);
+      resizeMarker = new maplibre.Marker({
+        element: resizeHandle,
+        draggable: true,
+      })
+        .setLngLat([east[1], east[0]])
+        .addTo(map);
+      placeResizeHandle();
+      resizeMarker.on("drag", () => {
+        const lngLat = resizeMarker!.getLngLat();
+        currentRadius = Math.max(
+          1,
+          distanceMeters(currentCenter, [lngLat.lat, lngLat.lng])
+        );
+        redraw();
+      });
+      resizeMarker.on("dragend", () => {
+        // Snap the handle back onto the east edge
+        placeResizeHandle();
+        options.onResize?.(currentRadius);
+      });
+      // Arrow keys resize in steps, committed on key release
+      let keyboardRadius: number | undefined;
+      resizeHandle.addEventListener("keydown", (ev) => {
+        const direction =
+          ev.key === "ArrowRight" || ev.key === "ArrowUp"
+            ? 1
+            : ev.key === "ArrowLeft" || ev.key === "ArrowDown"
+              ? -1
+              : 0;
+        if (!direction) {
+          return;
+        }
+        ev.preventDefault();
+        // MapLibre pans on arrow keys reaching the map
+        ev.stopPropagation();
+        if (keyboardRadius === undefined) {
+          // Host updates treat a key resize like a drag
+          dragging = true;
+          staleCenter = currentCenter;
+          staleRadius = currentRadius;
+        }
+        currentRadius = Math.max(
+          1,
+          currentRadius * (1 + direction * RESIZE_KEY_STEP)
+        );
+        keyboardRadius = currentRadius;
+        placeResizeHandle();
+        redraw();
+      });
+      const commitKeyboardResize = () => {
+        if (keyboardRadius !== undefined) {
+          keyboardRadius = undefined;
+          dragging = false;
+          options.onResize?.(currentRadius);
+        }
+      };
+      resizeHandle.addEventListener("keyup", commitKeyboardResize);
+      // Focus can leave while a key is still held
+      resizeHandle.addEventListener("blur", commitKeyboardResize);
+      // Like the other markers: a click on the handle is not a map click
+      resizeHandle.addEventListener("click", (ev) => ev.stopPropagation());
+    }
+
+    [centerMarker, resizeMarker].forEach((handleMarker) => {
+      handleMarker?.on("dragstart", () => {
+        dragging = true;
+        staleCenter = currentCenter;
+        staleRadius = currentRadius;
+      });
+      handleMarker?.on("dragend", () => {
+        dragging = false;
+      });
+    });
+    const isStale = (candidateCenter: MapLatLng, candidateRadius: number) =>
+      staleCenter !== undefined &&
+      staleRadius !== undefined &&
+      candidateCenter[0] === staleCenter[0] &&
+      candidateCenter[1] === staleCenter[1] &&
+      candidateRadius === staleRadius;
+
+    if (options.moveable) {
+      centerMarker.on("drag", () => {
+        const lngLat = centerMarker.getLngLat();
+        currentCenter = [lngLat.lat, lngLat.lng];
+        placeResizeHandle();
+        redraw();
+      });
+      centerMarker.on("dragend", () => options.onMove?.(currentCenter));
+    }
+
+    // The center element may be reused for a rebuilt circle; its listeners go with this one
+    let removeCenterListeners: (() => void) | undefined;
+    if (options.onClick) {
+      // A drag can end in a click; only one with its own pointer down counts
+      let dragged = false;
+      centerMarker.on("dragstart", () => {
+        dragged = true;
+      });
+      const onPointerDown = () => {
+        dragged = false;
+      };
+      const onClick = (ev: MouseEvent) => {
+        ev.stopPropagation();
+        if (dragged) {
+          return;
+        }
+        options.onClick!();
+      };
+      const onKeydown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          options.onClick!();
+        }
+      };
+      centerEl.addEventListener("pointerdown", onPointerDown);
+      centerEl.addEventListener("click", onClick);
+      centerEl.addEventListener("keydown", onKeydown);
+      removeCenterListeners = () => {
+        centerEl.removeEventListener("pointerdown", onPointerDown);
+        centerEl.removeEventListener("click", onClick);
+        centerEl.removeEventListener("keydown", onKeydown);
+      };
+    }
+
+    return {
+      get center() {
+        return currentCenter;
+      },
+      get radius() {
+        return currentRadius;
+      },
+      update: (newCenter, newRadius) => {
+        if (dragging) {
+          return;
+        }
+        const stale = isStale(newCenter, newRadius);
+        staleCenter = undefined;
+        staleRadius = undefined;
+        if (stale) {
+          return;
+        }
+        currentCenter = newCenter;
+        currentRadius = newRadius;
+        centerMarker.setLngLat([newCenter[1], newCenter[0]]);
+        placeResizeHandle();
+        redraw();
+      },
+      remove: () => {
+        if (frame !== undefined) {
+          cancelAnimationFrame(frame);
+        }
+        removeCenterListeners?.();
+        centerMarker.remove();
+        resetMarkerElement(centerEl);
+        clearMarkerAccessibility(centerEl);
+        this._placedElements.delete(centerEl);
+        resizeMarker?.remove();
         this._removeCustomLayer(`${id}-fill`);
         this._removeCustomLayer(`${id}-line`);
         this._removeCustomSource(id);
@@ -760,40 +1109,58 @@ export class MapLibreMapEngine implements MapEngine {
     id: string,
     data: Feature<Polygon> | FeatureCollection
   ): void {
+    // Recorded now, so an update while the style loads reaches the record and
+    // a swap in between carries it; the map itself may already have it then
+    const source: GeoJSONSourceSpecification = { type: "geojson", data };
+    this._customSources.set(id, source);
     this._whenStyleLoaded(() => {
-      const source: GeoJSONSourceSpecification = { type: "geojson", data };
-      this._map!.addSource(id, source);
-      this._customSources.set(id, source);
+      if (!this._map!.getSource(id)) {
+        this._map!.addSource(id, source);
+      }
     });
   }
 
+  private _setCustomSourceData(
+    id: string,
+    data: Feature<Polygon> | FeatureCollection
+  ): void {
+    const source = this._customSources.get(id);
+    if (source) {
+      source.data = data;
+    }
+    (this._map?.getSource(id) as GeoJSONSource | undefined)?.setData(data);
+  }
+
   private _addCustomLayer(layer: LayerSpecification): void {
+    this._customLayers.set(layer.id, layer);
     this._whenStyleLoaded(() => {
+      if (this._map!.getLayer(layer.id)) {
+        return;
+      }
       // Under the labels, over the base cartography
       const symbolLayer = this._map!.getStyle().layers.find(
         (styleLayer) =>
           styleLayer.type === "symbol" && !this._customLayers.has(styleLayer.id)
       );
       this._map!.addLayer(layer, symbolLayer?.id);
-      this._customLayers.set(layer.id, layer);
     });
   }
 
   private _removeCustomLayer(id: string): void {
+    this._customLayers.delete(id);
     this._whenStyleLoaded(() => {
       if (this._map!.getLayer(id)) {
         this._map!.removeLayer(id);
       }
-      this._customLayers.delete(id);
     });
   }
 
   private _removeCustomSource(id: string): void {
+    this._customSources.delete(id);
     this._whenStyleLoaded(() => {
       if (this._map!.getSource(id)) {
         this._map!.removeSource(id);
       }
-      this._customSources.delete(id);
     });
   }
 
@@ -973,7 +1340,6 @@ export class MapLibreMapEngine implements MapEngine {
         group.iconMarker?.remove();
         this._openGroup(group);
       };
-      icon.element.tabIndex = 0;
       setMarkerAccessibility(
         icon.element,
         group.members

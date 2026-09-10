@@ -1,9 +1,8 @@
 import { consume } from "@lit/context";
 import { isToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
-import type { Layer } from "leaflet";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement } from "lit";
+import { css, ReactiveElement, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
@@ -17,7 +16,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsWebGL2 } from "../../common/map/base-layer";
-import type { LeafletMapEngine } from "../../common/map/engines/leaflet-map-engine";
 import type {
   MapClusterIcon,
   MapEngine,
@@ -27,8 +25,12 @@ import type {
   MapPath,
   MapPathMarker,
   MapPathSegment,
+  MapEditableCircleHandle,
+  MapEditableMarkerHandle,
+  MapEditingSupport,
 } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
+import { editableCircleStyles } from "../../common/map/editable-circle";
 import { filterXSS } from "../../common/util/xss";
 import {
   configContext,
@@ -82,6 +84,125 @@ export const MAP_CARD_MARKER_LABEL_MODES = [
 export type MapCardMarkerLabelMode =
   (typeof MAP_CARD_MARKER_LABEL_MODES)[number];
 
+/** A location drawn for editing: a draggable marker, or a circle with a moveable center and radius */
+export interface HaMapEditableLocation {
+  id: string;
+  location: MapLatLng;
+  radius?: number;
+  /** Element shown at the location, e.g. a named icon */
+  element?: HTMLElement;
+  elementSize?: [width: number, height: number];
+  title?: string;
+  color?: string;
+  locationEditable?: boolean;
+  radiusEditable?: boolean;
+  /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
+  activatable?: boolean;
+}
+
+// Geometry is updated in place; a change to anything else rebuilds the marker
+const sameAppearance = (
+  a: HaMapEditableLocation,
+  b: HaMapEditableLocation
+): boolean =>
+  a.element === b.element &&
+  a.title === b.title &&
+  a.color === b.color &&
+  a.locationEditable === b.locationEditable &&
+  a.radiusEditable === b.radiusEditable &&
+  a.activatable === b.activatable &&
+  a.elementSize?.[0] === b.elementSize?.[0] &&
+  a.elementSize?.[1] === b.elementSize?.[1];
+
+// Without editing support (the Leaflet fallback) locations are static and redrawn on edits
+const staticEditing = (engine: MapEngine): MapEditingSupport => ({
+  addDraggableMarker: (element, location, options) => {
+    let current = location;
+    let marker = engine.addMarker(element, current, options);
+    return {
+      get location() {
+        return current;
+      },
+      clusterData: options.clusterData,
+      setLocation: (newLocation) => {
+        marker.remove();
+        current = newLocation;
+        marker = engine.addMarker(element, current, options);
+      },
+      remove: () => marker.remove(),
+    };
+  },
+  addEditableCircle: (center, options) => {
+    const centerEl = options.centerElement ?? document.createElement("div");
+    if (!options.centerElement) {
+      centerEl.className = "editable-circle-center";
+    }
+    // The center element may be reused for a rebuilt circle; the listeners go with this one
+    let removeListeners: (() => void) | undefined;
+    if (options.onClick) {
+      const onClick = (ev: Event) => {
+        ev.stopPropagation();
+        options.onClick!();
+      };
+      const onKeydown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          options.onClick!();
+        }
+      };
+      centerEl.addEventListener("click", onClick);
+      centerEl.addEventListener("keydown", onKeydown);
+      removeListeners = () => {
+        centerEl.removeEventListener("click", onClick);
+        centerEl.removeEventListener("keydown", onKeydown);
+      };
+    }
+    let current = { center, radius: options.radius };
+    let items: MapItemHandle[] = [];
+    const draw = () => {
+      items = [
+        engine.addCircle(current.center, {
+          radius: current.radius,
+          color: options.color,
+        }),
+        engine.addMarker(centerEl, current.center, {
+          size: options.centerSize ?? [16, 16],
+          interactive: !!options.onClick,
+          title: options.title,
+        }),
+      ];
+    };
+    draw();
+    return {
+      get center() {
+        return current.center;
+      },
+      get radius() {
+        return current.radius;
+      },
+      update: (newCenter, newRadius) => {
+        items.forEach((item) => item.remove());
+        current = { center: newCenter, radius: newRadius };
+        draw();
+      },
+      remove: () => {
+        removeListeners?.();
+        items.forEach((item) => item.remove());
+      },
+    };
+  },
+});
+
+declare global {
+  interface HASSDomEvents {
+    "editable-location-moved": { id: string; location: MapLatLng };
+    "editable-location-resized": { id: string; radius: number };
+    "editable-location-clicked": { id: string };
+    /** Whether the loaded engine can edit; false on the Leaflet fallback */
+    "editing-available-changed": { available: boolean };
+  }
+}
+
 export interface HaMapEntity {
   entity_id: string;
   color: string;
@@ -127,17 +248,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: false }) public paths?: HaMapPaths[];
 
-  /**
-   * Raw Leaflet layers, for ha-locations-editor only. Requires
-   * engine="leaflet".
-   */
-  @property({ attribute: false }) public layers?: Layer[];
-
-  /**
-   * Which map engine to use. "leaflet" is required by embedders that manage
-   * raw Leaflet layers (ha-locations-editor); "auto" picks the best engine.
-   */
-  @property() public engine: "auto" | "leaflet" = "auto";
+  /** Locations drawn with drag handles for editing (ha-locations-editor) */
+  @property({ attribute: false })
+  public editableLocations?: HaMapEditableLocation[];
 
   @property({ type: Boolean }) public clickable = false;
 
@@ -168,11 +281,18 @@ export class HaMap extends ReactiveElement {
 
   private _engine?: MapEngine;
 
-  /** Escape hatch for ha-locations-editor; only set with engine="leaflet" */
-  public get leafletMap() {
-    // Only the Leaflet engine has this property
-    return (this._engine as Partial<LeafletMapEngine> | undefined)?.leafletMap;
-  }
+  // Reconciled by id, so updates move handles instead of recreating them
+  private _editableHandles = new Map<
+    string,
+    (
+      | { kind: "circle"; handle: MapEditableCircleHandle }
+      | { kind: "marker"; handle: MapEditableMarkerHandle }
+    ) & {
+      source: HaMapEditableLocation;
+      /** Detaches what ha-map itself put on the caller's element */
+      cleanup?: () => void;
+    }
+  >();
 
   private _resizeObserver?: ResizeObserver;
 
@@ -227,6 +347,7 @@ export class HaMap extends ReactiveElement {
     this._entityHandles = [];
     this._zoneHandles = [];
     this._pathHandles = [];
+    this._removeEditableLocations();
     this._focusPoints = [];
     this._focusZonePoints = [];
 
@@ -282,12 +403,24 @@ export class HaMap extends ReactiveElement {
       this._drawPaths();
     }
 
-    if (changedProps.has("_loaded") || changedProps.has("layers")) {
-      this._drawLayers(changedProps.get("layers") as Layer[] | undefined);
-      autoFitRequired = true;
+    if (changedProps.has("_loaded") || changedProps.has("editableLocations")) {
+      // Added or removed locations refit; edits keep the view
+      if (this._drawEditableLocations()) {
+        autoFitRequired = true;
+      }
+    } else if (changedProps.has("_i18n") && this._editableHandles.size) {
+      // Titles and handle labels are localized when drawn
+      this._removeEditableLocations();
+      this._drawEditableLocations();
     }
 
-    if (changedProps.has("_loaded") || (this.autoFit && autoFitRequired)) {
+    if (changedProps.has("_loaded") && this._pendingFit) {
+      // A fit requested before the engine was ready wins over the default
+      this._runPendingFit();
+    } else if (
+      changedProps.has("_loaded") ||
+      (this.autoFit && autoFitRequired)
+    ) {
       this.fitMap();
     }
 
@@ -336,7 +469,7 @@ export class HaMap extends ReactiveElement {
 
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this.engine === "leaflet" || this._forceLeaflet || !supportsWebGL2()) {
+    if (this._forceLeaflet || !supportsWebGL2()) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -422,6 +555,9 @@ export class HaMap extends ReactiveElement {
       this._engine = engine;
       this._updateMapStyle();
       this._loaded = true;
+      fireEvent(this, "editing-available-changed", {
+        available: !!engine.editing,
+      });
     } finally {
       if (attempt === this._setupAttempt) {
         this._loading = false;
@@ -451,6 +587,7 @@ export class HaMap extends ReactiveElement {
     this._entityHandles = [];
     this._zoneHandles = [];
     this._pathHandles = [];
+    this._removeEditableLocations();
     this._focusPoints = [];
     this._focusZonePoints = [];
     this._pendingFit = undefined;
@@ -502,7 +639,7 @@ export class HaMap extends ReactiveElement {
     if (
       !this._focusPoints.length &&
       !this._focusZonePoints.length &&
-      !this.layers?.length
+      !this.editableLocations?.length
     ) {
       this._withProgrammaticFit(() => {
         this._engine!.setView(
@@ -516,22 +653,14 @@ export class HaMap extends ReactiveElement {
 
     const points = [...this._focusPoints, ...this._focusZonePoints];
 
-    // Raw Leaflet layers (ha-locations-editor) contribute their bounds
-    const leafletMap = this.leafletMap;
-    if (this.layers?.length && leafletMap) {
-      this.layers.forEach((layer: any) => {
-        if ("getBounds" in layer) {
-          const layerBounds = layer.getBounds();
-          points.push(
-            [layerBounds.getSouth(), layerBounds.getWest()],
-            [layerBounds.getNorth(), layerBounds.getEast()]
-          );
-        } else if ("getLatLng" in layer) {
-          const latLng = layer.getLatLng();
-          points.push([latLng.lat, latLng.lng]);
-        }
-      });
-    }
+    // Editable locations contribute their bounds, radius included
+    this.editableLocations?.forEach((editable) => {
+      if (editable.radius) {
+        points.push(...circleBoundsPoints(editable.location, editable.radius));
+      } else {
+        points.push(editable.location);
+      }
+    });
 
     this._withProgrammaticFit(() => {
       this._engine!.fitBounds(points, {
@@ -565,11 +694,30 @@ export class HaMap extends ReactiveElement {
     }
   }
 
+  public panTo(location: MapLatLng): void {
+    this._engine?.panTo(location);
+  }
+
+  public containsLocation(location: MapLatLng): boolean {
+    return this._engine?.containsLocation(location) ?? false;
+  }
+
+  public setView(center: MapLatLng, zoom?: number): void {
+    if (!this._engine) {
+      this._pendingFit = () => this.setView(center, zoom);
+      return;
+    }
+    this._pendingFit = undefined;
+    this._engine.setView(center, zoom);
+  }
+
   public fitBounds(
     boundingbox: MapLatLng[],
     options?: { zoom?: number; pad?: number }
   ) {
     if (!this._engine) {
+      // Engine still loading (see _loadMap); runs once it is
+      this._pendingFit = () => this.fitBounds(boundingbox, options);
       return;
     }
     if (this._deferIfUnsized(() => this.fitBounds(boundingbox, options))) {
@@ -585,20 +733,146 @@ export class HaMap extends ReactiveElement {
     this._hasFitted = true;
   }
 
-  private _drawLayers(prevLayers: Layer[] | undefined): void {
-    if (prevLayers) {
-      prevLayers.forEach((layer) => layer.remove());
+  // Returns whether locations were added or removed
+  private _drawEditableLocations(): boolean {
+    const engine = this._engine;
+    if (!engine) {
+      return false;
     }
-    if (!this.layers) {
-      return;
+    const staticSupport = staticEditing(engine);
+    const editing = engine.editing ?? staticSupport;
+    const wanted = new Set((this.editableLocations ?? []).map((e) => e.id));
+    let changed = false;
+    for (const [id, entry] of this._editableHandles) {
+      if (!wanted.has(id)) {
+        entry.cleanup?.();
+        entry.handle.remove();
+        this._editableHandles.delete(id);
+        changed = true;
+      }
     }
-    const leafletMap = this.leafletMap;
-    if (!leafletMap) {
-      return;
+    if (!this.editableLocations) {
+      return changed;
     }
-    this.layers.forEach((layer) => {
-      leafletMap.addLayer(layer);
-    });
+    const defaultColor =
+      getComputedStyle(this).getPropertyValue("--accent-color");
+    for (const editable of this.editableLocations) {
+      const { id } = editable;
+      // Markers are buttons, so an unnamed location still gets a name
+      const title =
+        editable.title ?? this._i18n?.localize("ui.components.map.location");
+      const existing = this._editableHandles.get(id);
+      const kind = editable.radius ? "circle" : "marker";
+
+      if (
+        existing &&
+        existing.kind === kind &&
+        sameAppearance(existing.source, editable)
+      ) {
+        if (existing.kind === "circle") {
+          existing.handle.update(editable.location, editable.radius!);
+        } else {
+          existing.handle.setLocation(editable.location);
+        }
+        existing.source = editable;
+        continue;
+      }
+      if (existing) {
+        existing.cleanup?.();
+        existing.handle.remove();
+      } else {
+        changed = true;
+      }
+
+      if (kind === "circle") {
+        this._editableHandles.set(id, {
+          kind,
+          source: editable,
+          handle: editing.addEditableCircle(editable.location, {
+            radius: editable.radius!,
+            color: editable.color || defaultColor,
+            centerElement: editable.element,
+            centerSize: editable.elementSize,
+            title,
+            moveable: editable.locationEditable,
+            resizable: editable.radiusEditable,
+            resizeLabel: editable.title
+              ? this._i18n?.localize("ui.components.map.radius_of", {
+                  name: editable.title,
+                })
+              : this._i18n?.localize("ui.components.map.radius"),
+            onMove: (location) =>
+              fireEvent(this, "editable-location-moved", { id, location }),
+            onResize: (radius) =>
+              fireEvent(this, "editable-location-resized", { id, radius }),
+            onClick: editable.activatable
+              ? () => fireEvent(this, "editable-location-clicked", { id })
+              : undefined,
+          }),
+        });
+        continue;
+      }
+      const element = editable.element ?? document.createElement("div");
+      if (!editable.element) {
+        element.className = "editable-circle-center";
+      }
+      let dragged = false;
+      let cleanup: (() => void) | undefined;
+      if (editable.activatable) {
+        // A drag can end in a click; only one with its own pointer down counts
+        const onPointerDown = () => {
+          dragged = false;
+        };
+        const onClick = (ev: Event) => {
+          ev.stopPropagation();
+          if (dragged) {
+            return;
+          }
+          fireEvent(this, "editable-location-clicked", { id });
+        };
+        const onKeydown = (ev: KeyboardEvent) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            fireEvent(this, "editable-location-clicked", { id });
+          }
+        };
+        element.addEventListener("pointerdown", onPointerDown);
+        element.addEventListener("click", onClick);
+        element.addEventListener("keydown", onKeydown);
+        cleanup = () => {
+          element.removeEventListener("pointerdown", onPointerDown);
+          element.removeEventListener("click", onClick);
+          element.removeEventListener("keydown", onKeydown);
+        };
+      }
+      // A location that cannot be dragged is static on any engine
+      const support = editable.locationEditable ? editing : staticSupport;
+      this._editableHandles.set(id, {
+        kind,
+        source: editable,
+        cleanup,
+        handle: support.addDraggableMarker(element, editable.location, {
+          size: editable.elementSize ?? [16, 16],
+          interactive: true,
+          focusable: !!editable.activatable,
+          title,
+          onDragEnd: (location) => {
+            dragged = true;
+            fireEvent(this, "editable-location-moved", { id, location });
+          },
+        }),
+      });
+    }
+    return changed;
+  }
+
+  // One by one, so the listeners on the caller's elements are detached too
+  private _removeEditableLocations(): void {
+    for (const entry of this._editableHandles.values()) {
+      entry.cleanup?.();
+      entry.handle.remove();
+    }
+    this._editableHandles.clear();
   }
 
   private _computePathTooltip(path: HaMapPaths, point: HaMapPathPoint): string {
@@ -1015,8 +1289,9 @@ export class HaMap extends ReactiveElement {
     .leaflet-tile-pane .leaflet-tile {
       filter: var(--map-filter);
     }
-    /* The adapter path (engine="leaflet" with WebGL2) loads no MapLibre
-       stylesheet; these are the only two rules its canvas needs. */
+    /* The Leaflet fallback with WebGL2 renders vectors through the adapter
+       without MapLibre's stylesheet; these are the only two rules its canvas
+       needs. */
     .maplibregl-map {
       position: relative;
       overflow: hidden;
@@ -1059,13 +1334,7 @@ export class HaMap extends ReactiveElement {
     .dark .leaflet-bar a:hover {
       background-color: #313131;
     }
-    .leaflet-marker-draggable {
-      cursor: move !important;
-    }
-    .leaflet-edit-resize {
-      border-radius: var(--ha-border-radius-circle);
-      cursor: nesw-resize !important;
-    }
+    ${unsafeCSS(editableCircleStyles)}
     .named-icon {
       display: flex;
       align-items: center;

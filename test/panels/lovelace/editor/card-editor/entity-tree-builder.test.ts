@@ -263,11 +263,20 @@ describe("searchEntities", () => {
         "light.kitchen_ceiling": state("light.kitchen_ceiling"),
         "light.living_lamp": state("light.living_lamp"),
         "sensor.orphan": state("sensor.orphan"),
+        "sensor.outlet_1_power": state("sensor.outlet_1_power"),
       },
       entities: {
         "light.kitchen_ceiling": entity({ area_id: "kitchen" }),
         "light.living_lamp": entity({ area_id: "living" }),
         "sensor.orphan": entity({}),
+        "sensor.outlet_1_power": entity({ device_id: "outlet_1" }),
+      },
+      devices: {
+        outlet_1: device("outlet_1", {
+          name: "Outlet 1",
+          parent_device_id: "strip",
+        }),
+        strip: device("strip", { name: "Power strip", area_id: "kitchen" }),
       },
       areas: {
         kitchen: area("kitchen", { floor_id: "ground", name: "Kitchen" }),
@@ -297,6 +306,12 @@ describe("searchEntities", () => {
     const { entities, index } = buildSample();
     const ids = searchEntities(entities, index, "Living").map((s) => s.id);
     expect(ids).toContain("light.living_lamp");
+  });
+
+  it("matches on parent device name", () => {
+    const { entities, index } = buildSample();
+    const ids = searchEntities(entities, index, "Power strip").map((s) => s.id);
+    expect(ids).toContain("sensor.outlet_1_power");
   });
 
   it("respects the result limit", () => {

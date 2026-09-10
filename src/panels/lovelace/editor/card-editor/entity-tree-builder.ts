@@ -12,6 +12,7 @@ import { computeDeviceName } from "../../../../common/entity/compute_device_name
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { stringCompare } from "../../../../common/string/compare";
 import { entityComboBoxKeys } from "../../../../data/entity/entity_picker";
 import { domainToName } from "../../../../data/integration";
@@ -53,12 +54,14 @@ export interface SearchableEntity {
   id: string;
   name: string;
   area: string;
+  parentDevice: string;
   device: string;
   domain: string;
   search_labels: {
     entityName: string | null;
     friendlyName: string | null;
     deviceName: string | null;
+    parentDeviceName: string | null;
     areaName: string | null;
     domainName: string | null;
     entityId: string;
@@ -136,14 +139,22 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     const entry = entityReg[entityId];
     if (entry?.hidden) continue;
 
-    const device = entry?.device_id ? deviceReg[entry.device_id] : undefined;
-    const areaId = entry?.area_id ?? device?.area_id;
-    const area = areaId ? areaReg[areaId] : undefined;
+    const { device, parentDevice, area } = getEntityContext(
+      stateObj,
+      entityReg,
+      deviceReg,
+      areaReg,
+      floorReg
+    );
+    const areaId = area?.area_id;
     const domain = computeDomain(entityId);
 
     const entityName = computeEntityName(stateObj, entityReg, deviceReg);
     const friendlyName = computeStateName(stateObj);
     const deviceName = device ? computeDeviceName(device) : undefined;
+    const parentDeviceName = parentDevice
+      ? computeDeviceName(parentDevice)
+      : undefined;
     const areaName = area ? computeAreaName(area) : undefined;
     const domainName = domainToName(localize, domain);
 
@@ -151,12 +162,14 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
       id: entityId,
       name: entityName || friendlyName || entityId,
       area: areaName ?? "",
+      parentDevice: parentDeviceName ?? "",
       device: deviceName ?? "",
       domain: domainName,
       search_labels: {
         entityName: entityName || null,
         friendlyName: friendlyName || null,
         deviceName: deviceName || null,
+        parentDeviceName: parentDeviceName || null,
         areaName: areaName || null,
         domainName: domainName || null,
         entityId,

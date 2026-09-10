@@ -110,7 +110,6 @@
     "intl-messageformat": "11.2.14",
     "js-yaml": "5.4.1",
     "leaflet": "1.9.4",
-    "leaflet-draw": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch",
     "leaflet.markercluster": "1.5.3",
     "lit": "3.3.3",
     "lit-html": "3.3.3",
@@ -163,7 +162,6 @@
     "@types/culori": "4.0.1",
     "@types/html-minifier-terser": "7.0.2",
     "@types/leaflet": "1.9.22",
-    "@types/leaflet-draw": "1.0.13",
     "@types/leaflet.markercluster": "1.5.6",
     "@types/lodash.merge": "4.6.9",
     "@types/luxon": "3.7.5",
@@ -234,6 +232,6 @@
   },
   "packageManager": "yarn@4.18.0",
   "volta": {
-    "node": "24.20.0"
+    "node": "24.21.0"
   }
 }

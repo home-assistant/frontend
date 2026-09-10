@@ -13,6 +13,7 @@ import { getDeviceAreaId } from "./get_device_context";
 interface EntityContext {
   entity: EntityRegistryDisplayEntry | null;
   device: DeviceRegistryEntry | null;
+  parentDevice: DeviceRegistryEntry | null;
   area: AreaRegistryEntry | null;
   floor: FloorRegistryEntry | null;
 }
@@ -31,6 +32,7 @@ export const getEntityContext = (
     return {
       entity: null,
       device: null,
+      parentDevice: null,
       area: null,
       floor: null,
     };
@@ -65,6 +67,9 @@ export const getEntityEntryContext = (
   const entity = entities[entry.entity_id];
   const deviceId = entry?.device_id;
   const device = deviceId ? devices[deviceId] : undefined;
+  const parentDevice = device?.parent_device_id
+    ? devices[device.parent_device_id]
+    : undefined;
   const areaId =
     entry?.area_id || (device ? getDeviceAreaId(device, devices) : undefined);
   const area = areaId ? areas[areaId] : undefined;
@@ -74,6 +79,7 @@ export const getEntityEntryContext = (
   return {
     entity: entity,
     device: device || null,
+    parentDevice: parentDevice || null,
     area: area || null,
     floor: floor || null,
   };

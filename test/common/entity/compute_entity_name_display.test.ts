@@ -245,6 +245,43 @@ describe("computeEntityNameDisplay", () => {
     expect(result).toBe("Kitchen Smart Light");
   });
 
+  it("returns parent device name for an entity on a child device", () => {
+    const stateObj = mockStateObj({ entity_id: "switch.outlet_1" });
+    const hass = {
+      entities: {
+        "switch.outlet_1": mockEntity({
+          entity_id: "switch.outlet_1",
+          name: "Switch",
+          device_id: "child_1",
+        }),
+      },
+      devices: {
+        child_1: mockDevice({
+          id: "child_1",
+          name: "Outlet 1",
+          parent_device_id: "parent_1",
+        }),
+        parent_1: mockDevice({
+          id: "parent_1",
+          name: "Power strip",
+        }),
+      },
+      areas: {},
+      floors: {},
+    } as unknown as HomeAssistant;
+
+    const result = computeEntityNameDisplay(
+      stateObj,
+      [{ type: "parent_device" }, { type: "device" }, { type: "entity" }],
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+
+    expect(result).toBe("Power strip Outlet 1 Switch");
+  });
+
   it("returns floor name", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {
