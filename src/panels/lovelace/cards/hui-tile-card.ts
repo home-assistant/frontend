@@ -40,7 +40,21 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import { tileCardStyle } from "./tile/tile-card-style";
-import type { TileCardConfig } from "./types";
+import type { TileCardConfig, TileCardStatePosition } from "./types";
+
+/**
+ * Where the tile card renders the entity state. A hidden state and the vertical
+ * content layout both win over `state_position`. The card and its editor share
+ * this so the editor never disables an option the card still honors.
+ */
+export const computeTileStatePosition = (
+  config: Pick<TileCardConfig, "hide_state" | "vertical" | "state_position">
+): TileCardStatePosition => {
+  if (config.hide_state || config.vertical) {
+    return "secondary";
+  }
+  return config.state_position || "secondary";
+};
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -251,8 +265,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _statePosition = memoizeOne(computeTileStatePosition);
+
   private _featurePosition = memoizeOne((config: TileCardConfig) => {
     if (config.vertical) {
+      return "bottom";
+    }
+    // the inline state owns the right side of the name row, so features move below
+    if (this._statePosition(config) === "inline") {
       return "bottom";
     }
     return config.features_position || "bottom";
@@ -308,6 +328,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       : undefined;
 
     const featurePosition = this._featurePosition(this._config);
+    const statePosition = this._statePosition(this._config);
     const features = this._featureLayout(this._config);
 
     const hasImage = Boolean(imageUrl);
@@ -361,11 +382,16 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
           <ha-tile-info slot="info">
             <span slot="primary" class="primary">${name}</span>
             ${
-              stateDisplay
+              statePosition === "secondary" && stateDisplay
                 ? html`<span slot="secondary">${stateDisplay}</span>`
                 : nothing
             }
           </ha-tile-info>
+          ${
+            statePosition === "inline"
+              ? html`<span slot="state">${stateDisplay}</span>`
+              : nothing
+          }
           ${
             features.inline.length > 0
               ? html`
