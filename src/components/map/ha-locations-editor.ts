@@ -337,12 +337,13 @@ export class HaLocationsEditor extends LitElement {
       display: block;
       height: 100%;
     }
-    /* Over the map, clear of the zoom control, so a fixed-height host shows it */
+    /* Over the map, clear of the zoom control, so a fixed-height host shows it.
+       The control sits at the physical top-left in either direction. */
     ha-alert {
       position: absolute;
       top: var(--ha-space-2);
-      inset-inline-start: 56px;
-      inset-inline-end: var(--ha-space-2);
+      left: 56px;
+      right: var(--ha-space-2);
       z-index: 1;
     }
   `;
