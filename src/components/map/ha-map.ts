@@ -31,6 +31,16 @@ import type {
 } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { editableCircleStyles } from "../../common/map/editable-circle";
+import {
+  entityMapColor,
+  subscribeEntityMapColors,
+  zoneColor,
+} from "../../common/map/entity-map-colors";
+import {
+  createZoneMarkerElement,
+  ZONE_CIRCLE_SIZE,
+  zoneMarkerStyles,
+} from "../../common/map/zone-marker";
 import { filterXSS } from "../../common/util/xss";
 import {
   configContext,
@@ -211,9 +221,35 @@ export interface HaMapEntity {
   unit?: string;
   name?: string;
   focus?: boolean;
+  hide_accuracy?: boolean;
+  hide_radius?: boolean;
+  selected?: boolean;
 }
 
+// Data carried by entity markers for rendering cluster bubbles
+interface ClusterData {
+  entityId: string;
+  picture?: string;
+  label: string;
+  color?: string;
+  selected: boolean;
+  zoneId?: string;
+}
+
+const CLUSTER_AVATAR_SIZE = 32;
+const CLUSTER_BUBBLE_PADDING = 6;
+const CLUSTER_BUBBLE_GAP = 4;
+const CLUSTER_MAX_AVATARS = 3;
+const CLUSTER_MORE_WIDTH = 28;
+const CLUSTER_MORE_MAX = 99;
+const CLUSTER_TAIL_SIZE = 10;
+// The tail is a rotated square on the bubble's bottom edge, reaching half its diagonal below
+const CLUSTER_TAIL_HEIGHT = Math.round((CLUSTER_TAIL_SIZE * Math.SQRT2) / 2);
+const CLUSTER_ZONE_SPACING = 2;
 const CLUSTER_RADIUS = 40;
+// Same-zone markers share the zone's bubble while they span at most this many
+// pixels; further apart they show their actual positions
+const ZONE_GROUP_RADIUS = 160;
 
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
@@ -264,6 +300,8 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
+  private _zonePositions: Record<string, MapLatLng> = {};
+
   @property({ attribute: "theme-mode", type: String })
   public themeMode: ThemeMode = "auto";
 
@@ -296,6 +334,8 @@ export class HaMap extends ReactiveElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _unsubscribeColors?: () => void;
+
   private _entityHandles: MapMarkerHandle[] = [];
 
   private _zoneHandles: MapItemHandle[] = [];
@@ -321,6 +361,32 @@ export class HaMap extends ReactiveElement {
     super.connectedCallback();
     this._loadMap();
     this._attachObserver();
+    this._subscribeColors();
+  }
+
+  // Only maps that draw entities need the registry's creation order; an
+  // editor's map, as in onboarding, never asks for it
+  private _subscribeColors(): void {
+    if (
+      this._unsubscribeColors ||
+      !this._connection?.connection ||
+      !this.entities?.length
+    ) {
+      return;
+    }
+    this._unsubscribeColors = subscribeEntityMapColors(
+      this._connection.connection,
+      () => {
+        if (this._loaded) {
+          this._drawEntities();
+        }
+      }
+    );
+  }
+
+  private _releaseColors(): void {
+    this._unsubscribeColors?.();
+    this._unsubscribeColors = undefined;
   }
 
   private _handleVisibilityChange = async () => {
@@ -337,6 +403,7 @@ export class HaMap extends ReactiveElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
+    this._releaseColors();
     this._engine?.destroy();
     this._engine = undefined;
     // An engine still setting up goes too; its setup notices and stops
@@ -362,6 +429,12 @@ export class HaMap extends ReactiveElement {
 
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
+
+    if (changedProps.has("_connection")) {
+      // A new connection needs its own subscription
+      this._releaseColors();
+      this._subscribeColors();
+    }
 
     if (!this._loaded) {
       return;
@@ -401,6 +474,11 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("paths")) {
       this._drawPaths();
+      // Cluster bubbles show entity colors only while trails are visible
+      const oldPaths = changedProps.get("paths") as HaMapPaths[] | undefined;
+      if (!!oldPaths?.length !== !!this.paths?.length) {
+        this._engine?.refreshClusters();
+      }
     }
 
     if (changedProps.has("_loaded") || changedProps.has("editableLocations")) {
@@ -433,13 +511,15 @@ export class HaMap extends ReactiveElement {
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
-      (!changedProps.has("_ui") ||
-        (oldUi && oldUi.themes?.darkMode === this._ui.themes?.darkMode))
+      (!changedProps.has("_ui") || (oldUi && oldUi.themes === this._ui.themes))
     ) {
       return;
     }
 
     this._updateMapStyle();
+    // Marker and trail colors were resolved from the theme when drawn
+    this._drawEntities();
+    this._drawPaths();
   }
 
   private get _darkMode() {
@@ -1027,20 +1107,44 @@ export class HaMap extends ReactiveElement {
     this._zoneHandles = [];
     this._focusZonePoints = [];
 
+    if (!this.entities?.length) {
+      // Nothing left to color; let the shared registry stream go
+      this._releaseColors();
+    }
     if (!this.entities) {
       engine.setClustering(null);
       return;
     }
+    this._subscribeColors();
 
     const computedStyles = getComputedStyle(this);
-    const zoneColor = computedStyles.getPropertyValue("--accent-color");
-    const passiveZoneColor = computedStyles.getPropertyValue(
-      "--secondary-text-color"
-    );
-
-    const darkPrimaryColor = computedStyles.getPropertyValue(
-      "--dark-primary-color"
-    );
+    // A person's state is "home" for the home zone, the zone name otherwise
+    const zoneByState: Record<string, string> = {};
+    this._zonePositions = {};
+    for (const entity of this.entities) {
+      const stateObj = states[getEntityId(entity)];
+      // A zone that is not drawn cannot anchor a bubble either
+      if (
+        stateObj &&
+        computeStateDomain(stateObj) === "zone" &&
+        (this.renderPassive || !stateObj.attributes.passive)
+      ) {
+        zoneByState[
+          stateObj.entity_id === "zone.home"
+            ? "home"
+            : computeStateName(stateObj)
+        ] = stateObj.entity_id;
+        if (
+          typeof stateObj.attributes.latitude === "number" &&
+          typeof stateObj.attributes.longitude === "number"
+        ) {
+          this._zonePositions[stateObj.entity_id] = [
+            stateObj.attributes.latitude,
+            stateObj.attributes.longitude,
+          ];
+        }
+      }
+    }
 
     for (const entity of this.entities) {
       const stateObj = states[getEntityId(entity)];
@@ -1069,26 +1173,24 @@ export class HaMap extends ReactiveElement {
           continue;
         }
 
-        const zoneMarkerColor = passive ? passiveZoneColor : zoneColor;
+        const hideRadius = typeof entity !== "string" && entity.hide_radius;
+        // A host-set color wins, except passive zones are always muted
+        const markerColor =
+          !passive && typeof entity !== "string" && entity.color
+            ? entity.color
+            : zoneColor(stateObj.entity_id, !!passive, computedStyles);
 
-        if (radius) {
+        if (!hideRadius && radius) {
           this._zoneHandles.push(
-            engine.addCircle(position, { radius, color: zoneMarkerColor })
+            engine.addCircle(position, { radius, color: markerColor })
           );
         }
 
-        // create icon
-        const iconEl = document.createElement("div");
-        iconEl.className = `zone-icon ${this._darkMode ? "dark" : "light"}`;
-        if (icon) {
-          const el = document.createElement("ha-icon");
-          el.setAttribute("icon", icon);
-          iconEl.appendChild(el);
-        } else {
-          const el = document.createElement("span");
-          el.textContent = title;
-          iconEl.appendChild(el);
-        }
+        const circleEl = createZoneMarkerElement({
+          color: markerColor,
+          icon,
+          name: title,
+        });
 
         if (this.interactiveZones) {
           const openMoreInfo = (ev: Event) => {
@@ -1097,8 +1199,8 @@ export class HaMap extends ReactiveElement {
               entityId: stateObj.entity_id,
             });
           };
-          iconEl.addEventListener("click", openMoreInfo);
-          iconEl.addEventListener("keydown", (ev) => {
+          circleEl.addEventListener("click", openMoreInfo);
+          circleEl.addEventListener("keydown", (ev) => {
             if (ev.key === "Enter" || ev.key === " ") {
               ev.preventDefault();
               openMoreInfo(ev);
@@ -1106,10 +1208,9 @@ export class HaMap extends ReactiveElement {
           });
         }
 
-        const zoneIconSize = this._getMarkerSize(computedStyles) / 2;
         this._zoneHandles.push(
-          engine.addMarker(iconEl, position, {
-            size: [zoneIconSize, zoneIconSize],
+          engine.addMarker(circleEl, position, {
+            size: [ZONE_CIRCLE_SIZE, ZONE_CIRCLE_SIZE],
             interactive: this.interactiveZones,
             title,
           })
@@ -1119,7 +1220,7 @@ export class HaMap extends ReactiveElement {
           this.fitZones &&
           (typeof entity === "string" || entity.focus !== false)
         ) {
-          if (radius) {
+          if (!hideRadius && radius) {
             this._focusZonePoints.push(...circleBoundsPoints(position, radius));
           } else {
             this._focusZonePoints.push(position);
@@ -1163,9 +1264,30 @@ export class HaMap extends ReactiveElement {
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this._connection.hassUrl(entityPicture)
           : "";
+      // A host may leave the color to the map
+      const entityColor =
+        (typeof entity !== "string" ? entity.color : undefined) ||
+        entityMapColor(getEntityId(entity), computedStyles);
+      entityMarker.entityColor = entityColor;
       if (typeof entity !== "string") {
-        entityMarker.entityColor = entity.color;
+        entityMarker.selected = entity.selected ?? false;
       }
+
+      const clusterData: ClusterData = {
+        entityId: getEntityId(entity),
+        picture: entityMarker.entityPicture || undefined,
+        label: entityName,
+        color: entityColor,
+        selected: typeof entity !== "string" && (entity.selected ?? false),
+        zoneId: ["person", "device_tracker"].includes(
+          computeStateDomain(stateObj)
+        )
+          ? zoneByState[stateObj.state]
+          : undefined,
+      };
+
+      const showAccuracy =
+        !!gpsAccuracy && !(typeof entity !== "string" && entity.hide_accuracy);
 
       const markerSize = this._getMarkerSize(computedStyles);
       this._entityHandles.push(
@@ -1173,9 +1295,9 @@ export class HaMap extends ReactiveElement {
           size: [markerSize, markerSize],
           title,
           cluster: true,
-          // create circle around if entity has accuracy
-          decoration: gpsAccuracy
-            ? { radius: gpsAccuracy, color: darkPrimaryColor }
+          clusterData,
+          decoration: showAccuracy
+            ? { radius: gpsAccuracy!, color: entityColor }
             : undefined,
         })
       );
@@ -1187,22 +1309,95 @@ export class HaMap extends ReactiveElement {
 
     engine.setClustering(
       this.clusterMarkers
-        ? { radius: CLUSTER_RADIUS, iconBuilder: this._createClusterIcon }
+        ? {
+            radius: CLUSTER_RADIUS,
+            iconBuilder: this._createClusterBubble,
+            // Everyone in a zone shares its bubble until zooming spreads them
+            groupKey: (marker) => (marker.clusterData as ClusterData)?.zoneId,
+            groupRadius: ZONE_GROUP_RADIUS,
+          }
         : null
     );
   }
 
-  // Renders a marker cluster as a circle with the member count
-  private _createClusterIcon = (members: MapMarkerHandle[]): MapClusterIcon => {
-    const size = Math.round(
-      this._getMarkerSize(getComputedStyle(this)) * (2 / 3)
-    );
-    const element = document.createElement("div");
-    element.className = "marker-cluster";
-    const count = document.createElement("span");
-    count.textContent = String(members.length);
-    element.appendChild(count);
-    return { element, size: [size, size] };
+  // Renders a marker cluster as a bubble of its members' avatars
+  private _createClusterBubble = (
+    members: MapMarkerHandle[]
+  ): MapClusterIcon => {
+    const data = members.map((member) => member.clusterData as ClusterData);
+    const shown = data.slice(0, CLUSTER_MAX_AVATARS);
+    const hidden = data.length - shown.length;
+
+    // With history trails shown, colored borders match avatars to trails
+    const showColors = !!this.paths?.length;
+
+    const bubble = document.createElement("div");
+    bubble.className = "cluster-bubble";
+    for (const member of shown) {
+      const avatar = document.createElement("ha-entity-marker");
+      avatar.entityId = member?.entityId;
+      avatar.entityName = member?.label ?? "";
+      avatar.entityPicture = member?.picture ?? "";
+      avatar.entityColor = member?.color;
+      if (showColors) {
+        avatar.style.setProperty(
+          "--ha-marker-color",
+          member?.color ?? "var(--primary-color)"
+        );
+        avatar.style.setProperty("--ha-marker-border-width", "2px");
+      }
+      if (member?.selected) {
+        avatar.selected = true;
+      }
+      bubble.appendChild(avatar);
+    }
+
+    let width =
+      shown.length * CLUSTER_AVATAR_SIZE +
+      (shown.length - 1) * CLUSTER_BUBBLE_GAP +
+      2 * CLUSTER_BUBBLE_PADDING;
+    if (hidden > 0) {
+      const more = document.createElement("span");
+      more.className = "more";
+      more.textContent =
+        hidden > CLUSTER_MORE_MAX ? `${CLUSTER_MORE_MAX}+` : `+${hidden}`;
+      bubble.appendChild(more);
+      width += CLUSTER_MORE_WIDTH + CLUSTER_BUBBLE_GAP;
+    }
+
+    // A cluster of one zone's occupants attaches to that zone's marker
+    const zoneId = data[0]?.zoneId;
+    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
+    const atZone =
+      !!zoneId &&
+      !!zonePosition &&
+      data.every((member) => member?.zoneId === zoneId);
+
+    let height = CLUSTER_AVATAR_SIZE + 2 * CLUSTER_BUBBLE_PADDING;
+    let root: HTMLElement = bubble;
+    if (atZone) {
+      root = document.createElement("div");
+      root.className = "cluster-marker";
+      const tail = document.createElement("div");
+      tail.className = "cluster-bubble-tail";
+      root.append(bubble, tail);
+      height += CLUSTER_TAIL_HEIGHT;
+    }
+
+    return {
+      element: root,
+      size: [width, height],
+      // Float above the zone circle, tail pointing at it
+      ...(atZone && zonePosition
+        ? {
+            location: zonePosition,
+            anchor: [
+              width / 2,
+              height + ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING,
+            ] as [number, number],
+          }
+        : {}),
+    };
   };
 
   private _drawScaleRuler(): void {
@@ -1346,17 +1541,58 @@ export class HaMap extends ReactiveElement {
     .leaflet-pane {
       z-index: 0 !important;
     }
-    /* Zone icons, sized like the Leaflet divIcon they replaced */
-    .zone-icon {
+    .cluster-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .cluster-bubble-tail {
+      width: ${CLUSTER_TAIL_SIZE}px;
+      height: ${CLUSTER_TAIL_SIZE}px;
+      margin-top: ${-CLUSTER_TAIL_SIZE / 2}px;
+      border-radius: 2px;
+      background: var(--card-background-color, #fff);
+      transform: rotate(45deg);
+    }
+    .cluster-bubble {
+      display: flex;
+      align-items: center;
+      gap: ${CLUSTER_BUBBLE_GAP}px;
+      padding: ${CLUSTER_BUBBLE_PADDING}px;
+      box-sizing: border-box;
+      background: var(--card-background-color, #fff);
+      border-radius: 14px;
+      box-shadow: var(--ha-box-shadow-s);
+      --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
+      --ha-marker-color: transparent;
+      --ha-marker-border-width: 1px;
+      --ha-marker-shadow: none;
+      --ha-marker-font-size: var(--ha-font-size-s);
+      /* distinguish letter tiles from the bubble background */
+      --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);
+    }
+    .cluster-bubble .more {
+      flex: none;
+      width: ${CLUSTER_MORE_WIDTH}px;
+      height: ${CLUSTER_AVATAR_SIZE}px;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      color: var(--primary-text-color);
+      border-radius: 10px;
+      background: var(--ha-color-fill-neutral-quiet-resting, #f0f0f0);
+      color: var(--primary-text-color, #212121);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
     }
-    .zone-icon.dark {
-      color: #ffffff;
+    /* Markers are rounded squares to match the cluster bubble avatars */
+    ha-entity-marker {
+      --ha-marker-border-radius: var(--ha-border-radius-lg);
     }
+    .cluster-bubble ha-entity-marker {
+      flex: none;
+      --ha-marker-border-radius: 10px;
+    }
+    ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-control,
     .leaflet-top,
     .leaflet-bottom {
@@ -1405,19 +1641,6 @@ export class HaMap extends ReactiveElement {
 
     ha-icon {
       --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
-    }
-
-    .marker-cluster {
-      box-sizing: border-box;
-      background-clip: padding-box;
-      background-color: var(--primary-color);
-      border: 3px solid rgba(var(--rgb-primary-color), 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-primary-color);
-      font-size: var(--ha-font-size-m);
     }
   `;
 }

@@ -123,8 +123,6 @@ interface ManagedMarker {
   draggable?: boolean;
   onDragEnd?: (location: MapLatLng) => void;
   dragging?: boolean;
-  /** Pre-drag location; the next update echoing it is ignored (see setLocation) */
-  staleLocation?: MapLatLng;
   mlMarker?: MapLibreMarker;
   decoration?: MapItemHandle;
   removed?: boolean;
@@ -600,17 +598,8 @@ export class MapLibreMapEngine implements MapEngine {
       },
       clusterData: options.clusterData,
       setLocation: (newLocation) => {
+        // The user's hand wins while dragging; the host is the truth otherwise
         if (managed.dragging) {
-          return;
-        }
-        // Skip one update echoing the pre-drag location (the save has not returned yet)
-        const stale = managed.staleLocation;
-        managed.staleLocation = undefined;
-        if (
-          stale &&
-          newLocation[0] === stale[0] &&
-          newLocation[1] === stale[1]
-        ) {
           return;
         }
         managed.location = newLocation;
@@ -663,7 +652,6 @@ export class MapLibreMapEngine implements MapEngine {
       if (managed.draggable) {
         managed.mlMarker.on("dragstart", () => {
           managed.dragging = true;
-          managed.staleLocation = managed.location;
         });
         managed.mlMarker.on("dragend", () => {
           managed.dragging = false;
@@ -801,10 +789,8 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
-    // Skip one update echoing the pre-edit values (the save has not returned yet)
+    // The user's hand wins while dragging; the host is the truth otherwise
     let dragging = false;
-    let staleCenter: MapLatLng | undefined;
-    let staleRadius: number | undefined;
 
     if (options.resizable) {
       const east = pointEastOf(center, options.radius);
@@ -847,8 +833,6 @@ export class MapLibreMapEngine implements MapEngine {
         if (keyboardRadius === undefined) {
           // Host updates treat a key resize like a drag
           dragging = true;
-          staleCenter = currentCenter;
-          staleRadius = currentRadius;
         }
         currentRadius = Math.max(
           1,
@@ -875,19 +859,11 @@ export class MapLibreMapEngine implements MapEngine {
     [centerMarker, resizeMarker].forEach((handleMarker) => {
       handleMarker?.on("dragstart", () => {
         dragging = true;
-        staleCenter = currentCenter;
-        staleRadius = currentRadius;
       });
       handleMarker?.on("dragend", () => {
         dragging = false;
       });
     });
-    const isStale = (candidateCenter: MapLatLng, candidateRadius: number) =>
-      staleCenter !== undefined &&
-      staleRadius !== undefined &&
-      candidateCenter[0] === staleCenter[0] &&
-      candidateCenter[1] === staleCenter[1] &&
-      candidateRadius === staleRadius;
 
     if (options.moveable) {
       centerMarker.on("drag", () => {
@@ -942,12 +918,6 @@ export class MapLibreMapEngine implements MapEngine {
       },
       update: (newCenter, newRadius) => {
         if (dragging) {
-          return;
-        }
-        const stale = isStale(newCenter, newRadius);
-        staleCenter = undefined;
-        staleRadius = undefined;
-        if (stale) {
           return;
         }
         currentCenter = newCenter;
