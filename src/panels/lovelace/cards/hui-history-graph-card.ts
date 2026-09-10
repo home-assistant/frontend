@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { theme2hex } from "../../../common/color/convert-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { createSearchParam } from "../../../common/url/search-params";
@@ -110,17 +111,17 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       if (entity.name === undefined) {
         return;
       }
-      const stateObj = this.hass!.states[entity.entity];
-      if (stateObj) {
-        this._names[entity.entity] = this.hass!.formatEntityName(
-          stateObj,
-          entity.name
-        );
-        return;
-      }
-      if (typeof entity.name === "string") {
-        this._names[entity.entity] = entity.name;
-      }
+      const stateObj =
+        this.hass!.states[entity.entity] ??
+        ({
+          entity_id: entity.entity,
+          state: "unavailable",
+          attributes: {},
+        } as HassEntity);
+      this._names[entity.entity] = this.hass!.formatEntityName(
+        stateObj,
+        entity.name
+      );
     });
   }
 
