@@ -42,6 +42,7 @@ const SELECTOR_FALLBACK_VALUES = {
   number: (selector) => selector.number?.min ?? 0,
   numeric_threshold: undefined,
   object: undefined,
+  offset: undefined,
   period: undefined,
   qr_code: undefined,
   select: undefined,

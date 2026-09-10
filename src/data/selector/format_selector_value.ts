@@ -1,9 +1,11 @@
 import { ensureArray } from "../../common/array/ensure-array";
 import { computeAreaName } from "../../common/entity/compute_area_name";
+import { durationValueToData } from "../../common/datetime/duration_value_to_data";
+import { formatDurationLong } from "../../common/datetime/format_duration";
 import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_display";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import type { HomeAssistant } from "../../types";
-import type { Selector } from "../selector";
+import type { OffsetSelectorValue, Selector } from "../selector";
 
 export const formatSelectorValue = (
   hass: HomeAssistant,
@@ -121,6 +123,21 @@ export const formatSelectorValue = (
         return JSON.stringify(item);
       })
       .join(", ");
+  }
+
+  if ("offset" in selector) {
+    const { type, duration } = value as OffsetSelectorValue;
+    const durationData = durationValueToData(duration);
+    if (type === "none" || !durationData) {
+      return "";
+    }
+    const formattedDuration = formatDurationLong(hass.locale, durationData);
+    if (!formattedDuration) {
+      return "";
+    }
+    return hass.localize(`ui.components.selectors.offset.summary.${type}`, {
+      duration: formattedDuration,
+    });
   }
 
   return ensureArray(value)

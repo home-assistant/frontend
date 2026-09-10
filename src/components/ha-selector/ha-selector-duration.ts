@@ -1,6 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { durationValueToData } from "../../common/datetime/duration_value_to_data";
 import type { DurationSelector } from "../../data/selector";
 import "../ha-duration-input";
 import type { HaDurationData, HaDurationInput } from "../ha-duration-input";
@@ -26,35 +27,7 @@ export class HaTimeDuration extends LitElement {
     return this._input?.reportValidity() ?? true;
   }
 
-  private _data = memoizeOne(
-    (value?: HaDurationData | string | number): HaDurationData | undefined => {
-      if (typeof value === "number") {
-        return { seconds: value };
-      }
-      if (typeof value === "string") {
-        const negative = value.trim()[0] === "-";
-        const parts = value
-          .split(":")
-          .map((p) => (negative && p ? -Math.abs(Number(p)) : Number(p)));
-
-        if (parts.length === 1) {
-          return { seconds: parts[0] };
-        }
-        if (parts.length === 2) {
-          return { hours: parts[0], minutes: parts[1] };
-        }
-        if (parts.length === 3) {
-          return {
-            hours: parts[0],
-            minutes: parts[1],
-            seconds: parts[2],
-          };
-        }
-        return undefined;
-      }
-      return value;
-    }
-  );
+  private _data = memoizeOne(durationValueToData);
 
   protected render() {
     return html`

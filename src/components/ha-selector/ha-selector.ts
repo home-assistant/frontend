@@ -43,6 +43,7 @@ const LOAD_ELEMENTS = {
   number: () => import("./ha-selector-number"),
   numeric_threshold: () => import("./ha-selector-numeric-threshold"),
   object: () => import("./ha-selector-object"),
+  offset: () => import("./ha-selector-offset"),
   period: () => import("./ha-selector-period"),
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),

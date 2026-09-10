@@ -319,6 +319,7 @@ const SCHEMAS: {
         selector: { config_entry: {} },
       },
       duration: { name: "Duration", selector: { duration: {} } },
+      offset: { name: "Offset", selector: { offset: { enable_day: true } } },
       app: { name: "App", selector: { app: {} } },
       number_box: {
         name: "Number Box",

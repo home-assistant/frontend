@@ -22,6 +22,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import type { HaDurationData } from "../components/ha-duration-input";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
 
@@ -63,6 +64,7 @@ export type Selector =
   | NumberSelector
   | NumericThresholdSelector
   | ObjectSelector
+  | OffsetSelector
   | PeriodSelector
   | AssistPipelineSelector
   | QRCodeSelector
@@ -444,6 +446,20 @@ export interface ObjectSelector {
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
   } | null;
+}
+
+export type OffsetType = "none" | "before" | "after";
+
+export interface OffsetSelector {
+  offset: {
+    enable_day?: boolean;
+    enable_millisecond?: boolean;
+  } | null;
+}
+
+export interface OffsetSelectorValue {
+  type: OffsetType;
+  duration?: HaDurationData | string | number;
 }
 
 export type PeriodKey =

@@ -74,6 +74,7 @@ const SELECTOR_INITIAL_VALUES = {
         };
   },
   object: (selector) => (selector.object?.multiple ? [] : ""),
+  offset: () => ({ type: "none" }),
   period: undefined,
   qr_code: undefined,
   select: (selector) => {

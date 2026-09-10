@@ -660,6 +660,16 @@
             "outside": "Outside range"
           }
         },
+        "offset": {
+          "none": "No offset",
+          "before": "Before",
+          "after": "After",
+          "duration": "Duration",
+          "summary": {
+            "before": "{duration} before",
+            "after": "{duration} after"
+          }
+        },
         "automation_behavior": {
           "trigger": {
             "options": {
