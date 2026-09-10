@@ -342,7 +342,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     if (
       !this.route.path.startsWith("/edit/") ||
       !this._stateItems ||
@@ -396,11 +397,23 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._pendingEdits = rest;
   }
 
-  private async _saveEdit(id: string, pending: PendingEdit) {
+  // Saves for one zone run in order, so each sees the entry the previous one
+  // produced and a failure only drops the values its own request carried
+  private _saveQueue: Record<string, Promise<void>> = {};
+
+  private _saveEdit(id: string, pending: PendingEdit): Promise<void> {
     this._pendingEdits = {
       ...this._pendingEdits,
       [id]: { ...this._pendingEdits[id], ...pending },
     };
+    const save = (this._saveQueue[id] ?? Promise.resolve()).then(() =>
+      this._performSave(id, pending)
+    );
+    this._saveQueue[id] = save;
+    return save;
+  }
+
+  private async _performSave(id: string, pending: PendingEdit) {
     try {
       if (id === "zone.home") {
         await saveCoreConfig(this.hass, pending);
@@ -411,12 +424,30 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         await this._updateEntry(entry, pending);
       }
     } catch (err: any) {
-      // The saved values are the truth again; the marker moves back
-      this._dropPendingEdit(id);
+      // The saved values are the truth again for what this request changed;
+      // a later edit of other values stays pending for its own save
+      this._dropPendingValues(id, pending);
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
         text: err.message,
       });
+    }
+  }
+
+  private _dropPendingValues(id: string, failed: PendingEdit) {
+    const current = this._pendingEdits[id];
+    if (!current) {
+      return;
+    }
+    const rest = Object.fromEntries(
+      Object.entries(current).filter(
+        ([key, value]) => failed[key as keyof PendingEdit] !== value
+      )
+    ) as PendingEdit;
+    if (Object.keys(rest).length) {
+      this._pendingEdits = { ...this._pendingEdits, [id]: rest };
+    } else {
+      this._dropPendingEdit(id);
     }
   }
 
