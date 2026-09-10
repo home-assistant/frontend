@@ -8,7 +8,8 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ContextConsumer } from "@lit/context";
+import type { ContextType } from "@lit/context";
+import { consume, ContextConsumer } from "@lit/context";
 import { resolveThemeColor } from "../../../common/color/compute-color";
 import {
   entityMapColor,
@@ -36,7 +37,8 @@ import type { MapLatLng } from "../../../common/map/map-engine";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { Themes } from "../../../data/ws-themes";
-import { fullEntitiesContext } from "../../../data/context";
+import { fullEntitiesContext, uiContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -99,6 +101,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   // Registry creation order decides the palette colors
   @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  // Palette colors are read from the theme when the entities are built
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<ContextType<typeof uiContext>, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes?: Themes;
 
   @state() private _clusterMarkers = true;
 
@@ -235,7 +245,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._stateHistory,
               this._entityReg,
-              this.hass.themes
+              this._themes
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
@@ -344,9 +354,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ) {
       this._mapEntities = this._getMapEntities();
     }
-    // Palette colors are read from the theme when the entities are built
-    const oldThemes = changedProps.get("hass")?.themes;
-    if (oldThemes && oldThemes !== this.hass.themes) {
+    // Private state is not in keyof this
+    if ((changedProps as PropertyValues).has("_themes") && this.hasUpdated) {
       this._mapEntities = this._getMapEntities();
     }
 
@@ -535,7 +544,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       history: HistoryStates | undefined,
       // Trail colors follow the registry order and the theme like the markers
       _entityReg: EntityRegistryEntry[],
-      _themes: Themes
+      _themes: Themes | undefined
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
