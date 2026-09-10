@@ -1037,6 +1037,20 @@ describe("getEnergyDataCollection live day", () => {
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 
+    // Midnight refresh is before the first short-term bucket. Schedule a
+    // follow-up after recorder's :05:10 compile, then resume :20 cadence.
+    refresh.mockClear();
+    callWS.mockClear();
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    refresh.mockClear();
+    callWS.mockClear();
+    await vi.advanceTimersByTimeAsync(14 * 60 * 1000 + 45 * 1000);
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
     unsub();
   });
 

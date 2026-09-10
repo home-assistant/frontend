@@ -802,14 +802,21 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   }
 
   if (collection._active && (!collection.end || collection.end > new Date())) {
-    // The stats are created every hour
-    // Schedule a refresh for 20 minutes past the hour
-    // If the end is larger than the current time.
+    // Long-term hourly stats land around :20. Before that, Core can already
+    // stitch the open hour from short-term rows once the first 5-minute
+    // bucket exists (recorder compiles at :05:10), so prefer an early
+    // refresh after midnight / early-hour fetches, then resume :20.
     const nextFetch = new Date();
-    if (nextFetch.getMinutes() >= 20) {
-      nextFetch.setHours(nextFetch.getHours() + 1);
+    const firstShortTermRefresh = new Date(nextFetch);
+    firstShortTermRefresh.setMinutes(5, 15, 0);
+    if (nextFetch < firstShortTermRefresh) {
+      nextFetch.setTime(firstShortTermRefresh.getTime());
+    } else {
+      if (nextFetch.getMinutes() >= 20) {
+        nextFetch.setHours(nextFetch.getHours() + 1);
+      }
+      nextFetch.setMinutes(20, 0, 0);
     }
-    nextFetch.setMinutes(20, 0, 0);
 
     collection._refreshTimeout = window.setTimeout(
       () => collection.refresh(),
