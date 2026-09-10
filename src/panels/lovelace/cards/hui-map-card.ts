@@ -35,6 +35,7 @@ import type {
 import type { MapLatLng } from "../../../common/map/map-engine";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import type { Themes } from "../../../data/ws-themes";
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
@@ -233,7 +234,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .paths=${this._getHistoryPaths(
               this._config,
               this._stateHistory,
-              this._entityReg
+              this._entityReg,
+              this.hass.themes
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
@@ -340,6 +342,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._getSourceEntities(this.hass.states)
       )
     ) {
+      this._mapEntities = this._getMapEntities();
+    }
+    // Palette colors are read from the theme when the entities are built
+    const oldThemes = changedProps.get("hass")?.themes;
+    if (oldThemes && oldThemes !== this.hass.themes) {
       this._mapEntities = this._getMapEntities();
     }
 
@@ -526,8 +533,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     (
       config: MapCardConfig,
       history: HistoryStates | undefined,
-      // Trail colors follow the registry order like the markers
-      _entityReg: EntityRegistryEntry[]
+      // Trail colors follow the registry order and the theme like the markers
+      _entityReg: EntityRegistryEntry[],
+      _themes: Themes
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;

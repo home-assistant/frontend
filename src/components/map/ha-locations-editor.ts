@@ -8,8 +8,12 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
 import type { MapLatLng } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
-import { internationalizationContext } from "../../data/context";
-import type { HomeAssistantInternationalization, ThemeMode } from "../../types";
+import { internationalizationContext, uiContext } from "../../data/context";
+import type {
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+  ThemeMode,
+} from "../../types";
 import "../ha-alert";
 import "../ha-input-helper-text";
 import "./ha-map";
@@ -72,6 +76,11 @@ export class HaLocationsEditor extends LitElement {
 
   @state() private _editingAvailable = true;
 
+  // Marker elements bake in theme colors, so they are rebuilt on a theme change
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: HomeAssistantUI;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
@@ -112,7 +121,10 @@ export class HaLocationsEditor extends LitElement {
     return html`
       <div class="map">
         <ha-map
-          .editableLocations=${this._editableLocations(this.locations)}
+          .editableLocations=${this._editableLocations(
+            this.locations,
+            this._ui?.themes
+          )}
           .zoom=${this.zoom}
           .autoFit=${this.autoFit}
           .themeMode=${this.themeMode}
@@ -144,7 +156,14 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private _editableLocations = memoizeOne(
-    (locations?: MarkerLocation[]): HaMapEditableLocation[] => {
+    (
+      locations: MarkerLocation[] | undefined,
+      themes: HomeAssistantUI["themes"] | undefined
+    ): HaMapEditableLocation[] => {
+      if (themes !== this._elementsThemes) {
+        this._elementsThemes = themes;
+        this._elements.clear();
+      }
       const ids = new Set((locations ?? []).map((location) => location.id));
       for (const id of this._elements.keys()) {
         if (!ids.has(id)) {
@@ -170,6 +189,8 @@ export class HaLocationsEditor extends LitElement {
 
   // Reused while unchanged, so ha-map moves markers instead of rebuilding them
   private _elements = new Map<string, { key: string; element?: HTMLElement }>();
+
+  private _elementsThemes?: HomeAssistantUI["themes"];
 
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
     const isZone = !!location.radius;
