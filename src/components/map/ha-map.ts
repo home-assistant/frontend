@@ -231,6 +231,8 @@ interface ClusterData {
   entityId: string;
   picture?: string;
   label: string;
+  showIcon: boolean;
+  unit: string;
   color?: string;
   selected: boolean;
   zoneId?: string;
@@ -1277,6 +1279,8 @@ export class HaMap extends ReactiveElement {
         entityId: getEntityId(entity),
         picture: entityMarker.entityPicture || undefined,
         label: entityName,
+        showIcon: entityMarker.showIcon,
+        unit: entityMarker.entityUnit ?? "",
         color: entityColor,
         selected: typeof entity !== "string" && (entity.selected ?? false),
         zoneId: ["person", "device_tracker"].includes(
@@ -1337,6 +1341,8 @@ export class HaMap extends ReactiveElement {
       const avatar = document.createElement("ha-entity-marker");
       avatar.entityId = member?.entityId;
       avatar.entityName = member?.label ?? "";
+      avatar.entityUnit = member?.unit ?? "";
+      avatar.showIcon = member?.showIcon ?? false;
       avatar.entityPicture = member?.picture ?? "";
       avatar.entityColor = member?.color;
       if (showColors) {
