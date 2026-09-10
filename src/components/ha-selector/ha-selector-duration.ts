@@ -51,6 +51,8 @@ export class HaTimeDuration extends LitElement {
 
   @query("ha-duration-input") private _input?: HaDurationInput;
 
+  @state() private _pendingOffsetType?: OffsetType;
+
   public reportValidity(): boolean {
     return this._input?.reportValidity() ?? true;
   }
@@ -151,15 +153,14 @@ export class HaTimeDuration extends LitElement {
   }
 
   private _offsetType(data?: HaDurationData): OffsetType {
-    if (!data) {
-      return "none";
-    }
-    if (data.negative !== undefined) {
+    if (data?.negative !== undefined) {
       return data.negative ? "before" : "after";
     }
-    const { negative, ...components } = normalizeDuration(data);
+    const { negative, ...components } = data
+      ? normalizeDuration(data)
+      : { negative: false };
     if (durationDataToSeconds(components) === 0) {
-      return "none";
+      return this._pendingOffsetType ?? "none";
     }
     return negative ? "before" : "after";
   }
@@ -185,10 +186,8 @@ export class HaTimeDuration extends LitElement {
     if (type === "none") {
       return this._zeroDuration();
     }
-    return {
-      negative: type === "before",
-      ...this._components(data ?? this._zeroDuration()),
-    };
+    const components = this._components(data ?? this._zeroDuration());
+    return type === "before" ? { negative: true, ...components } : components;
   }
 
   private _durationChanged(ev: ValueChangedEvent<HaDurationData | undefined>) {
@@ -209,6 +208,7 @@ export class HaTimeDuration extends LitElement {
     if (!type || type === this._offsetType(data)) {
       return;
     }
+    this._pendingOffsetType = type;
     fireEvent(this, "value-changed", {
       value: this._withOffsetType(type, data),
     });
