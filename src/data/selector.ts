@@ -275,7 +275,6 @@ export interface DurationSelector {
     allow_negative?: boolean;
     enable_second?: boolean;
     mode?: DurationSelectorMode;
-    translation_key?: string;
   } | null;
 }
 

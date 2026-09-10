@@ -42,9 +42,6 @@ export class HaTimeDuration extends LitElement {
 
   @property() public helper?: string;
 
-  @property({ attribute: false })
-  public localizeValue?: (key: string) => string;
-
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -61,20 +58,12 @@ export class HaTimeDuration extends LitElement {
 
   private _data = memoizeOne(durationValueToData);
 
-  private _offsetTypeOptions = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      localizeValue?: (key: string) => string,
-      translationKey?: string
-    ) =>
-      OFFSET_TYPES.map(({ value, iconPath }) => ({
-        value,
-        iconPath,
-        label:
-          (translationKey &&
-            localizeValue?.(`${translationKey}.options.${value}`)) ||
-          localize(`ui.components.selectors.duration.offset.${value}`),
-      }))
+  private _offsetTypeOptions = memoizeOne((localize: LocalizeFunc) =>
+    OFFSET_TYPES.map(({ value, iconPath }) => ({
+      value,
+      iconPath,
+      label: localize(`ui.components.selectors.duration.offset.${value}`),
+    }))
   );
 
   protected render() {
@@ -101,11 +90,7 @@ export class HaTimeDuration extends LitElement {
         <div class="inputs">
           <ha-select
             .value=${offsetType}
-            .options=${this._offsetTypeOptions(
-              this._localize,
-              this.localizeValue,
-              this.selector.duration?.translation_key
-            )}
+            .options=${this._offsetTypeOptions(this._localize)}
             .disabled=${this.disabled}
             @selected=${this._offsetTypeChanged}
           ></ha-select>
