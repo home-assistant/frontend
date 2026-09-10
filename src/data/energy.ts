@@ -9,6 +9,7 @@ import {
   isFirstDayOfMonth,
   isLastDayOfMonth,
   startOfDay,
+  startOfHour,
 } from "date-fns";
 import type { Collection, HassEntity } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
@@ -600,6 +601,9 @@ const getEnergyData = async (
   let statsCompare;
   let startCompare;
   let endCompare;
+  // Compare ranges are completed/historical; pick their period independently so
+  // hour-0's live "5minute" choice is not reused for YoY/previous compare.
+  let periodCompare = period;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
@@ -646,13 +650,14 @@ const getEnergyData = async (
       startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
       endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
+    periodCompare = getSuggestedPeriod(startCompare!, endCompare);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
         startCompare,
         endCompare,
         energyStatIds,
-        period,
+        periodCompare,
         energyUnits,
         ["change"]
       );
@@ -663,7 +668,7 @@ const getEnergyData = async (
         startCompare,
         endCompare,
         waterStatIds,
-        period,
+        periodCompare,
         waterUnits,
         ["change"]
       );
@@ -686,13 +691,15 @@ const getEnergyData = async (
       fossilPeriod
     );
     if (compare) {
+      const fossilPeriodCompare =
+        periodCompare === "5minute" ? "hour" : periodCompare;
       _fossilEnergyConsumptionCompare = getFossilEnergyConsumption(
         hass!,
         startCompare,
         consumptionStatIDs,
         co2SignalEntity,
         endCompare,
-        fossilPeriod
+        fossilPeriodCompare
       );
     }
   }
@@ -1804,10 +1811,14 @@ export function getSuggestedPeriod(
         : "hour";
 
   // Hourly long-term stats for the current hour do not exist until it ends.
-  // Use 5-minute short-term stats while the visible range is still < 1 hour.
+  // Use 5-minute short-term stats only for the live incomplete hour — not for
+  // historical short ranges (e.g. year-over-year compare during hour 0).
   if (coarse === "hour") {
     const rangeEnd = Math.min((end ?? now).getTime(), now.getTime());
-    if (rangeEnd - start.getTime() < 60 * 60 * 1000) {
+    if (
+      start.getTime() >= startOfHour(now).getTime() &&
+      rangeEnd - start.getTime() < 60 * 60 * 1000
+    ) {
       return "5minute";
     }
   }

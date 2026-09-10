@@ -957,6 +957,15 @@ describe("getSuggestedPeriod", () => {
     assert.equal(getSuggestedPeriod(start, end, false, now), "hour");
   });
 
+  it("uses hour for a year-ago short range during hour 0", () => {
+    // YoY compare of "today" during hour 0 is also < 1 hour long, but those
+    // hours completed a year ago so hourly long-term stats already exist.
+    const now = new Date("2026-06-20T00:30:00-04:00");
+    const start = new Date("2025-06-20T00:00:00-04:00");
+    const end = new Date("2025-06-20T00:30:00-04:00");
+    assert.equal(getSuggestedPeriod(start, end, false, now), "hour");
+  });
+
   it("keeps day and month for longer ranges during hour 0", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
     const weekStart = calcDate(
