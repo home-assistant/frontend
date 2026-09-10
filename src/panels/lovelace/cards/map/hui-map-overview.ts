@@ -524,6 +524,7 @@ export class HuiMapOverview extends LitElement {
     return zoneColor(
       zone.entity_id,
       !!zone.attributes.passive,
+      this._entityReg,
       getComputedStyle(this)
     );
   }
