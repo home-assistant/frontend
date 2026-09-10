@@ -322,6 +322,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     const columns = this._config.grid_options?.columns ?? 12;
     const narrow = typeof columns === "number" && columns <= 12;
     const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+    const showNames = this._config.show_names !== false;
 
     return html`
       <ha-card>
@@ -367,12 +368,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                     .names=${this._names}
                     up-to-now
                     .hoursToShow=${this._hoursToShow}
-                    .showNames=${
-                      this._config.show_names !== undefined
-                        ? this._config.show_names
-                        : true
-                    }
-                    inside-labels
+                    .showNames=${showNames}
+                    ?inside-labels=${showNames}
                     .logarithmicScale=${this._config.logarithmic_scale || false}
                     .minYAxis=${this._config.min_y_axis}
                     .maxYAxis=${this._config.max_y_axis}
