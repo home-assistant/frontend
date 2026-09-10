@@ -266,14 +266,23 @@ export interface LegacyDeviceSelector {
   };
 }
 
+export type DurationSelectorMode = "positive" | "signed" | "offset";
+
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
     enable_second?: boolean;
+    mode?: DurationSelectorMode;
+    translation_key?: string;
   } | null;
 }
+
+export const getDurationSelectorMode = (
+  config: DurationSelector["duration"]
+): DurationSelectorMode =>
+  config?.mode ?? (config?.allow_negative ? "signed" : "positive");
 
 interface EntitySelectorFilter {
   integration?: string;

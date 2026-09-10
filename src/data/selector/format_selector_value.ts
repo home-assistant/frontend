@@ -4,6 +4,7 @@ import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_dis
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import type { HomeAssistant } from "../../types";
 import type { Selector } from "../selector";
+import { formatDurationSelectorValue } from "./format_duration_selector_value";
 
 export const formatSelectorValue = (
   hass: HomeAssistant,
@@ -121,6 +122,15 @@ export const formatSelectorValue = (
         return JSON.stringify(item);
       })
       .join(", ");
+  }
+
+  if ("duration" in selector) {
+    return formatDurationSelectorValue(
+      hass.localize,
+      hass.locale,
+      value,
+      selector.duration
+    );
   }
 
   return ensureArray(value)
