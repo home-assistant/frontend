@@ -193,6 +193,18 @@ describe("source predicates", () => {
     expect(
       hasNowViewContent(
         makePrefs({
+          device_consumption: [
+            {
+              stat_consumption: "sensor.device",
+              stat_rate: "sensor.device_rate",
+            },
+          ],
+        })
+      )
+    ).toBe(true);
+    expect(
+      hasNowViewContent(
+        makePrefs({
           energy_sources: [
             source({
               type: "solar",
