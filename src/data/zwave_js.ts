@@ -1,6 +1,7 @@
 import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import { callWS } from "../util/websocket";
+import type { DeviceRegistryEntry } from "./device/device_registry";
 
 export enum InclusionState {
   /** The controller isn't doing anything regarding inclusion. */
@@ -314,6 +315,11 @@ export interface ZWaveJSSetConfigParamResult {
   error?: string;
 }
 
+export interface ZwaveJSNodeConfigParameterUpdate {
+  id: string;
+  value: number | null;
+}
+
 export interface ZWaveJSDataCollectionStatus {
   enabled: boolean;
   opted_in: boolean;
@@ -460,6 +466,27 @@ export interface RequestedGrant {
   clientSideAuth: boolean;
 }
 
+/**
+ * Get the Z-Wave node ID of a device from its registry identifiers, which have
+ * the form `<home id>-<node id>[-<manufacturer>:<product type>:<product id>]`.
+ * Returns undefined for devices without a node, e.g. provisioning entries.
+ */
+export const getNodeIdFromDevice = (
+  device: DeviceRegistryEntry
+): number | undefined => {
+  for (const [domain, identifier] of device.identifiers) {
+    // a provisioning entry is identified by its DSK, whose blocks parse as numbers
+    if (domain !== "zwave_js" || identifier.startsWith("provision_")) {
+      continue;
+    }
+    const nodeId = parseInt(identifier.split("-")[1]);
+    if (!isNaN(nodeId)) {
+      return nodeId;
+    }
+  }
+  return undefined;
+};
+
 export const invokeZWaveCCApi = <T = unknown>(
   hass: HomeAssistant,
   device_id: string,
@@ -498,6 +525,16 @@ export const fetchZwaveNetworkStatus = (
     entry_id: device_or_entry_id.entry_id,
   });
 };
+
+/** Node IDs of the nodes each node can reach directly, keyed by node ID. */
+export const fetchZwaveNetworkNeighbors = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<Record<number, number[]>> =>
+  hass.callWS({
+    type: "zwave_js/network_neighbors",
+    entry_id,
+  });
 
 export const fetchZwaveDataCollectionStatus = (
   hass: HomeAssistant,
@@ -729,6 +766,16 @@ export const fetchZwaveNodeConfigParameters = (
 ): Promise<ZWaveJSNodeConfigParams> =>
   hass.callWS({
     type: "zwave_js/get_config_parameters",
+    device_id,
+  });
+
+export const subscribeZwaveNodeConfigParameterUpdates = (
+  hass: HomeAssistant,
+  device_id: string,
+  callback: (update: ZwaveJSNodeConfigParameterUpdate) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callback, {
+    type: "zwave_js/subscribe_config_parameter_updates",
     device_id,
   });
 

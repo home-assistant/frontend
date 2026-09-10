@@ -57,17 +57,40 @@ export const evaluateCondition = (
   return matchFieldCondition(condition, data);
 };
 
-export const isFieldHidden = (
+export const isFieldVisible = (
   schema: HaFormSchema,
   data: HaFormDataContainer | undefined
 ): boolean => {
-  const { hidden } = schema as HaFormBaseSchema;
-  if (!hidden) {
-    return false;
-  }
-  if (hidden === true) {
+  const { visible } = schema as HaFormBaseSchema;
+  if (visible === undefined || visible === true) {
     return true;
   }
-  const conditions = Array.isArray(hidden) ? hidden : [hidden];
+  if (visible === false) {
+    return false;
+  }
+  const conditions = Array.isArray(visible) ? visible : [visible];
   return conditions.every((condition) => evaluateCondition(condition, data));
+};
+
+// Hiding a field drops its value, which can flip another field's condition, so
+// resolve the set to a fixpoint.
+export const getHiddenFields = (
+  schema: readonly HaFormSchema[],
+  data: HaFormDataContainer | undefined
+): Set<string> => {
+  const hidden = new Set<string>();
+  const evalData: HaFormDataContainer = { ...(data ?? {}) };
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const field of schema) {
+      if (hidden.has(field.name) || isFieldVisible(field, evalData)) {
+        continue;
+      }
+      hidden.add(field.name);
+      delete evalData[field.name];
+      changed = true;
+    }
+  }
+  return hidden;
 };

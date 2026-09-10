@@ -13,6 +13,7 @@ import { forwardHaptic } from "../../data/haptics";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
+import { getToggleAction } from "../../common/entity/get_toggle_action";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -124,25 +125,10 @@ export class HaEntityToggle extends LitElement {
     }
     forwardHaptic(this, "light");
     const stateDomain = computeStateDomain(this.stateObj);
-    let serviceDomain;
-    let service;
 
-    if (stateDomain === "lock") {
-      serviceDomain = "lock";
-      service = turnOn ? "unlock" : "lock";
-    } else if (stateDomain === "cover") {
-      serviceDomain = "cover";
-      service = turnOn ? "open_cover" : "close_cover";
-    } else if (stateDomain === "valve") {
-      serviceDomain = "valve";
-      service = turnOn ? "open_valve" : "close_valve";
-    } else if (stateDomain === "group") {
-      serviceDomain = "homeassistant";
-      service = turnOn ? "turn_on" : "turn_off";
-    } else {
-      serviceDomain = stateDomain;
-      service = turnOn ? "turn_on" : "turn_off";
-    }
+    const serviceDomain =
+      stateDomain === "group" ? "homeassistant" : stateDomain;
+    const service = getToggleAction(stateDomain, turnOn);
 
     const currentState = this.stateObj;
 

@@ -3,6 +3,7 @@ import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
 
 export interface BluetoothDeviceInfoDialogParams {
   entry: BluetoothDeviceData;
+  deviceId?: string;
 }
 
 export const loadBluetoothDeviceInfoDialog = () =>

@@ -8,6 +8,7 @@ import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
+import { applyDefaultColor } from "../common/entity-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -24,7 +25,7 @@ import type {
   LovelaceHeaderFooter,
 } from "../types";
 import { migrateEntitiesCardConfig } from "./migrate-card-config";
-import type { EntitiesCardConfig } from "./types";
+import type { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { haStyleScrollbar } from "../../../resources/styles";
 
 export const computeShowHeaderToggle = <
@@ -159,7 +160,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     const migratedConfig = migrateEntitiesCardConfig(config);
     const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = migratedConfig;
+    this._config = { color: "state", ...migratedConfig };
     this._configEntities = entities;
     this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
@@ -343,18 +344,18 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     `,
   ];
 
-  private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
-    const element = createRowElement(
-      (!("type" in entityConf) || entityConf.type === "conditional") &&
-        "state_color" in this._config!
-        ? ({
-            state_color: this._config.state_color,
-            ...(entityConf as EntityConfig),
-          } as EntityConfig)
-        : entityConf.type === "perform-action"
-          ? { ...entityConf, type: "call-service" }
-          : entityConf
+  private _rowConfig(entityConf: LovelaceRowConfig): LovelaceRowConfig {
+    if (entityConf.type === "perform-action") {
+      return { ...entityConf, type: "call-service" };
+    }
+    return applyDefaultColor(
+      entityConf as EntitiesCardEntityConfig,
+      this._config!.color
     );
+  }
+
+  private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+    const element = createRowElement(this._rowConfig(entityConf));
     if (this._hass) {
       element.hass = this._hass;
     }

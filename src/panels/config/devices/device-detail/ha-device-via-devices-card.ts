@@ -75,7 +75,11 @@ export class HaDeviceViaDevicesCard extends LitElement {
           ? viaDevices
           : viaDevices.slice(0, MAX_VISIBLE_VIA_DEVICES)
         ).map((viaDevice) => {
-          const area = getDeviceArea(viaDevice, this.hass.areas);
+          const area = getDeviceArea(
+            viaDevice,
+            this.hass.areas,
+            this.hass.devices
+          );
           const entityCount = entityCounts[viaDevice.id] ?? 0;
           const secondary = [
             area?.name,

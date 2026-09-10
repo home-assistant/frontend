@@ -145,7 +145,7 @@ export class HuiTileCardEditor
             },
             {
               name: "state_content",
-              hidden: { field: "hide_state", value: true },
+              visible: { field: "hide_state", operator: "not_eq", value: true },
               selector: {
                 ui_state_content: {
                   allow_context: true,
@@ -157,7 +157,7 @@ export class HuiTileCardEditor
             },
             {
               name: "time_format",
-              hidden: !showTimeFormat,
+              visible: showTimeFormat,
               selector: {
                 ui_time_format: {},
               },
@@ -198,6 +198,10 @@ export class HuiTileCardEditor
                 },
               },
               context: ACTION_RELATED_CONTEXT,
+            },
+            {
+              name: "",
+              type: "divider",
             },
             {
               name: "icon_tap_action",

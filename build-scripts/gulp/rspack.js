@@ -108,7 +108,7 @@ const runDevServer = async ({
   }
 };
 
-const doneHandler = (done) => (err, stats) => {
+const doneHandler = () => (err, stats) => {
   if (err) {
     log.error(err.stack || err);
     if (err.details) {
@@ -122,18 +122,26 @@ const doneHandler = (done) => (err, stats) => {
   }
 
   log(`Build done @ ${new Date().toLocaleTimeString()}`);
-
-  if (done) {
-    done();
-  }
 };
 
 const prodBuild = (conf) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     rspack(
       conf,
       // Resolve promise when done. Because we pass a callback, rspack closes itself
-      doneHandler(resolve)
+      (err, stats) => {
+        if (err) {
+          reject(err);
+        } else if (stats.hasErrors()) {
+          reject(Error(stats.toString("errors-only")));
+        } else {
+          if (stats.hasWarnings()) {
+            console.log(stats.toString("minimal"));
+          }
+          log(`Build done @ ${new Date().toLocaleTimeString()}`);
+          resolve();
+        }
+      }
     );
   });
 
@@ -160,6 +168,17 @@ gulp.task("rspack-prod-app", () =>
   )
 );
 
+gulp.task("rspack-prod-app-modern", () =>
+  prodBuild(
+    createAppConfig({
+      isProdBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+      latestBuild: true,
+    })
+  )
+);
+
 gulp.task("rspack-dev-server-demo", () =>
   runDevServer({
     compiler: rspack(
@@ -177,6 +196,18 @@ gulp.task("rspack-prod-demo", () =>
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
+gulp.task("rspack-prod-demo-e2e", () =>
+  prodBuild(
+    createDemoConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
@@ -221,6 +252,7 @@ gulp.task("rspack-prod-gallery", () =>
     createGalleryConfig({
       isProdBuild: true,
       latestBuild: true,
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
@@ -269,6 +301,18 @@ gulp.task("rspack-prod-e2e-test-app", () =>
     bothBuilds(createE2eTestAppConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
+gulp.task("rspack-prod-e2e-test-app-e2e", () =>
+  prodBuild(
+    createE2eTestAppConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );

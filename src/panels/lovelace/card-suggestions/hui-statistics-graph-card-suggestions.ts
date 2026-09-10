@@ -36,6 +36,30 @@ const MEASUREMENT_VARIANTS: Variant[] = [
   },
 ];
 
+const MEASUREMENT_ANGLE_VARIANTS: Variant[] = [
+  {
+    labelKey: "last_24h",
+    days_to_show: 1,
+    period: "hour",
+    chart_type: "line",
+    stat_types: ["mean"],
+  },
+  {
+    labelKey: "last_7d",
+    days_to_show: 7,
+    period: "day",
+    chart_type: "line",
+    stat_types: ["mean"],
+  },
+  {
+    labelKey: "last_30d",
+    days_to_show: 30,
+    period: "day",
+    chart_type: "line",
+    stat_types: ["mean"],
+  },
+];
+
 const TOTAL_VARIANTS: Variant[] = [
   {
     labelKey: "last_7d",
@@ -60,6 +84,13 @@ const TOTAL_VARIANTS: Variant[] = [
   },
 ];
 
+const VARIANTS_BY_STATE_CLASS: Record<string, Variant[]> = {
+  measurement: MEASUREMENT_VARIANTS,
+  measurement_angle: MEASUREMENT_ANGLE_VARIANTS,
+  total: TOTAL_VARIANTS,
+  total_increasing: TOTAL_VARIANTS,
+};
+
 export const statisticsGraphCardSuggestions: CardSuggestionProvider<StatisticsGraphCardConfig> =
   {
     getEntitySuggestion(hass, entityId) {
@@ -67,8 +98,8 @@ export const statisticsGraphCardSuggestions: CardSuggestionProvider<StatisticsGr
       const stateObj = hass.states[entityId];
       const stateClass = stateObj?.attributes.state_class;
       if (!stateClass) return null;
-      const variants =
-        stateClass === "measurement" ? MEASUREMENT_VARIANTS : TOTAL_VARIANTS;
+      const variants = VARIANTS_BY_STATE_CLASS[stateClass];
+      if (!variants) return null;
       const suggestions: CardSuggestion<StatisticsGraphCardConfig>[] =
         variants.map((v) => ({
           label: hass.localize(`${LABEL_PREFIX}${v.labelKey}` as any),

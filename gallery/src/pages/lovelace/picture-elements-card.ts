@@ -1,7 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { PictureElementsCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type {
+  ImageElementConfig,
+  LovelaceElementConfig,
+} from "../../../../src/panels/lovelace/elements/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -60,116 +66,141 @@ const ENTITIES = [
   },
 ];
 
+type LegacyImageElementConfig = Omit<
+  ImageElementConfig,
+  "state_filter" | "state_image"
+> & {
+  state_filter?: Record<string, string>;
+  state_image?: Record<string, string>;
+};
+
+type GalleryPictureElementsCardConfig = Omit<
+  PictureElementsCardConfig,
+  "elements"
+> & {
+  type: PictureElementsCardConfig["type"];
+  elements: (LovelaceElementConfig | LegacyImageElementConfig)[];
+};
+
 const CONFIGS = [
   {
     heading: "Card with few elements",
-    config: `
-- type: picture-elements
-  image: /images/floorplan.png
-  elements:
-    - type: service-button
-      title: Lights Off
-      style:
-        top: 97%
-        left: 90%
-        padding: 0px
-      service: light.turn_off
-      data:
-        entity_id: group.all_lights
-    - type: icon
-      icon: mdi:cctv
-      entity: camera.demo_camera
-      style:
-        top: 12%
-        left: 6%
-        transform: rotate(-60deg) scaleX(-1)
-        --mdc-icon-size: 30px
-        --mdc-icon-stroke-color: black
-        --mdc-icon-fill-color: rgba(50, 50, 50, .75)
-    - type: image
-      entity: light.bed_light
-      tap_action:
-        action: toggle
-      image: /images/light_bulb_off.png
-      state_image:
-        'on': /images/light_bulb_on.png
-      state_filter:
-        'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-        'off': brightness(80%) saturate(0.8)
-      style:
-        top: 35%
-        left: 65%
-        width: 7%
-        padding: 50px 50px 100px 50px
-    - type: state-icon
-      entity: binary_sensor.movement_backyard
-      style:
-        top: 8%
-        left: 35%
-    `,
+    config: {
+      type: "picture-elements",
+      image: "/images/floorplan.png",
+      elements: [
+        {
+          type: "service-button",
+          title: "Lights Off",
+          style: { top: "97%", left: "90%", padding: "0px" },
+          service: "light.turn_off",
+          data: { entity_id: "group.all_lights" },
+        },
+        {
+          type: "icon",
+          icon: "mdi:cctv",
+          entity: "camera.demo_camera",
+          style: {
+            top: "12%",
+            left: "6%",
+            transform: "rotate(-60deg) scaleX(-1)",
+            "--mdc-icon-size": "30px",
+            "--mdc-icon-stroke-color": "black",
+            "--mdc-icon-fill-color": "rgba(50, 50, 50, .75)",
+          },
+        },
+        {
+          type: "image",
+          entity: "light.bed_light",
+          tap_action: { action: "toggle" },
+          image: "/images/light_bulb_off.png",
+          state_image: { on: "/images/light_bulb_on.png" },
+          state_filter: {
+            on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+            off: "brightness(80%) saturate(0.8)",
+          },
+          style: {
+            top: "35%",
+            left: "65%",
+            width: "7%",
+            padding: "50px 50px 100px 50px",
+          },
+        },
+        {
+          type: "state-icon",
+          entity: "binary_sensor.movement_backyard",
+          style: { top: "8%", left: "35%" },
+        },
+      ],
+    },
   },
   {
     heading: "Card with header",
-    config: `
-- type: picture-elements
-  image: /images/floorplan.png
-  title: My House
-  elements:
-    - type: service-button
-      title: Lights Off
-      style:
-        top: 97%
-        left: 90%
-        padding: 0px
-      service: light.turn_off
-      data:
-        entity_id: group.all_lights
-    - type: icon
-      icon: mdi:cctv
-      entity: camera.demo_camera
-      style:
-        top: 12%
-        left: 6%
-        transform: rotate(-60deg) scaleX(-1)
-        --mdc-icon-size: 30px
-        --mdc-icon-stroke-color: black
-        --mdc-icon-fill-color: rgba(50, 50, 50, .75)
-    - type: image
-      entity: light.bed_light
-      tap_action:
-        action: toggle
-      image: /images/light_bulb_off.png
-      state_image:
-        'on': /images/light_bulb_on.png
-      state_filter:
-        'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
-        'off': brightness(80%) saturate(0.8)
-      style:
-        top: 35%
-        left: 65%
-        width: 7%
-        padding: 50px 50px 100px 50px
-    - type: state-icon
-      entity: binary_sensor.movement_backyard
-      style:
-        top: 8%
-        left: 35%
-    `,
+    config: {
+      type: "picture-elements",
+      image: "/images/floorplan.png",
+      title: "My House",
+      elements: [
+        {
+          type: "service-button",
+          title: "Lights Off",
+          style: { top: "97%", left: "90%", padding: "0px" },
+          service: "light.turn_off",
+          data: { entity_id: "group.all_lights" },
+        },
+        {
+          type: "icon",
+          icon: "mdi:cctv",
+          entity: "camera.demo_camera",
+          style: {
+            top: "12%",
+            left: "6%",
+            transform: "rotate(-60deg) scaleX(-1)",
+            "--mdc-icon-size": "30px",
+            "--mdc-icon-stroke-color": "black",
+            "--mdc-icon-fill-color": "rgba(50, 50, 50, .75)",
+          },
+        },
+        {
+          type: "image",
+          entity: "light.bed_light",
+          tap_action: { action: "toggle" },
+          image: "/images/light_bulb_off.png",
+          state_image: { on: "/images/light_bulb_on.png" },
+          state_filter: {
+            on: "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
+            off: "brightness(80%) saturate(0.8)",
+          },
+          style: {
+            top: "35%",
+            left: "65%",
+            width: "7%",
+            padding: "50px 50px 100px 50px",
+          },
+        },
+        {
+          type: "state-icon",
+          entity: "binary_sensor.movement_backyard",
+          style: { top: "8%", left: "35%" },
+        },
+      ],
+    },
   },
   {
     heading: "Person entity",
-    config: `
-- type: picture-elements
-  image_entity: person.paulus
-  elements:
-  - type: state-icon
-    entity: sensor.battery
-    style:
-      top: 8%
-      left: 8%
-    `,
+    config: {
+      type: "picture-elements",
+      image_entity: "person.paulus",
+      elements: [
+        {
+          type: "state-icon",
+          entity: "sensor.battery",
+          style: { top: "8%", left: "8%" },
+        },
+      ],
+    },
   },
-];
+] satisfies DemoCardConfig<GalleryPictureElementsCardConfig>[];
 
 @customElement("demo-lovelace-picture-elements-card")
 class DemoPictureElements extends LitElement {

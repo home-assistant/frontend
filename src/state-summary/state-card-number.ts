@@ -3,10 +3,14 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
+import type { HaSlider } from "../components/ha-slider";
 import "../components/ha-slider";
+import type { HaInput } from "../components/input/ha-input";
 import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
+import { showNumberSlider } from "../data/number";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 
@@ -46,8 +50,6 @@ class StateCardNumber extends LitElement {
   }
 
   protected render() {
-    const range = this.stateObj.attributes.max - this.stateObj.attributes.min;
-
     return html`
       <state-info
         .hass=${this.hass}
@@ -55,8 +57,7 @@ class StateCardNumber extends LitElement {
         .inDialog=${this.inDialog}
       ></state-info>
       ${
-        this.stateObj.attributes.mode === "slider" ||
-        (this.stateObj.attributes.mode === "auto" && range <= 256)
+        showNumberSlider(this.stateObj)
           ? html`
               <div class="flex">
                 <ha-slider
@@ -126,8 +127,10 @@ class StateCardNumber extends LitElement {
     }
   }
 
-  private async _selectedValueChanged(ev: Event) {
-    const value = (ev.target as HTMLInputElement).value;
+  private async _selectedValueChanged(
+    ev: HASSDomTargetEvent<HaSlider | HaInput>
+  ) {
+    const value = String(ev.target.value);
     if (value === this.stateObj.state) {
       return;
     }

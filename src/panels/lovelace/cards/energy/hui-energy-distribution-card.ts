@@ -36,8 +36,13 @@ import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
+import { round } from "../../../../common/number/round";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
+
+// Flows are differences of sums; anything that rounds to 0 Wh is noise
+const hasFlow = (value: number | null): value is number =>
+  round(value ?? 0, 3) > 0;
 
 const periodIncludesNow = (data: EnergyData): boolean =>
   !data.end || data.end.getTime() >= Date.now();
@@ -112,11 +117,29 @@ class HuiEnergyDistrubutionCard
     ) {
       return true;
     }
-    const oldStates = changedProps.get("hass").states;
+    const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
+    const oldStates = oldHass.states;
     if (
       this._data?.co2SignalEntity &&
       this.hass.states[this._data.co2SignalEntity] !==
         oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    if (
+      this._data &&
+      energySourcesByType(this._data.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
     ) {
       return true;
     }
@@ -155,15 +178,30 @@ class HuiEnergyDistrubutionCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    const hasGrid =
-      !!types.grid?.[0] &&
-      (!!types.grid[0].stat_energy_from || !!types.grid[0].stat_energy_to);
+    const hasGrid = types.grid?.some(
+      (g) => g.stat_energy_from || g.stat_energy_to
+    );
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
+    const gasUnit = this._data.gasUnit;
+    const gasDisplayPrecisions = types.gas
+      ?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === gasUnit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+    const gasDisplayPrecision = gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
     const hasReturnToGrid =
-      types.grid?.some((source) => !!source.stat_energy_to) ?? false;
+      types.grid?.some((source) => source.stat_energy_to) ?? false;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
@@ -210,16 +248,37 @@ class HuiEnergyDistrubutionCard
       // card's data when the selected period extends to now. For historical
       // periods (yesterday, last week, ...) fall back to the generic icon.
       if (periodIncludesNow(this._data)) {
-        const socValues = types
-          .battery!.map((source) =>
-            source.stat_soc
+        const socBatteries = types
+          .battery!.map((source) => ({
+            soc: source.stat_soc
               ? Number(this.hass.states[source.stat_soc]?.state)
-              : NaN
-          )
-          .filter((value) => Number.isFinite(value));
-        if (socValues.length) {
-          averageBatterySoc =
-            socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
+              : NaN,
+            capacity: source.capacity,
+          }))
+          .filter((battery) => Number.isFinite(battery.soc));
+        if (socBatteries.length) {
+          // Weight each battery's SOC by its capacity so the combined value
+          // reflects the total stored energy. Batteries without a configured
+          // capacity assume the mean of the configured ones; when none are
+          // configured this falls back to an equally weighted (simple) average.
+          const configuredCapacities = socBatteries
+            .map((battery) => battery.capacity)
+            .filter((capacity) => capacity != null && capacity > 0) as number[];
+          const meanCapacity = configuredCapacities.length
+            ? configuredCapacities.reduce((sum, value) => sum + value, 0) /
+              configuredCapacities.length
+            : 1;
+          let weightSum = 0;
+          let weightedSocSum = 0;
+          socBatteries.forEach((battery) => {
+            const capacity =
+              battery.capacity != null && battery.capacity > 0
+                ? battery.capacity
+                : meanCapacity;
+            weightSum += capacity;
+            weightedSocSum += battery.soc * capacity;
+          });
+          averageBatterySoc = weightedSocSum / weightSum;
           batteryIconPath = batteryLevelIconPath(averageBatterySoc);
         }
       }
@@ -416,7 +475,9 @@ class HuiEnergyDistrubutionCard
                             ${formatConsumptionShort(
                               this.hass,
                               gasUsage,
-                              this._data.gasUnit
+                              this._data.gasUnit,
+                              undefined,
+                              gasDisplayPrecision
                             )}
                           </div>
                           <svg width="80" height="30">
@@ -787,8 +848,8 @@ class HuiEnergyDistrubutionCard
                       ? svg`<path
                           id="battery-grid"
                           class=${classMap({
-                            "battery-from-grid": Boolean(batteryFromGrid),
-                            "battery-to-grid": Boolean(batteryToGrid),
+                            "battery-from-grid": hasFlow(batteryFromGrid),
+                            "battery-to-grid": hasFlow(batteryToGrid),
                           })}
                           d="M45,100 v-15 c0,-35 -10,-30 -30,-30 h-20"
                           vector-effect="non-scaling-stroke"
@@ -819,14 +880,14 @@ class HuiEnergyDistrubutionCard
                   : nothing
               }
               ${
-                solarToGrid && this._animate
+                hasFlow(solarToGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="return"
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (solarToGrid / totalLines) * 6}s"
+                      dur="${6 - (solarToGrid / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -836,7 +897,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                solarConsumption && this._animate
+                hasFlow(solarConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="solar"
@@ -853,7 +914,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                gridConsumption && this._animate
+                hasFlow(gridConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="grid"
@@ -870,7 +931,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                solarToBattery && this._animate
+                hasFlow(solarToBattery) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -887,7 +948,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryConsumption && this._animate
+                hasFlow(batteryConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -904,7 +965,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryFromGrid && this._animate
+                hasFlow(batteryFromGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -922,7 +983,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryToGrid && this._animate
+                hasFlow(batteryToGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-to-grid"

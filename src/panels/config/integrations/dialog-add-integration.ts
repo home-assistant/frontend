@@ -7,6 +7,10 @@ import { customElement, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -661,16 +665,17 @@ class AddIntegrationDialog extends LitElement {
     );
   }
 
-  private async _filterChanged(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
-  private _integrationPicked = (ev: Event) => {
-    const listItem = ev.currentTarget as HaIntegrationListItem;
-    if (!listItem?.integration) {
+  private _integrationPicked = (
+    ev: HASSDomCurrentTargetEvent<HaIntegrationListItem>
+  ) => {
+    if (!ev.currentTarget.integration) {
       return;
     }
-    this._handleIntegrationPicked(listItem.integration);
+    this._handleIntegrationPicked(ev.currentTarget.integration);
   };
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {

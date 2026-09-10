@@ -94,6 +94,27 @@ export class HaDeviceCard extends LitElement {
               : ""
           }
           ${
+            this.device.parent_device_id
+              ? html`
+                  <div class="extra-info">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.part_of"
+                    )}
+                    <span class="hub"
+                      ><a
+                        href="/config/devices/device/${
+                          this.device.parent_device_id
+                        }"
+                        >${this._computeDeviceNameDisplay(
+                          this.device.parent_device_id
+                        )}</a
+                      ></span
+                    >
+                  </div>
+                `
+              : ""
+          }
+          ${
             this.device.via_device_id
               ? html`
                   <div class="extra-info">

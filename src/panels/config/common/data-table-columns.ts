@@ -203,12 +203,10 @@ export function getModifiedAtTableColumn<T>(
 }
 
 const renderDateTimeColumn = (valueDateTime: number, hass: HomeAssistant) =>
-  html`${
-    valueDateTime
-      ? formatShortDateTimeWithConditionalYear(
-          new Date(valueDateTime * 1000),
-          hass.locale,
-          hass.config
-        )
-      : nothing
-  }`;
+  valueDateTime
+    ? formatShortDateTimeWithConditionalYear(
+        new Date(valueDateTime * 1000),
+        hass.locale,
+        hass.config
+      )
+    : nothing;

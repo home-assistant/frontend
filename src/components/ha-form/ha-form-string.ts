@@ -2,6 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-icon-button";
 import "../input/ha-input";
@@ -56,6 +57,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         .name=${this.schema.name}
         .autofocus=${!!this.schema.autofocus}
         .autocomplete=${this.schema.autocomplete}
+        .inputId=${this.schema.name}
         .validationMessage=${
           this.schema.required
             ? this.localize?.("ui.common.error_required")
@@ -79,7 +81,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     }
   }
 
-  protected _valueChanged(ev: Event): void {
+  protected _valueChanged(ev: HASSDomTargetEvent<HaInput>): void {
     let value: string | undefined = (ev.target as HaInput).value;
     if (this.data === value) {
       return;

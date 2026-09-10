@@ -128,8 +128,12 @@ class DialogAutomationSave
     `;
   }
 
+  private get _isDiscardDialog(): boolean {
+    return this._params?.onDiscard !== undefined;
+  }
+
   protected _renderDiscard() {
-    if (!this._params?.onDiscard) {
+    if (!this._isDiscardDialog) {
       return nothing;
     }
     return html`
@@ -324,10 +328,14 @@ class DialogAutomationSave
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${!!this._params.config.alias && !this.isDirtyState}
+            .disabled=${
+              !!this._params.config.alias &&
+              !this._isDiscardDialog &&
+              !this.isDirtyState
+            }
           >
             ${this.hass.localize(
-              this._params.config.alias && !this._params.onDiscard
+              this._params.config.alias && !this._isDiscardDialog
                 ? "ui.panel.config.automation.editor.rename"
                 : "ui.common.save"
             )}

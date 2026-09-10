@@ -10,12 +10,16 @@ import {
   optional,
   string,
   union,
+  literal,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-entities-picker";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { CalendarCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
@@ -27,6 +31,13 @@ const cardConfigStruct = assign(
     title: optional(union([string(), boolean()])),
     initial_view: optional(string()),
     theme: optional(string()),
+    show_add_event: optional(boolean()),
+    add_event_style: optional(
+      union([literal("below"), literal("on_top"), literal("header")])
+    ),
+    add_event_size: optional(
+      union([literal("small"), literal("medium"), literal("large")])
+    ),
     entities: array(string()),
   })
 );
@@ -72,7 +83,83 @@ export class HuiCalendarCardEditor
           ],
         },
         { name: "theme", required: false, selector: { theme: {} } },
-      ] as const
+        { name: "show_add_event", required: false, selector: { boolean: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "add_event_style",
+              default: "below",
+              visible: { field: "show_add_event", operator: "eq", value: true },
+              required: false,
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "below",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.below"
+                      ),
+                    },
+                    {
+                      value: "on_top",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.on_top"
+                      ),
+                    },
+                    {
+                      value: "header",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.header"
+                      ),
+                    },
+                  ],
+                  mode: "dropdown",
+                },
+              },
+            },
+            {
+              name: "add_event_size",
+              default: "small",
+              visible: [
+                { field: "show_add_event", operator: "eq", value: true },
+                {
+                  field: "add_event_style",
+                  operator: "not_eq",
+                  value: "header",
+                },
+              ],
+              required: false,
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "small",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.s"
+                      ),
+                    },
+                    {
+                      value: "medium",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.m"
+                      ),
+                    },
+                    {
+                      value: "large",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.l"
+                      ),
+                    },
+                  ],
+                  mode: "dropdown",
+                },
+              },
+            },
+          ],
+        },
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {

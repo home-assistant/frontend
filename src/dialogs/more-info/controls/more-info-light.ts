@@ -367,10 +367,10 @@ class MoreInfoLight extends LitElement {
           width: auto;
         }
         .wheel {
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           flex: none;
-          border-radius: var(--ha-border-radius-xl);
+          border-radius: var(--ha-border-radius-circle);
         }
         .wheel.color {
           background-image: url("/static/images/color_wheel.png");

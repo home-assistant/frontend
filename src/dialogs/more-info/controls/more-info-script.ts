@@ -19,7 +19,7 @@ import {
   hasRequiredScriptFields,
   requiredScriptFieldsFilled,
 } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../components/ha-more-info-state-header";
 
 @customElement("more-info-script")
@@ -209,7 +209,9 @@ class MoreInfoScript extends LitElement {
     });
   }
 
-  private _scriptDataChanged(ev: CustomEvent): void {
+  private _scriptDataChanged(
+    ev: ValueChangedEvent<Record<string, unknown>>
+  ): void {
     this._scriptData = { ...this._scriptData, ...ev.detail.value };
   }
 

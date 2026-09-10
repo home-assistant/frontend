@@ -1,7 +1,1 @@
-export enum SirenEntityFeature {
-  TURN_ON = 1,
-  TURN_OFF = 2,
-  TONES = 4,
-  VOLUME_SET = 8,
-  DURATION = 16,
-}
+export { SirenEntityFeature } from "./feature/siren_entity_feature";

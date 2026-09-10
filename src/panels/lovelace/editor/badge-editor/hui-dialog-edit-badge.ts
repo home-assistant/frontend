@@ -146,6 +146,7 @@ export class HuiDialogEditBadge
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!changedProps.has("_badgeConfig")) {
       return;
     }

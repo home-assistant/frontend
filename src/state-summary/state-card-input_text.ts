@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
@@ -50,7 +51,7 @@ class StateCardInputText extends LitElement {
     }
   }
 
-  private _onInput(ev: InputEvent) {
+  private _onInput(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
     this.value = (ev.target as HaInput).value ?? "";
   }
 

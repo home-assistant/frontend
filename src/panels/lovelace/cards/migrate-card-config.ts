@@ -1,40 +1,59 @@
-import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import { migrateStateColorConfig } from "../common/entity-color-config";
+import { migrateTimeFormatConfig } from "../common/entity-time-format-config";
+import { migrateSecondaryInfoConfig } from "../common/entity-secondary-info-config";
+import type {
+  ConditionalRowConfig,
+  LovelaceRowConfig,
+} from "../entity-rows/types";
 import type {
   EntitiesCardConfig,
+  EntitiesCardEntityConfig,
   GlanceCardConfig,
   GlanceConfigEntity,
 } from "./types";
+
+const migrateEntitiesRowConfig = (
+  rowConf: LovelaceRowConfig | string
+): LovelaceRowConfig | string => {
+  if (typeof rowConf !== "object") {
+    return rowConf;
+  }
+  let newConf: LovelaceRowConfig = rowConf;
+  newConf = migrateTimeFormatConfig(newConf as EntitiesCardEntityConfig);
+  newConf = migrateStateColorConfig(newConf as EntitiesCardEntityConfig);
+  newConf = migrateSecondaryInfoConfig(newConf as EntitiesCardEntityConfig);
+  if (newConf.type === "conditional") {
+    const row = (newConf as ConditionalRowConfig).row;
+    if (row && typeof row === "object") {
+      let newRow = migrateTimeFormatConfig(row as EntitiesCardEntityConfig);
+      newRow = migrateStateColorConfig(newRow);
+      newRow = migrateSecondaryInfoConfig(newRow);
+      if (newRow !== row) {
+        newConf = { ...newConf, row: newRow } as ConditionalRowConfig;
+      }
+    }
+  }
+  return newConf;
+};
 
 export const migrateEntitiesCardConfig = (
   config: EntitiesCardConfig
 ): EntitiesCardConfig => {
   let changed = false;
   const newEntities = config.entities?.map((e) => {
-    if (typeof e !== "object") {
-      return e;
+    const newConf = migrateEntitiesRowConfig(e);
+    if (newConf !== e) {
+      changed = true;
     }
-    // Custom rows own their config schema and may use `format` with a
-    // different meaning (e.g. custom:multiple-entity-row), so leave it
-    // untouched.
-    if (e.type?.startsWith("custom:")) {
-      return e;
-    }
-    if (!("format" in e)) {
-      return e;
-    }
-    changed = true;
-    const { format, ...rest } = e;
-    return {
-      ...rest,
-      time_format: (rest as EntityConfig).time_format ?? format,
-    };
+    return newConf;
   });
+  const newConfig = migrateStateColorConfig(config);
   if (!changed) {
-    return config;
+    return newConfig;
   }
   return {
-    ...config,
-    entities: newEntities as (LovelaceRowConfig | string)[],
+    ...newConfig,
+    entities: newEntities,
   };
 };
 
@@ -46,21 +65,20 @@ export const migrateGlanceCardConfig = (
     if (typeof e !== "object") {
       return e;
     }
-    if (!("format" in e)) {
-      return e;
+    let newConf = e;
+    newConf = migrateTimeFormatConfig(newConf);
+    newConf = migrateStateColorConfig(newConf);
+    if (newConf !== e) {
+      changed = true;
     }
-    changed = true;
-    const { format, ...rest } = e;
-    return {
-      ...rest,
-      time_format: rest.time_format ?? format,
-    };
+    return newConf;
   });
+  const newConfig = migrateStateColorConfig(config);
   if (!changed) {
-    return config;
+    return newConfig;
   }
   return {
-    ...config,
+    ...newConfig,
     entities: newEntities as (GlanceConfigEntity | string)[],
   };
 };

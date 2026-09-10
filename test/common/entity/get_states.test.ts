@@ -132,7 +132,7 @@ describe("getStates", () => {
         expect.arrayContaining([
           "battery",
           "battery_charging",
-          "co",
+          "carbon_monoxide",
           "cold",
           "connectivity",
           "door",

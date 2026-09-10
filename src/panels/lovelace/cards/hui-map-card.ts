@@ -4,7 +4,6 @@ import {
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { LatLngTuple } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -29,6 +28,7 @@ import type {
   HaMapPaths,
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
+import type { MapLatLng } from "../../../common/map/map-engine";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
@@ -218,6 +218,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
+            .scaleRuler=${this._config.scale_ruler || false}
             interactive-zones
             render-passive
           ></ha-map>
@@ -527,7 +528,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             continue;
           }
           const p = {} as HaMapPathPoint;
-          p.point = [latitude, longitude] as LatLngTuple;
+          p.point = [latitude, longitude] as MapLatLng;
           p.timestamp = new Date(entityState.lu * 1000);
           points.push(p);
         }

@@ -1,6 +1,8 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { AreaCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
@@ -80,33 +82,33 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Bedroom",
-    config: `
-- type: area
-  area: bedroom
-    `,
+    config: {
+      type: "area",
+      area: "bedroom",
+    },
   },
   {
     heading: "Living Room",
-    config: `
-- type: area
-  area: living_room
-    `,
+    config: {
+      type: "area",
+      area: "living_room",
+    },
   },
   {
     heading: "Office",
-    config: `
-- type: area
-  area: office
-    `,
+    config: {
+      type: "area",
+      area: "office",
+    },
   },
   {
     heading: "Kitchen",
-    config: `
-- type: area
-  area: kitchen
-    `,
+    config: {
+      type: "area",
+      area: "kitchen",
+    },
   },
-];
+] satisfies DemoCardConfig<AreaCardConfig>[];
 
 @customElement("demo-lovelace-area-card")
 class DemoArea extends LitElement {

@@ -40,6 +40,8 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: ShortcutCardConfig;
 
   private _navInfo = new NavigationPathInfoController(this);
@@ -128,10 +130,14 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
 
     const style = color ? { "--tile-color": color } : {};
 
+    const fixedInfoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
+
     return html`
       <ha-card style=${styleMap(style)}>
         <ha-tile-container
           .vertical=${Boolean(this._config.vertical)}
+          .fixedInfoHeight=${fixedInfoHeight}
           .interactive=${this._hasCardAction}
           .actionHandlerOptions=${{
             hasHold: hasAction(this._config.hold_action),

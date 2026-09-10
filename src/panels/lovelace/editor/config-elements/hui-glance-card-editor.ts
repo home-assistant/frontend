@@ -44,7 +44,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     show_icon: optional(boolean()),
-    state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesConfigStruct),
   })
 );
@@ -69,7 +69,16 @@ const SCHEMA = [
       { name: "show_state", selector: { boolean: {} } },
     ],
   },
-  { name: "state_color", selector: { boolean: {} } },
+  {
+    name: "color",
+    selector: {
+      ui_color: {
+        default_color: "state",
+        include_state: true,
+        include_none: true,
+      },
+    },
+  },
 ] as const;
 
 @customElement("hui-glance-card-editor")
@@ -113,6 +122,15 @@ export class HuiGlanceCardEditor
             },
             context: {
               icon_entity: "entity",
+            },
+          },
+          {
+            name: "color",
+            selector: {
+              ui_color: {
+                include_state: true,
+                include_none: true,
+              },
             },
           },
           { name: "show_last_changed", selector: { boolean: {} } },

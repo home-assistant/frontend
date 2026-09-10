@@ -1,7 +1,7 @@
 import { type LitElement, css } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
+import { supportsNativeElementInternals } from "../../common/feature-detect/support-native-element-internals";
 import type { Constructor } from "../../types";
 
 /**
@@ -198,7 +198,7 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     }
 
     public checkValidity(): boolean {
-      return nativeElementInternalsSupported
+      return supportsNativeElementInternals()
         ? (this._formControl?.checkValidity() ?? true)
         : true;
     }
@@ -211,7 +211,7 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
 
     protected _handleInput(): void {
       this.value = this._formControl?.value ?? undefined;
-      if (this._invalid && this._formControl?.checkValidity()) {
+      if (this._invalid && this.checkValidity()) {
         this._invalid = false;
       }
     }
@@ -222,12 +222,16 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
 
     protected _handleBlur(): void {
       if (this.autoValidate) {
-        this._invalid = !this._formControl?.checkValidity();
+        this._invalid = !this.checkValidity();
       }
     }
 
     protected _handleInvalid(): void {
-      this._invalid = true;
+      // Polyfilled internals dispatch `invalid` themselves, so only trust the
+      // event when validity comes from the platform (#51338).
+      if (supportsNativeElementInternals()) {
+        this._invalid = true;
+      }
     }
 
     protected _renderLabel = memoizeOne((label: string, required: boolean) => {

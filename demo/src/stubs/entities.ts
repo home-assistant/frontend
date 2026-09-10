@@ -85,7 +85,7 @@ export const energyEntities = () =>
       },
     },
     "sensor.energy_consumption_tarif_1": {
-      entity_id: "sensor.energy_consumption_tarif_1	",
+      entity_id: "sensor.energy_consumption_tarif_1",
       state: "88.6",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",

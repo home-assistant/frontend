@@ -11,9 +11,11 @@ import "../../../../components/input/ha-input";
 import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
-import { energyStatisticHelpUrl } from "../../../../data/energy";
 import {
-  getStatisticLabel,
+  computeEnergyLabel,
+  energyStatisticHelpUrl,
+} from "../../../../data/energy";
+import {
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -174,7 +176,7 @@ export class DialogEnergyDeviceSettingsWater
           .value=${this._device?.name || ""}
           .placeholder=${
             this._device
-              ? getStatisticLabel(
+              ? computeEnergyLabel(
                   this.hass,
                   this._device.stat_consumption,
                   this._params?.statsMetadata?.[this._device.stat_consumption]

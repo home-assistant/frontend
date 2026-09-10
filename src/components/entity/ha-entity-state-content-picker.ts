@@ -33,7 +33,6 @@ const HIDDEN_ATTRIBUTES = [
   "battery_level",
   "code_arm_required",
   "code_format",
-  "color_modes",
   "device_class",
   "editable",
   "effect_list",
@@ -176,6 +175,17 @@ export class HaStateContentPicker extends LitElement {
                   ),
                   sorting_label: this.hass.localize(
                     "ui.components.state-content-picker.device_name"
+                  ),
+                });
+              }
+              if (context.parentDevice) {
+                contextItems.push({
+                  id: "parent_device_name",
+                  primary: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
+                  ),
+                  sorting_label: this.hass.localize(
+                    "ui.components.state-content-picker.parent_device_name"
                   ),
                 });
               }

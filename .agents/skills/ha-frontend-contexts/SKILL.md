@@ -23,27 +23,27 @@ Container components may keep `hass` when they own it and feed providers. Leaf c
 
 ## Context Selection
 
-| Context                                                              | Replaces                                                                               |
-| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `statesContext`                                                      | `hass.states`                                                                          |
-| `entitiesContext`, `devicesContext`, `areasContext`, `floorsContext` | `hass.entities`, `hass.devices`, `hass.areas`, `hass.floors`                           |
-| `registriesContext`                                                  | all four registries together                                                           |
-| `servicesContext`                                                    | `hass.services`                                                                        |
-| `internationalizationContext`                                        | `hass.localize`, `hass.locale`, `hass.language`                                        |
-| `formattersContext`                                                  | entity and attribute formatters                                                        |
-| `configContext`                                                      | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                               |
-| `connectionContext`                                                  | `hass.connection`, `hass.connected`, `hass.hassUrl`                                    |
-| `apiContext`                                                         | `hass.callService`, `hass.callApi`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth` |
-| `uiContext`                                                          | themes, selected theme, panels, sidebar, and UI state                                  |
-| `narrowViewportContext`                                              | narrow-layout boolean                                                                  |
+| Context                                                              | Replaces                                                                                                  |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `statesContext`                                                      | `hass.states`                                                                                             |
+| `entitiesContext`, `devicesContext`, `areasContext`, `floorsContext` | `hass.entities`, `hass.devices`, `hass.areas`, `hass.floors`                                              |
+| `registriesContext`                                                  | all four registries together                                                                              |
+| `servicesContext`                                                    | `hass.services`                                                                                           |
+| `internationalizationContext`                                        | `hass.localize`, `hass.locale`, `hass.language`                                                           |
+| `formattersContext`                                                  | entity and attribute formatters                                                                           |
+| `configContext`                                                      | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                                                  |
+| `connectionContext`                                                  | `hass.connection`, `hass.connected`, `hass.debugConnection`, `hass.hassUrl`                               |
+| `apiContext`                                                         | `hass.callService`, `hass.callApi`, `hass.callApiRaw`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth` |
+| `uiContext`                                                          | themes, selected theme, panels, sidebar, and UI state                                                     |
+| `narrowViewportContext`                                              | narrow-layout boolean                                                                                     |
 
-Lazy contexts subscribe on first consumer and tear down after the last consumer: `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, and `manifestsContext`.
+Lazy contexts subscribe on first consumer and tear down after the last consumer: `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`, `triggerDescriptionsContext`, and `conditionDescriptionsContext`.
 
 The single-field contexts such as `localizeContext`, `themesContext`, and `userContext` are deprecated. Use grouped contexts instead.
 
 ## Consumption Patterns
 
-Use entity-scoped helpers when the component watches an entity id held on the host:
+Use entity-scoped helpers when the component watches an entity ID held on the host:
 
 ```ts
 @state() @consumeEntityState({ entityIdPath: ["_config", "entity"] })
@@ -56,6 +56,13 @@ private _entity?: EntityRegistryDisplayEntry;
 private _localize!: LocalizeFunc;
 ```
 
+Use `consumeEntityStates` when the host property contains one or more entity IDs. It filters missing entities and preserves the previous record when none of the selected entities changed.
+
+```ts
+@state() @consumeEntityStates({ entityIdPath: ["_config", "entities"] })
+private _stateObjs?: Record<string, HassEntity>;
+```
+
 For a single field from a grouped context, pair `@consume` with `@transform`:
 
 ```ts
@@ -65,7 +72,7 @@ For a single field from a grouped context, pair `@consume` with `@transform`:
 private _themes!: Themes;
 ```
 
-Use `@transform` with `watch` when the transformer depends on a host property, such as a computed entity id. `consumeEntityState` only watches the first path segment.
+Use `@transform` with `watch` when the transformer depends on a host property, such as a computed entity ID. `consumeEntityState` and `consumeEntityStates` only watch the first path segment.
 
 To consume a whole group untransformed, omit `@transform` and type the field as `ContextType<typeof statesContext>` or the matching context type.
 

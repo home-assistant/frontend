@@ -644,6 +644,7 @@ class HaConfigAreaPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/areas/dashboard"
         .header=${html`${
           area.icon
             ? html`<ha-icon
@@ -902,7 +903,7 @@ class HaConfigAreaPage extends LitElement {
       destructive: true,
       confirm: async () => {
         await deleteAreaRegistryEntry(this.hass!, area!.area_id);
-        afterNextRender(() => goBack("/config"));
+        afterNextRender(() => goBack("/config/areas/dashboard"));
       },
     });
   }

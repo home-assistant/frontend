@@ -1,7 +1,8 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -29,10 +30,11 @@ import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
   getInitialPowerConfig,
+  getPowerHelperEntityId,
   getPowerTypeFromConfig,
-  type HaEnergyPowerConfig,
+  isPowerConfigValid,
   type PowerType,
-} from "./ha-energy-power-config";
+} from "./power-config";
 import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
@@ -66,8 +68,6 @@ export class DialogEnergyBatterySettings
   @state() private _energy_units?: string[];
 
   @state() private _error?: string;
-
-  @query("ha-energy-power-config") private _powerConfigEl?: HaEnergyPowerConfig;
 
   private _excludeList?: string[];
 
@@ -229,6 +229,10 @@ export class DialogEnergyBatterySettings
           .powerType=${this._powerType}
           .powerConfig=${this._powerConfig}
           .excludeList=${this._excludeListPower}
+          .helperEntityId=${getPowerHelperEntityId(
+            this._params.source,
+            this._powerConfig
+          )}
           .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
@@ -247,6 +251,24 @@ export class DialogEnergyBatterySettings
           )}
           @value-changed=${this._statisticSocChanged}
         ></ha-statistic-picker>
+
+        <ha-input
+          .value=${
+            this._source.capacity != null ? String(this._source.capacity) : ""
+          }
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.capacity"
+          )}
+          .hint=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.capacity_helper"
+          )}
+          type="number"
+          step="any"
+          min="0"
+          @input=${this._capacityChanged}
+        >
+          <span slot="end">kWh</span>
+        </ha-input>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -277,11 +299,7 @@ export class DialogEnergyBatterySettings
     }
 
     // Check power config validity
-    if (this._powerConfigEl && !this._powerConfigEl.isValid()) {
-      return false;
-    }
-
-    return true;
+    return isPowerConfigValid(this._powerType, this._powerConfig);
   }
 
   private async _updateMetadata(statId: string) {
@@ -323,7 +341,7 @@ export class DialogEnergyBatterySettings
   }
 
   private _handlePowerConfigChanged(
-    ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
+    ev: HASSDomEvent<HASSDomEvents["power-config-changed"]>
   ) {
     this._powerType = ev.detail.powerType;
     this._powerConfig = ev.detail.powerConfig;
@@ -346,6 +364,19 @@ export class DialogEnergyBatterySettings
     });
   }
 
+  private _capacityChanged(ev: InputEvent) {
+    const rawValue = (ev.target as HaInput).value;
+    const value = rawValue ? parseFloat(rawValue) : NaN;
+    this._source = {
+      ...this._source!,
+      capacity: Number.isFinite(value) && value > 0 ? value : undefined,
+    };
+    if (this._source.capacity === undefined) {
+      delete this._source.capacity;
+    }
+    this._updateFormDirtyState();
+  }
+
   private async _save() {
     try {
       const source: BatterySourceTypeEnergyPreference = {
@@ -366,6 +397,10 @@ export class DialogEnergyBatterySettings
         source.stat_soc = this._source!.stat_soc;
       }
 
+      if (this._source!.capacity != null) {
+        source.capacity = this._source!.capacity;
+      }
+
       await this._params!.saveCallback(source);
       this._markDirtyStateClean();
       this.closeDialog();
@@ -384,7 +419,11 @@ export class DialogEnergyBatterySettings
           display: block;
           margin-bottom: var(--ha-space-4);
         }
-        ha-statistic-picker:last-of-type {
+        ha-input {
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+        }
+        ha-input:last-of-type {
           margin-bottom: 0;
         }
       `,

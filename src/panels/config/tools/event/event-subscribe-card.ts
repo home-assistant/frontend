@@ -10,6 +10,7 @@ import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatTimeWithSeconds } from "../../../../common/datetime/format_time";
+import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
@@ -286,13 +287,13 @@ class EventSubscribeCard extends LitElement {
     this._viewedEventId = this._events[next].id;
   }
 
-  private _valueChanged(ev: InputEvent) {
-    this._eventType = (ev.target as HaInput).value ?? "";
+  private _valueChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._eventType = ev.target.value ?? "";
     this._error = undefined;
   }
 
-  private _filterChanged(ev: InputEvent) {
-    this._eventFilter = (ev.target as HaInput).value ?? "";
+  private _filterChanged(ev: HASSDomTargetEvent<HaInput>) {
+    this._eventFilter = ev.target.value ?? "";
   }
 
   private _testEventFilter(event: HassEvent): boolean {

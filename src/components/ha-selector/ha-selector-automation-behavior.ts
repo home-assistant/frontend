@@ -53,7 +53,6 @@ export class HaSelectorAutomationBehavior extends LitElement {
       value: behavior,
       label: this._localizeOption(behavior, "label"),
       description: this._localizeOption(behavior, "description"),
-      disabled: this.disabled,
       ...(isTrigger && {
         image: {
           src: `/static/images/form/automation_behavior_trigger_${behavior}.svg`,
@@ -66,6 +65,7 @@ export class HaSelectorAutomationBehavior extends LitElement {
       <ha-select-box
         .options=${options}
         .value=${this.value ?? ""}
+        .disabled=${this.disabled}
         max_columns="1"
         ?stacked_image=${isTrigger}
         @value-changed=${this._valueChanged}

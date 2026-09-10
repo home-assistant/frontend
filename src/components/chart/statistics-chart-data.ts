@@ -163,12 +163,15 @@ export function generateStatisticsChartData(
         return;
       }
       const isLineChart = chartType === "line";
+      // Points carry their time as epoch milliseconds, not Date objects:
+      // ECharts accepts both, but Chart2Music only reads a numeric x, and a
+      // Date would make it announce points by index instead of time.
       // For bar charts, optionally center the bar within its time range. The
       // centered time is shared by every series of this data point.
       const barTime =
         !isLineChart && centerBars
-          ? new Date((start.getTime() + end.getTime()) / 2)
-          : start;
+          ? (start.getTime() + end.getTime()) / 2
+          : start.getTime();
       // Whether a gap needs to be drawn before this data point (line charts).
       const drawGap =
         isLineChart &&
@@ -182,10 +185,10 @@ export function generateStatisticsChartData(
           if (drawGap) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime!, ...prevValues![i]!]);
-            d.data!.push([prevEndTime!, null]);
+            d.data!.push([prevEndTime!.getTime(), ...prevValues![i]!]);
+            d.data!.push([prevEndTime!.getTime(), null]);
           }
-          d.data!.push([start, ...dataValue!]);
+          d.data!.push([start.getTime(), ...dataValue!]);
           // For band-top rows dataValues[i] is [diff, top]; the actual Y is
           // the last element. For regular rows it's [value]. Same call works.
           trackY(dataValue[dataValue.length - 1]);
@@ -387,7 +390,7 @@ export function generateStatisticsChartData(
     const lastValues = prevValues;
     if (chartType === "line" && lastEndTime && lastValues) {
       statDataSets.forEach((d, i) => {
-        d.data!.push([lastEndTime, ...lastValues[i]!]);
+        d.data!.push([lastEndTime.getTime(), ...lastValues[i]!]);
       });
     }
 
@@ -423,7 +426,7 @@ export function generateStatisticsChartData(
               } else {
                 val.push(currentValue);
               }
-              statDataSets[i].data!.push([now, ...val]);
+              statDataSets[i].data!.push([now.getTime(), ...val]);
               trackY(val[val.length - 1]);
             });
           }

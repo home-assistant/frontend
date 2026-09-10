@@ -10,6 +10,7 @@ import {
 import {
   formatDateTime,
   formatDateTimeNumeric,
+  formatDateTimeWithSeconds,
 } from "../../../common/datetime/format_date_time";
 import {
   formatTime,
@@ -29,6 +30,8 @@ import type {
 } from "../../../types";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { TimestampRenderingFormat } from "./types";
+import { uid } from "../../../common/util/uid";
+import "../../../components/ha-tooltip";
 
 const FORMATS: Record<
   string,
@@ -60,6 +63,8 @@ class HuiTimestampDisplay extends LitElement {
 
   @property({ type: Boolean }) public capitalize = false;
 
+  @property({ type: Boolean }) public tooltip = false;
+
   @state() private _relative?: string;
 
   @state()
@@ -86,6 +91,8 @@ class HuiTimestampDisplay extends LitElement {
   private _connected?: boolean;
 
   private _interval?: number;
+
+  private _uid = "timestamp-display-" + uid();
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -114,6 +121,14 @@ class HuiTimestampDisplay extends LitElement {
     const formatType = this._formatType;
 
     if (INTERVAL_FORMAT.includes(formatType)) {
+      if (this.tooltip) {
+        return html`
+          <ha-tooltip for=${this._uid} placement="right">
+            ${formatDateTimeWithSeconds(this.ts, this._locale, this._config)}
+          </ha-tooltip>
+          <span id=${this._uid}> ${this._relative} </span>
+        `;
+      }
       return html` ${this._relative} `;
     }
     if (formatType in FORMATS) {
@@ -123,9 +138,20 @@ class HuiTimestampDisplay extends LitElement {
           : format.style && format.style in FORMATS[formatType]
             ? format.style
             : "default";
-      return html`
-        ${FORMATS[formatType][style](this.ts, this._locale, this._config)}
-      `;
+      const formatted = FORMATS[formatType][style](
+        this.ts,
+        this._locale,
+        this._config
+      );
+      if (this.tooltip) {
+        return html`
+          <ha-tooltip for=${this._uid} placement="right">
+            ${formatDateTimeWithSeconds(this.ts, this._locale, this._config)}
+          </ha-tooltip>
+          <span id=${this._uid}> ${formatted} </span>
+        `;
+      }
+      return html` ${formatted} `;
     }
     return html`${this._localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"

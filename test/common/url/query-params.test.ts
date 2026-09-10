@@ -15,6 +15,11 @@ import {
   type QueryParamConfig,
 } from "../../../src/common/url/query-params";
 import {
+  createMoreInfoUrl,
+  decodeMoreInfoUrl,
+  removeMoreInfoUrl,
+} from "../../../src/common/url/more-info-query-params";
+import {
   createTodoQueryString,
   decodeTodoQueryParams,
 } from "../../../src/common/url/todo-query-params";
@@ -238,5 +243,54 @@ describe("todo query params", () => {
     const decoded = decodeTodoQueryParams(original);
     const encoded = createTodoQueryString(decoded);
     expect(encoded).toBe("add_item=true&entity_id=todo.tasks");
+  });
+});
+
+describe("more-info query params", () => {
+  it("decodes the entity and view", () => {
+    const params = decodeMoreInfoUrl(
+      "?more-info-entity-id=weather.home&more-info-view=info"
+    );
+
+    expect(params.entityId).toBe("weather.home");
+    expect(params.view).toBe("info");
+  });
+
+  it("ignores invalid views", () => {
+    expect(
+      decodeMoreInfoUrl(
+        "?more-info-entity-id=weather.home&more-info-view=forecast"
+      ).view
+    ).toBeUndefined();
+  });
+
+  it("creates a link without dropping unrelated query params", () => {
+    expect(
+      createMoreInfoUrl("/lovelace/home?theme=dark", {
+        entityId: "weather.home",
+        view: "info",
+      })
+    ).toBe(
+      "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info"
+    );
+  });
+
+  it("removes more-info query params but preserves the hash", () => {
+    expect(
+      removeMoreInfoUrl(
+        "/lovelace/home?theme=dark&more-info-entity-id=weather.home&more-info-view=info#some-anchor"
+      )
+    ).toBe("/lovelace/home?theme=dark#some-anchor");
+  });
+
+  it("preserves the hash of the page it links from", () => {
+    expect(
+      createMoreInfoUrl("/lovelace/home?theme=dark#some-anchor", {
+        entityId: "light.kitchen",
+        view: "info",
+      })
+    ).toBe(
+      "/lovelace/home?theme=dark&more-info-entity-id=light.kitchen&more-info-view=info#some-anchor"
+    );
   });
 });

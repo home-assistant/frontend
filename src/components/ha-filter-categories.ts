@@ -8,9 +8,14 @@ import {
   mdiTag,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { createRef, ref } from "lit/directives/ref";
+import {
+  FilterPanelController,
+  filterPanelStyles,
+} from "../common/controllers/filter-panel-controller";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { CategoryRegistryEntry } from "../data/category_registry";
@@ -47,9 +52,9 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
 
   @state() private _categories: CategoryRegistryEntry[] = [];
 
-  @state() private _shouldRender = false;
+  private _content = createRef<HTMLElement>();
 
-  @query("ha-list") private _list?: HTMLElement;
+  private _panel = new FilterPanelController(this, this._content);
 
   protected hassSubscribeRequiredHostProps = ["scope"];
 
@@ -70,7 +75,6 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
       <ha-expansion-panel
         left-chevron
         .expanded=${this.expanded}
-        @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
@@ -85,9 +89,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
               : nothing
           }
         </div>
-        ${
-          this._shouldRender
-            ? html`
+      </ha-expansion-panel>
+      ${
+        this._panel.showContent
+          ? html`
+              <div class="content" ${ref(this._content)}>
                 <ha-list
                   @selected=${this._categorySelected}
                   class="ha-scrollbar"
@@ -158,32 +164,15 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                       </ha-list-item>`
                   )}
                 </ha-list>
-              `
-            : nothing
-        }
-      </ha-expansion-panel>
-      ${
-        this.expanded
-          ? html`<ha-list-item
-              graphic="icon"
-              @click=${this._addCategory}
-              class="add"
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.category.editor.add")}
-            </ha-list-item>`
+                <ha-list-item graphic="icon" @click=${this._addCategory}>
+                  <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.category.editor.add")}
+                </ha-list-item>
+              </div>
+            `
           : nothing
       }
     `;
-  }
-
-  protected updated(changed: PropertyValues<this>) {
-    if (changed.has("expanded") && this.expanded) {
-      setTimeout(() => {
-        if (!this.expanded) return;
-        this._list!.style.height = `${this.clientHeight - (49 + 48)}px`;
-      }, 300);
-    }
   }
 
   private _handleAction(ev: HaDropdownSelectEvent) {
@@ -244,10 +233,6 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _expandedWillChange(ev) {
-    this._shouldRender = ev.detail.expanded;
-  }
-
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
@@ -287,19 +272,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
+      filterPanelStyles,
       css`
-        :host {
-          border-bottom: 1px solid var(--divider-color);
-          position: relative;
-        }
-        :host([expanded]) {
-          flex: 1;
-          height: 0;
-        }
-        ha-expansion-panel {
-          --ha-card-border-radius: var(--ha-border-radius-square);
-          --expansion-panel-content-padding: 0;
-        }
         .header {
           display: flex;
           align-items: center;
@@ -325,6 +299,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
         }
         ha-list {
+          flex: 1;
+          min-height: 0;
           --mdc-list-item-meta-size: auto;
           --mdc-list-side-padding-right: var(--ha-space-1);
           --mdc-list-side-padding-left: var(--ha-space-4);
@@ -338,12 +314,6 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         }
         .warning {
           color: var(--error-color);
-        }
-        .add {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-          left: 0;
         }
       `,
     ];

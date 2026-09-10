@@ -261,7 +261,7 @@ export function generatePowerSourcesGraphData(
   const end = energyData.end || endOfToday();
 
   const chartData = fillLineGaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
   // fillLineGaps ensures all datasets share the same x values, so iterate the

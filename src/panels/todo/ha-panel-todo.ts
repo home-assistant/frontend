@@ -15,6 +15,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
@@ -396,8 +397,8 @@ class PanelTodo extends LitElement {
     }
   }
 
-  private _setEntityId(ev: Event) {
-    const item = ev.currentTarget as HaDropdownItem;
+  private _setEntityId(ev: HASSDomCurrentTargetEvent<HaDropdownItem>) {
+    const item = ev.currentTarget;
 
     this._entityId = item.value;
   }

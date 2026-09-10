@@ -184,6 +184,7 @@ export const checkForEntityUpdates = async (
   }
 
   showToast(element, {
+    id: "check-updates",
     message: hass.localize("ui.panel.config.updates.checking_updates"),
   });
 
@@ -194,6 +195,7 @@ export const checkForEntityUpdates = async (
       if (computeDomain(event.data.entity_id) === "update") {
         updated++;
         showToast(element, {
+          id: "check-updates",
           message: hass.localize("ui.panel.config.updates.updates_refreshed", {
             count: updated,
           }),
@@ -216,6 +218,7 @@ export const checkForEntityUpdates = async (
 
   if (updated === 0) {
     showToast(element, {
+      id: "check-updates",
       message: hass.localize("ui.panel.config.updates.no_new_updates"),
     });
   }

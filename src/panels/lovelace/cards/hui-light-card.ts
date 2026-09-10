@@ -332,8 +332,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       font-size: var(--brightness-font-size);
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
-      -moz-transition: opacity 0.5s ease-in-out;
-      -webkit-transition: opacity 0.5s ease-in-out;
     }
 
     .show_brightness {

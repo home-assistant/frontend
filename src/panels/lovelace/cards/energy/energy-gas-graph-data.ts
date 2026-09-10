@@ -119,7 +119,7 @@ export function generateEnergyGasGraphData(
     true,
     generateFillBuckets(datasets, start, end, period)
   );
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
   const chartData = datasets;
   const total = processTotal(energyData.stats, gasSources);
 

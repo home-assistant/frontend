@@ -29,8 +29,6 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  private _searchParms = new URLSearchParams(window.location.search);
-
   protected render() {
     if (!this.hass) {
       return html`<hass-loading-screen></hass-loading-screen>`;
@@ -39,9 +37,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
       >

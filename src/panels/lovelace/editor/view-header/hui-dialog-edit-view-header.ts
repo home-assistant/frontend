@@ -78,6 +78,7 @@ export class HuiDialogEditViewHeader extends LitElement {
   @state() private _open = false;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (this._yamlMode && changedProperties.has("_yamlMode")) {
       this._yamlEditor?.setValue({
         header: this._headerConfig,

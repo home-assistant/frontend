@@ -1,10 +1,16 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { ShortcutItem } from "./home_shortcuts";
 
+export interface SurveyInteraction {
+  date: string;
+  action: "opened" | "dismissed";
+}
+
 export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
   default_panel?: string;
   apps_info_dismissed?: boolean;
+  dashboard_favorite_card_types?: string[];
 }
 
 export interface SidebarFrontendUserData {
@@ -16,6 +22,9 @@ export interface CoreFrontendSystemData {
   default_panel?: string;
   onboarded_version?: string;
   onboarded_date?: string;
+  surveys?: {
+    onboarding?: SurveyInteraction;
+  };
 }
 
 export interface HomeFrontendSystemData {
@@ -24,6 +33,18 @@ export interface HomeFrontendSystemData {
   hide_welcome_message?: boolean;
   hide_suggested_entities?: boolean;
   shortcuts?: ShortcutItem[];
+}
+
+export type SecurityAlertSeverity = "alert" | "warning";
+
+export interface SecurityAlertEntityConfig {
+  entity: string;
+  severity?: SecurityAlertSeverity;
+}
+
+export interface SecurityFrontendSystemData {
+  alert_entities?: SecurityAlertEntityConfig[];
+  favorite_entities?: string[];
 }
 
 export interface EnergyFrontendSystemData {
@@ -42,6 +63,7 @@ declare global {
     core: CoreFrontendSystemData;
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
+    security: SecurityFrontendSystemData;
   }
 }
 

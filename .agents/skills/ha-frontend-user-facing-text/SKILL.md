@@ -16,7 +16,7 @@ Use this skill for all user-facing text, translations, labels, buttons, dialog c
 - Give translators enough context through key naming and placeholders.
 
 ```ts
-this.hass.localize("ui.panel.config.updates.updates_refreshed", {
+this._localize("ui.panel.config.updates.updates_refreshed", {
   count: 5,
 });
 ```

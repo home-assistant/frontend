@@ -5,9 +5,9 @@ export const waColorStyles = css`
     --wa-color-brand-fill-loud: var(--ha-color-fill-primary-loud-resting);
     --wa-color-brand-fill-normal: var(--ha-color-fill-primary-normal-resting);
     --wa-color-brand-fill-quiet: var(--ha-color-fill-primary-quiet-hover);
-    --wa-color-brand-border-loud: var(--ha-color-border-loud);
+    --wa-color-brand-border-loud: var(--ha-color-border-primary-loud);
     --wa-color-brand-border-normal: var(--ha-color-primary-50);
-    --wa-color-brand-border-quiet: var(--ha-color-border-quiet);
+    --wa-color-brand-border-quiet: var(--ha-color-border-primary-quiet);
     --wa-color-brand-on-loud: var(--ha-color-on-primary-loud);
     --wa-color-brand-on-normal: var(--ha-color-on-primary-normal);
     --wa-color-brand-on-quiet: var(--ha-color-on-primary-quiet);

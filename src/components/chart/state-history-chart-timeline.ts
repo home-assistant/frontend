@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
-  ECElementEvent,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -13,7 +12,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import { sideTooltipPosition } from "./chart-tooltip-position";
+import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import { computeTimelineColor } from "./timeline-color";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
@@ -21,7 +20,12 @@ import echarts from "../../resources/echarts/echarts";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+
+const ROW_HEIGHT = 30;
+// Taller rows when the name is drawn under the bar instead of in a column.
+const ROW_HEIGHT_INSIDE_LABELS = 64;
+const GRID_BOTTOM = 30;
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -38,6 +42,11 @@ export class StateHistoryChartTimeline extends LitElement {
   @property() public identifier?: string;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  // Render each row's name inside the plot (under its bar) instead of in a
+  // left-hand category-label column. Opt-in; used by the history panel.
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -68,7 +77,11 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .hass=${this.hass}
         .options=${this._chartOptions}
-        .height=${`${this.data.length * 30 + 30}px`}
+        .height=${`${
+          this.data.length *
+            (this.insideLabels ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) +
+          GRID_BOTTOM
+        }px`}
         .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
@@ -183,6 +196,7 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
       changedProps.has("showNames") ||
+      changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
       changedProps.has("_yWidth")
     ) {
@@ -194,9 +208,11 @@ export class StateHistoryChartTimeline extends LitElement {
     const narrow = this.narrow;
     const showNames = this.chunked || this.showNames;
     const maxInternalLabelWidth = narrow ? 105 : 185;
-    const labelWidth = showNames
-      ? Math.max(this.paddingYAxis, this._yWidth)
-      : 0;
+    const insideLabels = this.insideLabels;
+    const labelWidth =
+      showNames && !insideLabels
+        ? Math.max(this.paddingYAxis, this._yWidth)
+        : 0;
     const labelMargin = 5;
     const rtl = computeRTL(
       this.hass.language,
@@ -225,41 +241,57 @@ export class StateHistoryChartTimeline extends LitElement {
         axisLine: {
           show: false,
         },
-        axisLabel: {
-          show: showNames,
-          width: labelWidth,
-          overflow: "truncate",
-          margin: labelMargin,
-          formatter: (id: string) => {
-            const label = this._chartData.find((d) => d.id === id)
-              ?.name as string;
-            const width = label
-              ? Math.min(
-                  measureTextWidth(label, 12) + labelMargin,
-                  maxInternalLabelWidth
-                )
-              : 0;
-            if (width > this._yWidth) {
-              this._yWidth = width;
-              fireEvent(this, "y-width-changed", {
-                value: this._yWidth,
-                chartIndex: this.chartIndex,
-              });
+        axisLabel: insideLabels
+          ? {
+              // Draw the name inside the plot, under each row's bar, matching
+              // the line charts whose legend sits under the plot. The taller
+              // rows keep a name clear of the next row's bar.
+              show: showNames,
+              inside: true,
+              margin: 0,
+              padding: [18, 0, 0, rtl ? 0 : 2],
+              align: rtl ? "right" : "left",
+              verticalAlign: "top",
+              formatter: (id: string) =>
+                (this._chartData.find((d) => d.id === id)?.name as string) ??
+                "",
+              hideOverlap: true,
             }
-            return label;
-          },
-          hideOverlap: true,
-        },
+          : {
+              show: showNames,
+              width: labelWidth,
+              overflow: "truncate",
+              margin: labelMargin,
+              formatter: (id: string) => {
+                const label = this._chartData.find((d) => d.id === id)
+                  ?.name as string;
+                const width = label
+                  ? Math.min(
+                      measureTextWidth(label, 12) + labelMargin,
+                      maxInternalLabelWidth
+                    )
+                  : 0;
+                if (width > this._yWidth) {
+                  this._yWidth = width;
+                  fireEvent(this, "y-width-changed", {
+                    value: this._yWidth,
+                    chartIndex: this.chartIndex,
+                  });
+                }
+                return label;
+              },
+              hideOverlap: true,
+            },
       },
       grid: {
         top: 10,
-        bottom: 30,
+        bottom: GRID_BOTTOM,
         left: rtl ? 1 : labelWidth,
         right: rtl ? labelWidth : 1,
       },
       tooltip: {
         renderMode: "html",
-        position: sideTooltipPosition,
+        position: itemTooltipPosition,
         confine: true,
         formatter: this._renderTooltip,
       },
@@ -271,7 +303,7 @@ export class StateHistoryChartTimeline extends LitElement {
     chartBase.zoom(start, end, true);
   }
 
-  private _handleDataZoom(ev: CustomEvent) {
+  private _handleDataZoom(ev: HASSDomEvent<HASSDomEvents["chart-zoom"]>) {
     fireEvent(this, "chart-zoom-with-index", {
       start: ev.detail.start ?? 0,
       end: ev.detail.end ?? 100,
@@ -385,7 +417,9 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartData = datasets;
   }
 
-  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+  private _handleChartClick(
+    e: HASSDomEvent<HASSDomEvents["chart-click"]>
+  ): void {
     if (e.detail.targetType === "axisLabel") {
       const dataset = this._chartData[e.detail.dataIndex];
       if (dataset) {

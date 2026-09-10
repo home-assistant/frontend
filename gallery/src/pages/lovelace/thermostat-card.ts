@@ -1,7 +1,9 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { ThermostatCardConfig } from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -123,120 +125,131 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Range example",
-    config: `
-- type: thermostat
-  entity: climate.ecobee
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.ecobee",
+    },
   },
   {
     heading: "Single temp example",
-    config: `
-- type: thermostat
-  entity: climate.nest
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.nest",
+    },
   },
   {
     heading: "Feature example",
-    config: `
-- type: thermostat
-  entity: climate.overkiz_radiator
-  features:
-    - type: climate-hvac-modes
-      hvac_modes:
-        - heat
-        - 'off'
-        - auto
-    - type: climate-preset-modes
-      style: icons
-      preset_modes:
-        - none
-        - frost_protection
-        - eco
-        - comfort
-        - comfort-1
-        - comfort-2
-        - auto
-        - boost
-        - external
-        - prog
-    - type: climate-preset-modes
-      style: dropdown
-      preset_modes:
-        - none
-        - frost_protection
-        - eco
-        - comfort
-        - comfort-1
-        - comfort-2
-        - auto
-        - boost
-        - external
-        - prog
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.overkiz_radiator",
+      features: [
+        {
+          type: "climate-hvac-modes",
+          hvac_modes: ["heat", "off", "auto"],
+        },
+        {
+          type: "climate-preset-modes",
+          style: "icons",
+          preset_modes: [
+            "none",
+            "frost_protection",
+            "eco",
+            "comfort",
+            "comfort-1",
+            "comfort-2",
+            "auto",
+            "boost",
+            "external",
+            "prog",
+          ],
+        },
+        {
+          type: "climate-preset-modes",
+          style: "dropdown",
+          preset_modes: [
+            "none",
+            "frost_protection",
+            "eco",
+            "comfort",
+            "comfort-1",
+            "comfort-2",
+            "auto",
+            "boost",
+            "external",
+            "prog",
+          ],
+        },
+      ],
+    },
   },
   {
     heading: "Preset only example",
-    config: `
-- type: thermostat
-  entity: climate.overkiz_towel_dryer
-  features:
-    - type: climate-hvac-modes
-      hvac_modes:
-        - heat
-        - 'off'
-    - type: climate-preset-modes
-      style: icons
-      preset_modes:
-        - none
-        - frost_protection
-        - eco
-        - comfort
-        - comfort-1
-        - comfort-2
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.overkiz_towel_dryer",
+      features: [
+        {
+          type: "climate-hvac-modes",
+          hvac_modes: ["heat", "off"],
+        },
+        {
+          type: "climate-preset-modes",
+          style: "icons",
+          preset_modes: [
+            "none",
+            "frost_protection",
+            "eco",
+            "comfort",
+            "comfort-1",
+            "comfort-2",
+          ],
+        },
+      ],
+    },
   },
   {
     heading: "Fan only example",
-    config: `
-- type: thermostat
-  entity: climate.sensibo
-  features:
-    - type: climate-hvac-modes
-      hvac_modes:
-        - fan_only
-        - 'off'
-    - type: climate-fan-modes
-      style: icons
-      fan_modes:
-        - low
-        - high
-    - type: climate-swing-modes
-      style: icons
-      swing_modes:
-        - 'both'
-        - 'rangefull'
-        - 'off'
-      swing_horizontal_modes:
-        - 'both'
-        - 'rangefull'
-        - 'off'
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.sensibo",
+      features: [
+        {
+          type: "climate-hvac-modes",
+          hvac_modes: ["fan_only", "off"],
+        },
+        {
+          type: "climate-fan-modes",
+          style: "icons",
+          fan_modes: ["low", "high"],
+        },
+        {
+          type: "climate-swing-modes",
+          style: "icons",
+          swing_modes: ["both", "rangefull", "off"],
+        },
+        {
+          type: "climate-swing-horizontal-modes",
+          style: "icons",
+          swing_horizontal_modes: ["both", "rangefull", "off"],
+        },
+      ],
+    },
   },
   {
     heading: "Unavailable",
-    config: `
-- type: thermostat
-  entity: climate.unavailable
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.unavailable",
+    },
   },
   {
     heading: "Non existing",
-    config: `
-- type: thermostat
-  entity: climate.nonexisting
-    `,
+    config: {
+      type: "thermostat",
+      entity: "climate.nonexisting",
+    },
   },
-];
+] satisfies DemoCardConfig<ThermostatCardConfig>[];
 
 @customElement("demo-lovelace-thermostat-card")
 class DemoThermostatEntity extends LitElement {

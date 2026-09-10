@@ -54,6 +54,7 @@ export class HaImagecropperDialog
   }
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (!changedProperties.has("_params") || !this._params) {
       return;
     }

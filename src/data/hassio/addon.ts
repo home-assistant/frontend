@@ -95,7 +95,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   options: Record<string, unknown>;
   privileged: any;
   protected: boolean;
-  rating: "1-8";
+  rating: number;
   schema: HaFormSchema[] | null;
   services_role: string[];
   signed: boolean;
@@ -280,14 +280,14 @@ export const restartHassioAddon = async (
 export const uninstallHassioAddon = async (
   callWS: CallWS,
   slug: string,
-  removeData: boolean
+  removeConfig: boolean
 ): Promise<void> => {
   await callWS({
     type: "supervisor/api",
     endpoint: `/addons/${slug}/uninstall`,
     method: "post",
     timeout: null,
-    data: { remove_config: removeData },
+    data: { remove_config: removeConfig },
   });
 };
 

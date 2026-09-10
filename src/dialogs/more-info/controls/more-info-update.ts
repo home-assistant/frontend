@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
 import { consume } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,6 +10,8 @@ import { consumeLocalize } from "../../../common/decorators/consume-context-entr
 import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -90,7 +93,11 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _markdownLoading = true;
 
+  @state() private _backupConfigLoading = true;
+
   @state() private _backupConfig?: BackupConfig;
+
+  @state() private _createBackupLoading = true;
 
   @state() private _createBackup = false;
 
@@ -104,6 +111,8 @@ class MoreInfoUpdate extends LitElement {
       // ignore error, because user will get a manual backup option
       // eslint-disable-next-line no-console
       console.error(err);
+    } finally {
+      this._backupConfigLoading = false;
     }
   }
 
@@ -114,6 +123,7 @@ class MoreInfoUpdate extends LitElement {
       // for home assistant and OS updates
       if (this._isHaOrOsUpdate(type)) {
         this._createBackup = config.core_backup_before_update;
+        this._createBackupLoading = false;
         return;
       }
 
@@ -124,6 +134,9 @@ class MoreInfoUpdate extends LitElement {
       // ignore error, because user can still set the config
       // eslint-disable-next-line no-console
       console.error(err);
+      this._createBackup = false;
+    } finally {
+      this._createBackupLoading = false;
     }
   }
 
@@ -152,6 +165,10 @@ class MoreInfoUpdate extends LitElement {
       : "generic";
 
     if (this._isHaOrOsUpdate(updateType)) {
+      if (this._backupConfigLoading) {
+        return undefined;
+      }
+
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.automatic_backups_configured &&
@@ -232,6 +249,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     const createBackupTexts = this._computeCreateBackupTexts();
+    const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
 
     return html`
       <div class="content">
@@ -283,14 +301,10 @@ class MoreInfoUpdate extends LitElement {
           </div>
 
           ${
-            this.stateObj.attributes.release_url
+            releaseUrl
               ? html`<div class="row">
                   <div class="key">
-                    <a
-                      href=${this.stateObj.attributes.release_url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href=${releaseUrl} target="_blank" rel="noreferrer">
                       ${this._localize(
                         "ui.dialogs.more_info_control.update.release_announcement"
                       )}
@@ -334,25 +348,34 @@ class MoreInfoUpdate extends LitElement {
       </div>
       <div class="footer">
         ${
-          createBackupTexts
+          createBackupTexts || this._backupConfigLoading
             ? html`
-                <ha-row-item>
-                  <span slot="headline">${createBackupTexts.title}</span>
+                <ha-row-item
+                  .headline=${createBackupTexts ? createBackupTexts.title : undefined}
+                  .supportingText=${createBackupTexts ? createBackupTexts.description : undefined}
+                >
                   ${
-                    createBackupTexts.description
-                      ? html`
-                          <span slot="supporting-text">
-                            ${createBackupTexts.description}
-                          </span>
-                        `
+                    !createBackupTexts
+                      ? html`<ha-fade-in slot="headline" .delay=${500}
+                          ><wa-skeleton effect="sheen"></wa-skeleton
+                        ></ha-fade-in>`
                       : nothing
                   }
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                    .disabled=${updateIsInstalling(this.stateObj)}
-                  ></ha-switch>
+                  ${
+                    this._createBackupLoading
+                      ? html`<ha-fade-in
+                          class="skeleton-end"
+                          slot="end"
+                          .delay=${500}
+                          ><wa-skeleton effect="sheen"></wa-skeleton
+                        ></ha-fade-in>`
+                      : html`<ha-switch
+                          slot="end"
+                          .checked=${this._createBackup}
+                          @change=${this._createBackupChanged}
+                          .disabled=${updateIsInstalling(this.stateObj)}
+                        ></ha-switch>`
+                  }
                 </ha-row-item>
               `
             : nothing
@@ -418,19 +441,34 @@ class MoreInfoUpdate extends LitElement {
       this._fetchReleaseNotes();
     }
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      this._fetchEntitySources().then(() => {
-        const type = getUpdateType(this.stateObj!, this._entitySources!);
-        if (
-          isComponentLoaded(this._config, "hassio") &&
-          ["addon", "home_assistant", "home_assistant_os"].includes(type)
-        ) {
-          this._fetchUpdateBackupConfig(type);
-        }
+      this._fetchEntitySources()
+        .then(() => {
+          const type = getUpdateType(this.stateObj!, this._entitySources!);
+          if (
+            isComponentLoaded(this._config, "hassio") &&
+            ["addon", "home_assistant", "home_assistant_os"].includes(type)
+          ) {
+            this._fetchUpdateBackupConfig(type);
+          } else {
+            this._createBackupLoading = false;
+          }
 
-        if (this._isHaOrOsUpdate(type)) {
-          this._fetchBackupConfig();
-        }
-      });
+          if (this._isHaOrOsUpdate(type)) {
+            this._fetchBackupConfig();
+          } else {
+            this._backupConfigLoading = false;
+          }
+        })
+        .catch((err) => {
+          // ignore error, because the generic backup option remains available
+          // eslint-disable-next-line no-console
+          console.error(err);
+          this._createBackupLoading = false;
+          this._backupConfigLoading = false;
+        });
+    } else {
+      this._createBackupLoading = false;
+      this._backupConfigLoading = false;
     }
   }
 
@@ -588,6 +626,11 @@ class MoreInfoUpdate extends LitElement {
       height: 80px;
       box-sizing: border-box;
       padding-bottom: var(--ha-space-4);
+    }
+    .skeleton-end {
+      width: 48px;
+      height: 24px;
+      display: block;
     }
   `;
 }

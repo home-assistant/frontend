@@ -5,6 +5,7 @@ import { dump, JSON_SCHEMA, load } from "js-yaml";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
@@ -17,6 +18,8 @@ import {
   isTemplate,
 } from "../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { sanitizeHttpUrl } from "../../../../common/url/sanitize-http-url";
+import { sanitizeNavigationPath } from "../../../../common/url/sanitize-navigation-path";
 import { extractSearchParam } from "../../../../common/url/search-params";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
@@ -562,7 +565,10 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                           `
                         : html`
                             <a
-                              href=${resolved.url}
+                              href=${ifDefined(
+                                sanitizeHttpUrl(resolved.url) ??
+                                  sanitizeNavigationPath(resolved.url)
+                              )}
                               target="_blank"
                               rel="noreferrer"
                               ><ha-button>

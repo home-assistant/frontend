@@ -287,7 +287,9 @@ export class HuiSuggestionEntityTree extends LitElement {
       this.hass.translationMetadata.translations
     );
     const separator = rtl ? " ◂ " : " ▸ ";
-    const secondary = [item.area, item.device].filter(Boolean).join(separator);
+    const secondary = [item.area, item.parentDevice, item.device]
+      .filter(Boolean)
+      .join(separator);
     return html`
       <ha-combo-box-item
         type="button"
@@ -414,14 +416,18 @@ export class HuiSuggestionEntityTree extends LitElement {
     `;
   }
 
-  private _renderDevice(device: DeviceNode, parentKey: string): TemplateResult {
+  private _renderDevice(
+    device: DeviceNode,
+    parentKey: string,
+    nested = false
+  ): TemplateResult {
     const key = deviceKey(parentKey, device.id);
     const expanded = this._isExpanded(key);
     const domain = this._deviceDomain(device.id);
     return html`
       <ha-combo-box-item
         type="button"
-        class="branch depth-device device-item"
+        class="branch ${nested ? "depth-device-nested" : "depth-device"} device-item"
         aria-expanded=${expanded}
         data-node-key=${key}
         @click=${this._toggleNode}
@@ -442,11 +448,24 @@ export class HuiSuggestionEntityTree extends LitElement {
       </ha-combo-box-item>
       ${
         expanded
-          ? repeat(
-              device.entityIds,
-              (id: string) => id,
-              (id: string) => this._renderEntity(id, "depth-entity-device")
-            )
+          ? html`
+              ${repeat(
+                device.children,
+                (child: DeviceNode) => child.id,
+                (child: DeviceNode) => this._renderDevice(child, key, true)
+              )}
+              ${repeat(
+                device.entityIds,
+                (id: string) => id,
+                (id: string) =>
+                  this._renderEntity(
+                    id,
+                    nested
+                      ? "depth-entity-device-nested"
+                      : "depth-entity-device"
+                  )
+              )}
+            `
           : nothing
       }
     `;
@@ -648,8 +667,12 @@ export class HuiSuggestionEntityTree extends LitElement {
         ha-combo-box-item.depth-entity-area {
           --md-list-item-leading-space: var(--ha-space-12);
         }
-        ha-combo-box-item.depth-entity-device {
+        ha-combo-box-item.depth-entity-device,
+        ha-combo-box-item.depth-device-nested {
           --md-list-item-leading-space: var(--ha-space-16);
+        }
+        ha-combo-box-item.depth-entity-device-nested {
+          --md-list-item-leading-space: var(--ha-space-20);
         }
         .leading {
           display: flex;

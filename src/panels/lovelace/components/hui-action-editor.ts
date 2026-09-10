@@ -22,6 +22,9 @@ import type {
 } from "../../../data/lovelace/config/action";
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
+import { canToggleState } from "../../../common/entity/can_toggle_state";
+import { canToggleDomain } from "../../../common/entity/can_toggle_domain";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -134,14 +137,34 @@ export class HuiActionEditor extends LitElement {
     ]
   );
 
+  private _filterToggleAction = memoizeOne(
+    (actions: UiAction[]): UiAction[] => {
+      return actions.filter((a) => a !== "toggle");
+    }
+  );
+
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
-    const actions = this.actions ?? DEFAULT_ACTIONS;
-
     let action = this.config?.action || (this.required ? "" : "default");
+
+    let actions = this.actions ?? DEFAULT_ACTIONS;
+
+    if (
+      this.context?.entity_id &&
+      action !== "toggle" &&
+      actions.includes("toggle")
+    ) {
+      const stateObj = this.hass.states[this.context.entity_id];
+      const canToggle = stateObj
+        ? canToggleState(this.hass, stateObj)
+        : canToggleDomain(this.hass, computeDomain(this.context.entity_id));
+      if (!canToggle) {
+        actions = this._filterToggleAction(actions);
+      }
+    }
 
     if (action === "call-service") {
       action = "perform-action";

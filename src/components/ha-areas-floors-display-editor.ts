@@ -7,6 +7,10 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -191,7 +195,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     }
   );
 
-  private _floorMoved(ev: CustomEvent<HASSDomEvents["item-moved"]>) {
+  private _floorMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
     const newIndex = ev.detail.newIndex;
     const oldIndex = ev.detail.oldIndex;
@@ -215,7 +219,12 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  private async _areaDisplayChanged(ev: ValueChangedEvent<DisplayValue>) {
+  private async _areaDisplayChanged(
+    ev: ValueChangedEvent<DisplayValue> &
+      HASSDomCurrentTargetEvent<
+        HTMLElementTagNameMap["ha-items-display-editor"] & { floorId?: string }
+      >
+  ) {
     ev.stopPropagation();
     const value = ev.detail.value;
     const currentFloorId = (ev.currentTarget as any).floorId;

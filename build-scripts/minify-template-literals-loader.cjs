@@ -12,18 +12,42 @@
 const remapping = require("@ampproject/remapping");
 
 // minify-literals is ESM-only, so load it via dynamic import from this CJS loader.
-let minifyPromise;
-const getMinifier = () => {
-  if (!minifyPromise) {
-    minifyPromise = import("minify-literals").then((m) => m.minifyHTMLLiterals);
+// Also map to cache loader promises per environment (e.g., 'modern', 'legacy')
+const loaderInitPromises = new Map();
+const initLoader = (browserslistEnv) => {
+  if (!loaderInitPromises.has(browserslistEnv)) {
+    loaderInitPromises.set(
+      browserslistEnv,
+      Promise.all([
+        import("minify-literals"),
+        import("browserslist"),
+        import("lightningcss"),
+      ]).then(([minifyModule, browserslistModule, lightningcssModule]) => {
+        const browserslist = browserslistModule.default;
+        const { browserslistToTargets } = lightningcssModule;
+        const rawTargets = browserslist(null, { env: browserslistEnv });
+        if (!rawTargets.length) {
+          throw new Error(
+            `No browsers resolved for browserslist environment "${browserslistEnv}"`
+          );
+        }
+        const lightningcssTargets = browserslistToTargets(rawTargets);
+
+        return {
+          minifyHTMLLiterals: minifyModule.minifyHTMLLiterals,
+          lightningcssTargets,
+        };
+      })
+    );
   }
-  return minifyPromise;
+  return loaderInitPromises.get(browserslistEnv);
 };
 
 // HTML options mirror the previous babel-plugin-template-html-minifier config
 // (html-minifier-next is option-compatible with html-minifier-terser). CSS in
-// css`` templates and inline <style> is handled by minify-literals' lightningcss
-// default.
+// css`` templates and inline <style> is handled by minify-literals'
+// lightningcss. We pass in the targets from browserslist so lightningcss
+// can minify CSS appropriately for the build environment.
 //
 // `keepClosingSlash` is required for `svg`` templates: SVG elements such as
 // `<path />` and `<circle />` are not void elements in HTML, so dropping the
@@ -40,11 +64,16 @@ const htmlOptions = {
 
 module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const callback = this.async();
-  getMinifier()
-    .then((minifyHTMLLiterals) =>
+  const { browserslistEnv } = this.getOptions();
+
+  initLoader(browserslistEnv)
+    .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
+        css: {
+          targets: lightningcssTargets,
+        },
       })
     )
     .then((result) => {
