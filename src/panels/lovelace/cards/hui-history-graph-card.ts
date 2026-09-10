@@ -111,11 +111,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         return;
       }
       const stateObj = this.hass!.states[entity.entity];
-      this._names[entity.entity] = stateObj
-        ? this.hass!.formatEntityName(stateObj, entity.name)
-        : typeof entity.name === "string"
-          ? entity.name
-          : entity.entity;
+      if (stateObj) {
+        this._names[entity.entity] = this.hass!.formatEntityName(
+          stateObj,
+          entity.name
+        );
+        return;
+      }
+      if (typeof entity.name === "string") {
+        this._names[entity.entity] = entity.name;
+      }
     });
   }
 

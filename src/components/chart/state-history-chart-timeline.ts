@@ -80,7 +80,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${
           this.data.length *
-            (this.insideLabels && this.showNames
+            (this.insideLabels && (this.chunked || this.showNames)
               ? ROW_HEIGHT_INSIDE_LABELS
               : ROW_HEIGHT) +
           GRID_BOTTOM
