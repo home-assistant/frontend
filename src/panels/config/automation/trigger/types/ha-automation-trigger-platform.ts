@@ -10,7 +10,6 @@ import { getSelectorFallbackValue } from "../../../../../components/ha-form/get-
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
 import type { PlatformTrigger } from "../../../../../data/automation";
-import { TRIGGER_ROW_CONFIG_KEYS } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
@@ -20,6 +19,7 @@ import {
   getTriggerObjectId,
   type TriggerDescription,
 } from "../../../../../data/trigger";
+import { migratePlatformTrigger } from "../../../../../data/trigger/migrate_platform_trigger";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
@@ -27,13 +27,6 @@ const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   field.selector &&
   !field.required &&
   !("boolean" in field.selector && field.default);
-
-const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
-  ...TRIGGER_ROW_CONFIG_KEYS,
-  "trigger",
-  "target",
-  "options",
-];
 
 @customElement("ha-automation-trigger-platform")
 export class HaPlatformTrigger extends LitElement {
@@ -61,32 +54,19 @@ export class HaPlatformTrigger extends LitElement {
       this.hass.loadBackendTranslation("triggers");
       this.hass.loadBackendTranslation("selector");
     }
+    if (
+      changedProperties.has("trigger") ||
+      changedProperties.has("description")
+    ) {
+      const migrated = migratePlatformTrigger(this.trigger, this.description);
+      if (migrated) {
+        fireEvent(this, "value-changed", { value: migrated });
+        this.trigger = migrated;
+      }
+    }
+
     if (!changedProperties.has("trigger")) {
       return;
-    }
-
-    let newValue: PlatformTrigger | undefined;
-
-    for (const key in this.trigger) {
-      // Migrate old options to `options`
-      if (DEFAULT_KEYS.includes(key as keyof PlatformTrigger)) {
-        continue;
-      }
-      if (newValue === undefined) {
-        newValue = {
-          ...this.trigger,
-          options: { [key]: this.trigger[key] },
-        };
-      } else {
-        newValue.options![key] = this.trigger[key];
-      }
-      delete newValue[key];
-    }
-    if (newValue !== undefined) {
-      fireEvent(this, "value-changed", {
-        value: newValue,
-      });
-      this.trigger = newValue;
     }
 
     const oldValue = changedProperties.get("trigger") as
