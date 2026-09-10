@@ -8919,16 +8919,28 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
-            "preview": "Preview",
+            "preview": "Examples",
             "preview_error": "Failed to generate preview",
+            "unused_part": "{name} (not used in format)",
             "reset": "Reset to default",
             "examples": {
-              "area": "Living room",
-              "device": "Thermostat",
-              "entity": "Temperature",
-              "floor": "Ground floor"
+              "thermostat": {
+                "name": "Thermostat",
+                "floor": "Ground floor",
+                "area": "Living room",
+                "device": "Thermostat",
+                "entity": "Temperature"
+              },
+              "power_strip": {
+                "name": "Power strip",
+                "floor": "First floor",
+                "area": "Office",
+                "parent_device": "Power strip",
+                "device": "Outlet 1",
+                "entity": "Power"
+              }
             },
             "editor": {
               "label": "Format",
