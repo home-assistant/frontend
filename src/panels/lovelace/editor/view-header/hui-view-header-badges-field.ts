@@ -59,6 +59,21 @@ export class HuiViewHeaderBadgesField extends LitElement {
   // Index of the badge currently being configured, if any.
   @state() private _editingIndex?: number;
 
+  // Stable keys per badge config object so drag-reorder doesn't make the chips
+  // jump (index keys fight the drag library).
+  private _badgeIds = new WeakMap<LovelaceBadgeConfig, number>();
+
+  private _nextBadgeId = 0;
+
+  private _badgeKey(badge: LovelaceBadgeConfig): number {
+    let id = this._badgeIds.get(badge);
+    if (id === undefined) {
+      id = this._nextBadgeId++;
+      this._badgeIds.set(badge, id);
+    }
+    return id;
+  }
+
   private _emit(badges: LovelaceBadgeConfig[]): void {
     fireEvent(this, "badges-changed", { badges });
   }
@@ -158,6 +173,9 @@ export class HuiViewHeaderBadgesField extends LitElement {
   private _moveItem(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
+    if (oldIndex === newIndex) {
+      return;
+    }
     const badges = [...this.badges];
     const [moved] = badges.splice(oldIndex, 1);
     badges.splice(newIndex, 0, moved);
@@ -198,7 +216,7 @@ export class HuiViewHeaderBadgesField extends LitElement {
           <ha-chip-set>
             ${repeat(
               this.badges,
-              (_badge, idx) => idx,
+              (badge) => this._badgeKey(badge),
               (badge, idx) => html`
                 <ha-input-chip
                   data-idx=${idx}

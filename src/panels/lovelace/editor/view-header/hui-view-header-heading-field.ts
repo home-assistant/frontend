@@ -6,6 +6,7 @@ import {
   mdiPencilOutline,
   mdiPlus,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -35,10 +36,15 @@ declare global {
 // - "Custom" adds a free-text chip you type into (click a text chip to re-edit).
 // - "Add" inserts a token: time-of-day greeting, name, or location name.
 // - Chips drag to reorder, which is the order they appear in the line.
+//
+// The chips are held as state with stable ids (not re-derived from the string
+// on every keystroke) so drag-reorder stays stable and adjacent custom-text
+// chips don't get merged while editing.
 
 type TokenType = "greeting" | "user" | "location";
 
-type HeadingPart = { type: "text"; text: string } | { type: TokenType };
+type HeadingPart =
+  { id: number; type: "text"; text: string } | { id: number; type: TokenType };
 
 // Serialized template for each token. These exact strings are what we write
 // into the content and what we match when parsing it back into chips.
@@ -99,6 +105,9 @@ export class HuiViewHeaderHeadingField extends LitElement {
 
   @property() public placeholder?: string;
 
+  // The chips, held as state so drag/edit don't fight a re-parse of `content`.
+  @state() private _parts: HeadingPart[] = [];
+
   // Index of the text chip being edited inline, or NEW_ITEM for the trailing
   // new-text input. undefined = nothing being edited.
   @state() private _editIndex?: number;
@@ -107,11 +116,20 @@ export class HuiViewHeaderHeadingField extends LitElement {
 
   @query(".chip-edit input") private _editInput?: HTMLInputElement;
 
-  // Split the content into text/token parts. Text runs are trimmed: the single
-  // spaces we write between chips (see _serialize) are separators, not content,
-  // so trimming them keeps the round-trip stable and avoids blank space chips.
-  private get _parts(): HeadingPart[] {
-    const content = this.content;
+  private _nextId = 0;
+
+  // The last content we emitted; lets us ignore the echo from the parent so we
+  // don't re-parse (and lose chip identity) on our own changes.
+  private _lastEmitted?: string;
+
+  protected willUpdate(changed: PropertyValues): void {
+    // Only (re)parse when the content actually changes from the outside.
+    if (changed.has("content") && this.content !== this._lastEmitted) {
+      this._parts = this._parse(this.content);
+    }
+  }
+
+  private _parse(content: string): HeadingPart[] {
     if (!content) {
       return [];
     }
@@ -120,14 +138,14 @@ export class HuiViewHeaderHeadingField extends LitElement {
     for (const match of content.matchAll(TOKEN_SPLIT_RE)) {
       const text = content.slice(lastIndex, match.index).trim();
       if (text) {
-        parts.push({ type: "text", text });
+        parts.push({ id: this._nextId++, type: "text", text });
       }
-      parts.push({ type: matchToken(match[0]) });
+      parts.push({ id: this._nextId++, type: matchToken(match[0]) });
       lastIndex = match.index + match[0].length;
     }
     const tail = content.slice(lastIndex).trim();
     if (tail) {
-      parts.push({ type: "text", text: tail });
+      parts.push({ id: this._nextId++, type: "text", text: tail });
     }
     return parts;
   }
@@ -143,8 +161,9 @@ export class HuiViewHeaderHeadingField extends LitElement {
   }
 
   private _emit(parts: HeadingPart[]): void {
+    this._parts = parts;
     const content = this._serialize(parts);
-    this.content = content;
+    this._lastEmitted = content;
     fireEvent(this, "heading-content-changed", { content });
   }
 
@@ -192,7 +211,7 @@ export class HuiViewHeaderHeadingField extends LitElement {
       return;
     }
     const text = this._draft.trim();
-    const parts = this._parts;
+    const parts = [...this._parts];
 
     this._editIndex = undefined;
     this._draft = "";
@@ -201,9 +220,10 @@ export class HuiViewHeaderHeadingField extends LitElement {
       if (!text) {
         return; // nothing typed — no empty chip
       }
-      parts.push({ type: "text", text });
+      parts.push({ id: this._nextId++, type: "text", text });
     } else if (text) {
-      parts[index] = { type: "text", text };
+      // Keep the same id so the chip isn't recreated on edit.
+      parts[index] = { id: parts[index].id, type: "text", text };
     } else {
       parts.splice(index, 1); // cleared = remove the chip
     }
@@ -233,9 +253,7 @@ export class HuiViewHeaderHeadingField extends LitElement {
     if (!this.tokens.includes(type)) {
       return;
     }
-    const parts = this._parts;
-    parts.push({ type });
-    this._emit(parts);
+    this._emit([...this._parts, { id: this._nextId++, type }]);
   }
 
   // ---- chip list ------------------------------------------------------------
@@ -243,17 +261,25 @@ export class HuiViewHeaderHeadingField extends LitElement {
   private _removeItem(ev: Event): void {
     ev.stopPropagation();
     const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
-    const parts = this._parts;
+    const parts = [...this._parts];
     parts.splice(idx, 1);
+    if (this._editIndex === idx) {
+      this._editIndex = undefined;
+    }
     this._emit(parts);
   }
 
   private _moveItem(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
-    const parts = this._parts;
-    const moved = parts.splice(oldIndex, 1)[0];
+    if (oldIndex === newIndex) {
+      return;
+    }
+    const parts = [...this._parts];
+    const [moved] = parts.splice(oldIndex, 1);
     parts.splice(newIndex, 0, moved);
+    // A drag cancels any in-progress inline edit.
+    this._editIndex = undefined;
     this._emit(parts);
   }
 
@@ -326,7 +352,6 @@ export class HuiViewHeaderHeadingField extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    const parts = this._parts;
 
     return html`
       <div class="field">
@@ -338,8 +363,8 @@ export class HuiViewHeaderHeadingField extends LitElement {
         >
           <ha-chip-set>
             ${repeat(
-              parts,
-              (_part, idx) => idx,
+              this._parts,
+              (part) => part.id,
               (part, idx) =>
                 this._editIndex === idx
                   ? this._renderEditor()
