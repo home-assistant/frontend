@@ -3,11 +3,7 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type {
-  Connection,
-  HassEntities,
-  HassEntity,
-} from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -38,7 +34,6 @@ import type {
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
 import {
   entityMapColor,
-  subscribeEntityMapColors,
   zoneColor,
 } from "../../../common/map/entity-map-colors";
 import type { HistoryStates } from "../../../data/history";
@@ -387,9 +382,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
-    if (changedProps.has("hass")) {
-      this._subscribeColors();
-    }
     if (
       this._config?.show_all &&
       !this._config?.entities &&
@@ -471,37 +463,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _unsubscribeColors?: () => void;
-
-  private _colorsConnection?: Connection;
-
   public connectedCallback() {
     super.connectedCallback();
     if (this.hasUpdated && this._configEntities?.length) {
       this._subscribeHistory();
     }
-    this._subscribeColors();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeHistory();
-    this._unsubscribeColors?.();
-    this._unsubscribeColors = undefined;
-    this._colorsConnection = undefined;
-  }
-
-  private _subscribeColors(): void {
-    const connection = this.hass?.connection;
-    if (!connection || this._colorsConnection === connection) {
-      return;
-    }
-    // A replaced connection needs its own subscription
-    this._unsubscribeColors?.();
-    this._colorsConnection = connection;
-    this._unsubscribeColors = subscribeEntityMapColors(connection, () => {
-      this._mapEntities = this._getMapEntities();
-    });
   }
 
   private _subscribeHistory() {

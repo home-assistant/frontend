@@ -32,9 +32,11 @@ import {
   configContext,
   connectionContext,
   formattersContext,
+  fullEntitiesContext,
   internationalizationContext,
   statesContext,
 } from "../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
@@ -99,6 +101,11 @@ export class HuiMapOverview extends LitElement {
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  // Registry creation order decides the zone colors
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
 
   @queryAll(".tablist button")
   private _tabButtons!: NodeListOf<HTMLButtonElement>;
@@ -593,6 +600,7 @@ export class HuiMapOverview extends LitElement {
     const color = zoneColor(
       stateObj.entity_id,
       !!stateObj.attributes.passive,
+      this._entityReg,
       getComputedStyle(this)
     );
 
