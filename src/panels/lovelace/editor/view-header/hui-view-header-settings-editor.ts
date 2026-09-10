@@ -1,5 +1,7 @@
-import { html, LitElement, nothing } from "lit";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -21,11 +23,33 @@ import {
 } from "../../views/hui-view-header";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 
+// Compact mode: radio + title + description, no boxes/illustrations. `columns`
+// controls how many options sit per row (mockup: layout 3-up, badges 2-up).
+const COMPACT_SETTINGS = [
+  {
+    name: "layout",
+    values: ["responsive", "start", "center", "inline"],
+    columns: 2,
+  },
+  { name: "badges_position", values: ["top", "bottom"], columns: 2 },
+  { name: "badges_wrap", values: ["wrap", "scroll"], columns: 2 },
+] as const;
+
+type CompactScope = "all" | "badges" | "layout";
+
 @customElement("hui-view-header-settings-editor")
 export class HuiViewHeaderSettingsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
+
+  // When set, options render as compact radio + title + description (used by
+  // the single-page concept) instead of the full boxed ha-form selectors.
+  @property({ type: Boolean }) public compact = false;
+
+  // Which settings to show in compact mode: "badges" = position + behavior,
+  // "layout" = alignment only, "all" = everything.
+  @property() public scope: CompactScope = "all";
 
   @state({ attribute: false }) private narrow = false;
 
@@ -137,6 +161,11 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
+
+    if (this.compact) {
+      return this._renderCompact(data, isRTL);
+    }
+
     const schema = this._schema(this.hass.localize, isRTL, narrow);
 
     return html`
@@ -148,6 +177,79 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
+  }
+
+  private _renderCompact(data: Record<string, string>, isRTL: boolean) {
+    const settings = COMPACT_SETTINGS.filter((setting) => {
+      if (this.scope === "badges") {
+        return setting.name !== "layout";
+      }
+      if (this.scope === "layout") {
+        return setting.name === "layout";
+      }
+      return true;
+    });
+
+    return html`
+      <div class="compact">
+        ${settings.map(
+          (setting) => html`
+            <div
+              class="options"
+              role="radiogroup"
+              style=${`--columns: ${this.narrow ? 1 : setting.columns}`}
+            >
+              ${setting.values.map((value) => {
+                const selected = data[setting.name] === value;
+                const labelKey =
+                  setting.name === "layout" && value === "start" && isRTL
+                    ? "start_rtl"
+                    : value;
+                return html`
+                  <button
+                    type="button"
+                    class=${classMap({ option: true, selected })}
+                    role="radio"
+                    aria-checked=${selected}
+                    @click=${this._compactOptionClicked}
+                    data-name=${setting.name}
+                    data-value=${value}
+                  >
+                    <span class="radio" aria-hidden="true"></span>
+                    <span class="text">
+                      <span class="option-label"
+                        >${this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view_header.settings.${setting.name}_options.${labelKey}` as const
+                        )}</span
+                      >
+                      <span class="option-description"
+                        >${this.hass.localize(
+                          `ui.panel.lovelace.editor.edit_view_header.settings.${setting.name}_options.${value}_description` as const
+                        )}</span
+                      >
+                    </span>
+                  </button>
+                `;
+              })}
+            </div>
+          `
+        )}
+      </div>
+    `;
+  }
+
+  private _compactOptionClicked(ev: Event): void {
+    const target = ev.currentTarget as HTMLElement;
+    const name = target.dataset.name!;
+    const value = target.dataset.value!;
+    if (this.config?.[name] === value) {
+      return;
+    }
+    const config: LovelaceViewHeaderConfig = {
+      ...this.config,
+      [name]: value,
+    };
+    fireEvent(this, "config-changed", { config });
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -176,6 +278,70 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
         return "";
     }
   };
+
+  static styles: CSSResultGroup = css`
+    .compact {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-5);
+    }
+    /* Radio + title + description, no boxes. */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+      gap: var(--ha-space-3) var(--ha-space-4);
+    }
+    .option {
+      appearance: none;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--ha-space-2);
+      padding: 0;
+      text-align: start;
+      font-family: inherit;
+      color: var(--primary-text-color);
+    }
+    .radio {
+      flex: none;
+      box-sizing: border-box;
+      width: 20px;
+      height: 20px;
+      margin-top: 1px;
+      border-radius: 50%;
+      border: 2px solid var(--secondary-text-color);
+      transition:
+        border-color 120ms ease-in-out,
+        background 120ms ease-in-out;
+    }
+    .option:hover .radio {
+      border-color: var(--primary-text-color);
+    }
+    .option.selected .radio {
+      border-color: var(--primary-color);
+      border-width: 6px;
+      background: var(--card-background-color);
+    }
+    .text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .option-label {
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+    }
+    .option-description {
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
+      line-height: var(--ha-line-height-condensed);
+    }
+  `;
 }
 
 declare global {

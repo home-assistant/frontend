@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
@@ -25,6 +26,23 @@ import type { Lovelace } from "../types";
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
 export const DEFAULT_VIEW_HEADER_BADGES_WRAP = "wrap";
+
+// Curated title fonts for the header editor. `stack` is the CSS font-family
+// applied to the heading; "" means keep the theme default. Labels are localized
+// in the editor via ...edit_view_header.font_options.<id>.
+export const VIEW_HEADER_FONTS = [
+  { id: "default", stack: "" },
+  { id: "serif", stack: "Georgia, 'Times New Roman', serif" },
+  { id: "mono", stack: "var(--ha-font-family-code, monospace)" },
+  {
+    id: "rounded",
+    stack: "'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive",
+  },
+  { id: "system", stack: "system-ui, -apple-system, 'Segoe UI', sans-serif" },
+] as const;
+
+export const getViewHeaderFontStack = (id?: string): string =>
+  VIEW_HEADER_FONTS.find((font) => font.id === id)?.stack ?? "";
 
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
@@ -183,10 +201,8 @@ export class HuiViewHeader extends LitElement {
 
   private _configure = () => {
     showEditViewHeaderDialog(this, {
-      config: this.config!,
-      saveConfig: (config: LovelaceViewHeaderConfig) => {
-        this._saveHeaderConfig(config);
-      },
+      lovelace: this.lovelace,
+      viewIndex: this.viewIndex,
     });
   };
 
@@ -208,6 +224,13 @@ export class HuiViewHeader extends LitElement {
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
+
+    const titleFontStack = getViewHeaderFontStack(this.config?.title_font);
+    // Only the title (markdown h1) follows this var; a sub-heading line stays on
+    // the body font.
+    const headingStyle = titleFontStack
+      ? { "--ha-font-family-heading": titleFontStack }
+      : {};
 
     return html`
       ${
@@ -238,7 +261,7 @@ export class HuiViewHeader extends LitElement {
           ${
             card || editMode
               ? html`
-                  <div class="heading">
+                  <div class="heading" style=${styleMap(headingStyle)}>
                     ${
                       editMode
                         ? card
@@ -403,6 +426,15 @@ export class HuiViewHeader extends LitElement {
 
     .layout.center hui-view-badges {
       --badges-aligmnent: center;
+    }
+
+    /* Inline: heading and badges always on one row. */
+    .layout.inline.has-heading {
+      flex-direction: row;
+      align-items: center;
+    }
+    .layout.inline.has-heading hui-view-badges {
+      --badges-aligmnent: flex-end;
     }
 
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {

@@ -120,6 +120,7 @@ export class HaMarkdown extends LitElement {
     h5,
     h6 {
       line-height: initial;
+      font-family: var(--ha-font-family-heading);
     }
     h2 {
       font-size: var(--ha-font-size-xl);

@@ -33,9 +33,10 @@ export interface LovelaceViewBackgroundConfig {
 
 export interface LovelaceViewHeaderConfig {
   card?: LovelaceCardConfig;
-  layout?: "start" | "center" | "responsive";
+  layout?: "start" | "center" | "responsive" | "inline";
   badges_position?: "bottom" | "top";
   badges_wrap?: "wrap" | "scroll";
+  title_font?: string;
 }
 
 export const DEFAULT_FOOTER_MAX_WIDTH_PX = 600;
