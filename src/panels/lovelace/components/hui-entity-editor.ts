@@ -63,8 +63,8 @@ export class HuiEntityEditor extends LitElement {
       this.hass.formatEntityName(
         stateObj,
         useDeviceName
-          ? [{ type: "area" }]
-          : [{ type: "area" }, { type: "device" }],
+          ? [{ type: "area" }, { type: "parent_device" }]
+          : [{ type: "area" }, { type: "parent_device" }, { type: "device" }],
         {
           separator: isRTL ? " ◂ " : " ▸ ",
         }

@@ -63,11 +63,6 @@ class HaFaded extends LitElement {
     }
     .faded {
       cursor: pointer;
-      -webkit-mask-image: linear-gradient(
-        to bottom,
-        black 25%,
-        transparent 100%
-      );
       mask-image: linear-gradient(to bottom, black 25%, transparent 100%);
       overflow-y: hidden;
     }

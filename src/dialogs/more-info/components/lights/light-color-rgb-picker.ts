@@ -483,8 +483,6 @@ class LightRgbColorPicker extends LitElement {
 
         input[type="color"] {
           appearance: none;
-          -webkit-appearance: none;
-          -moz-appearance: none;
           border: none;
           outline: none;
           display: block;

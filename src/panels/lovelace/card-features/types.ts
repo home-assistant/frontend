@@ -176,6 +176,7 @@ export interface DateSetCardFeatureConfig {
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
+  style?: "dropdown" | "buttons";
 }
 
 export interface NumericInputCardFeatureConfig {
@@ -193,6 +194,26 @@ export interface TargetTemperatureCardFeatureConfig {
 
 export interface ToggleCardFeatureConfig {
   type: "toggle";
+}
+
+export const TIMER_ACTIONS = ["start", "pause", "cancel", "finish"] as const;
+
+export type TimerActions = (typeof TIMER_ACTIONS)[number];
+
+export const DEFAULT_TIMER_ACTIONS: TimerActions[] = [
+  "start",
+  "pause",
+  "cancel",
+];
+
+export interface TimerActionsCardFeatureConfig {
+  type: "timer-actions";
+  actions?: TimerActions[];
+}
+
+export interface TimerPresetsCardFeatureConfig {
+  type: "timer-presets";
+  style?: "buttons" | "dropdown";
 }
 
 export interface WaterHeaterOperationModesCardFeatureConfig {
@@ -359,6 +380,8 @@ export type LovelaceCardFeatureConfig =
   | TrendGraphCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
+  | TimerActionsCardFeatureConfig
+  | TimerPresetsCardFeatureConfig
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig

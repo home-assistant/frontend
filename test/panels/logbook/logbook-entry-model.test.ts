@@ -159,6 +159,57 @@ describe("entityDisplay", () => {
     });
   });
 
+  describe("with a parent device", () => {
+    const h = baseHass({
+      states: {
+        "sensor.outlet_1_power": mockStateObj({
+          entity_id: "sensor.outlet_1_power",
+        }),
+      },
+      entities: {
+        "sensor.outlet_1_power": mockEntity({
+          entity_id: "sensor.outlet_1_power",
+          name: "Power",
+          device_id: "outlet_1",
+        }),
+      },
+      devices: {
+        outlet_1: mockDevice({
+          id: "outlet_1",
+          name: "Outlet 1",
+          parent_device_id: "strip",
+        }),
+        strip: mockDevice({
+          id: "strip",
+          name: "Power strip",
+          area_id: "area_1",
+        }),
+      },
+      areas: { area_1: mockArea({ area_id: "area_1", name: "Garage" }) },
+    });
+
+    it("shows 'Area ▸ Parent ▸ Device' by default", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power")).toEqual({
+        primary: "Power",
+        secondary: "Garage ▸ Power strip ▸ Outlet 1",
+      });
+    });
+
+    it("shows 'Parent ▸ Device' for the 'device' name detail", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power", "device")).toEqual({
+        primary: "Power",
+        secondary: "Power strip ▸ Outlet 1",
+      });
+    });
+
+    it("shows no context for the 'entity' name detail", () => {
+      expect(entityDisplay(h, "sensor.outlet_1_power", "entity")).toEqual({
+        primary: "Power",
+        secondary: undefined,
+      });
+    });
+  });
+
   it("returns an empty display for a deleted entity", () => {
     expect(entityDisplay(baseHass({}), "light.removed")).toEqual({});
   });

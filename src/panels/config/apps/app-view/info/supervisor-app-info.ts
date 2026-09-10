@@ -86,6 +86,7 @@ import type { HassioStats } from "../../../../../data/hassio/common";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
+  supervisorUrl,
 } from "../../../../../data/hassio/common";
 import type { StoreAddonDetails } from "../../../../../data/supervisor/store";
 import {
@@ -205,7 +206,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     <img
                       class="logo"
                       alt=""
-                      src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                      src=${supervisorUrl(
+                        `addons/${this._currentAddon.slug}/logo`
+                      )}
                     />
                   `
                 : nothing
@@ -1462,29 +1465,34 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       return;
     }
 
-    let removeData = false;
-    const _removeDataToggled = (e: Event) => {
-      removeData = (e.target as HaSwitch).checked;
+    let removeConfig = false;
+    const _removeConfigToggled = (e: Event) => {
+      removeConfig = (e.target as HaSwitch).checked;
     };
 
     const confirmed = await showConfirmationDialog(this, {
       title: this.i18n.localize(
-        "ui.panel.config.apps.dashboard.uninstall_dialog.title",
-        {
-          name: getAppDisplayName(addon.name, addon.stage),
-        }
+        "ui.panel.config.apps.dashboard.uninstall_dialog.title"
       ),
       text: html`
+        <p>
+          ${this.i18n.localize(
+            "ui.panel.config.apps.dashboard.uninstall_dialog.text",
+            {
+              name: getAppDisplayName(addon.name, addon.stage),
+            }
+          )}
+        </p>
         <ha-formfield
           .label=${html`<p>
             ${this.i18n.localize(
-              "ui.panel.config.apps.dashboard.uninstall_dialog.remove_data"
+              "ui.panel.config.apps.dashboard.uninstall_dialog.remove_config"
             )}
           </p>`}
         >
           <ha-switch
-            @change=${_removeDataToggled}
-            .checked=${removeData}
+            @change=${_removeConfigToggled}
+            .checked=${removeConfig}
             haptic
           ></ha-switch>
         </ha-formfield>
@@ -1503,7 +1511,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     this._uninstalling = true;
     this._error = undefined;
     try {
-      await uninstallHassioAddon(this.api.callWS, addon.slug, removeData);
+      await uninstallHassioAddon(this.api.callWS, addon.slug, removeConfig);
       const eventdata = {
         success: true,
         response: undefined,

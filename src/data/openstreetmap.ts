@@ -40,8 +40,7 @@ export const searchPlaces = (
       limit ? `&limit=${limit}` : ""
     }${addressdetails ? "&addressdetails=1" : ""}&accept-language=${
       hass.locale.language
-    }&email=abuse@home-assistant.io`,
-    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
+    }&email=abuse@home-assistant.io`
   ).then((res) => {
     if (res.ok) {
       return res.json();
@@ -59,8 +58,7 @@ export const reverseGeocode = (
       location[1]
     }&accept-language=${hass.locale.language}&zoom=${
       zoom ?? 18
-    }&format=jsonv2&email=abuse@home-assistant.io`,
-    { headers: { "User-Agent": `HomeAssistant/${hass.config.version}` } }
+    }&format=jsonv2&email=abuse@home-assistant.io`
   ).then((res) => {
     if (res.ok) {
       return res.json();

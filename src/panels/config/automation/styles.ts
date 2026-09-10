@@ -3,6 +3,25 @@ import { css } from "lit";
 export const SIDEBAR_MIN_WIDTH = 375;
 export const CONTENT_MIN_WIDTH = 350;
 
+export const rowSummaryStyles = css`
+  :host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+    vertical-align: middle;
+    color: var(--ha-color-text-secondary);
+  }
+  :host([hidden]) {
+    display: none;
+  }
+  .dot-separator {
+    width: 2px;
+    height: 2px;
+    border-radius: var(--ha-border-radius-circle);
+    background-color: currentColor;
+  }
+`;
+
 export const rowStyles = css`
   ha-icon-button {
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
@@ -292,5 +311,22 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
+  }
+`;
+
+export const shortcutStyles = css`
+  .shortcut {
+    direction: ltr;
+    --mdc-icon-size: var(--ha-space-3);
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    margin-right: var(--ha-space-4);
+  }
+  .shortcut span {
+    font-size: var(--ha-font-size-s);
+    font-family: var(--ha-font-family-code);
+    color: var(--ha-color-text-secondary);
   }
 `;

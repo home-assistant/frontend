@@ -1,4 +1,8 @@
+import { resolveHassUrl } from "../../common/url/hass-url";
 import type { CallWS } from "../../types";
+
+export const supervisorUrl = (path: string): string =>
+  resolveHassUrl(`/api/hassio/${path}`);
 
 export interface HassioResponse<T> {
   data: T;

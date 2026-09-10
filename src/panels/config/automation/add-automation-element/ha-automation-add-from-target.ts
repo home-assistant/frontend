@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/tree-item/tree-item";
+import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-item/tree-item";
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import { consume, type ContextType } from "@lit/context";
@@ -64,6 +65,8 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
+import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+import "./ha-automation-add-element-paste";
 
 interface Level1Entries {
   open: boolean;
@@ -103,6 +106,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public timeLocationGroups?: AddAutomationElementListItem[];
 
   @property({ attribute: false }) public selectedGroup?: string;
+
+  @property({ attribute: false }) public clipboardItem?: string;
+
+  @property({ attribute: "automation-element-type" })
+  public automationElementType!: AddAutomationElementDialogParams["type"];
 
   // #endregion properties
 
@@ -192,6 +200,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
         this.narrow && this.value
           ? this._renderNarrow(this._entries, this.value)
           : html`
+              <ha-list-base>
+                <ha-automation-add-element-paste
+                  .automationElementType=${this.automationElementType}
+                  .clipboardItem=${this.clipboardItem}
+                ></ha-automation-add-element-paste>
+              </ha-list-base>
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
@@ -343,27 +357,32 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 );
           });
 
-      return html`<ha-section-title
-          >${this._i18n.localize(
-            "ui.panel.config.automation.editor.home"
-          )}</ha-section-title
-        >
-        ${
-          emptyFloors
-            ? html`<ha-row-item>
-                <div slot="headline">
-                  ${this._i18n.localize("ui.components.area-picker.no_areas")}
-                </div>
-              </ha-row-item>`
-            : html`${
-                narrow
-                  ? html`<ha-list-base>${floorAreas}</ha-list-base>`
-                  : html`<wa-tree
-                      @wa-selection-change=${this._handleSelectionChange}
-                      >${floorAreas}</wa-tree
-                    >`
-              }`
-        }`;
+      return html`${
+        !narrow || (this._floorAreas.length >= 1 && this._floorAreas[0].id)
+          ? html`<ha-section-title
+              >${this._i18n.localize(
+                "ui.panel.config.automation.editor.home"
+              )}</ha-section-title
+            >`
+          : nothing
+      }
+      ${
+        emptyFloors
+          ? html`<ha-row-item>
+              <div slot="headline">
+                ${this._i18n.localize("ui.components.area-picker.no_areas")}
+              </div>
+            </ha-row-item>`
+          : html`${
+              narrow
+                ? html`<ha-list-base>${floorAreas}</ha-list-base>`
+                : html`<wa-tree
+                    @wa-selection-change=${this._handleSelectionChange}
+                    @dblclick=${this._handleDoubleClick}
+                    >${floorAreas}</wa-tree
+                  >`
+            }`
+      }`;
     }
   );
 
@@ -1442,6 +1461,26 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _collapseItem(ev) {
     const targetId = ev.target.target;
     this._toggleItem(targetId, false);
+  }
+
+  private _handleDoubleClick(ev: MouseEvent) {
+    // the expand button and non-selectable items already toggle on single click
+    if (
+      ev
+        .composedPath()
+        .some((el) => (el as HTMLElement).classList?.contains("expand-button"))
+    ) {
+      return;
+    }
+    const item = (ev.target as HTMLElement).closest<
+      WaTreeItem & { target: string }
+    >("wa-tree-item");
+    if (!item || item.isLeaf || item.preventSelection) {
+      return;
+    }
+    // avoid leaving the label text selected by the double click
+    window.getSelection()?.removeAllRanges();
+    this._toggleItem(item.target, !item.expanded);
   }
 
   private async _loadConfigEntries() {

@@ -79,8 +79,9 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
-  /** Draw timeline row names above their bar instead of in a label column. */
-  @property({ attribute: "inside-labels", type: Boolean, reflect: true })
+  // Render timeline row names inside the plot (under each bar) instead of in a
+  // left-hand column. Opt-in; used by the history panel.
+  @property({ attribute: "inside-labels", type: Boolean })
   public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
@@ -429,12 +430,6 @@ export class StateHistoryCharts extends LitElement {
       padding-top: 8px;
     }
 
-    /* Names inside the plot sit close to the chart above them, so the groups
-       need more room between them to stay apart. */
-    :host([inside-labels]) .entry-container.timeline:not(:first-child) {
-      margin-top: var(--ha-space-8);
-    }
-
     .entry-container:hover {
       z-index: 1;
     }
@@ -453,6 +448,10 @@ export class StateHistoryCharts extends LitElement {
     .entry-container:not(:first-child) {
       border-top: 2px solid var(--divider-color);
       margin-top: 16px;
+    }
+
+    .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
     }
 
     .container,

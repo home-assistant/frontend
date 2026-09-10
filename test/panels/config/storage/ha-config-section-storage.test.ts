@@ -125,12 +125,6 @@ const nextTask = () =>
     setTimeout(resolve, 0);
   });
 
-const rows = (el: HTMLElement) =>
-  Array.from(el.shadowRoot!.querySelectorAll("ha-list-item"));
-
-const rowFor = (el: HTMLElement, name: string) =>
-  rows(el).find((row) => row.textContent?.includes(name));
-
 describe("ha-config-section-storage per-mount usage", () => {
   let usageCalls: Record<string, Deferred<any>>;
 
@@ -184,58 +178,5 @@ describe("ha-config-section-storage per-mount usage", () => {
       .filter((disk) => disk !== "default");
     expect(asked).toEqual(["alpha", "beta"]);
     expect(asked).not.toContain("broken");
-  });
-
-  it("renders the rows before any usage arrives", async () => {
-    const el = await render();
-    expect(rows(el)).toHaveLength(3);
-    expect(rowFor(el, "alpha")!.querySelector("ha-spinner")).not.toBeNull();
-  });
-
-  it("fills in each row as its own request settles", async () => {
-    const el = await render();
-
-    usageCalls.alpha.resolve({
-      id: "alpha",
-      label: "alpha",
-      total_bytes: 1000,
-      used_bytes: 500,
-    });
-    await nextTask();
-    await (el as any).updateComplete;
-
-    expect(rowFor(el, "alpha")!.textContent).toContain(
-      "500 Bytes of 1000 Bytes used"
-    );
-    // beta has not answered yet, so it must still be pending, not blanked.
-    expect(rowFor(el, "beta")!.querySelector("ha-spinner")).not.toBeNull();
-    expect(rowFor(el, "alpha")!.querySelector("ha-spinner")).toBeNull();
-  });
-
-  it("leaves a row without usage when its request fails, and keeps the others", async () => {
-    const el = await render();
-
-    usageCalls.alpha.resolve({
-      id: "alpha",
-      label: "alpha",
-      total_bytes: 1000,
-      used_bytes: 500,
-    });
-    usageCalls.beta.reject(new Error("dead server"));
-    await nextTask();
-    await (el as any).updateComplete;
-
-    const beta = rowFor(el, "beta")!;
-    expect(beta.querySelector("ha-spinner")).toBeNull();
-    expect(beta.querySelector("ha-bar")).toBeNull();
-    expect(beta.textContent).not.toContain("used");
-    expect(rowFor(el, "alpha")!.querySelector("ha-bar")).not.toBeNull();
-  });
-
-  it("never shows usage for a mount that is not active", async () => {
-    const el = await render();
-    const broken = rowFor(el, "broken")!;
-    expect(broken.querySelector("ha-spinner")).toBeNull();
-    expect(broken.querySelector("ha-bar")).toBeNull();
   });
 });

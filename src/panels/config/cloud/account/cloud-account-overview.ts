@@ -57,7 +57,7 @@ export class CloudAccountOverview extends LitElement {
 
   private _renderTopCard(): TemplateResult {
     return html`
-      <ha-card outlined>
+      <ha-card outlined class="summary-card">
         <div class="card-content">
           <div
             class="thank-you-header"
@@ -121,8 +121,8 @@ export class CloudAccountOverview extends LitElement {
           <p class="muted">
             ${this.hass.localize("ui.panel.config.cloud.account.funding_note")}
           </p>
-          ${this._renderSubscriptionState()}
         </div>
+        ${this._renderSubscriptionState()}
       </ha-card>
     `;
   }
@@ -132,6 +132,7 @@ export class CloudAccountOverview extends LitElement {
       case "trial":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="warning"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.trial_title"
@@ -156,6 +157,7 @@ export class CloudAccountOverview extends LitElement {
       case "canceled":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="warning"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.canceled_title"
@@ -181,6 +183,7 @@ export class CloudAccountOverview extends LitElement {
       case "expired":
         return html`
           <ha-alert
+            class="subscription-alert"
             alert-type="error"
             .title=${this.hass.localize(
               "ui.panel.config.cloud.account.overview.expired_title"
@@ -636,11 +639,15 @@ export class CloudAccountOverview extends LitElement {
           width: auto;
           color: var(--primary-text-color);
         }
-        ha-alert {
-          display: block;
-          margin-top: var(--ha-space-3);
+        /* Prevent the embedded .subscription-alert ha-alert from bleeding outside the card */
+        .summary-card {
+          overflow: hidden;
         }
-        ha-alert ha-button[slot="action"] {
+        .subscription-alert {
+          display: block;
+          --ha-alert-padding: var(--ha-space-3);
+        }
+        .subscription-alert ha-button[slot="action"] {
           width: max-content;
           white-space: nowrap;
         }

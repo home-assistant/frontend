@@ -120,6 +120,50 @@ class RaceRouter extends HassRouterPage {
   }
 }
 
+class PathPanel extends HTMLElement {
+  public itemId = "";
+}
+
+class DashPanel extends HTMLElement {}
+
+class PathRouter extends HassRouterPage {
+  public editLoads = 0;
+
+  protected routerOptions: RouterOptions = {
+    routes: {
+      dashboard: { tag: "test-dash-panel", cache: true },
+      edit: {
+        tag: "test-path-panel",
+        cache: true,
+        itemId: true,
+        load: () => {
+          this.editLoads += 1;
+          return Promise.resolve();
+        },
+      },
+      view: { tag: "test-path-panel", cache: true },
+    },
+  };
+
+  protected updatePageEl(el: PathPanel) {
+    if (this._currentPage === "edit" || this._currentPage === "view") {
+      el.itemId = this.routeTail.path.slice(1);
+    }
+  }
+}
+
+class ParentRouter extends HassRouterPage {
+  protected routerOptions: RouterOptions = {
+    routes: {
+      automation: { tag: "test-path-router" },
+    },
+  };
+
+  protected updatePageEl(el: PathRouter) {
+    el.route = this.routeTail;
+  }
+}
+
 customElements.define("test-router", TestRouter);
 customElements.define("test-immediate-panel", ImmediatePanel);
 customElements.define("test-deferred-panel", DeferredPanel);
@@ -129,6 +173,10 @@ customElements.define("test-swap-router", SwapRouter);
 customElements.define("test-swap-first-panel", SwapFirstPanel);
 customElements.define("test-swap-second-panel", SwapSecondPanel);
 customElements.define("test-race-router", RaceRouter);
+customElements.define("test-path-panel", PathPanel);
+customElements.define("test-dash-panel", DashPanel);
+customElements.define("test-path-router", PathRouter);
+customElements.define("test-parent-router", ParentRouter);
 
 let router: TestRouter | undefined;
 
@@ -294,6 +342,151 @@ describe("HassRouterPage update propagation during load", () => {
   });
 });
 
+describe("HassRouterPage item ids", () => {
+  it("recreates the page when the item id changes", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as PathPanel;
+    expect(first.itemId).toBe("a");
+    expect(element.editLoads).toBe(1);
+
+    element.route = { prefix: "/config/automation", path: "/edit/b" };
+    await element.updateComplete;
+
+    const second = element.lastElementChild as PathPanel;
+    expect(second).not.toBe(first);
+    expect(second.itemId).toBe("b");
+    expect(first.isConnected).toBe(false);
+    expect(element.editLoads).toBe(2);
+
+    element.remove();
+  });
+
+  it("does not cache a page that has an item id", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as PathPanel;
+    element.route = { prefix: "/config/automation", path: "/dashboard" };
+    await element.updateComplete;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    await element.updateComplete;
+
+    const second = element.lastElementChild as PathPanel;
+    expect(second).not.toBe(first);
+    expect(second.itemId).toBe("a");
+
+    element.remove();
+  });
+
+  it("still caches pages that have no item id", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/config/automation", path: "/dashboard" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as DashPanel;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    await element.updateComplete;
+    element.route = { prefix: "/config/automation", path: "/dashboard" };
+    await element.updateComplete;
+
+    expect(element.lastElementChild).toBe(first);
+
+    element.remove();
+  });
+
+  it("keeps the same page when the item id is unchanged", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as PathPanel;
+    element.route = { prefix: "/config/automation", path: "/edit/a" };
+    await element.updateComplete;
+
+    expect(element.lastElementChild).toBe(first);
+    expect(first.itemId).toBe("a");
+
+    element.remove();
+  });
+
+  it("reuses a page with a one-segment tail when itemId is not set", async () => {
+    const element = document.createElement("test-path-router") as PathRouter;
+    element.route = { prefix: "/lovelace", path: "/view/0" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const first = element.lastElementChild as PathPanel;
+    expect(first.itemId).toBe("0");
+
+    element.route = { prefix: "/lovelace", path: "/view/1" };
+    await element.updateComplete;
+
+    expect(element.lastElementChild).toBe(first);
+    expect(first.itemId).toBe("1");
+
+    element.remove();
+  });
+
+  it("does not recreate a nested router when opening an item from the dashboard", async () => {
+    const element = document.createElement(
+      "test-parent-router"
+    ) as ParentRouter;
+    element.route = { prefix: "/config", path: "/automation/dashboard" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const nested = element.lastElementChild as PathRouter;
+    expect(nested).toBeInstanceOf(PathRouter);
+    await nested.updateComplete;
+    const dashboard = nested.lastElementChild as DashPanel;
+    expect(dashboard).toBeInstanceOf(DashPanel);
+
+    element.route = { prefix: "/config", path: "/automation/edit/a" };
+    await element.updateComplete;
+    await nested.updateComplete;
+
+    expect(element.lastElementChild).toBe(nested);
+    const editor = nested.lastElementChild as PathPanel;
+    expect(editor.itemId).toBe("a");
+
+    element.remove();
+  });
+
+  it("does not recreate a nested router when only its child's id changes", async () => {
+    const element = document.createElement(
+      "test-parent-router"
+    ) as ParentRouter;
+    element.route = { prefix: "/config", path: "/automation/edit/a" };
+    document.body.append(element);
+    await element.updateComplete;
+
+    const nested = element.lastElementChild as PathRouter;
+    expect(nested).toBeInstanceOf(PathRouter);
+    await nested.updateComplete;
+    const firstLeaf = nested.lastElementChild as PathPanel;
+    expect(firstLeaf.itemId).toBe("a");
+
+    element.route = { prefix: "/config", path: "/automation/edit/b" };
+    await element.updateComplete;
+    await nested.updateComplete;
+
+    expect(element.lastElementChild).toBe(nested);
+    const secondLeaf = nested.lastElementChild as PathPanel;
+    expect(secondLeaf).not.toBe(firstLeaf);
+    expect(secondLeaf.itemId).toBe("b");
+
+    element.remove();
+  });
+});
+
 declare global {
   interface HTMLElementTagNameMap {
     "test-router": TestRouter;
@@ -306,5 +499,9 @@ declare global {
     "test-swap-first-panel": SwapFirstPanel;
     "test-swap-second-panel": SwapSecondPanel;
     "test-race-router": RaceRouter;
+    "test-path-panel": PathPanel;
+    "test-dash-panel": DashPanel;
+    "test-path-router": PathRouter;
+    "test-parent-router": ParentRouter;
   }
 }

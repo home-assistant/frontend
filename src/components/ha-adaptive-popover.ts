@@ -293,12 +293,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           );
           overflow: hidden;
           color: var(--primary-text-color);
-          -webkit-backdrop-filter: var(
-            --ha-dialog-surface-backdrop-filter,
-            none
-          );
           backdrop-filter: var(--ha-dialog-surface-backdrop-filter, none);
-          -webkit-user-select: text;
           user-select: text;
         }
 
