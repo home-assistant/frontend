@@ -1,10 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import {
-  absDurationData,
-  isNegativeDuration,
-} from "../common/datetime/duration_sign";
+import { normalizeDuration } from "../common/datetime/normalize_duration";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ValueChangedEvent } from "../types";
 import "./ha-base-time-input";
@@ -91,7 +88,7 @@ export class HaDurationInput extends LitElement {
   }
 
   private get _negative(): boolean {
-    return !!this.data && isNegativeDuration(this.data);
+    return !!this.data && normalizeDuration(this.data).negative;
   }
 
   private _component(field: keyof HaDurationData): number {
@@ -179,8 +176,7 @@ export class HaDurationInput extends LitElement {
   }
 
   private _withSign(value: HaDurationData, negative: boolean): HaDurationData {
-    const components = absDurationData(value);
-    return negative ? { negative: true, ...components } : components;
+    return { ...normalizeDuration(value), negative };
   }
 
   static styles = css`

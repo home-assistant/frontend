@@ -7,10 +7,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import {
-  absDurationData,
-  signedDurationToSeconds,
-} from "../../common/datetime/duration_sign";
+import { durationDataToSeconds } from "../../common/datetime/duration_to_seconds";
+import { normalizeDuration } from "../../common/datetime/normalize_duration";
 import { durationValueToData } from "../../common/datetime/duration_value_to_data";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -114,7 +112,10 @@ export class HaTimeDuration extends LitElement {
                       "ui.components.selectors.duration.duration"
                     )}${this.required ? "*" : ""}</span
                   >
-                  ${this._renderInput(data && absDurationData(data), undefined)}
+                  ${this._renderInput(
+                    data && this._components(data),
+                    undefined
+                  )}
                 </div>`
           }
         </div>
@@ -156,11 +157,16 @@ export class HaTimeDuration extends LitElement {
     if (data.negative !== undefined) {
       return data.negative ? "before" : "after";
     }
-    const seconds = signedDurationToSeconds(data);
-    if (seconds === 0) {
+    const { negative, ...components } = normalizeDuration(data);
+    if (durationDataToSeconds(components) === 0) {
       return "none";
     }
-    return seconds < 0 ? "before" : "after";
+    return negative ? "before" : "after";
+  }
+
+  private _components(data: HaDurationData): HaDurationData {
+    const { negative: _negative, ...components } = normalizeDuration(data);
+    return components;
   }
 
   private _zeroDuration(): HaDurationData {
@@ -181,7 +187,7 @@ export class HaTimeDuration extends LitElement {
     }
     return {
       negative: type === "before",
-      ...absDurationData(data ?? this._zeroDuration()),
+      ...this._components(data ?? this._zeroDuration()),
     };
   }
 

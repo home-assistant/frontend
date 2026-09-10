@@ -9,17 +9,16 @@ const COMPONENTS = [
   "milliseconds",
 ] as const;
 
-export const isNegativeDuration = (duration: HaDurationData): boolean =>
-  duration.negative ?? durationDataToSeconds(duration) < 0;
+export interface NormalizedDuration extends HaDurationData {
+  negative: boolean;
+}
 
-const hasMixedSigns = (duration: HaDurationData): boolean => {
-  const signs = new Set(
+const hasMixedSigns = (duration: HaDurationData): boolean =>
+  new Set(
     COMPONENTS.map((field) => Math.sign(duration[field] ?? 0)).filter(
       (sign) => sign !== 0
     )
-  );
-  return signs.size > 1;
-};
+  ).size > 1;
 
 const splitSeconds = (
   totalSeconds: number,
@@ -42,13 +41,19 @@ const splitSeconds = (
   return result;
 };
 
-export const absDurationData = (duration: HaDurationData): HaDurationData => {
-  const { negative: _negative, ...components } = duration;
-  if (_negative === undefined && hasMixedSigns(components)) {
-    return splitSeconds(
-      Math.abs(durationDataToSeconds(components)),
-      components
-    );
+export const normalizeDuration = (
+  duration: HaDurationData
+): NormalizedDuration => {
+  const { negative, ...components } = duration;
+  if (negative !== undefined) {
+    return { negative, ...components };
+  }
+  const total = durationDataToSeconds(components);
+  if (hasMixedSigns(components)) {
+    return {
+      negative: total < 0,
+      ...splitSeconds(Math.abs(total), components),
+    };
   }
   for (const field of COMPONENTS) {
     const amount = components[field];
@@ -56,17 +61,5 @@ export const absDurationData = (duration: HaDurationData): HaDurationData => {
       components[field] = Math.abs(amount);
     }
   }
-  return components;
+  return { negative: total < 0, ...components };
 };
-
-export const isValidDurationData = (duration: HaDurationData): boolean =>
-  COMPONENTS.every((field) => {
-    const amount = duration[field];
-    return amount === undefined || Number.isFinite(amount);
-  });
-
-export const signedDurationToSeconds = (duration: HaDurationData): number =>
-  duration.negative === undefined
-    ? durationDataToSeconds(duration)
-    : (duration.negative ? -1 : 1) *
-      durationDataToSeconds(absDurationData(duration));
