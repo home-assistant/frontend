@@ -406,9 +406,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ...this._pendingEdits,
       [id]: { ...this._pendingEdits[id], ...pending },
     };
-    const save = (this._saveQueue[id] ?? Promise.resolve()).then(() =>
-      this._performSave(id, pending)
-    );
+    const save = (this._saveQueue[id] ?? Promise.resolve())
+      .then(() => this._performSave(id, pending))
+      .finally(() => {
+        // Only the last save in the chain removes the queue entry
+        if (this._saveQueue[id] === save) {
+          delete this._saveQueue[id];
+        }
+      });
     this._saveQueue[id] = save;
     return save;
   }
