@@ -72,6 +72,15 @@ const SELECTOR_SCHEMAS = {
       selector: { boolean: {} },
     },
     {
+      name: "mode",
+      selector: {
+        select: {
+          mode: "dropdown",
+          options: ["positive", "signed", "offset"],
+        },
+      },
+    },
+    {
       name: "allow_negative",
       selector: { boolean: {} },
     },
