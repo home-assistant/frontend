@@ -10,8 +10,8 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-next";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-icon-button-next-most";
-import "../../../../components/ha-icon-button-prev-most";
+import "../../../../components/ha-icon-button-last";
+import "../../../../components/ha-icon-button-first";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
@@ -166,13 +166,13 @@ class EventSubscribeCard extends LitElement {
     return html`
       <ha-card class="events-card">
         <div class="events-toolbar">
-          <ha-icon-button-prev-most
+          <ha-icon-button-first
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.oldest_event"
             )}
             @click=${this._showOldest}
-          ></ha-icon-button-prev-most>
+          ></ha-icon-button-first>
           <ha-icon-button-prev
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
@@ -220,13 +220,13 @@ class EventSubscribeCard extends LitElement {
             )}
             @click=${this._showNewer}
           ></ha-icon-button-next>
-          <ha-icon-button-next-most
+          <ha-icon-button-last
             .disabled=${atNewest}
             .label=${this.hass!.localize(
               "ui.panel.config.tools.tabs.events.newest_event"
             )}
             @click=${this._showNewest}
-          ></ha-icon-button-next-most>
+          ></ha-icon-button-last>
         </div>
         <ha-yaml-editor
           .value=${event.event}

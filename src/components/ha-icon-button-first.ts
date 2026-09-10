@@ -7,8 +7,8 @@ import "./ha-icon-button";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 
-@customElement("ha-icon-button-prev-most")
-export class HaIconButtonPrevMost extends LitElement {
+@customElement("ha-icon-button-first")
+export class HaIconButtonFirst extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property() public label?: string;
@@ -47,6 +47,6 @@ export class HaIconButtonPrevMost extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-icon-button-prev-most": HaIconButtonPrevMost;
+    "ha-icon-button-first": HaIconButtonFirst;
   }
 }
