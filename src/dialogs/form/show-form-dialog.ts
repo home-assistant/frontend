@@ -7,6 +7,10 @@ export interface FormDialogParams {
   title: string;
   schema: HaFormSchema[];
   data?: FormDialogData;
+  // Extra submit-time validation beyond the schema's own checks. Returned
+  // errors are shown on the named fields ("base" for a general error) and
+  // block the submit; they clear when the user edits the form.
+  validate?: (data: FormDialogData) => Record<string, string> | undefined;
   submit?: (data?: FormDialogData) => void;
   cancel?: () => void;
   computeLabel?: (schema, data) => string | undefined;

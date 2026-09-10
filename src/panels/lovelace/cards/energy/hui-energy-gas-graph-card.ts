@@ -11,6 +11,7 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  energySourcesByType,
   getEnergyDataCollection,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -66,6 +67,8 @@ export class HuiEnergyGasGraphCard
 
   @state() private _total?: number;
 
+  private _energyData?: EnergyData;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -88,11 +91,68 @@ export class HuiEnergyGasGraphCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
+    if (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
       !changedProps.has("hass")
-    );
+    ) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass");
+    if (!oldHass) {
+      return true;
+    }
+
+    if (
+      this._energyData &&
+      energySourcesByType(this._energyData.prefs).gas?.some((source) => {
+        const statId = source.stat_energy_from;
+        return (
+          this.hass.entities[statId]?.display_precision !==
+            oldHass.entities[statId]?.display_precision ||
+          this.hass.states[statId]?.attributes.unit_of_measurement !==
+            oldHass.states[statId]?.attributes.unit_of_measurement
+        );
+      })
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private get _displayPrecision(): number | undefined {
+    if (!this._energyData) {
+      return undefined;
+    }
+
+    const gasDisplayPrecisions = energySourcesByType(this._energyData.prefs)
+      .gas?.filter(
+        (source) =>
+          this.hass.states[source.stat_energy_from]?.attributes
+            .unit_of_measurement === this._unit
+      )
+      .map(
+        (source) =>
+          this.hass.entities[source.stat_energy_from]?.display_precision
+      )
+      .filter((precision): precision is number => precision !== undefined);
+
+    return gasDisplayPrecisions?.length
+      ? Math.max(...gasDisplayPrecisions)
+      : undefined;
+  }
+
+  private get _gasFormatOptions(): Intl.NumberFormatOptions | undefined {
+    const displayPrecision = this._displayPrecision;
+
+    return displayPrecision !== undefined
+      ? {
+          minimumFractionDigits: displayPrecision,
+          maximumFractionDigits: displayPrecision,
+        }
+      : undefined;
   }
 
   protected render() {
@@ -111,7 +171,11 @@ export class HuiEnergyGasGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this.hass.locale)}
+                        ${formatNumber(
+                          this._total,
+                          this.hass.locale,
+                          this._gasFormatOptions
+                        )}
                         ${this._unit}
                       </hui-energy-graph-chip>`
                     : nothing
@@ -135,7 +199,7 @@ export class HuiEnergyGasGraphCard
               this._unit,
               this._compareStart,
               this._compareEnd,
-              this._yAxisFractionDigits
+              this._displayPrecision ?? this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -162,7 +226,10 @@ export class HuiEnergyGasGraphCard
   private _formatTotal = (total: number) =>
     this.hass.localize(
       "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
-      { num: formatNumber(total, this.hass.locale), unit: this._unit }
+      {
+        num: formatNumber(total, this.hass.locale, this._gasFormatOptions),
+        unit: this._unit,
+      }
     );
 
   private _createOptions = memoizeOne(
@@ -191,6 +258,8 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._energyData = energyData;
+
     const result = generateEnergyGasGraphData({
       hass: this.hass,
       energyData,

@@ -196,9 +196,7 @@ class PanelEnergy extends LitElement {
       css`
         :host {
           --ha-view-sections-column-max-width: 100%;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         .centered {
           width: 100%;

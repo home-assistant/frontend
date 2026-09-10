@@ -20,7 +20,15 @@ export const configLinks: LinkSmokeCase[] = [
   { href: "/config/areas", label: "Areas, labels & zones" },
   { href: "/config/apps", label: "Apps" },
   { href: "/config/lovelace/dashboards", label: "Dashboards" },
+  { href: "/config/connectivity", label: "Connectivity" },
   { href: "/config/voice-assistants", label: "Voice assistants" },
+  { href: "/config/person", label: "People" },
+  { href: "/config/system", label: "System" },
+  { href: "/config/tools", label: "Tools" },
+  { href: "/config/info", label: "About" },
+];
+
+export const connectivityLinks: LinkSmokeCase[] = [
   { href: "/config/matter", label: "Matter" },
   { href: "/config/zha", label: "Zigbee" },
   { href: "/config/zwave_js", label: "Z-Wave" },
@@ -31,10 +39,6 @@ export const configLinks: LinkSmokeCase[] = [
   { href: "/config/radio-frequency", label: "Radio frequency" },
   { href: "/insteon", label: "Insteon" },
   { href: "/config/tags", label: "Tags" },
-  { href: "/config/person", label: "People" },
-  { href: "/config/system", label: "System" },
-  { href: "/config/tools", label: "Tools" },
-  { href: "/config/info", label: "About" },
 ];
 
 // ── More-info dialog views ───────────────────────────────────────────────────
@@ -63,10 +67,10 @@ export const moreInfoViewElements: ViewElementSmokeCase<MoreInfoView>[] = [
   },
   {
     view: "related",
-    element: "ha-related-items",
-    // search/related is mocked to return no relations, so the empty list
-    // renders.
-    content: [{ selector: "ha-related-items >> ha-list" }],
+    element: "ha-more-info-related",
+    // search/related is mocked to return no relations, so only the context
+    // group renders.
+    content: [{ selector: "ha-more-info-related >> ha-grouped-list" }],
   },
   {
     view: "add_to",
@@ -198,6 +202,7 @@ const CONFIG_ROUTES = routeCases([
   ["/config/script", "ha-config-script"],
   ["/config/blueprint", "ha-config-blueprint"],
   ["/config/cloud", "ha-config-cloud"],
+  ["/config/connectivity", "ha-config-connectivity"],
   ["/config/energy", "ha-config-energy"],
   ["/config/hardware", "ha-config-hardware"],
   ["/config/labs", "ha-config-labs"],
@@ -214,7 +219,7 @@ const CONFIG_ROUTES = routeCases([
   ["/config/updates", "ha-config-section-updates"],
   ["/config/repairs", "ha-config-repairs-dashboard"],
   ["/config/analytics", "ha-config-section-analytics"],
-  ["/config/ai-tasks", "ha-config-section-ai-tasks"],
+  ["/config/ai", "ha-config-section-ai"],
   ["/config/labels", "ha-config-labels"],
   ["/config/zone", "ha-config-zone"],
   ["/config/network", "ha-config-section-network"],

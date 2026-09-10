@@ -17,7 +17,7 @@ import type { HomeAssistant } from "../../../../types";
 
 import {
   isMediaSourceContentId,
-  resolveMediaSource,
+  resolveMediaSourceWithCache,
 } from "../../../../data/media_source";
 
 export interface BackgroundConfigTarget {
@@ -43,7 +43,6 @@ export class HuiViewBackgroundEditor extends LitElement {
           selector: {
             media: {
               accept: ["image/*"] as string[],
-              clearable: true,
               image_upload: true,
               hide_content_type: true,
               content_id_helper: this.hass.localize(
@@ -142,19 +141,33 @@ export class HuiViewBackgroundEditor extends LitElement {
         `${(background.opacity ?? 100) / 100}`
       );
 
-      const backgroundImage =
-        typeof background.image === "object"
-          ? background.image.media_content_id
-          : background.image;
+      const backgroundImage = this._currentBackgroundImage();
 
       if (backgroundImage && isMediaSourceContentId(backgroundImage)) {
-        resolveMediaSource(this.hass, backgroundImage).then((result) => {
-          this._resolvedImage = result.url;
-        });
+        resolveMediaSourceWithCache(this.hass, backgroundImage).then(
+          (result) => {
+            // Discard if the image changed while resolving
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = result.url;
+            }
+          },
+          () => {
+            if (this._currentBackgroundImage() === backgroundImage) {
+              this._resolvedImage = undefined;
+            }
+          }
+        );
       } else {
         this._resolvedImage = backgroundImage;
       }
     }
+  }
+
+  private _currentBackgroundImage(): string | undefined {
+    const background = this._backgroundData(this.config);
+    return typeof background.image === "object"
+      ? background.image.media_content_id
+      : background.image;
   }
 
   protected render() {

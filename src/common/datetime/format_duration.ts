@@ -57,6 +57,18 @@ export const formatDurationLong = (
   duration: HaDurationData
 ) => formatDurationLongMem(locale).format(duration);
 
+const formatDurationNarrowMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DurationFormat(locale.language, {
+      style: "narrow",
+    })
+);
+
+export const formatDurationNarrow = (
+  locale: FrontendLocaleData,
+  duration: HaDurationData
+) => formatDurationNarrowMem(locale).format(duration);
+
 const formatDigitalDurationMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DurationFormat(locale.language, {

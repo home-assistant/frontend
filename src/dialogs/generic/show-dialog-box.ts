@@ -2,6 +2,8 @@ import type { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 
 interface BaseDialogBoxParams {
+  /** Whether back closes the dialog. Off while a navigation is in flight. */
+  addHistory?: boolean;
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
@@ -61,6 +63,7 @@ const showDialogHelper = (
     fireEvent(element, "show-dialog", {
       dialogTag: "dialog-box",
       dialogImport: loadGenericDialog,
+      addHistory: dialogParams.addHistory,
       dialogParams: {
         ...dialogParams,
         ...extra,

@@ -137,7 +137,7 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
         --control-slider-tooltip-font-size: var(--ha-font-size-xl);
       }
       .gradient {
-        background: -webkit-linear-gradient(top, ${GRADIENT});
+        background: linear-gradient(to bottom, ${GRADIENT});
         opacity: 0.6;
       }
     `;

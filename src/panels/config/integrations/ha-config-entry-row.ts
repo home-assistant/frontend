@@ -51,7 +51,7 @@ import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
-  integrationsWithPanel,
+  getConfigPanelPath,
 } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -530,12 +530,7 @@ export class HaConfigEntryRow extends LitElement {
     </ha-md-list>`;
   }
 
-  private _configPanel = memoizeOne(
-    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
-      Object.values(panels).find(
-        (panel) => panel.config_panel_domain === domain
-      )?.url_path || integrationsWithPanel[domain]
-  );
+  private _configPanel = memoizeOne(getConfigPanelPath);
 
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities.filter(

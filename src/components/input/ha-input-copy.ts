@@ -113,6 +113,9 @@ export class HaInputCopy extends LitElement {
   }
 
   private _focusInput(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    if (!this.readonly) {
+      return;
+    }
     const inputElement = ev.currentTarget as HaInput;
     inputElement.select();
   }

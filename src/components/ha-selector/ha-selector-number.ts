@@ -67,15 +67,16 @@ export class HaNumberSelector extends LitElement {
       }
     }
 
-    // On iOS/iPadOS the numeric and decimal on-screen keypads have no minus key,
-    // so negatives can only be typed with the full "text" keyboard. Other
-    // platforms include a minus on their number keypads, so restrict this
-    // workaround to Safari/WebKit and only when the selector allows negatives
-    // (e.g. numeric_state triggers/conditions).
-    const useTextInputMode =
+    // On iOS/iPadOS the numeric and decimal on-screen keypads have no minus key.
+    // Leaving inputmode unset on a number input gives the "Numbers and
+    // Punctuation" keyboard there, which does include a minus. Other platforms
+    // include a minus on their number keypads, so restrict this workaround to
+    // Safari/WebKit and only when the selector allows negatives: either an
+    // explicit negative min, or no min at all (e.g. the numeric threshold
+    // selector used by the power triggers).
+    const useSafariNegativeKeyboard =
       isSafari &&
-      this.selector.number?.min !== undefined &&
-      this.selector.number.min < 0;
+      (this.selector.number?.min === undefined || this.selector.number.min < 0);
 
     const translationKey = this.selector.number?.translation_key;
     let unit = this.selector.number?.unit_of_measurement;
@@ -112,8 +113,8 @@ export class HaNumberSelector extends LitElement {
         }
         <ha-input
           .inputmode=${
-            useTextInputMode
-              ? "text"
+            useSafariNegativeKeyboard
+              ? undefined
               : this.selector.number?.step === "any" ||
                   (this.selector.number?.step ?? 1) % 1 !== 0
                 ? "decimal"

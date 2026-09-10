@@ -42,6 +42,21 @@ export class HuiSelectOptionsCardFeatureEditor
     ) =>
       [
         {
+          name: "style",
+          selector: {
+            select: {
+              multiple: false,
+              mode: "list",
+              options: ["dropdown", "buttons"].map((value) => ({
+                value,
+                label: this.hass!.localize(
+                  `ui.panel.lovelace.editor.features.types.select-options.style_list.${value}`
+                ),
+              })),
+            },
+          },
+        },
+        {
           name: "customize_options",
           selector: {
             boolean: {},
@@ -75,6 +90,7 @@ export class HuiSelectOptionsCardFeatureEditor
       : undefined;
 
     const data: SelectOptionsCardFeatureData = {
+      style: "dropdown",
       ...this._config,
       customize_options: this._config.options !== undefined,
     };
@@ -116,6 +132,7 @@ export class HuiSelectOptionsCardFeatureEditor
     switch (schema.name) {
       case "options":
       case "customize_options":
+      case "style":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.features.types.select-options.${schema.name}`
         );

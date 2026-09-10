@@ -121,7 +121,7 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
         ignoreModuleNotFound: true,
       },
     ],
-    // Import helpers and regenerator from runtime package.
+    // Import helpers from runtime package.
     // `moduleName` is pinned so helpers resolve from `@babel/runtime`: the
     // corejs3 polyfill provider above otherwise redirects them to the
     // (uninstalled) `@babel/runtime-corejs3`, which preset-env used to suppress
@@ -155,8 +155,6 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
           "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
-          "proxy-polyfill",
-          "unfetch",
         ].map((p) => new RegExp(`/node_modules/${p}/`)),
       ],
     },
