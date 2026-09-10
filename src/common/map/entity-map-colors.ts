@@ -1,13 +1,13 @@
-import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../color/colors";
 import { computeDomain } from "../entity/compute_domain";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
-import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 
 /**
  * Map colors for entities, by registry creation order per domain, so an
- * entity has the same color on every map. Entities without a registry entry
- * (e.g. YAML zones) get a color derived from their id.
+ * entity has the same color on every map. The registry comes from the
+ * fullEntitiesContext; entities without an entry (e.g. YAML zones) get a
+ * color derived from their id.
  */
 
 export const HOME_ZONE_ENTITY_ID = "zone.home";
@@ -15,60 +15,29 @@ export const HOME_ZONE_ENTITY_ID = "zone.home";
 /** Domains whose entities are colored by creation order */
 const ORDERED_DOMAINS = ["zone", "person", "device_tracker"];
 
-let creationIndex: Record<string, number> = {};
-let unsubscribe: UnsubscribeFunc | undefined;
-let subscribedConnection: Connection | undefined;
-const listeners = new Set<() => void>();
-
-const rebuildIndex = (entries: EntityRegistryEntry[]) => {
-  const byDomain: Record<string, EntityRegistryEntry[]> = {};
-  for (const entry of entries) {
-    const domain = computeDomain(entry.entity_id);
-    if (ORDERED_DOMAINS.includes(domain)) {
-      (byDomain[domain] ??= []).push(entry);
+// One index per registry update, shared by every map on the page
+const creationIndex = memoizeOne(
+  (entries: EntityRegistryEntry[]): Record<string, number> => {
+    const byDomain: Record<string, EntityRegistryEntry[]> = {};
+    for (const entry of entries) {
+      const domain = computeDomain(entry.entity_id);
+      if (ORDERED_DOMAINS.includes(domain)) {
+        (byDomain[domain] ??= []).push(entry);
+      }
     }
-  }
-  const index: Record<string, number> = {};
-  for (const domainEntries of Object.values(byDomain)) {
-    domainEntries
-      .sort((a, b) => a.created_at - b.created_at || a.id.localeCompare(b.id))
-      // The home zone has a fixed color and does not take a palette slot
-      .filter((entry) => entry.entity_id !== HOME_ZONE_ENTITY_ID)
-      .forEach((entry, i) => {
-        index[entry.entity_id] = i;
-      });
-  }
-  creationIndex = index;
-  listeners.forEach((listener) => listener());
-};
-
-/** Keeps the creation order current while a map is alive; onChange runs when colors may have changed */
-export const subscribeEntityMapColors = (
-  connection: Connection,
-  onChange: () => void
-): UnsubscribeFunc => {
-  // Each subscription is its own entry, so a callback subscribed twice
-  // counts twice and an unsubscribe only ever removes itself
-  const listener = () => onChange();
-  listeners.add(listener);
-  // One registry stream, shared by every map; a replaced connection takes over
-  if (!unsubscribe || subscribedConnection !== connection) {
-    unsubscribe?.();
-    subscribedConnection = connection;
-    unsubscribe = subscribeEntityRegistry(connection, rebuildIndex);
-  }
-  return () => {
-    if (!listeners.delete(listener)) {
-      return;
+    const index: Record<string, number> = {};
+    for (const domainEntries of Object.values(byDomain)) {
+      domainEntries
+        .sort((a, b) => a.created_at - b.created_at || a.id.localeCompare(b.id))
+        // The home zone has a fixed color and does not take a palette slot
+        .filter((entry) => entry.entity_id !== HOME_ZONE_ENTITY_ID)
+        .forEach((entry, i) => {
+          index[entry.entity_id] = i;
+        });
     }
-    if (listeners.size === 0 && unsubscribe) {
-      unsubscribe();
-      unsubscribe = undefined;
-      subscribedConnection = undefined;
-      creationIndex = {};
-    }
-  };
-};
+    return index;
+  }
+);
 
 // For entities without a registry entry
 const hashIndex = (entityId: string): number => {
@@ -82,10 +51,11 @@ const hashIndex = (entityId: string): number => {
 /** The palette color of an entity on a map */
 export const entityMapColor = (
   entityId: string,
+  entries: EntityRegistryEntry[],
   computedStyles: CSSStyleDeclaration
 ): string =>
   getColorByIndex(
-    creationIndex[entityId] ?? hashIndex(entityId),
+    creationIndex(entries)[entityId] ?? hashIndex(entityId),
     computedStyles
   );
 
@@ -93,6 +63,7 @@ export const entityMapColor = (
 export const zoneColor = (
   entityId: string,
   passive: boolean,
+  entries: EntityRegistryEntry[],
   computedStyles: CSSStyleDeclaration
 ): string => {
   if (entityId === HOME_ZONE_ENTITY_ID) {
@@ -101,5 +72,5 @@ export const zoneColor = (
   if (passive) {
     return computedStyles.getPropertyValue("--secondary-text-color");
   }
-  return entityMapColor(entityId, computedStyles);
+  return entityMapColor(entityId, entries, computedStyles);
 };

@@ -22,9 +22,10 @@ import type {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import {
-  subscribeEntityMapColors,
+  HOME_ZONE_ENTITY_ID,
   zoneColor,
 } from "../../../common/map/entity-map-colors";
 import type {
@@ -89,6 +90,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _regEntities: string[] = [];
 
+  // Registry creation order decides the zone colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
   // Storage zone id (its unique id) to entity id
   @state() private _zoneEntityIds: Record<string, string> = {};
 
@@ -101,6 +105,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       stateItems: HassEntity[],
       zoneEntityIds: Record<string, string>,
       pendingEdits: Record<string, PendingEdit>,
+      entityReg: EntityRegistryEntry[],
       _colorVersion: number
     ): MarkerLocation[] => {
       const computedStyles = getComputedStyle(this);
@@ -117,12 +122,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           radius_color: zoneColor(
             entityState.entity_id,
             !!entityState.attributes.passive,
+            entityReg,
             computedStyles
           ),
           location_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
           radius_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
@@ -131,6 +137,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         radius_color: zoneColor(
           zoneEntityIds[zone.id] ?? `zone.${zone.id}`,
           !!zone.passive,
+          entityReg,
           computedStyles
         ),
         location_editable: true,
@@ -142,10 +149,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      subscribeEntityMapColors(this.hass.connection!, () => {
-        this._colorVersion++;
-      }),
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
         this._regEntities = entities.map(
           (registryEntry) => registryEntry.entity_id
         );
@@ -312,6 +317,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       this._stateItems,
                       this._zoneEntityIds,
                       this._pendingEdits,
+                      this._entityReg,
                       this._colorVersion
                     )}
                     @location-updated=${this._locationUpdated}
@@ -420,7 +426,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _performSave(id: string, pending: PendingEdit) {
     try {
-      if (id === "zone.home") {
+      if (id === HOME_ZONE_ENTITY_ID) {
         await saveCoreConfig(this.hass, pending);
         return;
       }
@@ -505,7 +511,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private _radiusUpdated(ev: CustomEvent) {
     this._saveEdit(ev.detail.id, {
       radius:
-        ev.detail.id === "zone.home"
+        ev.detail.id === HOME_ZONE_ENTITY_ID
           ? Math.round(ev.detail.radius)
           : ev.detail.radius,
     });
@@ -534,7 +540,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
     const entryId: string = (ev.currentTarget! as any).value;
 
-    if (this.narrow && entryId === "zone.home") {
+    if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);
       return;
     }
@@ -593,7 +599,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       longitude: values.longitude,
       radius: values.radius,
     });
-    this._zoomZone("zone.home");
+    this._zoomZone(HOME_ZONE_ENTITY_ID);
   }
 
   private async _updateEntry(
