@@ -2,6 +2,7 @@ import { endOfDay, startOfDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -39,6 +40,10 @@ import {
   filterLowBatteryEntities,
   filterUnavailableBatteryEntities,
 } from "../../maintenance/strategies/maintenance-view-strategy";
+import {
+  isSecurityAlertActive,
+  resolveSecurityAlertSeverity,
+} from "../../security/strategies/security-alerts";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
@@ -179,6 +184,16 @@ export class HuiHomeSummaryCard
           ? `${formattedMinTemp}°`
           : `${formattedMinTemp} - ${formattedMaxTemp}°`;
       }
+      case "alerts": {
+        const count = (this._config.alert_entities ?? []).filter(
+          (alertEntity) => isSecurityAlertActive(this.hass!, alertEntity.entity)
+        ).length;
+        return count
+          ? this.hass.localize("ui.card.home-summary.count_active_alerts", {
+              count,
+            })
+          : "";
+      }
       case "security": {
         // Alarm and lock status
         const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
@@ -202,8 +217,22 @@ export class HuiHomeSummaryCard
           return s === "disarmed";
         });
 
+        const warningCount = (this._config.alert_entities ?? []).filter(
+          (alertEntity) =>
+            resolveSecurityAlertSeverity(
+              alertEntity,
+              this.hass!.states[alertEntity.entity]
+            ) === "warning" &&
+            isSecurityAlertActive(this.hass!, alertEntity.entity)
+        ).length;
+        const warningText = warningCount
+          ? this.hass.localize("ui.card.home-summary.count_warnings", {
+              count: warningCount,
+            })
+          : undefined;
+
         if (!locks.length && !alarms.length) {
-          return "";
+          return warningText ?? "";
         }
 
         const unlockedLocks = locks.filter((entityId) => {
@@ -211,23 +240,18 @@ export class HuiHomeSummaryCard
           return s === "unlocked" || s === "jammed" || s === "open";
         });
 
-        if (unlockedLocks.length) {
-          return this.hass.localize(
-            "ui.card.home-summary.count_locks_unlocked",
-            {
+        const statusText = unlockedLocks.length
+          ? this.hass.localize("ui.card.home-summary.count_locks_unlocked", {
               count: unlockedLocks.length,
-            }
-          );
-        }
-        if (disarmedAlarms.length) {
-          return this.hass.localize(
-            "ui.card.home-summary.count_alarms_disarmed",
-            {
-              count: disarmedAlarms.length,
-            }
-          );
-        }
-        return this.hass.localize("ui.card.home-summary.all_secure");
+            })
+          : disarmedAlarms.length
+            ? this.hass.localize("ui.card.home-summary.count_alarms_disarmed", {
+                count: disarmedAlarms.length,
+              })
+            : warningText
+              ? undefined
+              : this.hass.localize("ui.card.home-summary.all_secure");
+        return [warningText, statusText].filter(Boolean).join(", ");
       }
       case "media_players": {
         // Playing media
@@ -338,23 +362,29 @@ export class HuiHomeSummaryCard
       return nothing;
     }
 
-    const color = computeCssColor(HOME_SUMMARIES_COLORS[this._config.summary]);
+    const summary = this._config.summary;
+    const isAlertsSummary = summary === "alerts";
+    const color = computeCssColor(HOME_SUMMARIES_COLORS[summary]);
 
     const style = {
       "--tile-color": color,
+      "--ha-alert-color": isAlertsSummary ? color : undefined,
     };
 
     const secondary = this._computeSummaryState();
     const secondaryLoading = this._computeSecondaryLoading(
-      this._config.summary,
+      summary,
       this._energyData
     );
 
-    const label = getSummaryLabel(this.hass.localize, this._config.summary);
-    const icon = HOME_SUMMARIES_ICONS[this._config.summary];
+    const label = getSummaryLabel(this.hass.localize, summary);
+    const icon = HOME_SUMMARIES_ICONS[summary];
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card
+        class=${classMap({ alert: isAlertsSummary })}
+        style=${styleMap(style)}
+      >
         <ha-tile-container
           .vertical=${Boolean(this._config.vertical)}
           .interactive=${this._hasCardAction}
@@ -381,6 +411,24 @@ export class HuiHomeSummaryCard
     css`
       :host {
         --tile-color: var(--state-inactive-color);
+        --ha-alert-pulse-opacity: 0.3;
+      }
+      ha-card.alert {
+        position: relative;
+        overflow: hidden;
+        --tile-color: var(--ha-alert-color);
+      }
+      ha-card.alert::before {
+        position: absolute;
+        inset: 0;
+        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+        background-color: var(--ha-alert-color);
+        content: "";
+        opacity: var(--ha-alert-pulse-opacity);
+        pointer-events: none;
+      }
+      ha-card.alert ha-tile-container {
+        position: relative;
       }
     `,
   ];

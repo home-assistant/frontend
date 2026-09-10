@@ -3,6 +3,7 @@ import type { EntityNameItem } from "../../../common/entity/compute_entity_name_
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
+import type { SecurityAlertEntityConfig } from "../../../data/frontend";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
@@ -714,6 +715,7 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  alert_entities?: SecurityAlertEntityConfig[];
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
