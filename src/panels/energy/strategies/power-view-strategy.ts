@@ -9,9 +9,8 @@ import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
   hasGasRateSource,
-  hasPowerDevices,
+  hasNowViewContent,
   hasPowerSources,
-  hasWaterRateDevices,
   hasWaterRateSource,
   isEnergyCardVisible,
 } from "./energy-cards";
@@ -54,20 +53,11 @@ export class PowerViewStrategy extends ReactiveElement {
     };
 
     const hasPowerSrc = !!prefs && hasPowerSources(prefs);
-    const hasPowerDev = !!prefs && hasPowerDevices(prefs);
-    const hasWaterDev = !!prefs && hasWaterRateDevices(prefs);
     const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
     const hasGasSrc = !!prefs && hasGasRateSource(prefs);
 
-    // No sources configured
-    if (
-      !prefs ||
-      (!hasPowerSrc &&
-        !hasPowerDev &&
-        !hasWaterDev &&
-        !hasWaterSrc &&
-        !hasGasSrc)
-    ) {
+    // No live power or flow-rate sources configured
+    if (!prefs || !hasNowViewContent(prefs)) {
       return view;
     }
 
