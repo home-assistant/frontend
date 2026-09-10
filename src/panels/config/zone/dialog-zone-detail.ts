@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,12 +17,19 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { zoneColor } from "../../../common/map/entity-map-colors";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 
 @customElement("dialog-zone-detail")
 class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
   LitElement
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  // Registry creation order decides the zone color
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _error?: Record<string, string>;
 
@@ -112,6 +120,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
               ? zoneColor(
                   this._params.entityId,
                   !!this._data.passive,
+                  this._entityReg,
                   getComputedStyle(this)
                 )
               : undefined

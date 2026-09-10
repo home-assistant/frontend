@@ -91,7 +91,7 @@ class DialogHomeZoneDetail extends DirtyStateProviderMixin<HomeZoneMutableParams
           .schema=${SCHEMA(
             this.hass.states[HOME_ZONE_ENTITY_ID]?.attributes.icon ||
               "mdi:home",
-            zoneColor(HOME_ZONE_ENTITY_ID, false, getComputedStyle(this))
+            zoneColor(HOME_ZONE_ENTITY_ID, false, [], getComputedStyle(this))
           )}
           .data=${this._formData(this._data)}
           .error=${this._error}

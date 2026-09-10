@@ -52,7 +52,6 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
-import { HOME_ZONE_ENTITY_ID } from "../../../common/map/entity-map-colors";
 import "../ha-config-section";
 import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
@@ -102,7 +101,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   // Storage zone id (its unique id) to entity id
   @state() private _zoneEntityIds: Record<string, string> = {};
 
-  // Bumped when entity map colors change to recompute the memoized locations
+  // Bumped on a theme change to recompute the memoized locations
   @state() private _colorVersion = 0;
 
   // Home first, then alphabetical, for UI and YAML zones alike
@@ -233,7 +232,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     icon: string | undefined,
     name: string
   ) {
-    const color = zoneColor(entityId, passive, getComputedStyle(this));
+    const color = zoneColor(
+      entityId,
+      passive,
+      this._entityReg,
+      getComputedStyle(this)
+    );
     return html`
       <div
         slot="graphic"
