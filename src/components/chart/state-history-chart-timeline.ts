@@ -44,7 +44,8 @@ export class StateHistoryChartTimeline extends LitElement {
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
   // Render each row's name inside the plot (under its bar) instead of in a
-  // left-hand category-label column. Opt-in; used by the history panel.
+  // left-hand category-label column. Opt-in; used by the history panel and
+  // history-graph card.
   @property({ attribute: "inside-labels", type: Boolean })
   public insideLabels = false;
 

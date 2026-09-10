@@ -105,10 +105,17 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     this._names = {};
     this._entities.forEach((entity) => {
+      // Leave unset so timeline/line charts use computeHistory's Device ▸ Entity
+      // labels. Only YAML `name` overrides that default.
+      if (entity.name === undefined) {
+        return;
+      }
       const stateObj = this.hass!.states[entity.entity];
       this._names[entity.entity] = stateObj
         ? this.hass!.formatEntityName(stateObj, entity.name)
-        : entity.entity;
+        : typeof entity.name === "string"
+          ? entity.name
+          : entity.entity;
     });
   }
 
@@ -365,6 +372,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                         ? this._config.show_names
                         : true
                     }
+                    inside-labels
                     .logarithmicScale=${this._config.logarithmic_scale || false}
                     .minYAxis=${this._config.min_y_axis}
                     .maxYAxis=${this._config.max_y_axis}
