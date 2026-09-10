@@ -19,19 +19,22 @@ const entry = (entityId: string, createdAt: number, id = entityId) =>
   }) as EntityRegistryEntry;
 
 describe("entity map colors", () => {
-  it("colors entities in creation order, per domain", () => {
+  it("colors zones, persons and trackers in one creation order", () => {
     const entries = [
-      entry("zone.work", 30),
+      entry("zone.work", 40),
       entry("zone.school", 10),
       entry("person.anne", 20),
-      entry("zone.gym", 20),
+      entry("device_tracker.phone", 30),
+      entry("light.kitchen", 25),
     ];
 
     expect(entityMapColor("zone.school", entries, styles)).toBe("color-1");
-    expect(entityMapColor("zone.gym", entries, styles)).toBe("color-2");
-    expect(entityMapColor("zone.work", entries, styles)).toBe("color-3");
-    // Persons start their own sequence
-    expect(entityMapColor("person.anne", entries, styles)).toBe("color-1");
+    // A person takes the next slot, never a zone's color
+    expect(entityMapColor("person.anne", entries, styles)).toBe("color-2");
+    expect(entityMapColor("device_tracker.phone", entries, styles)).toBe(
+      "color-3"
+    );
+    expect(entityMapColor("zone.work", entries, styles)).toBe("color-4");
   });
 
   it("breaks creation ties by registry id", () => {

@@ -4,10 +4,10 @@ import { computeDomain } from "../entity/compute_domain";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 
 /**
- * Map colors for entities, by registry creation order per domain, so an
- * entity has the same color on every map. The registry comes from the
- * fullEntitiesContext; entities without an entry (e.g. YAML zones) get a
- * color derived from their id.
+ * Map colors for entities, by registry creation order, so an entity has the
+ * same color on every map. The registry comes from the fullEntitiesContext;
+ * entities without an entry (e.g. YAML zones) get a color derived from their
+ * id.
  */
 
 export const HOME_ZONE_ENTITY_ID = "zone.home";
@@ -15,26 +15,23 @@ export const HOME_ZONE_ENTITY_ID = "zone.home";
 /** Domains whose entities are colored by creation order */
 const ORDERED_DOMAINS = ["zone", "person", "device_tracker"];
 
-// One index per registry update, shared by every map on the page
+// One index per registry update, shared by every map on the page. Zones,
+// persons and trackers share one sequence, so a person never has the color
+// of the zone it is in.
 const creationIndex = memoizeOne(
   (entries: EntityRegistryEntry[]): Record<string, number> => {
-    const byDomain: Record<string, EntityRegistryEntry[]> = {};
-    for (const entry of entries) {
-      const domain = computeDomain(entry.entity_id);
-      if (ORDERED_DOMAINS.includes(domain)) {
-        (byDomain[domain] ??= []).push(entry);
-      }
-    }
     const index: Record<string, number> = {};
-    for (const domainEntries of Object.values(byDomain)) {
-      domainEntries
-        .sort((a, b) => a.created_at - b.created_at || a.id.localeCompare(b.id))
-        // The home zone has a fixed color and does not take a palette slot
-        .filter((entry) => entry.entity_id !== HOME_ZONE_ENTITY_ID)
-        .forEach((entry, i) => {
-          index[entry.entity_id] = i;
-        });
-    }
+    entries
+      .filter(
+        (entry) =>
+          ORDERED_DOMAINS.includes(computeDomain(entry.entity_id)) &&
+          // The home zone has a fixed color and does not take a palette slot
+          entry.entity_id !== HOME_ZONE_ENTITY_ID
+      )
+      .sort((a, b) => a.created_at - b.created_at || a.id.localeCompare(b.id))
+      .forEach((entry, i) => {
+        index[entry.entity_id] = i;
+      });
     return index;
   }
 );
