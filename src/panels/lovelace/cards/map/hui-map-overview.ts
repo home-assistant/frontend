@@ -181,12 +181,19 @@ export class HuiMapOverview extends LitElement {
           stateObj.attributes.latitude !== undefined &&
           stateObj.attributes.longitude !== undefined
       )
-      .sort((a, b) =>
-        computeStateName(a).localeCompare(
+      .sort((a, b) => {
+        // Home first
+        if (
+          (a.entity_id === HOME_ZONE_ENTITY_ID) !==
+          (b.entity_id === HOME_ZONE_ENTITY_ID)
+        ) {
+          return a.entity_id === HOME_ZONE_ENTITY_ID ? -1 : 1;
+        }
+        return computeStateName(a).localeCompare(
           computeStateName(b),
           this._i18n.locale.language
-        )
-      );
+        );
+      });
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

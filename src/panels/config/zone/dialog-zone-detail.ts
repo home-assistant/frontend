@@ -15,6 +15,7 @@ import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mi
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
+import { zoneColor } from "../../../common/map/entity-map-colors";
 
 @customElement("dialog-zone-detail")
 class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
@@ -105,7 +106,16 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         <ha-form
           autofocus
           .hass=${this.hass}
-          .schema=${this._schema(this._data.icon)}
+          .schema=${this._schema(
+            this._data.icon,
+            this._params?.entityId
+              ? zoneColor(
+                  this._params.entityId,
+                  !!this._data.passive,
+                  getComputedStyle(this)
+                )
+              : undefined
+          )}
           .data=${this._formData(this._data)}
           .error=${this._error}
           .computeLabel=${this._computeLabel}
@@ -153,7 +163,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
   }
 
   private _schema = memoizeOne(
-    (icon?: string) =>
+    (icon?: string, color?: string) =>
       [
         {
           name: "name",
@@ -172,7 +182,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         {
           name: "location",
           required: true,
-          selector: { location: { radius: true, icon } },
+          selector: { location: { radius: true, icon, color } },
         },
         { name: "passive_note", type: "constant" },
         { name: "passive", selector: { boolean: {} } },

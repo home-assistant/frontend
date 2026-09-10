@@ -3,6 +3,7 @@ import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
@@ -24,9 +25,14 @@ import type {
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import {
+  HOME_ZONE_ENTITY_ID,
   subscribeEntityMapColors,
   zoneColor,
 } from "../../../common/map/entity-map-colors";
+import {
+  contrastingZoneContent,
+  zoneInitials,
+} from "../../../common/map/zone-marker";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -94,6 +100,149 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   // Bumped when entity map colors change to recompute the memoized locations
   @state() private _colorVersion = 0;
+
+  // Home first, then alphabetical, for UI and YAML zones alike
+  private _sortedItems = memoizeOne(
+    (
+      storageItems: Zone[],
+      stateItems: HassEntity[],
+      language: string
+    ): ({ entry: Zone } | { stateObject: HassEntity })[] => {
+      const items = [
+        ...storageItems.map((entry) => ({
+          entry,
+          name: entry.name,
+          home: false,
+        })),
+        ...stateItems.map((stateObject) => ({
+          stateObject,
+          name: stateObject.attributes.friendly_name || stateObject.entity_id,
+          home: stateObject.entity_id === HOME_ZONE_ENTITY_ID,
+        })),
+      ];
+      return items.sort((a, b) =>
+        a.home !== b.home
+          ? a.home
+            ? -1
+            : 1
+          : stringCompare(a.name, b.name, language)
+      );
+    }
+  );
+
+  private _renderStorageItem(entry: Zone) {
+    const hass = this.hass;
+    return html`
+      <ha-list-item
+        .entry=${entry}
+        .id=${this.narrow ? entry.id : ""}
+        graphic="avatar"
+        .hasMeta=${!this.narrow}
+        @request-selected=${this._itemClicked}
+        .value=${entry.id}
+      >
+        ${this._renderZoneGraphic(
+          this._zoneEntityIds[entry.id] ?? `zone.${entry.id}`,
+          !!entry.passive,
+          entry.icon,
+          entry.name
+        )}
+        ${entry.name}
+        ${
+          !this.narrow
+            ? html`
+                <div slot="meta">
+                  <ha-icon-button
+                    .id=${entry.id}
+                    .entry=${entry}
+                    @click=${this._openEditEntry}
+                    .path=${mdiPencil}
+                    .label=${hass.localize("ui.common.edit_item", {
+                      name: entry.name,
+                    })}
+                  ></ha-icon-button>
+                </div>
+              `
+            : ""
+        }
+      </ha-list-item>
+    `;
+  }
+
+  private _renderStateItem(stateObject: HassEntity) {
+    const hass = this.hass;
+    return html`
+      <ha-list-item
+        graphic="avatar"
+        .id=${this.narrow ? stateObject.entity_id : ""}
+        .hasMeta=${!this.narrow || stateObject.entity_id !== "zone.home"}
+        .value=${stateObject.entity_id}
+        @request-selected=${this._stateItemClicked}
+        .noEdit=${stateObject.entity_id !== "zone.home" || !this._canEditCore}
+      >
+        ${this._renderZoneGraphic(
+          stateObject.entity_id,
+          !!stateObject.attributes.passive,
+          stateObject.attributes.icon,
+          stateObject.attributes.friendly_name || stateObject.entity_id
+        )}
+        ${stateObject.attributes.friendly_name || stateObject.entity_id}
+        ${
+          this.narrow &&
+          stateObject.entity_id === "zone.home" &&
+          !this._canEditCore
+            ? nothing
+            : html`<ha-icon-button
+                  .id="zone-${slugify(stateObject.entity_id)}"
+                  .entityId=${stateObject.entity_id}
+                  .noEdit=${
+                    stateObject.entity_id !== "zone.home" || !this._canEditCore
+                  }
+                  .path=${
+                    stateObject.entity_id === "zone.home" && this._canEditCore
+                      ? mdiPencil
+                      : mdiPencilOff
+                  }
+                  .label=${hass.localize("ui.common.edit_item", {
+                    name: hass.config.location_name,
+                  })}
+                  @click=${this._editHomeZone}
+                  slot="meta"
+                ></ha-icon-button>
+                <ha-tooltip
+                  .for="zone-${slugify(stateObject.entity_id)}"
+                  placement="left"
+                  .disabled=${stateObject.entity_id === "zone.home"}
+                  hoist
+                >
+                  ${hass.localize("ui.panel.config.zone.configured_in_yaml")}
+                </ha-tooltip>`
+        }
+      </ha-list-item>
+    `;
+  }
+
+  // The zone as it looks on the map: its color, with its icon or initials
+  private _renderZoneGraphic(
+    entityId: string,
+    passive: boolean,
+    icon: string | undefined,
+    name: string
+  ) {
+    const color = zoneColor(entityId, passive, getComputedStyle(this));
+    return html`
+      <div
+        slot="graphic"
+        class="zone-avatar"
+        style=${styleMap({
+          background: color,
+          color: contrastingZoneContent(color),
+        })}
+      >
+        ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : zoneInitials(name)}
+      </div>
+    `;
+  }
 
   private _getZones = memoizeOne(
     (
@@ -184,100 +333,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           `
         : html`
             <ha-list>
-              ${this._storageItems.map(
-                (entry) => html`
-                  <ha-list-item
-                    .entry=${entry}
-                    .id=${this.narrow ? entry.id : ""}
-                    graphic="icon"
-                    .hasMeta=${!this.narrow}
-                    @request-selected=${this._itemClicked}
-                    .value=${entry.id}
-                  >
-                    <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
-                    ${entry.name}
-                    ${
-                      !this.narrow
-                        ? html`
-                            <div slot="meta">
-                              <ha-icon-button
-                                .id=${entry.id}
-                                .entry=${entry}
-                                @click=${this._openEditEntry}
-                                .path=${mdiPencil}
-                                .label=${hass.localize("ui.common.edit_item", {
-                                  name: entry.name,
-                                })}
-                              ></ha-icon-button>
-                            </div>
-                          `
-                        : ""
-                    }
-                  </ha-list-item>
-                `
-              )}
-              ${this._stateItems.map(
-                (stateObject) => html`
-                  <ha-list-item
-                    graphic="icon"
-                    .id=${this.narrow ? stateObject.entity_id : ""}
-                    .hasMeta=${
-                      !this.narrow || stateObject.entity_id !== "zone.home"
-                    }
-                    .value=${stateObject.entity_id}
-                    @request-selected=${this._stateItemClicked}
-                    .noEdit=${
-                      stateObject.entity_id !== "zone.home" ||
-                      !this._canEditCore
-                    }
-                  >
-                    <ha-icon
-                      .icon=${stateObject.attributes.icon}
-                      slot="graphic"
-                    >
-                    </ha-icon>
-
-                    ${
-                      stateObject.attributes.friendly_name ||
-                      stateObject.entity_id
-                    }
-                    ${
-                      this.narrow &&
-                      stateObject.entity_id === "zone.home" &&
-                      !this._canEditCore
-                        ? nothing
-                        : html`<ha-icon-button
-                              .id="zone-${slugify(stateObject.entity_id)}"
-                              .entityId=${stateObject.entity_id}
-                              .noEdit=${
-                                stateObject.entity_id !== "zone.home" ||
-                                !this._canEditCore
-                              }
-                              .path=${
-                                stateObject.entity_id === "zone.home" &&
-                                this._canEditCore
-                                  ? mdiPencil
-                                  : mdiPencilOff
-                              }
-                              .label=${hass.localize("ui.common.edit_item", {
-                                name: hass.config.location_name,
-                              })}
-                              @click=${this._editHomeZone}
-                              slot="meta"
-                            ></ha-icon-button>
-                            <ha-tooltip
-                              .for="zone-${slugify(stateObject.entity_id)}"
-                              placement="left"
-                              .disabled=${stateObject.entity_id === "zone.home"}
-                              hoist
-                            >
-                              ${hass.localize(
-                                "ui.panel.config.zone.configured_in_yaml"
-                              )}
-                            </ha-tooltip>`
-                    }
-                  </ha-list-item>
-                `
+              ${this._sortedItems(
+                this._storageItems,
+                this._stateItems,
+                hass.locale.language
+              ).map((item) =>
+                "entry" in item
+                  ? this._renderStorageItem(item.entry)
+                  : this._renderStateItem(item.stateObject)
               )}
             </ha-list>
           `;
@@ -635,6 +698,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _openDialog(entry?: Zone) {
     showZoneDetailDialog(this, {
       entry,
+      entityId: entry ? this._zoneEntityIds[entry.id] : undefined,
       createEntry: (values) => this._createEntry(values),
       updateEntry: entry
         ? (values) => this._updateEntry(entry, values, true)
@@ -661,6 +725,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ha-icon,
     ha-icon-button:not([disabled]) {
       color: var(--secondary-text-color);
+    }
+    .zone-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--ha-font-weight-medium);
+    }
+    .zone-avatar ha-icon {
+      color: inherit;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
     ha-icon-button {
       --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
