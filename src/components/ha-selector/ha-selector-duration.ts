@@ -5,6 +5,7 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import {
   absDurationData,
@@ -84,10 +85,16 @@ export class HaTimeDuration extends LitElement {
       <div class="container">
         ${
           this.label
-            ? html`<label>${this.label}${this.required ? "*" : ""}</label>`
+            ? html`<label id="label"
+                >${this.label}${this.required ? "*" : ""}</label
+              >`
             : nothing
         }
-        <div class="inputs">
+        <div
+          class="inputs"
+          role="group"
+          aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+        >
           <ha-select
             .value=${offsetType}
             .options=${this._offsetTypeOptions(this._localize)}
@@ -97,8 +104,12 @@ export class HaTimeDuration extends LitElement {
           ${
             offsetType === "none"
               ? nothing
-              : html`<div class="value-row">
-                  <span class="value-label"
+              : html`<div
+                  class="value-row"
+                  role="group"
+                  aria-labelledby="duration-label"
+                >
+                  <span id="duration-label" class="value-label"
                     >${this._localize(
                       "ui.components.selectors.duration.duration"
                     )}${this.required ? "*" : ""}</span
@@ -165,10 +176,13 @@ export class HaTimeDuration extends LitElement {
     type: OffsetType,
     data?: HaDurationData
   ): HaDurationData {
-    const components = absDurationData(data ?? this._zeroDuration());
-    return type === "none"
-      ? components
-      : { negative: type === "before", ...components };
+    if (type === "none") {
+      return this._zeroDuration();
+    }
+    return {
+      negative: type === "before",
+      ...absDurationData(data ?? this._zeroDuration()),
+    };
   }
 
   private _durationChanged(ev: ValueChangedEvent<HaDurationData | undefined>) {

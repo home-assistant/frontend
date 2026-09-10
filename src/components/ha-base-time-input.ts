@@ -500,7 +500,8 @@ export class HaBaseTimeInput extends LitElement {
       align-items: center;
       box-sizing: border-box;
       height: 56px;
-      padding: 0 var(--ha-space-1) 0 var(--ha-space-3);
+      padding: 0;
+      padding-inline: var(--ha-space-3) var(--ha-space-1);
       border: none;
       border-bottom: 1px solid var(--ha-color-border-neutral-loud);
       background-color: var(--ha-color-form-background);
