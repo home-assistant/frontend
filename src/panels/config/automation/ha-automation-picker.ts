@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
+  mdiClockOutline,
   mdiCloseThick,
   mdiCog,
   mdiContentDuplicate,
@@ -115,6 +116,7 @@ import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import { showAutomationSuspendDialog } from "./automation-suspend-dialog/show-dialog-automation-suspend";
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
@@ -834,6 +836,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               : this.hass.localize("ui.panel.config.automation.editor.disable")
           }
         </ha-dropdown-item>
+        <ha-dropdown-item value="suspend">
+          <ha-svg-icon
+            .path=${mdiClockOutline}
+            slot="icon"
+          ></ha-svg-icon>
+          ${
+            this._overflowAutomation?.attributes?.suspended_until
+              ? this.hass.localize(
+                  "ui.panel.config.automation.editor.suspended"
+                )
+              : this.hass.localize("ui.panel.config.automation.editor.suspend")
+          }
+        </ha-dropdown-item>
         <ha-dropdown-item value="delete" variant="danger">
           <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.automation.picker.delete")}
@@ -1061,6 +1076,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       case "toggle":
         this._toggle(this._overflowAutomation);
         break;
+      case "suspend":
+        this._suspend(this._overflowAutomation);
+        break;
       case "delete":
         this._deleteConfirm(this._overflowAutomation);
         break;
@@ -1105,6 +1123,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     showAssignCategoryDialog(this, {
       scope: "automation",
       entityReg,
+    });
+  };
+
+  private _suspend = (automation: AutomationItem) => {
+    showAutomationSuspendDialog(this, {
+      entityId: automation.entity_id,
+      name: automation.name,
+      suspendedUntil: automation.attributes.suspended_until,
     });
   };
 

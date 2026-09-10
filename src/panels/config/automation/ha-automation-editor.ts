@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiClockOutline,
   mdiCog,
   mdiContentSave,
   mdiDebugStepOver,
@@ -77,6 +78,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
+import { showAutomationSuspendDialog } from "./automation-suspend-dialog/show-dialog-automation-suspend";
 import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
@@ -440,6 +442,20 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   ? mdiPlayCircleOutline
                   : mdiStopCircleOutline
               }
+            ></ha-svg-icon>
+          </ha-dropdown-item>
+
+          <ha-dropdown-item .disabled=${!stateObj} value="suspend">
+            ${
+              stateObj?.attributes.suspended_until
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.suspended"
+                  )
+                : this.hass.localize("ui.panel.config.automation.editor.suspend")
+            }
+            <ha-svg-icon
+              slot="icon"
+              .path=${mdiClockOutline}
             ></ha-svg-icon>
           </ha-dropdown-item>
 
@@ -853,6 +869,18 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     });
   }
 
+  private _suspend(): void {
+    if (!this.hass || !this.currentEntityId) {
+      return;
+    }
+    const stateObj = this.hass.states[this.currentEntityId];
+    showAutomationSuspendDialog(this, {
+      entityId: stateObj.entity_id,
+      name: stateObj.attributes.friendly_name || this.config?.alias,
+      suspendedUntil: stateObj.attributes.suspended_until,
+    });
+  }
+
   private _preprocessYaml() {
     if (!this.config) {
       return {};
@@ -1250,6 +1278,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         break;
       case "disable":
         this._toggle();
+        break;
+      case "suspend":
+        this._suspend();
         break;
       case "delete":
         this._deleteConfirm();

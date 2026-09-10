@@ -5236,6 +5236,20 @@
           "editor": {
             "enable": "[%key:ui::common::enable%]",
             "disable": "[%key:ui::common::disable%]",
+            "suspend": "Suspend",
+            "suspended": "Suspended",
+            "suspend_dialog": {
+              "title": "Suspend automation",
+              "description": "Suspend {name} until a specific date and time. The automation will be disabled and will automatically re-enable when the time is reached.",
+              "end_date": "End date",
+              "end_time": "End time",
+              "remove_suspend": "Remove suspend",
+              "presets": {
+                "one_hour": "+1 hour",
+                "one_day": "+1 day",
+                "one_week": "+1 week"
+              }
+            },
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "unavailable": "Automation is unavailable",

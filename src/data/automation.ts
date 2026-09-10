@@ -36,6 +36,7 @@ export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
     last_triggered: string;
+    suspended_until?: string;
   };
 }
 
