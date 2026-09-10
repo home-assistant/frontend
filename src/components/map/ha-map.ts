@@ -384,6 +384,11 @@ export class HaMap extends ReactiveElement {
     );
   }
 
+  private _releaseColors(): void {
+    this._unsubscribeColors?.();
+    this._unsubscribeColors = undefined;
+  }
+
   private _handleVisibilityChange = async () => {
     if (!document.hidden) {
       setTimeout(() => {
@@ -398,8 +403,7 @@ export class HaMap extends ReactiveElement {
       "visibilitychange",
       this._handleVisibilityChange
     );
-    this._unsubscribeColors?.();
-    this._unsubscribeColors = undefined;
+    this._releaseColors();
     this._engine?.destroy();
     this._engine = undefined;
     // An engine still setting up goes too; its setup notices and stops
@@ -428,8 +432,7 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_connection")) {
       // A new connection needs its own subscription
-      this._unsubscribeColors?.();
-      this._unsubscribeColors = undefined;
+      this._releaseColors();
       this._subscribeColors();
     }
 
@@ -1106,6 +1109,8 @@ export class HaMap extends ReactiveElement {
 
     if (!this.entities) {
       engine.setClustering(null);
+      // Nothing left to color; let the shared registry stream go
+      this._releaseColors();
       return;
     }
     this._subscribeColors();
