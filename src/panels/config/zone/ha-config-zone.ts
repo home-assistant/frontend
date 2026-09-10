@@ -61,8 +61,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @state() private _stateItems?: HassEntity[];
 
-  @state() private _activeEntry = "";
-
   @state() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
@@ -151,7 +149,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .hasMeta=${!this.narrow}
                     @request-selected=${this._itemClicked}
                     .value=${entry.id}
-                    ?selected=${this._activeEntry === entry.id}
                   >
                     <ha-icon .icon=${entry.icon} slot="graphic"></ha-icon>
                     ${entry.name}
@@ -185,7 +182,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     }
                     .value=${stateObject.entity_id}
                     @request-selected=${this._stateItemClicked}
-                    ?selected=${this._activeEntry === stateObject.entity_id}
                     .noEdit=${
                       stateObject.entity_id !== "zone.home" ||
                       !this._canEditCore
@@ -273,7 +269,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     )}
                     @location-updated=${this._locationUpdated}
                     @radius-updated=${this._radiusUpdated}
-                    @marker-clicked=${this._markerClicked}
                   ></ha-locations-editor>
                   <div class="overflow">${listBox}</div>
                 </div>
@@ -365,7 +360,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _locationUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
     if (ev.detail.id === "zone.home" && this._canEditCore) {
       await saveCoreConfig(this.hass, {
         latitude: ev.detail.location[0],
@@ -384,7 +378,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _radiusUpdated(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
     if (ev.detail.id === "zone.home" && this._canEditCore) {
       await saveCoreConfig(this.hass, {
         radius: Math.round(ev.detail.radius),
@@ -400,10 +393,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _markerClicked(ev: CustomEvent) {
-    this._activeEntry = ev.detail.id;
-  }
-
   private _createZone() {
     this._openDialog();
   }
@@ -417,9 +406,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._openEditEntry(ev);
       return;
     }
-    const entryId: string = (ev.currentTarget! as any).value;
-    this._zoomZone(entryId);
-    this._activeEntry = entryId;
+    this._zoomZone((ev.currentTarget! as any).value);
   }
 
   private _stateItemClicked(ev: CustomEvent) {
@@ -435,7 +422,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
 
     this._zoomZone(entryId);
-    this._activeEntry = entryId;
   }
 
   private async _zoomZone(id: string) {
@@ -478,7 +464,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow) {
       return;
     }
-    this._activeEntry = created.id;
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
@@ -505,7 +490,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow || !fitMap) {
       return;
     }
-    this._activeEntry = entry.id;
     await this.updateComplete;
     await this._map?.updateComplete;
     this._map?.fitMarker(entry.id);

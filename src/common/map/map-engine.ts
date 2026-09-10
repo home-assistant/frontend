@@ -1,26 +1,13 @@
 /**
- * Engine abstraction for ha-map.
+ * Map engine abstraction for ha-map: MapLibre GL where WebGL2 is available,
+ * Leaflet as the viewing fallback. The Leaflet engine is frozen at this
+ * contract; new capabilities go on MapLibre only, as optional members like
+ * `editing`.
  *
- * ha-map keeps all Home Assistant semantics (entities, zones, cluster bubble
- * DOM, history path math, fit policy) and delegates the primitive map
- * operations to a MapEngine, so the engine can be selected at runtime:
- * MapLibre GL native where WebGL2 is available, Leaflet otherwise (and always
- * for ha-locations-editor, which edits with leaflet-draw).
- *
- * The interface exposes no engine types: positions are [latitude, longitude]
- * tuples and marker content is caller-owned HTML elements.
- *
- * Zoom levels use Leaflet semantics (zoom 0 = one world tile), the historical
- * convention across Home Assistant map configs. The MapLibre engine converts
- * internally (MapLibre zoom = Leaflet zoom - 1).
+ * Positions are [latitude, longitude]; zoom levels use Leaflet semantics.
  */
 
 export type MapLatLng = [latitude: number, longitude: number];
-
-export interface MapPoint {
-  x: number;
-  y: number;
-}
 
 export type MapControlPosition =
   "topleft" | "topright" | "bottomleft" | "bottomright";
@@ -62,8 +49,10 @@ export interface MapMarkerOptions {
   size: [width: number, height: number];
   /** Point of the element placed on the coordinate, from its top left; defaults to the center */
   anchor?: [x: number, y: number];
-  /** Takes pointer input and keyboard focus; defaults to true */
+  /** Takes pointer input; defaults to true */
   interactive?: boolean;
+  /** A keyboard-focusable button, for markers that act on activation; defaults to interactive */
+  focusable?: boolean;
   /** Accessible name */
   title?: string;
   /** A meter-radius circle sharing the marker's lifecycle (GPS accuracy) */
@@ -107,6 +96,58 @@ export interface MapItemHandle {
 export interface MapMarkerHandle extends MapItemHandle {
   readonly location: MapLatLng;
   readonly clusterData?: unknown;
+}
+
+export interface MapDraggableMarkerOptions extends MapMarkerOptions {
+  onDragEnd?(location: MapLatLng): void;
+}
+
+export interface MapEditableCircleOptions {
+  /** Radius in meters */
+  radius: number;
+  /** Stroke color; the fill is derived from it, translucent */
+  color: string;
+  /** Element shown at the center, e.g. the zone icon; a plain dot otherwise */
+  centerElement?: HTMLElement;
+  centerSize?: [width: number, height: number];
+  title?: string;
+  /** The center can be dragged */
+  moveable?: boolean;
+  /** A handle on the edge can be dragged to change the radius */
+  resizable?: boolean;
+  /** Accessible name of the radius handle, e.g. "Radius of Home in meters" */
+  resizeLabel?: string;
+  onMove?(center: MapLatLng): void;
+  onResize?(radius: number): void;
+  onClick?(): void;
+}
+
+export interface MapEditingSupport {
+  /** Place a draggable HTML element marker */
+  addDraggableMarker(
+    element: HTMLElement,
+    location: MapLatLng,
+    options: MapDraggableMarkerOptions
+  ): MapEditableMarkerHandle;
+
+  /** Draw a circle whose center and radius can be dragged */
+  addEditableCircle(
+    center: MapLatLng,
+    options: MapEditableCircleOptions
+  ): MapEditableCircleHandle;
+}
+
+/** A circle with drag handles for its center and radius */
+export interface MapEditableCircleHandle extends MapItemHandle {
+  readonly center: MapLatLng;
+  readonly radius: number;
+  /** Move and resize without recreating (no-op mid-drag) */
+  update(center: MapLatLng, radius: number): void;
+}
+
+export interface MapEditableMarkerHandle extends MapMarkerHandle {
+  /** Move without recreating (no-op mid-drag) */
+  setLocation(location: MapLatLng): void;
 }
 
 export interface MapClusterIcon {
@@ -159,13 +200,13 @@ export interface MapEngine {
   /** Fit the given points into view; a single point centers on it */
   fitBounds(points: MapLatLng[], options?: MapFitOptions): void;
 
-  // Content ------------------------------------------------------------
+  /** Pan to the location, keeping the zoom */
+  panTo(location: MapLatLng): void;
 
-  /**
-   * Place an HTML element on the map. The element is owned by the caller;
-   * the engine positions it and, for interactive markers, makes it
-   * focusable.
-   */
+  /** Whether the location is inside the current viewport */
+  containsLocation(location: MapLatLng): boolean;
+
+  /** Place a caller-owned element on the map */
   addMarker(
     element: HTMLElement,
     location: MapLatLng,
@@ -175,33 +216,87 @@ export interface MapEngine {
   /** Draw a meter-radius circle (zone radius) */
   addCircle(center: MapLatLng, options: MapCircleOptions): MapItemHandle;
 
+  /** Editing support, MapLibre only; undefined on the Leaflet fallback */
+  editing?: MapEditingSupport;
+
   /** Draw one history trail (points with tooltips, connecting segments) */
   addPath(path: MapPath): MapItemHandle;
 
-  /**
-   * Enable or disable clustering of the markers added with cluster: true.
-   * Must be called after each batch of addMarker calls to place clusterable
-   * markers on the map; null places them unclustered.
-   */
+  /** Cluster the markers added with cluster: true; call after each batch of addMarker calls */
   setClustering(options: MapClusterOptions | null): void;
 
   /** Rebuild cluster icons without regrouping (e.g. after a style change) */
   refreshClusters(): void;
 }
 
+const EARTH_RADIUS = 6371008.8;
+
+const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
+const toDegrees = (radians: number) => (radians * 180) / Math.PI;
+
 /**
- * Bounding box corners of a circle, for fitting a radius into view without
- * engine-specific circle bounds.
+ * The point a distance away from center along a bearing (degrees clockwise
+ * from north), on the great circle. Longitude is left unwrapped so a ring of
+ * points stays continuous across the antimeridian.
+ */
+export const destinationPoint = (
+  center: MapLatLng,
+  distanceInMeters: number,
+  bearingDegrees: number
+): MapLatLng => {
+  const angular = distanceInMeters / EARTH_RADIUS;
+  const lat = toRadians(center[0]);
+  const bearing = toRadians(bearingDegrees);
+  const destLat = Math.asin(
+    Math.sin(lat) * Math.cos(angular) +
+      Math.cos(lat) * Math.sin(angular) * Math.cos(bearing)
+  );
+  const dLng = Math.atan2(
+    Math.sin(bearing) * Math.sin(angular) * Math.cos(lat),
+    Math.cos(angular) - Math.sin(lat) * Math.sin(destLat)
+  );
+  return [toDegrees(destLat), center[1] + toDegrees(dLng)];
+};
+
+/** Great-circle distance in meters */
+export const distanceMeters = (a: MapLatLng, b: MapLatLng): number => {
+  const dLat = toRadians(b[0] - a[0]);
+  const dLng = toRadians(b[1] - a[1]);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(a[0])) *
+      Math.cos(toRadians(b[0])) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(h));
+};
+
+/** The point the given distance due east of center, e.g. for a resize handle */
+export const pointEastOf = (
+  center: MapLatLng,
+  distanceInMeters: number
+): MapLatLng => destinationPoint(center, distanceInMeters, 90);
+
+/**
+ * Bounding box corners of a circle, for fitting a radius into view. A circle
+ * that reaches a pole spans every longitude.
  */
 export const circleBoundsPoints = (
   center: MapLatLng,
   radiusMeters: number
 ): MapLatLng[] => {
-  const latOffset = radiusMeters / 111320;
-  const lngOffset =
-    latOffset / Math.max(Math.cos((center[0] * Math.PI) / 180), 0.01);
+  const angular = radiusMeters / EARTH_RADIUS;
+  const latMin = Math.max(-90, center[0] - toDegrees(angular));
+  const latMax = Math.min(90, center[0] + toDegrees(angular));
+  const sinRatio = Math.sin(angular) / Math.cos(toRadians(center[0]));
+  if (latMin <= -90 || latMax >= 90 || Math.abs(sinRatio) >= 1) {
+    return [
+      [latMin, -180],
+      [latMax, 180],
+    ];
+  }
+  const dLng = toDegrees(Math.asin(sinRatio));
   return [
-    [center[0] - latOffset, center[1] - lngOffset],
-    [center[0] + latOffset, center[1] + lngOffset],
+    [latMin, center[1] - dLng],
+    [latMax, center[1] + dLng],
   ];
 };
