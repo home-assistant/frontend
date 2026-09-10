@@ -27,12 +27,24 @@ export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   cards?: LovelaceCardConfig[];
 }
 
+export interface LovelaceStackSectionConfig extends LovelaceSectionConfig {
+  type: "stack";
+  sections: LovelaceSectionRawConfig[];
+}
+
+export const isStackSection = (
+  section: LovelaceSectionRawConfig
+): section is LovelaceStackSectionConfig =>
+  "type" in section && section.type === "stack";
+
 export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig {
   strategy: LovelaceStrategyConfig;
 }
 
 export type LovelaceSectionRawConfig =
-  LovelaceSectionConfig | LovelaceStrategySectionConfig;
+  | LovelaceSectionConfig
+  | LovelaceStrategySectionConfig
+  | LovelaceStackSectionConfig;
 
 export function resolveSectionBackground(
   background: boolean | LovelaceSectionBackgroundConfig | undefined

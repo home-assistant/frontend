@@ -7,6 +7,11 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
 
 declare global {
+  interface HTMLElement {
+    /** Data returned by ha-sortable when this item moves to another container. */
+    sortableData?: unknown;
+  }
+
   interface HASSDomEvents {
     "item-moved": {
       oldIndex: number;

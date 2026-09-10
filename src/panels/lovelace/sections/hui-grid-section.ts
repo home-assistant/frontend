@@ -18,7 +18,10 @@ import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type {
+  LovelaceCardPath,
+  LovelaceSectionPath,
+} from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
@@ -47,6 +50,12 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   @property({ type: Number }) public index?: number;
 
   @property({ attribute: false }) public viewIndex?: number;
+
+  @property({ attribute: false }) public sectionPath?: LovelaceSectionPath;
+
+  private get _path(): LovelaceSectionPath {
+    return this.sectionPath ?? [this.viewIndex!, this.index!];
+  }
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -110,11 +119,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
               const { rows, columns } = computeCardGridSize(gridOptions);
 
-              const cardPath: LovelaceCardPath = [
-                this.viewIndex!,
-                this.index!,
-                idx,
-              ];
+              const cardPath: LovelaceCardPath = [...this._path, idx];
               return html`
                 <div
                   style=${styleMap({
@@ -176,16 +181,17 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
     const { oldIndex, newIndex } = ev.detail;
     const newConfig = moveCard(
       this.lovelace!.config,
-      [this.viewIndex!, this.index!, oldIndex],
-      [this.viewIndex!, this.index!, newIndex]
+      [...this._path, oldIndex],
+      [...this._path, newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
 
   private _cardAdded(ev) {
+    ev.stopPropagation();
     const { index, data } = ev.detail;
     const oldPath = data as LovelaceCardPath;
-    const newPath = [this.viewIndex!, this.index!, index] as LovelaceCardPath;
+    const newPath = [...this._path, index] as LovelaceCardPath;
     const newConfig = moveCard(this.lovelace!.config, oldPath, newPath);
     this.lovelace!.saveConfig(newConfig);
   }
