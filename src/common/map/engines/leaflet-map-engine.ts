@@ -186,6 +186,11 @@ export class LeafletMapEngine implements MapEngine {
     this.leafletMap.fitBounds(bounds, {
       maxZoom: options?.maxZoom,
       animate: options?.animate,
+      paddingTopLeft: [options?.padding?.left ?? 0, options?.padding?.top ?? 0],
+      paddingBottomRight: [
+        options?.padding?.right ?? 0,
+        options?.padding?.bottom ?? 0,
+      ],
     });
   }
 

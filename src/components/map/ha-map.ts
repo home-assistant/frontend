@@ -18,7 +18,9 @@ import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsWebGL2 } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
+  MapControlPosition,
   MapEngine,
+  MapFitPadding,
   MapItemHandle,
   MapLatLng,
   MapMarkerHandle,
@@ -300,6 +302,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
+  @property({ attribute: "zoom-position" })
+  public zoomPosition: MapControlPosition = "topleft";
+
   private _zonePositions: Record<string, MapLatLng> = {};
 
   @property({ attribute: "theme-mode", type: String })
@@ -462,6 +467,10 @@ export class HaMap extends ReactiveElement {
       this._drawEntities();
     }
 
+    if (changedProps.has("zoomPosition")) {
+      this._engine?.setZoomControlPosition(this.zoomPosition);
+    }
+
     const oldConfig = changedProps.get("_config") as HassConfig | undefined;
     if (
       changedProps.has("_loaded") ||
@@ -608,7 +617,7 @@ export class HaMap extends ReactiveElement {
         darkMode: this._darkMode,
         token,
         rasterOnly: this._forceLeaflet,
-        zoomControlPosition: "topleft",
+        zoomControlPosition: this.zoomPosition,
         events: {
           click: (location) => this._handleEngineClick(location),
           zoomStart: () => {
@@ -793,8 +802,11 @@ export class HaMap extends ReactiveElement {
 
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number }
+    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
   ) {
+    // An explicit fit is user intent, even while it waits for the engine or
+    // a size; an auto-fit must not take its place in the meantime
+    this._pauseAutoFit = true;
     if (!this._engine) {
       // Engine still loading (see _loadMap); runs once it is
       this._pendingFit = () => this.fitBounds(boundingbox, options);
@@ -808,6 +820,7 @@ export class HaMap extends ReactiveElement {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
+        padding: options?.padding,
       });
     });
     this._hasFitted = true;
@@ -1496,6 +1509,11 @@ export class HaMap extends ReactiveElement {
       top: 0;
       left: 0;
     }
+    .maplibregl-ctrl-bottom-left,
+    .maplibregl-ctrl-bottom-right {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
     .dark .maplibregl-ctrl.maplibregl-ctrl-group {
       background-color: #1c1c1c;
     }
@@ -1593,6 +1611,10 @@ export class HaMap extends ReactiveElement {
       --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
+    .leaflet-bottom {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
     .leaflet-control,
     .leaflet-top,
     .leaflet-bottom {
