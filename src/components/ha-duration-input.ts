@@ -103,69 +103,87 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
+  // Fold units we do not render into the smallest unit we do, so a value the
+  // user cannot see is not silently dropped on the next edit.
+  private get _data(): HaDurationData | undefined {
+    if (!this.data) {
+      return this.data;
+    }
+    const data = { ...this.data };
+    if (!this.enableDay && data.days) {
+      data.hours = (data.hours || 0) + data.days * 24;
+      delete data.days;
+    }
+    if (!this.enableMillisecond && data.milliseconds) {
+      data.seconds = (data.seconds || 0) + data.milliseconds / 1000;
+      delete data.milliseconds;
+    }
+    return data;
+  }
+
   private get _negative() {
     return (
       this._toggleNegative ||
-      (this.data?.days
-        ? this.data.days < 0
-        : this.data?.hours
-          ? this.data.hours < 0
-          : this.data?.minutes
-            ? this.data.minutes < 0
-            : this.data?.seconds
-              ? this.data.seconds < 0
-              : this.data?.milliseconds
-                ? this.data.milliseconds < 0
+      (this._data?.days
+        ? this._data.days < 0
+        : this._data?.hours
+          ? this._data.hours < 0
+          : this._data?.minutes
+            ? this._data.minutes < 0
+            : this._data?.seconds
+              ? this._data.seconds < 0
+              : this._data?.milliseconds
+                ? this._data.milliseconds < 0
                 : false)
     );
   }
 
   private get _days() {
-    return this.data?.days
+    return this._data?.days
       ? this.allowNegative
-        ? Math.abs(Number(this.data.days))
-        : Number(this.data.days)
-      : this.required || this.data
+        ? Math.abs(Number(this._data.days))
+        : Number(this._data.days)
+      : this.required || this._data
         ? 0
         : NaN;
   }
 
   private get _hours() {
-    return this.data?.hours
+    return this._data?.hours
       ? this.allowNegative
-        ? Math.abs(Number(this.data.hours))
-        : Number(this.data.hours)
-      : this.required || this.data
+        ? Math.abs(Number(this._data.hours))
+        : Number(this._data.hours)
+      : this.required || this._data
         ? 0
         : NaN;
   }
 
   private get _minutes() {
-    return this.data?.minutes
+    return this._data?.minutes
       ? this.allowNegative
-        ? Math.abs(Number(this.data.minutes))
-        : Number(this.data.minutes)
-      : this.required || this.data
+        ? Math.abs(Number(this._data.minutes))
+        : Number(this._data.minutes)
+      : this.required || this._data
         ? 0
         : NaN;
   }
 
   private get _seconds() {
-    return this.data?.seconds
+    return this._data?.seconds
       ? this.allowNegative
-        ? Math.abs(Number(this.data.seconds))
-        : Number(this.data.seconds)
-      : this.required || this.data
+        ? Math.abs(Number(this._data.seconds))
+        : Number(this._data.seconds)
+      : this.required || this._data
         ? 0
         : NaN;
   }
 
   private get _milliseconds() {
-    return this.data?.milliseconds
+    return this._data?.milliseconds
       ? this.allowNegative
-        ? Math.abs(Number(this.data.milliseconds))
-        : Number(this.data.milliseconds)
-      : this.required || this.data
+        ? Math.abs(Number(this._data.milliseconds))
+        : Number(this._data.milliseconds)
+      : this.required || this._data
         ? 0
         : NaN;
   }
@@ -236,8 +254,8 @@ export class HaDurationInput extends LitElement {
     ev.stopPropagation();
     const negative = (ev.detail?.value || ev.target.value) === "-";
     this._toggleNegative = negative;
-    if (this.data) {
-      const value = { ...this.data };
+    if (this._data) {
+      const value = { ...this._data };
       FIELDS.forEach((t) => {
         if (value[t]) {
           value[t] = negative ? -Math.abs(value[t]) : Math.abs(value[t]);
