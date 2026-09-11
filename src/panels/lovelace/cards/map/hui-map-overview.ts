@@ -1,10 +1,6 @@
 import { consume } from "@lit/context";
 import { mdiHistory } from "@mdi/js";
-import type {
-  HassConfig,
-  HassEntities,
-  HassEntity,
-} from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -12,8 +8,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { zoneColor } from "../../../../common/map/entity-map-colors";
 import { contrastingZoneContent } from "../../../../common/map/zone-marker";
-import { formatTime } from "../../../../common/datetime/format_time";
-import { transform } from "../../../../common/decorators/transform";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -27,11 +21,12 @@ import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
+import "../../../logbook/ha-logbook-entry";
+import type { LogbookEntry } from "../../../../data/logbook";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
 import {
   apiContext,
-  configContext,
   connectionContext,
   formattersContext,
   fullEntitiesContext,
@@ -43,8 +38,8 @@ import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
 import type {
+  HomeAssistant,
   HomeAssistantApi,
-  HomeAssistantConfig,
   HomeAssistantConnection,
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
@@ -66,6 +61,9 @@ declare global {
 export class HuiMapOverview extends LitElement {
   @property({ attribute: false }) public entities: HaMapEntity[] = [];
 
+  // Only handed to ha-logbook-entry, which takes the broad object
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ attribute: false }) public selected?: string;
 
   @state()
@@ -83,13 +81,6 @@ export class HuiMapOverview extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: HomeAssistantConnection;
-
-  @state()
-  @consume({ context: configContext, subscribe: true })
-  @transform<HomeAssistantConfig, HassConfig>({
-    transformer: ({ config }) => config,
-  })
-  private _config!: HassConfig;
 
   @state()
   @consume({ context: apiContext, subscribe: true })
@@ -390,52 +381,47 @@ export class HuiMapOverview extends LitElement {
                         : "ui.panel.lovelace.cards.map.overview.no_activity"
                     )}
                   </span>`
-                : html`<ol class="timeline">
-                    ${this._activity.map((entry) =>
-                      this._renderActivityEntry(stateObj, entry)
+                : html`<div class="timeline">
+                    ${this._activity.map((entry, index) =>
+                      this._renderActivityEntry(
+                        stateObj,
+                        entry,
+                        index === this._activity!.length - 1
+                      )
                     )}
-                  </ol>`
+                  </div>`
           }
         </div>
       </div>
     `;
   }
 
-  private _renderActivityEntry(stateObj: HassEntity, entry: ActivityEntry) {
-    const person = entry.personId ? this._states[entry.personId] : undefined;
-
+  // A logbook row: the person, the zone they are in now, and when. On the
+  // zone tab the row belongs to the person who arrived or left.
+  private _renderActivityEntry(
+    stateObj: HassEntity,
+    entry: ActivityEntry,
+    last: boolean
+  ) {
+    if (!this.hass) {
+      return nothing;
+    }
+    const entityId = entry.personId ?? stateObj.entity_id;
+    const subject = this._states[entityId];
+    const item: LogbookEntry = {
+      when: entry.when.getTime() / 1000,
+      name: subject ? computeStateName(subject) : entityId,
+      entity_id: entityId,
+      state: entry.state,
+    };
     return html`
-      <li>
-        <span
-          class="dot ${classMap({
-            home: entry.personId ? !!entry.arrived : entry.state === "home",
-            away: entry.personId
-              ? !entry.arrived
-              : entry.state === "not_home" || entry.state === "unknown",
-          })}"
-        ></span>
-        <span class="entry-state">
-          ${
-            entry.personId
-              ? this._i18n.localize(
-                  `ui.panel.lovelace.cards.map.overview.${
-                    entry.arrived ? "person_arrived" : "person_left"
-                  }`,
-                  {
-                    name: person ? computeStateName(person) : entry.personId,
-                  }
-                )
-              : this._formatters.formatEntityState(stateObj, entry.state)
-          }
-        </span>
-        <span class="entry-time">
-          ${formatTime(entry.when, this._i18n.locale, this._config)} ·
-          <ha-relative-time
-            .datetime=${entry.when}
-            format="short"
-          ></ha-relative-time>
-        </span>
-      </li>
+      <ha-logbook-entry
+        .hass=${this.hass}
+        .item=${item}
+        .lastOfDay=${last}
+        narrow
+        no-detail
+      ></ha-logbook-entry>
     `;
   }
 
@@ -902,58 +888,7 @@ export class HuiMapOverview extends LitElement {
     }
 
     .timeline {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .timeline li {
-      position: relative;
-      padding-inline-start: var(--ha-space-6);
-      padding-bottom: var(--ha-space-4);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .timeline li:last-child {
-      padding-bottom: 0;
-    }
-
-    .timeline li:not(:last-child)::after {
-      content: "";
-      position: absolute;
-      inset-inline-start: 5px;
-      top: 16px;
-      bottom: 2px;
-      width: 2px;
-      background: var(--divider-color);
-    }
-
-    .dot {
-      position: absolute;
-      inset-inline-start: 0;
-      top: 4px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--accent-color);
-    }
-
-    .dot.home {
-      background: var(--success-color);
-    }
-
-    .dot.away {
-      background: var(--secondary-text-color);
-    }
-
-    .entry-state {
-      font-weight: var(--ha-font-weight-medium);
-    }
-
-    .entry-time {
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
+      margin-top: var(--ha-space-2);
     }
 
     @media (max-width: 600px) {
