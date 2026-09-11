@@ -356,6 +356,24 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("settings");
   }
 
+  private _computeViewTitle(): string | undefined {
+    switch (this._currView) {
+      case "details":
+        return this.hass.localize("ui.dialogs.more_info_control.details");
+      case "related":
+        return this.hass.localize("ui.dialogs.more_info_control.related");
+      case "add_to":
+        return this.hass.localize("ui.dialogs.more_info_control.add_to.item");
+      case "settings":
+        return (
+          this._childView?.viewTitle ||
+          this.hass.localize("ui.dialogs.more_info_control.settings")
+        );
+      default:
+        return this._childView?.viewTitle;
+    }
+  }
+
   private _showChildView(ev: CustomEvent): void {
     this._pushChildView(ev.detail as ChildView);
   }
@@ -599,16 +617,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const viewTitle =
-      this._currView === "details"
-        ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "related"
-          ? this.hass.localize("ui.dialogs.more_info_control.related")
-          : this._currView === "settings"
-            ? this.hass.localize("ui.dialogs.more_info_control.settings")
-            : this._currView === "add_to"
-              ? addToMenuItem
-              : this._childView?.viewTitle;
+    const viewTitle = this._computeViewTitle();
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
       breadcrumb.pop();
