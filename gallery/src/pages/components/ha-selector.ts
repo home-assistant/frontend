@@ -323,6 +323,9 @@ const SERIAL_PORTS: SerialPort[] = [
     device: "esphome-hass://01JQ8Z5X9WQ0/?port_name=UART0",
   }),
   serialPort({
+    device: "socket://192.168.1.10:6638",
+  }),
+  serialPort({
     device: "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AB0KVD1L-if00-port0",
     description: "FT232R USB UART",
     manufacturer: "FTDI",
