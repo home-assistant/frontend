@@ -568,6 +568,20 @@
         "background": {
           "yaml_info": "Background image is set via YAML editor."
         },
+        "duration": {
+          "duration": "Duration",
+          "offset": {
+            "none": "No offset",
+            "before": "Before",
+            "after": "After"
+          },
+          "summary": {
+            "offset_negative": "{duration} before",
+            "offset_positive": "{duration} after",
+            "signed_negative": "-{duration}",
+            "signed_positive": "+{duration}"
+          }
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",

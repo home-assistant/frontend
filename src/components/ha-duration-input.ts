@@ -1,14 +1,14 @@
-import { mdiMinusThick, mdiPlusThick } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { normalizeDuration } from "../common/datetime/normalize_duration";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ValueChangedEvent } from "../types";
 import "./ha-base-time-input";
 import type { HaBaseTimeInput, TimeChangedEvent } from "./ha-base-time-input";
-import "./ha-button-toggle-group";
 
 export interface HaDurationData {
+  negative?: boolean;
   days?: number;
   hours?: number;
   minutes?: number;
@@ -44,8 +44,6 @@ export class HaDurationInput extends LitElement {
 
   @query("ha-base-time-input", true) private _input?: HaBaseTimeInput;
 
-  private _toggleNegative = false;
-
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
@@ -56,24 +54,12 @@ export class HaDurationInput extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const data =
+      this.data && this.allowNegative
+        ? normalizeDuration(this.data)
+        : this.data;
     return html`
       <div class="row">
-        ${
-          this.allowNegative
-            ? html`
-                <ha-button-toggle-group
-                  size="s"
-                  .buttons=${[
-                    { label: "+", iconPath: mdiPlusThick, value: "+" },
-                    { label: "-", iconPath: mdiMinusThick, value: "-" },
-                  ]}
-                  .active=${this._negative ? "-" : "+"}
-                  .disabled=${this.disabled}
-                  @value-changed=${this._negativeChanged}
-                ></ha-button-toggle-group>
-              `
-            : nothing
-        }
         <ha-base-time-input
           .label=${this.label}
           .helper=${this.helper}
@@ -85,12 +71,14 @@ export class HaDurationInput extends LitElement {
           .enableSecond=${this.enableSecond}
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
+          .enableSign=${this.allowNegative}
+          .negative=${!!data?.negative}
           format="24"
-          .days=${this._days}
-          .hours=${this._hours}
-          .minutes=${this._minutes}
-          .seconds=${this._seconds}
-          .milliseconds=${this._milliseconds}
+          .days=${this._component(data, "days")}
+          .hours=${this._component(data, "hours")}
+          .minutes=${this._component(data, "minutes")}
+          .seconds=${this._component(data, "seconds")}
+          .milliseconds=${this._component(data, "milliseconds")}
           @value-changed=${this._durationChanged}
           no-hours-limit
           day-label="dd"
@@ -103,77 +91,22 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
-  private get _negative() {
-    return (
-      this._toggleNegative ||
-      (this.data?.days
-        ? this.data.days < 0
-        : this.data?.hours
-          ? this.data.hours < 0
-          : this.data?.minutes
-            ? this.data.minutes < 0
-            : this.data?.seconds
-              ? this.data.seconds < 0
-              : this.data?.milliseconds
-                ? this.data.milliseconds < 0
-                : false)
-    );
-  }
-
-  private get _days() {
-    return this.data?.days
-      ? this.allowNegative
-        ? Math.abs(Number(this.data.days))
-        : Number(this.data.days)
-      : this.required || this.data
-        ? 0
-        : NaN;
-  }
-
-  private get _hours() {
-    return this.data?.hours
-      ? this.allowNegative
-        ? Math.abs(Number(this.data.hours))
-        : Number(this.data.hours)
-      : this.required || this.data
-        ? 0
-        : NaN;
-  }
-
-  private get _minutes() {
-    return this.data?.minutes
-      ? this.allowNegative
-        ? Math.abs(Number(this.data.minutes))
-        : Number(this.data.minutes)
-      : this.required || this.data
-        ? 0
-        : NaN;
-  }
-
-  private get _seconds() {
-    return this.data?.seconds
-      ? this.allowNegative
-        ? Math.abs(Number(this.data.seconds))
-        : Number(this.data.seconds)
-      : this.required || this.data
-        ? 0
-        : NaN;
-  }
-
-  private get _milliseconds() {
-    return this.data?.milliseconds
-      ? this.allowNegative
-        ? Math.abs(Number(this.data.milliseconds))
-        : Number(this.data.milliseconds)
-      : this.required || this.data
-        ? 0
-        : NaN;
+  private _component(
+    data: HaDurationData | undefined,
+    field: keyof HaDurationData
+  ): number {
+    const amount = data?.[field];
+    if (amount) {
+      return Number(amount);
+    }
+    return this.required || data ? 0 : NaN;
   }
 
   private _durationChanged(
     ev: ValueChangedEvent<TimeChangedEvent | undefined>
   ) {
     ev.stopPropagation();
+    const negative = ev.detail.value?.negative ?? false;
     const value = ev.detail.value ? { ...ev.detail.value } : undefined;
 
     if (value) {
@@ -217,45 +150,23 @@ export class HaDurationInput extends LitElement {
         value.days = (value.days ?? 0) + Math.floor(value.hours / 24);
         value.hours %= 24;
       }
-
-      if (this._negative) {
-        FIELDS.forEach((t) => {
-          if (value[t]) {
-            value[t] = -Math.abs(value[t]);
-          }
-        });
-      }
     }
 
     fireEvent(this, "value-changed", {
-      value,
+      value:
+        value && this.allowNegative ? this._withSign(value, negative) : value,
     });
   }
 
-  private _negativeChanged(ev) {
-    ev.stopPropagation();
-    const negative = (ev.detail?.value || ev.target.value) === "-";
-    this._toggleNegative = negative;
-    if (this.data) {
-      const value = { ...this.data };
-      FIELDS.forEach((t) => {
-        if (value[t]) {
-          value[t] = negative ? -Math.abs(value[t]) : Math.abs(value[t]);
-        }
-      });
-      fireEvent(this, "value-changed", {
-        value,
-      });
-    }
+  private _withSign(value: HaDurationData, negative: boolean): HaDurationData {
+    const { negative: _negative, ...components } = normalizeDuration(value);
+    return negative ? { negative: true, ...components } : components;
   }
 
   static styles = css`
     .row {
       display: flex;
       align-items: center;
-    }
-    ha-button-toggle-group {
-      margin: var(--ha-space-2);
     }
   `;
 }

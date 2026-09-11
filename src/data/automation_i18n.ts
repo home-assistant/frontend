@@ -10,6 +10,7 @@ import {
   formatTime,
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
+import { normalizeDuration } from "../common/datetime/normalize_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -871,8 +872,9 @@ const formatSunOffset = (
     return offset;
   }
   try {
-    const formatted = formatDurationDigital(hass.locale, offset);
-    return formatted.startsWith("-") ? formatted : `+${formatted}`;
+    const { negative, ...components } = normalizeDuration(offset);
+    const formatted = formatDurationDigital(hass.locale, components);
+    return `${negative ? "-" : "+"}${formatted}`;
   } catch (_e) {
     return JSON.stringify(offset);
   }

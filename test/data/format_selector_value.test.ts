@@ -61,3 +61,78 @@ describe("formatSelectorValue", () => {
     expect(result).toContain("••••••••");
   });
 });
+
+describe("formatSelectorValue duration selector", () => {
+  const localizedHass = {
+    locale: { language: "en" },
+    localize: (key: string, values?: Record<string, unknown>) => {
+      const suffix = key.split("ui.components.selectors.duration.summary.")[1];
+      return {
+        offset_negative: `${values?.duration} before`,
+        offset_positive: `${values?.duration} after`,
+        signed_negative: `-${values?.duration}`,
+        signed_positive: `+${values?.duration}`,
+      }[suffix]!;
+    },
+  } as unknown as HomeAssistant;
+
+  it("formats a positive duration without a sign", () => {
+    expect(
+      formatSelectorValue(
+        localizedHass,
+        { hours: 1, minutes: 30 },
+        { duration: {} }
+      )
+    ).toBe("1 hour, 30 minutes");
+  });
+
+  it("formats signed durations with an explicit sign", () => {
+    expect(
+      formatSelectorValue(
+        localizedHass,
+        { negative: true, minutes: 30 },
+        { duration: { mode: "signed" } }
+      )
+    ).toBe("-30 minutes");
+    expect(
+      formatSelectorValue(localizedHass, "00:30:00", {
+        duration: { allow_negative: true },
+      })
+    ).toBe("+30 minutes");
+  });
+
+  it("formats offsets as before or after", () => {
+    expect(
+      formatSelectorValue(
+        localizedHass,
+        { negative: true, hours: 1, minutes: 30 },
+        { duration: { mode: "offset" } }
+      )
+    ).toBe("1 hour, 30 minutes before");
+    expect(
+      formatSelectorValue(localizedHass, "-00:10:00", {
+        duration: { mode: "offset" },
+      })
+    ).toBe("10 minutes before");
+    expect(
+      formatSelectorValue(localizedHass, 45, { duration: { mode: "offset" } })
+    ).toBe("45 seconds after");
+    expect(
+      formatSelectorValue(
+        localizedHass,
+        { minutes: -5 },
+        { duration: { mode: "offset" } }
+      )
+    ).toBe("5 minutes before");
+  });
+
+  it("returns an empty string for a zero offset", () => {
+    expect(
+      formatSelectorValue(
+        localizedHass,
+        { hours: 0, minutes: 0, seconds: 0 },
+        { duration: { mode: "offset" } }
+      )
+    ).toBe("");
+  });
+});
