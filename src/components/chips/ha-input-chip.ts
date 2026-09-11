@@ -1,45 +1,46 @@
-import { InputChip } from "@material/web/chips/internal/input-chip";
-import { styles } from "@material/web/chips/internal/input-styles.cssresult.js";
-import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles.cssresult.js";
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
-import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles.cssresult.js";
+import type { CSSResultGroup } from "lit";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
+import { HaChipBase } from "./ha-chip-base";
 
 @customElement("ha-input-chip")
-export class HaInputChip extends InputChip {
-  static override styles = [
-    sharedStyles,
-    trailingIconStyles,
-    selectableStyles,
-    styles,
-    css`
-      :host {
-        max-width: 100%;
-        --md-sys-color-primary: var(--primary-text-color);
-        --md-sys-color-on-surface: var(--primary-text-color);
-        --md-sys-color-on-surface-variant: var(--primary-text-color);
-        --md-sys-color-on-secondary-container: var(--primary-text-color);
-        --md-input-chip-container-shape: 16px;
-        --md-input-chip-outline-color: var(--outline-color);
-        --md-input-chip-selected-container-color: rgba(
-          var(--rgb-primary-text-color),
-          0.15
-        );
-        --ha-input-chip-selected-container-opacity: 1;
-        --md-input-chip-label-text-font: Roboto, sans-serif;
-        --md-input-chip-label-text-weight: 400;
-      }
-      /** Set the size of mdc icons **/
-      ::slotted([slot="icon"]) {
-        display: flex;
-        --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
-      }
-      .selected::before {
-        opacity: var(--ha-input-chip-selected-container-opacity);
-      }
-    `,
-  ];
+export class HaInputChip extends HaChipBase {
+  @property({ type: Boolean, reflect: true }) selected = false;
+
+  @property({ type: Boolean, reflect: true }) avatar = false;
+
+  override removable = true;
+
+  static override get styles(): CSSResultGroup {
+    return [
+      super.styles,
+      css`
+        :host {
+          --ha-button-border-radius: 16px;
+          --ha-chip-icon-size: var(--md-input-chip-icon-size, 18px);
+        }
+        :host([selected]) {
+          --ha-chip-container-color: var(
+            --md-input-chip-selected-container-color,
+            rgba(var(--rgb-primary-text-color), 0.15)
+          );
+          --ha-chip-outline-width: var(
+            --md-input-chip-selected-outline-width,
+            0px
+          );
+          --ha-chip-container-opacity: var(
+            --ha-input-chip-selected-container-opacity,
+            1
+          );
+        }
+        :host([avatar]) ::slotted([slot="icon"]) {
+          width: 24px;
+          height: 24px;
+          border-radius: var(--ha-border-radius-circle);
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
