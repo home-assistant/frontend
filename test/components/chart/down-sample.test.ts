@@ -462,6 +462,76 @@ describe("downSampleAlignedLineData", () => {
     expect(sampled[1]).toEqual(second);
   });
 
+  it("retains extrema of the displayed stack sum", () => {
+    const first: [number, number][] = [
+      [0, 0],
+      [1, 100],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ];
+    const second: [number, number][] = [
+      [0, 100],
+      [1, 0],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ];
+    const sampled = downSampleAlignedLineData([first, second], 1);
+    expect(sampled[0]).toEqual([
+      [0, 0],
+      [1, 100],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ]);
+    expect(sampled[1]).toEqual([
+      [0, 100],
+      [1, 0],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ]);
+  });
+
+  it.each([1, -1])(
+    "keeps intermediate stack extrema across gaps (sign %s)",
+    (sign) => {
+      const values = [
+        [0, 100, 60, 0, 0],
+        [100, 0, 60, 0, 0],
+        [null, null, null, null, null],
+        [100, 100, 80, 100, 100],
+      ];
+      const data = values.map((row) =>
+        row.map((value, x): [number, number | null] => [
+          x,
+          value === null ? null : sign * value,
+        ])
+      );
+      const sampled = downSampleAlignedLineData(data, 1);
+      // The intermediate level peaks at 120 although the final level stays 200.
+      expect(sampled[0]).toContainEqual([2, sign * 60]);
+      expect(sampled[1]).toContainEqual([2, sign * 60]);
+    }
+  );
+
+  it.each(["all", "positive", "negative"] as const)(
+    "respects the %s stack strategy",
+    (strategy) => {
+      const sign = strategy === "negative" ? -1 : 1;
+      const data: [number, number][][] = [
+        [0, 100, 60, 0, 0].map((value, x) => [x, sign * value]),
+        [100, 0, 60, 0, 0].map((value, x) => [x, sign * value]),
+      ];
+      const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+        strategy,
+        strategy,
+      ]);
+      expect(sampled[0]).toContainEqual([2, sign * 60]);
+    }
+  );
+
   it("does not align mismatched series by corrupting their data", () => {
     const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
       x,

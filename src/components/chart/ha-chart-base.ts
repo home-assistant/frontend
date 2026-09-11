@@ -1228,7 +1228,10 @@ export class HaChartBase extends LitElement {
             dataSets,
             (this.clientWidth || DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
             min,
-            max
+            max,
+            indexes.map(
+              (index) => (series[index] as LineSeriesOption).stackStrategy
+            )
           )
         : dataSets.map((data) =>
             downSampleLineData(

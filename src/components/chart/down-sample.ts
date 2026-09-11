@@ -5,6 +5,10 @@ export type Point = NonNullable<LineSeriesOption["data"]>[number];
 interface AlignedFrame {
   min: (number | undefined)[];
   max: (number | undefined)[];
+  stackMin: (number | undefined)[];
+  stackMax: (number | undefined)[];
+  stackMinIndex: (number | undefined)[];
+  stackMaxIndex: (number | undefined)[];
 }
 
 interface MeanFrame {
@@ -241,7 +245,8 @@ export function downSampleAlignedLineData(
   dataSets: readonly Point[][],
   maxDetails: number,
   minX?: number,
-  maxX?: number
+  maxX?: number,
+  stackStrategies: readonly LineSeriesOption["stackStrategy"][] = []
 ): Point[][] {
   if (!dataSets.length || dataSets.some((data) => !data.length)) {
     return dataSets.map((data) => data.slice());
@@ -284,6 +289,10 @@ export function downSampleAlignedLineData(
         frame = {
           min: Array(dataSets.length),
           max: Array(dataSets.length),
+          stackMin: Array(dataSets.length),
+          stackMax: Array(dataSets.length),
+          stackMinIndex: Array(dataSets.length),
+          stackMaxIndex: Array(dataSets.length),
         };
         frames.set(frameIndex, frame);
       }
@@ -315,6 +324,61 @@ export function downSampleAlignedLineData(
       }
     }
   }
+  // Stacked ECharts lines display the cumulative value at each shared
+  // timestamp. Preserve extrema of that displayed sum as well as each member
+  // peak; otherwise a combined peak can disappear during reduction.
+  for (let pointIndex = 0; pointIndex < length; pointIndex++) {
+    const frameIndex = Math.floor(
+      Number(getPointData(dataSets[0][pointIndex])[0]) / step
+    );
+    const frame = frames.get(frameIndex);
+    if (!frame) continue;
+    // ECharts adds the nearest preceding cumulative value accepted by this
+    // member's strategy. Remember each sign to avoid rescanning the stack.
+    let previous: number | undefined;
+    let positive: number | undefined;
+    let negative: number | undefined;
+    let nonzero: number | undefined;
+    for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+      const raw = getPointData(dataSets[seriesIndex][pointIndex])[1];
+      let value = raw === null ? NaN : Number(raw);
+      const strategy = stackStrategies[seriesIndex] ?? "samesign";
+      const below =
+        strategy === "all"
+          ? previous
+          : strategy === "positive"
+            ? positive
+            : strategy === "negative"
+              ? negative
+              : value === 0
+                ? nonzero
+                : value > 0 && positive !== undefined
+                  ? positive
+                  : value <= 0
+                    ? negative
+                    : undefined;
+      if (below !== undefined) value += below;
+      previous = value;
+      if (value > 0) positive = value;
+      if (value < 0) negative = value;
+      if (value > 0 || value < 0) nonzero = value;
+      if (!Number.isFinite(value)) continue;
+      if (
+        frame.stackMin[seriesIndex] === undefined ||
+        value < frame.stackMin[seriesIndex]!
+      ) {
+        frame.stackMin[seriesIndex] = value;
+        frame.stackMinIndex[seriesIndex] = pointIndex;
+      }
+      if (
+        frame.stackMax[seriesIndex] === undefined ||
+        value > frame.stackMax[seriesIndex]!
+      ) {
+        frame.stackMax[seriesIndex] = value;
+        frame.stackMaxIndex[seriesIndex] = pointIndex;
+      }
+    }
+  }
   for (const frame of frames.values()) {
     for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
       const minIndex = frame.min[seriesIndex];
@@ -323,6 +387,9 @@ export function downSampleAlignedLineData(
         selected.add(minIndex);
         selected.add(maxIndex);
       }
+    }
+    for (const index of [...frame.stackMinIndex, ...frame.stackMaxIndex]) {
+      if (index !== undefined) selected.add(index);
     }
   }
   const indexes = [...selected].sort((a, b) => a - b);
