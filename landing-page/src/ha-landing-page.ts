@@ -9,6 +9,7 @@ import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
 import "../../src/components/progress/ha-progress-bar";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
+import { provideLiteI18nMixin } from "../../src/mixins/provide-lite-i18n-mixin";
 import "../../src/onboarding/onboarding-welcome-links";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import { haStyle } from "../../src/resources/styles";
@@ -28,7 +29,7 @@ const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 const SCHEDULE_FETCH_JOBS_INFO_SECONDS = 2;
 
 @customElement("ha-landing-page")
-class HaLandingPage extends LandingPageBaseElement {
+class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
   @property({ attribute: false }) public translationFragment = "landing-page";
 
   @state() private _supervisorError = false;
@@ -82,7 +83,6 @@ class HaLandingPage extends LandingPageBaseElement {
             networkIssue || this._networkInfoError
               ? html`
                   <landing-page-network
-                    .localize=${this.localize}
                     .networkInfo=${this._networkInfo}
                     .error=${this._networkInfoError}
                     @dns-set=${this._fetchSupervisorInfo}
@@ -103,13 +103,11 @@ class HaLandingPage extends LandingPageBaseElement {
               : nothing
           }
           <landing-page-logs
-            .localize=${this.localize}
             @landing-page-error=${this._showError}
           ></landing-page-logs>
         </div>
       </ha-card>
       <onboarding-welcome-links
-        .localize=${this.localize}
         .mobileApp=${this._mobileApp}
       ></onboarding-welcome-links>
       <div class="footer">
