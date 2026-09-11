@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { downSampleLineData } from "../../../src/components/chart/down-sample";
+import {
+  downSampleAlignedLineData,
+  downSampleLineData,
+} from "../../../src/components/chart/down-sample";
 import { digestResult } from "../../fixtures/digest";
 import { FIXED_EPOCH_MS, SCALES } from "../../fixtures/history-states";
 import { createSeededRandom } from "../../fixtures/random";
@@ -403,5 +406,87 @@ describe("downSampleLineData", () => {
         )
       )
     ).toMatchSnapshot();
+  });
+});
+
+describe("downSampleAlignedLineData", () => {
+  it("keeps stacked series aligned while preserving each series extrema and gaps", () => {
+    const first: [number, number | null][] = [];
+    const second: [number, number | null][] = [];
+    for (let index = 0; index < 600; index++) {
+      first.push([index, index === 211 ? 1000 : index === 350 ? null : index]);
+      second.push([
+        index,
+        index === 87 ? -100 : index === 351 ? null : 600 - index,
+      ]);
+    }
+    const sampled = downSampleAlignedLineData([first, second], 40);
+    expect((sampled[0] as [number, number | null][]).map(([x]) => x)).toEqual(
+      (sampled[1] as [number, number | null][]).map(([x]) => x)
+    );
+    expect(sampled[0]).toContainEqual([211, 1000]);
+    expect(sampled[1]).toContainEqual([87, -100]);
+    expect(sampled[0]).toContainEqual([350, null]);
+    expect(sampled[1]).toContainEqual([351, null]);
+    expect(sampled[0][0]).toEqual(first[0]);
+    expect(sampled[0][sampled[0].length - 1]).toEqual(first[first.length - 1]);
+    expect(sampled[0].length).toBeLessThanOrEqual(40 * 2 * 2 + 2);
+  });
+
+  it("bounds long null runs while retaining both sides of gap transitions", () => {
+    const first: [number, number | null][] = Array.from(
+      { length: 100000 },
+      (_, i) => [i, i < 100 || i > 99900 ? 1 : null]
+    );
+    const second: [number, number | null][] = first.map(([x]) => [x, 2]);
+    const sampled = downSampleAlignedLineData([first, second], 40);
+    expect(sampled[0].length).toBeLessThan(200);
+    for (const index of [99, 100, 99900, 99901]) {
+      expect(sampled[0]).toContainEqual(first[index]);
+    }
+    expect(sampled[0].length).toBe(sampled[1].length);
+  });
+
+  it("keeps duplicate-time value/null boundaries inside one sampling frame", () => {
+    const first: [number, number | null][] = [
+      [0, 10],
+      [1, 10],
+      [1, null],
+      [2, null],
+      [2, 20],
+      [3, 20],
+    ];
+    const second: [number, number | null][] = first.map(([x]) => [x, 30]);
+    const sampled = downSampleAlignedLineData([first, second], 1);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
+  });
+
+  it("does not align mismatched series by corrupting their data", () => {
+    const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const second: [number, number][] = Array.from({ length: 199 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const sampled = downSampleAlignedLineData([first, second], 20);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
+  });
+
+  it("does not align equal-length series with different timestamps", () => {
+    const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const second: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x + 1,
+      x,
+    ]);
+    const sampled = downSampleAlignedLineData([first, second], 20);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
   });
 });

@@ -441,7 +441,8 @@ export function generateStatisticsChartData(
       stackedLineStatistics.has(statistic_id)
     ) {
       statDataSets.forEach((dataset) => {
-        dataset.sampling = undefined;
+        // ha-chart-base samples aligned members together before rendering.
+        dataset.sampling = "minmax";
         dataset.data = stackedLineTimeline.flatMap(([time, slots]) =>
           Array.from({ length: slots }, () => [time, null])
         );

@@ -1,6 +1,11 @@
 import type { LineSeriesOption } from "echarts";
 
-type Point = NonNullable<LineSeriesOption["data"]>[number];
+export type Point = NonNullable<LineSeriesOption["data"]>[number];
+
+interface AlignedFrame {
+  min: (number | undefined)[];
+  max: (number | undefined)[];
+}
 
 interface MeanFrame {
   sumX: number;
@@ -224,6 +229,104 @@ export function downSampleLineData<
   }
 
   return result;
+}
+
+/**
+ * Downsample aligned line series with one shared index set. Stacked ECharts
+ * lines cannot be sampled independently because their values are combined by
+ * index. Every member contributes its extrema and gap markers to the shared
+ * set; the resulting point arrays therefore remain index-aligned.
+ */
+export function downSampleAlignedLineData(
+  dataSets: readonly Point[][],
+  maxDetails: number,
+  minX?: number,
+  maxX?: number
+): Point[][] {
+  if (!dataSets.length || dataSets.some((data) => !data.length)) {
+    return dataSets.map((data) => data.slice());
+  }
+  const length = dataSets[0].length;
+  if (
+    dataSets.some(
+      (data) =>
+        data.length !== length ||
+        data.some(
+          (point, index) =>
+            Number(getPointData(point)[0]) !==
+            Number(getPointData(dataSets[0][index])[0])
+        )
+    ) ||
+    length <= maxDetails
+  ) {
+    return dataSets.map((data) => data.slice());
+  }
+  const min = minX ?? Number(getPointData(dataSets[0][0])[0]);
+  const max = maxX ?? Number(getPointData(dataSets[0][length - 1])[0]);
+  const rawStep = Math.ceil((max - min) / Math.floor(maxDetails));
+  if (!Number.isFinite(rawStep) || rawStep <= 0) {
+    return dataSets.map((data) => data.slice());
+  }
+  const step = snapFrameSize(rawStep);
+  const selected = new Set<number>([0, length - 1]);
+  const frames = new Map<number, AlignedFrame>();
+  for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+    let previousNull: boolean | undefined;
+    for (let pointIndex = 0; pointIndex < length; pointIndex++) {
+      const point = dataSets[seriesIndex][pointIndex];
+      const pointData = getPointData(point);
+      if (!Array.isArray(pointData)) continue;
+      const x = Number(pointData[0]);
+      if (isNaN(x)) continue;
+      const frameIndex = Math.floor(x / step);
+      let frame = frames.get(frameIndex);
+      if (!frame) {
+        frame = {
+          min: Array(dataSets.length),
+          max: Array(dataSets.length),
+        };
+        frames.set(frameIndex, frame);
+      }
+      const y = pointData[1] as number | null;
+      const isNull = y === null;
+      // Keep both sides of each transition, including value/null pairs at
+      // the same timestamp, without retaining every padded null in a gap.
+      if (previousNull !== undefined && previousNull !== isNull) {
+        selected.add(pointIndex - 1);
+        selected.add(pointIndex);
+      }
+      previousNull = isNull;
+      if (isNull) continue;
+      const numericY = Number(y);
+      if (isNaN(numericY)) continue;
+      const minIndex = frame.min[seriesIndex];
+      const maxIndex = frame.max[seriesIndex];
+      if (
+        minIndex === undefined ||
+        numericY < Number(getPointData(dataSets[seriesIndex][minIndex])[1])
+      ) {
+        frame.min[seriesIndex] = pointIndex;
+      }
+      if (
+        maxIndex === undefined ||
+        numericY > Number(getPointData(dataSets[seriesIndex][maxIndex])[1])
+      ) {
+        frame.max[seriesIndex] = pointIndex;
+      }
+    }
+  }
+  for (const frame of frames.values()) {
+    for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+      const minIndex = frame.min[seriesIndex];
+      const maxIndex = frame.max[seriesIndex];
+      if (minIndex !== undefined && maxIndex !== undefined) {
+        selected.add(minIndex);
+        selected.add(maxIndex);
+      }
+    }
+  }
+  const indexes = [...selected].sort((a, b) => a - b);
+  return dataSets.map((data) => indexes.map((index) => data[index]));
 }
 
 function getPointData(point: NonNullable<LineSeriesOption["data"]>[number]) {

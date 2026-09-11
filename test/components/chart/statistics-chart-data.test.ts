@@ -5,7 +5,10 @@
  */
 import { describe, expect, it } from "vitest";
 import { generateStatisticsChartData } from "../../../src/components/chart/statistics-chart-data";
-import { downSampleLineData } from "../../../src/components/chart/down-sample";
+import {
+  downSampleLineData,
+  downSampleAlignedLineData,
+} from "../../../src/components/chart/down-sample";
 import { StatisticMeanType } from "../../../src/data/recorder";
 import type { StatisticsMetaData } from "../../../src/data/recorder";
 import { createMockComputedStyle } from "../../fixtures/computed-style";
@@ -275,7 +278,7 @@ describe("generateStatisticsChartData", () => {
     );
     expect(stackedSeries).toHaveLength(2);
     expect(
-      stackedSeries.every((dataset) => dataset.sampling === undefined)
+      stackedSeries.every((dataset) => dataset.sampling === "minmax")
     ).toBe(true);
     const independentlySampled = stackedSeries.map((dataset) =>
       downSampleLineData(dataset.data as [number, number | null][], 40).map(
@@ -283,8 +286,13 @@ describe("generateStatisticsChartData", () => {
       )
     );
     expect(independentlySampled[0]).not.toEqual(independentlySampled[1]);
-    const renderedTimestamps = stackedSeries.map((dataset) =>
-      dataset.data!.map((point) => (point as [number, number | null])[0])
+    const sampled = downSampleAlignedLineData(
+      stackedSeries.map((dataset) => dataset.data as [number, number | null][]),
+      40
+    );
+    expect(sampled[0].length).toBeLessThan(300);
+    const renderedTimestamps = sampled.map((data) =>
+      data.map((point) => (point as [number, number | null])[0])
     );
     expect(renderedTimestamps[0]).toEqual(renderedTimestamps[1]);
   });
