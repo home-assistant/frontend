@@ -78,6 +78,10 @@ import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
+import {
+  automationTriggerContext,
+  type AutomationTriggerContext,
+} from "./automation-trigger-id";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -183,6 +187,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
 
+  @state()
+  @consume({ context: automationTriggerContext, subscribe: true })
+  private _triggers?: AutomationTriggerContext;
+
   get selected() {
     return this._selected;
   }
@@ -208,6 +216,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderRow() {
+    const triggerIndex = this._triggers?.options.find(
+      (option) => option.trigger === this.trigger
+    )?.index;
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
@@ -242,8 +253,8 @@ export default class HaAutomationTriggerRow extends LitElement {
     return html`
       <div slot="leading-icon" class="trigger-leading">
         ${
-          this.index !== undefined
-            ? html`<span class="trigger-index-badge">${this.index + 1}</span>`
+          triggerIndex !== undefined
+            ? html`<span class="trigger-index-badge">${triggerIndex + 1}</span>`
             : nothing
         }
         ${

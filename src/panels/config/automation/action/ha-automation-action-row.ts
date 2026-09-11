@@ -379,7 +379,7 @@ export default class HaAutomationActionRow extends LitElement {
             this._entityReg,
             this.action,
             undefined,
-            false,
+            { hideTriggerIds: true },
             this._manifests
           )
         )}
@@ -1056,7 +1056,7 @@ export default class HaAutomationActionRow extends LitElement {
           this._entityReg,
           this.action,
           undefined,
-          true,
+          { ignoreAlias: true },
           this._manifests
         )
       ),

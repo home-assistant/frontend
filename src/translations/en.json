@@ -5862,7 +5862,8 @@
                   "assign_unique_ids_description": "Each trigger sharing an ID gets a unique one, and conditions using it are updated to match. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
-                    "full": "If triggered by"
+                    "full": "If triggered by {id}",
+                    "summary": "If triggered by"
                   }
                 },
                 "zone": {
