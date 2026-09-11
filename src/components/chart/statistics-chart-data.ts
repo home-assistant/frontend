@@ -116,6 +116,10 @@ function alignStackedLineData(
       }
     });
     dataset.data = aligned;
+    // ha-chart-base samples each line independently when sampling is set.
+    // Keep aligned stacked data intact so its shared timestamp index survives
+    // the chart rendering pipeline.
+    dataset.sampling = undefined;
   });
 }
 
