@@ -151,7 +151,6 @@ export class DialogSupportPackage extends LitElement {
     }
 
     table > tbody > tr {
-      -webkit-transition: background-color 0.25s ease;
       transition: background-color 0.25s ease;
     }
 

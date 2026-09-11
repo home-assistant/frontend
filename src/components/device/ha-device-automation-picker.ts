@@ -12,7 +12,6 @@ import { fullEntitiesContext } from "../../data/context";
 import type { DeviceAutomation } from "../../data/device/device_automation";
 import {
   deviceAutomationsEqual,
-  deviceAutomationsSimilar,
   sortDeviceAutomations,
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
@@ -180,12 +179,15 @@ export abstract class HaDeviceAutomationPicker<
       (a, idx) => value === `${a.device_id}_${idx}`
     );
 
-    const text = automation
+    const described =
+      automation ?? (this.value?.domain ? this.value : undefined);
+
+    const text = described
       ? this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
           this._entityReg,
-          automation
+          described
         )
       : value === NO_AUTOMATION_KEY
         ? this.NO_AUTOMATION_TEXT
@@ -195,29 +197,24 @@ export abstract class HaDeviceAutomationPicker<
   };
 
   private async _updateDeviceInfo() {
+    // Asking a removed device for its automations fails rather than returning
+    // an empty list.
     this._automations = this.deviceId
       ? (
-          await this._fetchDeviceAutomations(this.hass.callWS, this.deviceId)
+          await this._fetchDeviceAutomations(
+            this.hass.callWS,
+            this.deviceId
+          ).catch(() => [] as T[])
         ).sort(sortDeviceAutomations)
       : // No device, clear the list of automations
         [];
 
-    // If there is no value, or if we have changed the device ID, reset the
-    // value. When the device changed (for example after replacing a removed
-    // device), try to keep the same automation type/subtype on the new device
-    // before falling back to the first available automation.
+    // If there is no value, or if we have changed the device ID, reset the value.
     if (!this.value || this.value.device_id !== this.deviceId) {
-      const equivalent =
-        this.value && this.deviceId
-          ? this._automations.find((automation) =>
-              deviceAutomationsSimilar(automation, this.value!)
-            )
-          : undefined;
       this._setValue(
-        equivalent ||
-          (this._automations.length
-            ? this._automations[0]
-            : this._createNoAutomation(this.deviceId))
+        this._automations.length
+          ? this._automations[0]
+          : this._createNoAutomation(this.deviceId)
       );
     }
     this._renderEmpty = true;

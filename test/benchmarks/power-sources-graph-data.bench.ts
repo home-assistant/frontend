@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import type { EnergyData } from "../../src/data/energy";
 import { generatePowerSourcesGraphData } from "../../src/panels/lovelace/cards/energy/power-sources-graph-data";
 import { createMockComputedStyle } from "../fixtures/computed-style";
@@ -122,37 +122,41 @@ const base = {
 } as const;
 
 describe("generatePowerSourcesGraphData", () => {
-  bench("small (1 day hourly)", () => {
-    // generatePowerSourcesGraphData pushes a synthetic point into the stats
-    // arrays when showing "today"; clone so iterations stay independent.
-    generatePowerSourcesGraphData({
-      ...base,
-      energyData: { ...small, stats: structuredClone(small.stats) },
-    });
+  test("small (1 day hourly)", async ({ bench }) => {
+    await bench("small (1 day hourly)", () => {
+      // generatePowerSourcesGraphData pushes a synthetic point into the stats
+      // arrays when showing "today"; clone so iterations stay independent.
+      generatePowerSourcesGraphData({
+        ...base,
+        energyData: { ...small, stats: structuredClone(small.stats) },
+      });
+    }).run();
   });
 
-  bench("medium (1 month hourly)", () => {
-    generatePowerSourcesGraphData({
-      ...base,
-      energyData: { ...medium, stats: structuredClone(medium.stats) },
-    });
+  test("medium (1 month hourly)", async ({ bench }) => {
+    await bench("medium (1 month hourly)", () => {
+      generatePowerSourcesGraphData({
+        ...base,
+        energyData: { ...medium, stats: structuredClone(medium.stats) },
+      });
+    }).run();
   });
 
-  bench(
-    "large (2 weeks 5-minute)",
-    () => {
+  test("large (2 weeks 5-minute)", async ({ bench }) => {
+    await bench("large (2 weeks 5-minute)", () => {
       generatePowerSourcesGraphData({
         ...base,
         energyData: { ...large, stats: structuredClone(large.stats) },
       });
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench("many series (~18 series, 1 month hourly)", () => {
-    generatePowerSourcesGraphData({
-      ...base,
-      energyData: { ...manySeries, stats: structuredClone(manySeries.stats) },
-    });
+  test("many series (~18 series, 1 month hourly)", async ({ bench }) => {
+    await bench("many series (~18 series, 1 month hourly)", () => {
+      generatePowerSourcesGraphData({
+        ...base,
+        energyData: { ...manySeries, stats: structuredClone(manySeries.stats) },
+      });
+    }).run();
   });
 });

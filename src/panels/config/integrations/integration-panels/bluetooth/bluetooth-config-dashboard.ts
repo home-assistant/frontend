@@ -160,7 +160,7 @@ export class BluetoothConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.bluetooth.title")}
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <div class="container">
           <ha-card class="content network-status">

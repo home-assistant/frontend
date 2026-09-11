@@ -693,9 +693,7 @@ class HaGallery extends LitElement {
     haStyle,
     css`
       :host {
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
+        user-select: initial;
         --ha-sidebar-width: 300px;
         --ha-sidebar-expanded-width: 300px;
         --ha-sidebar-expanded-item-width: 292px;

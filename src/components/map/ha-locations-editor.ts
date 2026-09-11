@@ -3,7 +3,6 @@ import type {
   DivIcon,
   DragEndEvent,
   LatLng,
-  LatLngExpression,
   Marker,
   MarkerOptions,
 } from "leaflet";
@@ -13,6 +12,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import type { MapLatLng } from "../../common/map/map-engine";
 import type { ThemeMode } from "../../types";
 import "../ha-input-helper-text";
 import "./ha-map";
@@ -87,7 +87,7 @@ export class HaLocationsEditor extends LitElement {
   }
 
   public fitBounds(
-    boundingbox: LatLngExpression[],
+    boundingbox: MapLatLng[],
     options?: { zoom?: number; pad?: number }
   ) {
     this.map.fitBounds(boundingbox, options);
@@ -126,6 +126,7 @@ export class HaLocationsEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-map
+        engine="leaflet"
         .layers=${this._getLayers(this._circles, this._locationMarkers)}
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}

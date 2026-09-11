@@ -10,6 +10,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { deepActiveElement } from "../../../common/dom/deep-active-element";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -267,6 +268,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           pref_disable_polling: false,
           disabled_by: null,
           reason: null,
+          error_reason_translation_domain: null,
           error_reason_translation_key: null,
           error_reason_translation_placeholders: null,
         })
@@ -883,8 +885,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._showDisabled = !this._showDisabled;
   }
 
-  private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
     updateHistoryState({ filter: this._filter });
   }
 

@@ -3,11 +3,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
-import {
-  computeCssColor,
-  isValidColorString,
-} from "../../../common/color/compute-color";
-import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
@@ -20,6 +15,7 @@ import type {
   CalendarEventApiData,
 } from "../../../data/calendar";
 import {
+  getCalendarColors,
   normalizeSubscriptionEventData,
   subscribeCalendarEvents,
 } from "../../../data/calendar";
@@ -142,21 +138,14 @@ export class HuiCalendarCard
         ]) ?? []
       );
       if (this._config?.entities) {
-        this._calendars = this._config.entities.map((entity, idx) => {
-          const entityColor = entityOptionsMap.get(entity)?.calendar?.color;
-          let backgroundColor: string;
-          // Validate and use the color from entity registry if valid
-          if (entityColor && isValidColorString(entityColor)) {
-            backgroundColor = computeCssColor(entityColor);
-          } else {
-            // Fall back to default color by index
-            backgroundColor = getColorByIndex(idx, computedStyles);
-          }
-          return {
-            entity_id: entity,
-            backgroundColor,
-          };
-        });
+        this._calendars = this._config.entities.map((entity, idx) => ({
+          entity_id: entity,
+          ...getCalendarColors(
+            entityOptionsMap.get(entity)?.calendar?.color,
+            idx,
+            computedStyles
+          ),
+        }));
       }
     }
   }
@@ -222,6 +211,9 @@ export class HuiCalendarCard
             "has-title": !!this._config.title,
             loading: loading,
           })}
+          ?add-fab=${this._config.show_add_event}
+          add-fab-style=${this._config.show_add_event ? (this._config.add_event_style ?? "below") : nothing}
+          add-fab-size=${this._config.show_add_event && this._config.add_event_style !== "header" ? (this._config.add_event_size ?? "small") : nothing}
           .narrow=${this._narrow}
           .events=${this._events}
           .calendars=${this._calendars}
@@ -370,11 +362,7 @@ export class HuiCalendarCard
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card");
-    if (!card) {
-      return;
-    }
-    this._narrow = card.offsetWidth < 870;
+    this._narrow = this.offsetWidth < 870;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -383,12 +371,7 @@ export class HuiCalendarCard
         debounce(() => this._measureCard(), 250, false)
       );
     }
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+    this._resizeObserver.observe(this);
   }
 
   static styles = css`
@@ -414,9 +397,9 @@ export class HuiCalendarCard
 
     ha-full-calendar {
       --calendar-height: 400px;
-      display: block;
+      display: flex;
       width: 100%;
-      height: var(--calendar-height);
+      height: 100%;
       min-height: var(--calendar-height);
     }
 
@@ -431,9 +414,14 @@ export class HuiCalendarCard
 
     ha-full-calendar.is-grid.has-title,
     ha-full-calendar.is-panel.has-title {
+      --header-height: calc(
+        var(--ha-card-header-font-size, var(--ha-font-size-2xl)) *
+          var(--ha-line-height-condensed) + 16px
+      );
       --calendar-height: calc(
         100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
       );
+      height: calc(100% - var(--header-height));
     }
 
     .loading {

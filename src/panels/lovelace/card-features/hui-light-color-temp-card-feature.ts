@@ -159,8 +159,8 @@ class HuiLightColorTempCardFeature
       cardFeatureStyles,
       css`
         ha-control-slider {
-          --control-slider-background: -webkit-linear-gradient(
-            left,
+          --control-slider-background: linear-gradient(
+            to right,
             var(--gradient)
           );
           --control-slider-background-opacity: 1;

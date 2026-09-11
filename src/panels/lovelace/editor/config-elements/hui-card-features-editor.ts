@@ -64,6 +64,8 @@ import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsTimerActionsCardFeature } from "../../card-features/hui-timer-actions-card-feature";
+import { supportsTimerPresetsCardFeature } from "../../card-features/hui-timer-presets-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
@@ -130,6 +132,8 @@ const UI_FEATURE_TYPES = [
   "target-humidity",
   "target-temperature",
   "temperature-forecast",
+  "timer-actions",
+  "timer-presets",
   "toggle",
   "update-actions",
   "vacuum-commands",
@@ -169,6 +173,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "timer-actions",
+  "timer-presets",
   "trend-graph",
   "update-actions",
   "vacuum-commands",
@@ -224,6 +230,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   "temperature-forecast": supportsTemperatureForecastCardFeature,
+  "timer-actions": supportsTimerActionsCardFeature,
+  "timer-presets": supportsTimerPresetsCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,

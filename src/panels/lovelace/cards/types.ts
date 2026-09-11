@@ -23,7 +23,10 @@ import type {
   LovelaceCardFeaturePosition,
 } from "../card-features/types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
-import type { Condition, LegacyCondition } from "../common/validate-condition";
+import type {
+  Condition,
+  VisibilityCondition,
+} from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
 import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import type { TimestampRenderingFormat } from "../components/types";
@@ -52,11 +55,14 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
   initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
+  show_add_event?: boolean;
+  add_event_style?: "below" | "on_top" | "header";
+  add_event_size?: "small" | "medium" | "large";
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig;
-  conditions: (Condition | LegacyCondition)[];
+  conditions: VisibilityCondition[];
 }
 
 export interface EmptyStateButtonConfig {
@@ -175,6 +181,7 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_floor?: boolean;
   group_by_area?: boolean;
   max_devices?: number;
+  show_values?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
@@ -266,6 +273,12 @@ export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
 export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-flow-sankey";
 }
+
+export type SankeyCardConfig =
+  | EnergySankeyCardConfig
+  | PowerSankeyCardConfig
+  | WaterSankeyCardConfig
+  | WaterFlowSankeyCardConfig;
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
@@ -716,6 +729,13 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+}
+
+export interface AlertCardConfig extends LovelaceCardConfig {
+  type: "alert";
+  entity: string;
+  color?: string;
+  pulse?: boolean;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

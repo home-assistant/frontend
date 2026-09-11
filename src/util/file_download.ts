@@ -1,3 +1,4 @@
+import { resolveHassUrl } from "../common/url/hass-url";
 import { isExternalAndroid } from "../data/external";
 
 // 10 seconds gives the Android WebView download listener enough time
@@ -9,7 +10,7 @@ const BLOB_REVOKE_DELAY_MS = 10_000;
 export const fileDownload = (href: string, filename = ""): void => {
   const element = document.createElement("a");
   element.target = "_blank";
-  element.href = href;
+  element.href = resolveHassUrl(href);
   element.download = filename;
   element.style.display = "none";
   document.body.appendChild(element);

@@ -1,8 +1,9 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
@@ -21,6 +22,7 @@ import type { PersonEntity } from "../../../data/person";
 import {
   isMediaSourceContentId,
   resolveMediaSource,
+  isStreamingMedia,
 } from "../../../data/media_source";
 
 @customElement("hui-picture-card")
@@ -42,6 +44,25 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   @state() private _config?: PictureCardConfig;
 
   @state() private _resolvedImage?: string;
+
+  private _reconnectImg = false;
+
+  @query("img") private _img?: HTMLImageElement;
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._reconnectImg) {
+      this.requestUpdate();
+    }
+  }
 
   public getCardSize(): number {
     return 5;
@@ -69,7 +90,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     if (
       !this._config ||
       hasConfigChanged(this, changedProps) ||
-      changedProps.has("_resolvedImage")
+      changedProps.has("_resolvedImage") ||
+      this._reconnectImg
     ) {
       return true;
     }
@@ -92,6 +114,9 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     if (!this._config || !this.hass) {
       return;
+    }
+    if (this.isConnected) {
+      this._reconnectImg = false;
     }
 
     const firstHass =
@@ -198,7 +223,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           alt=${ifDefined(
             this._config.alt_text || stateObj?.attributes.friendly_name
           )}
-          src=${this.hass.hassUrl(image)}
+          src=${this._reconnectImg ? nothing : live(this.hass.hassUrl(image))}
         />
       </ha-card>
     `;
