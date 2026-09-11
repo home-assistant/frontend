@@ -346,6 +346,9 @@ export class HuiViewHeader extends LitElement {
       width: 100%;
       max-width: 700px;
       display: flex;
+      min-height: calc(
+        var(--ha-font-size-xl) * var(--ha-line-height-condensed) + 4px
+      );
     }
 
     .heading > * {
