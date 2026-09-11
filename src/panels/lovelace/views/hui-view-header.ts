@@ -356,6 +356,10 @@ export class HuiViewHeader extends LitElement {
       height: 100%;
     }
 
+    .container:not(.edit-mode) .heading:has(> *[hidden]) {
+      display: none;
+    }
+
     .badges {
       position: relative;
       flex: 1;
