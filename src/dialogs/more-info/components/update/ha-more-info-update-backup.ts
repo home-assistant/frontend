@@ -146,16 +146,22 @@ export class HaMoreInfoUpdateBackup extends LitElement {
       });
       const type = getUpdateType(this.stateObj!, this._entitySources!);
 
+      const requests: Promise<any>[] = [];
       if (
         isComponentLoaded(this._config, "hassio") &&
         ["addon", "home_assistant", "home_assistant_os"].includes(type)
       ) {
-        await this._fetchUpdateBackupConfig(type);
+        requests.push(this._fetchUpdateBackupConfig(type));
       }
 
       if (this._isHaOrOsUpdate(type)) {
-        const { config } = await fetchBackupConfig(this._api);
-        this._backupConfig = config;
+        requests.push(this._fetchBackupConfig());
+      }
+
+      const results = await Promise.allSettled(requests);
+      const failures = results.filter((r) => r.status === "rejected");
+      if (failures.length) {
+        throw failures[0].reason;
       }
     } catch (err) {
       // ignore error, because the generic backup option remains available
@@ -186,6 +192,11 @@ export class HaMoreInfoUpdateBackup extends LitElement {
       console.error(err);
       this._createBackup = false;
     }
+  }
+
+  private async _fetchBackupConfig(): Promise<void> {
+    const { config } = await fetchBackupConfig(this._api);
+    this._backupConfig = config;
   }
 
   private _isHaOrOsUpdate(type: UpdateType): boolean {
