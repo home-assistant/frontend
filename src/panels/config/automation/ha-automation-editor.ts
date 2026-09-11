@@ -791,8 +791,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
+    const config = ev.detail.value;
     this._updateConfig(
-      this._triggerController.cleanupRemovedIds(ev.detail.value)
+      "use_blueprint" in config
+        ? config
+        : this._triggerController.cleanupRemovedIds(config)
     );
   }
 
