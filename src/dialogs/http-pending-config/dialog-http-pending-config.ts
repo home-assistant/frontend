@@ -8,7 +8,7 @@ import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
-import "../../components/ha-icon-button-arrow-next";
+import "../../components/ha-icon-arrow-next";
 import type { HttpConfig } from "../../data/http";
 import {
   HTTP_CONFIG_FIELDS,
@@ -227,7 +227,7 @@ export class DialogHttpPendingConfig
                             <span class="old"
                               >${this._formatValue(key, stable[key])}</span
                             >
-                            <ha-icon-button-arrow-next></ha-icon-button-arrow-next>
+                            <ha-icon-arrow-next></ha-icon-arrow-next>
                             <span class="new"
                               >${this._formatValue(key, pending![key])}</span
                             >
