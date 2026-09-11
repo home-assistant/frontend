@@ -34,7 +34,7 @@ export class HaIconButtonLast extends LitElement {
     return html`
       <ha-icon-button
         .disabled=${this.disabled}
-        .label=${this.label || this._localize("ui.common.next") || "Next"}
+        .label=${this.label || this._localize("ui.common.last") || "Last"}
         .path=${this._icon}
         .href=${this.href}
         .target=${this.target}
