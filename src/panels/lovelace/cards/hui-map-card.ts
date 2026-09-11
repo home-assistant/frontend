@@ -277,6 +277,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._themes
             )}
             .autoFit=${this._config.auto_fit || false}
+            .fitPadding=${this._overviewPadding()}
             .fitZones=${this._config.fit_zones || false}
             .zoomPosition=${
               this.layout === PANEL_VIEW_LAYOUT &&
@@ -630,25 +631,38 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   }
 
-  // The part of the map the overview covers, so a focused marker lands next
-  // to it rather than under it: the bottom sheet on phones, the start side
-  // otherwise (see the #overview styles)
+  // The part of the map the overview covers, so fitted markers land next to
+  // it rather than under it: the bottom sheet on phones, the start side
+  // otherwise (see the #overview styles). Memoized so the map only refits
+  // when the drawer actually changes size.
   private _overviewPadding(): MapFitPadding | undefined {
-    const { width, height } = this._overviewSize;
-    if (!width || !height) {
-      return undefined;
-    }
-    if (window.matchMedia("(max-width: 600px)").matches) {
-      return { bottom: height + OVERVIEW_GAP };
-    }
-    const side = width + 2 * OVERVIEW_GAP;
-    return computeRTL(
+    return this._paddingFor(
+      this._overviewSize.width,
+      this._overviewSize.height,
       this.hass.language,
       this.hass.translationMetadata.translations
-    )
-      ? { right: side }
-      : { left: side };
+    );
   }
+
+  private _paddingFor = memoizeOne(
+    (
+      width: number,
+      height: number,
+      language: string,
+      translations: HomeAssistant["translationMetadata"]["translations"]
+    ): MapFitPadding | undefined => {
+      if (!width || !height) {
+        return undefined;
+      }
+      if (window.matchMedia("(max-width: 600px)").matches) {
+        return { bottom: height + OVERVIEW_GAP };
+      }
+      const side = width + 2 * OVERVIEW_GAP;
+      return computeRTL(language, translations)
+        ? { right: side }
+        : { left: side };
+    }
+  );
 
   private _toggleClusterMarkers() {
     this._clusterMarkers = !this._clusterMarkers;
