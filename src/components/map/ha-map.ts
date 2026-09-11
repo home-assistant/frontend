@@ -39,6 +39,7 @@ import {
   ZONE_CIRCLE_SIZE,
   zoneMarkerStyles,
 } from "../../common/map/zone-marker";
+import { deepEqual } from "../../common/util/deep-equal";
 import { filterXSS } from "../../common/util/xss";
 import {
   configContext,
@@ -302,6 +303,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
+  /** Part of the map an overlay covers; automatic fits keep clear of it */
+  @property({ attribute: false }) public fitPadding?: MapFitPadding;
+
   @property({ attribute: "zoom-position" })
   public zoomPosition: MapControlPosition = "topleft";
 
@@ -450,6 +454,14 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
       this._drawEntities();
+    }
+
+    // An overlay that grew or shrank may cover the fitted markers
+    if (
+      changedProps.has("fitPadding") &&
+      !deepEqual(changedProps.get("fitPadding"), this.fitPadding)
+    ) {
+      autoFitRequired = !this._pauseAutoFit;
     }
 
     if (changedProps.has("zoomPosition")) {
@@ -701,6 +713,7 @@ export class HaMap extends ReactiveElement {
   public fitMap(options?: {
     zoom?: number;
     pad?: number;
+    padding?: MapFitPadding;
     unpause_autofit?: boolean;
   }): void {
     if (options?.unpause_autofit) {
@@ -744,6 +757,7 @@ export class HaMap extends ReactiveElement {
       this._engine!.fitBounds(points, {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
+        padding: options?.padding ?? this.fitPadding,
         animate: this._hasFitted,
       });
     });
