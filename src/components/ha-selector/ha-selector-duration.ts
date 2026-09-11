@@ -154,12 +154,10 @@ export class HaTimeDuration extends LitElement {
   }
 
   private _getOffsetType(data?: HaDurationData): OffsetType {
-    if (data?.negative !== undefined) {
-      return data.negative ? "before" : "after";
+    if (!data) {
+      return this._offsetType ?? "none";
     }
-    const { negative, ...components } = data
-      ? normalizeDuration(data)
-      : { negative: false };
+    const { negative, ...components } = normalizeDuration(data);
     if (durationDataToSeconds(components) === 0) {
       return this._offsetType ?? "none";
     }

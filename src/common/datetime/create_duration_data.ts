@@ -32,11 +32,10 @@ export const createDurationData = (
   if (!("days" in duration)) {
     return duration;
   }
-  const { negative, days, minutes, seconds, milliseconds } = duration;
+  const { days, minutes, seconds, milliseconds } = duration;
   let hours = duration.hours || 0;
   hours = (hours || 0) + (days || 0) * 24;
   return {
-    ...(negative === undefined ? {} : { negative }),
     hours,
     minutes,
     seconds,

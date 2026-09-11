@@ -23,12 +23,8 @@ export const formatDurationSelectorValue = (
     return "";
   }
   const { negative, ...components } = normalizeDuration(data);
-  const total = durationDataToSeconds(components);
-  if (!Number.isFinite(total)) {
-    return "";
-  }
   const mode = getDurationSelectorMode(config);
-  if (mode === "offset" && total === 0) {
+  if (mode === "offset" && durationDataToSeconds(components) === 0) {
     return "";
   }
   const duration = formatDuration(locale, components);

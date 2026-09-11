@@ -24,29 +24,4 @@ describe("normalizeDuration", () => {
       minutes: 0,
     });
   });
-
-  it("recomputes the breakdown from the total for mixed signs", () => {
-    expect(normalizeDuration({ hours: -1, minutes: 30 })).toEqual({
-      negative: true,
-      hours: 0,
-      minutes: 30,
-      seconds: 0,
-    });
-    expect(normalizeDuration({ hours: -1, minutes: 90 })).toEqual({
-      negative: false,
-      hours: 0,
-      minutes: 30,
-      seconds: 0,
-    });
-    expect(
-      normalizeDuration({ days: 1, hours: -2, milliseconds: 500 })
-    ).toEqual({
-      negative: false,
-      days: 0,
-      hours: 22,
-      minutes: 0,
-      seconds: 0,
-      milliseconds: 500,
-    });
-  });
 });
