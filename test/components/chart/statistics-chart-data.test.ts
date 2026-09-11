@@ -80,6 +80,75 @@ describe("generateStatisticsChartData", () => {
     ).toMatchSnapshot();
   });
 
+  it("aligns stacked lines by timestamp when one statistic has a gap", () => {
+    const ids = ["sensor.charger", "sensor.pv"];
+    const start = FIXED_EPOCH_MS;
+    const period = 5 * 60 * 1000;
+    const statistics = {
+      [ids[0]]: [
+        { start, end: start + period, mean: 10 },
+        { start: start + 2 * period, end: start + 3 * period, mean: 20 },
+      ],
+      [ids[1]]: [
+        { start, end: start + period, mean: 100 },
+        { start: start + period, end: start + 2 * period, mean: 110 },
+        { start: start + 2 * period, end: start + 3 * period, mean: 120 },
+      ],
+    };
+
+    const result = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: statistics,
+      statisticsMetaData: buildMetadata(ids),
+      statTypes: ["mean"],
+      chartType: "line-stack",
+      period: "5minute",
+    });
+    const series = result!.datasets.filter((dataset) => dataset.data?.length);
+    expect(series).toHaveLength(2);
+    expect(series[0].data).toEqual([
+      [start, 10],
+      [start + period, 10],
+      [start + period, null],
+      [start + 2 * period, 20],
+      [start + 2 * period, 20],
+    ]);
+    expect(series[1].data).toEqual([
+      [start, 100],
+      [start + period, 110],
+      [start + period, 110],
+      [start + 2 * period, 120],
+      [start + 2 * period, 120],
+    ]);
+  });
+
+  it("keeps plain lines independently sampled", () => {
+    const ids = ["sensor.charger", "sensor.pv"];
+    const start = FIXED_EPOCH_MS;
+    const period = 5 * 60 * 1000;
+    const statistics = {
+      [ids[0]]: [
+        { start, end: start + period, mean: 10 },
+        { start: start + 2 * period, end: start + 3 * period, mean: 20 },
+      ],
+      [ids[1]]: [
+        { start, end: start + period, mean: 100 },
+        { start: start + period, end: start + 2 * period, mean: 110 },
+        { start: start + 2 * period, end: start + 3 * period, mean: 120 },
+      ],
+    };
+    const result = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: statistics,
+      statisticsMetaData: buildMetadata(ids),
+      statTypes: ["mean"],
+      chartType: "line",
+      period: "5minute",
+    });
+    const series = result!.datasets.filter((dataset) => dataset.data?.length);
+    expect(series[0].data!.length).not.toBe(series[1].data!.length);
+  });
+
   it("matches snapshot for a bar chart with sum statistics", () => {
     expect(
       generateStatisticsChartData({

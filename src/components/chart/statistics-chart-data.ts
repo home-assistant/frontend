@@ -54,6 +54,72 @@ export interface StatisticsChartData {
 }
 
 /**
+ * ECharts stacks line series by data index. Statistics are fetched per
+ * entity, so a recorder gap would otherwise make the next value in that
+ * entity stack against a different timestamp in its neighbours. Give every
+ * stacked line series the same (union) x-axis sequence and use null for a
+ * missing sample; this keeps the gap while making the stack time-aligned.
+ */
+type StackedLinePoint = [number, number | null];
+
+function alignStackedLineData(
+  datasets: (LineSeriesOption | BarSeriesOption)[]
+) {
+  const lineDatasets = datasets.filter(
+    (dataset): dataset is LineSeriesOption =>
+      dataset.type === "line" &&
+      Array.isArray(dataset.data) &&
+      dataset.data.length > 0
+  );
+  if (lineDatasets.length < 2) {
+    return;
+  }
+
+  const timestamps = new Set<number>();
+  const multiplicities = new Map<number, number>();
+  const pointsByDataset = lineDatasets.map((dataset) => {
+    const points = new Map<number, StackedLinePoint[]>();
+    for (const point of dataset.data as StackedLinePoint[]) {
+      if (!Array.isArray(point) || typeof point[0] !== "number") {
+        continue;
+      }
+      timestamps.add(point[0]);
+      const pointsAtTimestamp = points.get(point[0]) || [];
+      pointsAtTimestamp.push(point);
+      points.set(point[0], pointsAtTimestamp);
+      multiplicities.set(
+        point[0],
+        Math.max(multiplicities.get(point[0]) || 0, pointsAtTimestamp.length)
+      );
+    }
+    return points;
+  });
+  const orderedTimestamps = [...timestamps].sort((a, b) => a - b);
+
+  lineDatasets.forEach((dataset, index) => {
+    const points = pointsByDataset[index];
+    const aligned: StackedLinePoint[] = [];
+    orderedTimestamps.forEach((timestamp) => {
+      const pointsAtTimestamp = points.get(timestamp);
+      const multiplicity = multiplicities.get(timestamp)!;
+      if (!pointsAtTimestamp) {
+        for (let slot = 0; slot < multiplicity; slot++) {
+          aligned.push([timestamp, null]);
+        }
+        return;
+      }
+      for (let slot = 0; slot < multiplicity; slot++) {
+        aligned.push(
+          pointsAtTimestamp[slot] ||
+            pointsAtTimestamp[pointsAtTimestamp.length - 1]
+        );
+      }
+    });
+    dataset.data = aligned;
+  });
+}
+
+/**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
  * hass) are injected so the transform is deterministic and benchmarkable.
@@ -438,6 +504,10 @@ export function generateStatisticsChartData(
     Array.prototype.push.apply(totalDataSets, statDataSets);
     Array.prototype.push.apply(legendData, statLegendData);
   });
+
+  if (chartType === "line" && chartStacked) {
+    alignStackedLineData(totalDataSets);
+  }
 
   if (chartType === "bar") {
     fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[], chartStacked);
