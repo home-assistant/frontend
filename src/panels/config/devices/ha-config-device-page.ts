@@ -19,7 +19,7 @@ import {
   mdiTextureBox,
   mdiTools,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -83,12 +83,35 @@ import {
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
+import {
+  fetchESPHomeDeviceCapabilities,
+  type ESPHomeDeviceCapabilities,
+} from "../../../data/esphome";
+import {
+  countRemainingESPHomeCapabilities,
+  deriveESPHomeSetupStatus,
+  deviceHasMediaPlayerEntity,
+  getESPHomeSetupCapabilityIds,
+  hasESPHomeSetupCapabilities,
+  hasStartedNonBluetoothESPHomeSetup,
+  hasZWaveJSEntryForDevice,
+  isESPHomeSerialConfigured,
+  isESPHomeSetupDeferred,
+  withDeferredESPHomeDevice,
+} from "../../../data/esphome_setup";
+import {
+  saveFrontendUserData,
+  subscribeFrontendUserData,
+  type ESPHomeFrontendUserData,
+} from "../../../data/frontend";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { listSerialPortsWithUsage } from "../../../data/usb";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
 import { filterAddToSceneEntityIds } from "../../../dialogs/add-to/add-to";
+import { showESPHomeDeviceSetupDialog } from "../../../dialogs/esphome-device-setup/show-dialog-esphome-device-setup";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -110,6 +133,8 @@ import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import "./device-detail/ha-esphome-setup-banner";
+import "./device-detail/ha-esphome-setup-reminder";
 import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
@@ -206,7 +231,19 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
+  @state() private _esphomeCapabilities?: ESPHomeDeviceCapabilities;
+
+  @state() private _esphomeSerialConfigured = false;
+
+  @state() private _esphomeUserData: ESPHomeFrontendUserData | null = null;
+
+  @state() private _esphomeUserDataReady = false;
+
   private _deviceAlertsActionsTimeout?: number;
+
+  private _unsubEsphomeUserData?: UnsubscribeFunc;
+
+  private _esphomeUserDataSubGeneration = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -367,6 +404,8 @@ export class HaConfigDevicePage extends LitElement {
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+      this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -377,6 +416,7 @@ export class HaConfigDevicePage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
+    this._subscribeESPHomeUserData();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -390,9 +430,19 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hasUpdated) {
+      this._subscribeESPHomeUserData();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearTimeout(this._deviceAlertsActionsTimeout);
+    this._esphomeUserDataSubGeneration += 1;
+    this._unsubEsphomeUserData?.();
+    this._unsubEsphomeUserData = undefined;
   }
 
   protected render() {
@@ -445,6 +495,44 @@ export class HaConfigDevicePage extends LitElement {
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
     const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
+
+    const mediaPlayerSupported = deviceHasMediaPlayerEntity(
+      this.deviceId,
+      entities
+    );
+    const showESPHomeSetup =
+      this._esphomeUserDataReady &&
+      hasESPHomeSetupCapabilities(this._esphomeCapabilities, {
+        mediaPlayerSupported,
+      });
+    const esphomeDeferred = isESPHomeSetupDeferred(
+      this._esphomeUserData,
+      this.deviceId
+    );
+    const esphomeStatus = this._esphomeCapabilities
+      ? deriveESPHomeSetupStatus(this._esphomeCapabilities, {
+          mediaPlayerSupported,
+          musicAssistantLoaded: isComponentLoaded(
+            this.hass.config,
+            "music_assistant"
+          ),
+          zwaveJsEntryExists: hasZWaveJSEntryForDevice(
+            this.deviceId,
+            this.hass.devices,
+            this.entries
+          ),
+          serialConfigured: this._esphomeSerialConfigured,
+        })
+      : undefined;
+    const esphomeRemaining = esphomeStatus
+      ? countRemainingESPHomeCapabilities(esphomeStatus)
+      : 0;
+    const esphomeCapabilityCount = esphomeStatus
+      ? getESPHomeSetupCapabilityIds(esphomeStatus).length
+      : 0;
+    const esphomeStarted = esphomeStatus
+      ? hasStartedNonBluetoothESPHomeSetup(esphomeStatus)
+      : false;
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [
@@ -901,6 +989,15 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      ${
+        showESPHomeSetup && esphomeDeferred
+          ? html`<ha-esphome-setup-reminder
+              .remaining=${esphomeRemaining}
+              .count=${esphomeCapabilityCount}
+              @esphome-setup=${this._showESPHomeSetup}
+            ></ha-esphome-setup-reminder>`
+          : nothing
+      }
       <ha-device-child-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}
@@ -1115,6 +1212,20 @@ export class HaConfigDevicePage extends LitElement {
             }
           </div>
         </div>
+        ${
+          showESPHomeSetup && !esphomeDeferred
+            ? html`
+                <ha-esphome-setup-banner
+                  class="fullwidth"
+                  .deviceName=${deviceName}
+                  .status=${esphomeStatus}
+                  .started=${esphomeStarted}
+                  @esphome-setup=${this._showESPHomeSetup}
+                  @esphome-setup-later=${this._deferESPHomeSetup}
+                ></ha-esphome-setup-banner>
+              `
+            : nothing
+        }
         ${columnContents.map(
           (contents) => html`<div class="column">${contents}</div>`
         )}
@@ -1129,6 +1240,124 @@ export class HaConfigDevicePage extends LitElement {
       clearTimeout(this._deviceAlertsActionsTimeout);
       this._getDeviceActions();
       this._getDeviceAlerts();
+      this._fetchESPHomeCapabilities();
+    }
+  }
+
+  private async _subscribeESPHomeUserData() {
+    const generation = this._esphomeUserDataSubGeneration;
+    try {
+      const unsub = await subscribeFrontendUserData(
+        this.hass.connection,
+        "esphome",
+        ({ value }) => {
+          if (generation !== this._esphomeUserDataSubGeneration) {
+            return;
+          }
+          this._esphomeUserData = value;
+          this._esphomeUserDataReady = true;
+        }
+      );
+      if (generation !== this._esphomeUserDataSubGeneration) {
+        unsub();
+        return;
+      }
+      this._unsubEsphomeUserData = unsub;
+    } catch (_err) {
+      if (generation !== this._esphomeUserDataSubGeneration) {
+        return;
+      }
+      this._esphomeUserData = null;
+      this._esphomeUserDataReady = true;
+    }
+  }
+
+  private async _fetchESPHomeCapabilities() {
+    const deviceId = this.deviceId;
+    const device = this.hass.devices[deviceId];
+    if (!device) {
+      this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
+      return;
+    }
+    const domains = this._integrations(
+      device,
+      this.entries,
+      this.manifests
+    ).map((entry) => entry.domain);
+    if (!domains.includes("esphome")) {
+      this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
+      return;
+    }
+    try {
+      const capabilities = await fetchESPHomeDeviceCapabilities(
+        this.hass,
+        deviceId
+      );
+      let serialConfigured = false;
+      if (
+        capabilities.serial_proxies.length > 0 &&
+        isComponentLoaded(this.hass.config, "usb")
+      ) {
+        try {
+          const ports = await listSerialPortsWithUsage(this.hass);
+          serialConfigured = isESPHomeSerialConfigured(
+            capabilities.serial_proxies,
+            ports
+          );
+        } catch (_err) {
+          serialConfigured = false;
+        }
+      }
+      if (this.deviceId !== deviceId) {
+        return;
+      }
+      this._esphomeCapabilities = capabilities;
+      this._esphomeSerialConfigured = serialConfigured;
+    } catch (_err) {
+      if (this.deviceId !== deviceId) {
+        return;
+      }
+      this._esphomeCapabilities = undefined;
+      this._esphomeSerialConfigured = false;
+    }
+  }
+
+  private _showESPHomeSetup = () => {
+    const device = this.hass.devices[this.deviceId];
+    showESPHomeDeviceSetupDialog(this, {
+      deviceId: this.deviceId,
+      deviceName: device
+        ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+        : undefined,
+      capabilities: this._esphomeCapabilities,
+      mediaPlayerSupported: deviceHasMediaPlayerEntity(
+        this.deviceId,
+        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      ),
+      dialogClosedCallback: () => {
+        this._fetchESPHomeCapabilities();
+      },
+    });
+  };
+
+  private async _deferESPHomeSetup() {
+    const previous = this._esphomeUserData;
+    const next = withDeferredESPHomeDevice(previous, this.deviceId);
+    this._esphomeUserData = next;
+    try {
+      await saveFrontendUserData(this.hass.connection, "esphome", next);
+    } catch (err: unknown) {
+      this._esphomeUserData = previous;
+      await showAlertDialog(this, {
+        text:
+          err instanceof Error
+            ? err.message
+            : this.hass.localize(
+                "ui.panel.config.devices.esphome.setup_error_defer"
+              ),
+      });
     }
   }
 
