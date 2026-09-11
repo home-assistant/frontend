@@ -1327,6 +1327,9 @@ export class HaMap extends ReactiveElement {
     .maplibregl-popup-anchor-top .maplibregl-popup-tip {
       border-bottom-color: rgba(80, 80, 80, 0.9) !important;
     }
+    .maplibregl-ctrl-bottom-left {
+      direction: ltr;
+    }
     .dark .leaflet-bar a {
       background-color: #1c1c1c;
       color: #ffffff;
@@ -1377,6 +1380,7 @@ export class HaMap extends ReactiveElement {
         transparent
       ) !important;
       text-shadow: none !important;
+      direction: ltr;
     }
     /* the theme tokens follow the page, so forced modes need the opposite values */
     #map.forced-light .leaflet-control-scale-line {
