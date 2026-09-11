@@ -553,6 +553,50 @@ describe("downSampleAlignedLineData", () => {
     expect(sampled[3]).toContainEqual([0.5, -0.9]);
   });
 
+  it("preserves finite all-stack extrema after a null middle member", () => {
+    const values = [
+      [11, 8, 0, 9, 18, 3, 1, 14, 11, 15, 11, 0, 4, 14, 10, 11, 15, 15, 13, 12],
+      [
+        11,
+        4,
+        15,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        2,
+        3,
+        1,
+        1,
+        14,
+        13,
+        15,
+        13,
+      ],
+      [
+        10, 17, 16, 8, 12, 18, 10, 14, 12, 7, 4, 17, 16, 13, 10, 4, 13, 20, 9,
+        11,
+      ],
+    ];
+    const data = values.map((row) =>
+      row.map((y, x): [number, number | null] => [x / 100, y])
+    );
+    const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+      "all",
+      "all",
+      "all",
+    ]);
+    // With "all", ECharts propagates the middle member's null into the top
+    // level. Skipping that null invents a smaller value inside the gap and
+    // discards the real minimum of 11 + 1 + 4 = 16 at x=0.15.
+    expect(sampled[2]).toContainEqual([0.15, 4]);
+  });
+
   it("does not align mismatched series by corrupting their data", () => {
     const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
       x,
