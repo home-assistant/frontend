@@ -106,8 +106,9 @@ export class HaAutomationRowOptions extends LitElement {
     );
     if (
       !duration ||
-      Object.values(duration).some(
-        (part) => part !== undefined && !Number.isFinite(part)
+      Object.entries(duration).some(
+        ([key, part]) =>
+          key !== "negative" && part !== undefined && !Number.isFinite(part)
       )
     ) {
       return undefined;

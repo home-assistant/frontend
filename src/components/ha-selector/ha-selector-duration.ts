@@ -96,6 +96,7 @@ export class HaTimeDuration extends LitElement {
           aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
         >
           <ha-select
+            aria-label=${ifDefined(this.label)}
             .value=${offsetType}
             .options=${this._offsetTypeOptions(this._localize)}
             .disabled=${this.disabled}

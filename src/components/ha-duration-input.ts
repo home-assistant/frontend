@@ -54,6 +54,10 @@ export class HaDurationInput extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const data =
+      this.data && this.allowNegative
+        ? normalizeDuration(this.data)
+        : this.data;
     return html`
       <div class="row">
         <ha-base-time-input
@@ -68,13 +72,13 @@ export class HaDurationInput extends LitElement {
           .enableMillisecond=${this.enableMillisecond}
           .enableDay=${this.enableDay}
           .enableSign=${this.allowNegative}
-          .negative=${this._negative}
+          .negative=${!!data?.negative}
           format="24"
-          .days=${this._days}
-          .hours=${this._hours}
-          .minutes=${this._minutes}
-          .seconds=${this._seconds}
-          .milliseconds=${this._milliseconds}
+          .days=${this._component(data, "days")}
+          .hours=${this._component(data, "hours")}
+          .minutes=${this._component(data, "minutes")}
+          .seconds=${this._component(data, "seconds")}
+          .milliseconds=${this._component(data, "milliseconds")}
           @value-changed=${this._durationChanged}
           no-hours-limit
           day-label="dd"
@@ -87,36 +91,15 @@ export class HaDurationInput extends LitElement {
     `;
   }
 
-  private get _negative(): boolean {
-    return !!this.data && normalizeDuration(this.data).negative;
-  }
-
-  private _component(field: keyof HaDurationData): number {
-    const amount = this.data?.[field];
+  private _component(
+    data: HaDurationData | undefined,
+    field: keyof HaDurationData
+  ): number {
+    const amount = data?.[field];
     if (amount) {
-      return this.allowNegative ? Math.abs(Number(amount)) : Number(amount);
+      return Number(amount);
     }
-    return this.required || this.data ? 0 : NaN;
-  }
-
-  private get _days() {
-    return this._component("days");
-  }
-
-  private get _hours() {
-    return this._component("hours");
-  }
-
-  private get _minutes() {
-    return this._component("minutes");
-  }
-
-  private get _seconds() {
-    return this._component("seconds");
-  }
-
-  private get _milliseconds() {
-    return this._component("milliseconds");
+    return this.required || data ? 0 : NaN;
   }
 
   private _durationChanged(

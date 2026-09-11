@@ -48,4 +48,17 @@ describe("createDurationData", () => {
       milliseconds: undefined,
     });
   });
+
+  it("should keep the negative flag when folding days", () => {
+    expect(createDurationData({ negative: true, days: 1, hours: 1 })).toEqual({
+      negative: true,
+      hours: 25,
+      minutes: undefined,
+      seconds: undefined,
+      milliseconds: undefined,
+    });
+    expect(createDurationData({ days: 1, hours: 1 })).not.toHaveProperty(
+      "negative"
+    );
+  });
 });
