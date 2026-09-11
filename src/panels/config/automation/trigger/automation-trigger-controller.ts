@@ -10,8 +10,11 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import {
   assignGeneratedTriggerIds,
   automationTriggerContext,
-  cleanupTriggerIds,
+  cleanupRemovedGeneratedTriggerReferences,
+  cleanupUnusedGeneratedTriggerIds,
   getTriggerIdOptions,
+  getExplicitTriggerIds,
+  isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
   updateTriggerCondition,
 } from "./automation-trigger-id";
@@ -85,7 +88,18 @@ export class AutomationTriggerController implements ReactiveController {
    * or deleted triggers, while cleanup itself only changes condition references.
    */
   public cleanupRemovedIds(config: AutomationConfig): AutomationConfig {
-    const cleaned = cleanupTriggerIds(config);
+    const current = this._options.getConfig();
+    const previousIds = new Set(
+      current ? getExplicitTriggerIds(current.triggers) : []
+    );
+    const nextIds = new Set(getExplicitTriggerIds(config.triggers));
+    const removedIds = new Set(
+      [...previousIds].filter(
+        (id) => isGeneratedTriggerId(id) && !nextIds.has(id)
+      )
+    );
+    let cleaned = cleanupUnusedGeneratedTriggerIds(config);
+    cleaned = cleanupRemovedGeneratedTriggerReferences(cleaned, removedIds);
     preserveAutomationRowKeys(config, cleaned);
     return cleaned;
   }
@@ -108,7 +122,7 @@ export class AutomationTriggerController implements ReactiveController {
     );
     // Generated IDs that no condition or action references are no longer in use.
     // Strip them so the YAML does not accumulate stale identifiers.
-    this._commit(cleanupTriggerIds(updated));
+    this._commit(cleanupUnusedGeneratedTriggerIds(updated));
   };
 
   private _fixDuplicateTriggerIds = async () => {

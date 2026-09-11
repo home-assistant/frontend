@@ -7,7 +7,8 @@ import type {
 } from "../../../../../src/data/automation";
 import {
   assignGeneratedTriggerIds,
-  cleanupTriggerIds,
+  cleanupRemovedGeneratedTriggerReferences,
+  cleanupUnusedGeneratedTriggerIds,
   GENERATED_TRIGGER_ID_PREFIX,
   getTriggerIdOptions,
   makeDuplicateTriggerIdsUnique,
@@ -188,7 +189,12 @@ describe("automation trigger IDs", () => {
       ],
     };
 
-    expect(cleanupTriggerIds(config)).toMatchObject({
+    expect(
+      cleanupRemovedGeneratedTriggerReferences(
+        config,
+        new Set([`${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`])
+      )
+    ).toMatchObject({
       conditions: [{ condition: "trigger", id: ["manual-id"] }],
       actions: [{ condition: "trigger", id: "" }],
     });
@@ -207,9 +213,22 @@ describe("automation trigger IDs", () => {
       actions: [],
     };
 
-    expect(cleanupTriggerIds(config)).toMatchObject({
+    expect(
+      cleanupRemovedGeneratedTriggerReferences(config, new Set([generatedId]))
+    ).toMatchObject({
       conditions: [{ condition: "trigger", id: "" }],
     });
+  });
+
+  it("keeps a dangling generated reference during unrelated cleanup", () => {
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`;
+    const config: AutomationConfig = {
+      triggers: [],
+      conditions: [{ condition: "trigger", id: generatedId }],
+      actions: [],
+    };
+
+    expect(cleanupUnusedGeneratedTriggerIds(config)).toBe(config);
   });
 
   it("keeps manual dangling trigger IDs when triggers are removed", () => {
@@ -224,7 +243,9 @@ describe("automation trigger IDs", () => {
       actions: [],
     };
 
-    expect(cleanupTriggerIds(config)).toMatchObject({
+    expect(
+      cleanupRemovedGeneratedTriggerReferences(config, new Set(["manual"]))
+    ).toMatchObject({
       conditions: [{ condition: "trigger", id: "manual" }],
     });
   });
@@ -286,7 +307,7 @@ describe("automation trigger IDs", () => {
       actions: [],
     };
 
-    expect(cleanupTriggerIds(config)).toEqual({
+    expect(cleanupUnusedGeneratedTriggerIds(config)).toEqual({
       ...config,
       triggers: [
         { trigger: "state", entity_id: "light.kitchen", id: generatedA },
@@ -309,7 +330,7 @@ describe("automation trigger IDs", () => {
       actions: [],
     };
 
-    expect(cleanupTriggerIds(config)).toBe(config);
+    expect(cleanupUnusedGeneratedTriggerIds(config)).toBe(config);
   });
 
   it("preserves manual trigger IDs even when no condition references them", () => {
@@ -321,6 +342,6 @@ describe("automation trigger IDs", () => {
       actions: [],
     };
 
-    expect(cleanupTriggerIds(config)).toBe(config);
+    expect(cleanupUnusedGeneratedTriggerIds(config)).toBe(config);
   });
 });

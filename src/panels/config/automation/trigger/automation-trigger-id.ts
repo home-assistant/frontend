@@ -94,7 +94,9 @@ const getGeneratedTriggerId = (
 };
 
 /** Collect nonempty stored leaf IDs, including generated IDs and duplicates. */
-const getExplicitTriggerIds = (triggers: Trigger | Trigger[] | undefined) =>
+export const getExplicitTriggerIds = (
+  triggers: Trigger | Trigger[] | undefined
+) =>
   flattenTriggers(triggers)
     .map(getTriggerId)
     .filter((id): id is string => Boolean(id));
@@ -366,36 +368,20 @@ export const updateTriggerCondition = (
   };
 };
 
-/**
- * Reconcile generated trigger IDs in both directions:
- * - Remove trigger-condition references to generated IDs missing from the trigger list.
- * - Remove generated IDs from triggers not referenced by any trigger condition.
- * IDs without the generated prefix are left untouched. Templates and arbitrary
- * action data do not count as references because they are not inspected.
- *
- * The configuration must already contain the updated trigger list.
- * Return the original configuration when no IDs or references need removal.
- */
-export const cleanupTriggerIds = (
+/** Remove generated IDs from triggers that no trigger condition references. */
+export const cleanupUnusedGeneratedTriggerIds = (
   config: AutomationConfig
 ): AutomationConfig => {
-  const triggerIds = new Set(getExplicitTriggerIds(config.triggers));
   const referencedIds = new Set<string>();
-  let refsChanged = false;
-  /** Record a reference and remove it only if its generated ID has no trigger. */
-  const cleanRef = (id: string) => {
+  const recordRef = (id: string) => {
     referencedIds.add(id);
-    if (isGeneratedTriggerId(id) && !triggerIds.has(id)) {
-      refsChanged = true;
-      return undefined;
-    }
     return id;
   };
-  const updated = new AutomationTriggerConditionMapper((condition) =>
-    mapReferencedTriggerIds(condition, cleanRef)
+  new AutomationTriggerConditionMapper((condition) =>
+    mapReferencedTriggerIds(condition, recordRef)
   ).map(config);
 
-  let triggersChanged = false;
+  let changed = false;
   const newTriggers = walkLeafTriggers(config.triggers, (trigger) => {
     if (
       isTriggerList(trigger) ||
@@ -405,18 +391,39 @@ export const cleanupTriggerIds = (
     ) {
       return trigger;
     }
-    triggersChanged = true;
+    changed = true;
     const { id: _id, ...rest } = trigger;
     return rest as Trigger;
   });
 
-  if (!refsChanged && !triggersChanged) {
+  if (!changed) {
     return config;
   }
   return {
-    ...(refsChanged ? updated : config),
+    ...config,
     triggers: newTriggers,
   };
+};
+
+/** Remove references to generated IDs belonging to triggers removed from the config. */
+export const cleanupRemovedGeneratedTriggerReferences = (
+  config: AutomationConfig,
+  removedIds: Set<string>
+): AutomationConfig => {
+  if (!removedIds.size) {
+    return config;
+  }
+  let changed = false;
+  const cleaned = new AutomationTriggerConditionMapper((condition) =>
+    mapReferencedTriggerIds(condition, (id) => {
+      if (isGeneratedTriggerId(id) && removedIds.has(id)) {
+        changed = true;
+        return undefined;
+      }
+      return id;
+    })
+  ).map(config);
+  return changed ? cleaned : config;
 };
 
 /**
