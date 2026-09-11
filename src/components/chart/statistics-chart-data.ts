@@ -54,76 +54,6 @@ export interface StatisticsChartData {
 }
 
 /**
- * ECharts stacks line series by data index. Statistics are fetched per
- * entity, so a recorder gap would otherwise make the next value in that
- * entity stack against a different timestamp in its neighbours. Give every
- * stacked line series the same (union) x-axis sequence and use null for a
- * missing sample; this keeps the gap while making the stack time-aligned.
- */
-type StackedLinePoint = [number, number | null];
-
-function alignStackedLineData(
-  datasets: (LineSeriesOption | BarSeriesOption)[]
-) {
-  const lineDatasets = datasets.filter(
-    (dataset): dataset is LineSeriesOption =>
-      dataset.type === "line" &&
-      Array.isArray(dataset.data) &&
-      dataset.data.length > 0
-  );
-  if (lineDatasets.length < 2) {
-    return;
-  }
-
-  const timestamps = new Set<number>();
-  const multiplicities = new Map<number, number>();
-  const pointsByDataset = lineDatasets.map((dataset) => {
-    const points = new Map<number, StackedLinePoint[]>();
-    for (const point of dataset.data as StackedLinePoint[]) {
-      if (!Array.isArray(point) || typeof point[0] !== "number") {
-        continue;
-      }
-      timestamps.add(point[0]);
-      const pointsAtTimestamp = points.get(point[0]) || [];
-      pointsAtTimestamp.push(point);
-      points.set(point[0], pointsAtTimestamp);
-      multiplicities.set(
-        point[0],
-        Math.max(multiplicities.get(point[0]) || 0, pointsAtTimestamp.length)
-      );
-    }
-    return points;
-  });
-  const orderedTimestamps = [...timestamps].sort((a, b) => a - b);
-
-  lineDatasets.forEach((dataset, index) => {
-    const points = pointsByDataset[index];
-    const aligned: StackedLinePoint[] = [];
-    orderedTimestamps.forEach((timestamp) => {
-      const pointsAtTimestamp = points.get(timestamp);
-      const multiplicity = multiplicities.get(timestamp)!;
-      if (!pointsAtTimestamp) {
-        for (let slot = 0; slot < multiplicity; slot++) {
-          aligned.push([timestamp, null]);
-        }
-        return;
-      }
-      for (let slot = 0; slot < multiplicity; slot++) {
-        aligned.push(
-          pointsAtTimestamp[slot] ||
-            pointsAtTimestamp[pointsAtTimestamp.length - 1]
-        );
-      }
-    });
-    dataset.data = aligned;
-    // ha-chart-base samples each line independently when sampling is set.
-    // Keep aligned stacked data intact so its shared timestamp index survives
-    // the chart rendering pipeline.
-    dataset.sampling = undefined;
-  });
-}
-
-/**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
  * hass) are injected so the transform is deterministic and benchmarkable.
@@ -169,6 +99,68 @@ export function generateStatisticsChartData(
     endTime = now;
   }
 
+  // ECharts stacks lines by data index. Derive the common timeline from raw
+  // statistic boundaries before emitting datasets, so recorder gaps retain
+  // their value/null boundary slots without a later output-data rewrite.
+  const stackedLineTimes = new Map<number, number>();
+  const stackedLineStatistics = new Set<string>();
+  if (chartType === "line" && chartStacked) {
+    for (const [statisticId, stats] of statisticsData) {
+      if (
+        hiddenStats.has(statisticId) ||
+        !params.statTypes.some((type) => statisticsHaveType(stats, type))
+      ) {
+        continue;
+      }
+      let previousStart: number | undefined;
+      let previousEnd: number | undefined;
+      const statisticTimes = new Map<number, number>();
+      const addStatisticTime = (time: number) => {
+        statisticTimes.set(time, (statisticTimes.get(time) || 0) + 1);
+      };
+      for (const stat of stats) {
+        if (previousStart === stat.start) {
+          continue;
+        }
+        previousStart = stat.start;
+        const limit = Math.min(stat.end, endTime.getTime());
+        if (stat.start > limit) {
+          continue;
+        }
+        stackedLineStatistics.add(statisticId);
+        if (previousEnd !== undefined && previousEnd !== stat.start) {
+          addStatisticTime(previousEnd);
+          addStatisticTime(previousEnd);
+        }
+        addStatisticTime(stat.start);
+        previousEnd = limit;
+      }
+      if (previousEnd !== undefined) {
+        addStatisticTime(previousEnd);
+      }
+      for (const [time, slots] of statisticTimes) {
+        stackedLineTimes.set(
+          time,
+          Math.max(stackedLineTimes.get(time) || 0, slots)
+        );
+      }
+    }
+  }
+  let stackedLineOffset = 0;
+  const stackedLineTimeline = [...stackedLineTimes]
+    .sort(([a], [b]) => a - b)
+    .map(([time, slots]) => {
+      const offset = stackedLineOffset;
+      stackedLineOffset += slots;
+      return [time, slots, offset] as const;
+    });
+  const stackedLineSlots = new Map(
+    stackedLineTimeline.map(([time, slots, offset]) => [
+      time,
+      { slots, offset },
+    ])
+  );
+
   // Check if we need to display most recent data. Allow 10m of leeway for "now",
   // because stats are 5 minute aggregated.
   // Use same now point for all statistics even if processing time means the
@@ -211,6 +203,26 @@ export function generateStatisticsChartData(
     // The datasets for the current statistic
     const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
     const statLegendData: StatisticsChartLegendItem[] = [];
+    const statHidden = hiddenStats.has(statistic_id);
+    const emittedStackedLineSlots = new Map<number, number>();
+
+    const pushLineData = (
+      dataset: LineSeriesOption | BarSeriesOption,
+      time: number,
+      value: (number | null)[]
+    ) => {
+      const stackedSlot = stackedLineSlots.get(time);
+      if (!stackedSlot || statHidden) {
+        dataset.data!.push([time, ...value]);
+        return;
+      }
+      const emittedSlots = emittedStackedLineSlots.get(time) || 0;
+      const point = [time, ...value];
+      for (let slot = emittedSlots; slot < stackedSlot.slots; slot++) {
+        dataset.data![stackedSlot.offset + slot] = point;
+      }
+      emittedStackedLineSlots.set(time, emittedSlots + 1);
+    };
 
     // Place bars at centre of their specified time range if this is a bar chart
     // and the period is 5minute or hour.
@@ -255,10 +267,10 @@ export function generateStatisticsChartData(
           if (drawGap) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime!.getTime(), ...prevValues![i]!]);
-            d.data!.push([prevEndTime!.getTime(), null]);
+            pushLineData(d, prevEndTime!.getTime(), prevValues![i]!);
+            pushLineData(d, prevEndTime!.getTime(), [null]);
           }
-          d.data!.push([start.getTime(), ...dataValue!]);
+          pushLineData(d, start.getTime(), dataValue!);
           // For band-top rows dataValues[i] is [diff, top]; the actual Y is
           // the last element. For regular rows it's [value]. Same call works.
           trackY(dataValue[dataValue.length - 1]);
@@ -414,7 +426,19 @@ export function generateStatisticsChartData(
       return PLAIN_KIND;
     });
     const numTypes = statTypes.length;
-    const statHidden = hiddenStats.has(statistic_id);
+    if (
+      chartType === "line" &&
+      chartStacked &&
+      !statHidden &&
+      stackedLineStatistics.has(statistic_id)
+    ) {
+      statDataSets.forEach((dataset) => {
+        dataset.sampling = undefined;
+        dataset.data = stackedLineTimeline.flatMap(([time, slots]) =>
+          Array.from({ length: slots }, () => [time, null])
+        );
+      });
+    }
 
     for (const stat of stats) {
       // Skip consecutive stats that share the same start time. Compare the raw
@@ -460,7 +484,7 @@ export function generateStatisticsChartData(
     const lastValues = prevValues;
     if (chartType === "line" && lastEndTime && lastValues) {
       statDataSets.forEach((d, i) => {
-        d.data!.push([lastEndTime.getTime(), ...lastValues[i]!]);
+        pushLineData(d, lastEndTime.getTime(), lastValues[i]!);
       });
     }
 
@@ -508,10 +532,6 @@ export function generateStatisticsChartData(
     Array.prototype.push.apply(totalDataSets, statDataSets);
     Array.prototype.push.apply(legendData, statLegendData);
   });
-
-  if (chartType === "line" && chartStacked) {
-    alignStackedLineData(totalDataSets);
-  }
 
   if (chartType === "bar") {
     fillDataGapsAndRoundCaps(totalDataSets as BarSeriesOption[], chartStacked);

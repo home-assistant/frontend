@@ -169,7 +169,7 @@ describe("generateStatisticsChartData", () => {
       [ids[0]]: makeSeries(true),
       [ids[1]]: makeSeries(false),
     };
-    const params = {
+    const params: Parameters<typeof generateStatisticsChartData>[0] = {
       ...baseParams,
       statisticsData: statistics,
       statisticsMetaData: buildMetadata(ids),
@@ -179,19 +179,6 @@ describe("generateStatisticsChartData", () => {
       endTime: new Date(start + (count - 1) * period),
     };
 
-    const oldSeries = [
-      makeSeries(true).map(
-        ({ start: timestamp, mean }) => [timestamp, mean] as [number, number]
-      ),
-      makeSeries(false).map(
-        ({ start: timestamp, mean }) => [timestamp, mean] as [number, number]
-      ),
-    ];
-    const oldSamples = oldSeries.map((data) =>
-      downSampleLineData(data, 40).map(([timestamp]) => timestamp)
-    );
-    expect(oldSamples[0]).not.toEqual(oldSamples[1]);
-
     const result = generateStatisticsChartData(params)!;
     const stackedSeries = result.datasets.filter(
       (dataset) => dataset.data?.length
@@ -200,12 +187,67 @@ describe("generateStatisticsChartData", () => {
     expect(
       stackedSeries.every((dataset) => dataset.sampling === undefined)
     ).toBe(true);
-    const renderedSamples = stackedSeries.map((dataset) =>
-      (dataset.sampling === "minmax"
-        ? downSampleLineData(dataset.data as [number, number][], 40)
-        : dataset.data)!.map((point) => (point as [number, number | null])[0])
+    const independentlySampled = stackedSeries.map((dataset) =>
+      downSampleLineData(dataset.data as [number, number | null][], 40).map(
+        ([timestamp]) => timestamp
+      )
     );
-    expect(renderedSamples[0]).toEqual(renderedSamples[1]);
+    expect(independentlySampled[0]).not.toEqual(independentlySampled[1]);
+    const renderedTimestamps = stackedSeries.map((dataset) =>
+      dataset.data!.map((point) => (point as [number, number | null])[0])
+    );
+    expect(renderedTimestamps[0]).toEqual(renderedTimestamps[1]);
+  });
+
+  it("excludes hidden and clipped statistics from the stacked timeline", () => {
+    const ids = [
+      "sensor.charger",
+      "sensor.pv",
+      "sensor.hidden",
+      "sensor.future",
+    ];
+    const start = FIXED_EPOCH_MS;
+    const period = 5 * 60 * 1000;
+    const result = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: {
+        [ids[0]]: [
+          { start, end: start + period, mean: 10 },
+          { start: start + period, end: start + 2 * period, mean: 20 },
+        ],
+        [ids[1]]: [
+          { start, end: start + period, mean: 100 },
+          { start: start + period, end: start + 2 * period, mean: 200 },
+        ],
+        [ids[2]]: [
+          { start: start + period / 2, end: start + period, mean: 50 },
+        ],
+        [ids[3]]: [
+          { start: start + 2 * period, end: start + 3 * period, mean: 75 },
+        ],
+      },
+      statisticsMetaData: buildMetadata(ids),
+      statTypes: ["mean"],
+      chartType: "line-stack",
+      period: "5minute",
+      endTime: new Date(start + period),
+      hiddenStats: new Set([ids[2]]),
+    })!;
+    const series = result.datasets.filter((dataset) => dataset.data?.length);
+
+    expect(series).toHaveLength(2);
+    expect(series.map((dataset) => dataset.data)).toEqual([
+      [
+        [start, 10],
+        [start + period, 20],
+        [start + period, 20],
+      ],
+      [
+        [start, 100],
+        [start + period, 200],
+        [start + period, 200],
+      ],
+    ]);
   });
 
   it("matches snapshot for a bar chart with sum statistics", () => {
