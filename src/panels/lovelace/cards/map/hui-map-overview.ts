@@ -3,7 +3,13 @@ import { mdiHistory } from "@mdi/js";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, queryAll, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { zoneColor } from "../../../../common/map/entity-map-colors";
@@ -12,8 +18,10 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../../../common/entity/get_entity_location";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-resizable-bottom-sheet";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-relative-time";
@@ -96,19 +104,37 @@ export class HuiMapOverview extends LitElement {
 
   @state() private _tab: OverviewTab = "people";
 
-  @state() private _expanded = true;
+  // On phones the overview is a bottom sheet; elsewhere a floating panel
+  @state() private _phone = false;
+
+  private _phoneQuery = window.matchMedia("(max-width: 600px)");
+
+  // The sheet never shrinks below the strip that stays useful when collapsed
+  @state() private _sheetMinHeight?: number;
+
+  @query(".panel.sheet") private _sheetPanel?: HTMLElement;
+
+  @query(".peek") private _peek?: HTMLElement;
+
+  private _peekObserver?: ResizeObserver;
+
+  private _observedPeek?: HTMLElement;
 
   @state() private _activity?: ActivityEntry[];
 
   @state() private _activityFailed = false;
 
-  private _touchStartY?: number;
-
   private _resizeObserver?: ResizeObserver;
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this._phone = this._phoneQuery.matches;
+    this._phoneQuery.addEventListener("change", this._handlePhoneChange);
     this._resizeObserver ??= new ResizeObserver(() => {
+      // The sheet reports its own size
+      if (this._phone) {
+        return;
+      }
       const { width, height } = this.getBoundingClientRect();
       fireEvent(this, "map-overview-resize", { width, height });
     });
@@ -117,8 +143,56 @@ export class HuiMapOverview extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._phoneQuery.removeEventListener("change", this._handlePhoneChange);
     this._resizeObserver?.disconnect();
+    this._peekObserver?.disconnect();
+    this._observedPeek = undefined;
     fireEvent(this, "map-overview-resize", { width: 0, height: 0 });
+  }
+
+  private _handlePhoneChange = () => {
+    this._phone = this._phoneQuery.matches;
+  };
+
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    this._watchPeek();
+  }
+
+  // Measures the tabs or the detail header, whichever the sheet shows, plus
+  // the panel's padding around it
+  private _watchPeek(): void {
+    const peek = this._phone ? this._peek : undefined;
+    if (peek === this._observedPeek) {
+      return;
+    }
+    this._peekObserver?.disconnect();
+    this._observedPeek = peek;
+    if (!peek) {
+      this._sheetMinHeight = undefined;
+      return;
+    }
+    this._peekObserver = new ResizeObserver(() => {
+      const panel = this._sheetPanel;
+      if (!panel) {
+        return;
+      }
+      const style = getComputedStyle(panel);
+      this._sheetMinHeight =
+        parseFloat(style.paddingTop) +
+        peek.offsetHeight +
+        parseFloat(style.paddingBottom);
+    });
+    this._peekObserver.observe(peek);
+  }
+
+  private _handleSheetResized(
+    ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
+  ) {
+    fireEvent(this, "map-overview-resize", {
+      width: window.innerWidth,
+      height: ev.detail.height,
+    });
   }
 
   private _getPeople(): HassEntity[] {
@@ -198,7 +272,6 @@ export class HuiMapOverview extends LitElement {
       this._activity = undefined;
       this._activityFailed = false;
       if (this.selected) {
-        this._expanded = true;
         this._loadActivity(this.selected);
       }
     }
@@ -287,35 +360,24 @@ export class HuiMapOverview extends LitElement {
     const selectedStateObj = this.selected
       ? this._states[this.selected]
       : undefined;
+    const content = selectedStateObj
+      ? this._renderDetail(selectedStateObj)
+      : this._renderList(people, devices, zones);
 
     return html`
-      <div class=${classMap({ panel: true, collapsed: !this._expanded })}>
-        <button
-          class="handle"
-          type="button"
-          aria-expanded=${this._expanded}
-          aria-label=${this._i18n.localize(
-            `ui.panel.lovelace.cards.map.overview.${
-              this._expanded ? "hide_list" : "show_list"
-            }`
-          )}
-          .title=${this._i18n.localize(
-            `ui.panel.lovelace.cards.map.overview.${
-              this._expanded ? "hide_list" : "show_list"
-            }`
-          )}
-          @click=${this._toggleExpanded}
-          @touchstart=${this._handleTouchStart}
-          @touchend=${this._handleTouchEnd}
-        >
-          <span class="grip"></span>
-        </button>
-        ${
-          selectedStateObj
-            ? this._renderDetail(selectedStateObj)
-            : this._renderList(people, devices, zones)
-        }
-      </div>
+      ${
+        this._phone
+          ? html`<ha-resizable-bottom-sheet
+              persistent
+              open-at-content-height
+              open-max-viewport-height="45"
+              .minHeight=${this._sheetMinHeight}
+              @bottom-sheet-resized=${this._handleSheetResized}
+            >
+              <div class="panel sheet">${content}</div>
+            </ha-resizable-bottom-sheet>`
+          : html`<div class="panel">${content}</div>`
+      }
     `;
   }
 
@@ -324,7 +386,7 @@ export class HuiMapOverview extends LitElement {
     const zoneCount = isZone ? Number(stateObj.state) : undefined;
 
     return html`
-      <div class="detail-header">
+      <div class="detail-header peek">
         <ha-icon-button-prev
           .label=${this._i18n.localize("ui.common.back")}
           @click=${this._handleBack}
@@ -382,11 +444,11 @@ export class HuiMapOverview extends LitElement {
                     )}
                   </span>`
                 : html`<div class="timeline">
-                    ${this._activity.map((entry, index) =>
+                    ${this._activity.map((entry, index, all) =>
                       this._renderActivityEntry(
                         stateObj,
                         entry,
-                        index === this._activity!.length - 1
+                        index === all.length - 1
                       )
                     )}
                   </div>`
@@ -446,7 +508,7 @@ export class HuiMapOverview extends LitElement {
     const items = itemsPerTab[tab]!;
 
     return html`
-      <div class="tabs">
+      <div class="tabs peek">
         <span
           class="pill"
           style=${styleMap({
@@ -576,7 +638,6 @@ export class HuiMapOverview extends LitElement {
 
   private _handleTabClick(ev: Event) {
     this._tab = (ev.currentTarget as HTMLElement).dataset.tab as OverviewTab;
-    this._expanded = true;
   }
 
   private _handleTabKeydown(ev: KeyboardEvent) {
@@ -597,29 +658,6 @@ export class HuiMapOverview extends LitElement {
       this._tab = next.dataset.tab as OverviewTab;
       next.focus();
     }
-  }
-
-  private _toggleExpanded() {
-    this._expanded = !this._expanded;
-  }
-
-  private _handleTouchStart(ev: TouchEvent) {
-    this._touchStartY = ev.touches[0]?.clientY;
-  }
-
-  private _handleTouchEnd(ev: TouchEvent) {
-    if (this._touchStartY === undefined) {
-      return;
-    }
-    const endY = ev.changedTouches[0]?.clientY;
-    const deltaY = endY === undefined ? 0 : endY - this._touchStartY;
-    this._touchStartY = undefined;
-    if (Math.abs(deltaY) < 30) {
-      return;
-    }
-    // Swiping is handled here; suppress the synthetic click that follows
-    ev.preventDefault();
-    this._expanded = deltaY < 0;
   }
 
   private _handleItemClick(ev: Event) {
@@ -660,25 +698,19 @@ export class HuiMapOverview extends LitElement {
       box-shadow: var(--ha-box-shadow-m);
     }
 
-    .handle {
-      display: none;
-      flex: none;
-      width: 100%;
-      padding: var(--ha-space-1) 0 var(--ha-space-3);
-      margin: 0;
-      border: none;
-      background: none;
-      cursor: pointer;
-      touch-action: none;
+    ha-resizable-bottom-sheet {
+      pointer-events: auto;
+      /* The tabs sit right under the handle */
+      --ha-bottom-sheet-handle-padding: var(--ha-space-2);
     }
 
-    .grip {
-      display: block;
-      width: 40px;
-      height: 4px;
-      margin: 0 auto;
-      border-radius: 2px;
-      background: var(--divider-color);
+    .panel.sheet {
+      flex: 1;
+      min-height: 0;
+      border-radius: 0;
+      box-shadow: none;
+      padding-top: var(--ha-space-7);
+      padding-bottom: max(var(--ha-space-3), env(safe-area-inset-bottom));
     }
 
     .tabs {
@@ -889,46 +921,6 @@ export class HuiMapOverview extends LitElement {
 
     .timeline {
       margin-top: var(--ha-space-2);
-    }
-
-    @media (max-width: 600px) {
-      .panel {
-        border-end-start-radius: 0;
-        border-end-end-radius: 0;
-        padding-top: 0;
-        padding-bottom: max(var(--ha-space-3), env(safe-area-inset-bottom));
-      }
-
-      .handle {
-        display: block;
-      }
-
-      .list {
-        transition:
-          max-height 250ms ease,
-          opacity 250ms ease,
-          visibility 250ms ease;
-        max-height: 60vh;
-        opacity: 1;
-        visibility: visible;
-        overflow: hidden;
-      }
-
-      .panel.collapsed .list {
-        max-height: 0;
-        opacity: 0;
-        visibility: hidden;
-      }
-
-      .panel.collapsed ha-md-list {
-        margin-top: 0;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .list {
-          transition: none;
-        }
-      }
     }
   `;
 }
