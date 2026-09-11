@@ -11,7 +11,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
@@ -270,9 +269,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._name = this.entry.name || this.entry.original_name || "";
+    this._name = this.entry.name || this._originalName;
     this._useDeviceName =
-      !!this._device && !computeEntityEntryName(this.entry, this.hass.devices);
+      !!this._device && !(this.entry.name ?? this._originalName);
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -472,7 +471,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
-    const defaultName = this.entry.original_name || "";
+    const defaultName = this._originalName;
 
     return html`
       ${
@@ -520,24 +519,24 @@ export class EntityRegistrySettingsEditor extends LitElement {
               class="name"
               .value=${this._name}
               .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.name"
-                )}
+                "ui.dialogs.entity_registry.editor.name"
+              )}
               .disabled=${this.disabled}
               @input=${this._nameChanged}
             >
               ${
-                  this._name !== defaultName
-                    ? html`<ha-icon-button
-                        slot="end"
-                        .path=${mdiRestore}
-                        .label=${this.hass.localize(
+                this._name !== defaultName
+                  ? html`<ha-icon-button
+                      slot="end"
+                      .path=${mdiRestore}
+                      .label=${this.hass.localize(
                         "ui.dialogs.entity_registry.editor.restore_name"
                       )}
-                        .disabled=${this.disabled}
-                        @click=${this._restoreName}
-                      ></ha-icon-button>`
-                    : nothing
-                }
+                      .disabled=${this.disabled}
+                      @click=${this._restoreName}
+                    ></ha-icon-button>`
+                  : nothing
+              }
             </ha-input>`
       }
       ${
@@ -1736,8 +1735,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._useDeviceName = ev.currentTarget.checked;
   }
 
+  private get _originalName(): string {
+    return String(this.entry.original_name ?? "");
+  }
+
   private _restoreName(): void {
-    this._name = this.entry.original_name || "";
+    this._name = this._originalName;
+    if (this._device && !this._originalName) {
+      this._useDeviceName = true;
+    }
   }
 
   private _computeName(): string | null {
@@ -1745,13 +1751,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return this.entry.name;
     }
     if (this._device && this._useDeviceName) {
-      // Preserve entities that already use the device name without an override.
-      return computeEntityEntryName(this.entry, this.hass.devices)
-        ? ""
-        : this.entry.name;
+      return this._originalName ? "" : null;
     }
     const name = this._name.trim();
-    return name && name !== this.entry.original_name ? name : null;
+    return name && name !== this._originalName ? name : null;
   }
 
   private _openDeviceSettings() {
