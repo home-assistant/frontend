@@ -134,7 +134,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ${
         this._init && !this._restoring
           ? html`<onboarding-welcome-links
-              .localize=${this.localize}
               .mobileApp=${this._mobileApp}
             ></onboarding-welcome-links>`
           : nothing
@@ -158,7 +157,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _renderStep() {
     if (this._restoring) {
       return html`<onboarding-restore-backup
-        .localize=${this.localize}
         .supervisor=${this._supervisor ?? false}
         .mode=${this._restoring}
       >
@@ -175,34 +173,21 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       return html`<onboarding-loading></onboarding-loading>`;
     }
     if (step.step === "user") {
-      return html`<onboarding-create-user
-        .localize=${this.localize}
-        .language=${this.language}
-      >
-      </onboarding-create-user>`;
+      return html`<onboarding-create-user></onboarding-create-user>`;
     }
     if (step.step === "core_config") {
       return html`
-        <onboarding-core-config
-          .hass=${this.hass}
-          .onboardingLocalize=${this.localize}
-        ></onboarding-core-config>
+        <onboarding-core-config .hass=${this.hass}></onboarding-core-config>
       `;
     }
     if (step.step === "analytics") {
       return html`
-        <onboarding-analytics
-          .hass=${this.hass}
-          .localize=${this.localize}
-        ></onboarding-analytics>
+        <onboarding-analytics .hass=${this.hass}></onboarding-analytics>
       `;
     }
     if (step.step === "integration") {
       return html`
-        <onboarding-integrations
-          .hass=${this.hass}
-          .onboardingLocalize=${this.localize}
-        ></onboarding-integrations>
+        <onboarding-integrations .hass=${this.hass}></onboarding-integrations>
       `;
     }
     return nothing;

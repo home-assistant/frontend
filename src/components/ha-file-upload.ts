@@ -27,9 +27,9 @@ declare global {
 
 @customElement("ha-file-upload")
 export class HaFileUpload extends LitElement {
-  @property({ attribute: false }) public localize?: LocalizeFunc;
-
-  @state() @consumeLocalize() private _localize?: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -92,7 +92,6 @@ export class HaFileUpload extends LitElement {
   }
 
   public render(): TemplateResult {
-    const localize = this.localize || this._localize!;
     return html`
       ${
         this.uploading
@@ -102,10 +101,13 @@ export class HaFileUpload extends LitElement {
                   >${
                     this.uploadingLabel ||
                     (this.value
-                      ? localize("ui.components.file-upload.uploading_name", {
-                          name: this._name,
-                        })
-                      : localize("ui.components.file-upload.uploading"))
+                      ? this._localize(
+                          "ui.components.file-upload.uploading_name",
+                          {
+                            name: this._name,
+                          }
+                        )
+                      : this._localize("ui.components.file-upload.uploading"))
                   }</span
                 >
                 ${
@@ -147,12 +149,12 @@ export class HaFileUpload extends LitElement {
                           slot="start"
                           .path=${this.icon || mdiFileUpload}
                         ></ha-svg-icon>
-                        ${this.label || localize("ui.components.file-upload.label")}
+                        ${this.label || this._localize("ui.components.file-upload.label")}
                       </ha-button>
                       <span class="secondary"
                         >${
                           this.secondary ||
-                          localize("ui.components.file-upload.secondary")
+                          this._localize("ui.components.file-upload.secondary")
                         }</span
                       >
                       <span class="supports">${this.supports}</span>`
@@ -166,7 +168,7 @@ export class HaFileUpload extends LitElement {
                         </div>
                         <ha-icon-button
                           @click=${this._clearValue}
-                          .label=${this.deleteLabel || localize("ui.common.delete")}
+                          .label=${this.deleteLabel || this._localize("ui.common.delete")}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>`
@@ -185,7 +187,8 @@ export class HaFileUpload extends LitElement {
                             <ha-icon-button
                               @click=${this._clearValue}
                               .label=${
-                                this.deleteLabel || localize("ui.common.delete")
+                                this.deleteLabel ||
+                                this._localize("ui.common.delete")
                               }
                               .path=${mdiDelete}
                             ></ha-icon-button>
