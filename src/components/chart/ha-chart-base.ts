@@ -1209,6 +1209,11 @@ export class HaChartBase extends LitElement {
       stackGroups.set(key, group);
     });
     for (const indexes of stackGroups.values()) {
+      if (
+        (series[indexes[0]] as LineSeriesOption).stackOrder === "seriesDesc"
+      ) {
+        indexes.reverse();
+      }
       const dataSets = indexes.map((index) => series[index].data as Point[]);
       const first = dataSets[0];
       const aligned =

@@ -1,4 +1,5 @@
 import type { LineSeriesOption } from "echarts";
+import { addSafe } from "echarts/lib/util/number";
 
 export type Point = NonNullable<LineSeriesOption["data"]>[number];
 
@@ -357,7 +358,7 @@ export function downSampleAlignedLineData(
                   : value <= 0
                     ? negative
                     : undefined;
-      if (below !== undefined) value += below;
+      if (below !== undefined) value = addSafe(value, below);
       previous = value;
       if (value > 0) positive = value;
       if (value < 0) negative = value;

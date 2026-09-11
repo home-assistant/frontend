@@ -532,6 +532,27 @@ describe("downSampleAlignedLineData", () => {
     }
   );
 
+  it("uses ECharts decimal addition before choosing the next stack level", () => {
+    const values = [
+      [0.2, -0.8, -0.6, -0.5, 0.7, -0.2, -0.1, 0.9],
+      [0.4, -0.8, 0.5, 0.2, -0.9, 0.5, -0.7, -0.8],
+      [-0.6, 0.8, 0.1, 0, -0.6, -0.4, 0.5, 0.9],
+      [-1, -1, 0.5, 0.4, 0.8, -0.9, -0.9, 0.6],
+    ];
+    const data = values.map((row) =>
+      row.map((y, x): [number, number] => [x, y])
+    );
+    const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+      "negative",
+      "samesign",
+      "positive",
+      "positive",
+    ]);
+    // Rounding 0.2 + 0.4 - 0.6 to zero changes the preceding positive level.
+    // The last level's actual minimum is at x=5, not x=0.
+    expect(sampled[3]).toContainEqual([5, -0.9]);
+  });
+
   it("does not align mismatched series by corrupting their data", () => {
     const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
       x,
