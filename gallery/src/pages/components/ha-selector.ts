@@ -21,6 +21,7 @@ import "../../../../src/components/ha-settings-row";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
+import type { SerialPort } from "../../../../src/data/usb";
 import {
   showDialog,
   type ShowDialogParams,
@@ -293,9 +294,69 @@ const LABELS: LabelRegistryEntry[] = [
   },
 ];
 
+const serialPort = (port: Partial<SerialPort>): SerialPort => ({
+  device: "/dev/ttyUSB0",
+  resolved_device: null,
+  serial_number: null,
+  manufacturer: null,
+  description: null,
+  matching_integrations: [],
+  present: true,
+  ...port,
+});
+
+// One port per section the picker groups by, relative to the "zha" domain the
+// serial port selector below is given as its flow context
+const SERIAL_PORTS: SerialPort[] = [
+  serialPort({
+    device:
+      "/dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_9e2adbd75b8beb119fe564a0f320645d-if00-port0",
+    description: "SkyConnect v1.0",
+    manufacturer: "Nabu Casa",
+    serial_number: "9e2adbd75b8beb119fe564a0f320645d",
+    vid: "10C4",
+    pid: "EA60",
+    matching_integrations: ["zha"],
+  }),
+  serialPort({
+    device: "esphome-hass://01JQ8Z5X9WQ0/?port_name=UART0",
+  }),
+  serialPort({
+    device: "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AB0KVD1L-if00-port0",
+    description: "FT232R USB UART",
+    manufacturer: "FTDI",
+    serial_number: "AB0KVD1L",
+    vid: "0403",
+    pid: "6001",
+  }),
+  serialPort({
+    device: "/dev/ttyS0",
+    description: "ttyS0",
+    manufacturer: "Intel",
+  }),
+  serialPort({ device: "/dev/ttyAMA0" }),
+  serialPort({
+    device:
+      "/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0",
+    description: "CP2102 USB to UART Bridge Controller",
+    manufacturer: "Silicon Labs",
+    serial_number: "0001",
+    vid: "10C4",
+    pid: "EA60",
+    matching_integrations: ["matter"],
+  }),
+];
+
 const SCHEMAS: {
   name: string;
-  input: Record<string, (BlueprintInput & { required?: boolean }) | null>;
+  input: Record<
+    string,
+    | (BlueprintInput & {
+        required?: boolean;
+        context?: Record<string, unknown>;
+      })
+    | null
+  >;
 }[] = [
   {
     name: "One of each",
@@ -320,6 +381,13 @@ const SCHEMAS: {
       },
       duration: { name: "Duration", selector: { duration: {} } },
       app: { name: "App", selector: { app: {} } },
+      serial_port: {
+        name: "Serial port",
+        selector: { serial_port: {} },
+        // A config flow passes its own domain as context, which is what the
+        // picker groups recommended and not recommended ports by
+        context: { domain: "zha" },
+      },
       number_box: {
         name: "Number Box",
         selector: {
@@ -605,8 +673,19 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     mockFloorRegistry(hass, FLOORS);
     mockLabelRegistry(hass, LABELS);
     mockHassioSupervisor(hass);
+    hass.addTranslations({
+      "component.matter.title": "Matter",
+      "component.zha.title": "Zigbee Home Automation",
+    });
+    hass.updateHass({
+      config: {
+        ...hass.config,
+        components: [...hass.config.components, "usb"],
+      },
+    });
     hass.mockWS("auth/sign_path", (params) => params);
     hass.mockWS("media_player/browse_media", this._browseMedia);
+    hass.mockWS("usb/list_serial_ports", () => SERIAL_PORTS);
   }
 
   public provideHass(el) {
@@ -776,6 +855,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}
+                      .context=${value!.context}
                       .key=${key}
                       .label=${this._label ? value!.name : undefined}
                       .value=${data[key] ?? value!.default}
