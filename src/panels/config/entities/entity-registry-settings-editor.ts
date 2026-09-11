@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { mdiContentCopy, mdiPencil, mdiRestore } from "@mdi/js";
+import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -24,8 +24,6 @@ import type {
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
-import "../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
 import "../../../components/entity/ha-entity-picker";
@@ -272,7 +270,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._name = this.entry.name || "";
+    this._name = this.entry.name || this.entry.original_name || "";
     this._useDeviceName =
       !!this._device && !computeEntityEntryName(this.entry, this.hass.devices);
     this._icon = this.entry.icon || "";
@@ -474,74 +472,73 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
-    const deviceName =
-      this._device && this._useDeviceName
-        ? computeDeviceNameDisplay(
-            this._device,
-            this.hass.localize,
-            this.hass.states
-          )
-        : undefined;
+    const defaultName = this.entry.original_name || "";
 
     return html`
       ${
-        this.hideName
-          ? nothing
-          : html`<div
-              class="name-field"
-              role="group"
-              aria-label=${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.name"
-              )}
-            >
-              ${
-                deviceName !== undefined
-                  ? html`<div class="device-name" id="entity-name">
-                      <span class="device-name-label">
-                        ${this.hass.localize(
-                          "ui.dialogs.entity_registry.editor.name"
-                        )}
-                      </span>
-                      <span class="device-name-value" title=${deviceName}>
-                        ${deviceName}
-                      </span>
-                      <ha-icon-button
-                        .path=${mdiPencil}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.entity_registry.editor.edit_device_name"
-                        )}
-                        .disabled=${this.disabled}
-                        @click=${this._openDeviceSettings}
-                      ></ha-icon-button>
-                    </div>`
-                  : html`<ha-input
-                      inset-label
-                      class="name"
-                      id="entity-name"
-                      .value=${this._name}
-                      .placeholder=${this.entry.original_name || ""}
-                      .label=${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.name"
-                      )}
-                      .disabled=${this.disabled}
-                      @input=${this._nameChanged}
-                    ></ha-input>`
-              }
-              ${
-                this._device
-                  ? html`<ha-checkbox
-                      .checked=${this._useDeviceName}
-                      .disabled=${this.disabled}
-                      aria-controls="entity-name"
-                      @change=${this._useDeviceNameChanged}
+        !this.hideName && this._device
+          ? html`<ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.use_device_name"
+                )}
+                (${computeDeviceNameDisplay(
+                  this._device,
+                  this.hass.localize,
+                  this.hass.states
+                )})</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.change_device_settings",
+                  {
+                    link: html`<button
+                      class="link"
+                      @click=${this._openDeviceSettings}
                     >
                       ${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.use_device_name"
+                        "ui.dialogs.entity_registry.editor.change_device_name_link"
                       )}
-                    </ha-checkbox>`
-                  : nothing
-              }
-            </div>`
+                    </button>`,
+                  }
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .checked=${this._useDeviceName}
+                .disabled=${this.disabled}
+                @change=${this._useDeviceNameChanged}
+              ></ha-switch>
+            </ha-md-list-item>`
+          : nothing
+      }
+      ${
+        this.hideName || (this._device && this._useDeviceName)
+          ? nothing
+          : html`<ha-input
+              inset-label
+              class="name"
+              .value=${this._name}
+              .label=${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.name"
+                )}
+              .disabled=${this.disabled}
+              @input=${this._nameChanged}
+            >
+              ${
+                  this._name !== defaultName
+                    ? html`<ha-icon-button
+                        slot="end"
+                        .path=${mdiRestore}
+                        .label=${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.restore_name"
+                      )}
+                        .disabled=${this.disabled}
+                        @click=${this._restoreName}
+                      ></ha-icon-button>`
+                    : nothing
+                }
+            </ha-input>`
       }
       ${
         this.hideIcon
@@ -1735,10 +1732,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private _useDeviceNameChanged(
-    ev: HASSDomCurrentTargetEvent<HaCheckbox>
-  ): void {
+  private _useDeviceNameChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
     this._useDeviceName = ev.currentTarget.checked;
+  }
+
+  private _restoreName(): void {
+    this._name = this.entry.original_name || "";
   }
 
   private _computeName(): string | null {
@@ -1751,7 +1750,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
         ? ""
         : this.entry.name;
     }
-    return this._name.trim() || null;
+    const name = this._name.trim();
+    return name && name !== this.entry.original_name ? name : null;
   }
 
   private _openDeviceSettings() {
@@ -1855,68 +1855,14 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
 
         ha-input.entityId,
-        ha-input.name,
-        .device-name {
+        ha-input.name {
           --ha-icon-button-size: 36px;
           --mdc-icon-size: 20px;
         }
 
         ha-input.name {
           --ha-input-start-max-width: 35%;
-        }
-        .name-field {
-          margin: var(--ha-space-2) 0;
-        }
-        .name-field ha-input {
-          margin: 0;
           --ha-input-padding-bottom: 0;
-        }
-        .device-name {
-          position: relative;
-          display: flex;
-          align-items: center;
-          box-sizing: border-box;
-          height: 56px;
-          padding-inline: var(--ha-space-4);
-          background: var(--ha-color-form-background);
-          border-radius: var(--ha-border-radius-sm) var(--ha-border-radius-sm) 0
-            0;
-          box-shadow: inset 0 -1px var(--ha-color-border-neutral-quiet);
-          font-family: var(--ha-font-family-body);
-          font-weight: var(--ha-font-weight-normal);
-          line-height: var(--ha-line-height-condensed);
-          cursor: default;
-        }
-        .device-name-label {
-          position: absolute;
-          top: var(--ha-space-3);
-          inset-inline-start: var(--ha-space-4);
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-xs);
-        }
-        .device-name-value {
-          flex: 1;
-          min-width: 0;
-          padding-top: var(--ha-space-3);
-          color: var(--primary-text-color);
-          font-size: var(--ha-font-size-m);
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          user-select: text;
-        }
-        .device-name ha-icon-button {
-          flex: none;
-          color: var(--secondary-text-color);
-        }
-        .name-field ha-checkbox {
-          display: block;
-          width: fit-content;
-          padding-inline: var(--ha-space-4);
-          --wa-form-control-label-font-size: var(--ha-font-size-s);
-        }
-        .name-field ha-checkbox::part(base) {
-          min-height: 36px;
         }
         ha-input.entityId ha-icon-button:last-child {
           margin-inline-start: 0;

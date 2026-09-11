@@ -604,9 +604,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         ? this.hass.localize("ui.dialogs.more_info_control.details")
         : this._currView === "related"
           ? this.hass.localize("ui.dialogs.more_info_control.related")
-          : this._currView === "add_to"
-            ? addToMenuItem
-            : this._childView?.viewTitle;
+          : this._currView === "settings"
+            ? this.hass.localize("ui.dialogs.more_info_control.settings")
+            : this._currView === "add_to"
+              ? addToMenuItem
+              : this._childView?.viewTitle;
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
       breadcrumb.pop();
