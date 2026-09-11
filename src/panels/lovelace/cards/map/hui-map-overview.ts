@@ -914,6 +914,9 @@ export class HuiMapOverview extends LitElement {
       padding: var(--ha-space-3);
       border-radius: var(--ha-border-radius-lg);
       background: var(--ha-color-fill-neutral-quiet-resting);
+      /* Scrolls within the drawer's height instead of being clipped by it */
+      min-height: 0;
+      overflow-y: auto;
     }
 
     .activity-icon {
