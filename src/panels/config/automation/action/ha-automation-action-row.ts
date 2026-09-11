@@ -28,6 +28,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -61,6 +62,7 @@ import type {
   ActionSidebarConfig,
   AutomationClipboard,
   Condition,
+  TriggerCondition,
 } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
@@ -230,6 +232,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _runResultTimeout?: number;
 
+  private _sidebarAction?: Action;
+
   get selected() {
     return this._selected;
   }
@@ -254,6 +258,21 @@ export default class HaAutomationActionRow extends LitElement {
       type !== undefined && !YAML_ONLY_ACTION_TYPES.has(type as any);
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Controller updates (trigger selection, ID migration, or cleanup) bypass the
+    // sidebar's save callback. Refresh its snapshot unless it already has this
+    // action, so ordinary sidebar edits do not reopen it and disrupt focus.
+    if (
+      changedProperties.has("action") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.action !== this._sidebarAction
+    ) {
+      this.openSidebar();
     }
   }
 
@@ -379,6 +398,15 @@ export default class HaAutomationActionRow extends LitElement {
             ? html`<ha-automation-row-options
                 .config=${this.action}
               ></ha-automation-row-options>`
+            : nothing
+        }
+        ${
+          this._isTriggerConditionAction(type)
+            ? html` <ha-automation-trigger-references
+                .condition=${this.action as TriggerCondition}
+                .hass=${this.hass}
+                .entityRegistry=${this._entityReg}
+              ></ha-automation-trigger-references>`
             : nothing
         }
         ${
@@ -699,6 +727,14 @@ export default class HaAutomationActionRow extends LitElement {
           : nothing
       }
     `;
+  }
+
+  private _isTriggerConditionAction(
+    type: ReturnType<typeof getAutomationActionType>
+  ) {
+    return (
+      type === "condition" && (this.action as Condition).condition === "trigger"
+    );
   }
 
   protected render() {
@@ -1177,10 +1213,12 @@ export default class HaAutomationActionRow extends LitElement {
 
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
+    this._sidebarAction = sidebarAction;
     const actionType = getAutomationActionType(sidebarAction);
 
     fireEvent(this, "open-sidebar", {
       save: (value) => {
+        this._sidebarAction = value;
         fireEvent(this, "value-changed", { value });
       },
       close: (focus?: boolean) => {

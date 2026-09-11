@@ -137,6 +137,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Number }) public index?: number;
+
   @property({ type: Boolean }) public highlight?: boolean;
 
   @property({ type: Boolean, attribute: "sidebar" })
@@ -238,19 +240,26 @@ export default class HaAutomationTriggerRow extends LitElement {
     );
 
     return html`
-      ${
-        type === "list"
-          ? html`<ha-svg-icon
-              slot="leading-icon"
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>`
-          : html`<ha-trigger-icon
-              slot="leading-icon"
-              .hass=${this.hass}
-              .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
-            ></ha-trigger-icon>`
-      }
+      <div slot="leading-icon" class="trigger-leading">
+        ${
+          this.index !== undefined
+            ? html`<span class="trigger-index-badge">${this.index + 1}</span>`
+            : nothing
+        }
+        ${
+          type === "list"
+            ? html`<ha-svg-icon
+                class="trigger-icon"
+                .path=${TRIGGER_ICONS[type]}
+              ></ha-svg-icon>`
+            : html`<ha-trigger-icon
+                .hass=${this.hass}
+                .trigger=${
+                  (this.trigger as Exclude<Trigger, TriggerList>).trigger
+                }
+              ></ha-trigger-icon>`
+        }
+      </div>
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeTrigger(this.trigger, this.hass, this._entityReg)

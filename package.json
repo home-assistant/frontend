@@ -128,6 +128,7 @@
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
     "tinykeys": "patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch",
+    "ulid": "3.0.2",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.4.1",
     "workbox-core": "7.4.1",

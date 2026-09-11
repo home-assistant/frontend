@@ -77,6 +77,36 @@ export const rowStyles = css`
     display: inline-flex;
   }
 
+  .trigger-leading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+  }
+
+  .trigger-leading {
+    color: var(--ha-color-on-neutral-quiet);
+  }
+
+  .trigger-leading ha-trigger-icon,
+  .trigger-leading ha-svg-icon {
+    --mdc-icon-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trigger-index-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px dotted var(--ha-color-border-neutral-normal);
+    border-radius: var(--ha-border-radius-circle);
+    box-sizing: border-box;
+    color: var(--ha-color-text-secondary);
+    font-size: var(--ha-font-size-xs);
+    line-height: 1;
+  }
+
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }
