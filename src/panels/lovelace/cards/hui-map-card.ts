@@ -7,6 +7,7 @@ import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import type { ContextType } from "@lit/context";
@@ -261,12 +262,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       <ha-card id="card" .header=${this._config.title}>
         <div
           id="root"
-          class=${this.layout === PANEL_VIEW_LAYOUT ? "panel-layout" : ""}
+          class=${classMap({
+            "panel-layout": this.layout === PANEL_VIEW_LAYOUT,
+            rtl: computeRTL(
+              this.hass.language,
+              this.hass.translationMetadata.translations
+            ),
+          })}
           @hass-more-info=${this._handleMapMoreInfo}
         >
           <ha-map
             style=${styleMap({
               "--overview-height": `${this._overviewSize.height}px`,
+              "--overview-width": `${this._overviewSize.width}px`,
             })}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
@@ -857,6 +865,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       z-index: 1;
     }
 
+    /* Keep the attribution and scale ruler clear of the drawer: beside it on
+       wide layouts, above it on phones. The controls sit at physical corners. */
+    #root.panel-layout ha-map {
+      --ha-map-left-inset: calc(
+        var(--overview-width, 0px) + 2 * var(--ha-space-3)
+      );
+    }
+    #root.panel-layout.rtl ha-map {
+      --ha-map-left-inset: 0px;
+      --ha-map-right-inset: calc(
+        var(--overview-width, 0px) + 2 * var(--ha-space-3)
+      );
+    }
+
     @media (max-width: 600px) {
       #overview {
         top: auto;
@@ -867,8 +889,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         max-height: 70%;
       }
 
-      /* Keep the attribution and scale ruler above the drawer */
-      #root.panel-layout ha-map {
+      #root.panel-layout ha-map,
+      #root.panel-layout.rtl ha-map {
+        --ha-map-left-inset: 0px;
+        --ha-map-right-inset: 0px;
         --ha-map-bottom-inset: calc(
           var(--overview-height, 0px) + var(--ha-space-2)
         );
