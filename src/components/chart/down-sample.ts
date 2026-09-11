@@ -359,6 +359,8 @@ export function downSampleAlignedLineData(
                     ? negative
                     : undefined;
       if (below !== undefined) value = addSafe(value, below);
+      // "all" uses even a null preceding level; only sign-sensitive
+      // strategies skip it when searching for an earlier cumulative value.
       previous = value;
       if (value > 0) positive = value;
       if (value < 0) negative = value;
