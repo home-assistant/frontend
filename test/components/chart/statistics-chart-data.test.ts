@@ -123,6 +123,96 @@ describe("generateStatisticsChartData", () => {
     ]);
   });
 
+  it("keeps every stacked statistic type in its gap slot", () => {
+    const ids = ["sensor.charger", "sensor.pv"];
+    const start = FIXED_EPOCH_MS;
+    const period = 5 * 60 * 1000;
+    const statistics = {
+      [ids[0]]: [
+        { start, end: start + period, mean: 10, min: 1, max: 11 },
+        {
+          start: start + 2 * period,
+          end: start + 3 * period,
+          mean: 20,
+          min: 2,
+          max: 22,
+        },
+      ],
+      [ids[1]]: [
+        { start, end: start + period, mean: 100, min: 90, max: 110 },
+        {
+          start: start + period,
+          end: start + 2 * period,
+          mean: 101,
+          min: 91,
+          max: 111,
+        },
+        {
+          start: start + 2 * period,
+          end: start + 3 * period,
+          mean: 102,
+          min: 92,
+          max: 112,
+        },
+      ],
+    };
+
+    const result = generateStatisticsChartData({
+      ...baseParams,
+      statisticsData: statistics,
+      statisticsMetaData: buildMetadata(ids),
+      statTypes: ["mean", "min", "max"],
+      chartType: "line-stack",
+      period: "5minute",
+    })!;
+    const series = result.datasets.filter((dataset) => dataset.data?.length);
+
+    expect(series.map((dataset) => dataset.data)).toEqual([
+      [
+        [start, 10],
+        [start + period, 10],
+        [start + period, null],
+        [start + 2 * period, 20],
+        [start + 2 * period, 20],
+      ],
+      [
+        [start, 1],
+        [start + period, 1],
+        [start + period, null],
+        [start + 2 * period, 2],
+        [start + 2 * period, 2],
+      ],
+      [
+        [start, 11],
+        [start + period, 11],
+        [start + period, null],
+        [start + 2 * period, 22],
+        [start + 2 * period, 22],
+      ],
+      [
+        [start, 100],
+        [start + period, 101],
+        [start + period, 101],
+        [start + 2 * period, 102],
+        [start + 2 * period, 102],
+      ],
+      [
+        [start, 90],
+        [start + period, 91],
+        [start + period, 91],
+        [start + 2 * period, 92],
+        [start + 2 * period, 92],
+      ],
+      [
+        [start, 110],
+        [start + period, 111],
+        [start + period, 111],
+        [start + 2 * period, 112],
+        [start + 2 * period, 112],
+      ],
+    ]);
+  });
+
   it("keeps plain lines independently sampled", () => {
     const ids = ["sensor.charger", "sensor.pv"];
     const start = FIXED_EPOCH_MS;

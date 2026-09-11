@@ -204,7 +204,10 @@ export function generateStatisticsChartData(
     const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
     const statLegendData: StatisticsChartLegendItem[] = [];
     const statHidden = hiddenStats.has(statistic_id);
-    const emittedStackedLineSlots = new Map<number, number>();
+    const emittedStackedLineSlots = new Map<
+      LineSeriesOption | BarSeriesOption,
+      Map<number, number>
+    >();
 
     const pushLineData = (
       dataset: LineSeriesOption | BarSeriesOption,
@@ -216,12 +219,17 @@ export function generateStatisticsChartData(
         dataset.data!.push([time, ...value]);
         return;
       }
-      const emittedSlots = emittedStackedLineSlots.get(time) || 0;
+      let emittedSlotsByTime = emittedStackedLineSlots.get(dataset);
+      if (!emittedSlotsByTime) {
+        emittedSlotsByTime = new Map();
+        emittedStackedLineSlots.set(dataset, emittedSlotsByTime);
+      }
+      const emittedSlots = emittedSlotsByTime.get(time) || 0;
       const point = [time, ...value];
       for (let slot = emittedSlots; slot < stackedSlot.slots; slot++) {
         dataset.data![stackedSlot.offset + slot] = point;
       }
-      emittedStackedLineSlots.set(time, emittedSlots + 1);
+      emittedSlotsByTime.set(time, emittedSlots + 1);
     };
 
     // Place bars at centre of their specified time range if this is a bar chart
