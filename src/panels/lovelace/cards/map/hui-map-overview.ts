@@ -27,6 +27,8 @@ import "../../../../components/ha-spinner";
 import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { HaMapEntity } from "../../../../components/map/ha-map";
+import type { ActivityEntry } from "./map-activity";
+import { personActivity, zoneActivity } from "./map-activity";
 import {
   apiContext,
   configContext,
@@ -50,16 +52,7 @@ import type {
 
 type OverviewTab = "people" | "devices" | "zones";
 
-interface ActivityEntry {
-  state: string;
-  when: Date;
-  /** Zone detail: the person that arrived at or left the zone */
-  personId?: string;
-  arrived?: boolean;
-}
-
 const ACTIVITY_HOURS = 24;
-const ACTIVITY_MAX_ENTRIES = 20;
 
 declare global {
   interface HASSDomEvents {
@@ -262,21 +255,7 @@ export class HuiMapOverview extends LitElement {
       this._activity = [];
       return;
     }
-    const entries: ActivityEntry[] = [];
-    let previous: string | undefined;
-    for (const entry of history?.[entityId] || []) {
-      if (entry.s === "unavailable") {
-        continue;
-      }
-      const changed = entry.s !== previous;
-      previous = entry.s;
-      // The first sample is the state at the window's start, not an event
-      if (!changed || entry.lu * 1000 < since) {
-        continue;
-      }
-      entries.push({ state: entry.s, when: new Date(entry.lu * 1000) });
-    }
-    this._activity = entries.reverse().slice(0, ACTIVITY_MAX_ENTRIES);
+    this._activity = personActivity(history?.[entityId], since);
   }
 
   private async _loadZoneActivity(entityId: string): Promise<void> {
@@ -302,33 +281,7 @@ export class HuiMapOverview extends LitElement {
     // A person's state is "home" for the home zone, the zone name otherwise
     const zoneState =
       entityId === "zone.home" ? "home" : computeStateName(zone);
-    const entries: ActivityEntry[] = [];
-    for (const personId of personIds) {
-      let wasInZone: boolean | undefined;
-      for (const entry of history?.[personId] || []) {
-        if (entry.s === "unavailable") {
-          continue;
-        }
-        const inZone = entry.s === zoneState;
-        // Only changes inside the window are events; the first sample is the
-        // state at its start
-        if (
-          wasInZone !== undefined &&
-          inZone !== wasInZone &&
-          entry.lu * 1000 >= since
-        ) {
-          entries.push({
-            state: entry.s,
-            personId,
-            arrived: inZone,
-            when: new Date(entry.lu * 1000),
-          });
-        }
-        wasInZone = inZone;
-      }
-    }
-    entries.sort((a, b) => b.when.getTime() - a.when.getTime());
-    this._activity = entries.slice(0, ACTIVITY_MAX_ENTRIES);
+    this._activity = zoneActivity(history, personIds, zoneState, since);
   }
 
   protected render() {
