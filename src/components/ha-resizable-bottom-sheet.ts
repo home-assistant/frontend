@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, query, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
 
@@ -11,15 +11,47 @@ import { BOTTOM_SHEET_ANIMATION_DURATION_MS } from "./ha-bottom-sheet";
  * the sheet by dragging the handle at the top. It supports both mouse and touch
  * interactions and automatically closes when dragged below a 20% of screen height.
  *
+ * A persistent sheet never closes by dragging; it stops at its minimum height
+ * instead, so a host can keep a collapsed strip of content reachable.
+ *
  * @fires bottom-sheet-closed - Fired when the bottom sheet is closed
+ * @fires bottom-sheet-resized - Fired with the sheet's height in pixels once
+ * it has opened and whenever a drag ends
  *
  * @cssprop --ha-bottom-sheet-border-width - Border width for the sheet
  * @cssprop --ha-bottom-sheet-border-style - Border style for the sheet
  * @cssprop --ha-bottom-sheet-border-color - Border color for the sheet
+ * @cssprop --ha-bottom-sheet-handle-padding - How far below the handle the
+ * grab area reaches; shrink it when content sits right under the handle
  */
 @customElement("ha-resizable-bottom-sheet")
 export class HaResizableBottomSheet extends LitElement {
   @query("dialog") private _dialog!: HTMLDialogElement;
+
+  /** Dragging down stops at the minimum height instead of closing the sheet */
+  @property({ type: Boolean }) public persistent = false;
+
+  /**
+   * The height in pixels the sheet cannot be dragged below, e.g. what a host
+   * measures for the strip it wants to keep visible. Without it the sheet
+   * stops at 20% of the viewport.
+   */
+  @property({ type: Number, attribute: "min-height" })
+  public minHeight?: number;
+
+  /**
+   * The largest share of the viewport the sheet opens at, in percent. It
+   * opens at its content height up to this, and can be dragged to 90 after.
+   */
+  @property({ type: Number, attribute: "open-max-viewport-height" })
+  public openMaxViewportHeight = 70;
+
+  /**
+   * Whether the sheet may open smaller than 55% of the viewport, down to its
+   * content height and the minimum it can be dragged to.
+   */
+  @property({ type: Boolean, attribute: "open-at-content-height" })
+  public openAtContentHeight = false;
 
   private _dragging = false;
 
@@ -27,23 +59,32 @@ export class HaResizableBottomSheet extends LitElement {
 
   private _initialSize = 0;
 
-  @state() private _dialogMaxViewpointHeight = 70;
+  private _opened = false;
 
-  @state() private _dialogMinViewpointHeight = 55;
+  @state() private _dialogMaxViewpointHeight?: number;
+
+  @state() private _dialogMinViewpointHeight?: number;
 
   @state() private _dialogViewportHeight?: number;
 
   render() {
+    // Until it has opened, the sheet sizes to its content within the opening
+    // bounds; afterwards it keeps the height it settled on or was dragged to
+    const maxHeight =
+      this._dialogMaxViewpointHeight ?? this.openMaxViewportHeight;
+    const minHeight =
+      this._dialogMinViewpointHeight ??
+      (this.openAtContentHeight ? this._minViewportHeight() : 55);
     return html`<dialog
       open
       @transitionend=${this._handleTransitionEnd}
       style=${`
         --height: ${this._dialogViewportHeight}vh;
         --height: ${this._dialogViewportHeight}dvh;
-        --max-height: ${this._dialogMaxViewpointHeight}vh;
-        --max-height: ${this._dialogMaxViewpointHeight}dvh;
-        --min-height: ${this._dialogMinViewpointHeight}vh;
-        --min-height: ${this._dialogMinViewpointHeight}dvh;
+        --max-height: ${maxHeight}vh;
+        --max-height: ${maxHeight}dvh;
+        --min-height: ${minHeight}vh;
+        --min-height: ${minHeight}dvh;
       `}
     >
       <div class="handle-wrapper">
@@ -83,7 +124,9 @@ export class HaResizableBottomSheet extends LitElement {
       this._dialogViewportHeight =
         (this._dialog.offsetHeight / window.innerHeight) * 100;
       this._dialogMaxViewpointHeight = 90;
-      this._dialogMinViewpointHeight = 20;
+      this._dialogMinViewpointHeight = this._minViewportHeight();
+      this._opened = true;
+      this._fireResized();
     } else {
       // after close animation is done close dialog element and fire closed event
       this._dialog.close();
@@ -156,14 +199,36 @@ export class HaResizableBottomSheet extends LitElement {
     let newSize = this._initialSize + deltaVh;
     newSize = Math.max(10, Math.min(90, newSize));
 
-    // on drag down and below 20vh
-    if (newSize < 20 && deltaY < 0) {
+    if (this.persistent) {
+      newSize = Math.max(this._minViewportHeight(), newSize);
+    } else if (newSize < 20 && deltaY < 0) {
+      // on drag down and below 20vh
       this._endDrag();
       this.closeSheet();
       return;
     }
 
     this._dialogViewportHeight = newSize;
+  }
+
+  private _minViewportHeight(): number {
+    return this.minHeight === undefined
+      ? 20
+      : (this.minHeight / window.innerHeight) * 100;
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // A minimum set after opening applies right away
+    if (changedProperties.has("minHeight") && this._opened) {
+      this._dialogMinViewpointHeight = this._minViewportHeight();
+    }
+  }
+
+  private _fireResized() {
+    fireEvent(this, "bottom-sheet-resized", {
+      height: this._dialog.offsetHeight,
+    });
   }
 
   private _handleMouseUp = () => {
@@ -180,6 +245,8 @@ export class HaResizableBottomSheet extends LitElement {
     }
     this._dragging = false;
     document.body.style.removeProperty("cursor");
+    // Hosts lay out around the sheet once, not on every move
+    this.updateComplete.then(() => this._fireResized());
   }
 
   static styles = css`
@@ -201,7 +268,8 @@ export class HaResizableBottomSheet extends LitElement {
       justify-content: center;
       align-items: center;
       z-index: 7;
-      padding-bottom: 76px;
+      /* Extends the grab area over the content below the handle */
+      padding-bottom: var(--ha-bottom-sheet-handle-padding, 76px);
     }
     .handle-wrapper .handle::after {
       content: "";
@@ -280,5 +348,6 @@ declare global {
 
   interface HASSDomEvents {
     "bottom-sheet-closed": undefined;
+    "bottom-sheet-resized": { height: number };
   }
 }
