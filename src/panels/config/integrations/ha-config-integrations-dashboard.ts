@@ -678,7 +678,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                   ([domain, items]) =>
                     html`<ha-integration-card
                       data-domain=${domain}
-                      .hass=${this.hass}
                       .domain=${domain}
                       .items=${items}
                       .manifest=${this._manifests[domain]}
