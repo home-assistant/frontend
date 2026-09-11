@@ -31,6 +31,8 @@ export class HaToast extends LitElement {
   @property({ type: Number, attribute: "bottom-offset" }) public bottomOffset =
     0;
 
+  @property({ type: Boolean }) public stacked = false;
+
   @query(".toast")
   private _toast?: HTMLDivElement;
 
@@ -148,7 +150,12 @@ export class HaToast extends LitElement {
   }
 
   private _showToastPopover(): void {
-    if (!this._toast || !popoverSupported || this._isPopoverOpen()) {
+    if (
+      !this._toast ||
+      this.stacked ||
+      !popoverSupported ||
+      this._isPopoverOpen()
+    ) {
       return;
     }
 
@@ -156,7 +163,12 @@ export class HaToast extends LitElement {
   }
 
   private _hideToastPopover(): void {
-    if (!this._toast || !popoverSupported || !this._isPopoverOpen()) {
+    if (
+      !this._toast ||
+      this.stacked ||
+      !popoverSupported ||
+      !this._isPopoverOpen()
+    ) {
       return;
     }
 
@@ -187,12 +199,15 @@ export class HaToast extends LitElement {
         class=${classMap({
           toast: true,
           active: this._active,
+          stacked: this.stacked,
           visible: this._visible,
         })}
         style=${styleMap({
           "--ha-toast-bottom-offset": `${this.bottomOffset}px`,
         })}
-        popover=${ifDefined(popoverSupported ? "manual" : undefined)}
+        popover=${ifDefined(
+          popoverSupported && !this.stacked ? "manual" : undefined
+        )}
       >
         <span class="message">${this.labelText}</span>
         <div class=${classMap({ actions: true, "has-action": hasAction })}>
@@ -251,6 +266,15 @@ export class HaToast extends LitElement {
     .toast.visible {
       opacity: 1;
       transform: translate(calc(-50% * var(--scale-direction)), 0);
+    }
+
+    .toast.stacked {
+      position: static;
+      transform: translateY(var(--ha-space-2));
+    }
+
+    .toast.stacked.visible {
+      transform: translateY(0);
     }
 
     .toast:not(.active) {

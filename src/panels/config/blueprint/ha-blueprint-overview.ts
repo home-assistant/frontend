@@ -13,7 +13,10 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
@@ -483,7 +486,7 @@ class HaBlueprintOverview extends LitElement {
     this._createNew(blueprint);
   }
 
-  private _handleUsageClick = (ev: Event) => {
+  private _handleUsageClick = (ev: HASSDomCurrentTargetEvent<HTMLElement>) => {
     ev.stopPropagation();
     ev.preventDefault();
     const target = ev.currentTarget as HTMLElement | null;
@@ -619,8 +622,7 @@ class HaBlueprintOverview extends LitElement {
           }
         ),
         confirmText: this.hass!.localize(
-          "ui.panel.config.blueprint.overview.blueprint_in_use_view",
-          { type }
+          `ui.panel.config.blueprint.overview.blueprint_in_use_view_${blueprint.domain}`
         ),
       });
       if (result) {

@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-statistic-picker";
@@ -234,7 +235,7 @@ export class HaEnergyPowerConfig extends LitElement {
     fireEvent(this, "hass-more-info", { entityId: this.helperEntityId! });
   }
 
-  private _handlePowerTypeChanged(ev: Event) {
+  private _handlePowerTypeChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
     const newPowerType = (ev.currentTarget as HaRadioGroup).value as PowerType;
     // Clear power config when switching types
     fireEvent(this, "power-config-changed", {

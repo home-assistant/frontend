@@ -5,7 +5,6 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -134,8 +133,7 @@ export class HuiGenericEntityRow extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
-    toggleAttribute(
-      this,
+    this.toggleAttribute(
       "no-secondary",
       !this.secondaryText && !this.config?.secondary_info
     );

@@ -16,7 +16,11 @@ import { consume, type ContextType } from "@lit/context";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import {
@@ -48,11 +52,11 @@ import type {
 } from "../../../../data/recorder";
 import {
   clearStatistics,
-  getStatisticIds,
   StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../../data/recorder";
+import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import {
   apiContext,
   internationalizationContext,
@@ -596,11 +600,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     `;
   }
 
-  private _handleSearchChange(ev: InputEvent) {
-    if (this.filter === (ev.target as HaInputSearch).value) {
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    if (this.filter === ev.target.value) {
       return;
     }
-    this.filter = (ev.target as HaInputSearch).value ?? "";
+    this.filter = ev.target.value ?? "";
   }
 
   private _handleSelectionChanged(
@@ -698,20 +702,15 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _selectAllIssues() {
-    this._dataTable.select(
-      this._data
-        .filter((statistic) => statistic.issues)
-        .map((statistic) => statistic.statistic_id),
-      true
-    );
+    this._dataTable.selectAll((statistic) => statistic.issues);
   }
 
-  private _showStatisticsAdjustSumDialog(ev: Event) {
+  private _showStatisticsAdjustSumDialog(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { statistic: StatisticData }>
+  ) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
-      statistic: (
-        ev.currentTarget as HTMLElement & { statistic: StatisticData }
-      ).statistic,
+      statistic: ev.currentTarget.statistic,
     });
   }
 
@@ -782,10 +781,12 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     });
   };
 
-  private _fixIssue = async (ev: Event) => {
-    const issues = (
-      ev.currentTarget as HTMLElement & { data: StatisticsValidationResult[] }
-    ).data.sort(
+  private _fixIssue = async (
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { data: StatisticsValidationResult[] }
+    >
+  ) => {
+    const issues = ev.currentTarget.data.sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
         (FIX_ISSUES_ORDER[itemB.type] ?? 99)
@@ -853,7 +854,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           gap: var(--ha-space-4);
           padding: 0 var(--ha-space-4);
           overflow-x: scroll;
-          -ms-overflow-style: none;
           scrollbar-width: none;
         }
 

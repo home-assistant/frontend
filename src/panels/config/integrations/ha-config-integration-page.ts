@@ -18,6 +18,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -101,12 +102,16 @@ export const renderConfigEntryError = (
 ): TemplateResult => {
   if (entry.reason) {
     if (entry.error_reason_translation_key) {
+      // The error may be translated by another integration, e.g. one raised by
+      // a shared helper and owned by the homeassistant integration.
+      const translationDomain =
+        entry.error_reason_translation_domain || entry.domain;
       const lokalisePromExc = hass
-        .loadBackendTranslation("exceptions", entry.domain)
+        .loadBackendTranslation("exceptions", translationDomain)
         .then(
           (localize) =>
             localize(
-              `component.${entry.domain}.exceptions.${entry.error_reason_translation_key}.message`,
+              `component.${translationDomain}.exceptions.${entry.error_reason_translation_key}.message`,
               entry.error_reason_translation_placeholders ?? undefined
             ) || entry.reason
         );
@@ -373,7 +378,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       : this._manifest?.documentation;
 
     return html`
-      <hass-subpage .hass=${this.hass} .narrow=${this.narrow}>
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config/integrations/dashboard"
+      >
         ${
           documentationLink
             ? html`
@@ -901,7 +910,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     if (row) {
       row.scrollIntoView({
-        block: "center",
+        block: "start",
       });
       row.classList.add("highlight");
     }
@@ -1223,8 +1232,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._filterTree(data, filter, areas)
   );
 
-  private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
   }
 
   private async _handleEnableDebugLogging() {
@@ -1539,6 +1548,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-config-entry-row {
           display: block;
           margin-bottom: 16px;
+          scroll-margin-top: var(--ha-space-10);
         }
         a {
           text-decoration: none;

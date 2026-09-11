@@ -5,9 +5,11 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
+import type { HaIconButton } from "../../components/ha-icon-button";
 import "../../components/ha-settings-row";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
@@ -110,8 +112,10 @@ class HaLongLivedTokens extends LitElement {
     });
   }
 
-  private async _deleteToken(ev: Event): Promise<void> {
-    const token = (ev.currentTarget as any).token;
+  private async _deleteToken(
+    ev: HASSDomCurrentTargetEvent<HaIconButton & { token: RefreshToken }>
+  ): Promise<void> {
+    const token = ev.currentTarget.token;
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(

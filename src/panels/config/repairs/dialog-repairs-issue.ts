@@ -13,7 +13,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-dialog-footer";
-import "./dialog-repairs-issue-subtitle";
+import "../../../dialogs/repairs-flow/dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
 import type { RepairsIssue } from "../../../data/repairs";
 import { ignoreRepairsIssue } from "../../../data/repairs";

@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -214,7 +215,7 @@ export class DialogEnergyCustomise
     `;
   }
 
-  private _toggleCard = (ev: Event): void => {
+  private _toggleCard = (ev: HASSDomCurrentTargetEvent<HaSwitch>): void => {
     const target = ev.currentTarget as HaSwitch;
     const cardKey = target.dataset.cardKey;
     if (!cardKey) {

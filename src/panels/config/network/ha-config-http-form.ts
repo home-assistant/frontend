@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { mainWindow } from "../../../common/dom/get_main_window";
+import { HOSTNAME_PATTERN } from "../../../common/string/is_hostname";
 import {
   IP_ADDRESS_OR_NETWORK_PATTERN,
   IP_ADDRESS_PATTERN,
@@ -38,7 +39,16 @@ const SCHEMA = memoizeOne(
       {
         name: "server_port",
         required: true,
-        selector: { number: { min: 1, max: 65535, mode: "box" } },
+        selector: {
+          number: {
+            min: 1,
+            max: 65535,
+            mode: "box",
+            validation_message: localize(
+              "ui.panel.config.network.http.invalid_port"
+            ),
+          },
+        },
       },
       {
         name: "ssl",
@@ -118,7 +128,16 @@ const SCHEMA = memoizeOne(
           {
             name: "login_attempts_threshold",
             required: true,
-            selector: { number: { min: -1, max: 1000, mode: "box" } },
+            selector: {
+              number: {
+                min: -1,
+                max: 1000,
+                mode: "box",
+                validation_message: localize(
+                  "ui.panel.config.network.http.invalid_login_attempts_threshold"
+                ),
+              },
+            },
           },
         ],
       },
@@ -133,7 +152,7 @@ const SCHEMA = memoizeOne(
             selector: {
               text: {
                 multiple: true,
-                pattern: IP_ADDRESS_PATTERN,
+                pattern: `${IP_ADDRESS_PATTERN}|${HOSTNAME_PATTERN}`,
                 validation_message: localize(
                   "ui.panel.config.network.http.invalid_host"
                 ),
@@ -443,7 +462,7 @@ class HaConfigHttpForm extends LitElement {
             "ui.panel.config.network.http.restart_address.text"
           )}
         </p>
-        <a href=${url} rel="noreferrer noopener">${url}</a>
+        <a href=${url} target="_blank" rel="noreferrer noopener">${url}</a>
         <p class="dialog-note">
           ${this.hass.localize(
             "ui.panel.config.network.http.restart_address.note"

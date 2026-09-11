@@ -15,7 +15,7 @@ import {
   mdiPlaylistEdit,
   mdiTag,
 } from "@mdi/js";
-import type { HassEvent } from "home-assistant-js-websocket";
+import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -67,6 +67,7 @@ import {
   getSceneEditorInitData,
   saveScene,
   SCENE_IGNORED_DOMAINS,
+  sceneEntityStateObj,
   showSceneEditor,
 } from "../../../data/scene";
 import {
@@ -220,7 +221,19 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsubscribeEvents) {
+    // Hidden-tab panel suspend detaches an ancestor and later reattaches
+    // this same instance. Direct removal (route change) has no parentNode,
+    // so we still tear down even if the tab is hidden — e.g. saving a new
+    // scene remounts the itemId editor.
+    // Leave the live subscription in place on suspend so the websocket
+    // library can restore it after reconnect; a fresh subscribe here races
+    // the closed socket.
+    if (document.hidden && this.parentNode) {
+      return;
+    }
+    if (this._mode === "live" && this.hass) {
+      this._exitLiveMode();
+    } else if (this._unsubscribeEvents) {
       this._unsubscribeEvents();
       this._unsubscribeEvents = undefined;
     }
@@ -447,13 +460,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           const integrationName = platform
                             ? domainToName(this.hass.localize, platform)
                             : undefined;
+                          const badgeStateObj = this._badgeStateObj(
+                            entityId,
+                            entityStateObj
+                          );
                           return html`
                             <ha-list-item
                               hasMeta
                               ?twoline=${!!secondary}
-                              .graphic=${
-                                this._mode === "live" ? "icon" : undefined
-                              }
+                              graphic="icon"
                               .entityId=${entityId}
                               @click=${
                                 this._mode === "live"
@@ -463,10 +478,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               .noninteractive=${this._mode === "review"}
                             >
                               ${
-                                this._mode === "live"
+                                badgeStateObj
                                   ? html`
                                       <state-badge
-                                        .stateObj=${entityStateObj}
+                                        .stateObj=${badgeStateObj}
                                         slot="graphic"
                                       ></state-badge>
                                     `
@@ -552,14 +567,16 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                 this.hass.localize,
                                 computeDomain(entityId)
                               );
+                              const badgeStateObj = this._badgeStateObj(
+                                entityId,
+                                entityStateObj
+                              );
                               return html`
                                 <ha-list-item
                                   class="entity"
                                   hasMeta
                                   ?twoline=${!!secondary}
-                                  .graphic=${
-                                    this._mode === "live" ? "icon" : undefined
-                                  }
+                                  graphic="icon"
                                   .entityId=${entityId}
                                   @click=${
                                     this._mode === "live"
@@ -569,11 +586,13 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                   .noninteractive=${this._mode === "review"}
                                 >
                                   ${
-                                    this._mode === "live"
-                                      ? html` <state-badge
-                                          .stateObj=${entityStateObj}
-                                          slot="graphic"
-                                        ></state-badge>`
+                                    badgeStateObj
+                                      ? html`
+                                          <state-badge
+                                            .stateObj=${badgeStateObj}
+                                            slot="graphic"
+                                          ></state-badge>
+                                        `
                                       : nothing
                                   }
                                   ${primary}
@@ -904,11 +923,18 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   private async _subscribeEvents() {
-    this._unsubscribeEvents =
-      await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => this._stateChanged(event),
-        "state_changed"
-      );
+    if (this._unsubscribeEvents) {
+      return;
+    }
+    const unsubscribe = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
+    if (!this.isConnected || this._mode !== "live" || this._unsubscribeEvents) {
+      unsubscribe();
+      return;
+    }
+    this._unsubscribeEvents = unsubscribe;
   }
 
   private _showMoreInfo(ev: Event) {
@@ -921,6 +947,9 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
+      if (!this.isConnected) {
+        return;
+      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -932,7 +961,11 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                 { err_no: err.status_code }
               ),
       });
-      goBack("/config");
+      goBack("/config/scene/dashboard");
+      return;
+    }
+
+    if (!this.isConnected) {
       return;
     }
 
@@ -1074,10 +1107,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   };
 
   private _goBack(): void {
-    if (this._mode === "live") {
-      applyScene(this.hass, this._storedStates);
-    }
-    afterNextRender(() => goBack("/config"));
+    afterNextRender(() => goBack("/config/scene/dashboard"));
   }
 
   private _deleteTapped(): void {
@@ -1101,27 +1131,29 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       return;
     }
     await deleteScene(this.hass, this.sceneId);
-    if (this._mode === "live") {
-      applyScene(this.hass, this._storedStates);
-    }
-    goBack("/config");
+    goBack("/config/scene/dashboard");
   }
 
-  private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this.isDirtyState) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.scene.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+  private async _confirmUnsavedChanged(addHistory = true): Promise<boolean> {
+    if (!this.isDirtyState) {
+      return true;
     }
-    return true;
+    const confirmed = await showConfirmationDialog(this, {
+      addHistory,
+      title: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_title"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.scene.editor.unsaved_confirm_text"
+      ),
+      confirmText: this.hass!.localize("ui.common.leave"),
+      dismissText: this.hass!.localize("ui.common.stay"),
+      destructive: true,
+    });
+    if (confirmed) {
+      this._markDirtyStateClean();
+    }
+    return confirmed;
   }
 
   private async _duplicate() {
@@ -1186,6 +1218,33 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       return undefined;
     }
     return { ...stateObj.attributes, state: stateObj.state };
+  }
+
+  // Memoized per config so re-renders reuse the same object references and
+  // the state badges skip work when nothing changed.
+  private _sceneStateObjs = memoizeOne((config?: SceneConfig) => {
+    const objs: Record<string, HassEntity | undefined> = {};
+    for (const entityId of Object.keys(config?.entities ?? {})) {
+      objs[entityId] = sceneEntityStateObj(
+        entityId,
+        config!.entities[entityId]
+      );
+    }
+    return objs;
+  });
+
+  // Picks the state the row's icon should reflect: the live state in live
+  // mode, the scene's stored target in review mode. Undefined in review mode
+  // when the scene holds no usable target for the entity - the row then
+  // renders no badge rather than a live state that could be mistaken for a
+  // target.
+  private _badgeStateObj(
+    entityId: string,
+    entityStateObj: HassEntity
+  ): HassEntity | undefined {
+    return this._mode === "live"
+      ? entityStateObj
+      : this._sceneStateObjs(this._config)[entityId];
   }
 
   private _generateConfigFromLive() {
@@ -1359,7 +1418,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   }
 
   protected async promptDiscardChanges() {
-    return this._confirmUnsavedChanged();
+    return this._confirmUnsavedChanged(false);
   }
 
   static get styles(): CSSResultGroup {

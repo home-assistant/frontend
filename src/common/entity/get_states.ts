@@ -29,7 +29,7 @@ export const FIXED_DOMAIN_STATES = {
   fan: ["on", "off"],
   humidifier: ["on", "off"],
   input_boolean: ["on", "off"],
-  lawn_mower: ["error", "paused", "mowing", "returning", "docked"],
+  lawn_mower: ["error", "paused", "mowing", "returning", "docked", "idle"],
   light: ["on", "off"],
   lock: [
     "jammed",
@@ -303,6 +303,9 @@ export const DOMAIN_OPTIONS_ATTRIBUTES: Record<
     preset_mode: "preset_modes",
     swing_mode: "swing_modes",
     swing_horizontal_mode: "swing_horizontal_modes",
+  },
+  cover: {
+    speed: "supported_speeds",
   },
   event: {
     event_type: "event_types",

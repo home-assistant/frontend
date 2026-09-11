@@ -60,6 +60,7 @@ export class AssistPipelineRunDebug extends LitElement {
       <hass-subpage
         .narrow=${this.narrow}
         .hass=${this.hass}
+        back-path="/config/voice-assistants/assistants"
         .header=${this.hass.localize(
           "ui.panel.config.voice_assistants.debug.pipeline.header"
         )}

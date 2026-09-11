@@ -39,6 +39,7 @@ const createConfigEntry = (
   pref_disable_new_entities: false,
   pref_disable_polling: false,
   reason: null,
+  error_reason_translation_domain: null,
   error_reason_translation_key: null,
   error_reason_translation_placeholders: null,
   ...override,
@@ -238,6 +239,7 @@ const createDeviceRegistryEntries = (
     created_at: 0,
     modified_at: 0,
     primary_config_entry: null,
+    parent_device_id: null,
   },
 ];
 

@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
 import { extractSearchParamsObject } from "../common/url/search-params";
@@ -39,7 +40,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       this.addEventListener(
         "show-dialog",
         (ev) => {
-          if ((ev as CustomEvent).detail.dialogTag === "ha-quick-bar") {
+          if (
+            (ev as HASSDomEvent<HASSDomEvents["show-dialog"]>).detail
+              .dialogTag === "ha-quick-bar"
+          ) {
             // If quick bar is already open, prevent opening it again
             if (this._quickBarOpen) {
               ev.stopPropagation();
@@ -53,7 +57,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       );
 
       this.addEventListener("dialog-closed", (ev) => {
-        if ((ev as CustomEvent).detail.dialog === "ha-quick-bar") {
+        if (
+          (ev as HASSDomEvent<HASSDomEvents["dialog-closed"]>).detail.dialog ===
+          "ha-quick-bar"
+        ) {
           this._quickBarOpen = false;
         }
       });

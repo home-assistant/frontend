@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -154,14 +155,12 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
             ${this.hass.localize("ui.panel.config.url.description")}
           </div>
 
+          <h4>
+            ${this.hass.localize("ui.panel.config.url.external_url_label")}
+          </h4>
           ${
             hasCloud
               ? html`
-                  <h4>
-                    ${this.hass.localize(
-                      "ui.panel.config.url.external_url_label"
-                    )}
-                  </h4>
                   <ha-md-list-item>
                     <span slot="headline"
                       >${this.hass.localize(
@@ -363,19 +362,20 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     );
   }
 
-  private _toggleCloud(ev: Event) {
-    this._cloudChecked = (ev.currentTarget as HaSwitch).checked;
+  private _toggleCloud(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
+    this._cloudChecked = ev.currentTarget.checked;
     this._showCustomExternalUrl = !this._cloudChecked;
   }
 
-  private _toggleInternalAutomatic(ev: Event) {
-    this._showCustomInternalUrl = !(ev.currentTarget as HaSwitch).checked;
+  private _toggleInternalAutomatic(ev: HASSDomCurrentTargetEvent<HaSwitch>) {
+    this._showCustomInternalUrl = !ev.currentTarget.checked;
   }
 
-  private _handleChange(ev: InputEvent) {
-    const target = ev.currentTarget as HaInputCopy;
+  private _handleChange(
+    ev: InputEvent & HASSDomCurrentTargetEvent<HaInputCopy>
+  ) {
     const input = ev.composedPath()[0] as HaInput;
-    this[`_${target.dataset.name}`] = input.value || "";
+    this[`_${ev.currentTarget.dataset.name}`] = input.value || "";
   }
 
   private async _save() {

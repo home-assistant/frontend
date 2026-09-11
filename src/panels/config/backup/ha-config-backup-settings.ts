@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { replaceCurrentUrl } from "../../../common/navigate";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-alert";
@@ -118,7 +119,7 @@ class HaConfigBackupSettings extends LitElement {
   }
 
   private _clearHash() {
-    history.replaceState(null, "", window.location.pathname);
+    replaceCurrentUrl(window.location.pathname);
   }
 
   protected render() {

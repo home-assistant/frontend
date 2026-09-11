@@ -126,11 +126,18 @@ export const listDatadisks = async (
     timeout: null,
   });
 
-export const fetchHostDisksUsage = async (hass: HomeAssistant) =>
+// `disk` is "default" for the data disk, or a mount name. Omitting maxDepth
+// leaves the depth to the Supervisor, which defaults per target — walking a
+// mount costs a round trip per directory, so mounts want no depth at all.
+export const fetchHostDisksUsage = async (
+  hass: HomeAssistant,
+  disk = "default",
+  maxDepth?: number
+) =>
   hass.callWS<HostDisksUsage>({
     type: "supervisor/api",
-    endpoint: "/host/disks/default/usage",
+    endpoint: `/host/disks/${disk}/usage`,
     method: "get",
     timeout: 3600, // seconds. This can take a while
-    params: { max_depth: 3 },
+    ...(maxDepth === undefined ? {} : { params: { max_depth: maxDepth } }),
   });

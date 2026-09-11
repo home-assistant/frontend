@@ -15,6 +15,7 @@ export class HaInputChip extends InputChip {
     styles,
     css`
       :host {
+        max-width: 100%;
         --md-sys-color-primary: var(--primary-text-color);
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--primary-text-color);

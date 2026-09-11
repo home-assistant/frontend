@@ -16,6 +16,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShapeOutline,
+  mdiTextureBox,
   mdiTools,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -32,6 +33,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -44,6 +46,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
@@ -65,7 +68,7 @@ import {
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
-  removeConfigEntryFromDevice,
+  removeDeviceFromRegistry,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
@@ -104,6 +107,7 @@ import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
+import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-linked-devices-card";
@@ -440,7 +444,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
-    const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
 
     const deviceInfo: TemplateResult[] = integrations.length
       ? [
@@ -897,6 +901,10 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      <ha-device-child-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+      ></ha-device-child-devices-card>
       <ha-device-linked-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}
@@ -986,6 +994,7 @@ export class HaConfigDevicePage extends LitElement {
     return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
+      back-path="/config/devices/dashboard"
       .header=${deviceName}
     >
       <ha-tooltip for="edit-settings-button" slot="toolbar-icon">
@@ -1035,12 +1044,27 @@ export class HaConfigDevicePage extends LitElement {
           ${
             area
               ? html`<div class="header-name">
-                  <a href="/config/areas/area/${area.area_id}"
-                    >${this.hass.localize(
+                  <ha-button
+                    href="/config/areas/area/${area.area_id}"
+                    size="s"
+                    appearance="plain"
+                  >
+                    ${
+                      area.icon
+                        ? html`<ha-icon
+                            slot="start"
+                            .icon=${area.icon}
+                          ></ha-icon>`
+                        : html`<ha-svg-icon
+                            slot="start"
+                            .path=${mdiTextureBox}
+                          ></ha-svg-icon>`
+                    }
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.area",
                       { area: area.name || "Unnamed Area" }
-                    )}</a
-                  >
+                    )}
+                  </ha-button>
                 </div>`
               : ""
           }
@@ -1218,11 +1242,7 @@ export class HaConfigDevicePage extends LitElement {
             }
 
             try {
-              await removeConfigEntryFromDevice(
-                this.hass,
-                this.deviceId,
-                entry.entry_id
-              );
+              await removeDeviceFromRegistry(this.hass, this.deviceId);
             } catch (err: unknown) {
               showAlertDialog(this, {
                 title: this.hass.localize(
@@ -1747,10 +1767,12 @@ export class HaConfigDevicePage extends LitElement {
         .header-name {
           display: flex;
           align-items: center;
-          padding-left: var(--ha-space-2);
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           direction: var(--direction);
+        }
+
+        .header-name ha-icon,
+        .header-name ha-svg-icon {
+          --mdc-icon-size: 18px;
         }
 
         .column,

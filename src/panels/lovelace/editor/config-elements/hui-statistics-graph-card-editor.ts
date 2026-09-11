@@ -500,13 +500,20 @@ export class HuiStatisticsGraphCardEditor
 
     // update card config with updated entity config
     const index = this._subElementEditorConfig!.index!;
+    const oldEntityConfig = this._config!.entities[index];
+    const oldEntityId =
+      typeof oldEntityConfig === "string"
+        ? oldEntityConfig
+        : oldEntityConfig?.entity;
     const newEntities = [...this._config!.entities];
     newEntities[index] = newEntityConfig;
     let config = this._config!;
     config = { ...config, entities: newEntities };
 
-    // remove inappropriate stat options dependently on entities
-    config = await this._cleanConfig(config);
+    // only a different statistic can invalidate the stat options
+    if (newEntityConfig.entity !== oldEntityId) {
+      config = await this._cleanConfig(config);
+    }
     // normalize a generated yaml code
     config = this._orderProperties(config);
     this._config = config;

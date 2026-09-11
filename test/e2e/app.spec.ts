@@ -4,7 +4,7 @@
  * Run with:
  *   yarn test:e2e:app
  */
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import {
   appSidebar,
   appSidebarConfig,
@@ -14,6 +14,7 @@ import {
   defineRouteSmokeTests,
   ensureAppSidebarPanelVisible,
   goToPanel,
+  openMoreInfoDialog,
 } from "./app/src/helpers";
 import {
   expectNoPageErrors,
@@ -25,6 +26,7 @@ import {
 import {
   appRouteSmokeGroups,
   configLinks,
+  connectivityLinks,
   moreInfoViewElements,
 } from "./app/src/smoke";
 
@@ -161,65 +163,124 @@ test.describe("Quick search", () => {
 
 defineRouteSmokeTests(appRouteSmokeGroups);
 
-const assertInitialReadiness = async (
-  page: Page,
-  options: {
+test("keeps the launch screen until initial panel content renders", async ({
+  page,
+}) => {
+  const cases: {
+    name: string;
     path: string;
     loadingSelector: string;
-    resolver:
-      "rejectMediaBrowse" | "resolveCalendarRegistry" | "resolveMediaBrowse";
     readySelector: string;
-  }
-) => {
-  await goToPanel(page, options.path);
-
-  const launchScreen = page.locator("#ha-launch-screen");
-  await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-  await expect(page.locator(options.loadingSelector)).toBeAttached({
-    timeout: QUICK_TIMEOUT,
-  });
-
-  await page.evaluate((resolver) => window[resolver]?.(), options.resolver);
-
-  await expect(page.locator(options.readySelector)).toBeAttached({
-    timeout: PANEL_TIMEOUT,
-  });
-  await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-};
-
-test.describe("Initial readiness", () => {
-  test("keeps the launch screen until calendar content renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+    resolvers: (
+      | "rejectMediaBrowse"
+      | "resolveCalendarRegistry"
+      | "resolveConnectivityConfigEntries"
+      | "resolveConfigEntries"
+      | "resolveConfigEntriesInProgress"
+      | "resolveGeneratedDashboard"
+      | "resolveLovelaceConfig"
+      | "resolveMediaBrowse"
+      | "resolveSerialPorts"
+      | "resolveStorageHostInfo"
+    )[];
+  }[] = [
+    {
+      name: "calendar",
       path: "/?scenario=delayed-calendar#/calendar",
       loadingSelector: "ha-panel-calendar ha-spinner",
-      resolver: "resolveCalendarRegistry",
       readySelector: "ha-full-calendar",
-    });
-  });
-
-  test("keeps the launch screen until media content renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+      resolvers: ["resolveCalendarRegistry"],
+    },
+    {
+      name: "media browser",
       path: "/?scenario=delayed-media-browse#/media-browser/browser",
       loadingSelector: "ha-media-player-browse > ha-spinner",
-      resolver: "resolveMediaBrowse",
       readySelector: "ha-media-player-browse .no-items",
-    });
-  });
-
-  test("keeps the launch screen until a media error renders", async ({
-    page,
-  }) => {
-    await assertInitialReadiness(page, {
+      resolvers: ["resolveMediaBrowse"],
+    },
+    {
+      name: "integrations",
+      path: "/?scenario=delayed-integrations#/config/integrations",
+      loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
+      readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
+      resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "connectivity",
+      path: "/?scenario=delayed-connectivity#/config/connectivity",
+      loadingSelector: "ha-config-connectivity ha-card",
+      readySelector: "ha-config-connectivity ha-list-item-button",
+      resolvers: ["resolveConnectivityConfigEntries"],
+    },
+    {
+      name: "serial",
+      path: "/?scenario=delayed-serial#/config/serial",
+      loadingSelector: "serial-config-dashboard ha-spinner",
+      readySelector: "serial-config-dashboard .empty",
+      resolvers: ["resolveSerialPorts"],
+    },
+    {
+      name: "storage",
+      path: "/?scenario=delayed-storage#/config/storage",
+      loadingSelector: "ha-config-section-storage",
+      readySelector: "ha-config-section-storage hass-subpage",
+      resolvers: ["resolveStorageHostInfo"],
+    },
+    {
+      name: "media browser error",
       path: "/?scenario=delayed-media-browse-error#/media-browser/browser",
       loadingSelector: "ha-media-player-browse > ha-spinner",
-      resolver: "rejectMediaBrowse",
       readySelector: "ha-media-player-browse ha-alert",
+      resolvers: ["rejectMediaBrowse"],
+    },
+    {
+      name: "generated dashboard",
+      path: "/?scenario=delayed-generated-dashboard#/climate",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveGeneratedDashboard"],
+    },
+    {
+      name: "Lovelace dashboard",
+      path: "/?scenario=delayed-lovelace#/lovelace",
+      loadingSelector: "#ha-launch-screen",
+      readySelector: "hui-card",
+      resolvers: ["resolveLovelaceConfig"],
+    },
+  ];
+
+  for (const readinessCase of cases) {
+    // eslint-disable-next-line no-await-in-loop
+    await test.step(readinessCase.name, async () => {
+      await goToPanel(page, readinessCase.path);
+
+      const launchScreen = page.locator("#ha-launch-screen");
+      const loadingScreen = page.locator(readinessCase.loadingSelector);
+      const readyContent = page.locator(readinessCase.readySelector).first();
+      await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(loadingScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(readyContent).not.toBeAttached();
+
+      await readinessCase.resolvers.reduce(
+        async (previousResolver, resolver, index) => {
+          await previousResolver;
+          await page.evaluate((resolverName) => {
+            window[resolverName]?.();
+          }, resolver);
+
+          if (index < readinessCase.resolvers.length - 1) {
+            await expect(launchScreen).toBeAttached();
+            await expect(loadingScreen).toBeAttached();
+            await expect(readyContent).not.toBeAttached();
+          }
+        },
+        Promise.resolve()
+      );
+
+      await expect(readyContent).toBeAttached({ timeout: PANEL_TIMEOUT });
+      await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
     });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -227,40 +288,6 @@ test.describe("Initial readiness", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Lovelace dashboard", () => {
-  test("keeps the launch screen until generated content renders", async ({
-    page,
-  }) => {
-    await goToPanel(page, "/?scenario=delayed-generated-dashboard#/climate");
-
-    const launchScreen = page.locator("#ha-launch-screen");
-    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(page.locator("hui-view")).not.toBeAttached();
-
-    await page.evaluate(() => window.resolveGeneratedDashboard?.());
-
-    await expect(page.locator("hui-view")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-  });
-
-  test("keeps the launch screen until initial content renders", async ({
-    page,
-  }) => {
-    await goToPanel(page, "/?scenario=delayed-lovelace#/lovelace");
-
-    const launchScreen = page.locator("#ha-launch-screen");
-    await expect(launchScreen).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(page.locator("hui-card")).not.toBeAttached();
-
-    await page.evaluate(() => window.resolveLovelaceConfig?.());
-
-    await expect(page.locator("hui-card").first()).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-    await expect(launchScreen).not.toBeAttached({ timeout: QUICK_TIMEOUT });
-  });
-
   test("renders cards", async ({ page }) => {
     await goToPanel(page, "/lovelace");
     // At least one card should appear
@@ -278,6 +305,85 @@ test.describe("Lovelace dashboard", () => {
   });
 });
 
+test.describe("Energy dashboard", () => {
+  test("returns to Energy after repeatedly opening the device dialog", async ({
+    page,
+  }) => {
+    const errors = trackPageErrors(page);
+    await goToPanel(
+      page,
+      "/?historyBack=1&backPath=%2Flovelace#/energy/overview"
+    );
+    const energyRoot = page.locator("ha-panel-energy hui-root");
+    await expect(energyRoot).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    const editDashboard = energyRoot.getByRole("button", {
+      name: /^Edit dashboard\b/,
+    });
+    const dashboardMenu = energyRoot.getByRole("button", {
+      name: "Open dashboard menu",
+    });
+    await expect(editDashboard.or(dashboardMenu)).toBeVisible({
+      timeout: QUICK_TIMEOUT,
+    });
+    if (await editDashboard.isVisible()) {
+      await editDashboard.click();
+    } else {
+      await dashboardMenu.click();
+      await page.getByRole("menuitem", { name: /^Edit dashboard\b/ }).click();
+    }
+
+    await expect(page.locator("ha-config-energy")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+
+    const backLink = page
+      .locator("ha-config-energy hass-tabs-subpage")
+      .getByRole("link", { name: "Back" });
+    await expect(backLink).toHaveAttribute(
+      "href",
+      "/config/lovelace/dashboards"
+    );
+
+    const addDevice = page
+      .locator("ha-energy-device-settings")
+      .locator("ha-button")
+      .first();
+    const openAndCancelDeviceDialog = async () => {
+      await addDevice.click();
+      const dialog = page.locator("dialog-energy-device-settings");
+      const cancel = dialog.locator("ha-dialog-footer ha-button").first();
+      await expect(cancel).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await cancel.click();
+      await expect(cancel).toBeHidden({ timeout: QUICK_TIMEOUT });
+    };
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+    await openAndCancelDeviceDialog();
+
+    await backLink.click();
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => ({
+            hash: window.location.hash,
+            search: window.location.search,
+          })),
+        { timeout: PANEL_TIMEOUT }
+      )
+      .toEqual({
+        hash: "#/energy/overview",
+        search: "?historyBack=1&backPath=%2Flovelace",
+      });
+    await expect(page.locator("ha-panel-energy")).toBeAttached();
+    await expect(
+      energyRoot.getByRole("link", { name: "Back" })
+    ).toHaveAttribute("href", "/lovelace");
+    expectNoPageErrors(errors);
+  });
+});
+
 // ---------------------------------------------------------------------------
 // More-info dialog (light)
 // ---------------------------------------------------------------------------
@@ -290,40 +396,149 @@ test.describe("Light more-info dialog", () => {
       // The light-more-info scenario seeds light.test_light synchronously.
       await goToPanel(page, "/?scenario=light-more-info#/lovelace");
 
-      const dialog = page.locator("ha-more-info-dialog");
-
       // Fire the standard hass-more-info event from the app root with an
       // explicit view. The HA shell opens ha-more-info-dialog on the requested
       // view directly, so the test does not depend on the admin/demo-hidden
       // header controls.
-      //
-      // The event is one-shot: if it lands before the shell's hass-more-info
-      // listener is attached it is silently dropped. Re-dispatching is
-      // idempotent (showDialog just resets the dialog to the requested view),
-      // so poll the dispatch until the requested view actually renders.
-      await expect(async () => {
-        await page.evaluate((v) => {
-          const el = document.querySelector("ha-test");
-          el?.dispatchEvent(
-            new CustomEvent("hass-more-info", {
-              detail: { entityId: "light.test_light", view: v },
-              bubbles: true,
-              composed: true,
-            })
-          );
-        }, view);
-
-        await expect(dialog).toBeAttached({ timeout: QUICK_TIMEOUT });
-        await expect(dialog.locator(element)).toBeAttached({
-          timeout: QUICK_TIMEOUT,
-        });
-      }).toPass({ timeout: SHELL_TIMEOUT });
+      const dialog = await openMoreInfoDialog(
+        page,
+        "light.test_light",
+        view,
+        element
+      );
 
       // Each view should render its own characteristic content, not just an
       // empty shell.
       await assertElementContent(dialog, content);
     });
   }
+});
+
+test.describe("Weather more-info forecast", () => {
+  test("switches the rendered forecast when a tab is selected", async ({
+    page,
+  }) => {
+    await goToPanel(
+      page,
+      "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
+    );
+
+    const dialog = page.locator("ha-more-info-dialog");
+    const weather = dialog.locator("more-info-weather");
+    await expect(weather).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(page).toHaveURL(
+      /more-info-entity-id=weather\.test_weather&more-info-view=info/
+    );
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
+    ).toBeAttached();
+
+    // Only the hourly and twice daily forecasts group their items under a day
+    // header, so it tells the rendered forecast apart from the daily one.
+    await expect(weather.locator(".forecast-day-header")).toHaveCount(0);
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Hourly" })
+      .click();
+
+    await expect(
+      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
+    ).toBeAttached();
+    await expect(weather.locator(".forecast-day-header").first()).toBeVisible();
+
+    await dialog.getByRole("button", { name: "History" }).click();
+    await expect(page).toHaveURL(/more-info-view=history/);
+
+    await dialog.getByRole("button", { name: "Back" }).click();
+    await expect(page).toHaveURL(/more-info-view=info/);
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page).not.toHaveURL(/more-info-entity-id/);
+  });
+});
+
+test.describe("More-info dialog URL cleanup", () => {
+  test("strips the deep-link params on a plain close", async ({ page }) => {
+    const errors = trackPageErrors(page);
+
+    // An exact route so no default-page redirect races the dialog open.
+    await goToPanel(page, "/?scenario=light-more-info#/config/dashboard");
+
+    const dialog = await openMoreInfoDialog(page, "light.test_light");
+
+    await expect(page).toHaveURL(/more-info-entity-id=light\.test_light/);
+
+    await dialog.getByRole("button", { name: "Close" }).click();
+
+    // The dialog re-renders empty once its close cleanup has run.
+    await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(0, {
+      timeout: QUICK_TIMEOUT,
+    });
+
+    await expect(page).not.toHaveURL(/more-info-entity-id/);
+    await expect(page).toHaveURL(/#\/config\/dashboard/);
+    expectNoPageErrors(errors);
+  });
+
+  test.describe("when navigation closes the dialog", () => {
+    // --ha-dialog-hide-duration only applies in dialog mode; the bottom sheet
+    // hardcodes its animation duration, so pin a desktop viewport on every
+    // project to keep the slow-close setup below effective.
+    test.use({ viewport: { width: 1280, height: 800 } });
+
+    test("keeps the new URL when navigation outpaces the close transition", async ({
+      page,
+    }) => {
+      const errors = trackPageErrors(page);
+
+      // An exact route so no default-page redirect races the dialog open.
+      await goToPanel(page, "/?scenario=light-more-info#/config/dashboard");
+
+      const dialog = await openMoreInfoDialog(page, "light.test_light");
+
+      await expect(page).toHaveURL(/more-info-entity-id=light\.test_light/);
+
+      // Make the hide transition outlast navigate()'s dialog-close wait so
+      // the navigation commits its URL while the dialog is still closing,
+      // like on a slow device or with a long themed animation.
+      await page.evaluate(() => {
+        document.documentElement.style.setProperty(
+          "--ha-dialog-hide-duration",
+          "1200ms"
+        );
+      });
+
+      // Navigate through a synthetic same-origin link: the dialog scrim
+      // blocks real link clicks and the dialog's own edit/device actions are
+      // hidden in the demo build, while navigate() closes open dialogs the
+      // same way for all of them.
+      await page.evaluate(() => {
+        const anchor = document.createElement("a");
+        anchor.href = "/history";
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+      });
+
+      await expect(page).toHaveURL(/#\/history/, { timeout: QUICK_TIMEOUT });
+
+      // The navigation must commit while the dialog is still closing,
+      // otherwise this test no longer covers the regression.
+      await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(1);
+
+      // The dialog re-renders empty once its close cleanup has run.
+      await expect(dialog.locator("ha-adaptive-dialog")).toHaveCount(0, {
+        timeout: QUICK_TIMEOUT,
+      });
+
+      // The cleanup must not rewrite the URL back to the pre-dialog page.
+      await expect(page).toHaveURL(/#\/history/);
+      await expect(page).not.toHaveURL(/more-info-entity-id/);
+      expectNoPageErrors(errors);
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -400,5 +615,21 @@ test.describe("Config panel", () => {
     "config links point to expected pages",
     configLinks,
     getDashboard
+  );
+
+  // Reached by clicking through from the dashboard: the e2e harness only
+  // resolves config panel translations once the dashboard has mounted.
+  const getConnectivity = async (page) => {
+    const dashboard = await getDashboard(page);
+    await dashboard.getByRole("link", { name: /^Connectivity\b/ }).click();
+    const connectivity = page.locator("ha-config-connectivity");
+    await expect(connectivity).toBeAttached({ timeout: PANEL_TIMEOUT });
+    return connectivity;
+  };
+
+  defineLinkSmokeTests(
+    "connectivity links point to expected pages",
+    connectivityLinks,
+    getConnectivity
   );
 });

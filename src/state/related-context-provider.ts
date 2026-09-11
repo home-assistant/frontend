@@ -76,7 +76,7 @@ export class RelatedContextProvider {
   }
 
   private _onRelatedContext = (
-    ev: HASSDomEvent<RelatedContextItem | undefined>
+    ev: HASSDomEvent<HASSDomEvents["hass-related-context"]>
   ): void => {
     // `fireEvent` coerces an undefined detail to `{}`, so a clear arrives
     // without an itemId; normalise that back to undefined.

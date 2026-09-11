@@ -9,14 +9,12 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { cloudLogin } from "../../../../data/cloud";
 import { loginHaCloud } from "../../../../data/onboarding";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   showAlertDialog,
-  showConfirmationDialog,
   showPromptDialog,
 } from "../../../lovelace/custom-card-helpers";
 import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
@@ -37,6 +35,8 @@ export class CloudLogin extends LitElement {
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
+  @property() public lead?: string;
+
   @query("#email", true) public emailField!: HaInput;
 
   @query("#password", true) private _passwordField!: HaInput;
@@ -50,21 +50,13 @@ export class CloudLogin extends LitElement {
       return this._renderLoginForm();
     }
 
-    return html`
-      <ha-card
-        outlined
-        .header=${this.localize(
-          `ui.panel.${this.translationKeyPanel}.login.sign_in`
-        )}
-      >
-        ${this._renderLoginForm()}
-      </ha-card>
-    `;
+    return html`<ha-card outlined>${this._renderLoginForm()}</ha-card>`;
   }
 
   private _renderLoginForm() {
     return html`
       <div class="card-content login-form">
+        ${this.lead ? html`<p class="lead">${this.lead}</p>` : nothing}
         ${
           this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -219,28 +211,12 @@ export class CloudLogin extends LitElement {
 
     try {
       if (this.hass) {
-        const result = await cloudLogin({
+        await cloudLogin({
           hass: this.hass,
           email,
           ...(code ? { code } : { password }),
           check_connection: checkConnection,
         });
-        if (result.cloud_pipeline) {
-          if (
-            await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_title"
-              ),
-              text: this.hass.localize(
-                "ui.panel.config.cloud.login.cloud_pipeline_text"
-              ),
-              confirmText: this.hass.localize("ui.common.yes"),
-              dismissText: this.hass.localize("ui.common.no"),
-            })
-          ) {
-            setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
-          }
-        }
       } else {
         // for onboarding
         await loginHaCloud({
@@ -250,6 +226,7 @@ export class CloudLogin extends LitElement {
       }
       this.email = "";
       fireEvent(this, "ha-refresh-cloud-status");
+      fireEvent(this, "cloud-logged-in");
     } catch (err: any) {
       const error = await this._handleCloudLoginError(
         err,
@@ -307,7 +284,9 @@ export class CloudLogin extends LitElement {
   }
 
   private _handleForgotPassword() {
-    fireEvent(this, "cloud-forgot-password");
+    fireEvent(this, "cloud-forgot-password", {
+      email: this.emailField?.value ?? this.email ?? "",
+    });
   }
 
   static get styles() {
@@ -317,9 +296,6 @@ export class CloudLogin extends LitElement {
         ha-card {
           overflow: hidden;
         }
-        ha-card .card-header {
-          margin-bottom: -8px;
-        }
         .card-actions {
           display: flex;
           justify-content: space-between;
@@ -328,6 +304,11 @@ export class CloudLogin extends LitElement {
         .login-form {
           display: flex;
           flex-direction: column;
+        }
+        .lead {
+          margin: 0 0 var(--ha-space-2);
+          color: var(--secondary-text-color);
+          line-height: var(--ha-line-height-normal);
         }
       `,
     ];
@@ -347,5 +328,6 @@ declare global {
     "cloud-forgot-password": {
       email: string;
     };
+    "cloud-logged-in": undefined;
   }
 }

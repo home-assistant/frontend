@@ -10,21 +10,18 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
-import {
-  startMediaProgressInterval,
-  stopMediaProgressInterval,
-} from "../../../common/util/media-progress";
+import { MediaProgressController } from "../../../common/controllers/media-progress-controller";
 import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
@@ -64,7 +61,6 @@ import type {
   HomeAssistantConnection,
   HomeAssistantFormatters,
 } from "../../../types";
-import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -92,7 +88,10 @@ class MoreInfoMediaPlayer extends LitElement {
   @query(".volume-slider")
   private _volumeSlider?: HaSlider;
 
-  private _progressInterval?: number;
+  private _progressController = new MediaProgressController(this, {
+    getStateObj: () => this.stateObj,
+    getSlider: () => this._positionSlider,
+  });
 
   private _volumeStep = 2;
 
@@ -106,23 +105,6 @@ class MoreInfoMediaPlayer extends LitElement {
     onSetVolume: (value) => this._setVolume(value),
     onSetVolumeDebounced: (value) => this._debouncedVolumeSet(value),
   });
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._syncProgressInterval();
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._clearProgressInterval();
-  }
-
-  protected firstUpdated(_changedProperties: PropertyValues<this>) {
-    if (this._positionSlider) {
-      this._positionSlider.valueFormatter = (value: number) =>
-        this._formatDuration(value);
-    }
-  }
 
   private _formatDuration(duration: number) {
     return formatMediaTime(duration);
@@ -375,9 +357,11 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.entity_picture ||
       "";
     const coverUrl = coverUrlRaw ? this._connection.hassUrl(coverUrlRaw) : "";
-    const playerObj = new HassMediaPlayerEntity(this._api, this.stateObj);
 
-    const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
+    const position = Math.max(
+      Math.floor(this._progressController.progress ?? 0),
+      0
+    );
     const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
     const positionFormatted = this._formatDuration(position);
     const durationFormatted = this._formatDuration(duration);
@@ -441,7 +425,6 @@ class MoreInfoMediaPlayer extends LitElement {
                   min="0"
                   max=${duration}
                   step="1"
-                  .value=${position}
                   aria-label=${this._localize(
                     "ui.card.media_player.track_position"
                   )}
@@ -781,39 +764,6 @@ class MoreInfoMediaPlayer extends LitElement {
     );
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
-    super.updated(changedProps);
-    if (changedProps.has("stateObj")) {
-      this._syncProgressInterval();
-    }
-  }
-
-  private _syncProgressInterval(): void {
-    if (this._shouldUpdateProgress()) {
-      this._progressInterval = startMediaProgressInterval(
-        this._progressInterval,
-        () => this.requestUpdate()
-      );
-      return;
-    }
-    this._clearProgressInterval();
-  }
-
-  private _clearProgressInterval(): void {
-    this._progressInterval = stopMediaProgressInterval(this._progressInterval);
-  }
-
-  private _shouldUpdateProgress(): boolean {
-    const stateObj = this.stateObj;
-    return (
-      !!stateObj &&
-      stateObj.state === "playing" &&
-      Number(stateObj.attributes.media_duration) > 0 &&
-      "media_position" in stateObj.attributes &&
-      "media_position_updated_at" in stateObj.attributes
-    );
-  }
-
   private _toggleMute() {
     this._api.callService("media_player", "volume_mute", {
       entity_id: this.stateObj!.entity_id,
@@ -872,12 +822,15 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private async _handleMediaSeekChanged(e: Event): Promise<void> {
+  private async _handleMediaSeekChanged(
+    e: HASSDomTargetEvent<HaSlider>
+  ): Promise<void> {
     if (!this.stateObj) {
       return;
     }
 
-    const newValue = (e.target as any).value;
+    const newValue = e.target.value;
+    this._progressController.seek(newValue);
     this._api.callService("media_player", "media_seek", {
       entity_id: this.stateObj.entity_id,
       seek_position: newValue,

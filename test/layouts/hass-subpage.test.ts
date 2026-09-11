@@ -28,7 +28,7 @@ afterEach(() => {
 describe("hass-subpage back path", () => {
   it("links to a path on the current origin", async () => {
     const backButton = await mount("/config/system");
-    expect(backButton!.getAttribute("href")).toEqual("/config/system");
+    expect(backButton!.href).toEqual("/config/system");
   });
 
   // eslint-disable-next-line no-script-url
@@ -36,7 +36,7 @@ describe("hass-subpage back path", () => {
     "does not link to %s",
     async (backPath) => {
       const backButton = await mount(backPath);
-      expect(backButton!.hasAttribute("href")).toBe(false);
+      expect(backButton!.href).toBeUndefined();
     }
   );
 });

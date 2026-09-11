@@ -2,11 +2,13 @@ import { mdiCloseCircle } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
@@ -129,9 +131,9 @@ class ZWaveJSCustomParam extends LitElement {
     return parsed;
   }
 
-  private _customParamNumberChanged(ev: Event) {
+  private _customParamNumberChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
     this._customParamNumber = this._tryParseNumber(
-      (ev.target as HTMLInputElement).value
+      ev.currentTarget.value ?? ""
     );
   }
 
@@ -139,8 +141,8 @@ class ZWaveJSCustomParam extends LitElement {
     this._valueSize = this._tryParseNumber(ev.detail.value) ?? 1;
   }
 
-  private _customValueChanged(ev: Event) {
-    this._value = this._tryParseNumber((ev.target as HTMLInputElement).value);
+  private _customValueChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    this._value = this._tryParseNumber(ev.currentTarget.value ?? "");
   }
 
   private _customValueFormatChanged(ev: HaSelectSelectEvent) {

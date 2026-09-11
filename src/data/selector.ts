@@ -14,6 +14,7 @@ import type {
 import type { HomeAssistant } from "../types";
 import {
   type DeviceRegistryEntry,
+  devicesInEffectiveArea,
   getDeviceIntegrationLookup,
 } from "./device/device_registry";
 import type {
@@ -47,6 +48,7 @@ export type Selector =
   | DeviceSelector
   | FloorSelector
   | LegacyDeviceSelector
+  | DeviceClassSelector
   | DurationSelector
   | EntitySelector
   | EntityNameSelector
@@ -66,6 +68,7 @@ export type Selector =
   | QRCodeSelector
   | SelectSelector
   | SelectorSelector
+  | StateClassSelector
   | StateSelector
   | StatisticSelector
   | StringSelector
@@ -85,6 +88,20 @@ export type Selector =
   | UiStateContentSelector
   | UiTimeFormatSelector
   | BackupLocationSelector;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type SelectorType = KeysOfUnion<Selector>;
+
+type UnionMemberWithKey<U, K extends PropertyKey> = U extends unknown
+  ? K extends keyof U
+    ? U
+    : never
+  : never;
+
+export type SelectorForType<T extends SelectorType> = UnionMemberWithKey<
+  Selector,
+  T
+>;
 
 export interface ActionSelector {
   action: {
@@ -364,9 +381,9 @@ export interface MediaSelector {
   media: {
     accept?: string[];
     image_upload?: boolean;
-    clearable?: boolean;
     hide_content_type?: boolean;
     content_id_helper?: string;
+    multiple?: boolean;
   } | null;
 }
 
@@ -397,6 +414,9 @@ export interface NumberSelector {
     unit_of_measurement?: string;
     slider_ticks?: boolean;
     translation_key?: string;
+    // Shown instead of the browser's native message when the value fails
+    // min/max/step constraint validation.
+    validation_message?: string;
   } | null;
 }
 
@@ -480,6 +500,13 @@ export interface SelectSelector {
   } | null;
 }
 
+export interface DeviceClassSelector {
+  device_class: {
+    domain: string;
+    multiple?: boolean;
+  } | null;
+}
+
 export interface SelectorSelector {
   selector: {} | null;
 }
@@ -487,6 +514,13 @@ export interface SelectorSelector {
 export interface SerialPortSelector {
   serial_port: {
     extra_recommended_domains?: string[];
+  } | null;
+}
+
+export interface StateClassSelector {
+  state_class: {
+    multiple?: boolean;
+    state_classes?: string[];
   } | null;
 }
 
@@ -723,9 +757,10 @@ export const expandAreaTarget = (
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
-  Object.values(devices).forEach((device) => {
+  // Devices of an area are its effective-area members: a child device inheriting
+  // this area counts, a child with a different explicit area does not.
+  devicesInEffectiveArea(devices, areaId).forEach((device) => {
     if (
-      device.area_id === areaId &&
       deviceMeetsTargetSelector(
         hass.states,
         Object.values(entities),
@@ -787,9 +822,8 @@ export const areaMeetsTargetSelector = (
   targetSelector: TargetSelector,
   entitySources?: EntitySources
 ): boolean => {
-  const hasMatchingdevice = Object.values(devices).some((device) => {
-    if (
-      device.area_id === areaId &&
+  const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
+    (device) =>
       deviceMeetsTargetSelector(
         hass.states,
         Object.values(entities),
@@ -797,11 +831,7 @@ export const areaMeetsTargetSelector = (
         targetSelector,
         entitySources
       )
-    ) {
-      return true;
-    }
-    return false;
-  });
+  );
   if (hasMatchingdevice) {
     return true;
   }
@@ -843,6 +873,8 @@ export const deviceMeetsTargetSelector = (
     }
   }
   if (targetSelector.target?.entity) {
+    // Only the device's own entities: a child device is reached through the
+    // device target itself, so a parent must not match on a child's behalf.
     const entities = entityRegistry.filter(
       (reg) => reg.device_id === device.id
     );
@@ -1109,6 +1141,11 @@ export const resolveEntityIDs = (
   const targetFloors = new Set(ensureArray(targetPickerValue.floor_id));
   const targetLabels = new Set(ensureArray(targetPickerValue.label_id));
 
+  // Only a directly targeted device pulls in its child devices. Devices that are
+  // only reached through a label or an area must not, because core does not
+  // inherit labels to children and resolves areas by effective area membership.
+  const directDevices = new Set(targetDevices);
+
   targetLabels.forEach((labelId) => {
     const expanded = expandLabelTarget(
       hass,
@@ -1128,6 +1165,10 @@ export const resolveEntityIDs = (
     expanded.areas.forEach((id) => targetAreas.add(id));
   });
 
+  // Devices only reached through an area do not pull in entities that are
+  // explicitly assigned to another area, matching core.
+  const devicesNotViaArea = new Set(targetDevices);
+
   targetAreas.forEach((areaId) => {
     const expanded = expandAreaTarget(
       hass,
@@ -1140,6 +1181,16 @@ export const resolveEntityIDs = (
     expanded.entities.forEach((id) => targetEntities.add(id));
   });
 
+  // Targeting a device also targets its child devices, matching core's
+  // server-side target resolution. Only direct device targets expand this way;
+  // nesting is single-level, so one pass is enough.
+  Object.values(devices).forEach((device) => {
+    if (device.parent_device_id && directDevices.has(device.parent_device_id)) {
+      targetDevices.add(device.id);
+      devicesNotViaArea.add(device.id);
+    }
+  });
+
   targetDevices.forEach((deviceId) => {
     const expanded = expandDeviceTarget(
       hass,
@@ -1147,7 +1198,11 @@ export const resolveEntityIDs = (
       entities,
       targetSelector
     );
-    expanded.entities.forEach((id) => targetEntities.add(id));
+    expanded.entities.forEach((id) => {
+      if (devicesNotViaArea.has(deviceId) || !entities[id]?.area_id) {
+        targetEntities.add(id);
+      }
+    });
   });
 
   return Array.from(targetEntities);

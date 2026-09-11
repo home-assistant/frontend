@@ -16,7 +16,7 @@ import type {
 } from "../../data/data_entry_flow";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 
 let instance = 0;
 
@@ -229,7 +229,7 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
     });
   }
 
-  private _stepDataChanged(ev: CustomEvent) {
+  private _stepDataChanged(ev: ValueChangedEvent<Record<string, unknown>>) {
     this._stepData = ev.detail.value;
     this._updateDirtyState(this._stepData);
   }

@@ -102,6 +102,11 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
     cost_sensors: {},
     solar_forecast_domains: [],
   }));
+  hass.mockWS("energy/validate", () => ({
+    energy_sources: Array.from({ length: 6 }, () => []),
+    device_consumption: Array.from({ length: 6 }, () => []),
+    device_consumption_water: Array.from({ length: 2 }, () => []),
+  }));
   hass.mockWS(
     "energy/fossil_energy_consumption",
     ({ period }): FossilEnergyConsumption => ({

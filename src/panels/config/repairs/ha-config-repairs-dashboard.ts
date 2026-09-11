@@ -17,6 +17,7 @@ import {
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
 import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
 import "./ha-config-repairs";
@@ -32,7 +33,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _repairsIssues: RepairsIssue[] = [];
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
+  @state() private _loaded = false;
 
   @state() private _showIgnored = false;
 
@@ -60,6 +61,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         this._repairsIssues = repairs.issues.sort(
           (a, b) => severitySort[a.severity] - severitySort[b.severity]
         );
+        this._loaded = true;
         const integrations = new Set<string>();
         for (const issue of this._repairsIssues) {
           integrations.add(issue.domain);
@@ -70,6 +72,10 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    if (!this._loaded) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
     const issues = this._getFilteredIssues(
       this._showIgnored,
       this._repairsIssues
@@ -77,9 +83,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
 
     return html`
       <hass-subpage
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config/system"
-        }
+        back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.repairs.caption")}

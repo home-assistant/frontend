@@ -11,6 +11,9 @@ inputs:
   is-test:
     description: Set IS_TEST for the build (skips source maps and compression)
     default: "false"
+  rspack-cache:
+    description: rspack persistent cache mode ("readwrite", "readonly", or "" to disable)
+    default: ""
 
 runs:
   using: composite
@@ -21,3 +24,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         IS_TEST: ${{ inputs.is-test }}
+        RSPACK_CACHE: ${{ inputs.rspack-cache }}

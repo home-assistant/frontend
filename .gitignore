@@ -6,6 +6,8 @@ build/
 dist/
 /hass_frontend/
 /translations/
+/.compress-cache/
+/.rspack-cache/
 # Composite action source, not build output
 !/.github/actions/build/
 
@@ -72,3 +74,4 @@ test/e2e/app/dist/
 .serena
 
 test/benchmarks/results/
+

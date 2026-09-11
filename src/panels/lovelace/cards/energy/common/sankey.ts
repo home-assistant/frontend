@@ -11,6 +11,11 @@ import type { HomeAssistant } from "../../../../../types";
 // Devices below this fraction of the home total are grouped into an "Other" node
 export const MIN_SANKEY_THRESHOLD_FACTOR = 0.001; // 0.1% of home total
 
+// Readable capacity of the default 400px card: ~18px per node including the
+// 6px nodeGap. Past this, bars collapse toward the 1px minimum and the labels
+// shrink with them.
+export const DEFAULT_MAX_SANKEY_DEVICES = 20;
+
 // While the graph is assembled, device nodes carry an ad-hoc `parent` field
 // that is not part of the chart's Node interface. The chart ignores it.
 export type SankeyDeviceNode = Node & { parent?: string };
@@ -36,6 +41,103 @@ export const fireSankeyNodeMoreInfo = (el: HTMLElement, node: Node): void => {
   }
 };
 
+export interface FindDevicesOverCapOptions {
+  devices: DeviceConsumptionEnergyPreference[];
+  /** Max named children per parent. Falsy or non-positive disables the cap. */
+  maxDevices: number | undefined;
+  rootNodeId: string;
+  renderedIds: ReadonlySet<string>;
+  deviceValues: ReadonlyMap<string, number>;
+  getId: (device: DeviceConsumptionEnergyPreference) => string | undefined;
+  /** First ancestor rendered as its own node, else undefined. */
+  getEffectiveParent: (
+    device: DeviceConsumptionEnergyPreference
+  ) => string | undefined;
+}
+
+/**
+ * Node ids to drop from the rendered set because their parent has more rendered
+ * children than `maxDevices`. Callers group the result into the parent's "Other"
+ * node, so the smallest devices merge instead of disappearing.
+ */
+export const findDevicesOverCap = ({
+  devices,
+  maxDevices,
+  rootNodeId,
+  renderedIds,
+  deviceValues,
+  getId,
+  getEffectiveParent,
+}: FindDevicesOverCapOptions): Set<string> => {
+  const grouped = new Set<string>();
+  if (!maxDevices || !Number.isFinite(maxDevices) || maxDevices <= 0) {
+    return grouped;
+  }
+
+  const childrenByParent = new Map<
+    string,
+    { id: string; value: number; idx: number }[]
+  >();
+  const seenIds = new Set<string>();
+  devices.forEach((device, idx) => {
+    const id = getId(device);
+    if (!id || !renderedIds.has(id) || seenIds.has(id)) {
+      return;
+    }
+    seenIds.add(id);
+    const parentKey = getEffectiveParent(device) ?? rootNodeId;
+    if (!childrenByParent.has(parentKey)) {
+      childrenByParent.set(parentKey, []);
+    }
+    childrenByParent.get(parentKey)!.push({
+      id,
+      value: deviceValues.get(id)!,
+      idx,
+    });
+  });
+
+  // Taking the whole subtree stops a grouped device's children from re-parenting
+  // upward while its value, which already includes them, rolls into "Other".
+  const groupSubtree = (id: string): void => {
+    if (grouped.has(id)) {
+      return;
+    }
+    grouped.add(id);
+    childrenByParent.get(id)?.forEach((child) => groupSubtree(child.id));
+  };
+
+  const queue = [rootNodeId];
+  const visited = new Set(queue);
+  while (queue.length) {
+    const children = childrenByParent.get(queue.shift()!);
+    if (!children) {
+      continue;
+    }
+    let kept = children;
+    if (children.length > maxDevices) {
+      // Raw value includes children, so a parent never sorts below its own
+      // child; declaration order breaks ties so the layout is stable.
+      const ranked = [...children].sort(
+        (a, b) => a.value - b.value || a.idx - b.idx
+      );
+      // At least two, because a lone grouped device is rendered by name instead
+      // and would void the cap.
+      ranked
+        .slice(0, Math.max(children.length - maxDevices, 2))
+        .forEach((child) => groupSubtree(child.id));
+      kept = children.filter((child) => !grouped.has(child.id));
+    }
+    kept.forEach((child) => {
+      if (!visited.has(child.id)) {
+        visited.add(child.id);
+        queue.push(child.id);
+      }
+    });
+  }
+
+  return grouped;
+};
+
 export interface BuildSankeyDeviceNodesOptions {
   devices: DeviceConsumptionEnergyPreference[];
   computedStyle: CSSStyleDeclaration;
@@ -44,6 +146,12 @@ export interface BuildSankeyDeviceNodesOptions {
   rootNodeId: string;
   /** Flows below this value are grouped into an "Other" node. */
   minThreshold: number;
+  /**
+   * Max named child nodes per parent. Once a parent has more rendered children
+   * than this, the smallest are grouped into that parent's "Other" node.
+   * Undefined means no cap.
+   */
+  maxDevices?: number;
   /** Per-parent untracked residual only shown when above this value. */
   untrackedFloor: number;
   /** Round the "Other" node value up (instantaneous cards only). */
@@ -76,6 +184,7 @@ export const buildSankeyDeviceNodes = (
     localize,
     rootNodeId,
     minThreshold,
+    maxDevices,
     untrackedFloor,
     ceilOtherValue,
     initialUntracked,
@@ -146,6 +255,19 @@ export const buildSankeyDeviceNodes = (
     return undefined;
   };
 
+  // The value threshold only catches devices that are a negligible share of the
+  // home total, so a panel of dozens of similar-sized circuits never groups.
+  findDevicesOverCap({
+    devices,
+    maxDevices,
+    rootNodeId,
+    renderedIds,
+    deviceValues,
+    getId,
+    getEffectiveParent: (device) =>
+      findEffectiveParent(device.included_in_stat),
+  }).forEach((id) => renderedIds.delete(id));
+
   devices.forEach((device, idx) => {
     const id = getId(device);
     if (!id) {
@@ -154,8 +276,9 @@ export const buildSankeyDeviceNodes = (
     const value = deviceValues.get(id)!;
     const effectiveParent = findEffectiveParent(device.included_in_stat);
 
-    if (value < minThreshold) {
-      // Collect small consumers instead of folding them into untracked
+    if (!renderedIds.has(id)) {
+      // Below the value threshold or demoted by the count cap. Collect it
+      // instead of folding it into untracked.
       const parentKey = effectiveParent ?? rootNodeId;
       if (!smallConsumersByParent.has(parentKey)) {
         smallConsumersByParent.set(parentKey, []);

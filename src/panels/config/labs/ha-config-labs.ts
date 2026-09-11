@@ -19,6 +19,7 @@ import {
   subscribeLabFeatures,
 } from "../../../data/labs";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -38,7 +39,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _preview_features: LabPreviewFeature[] = [];
+  @state() private _preview_features?: LabPreviewFeature[];
 
   @state() private _highlightedPreviewFeature?: string;
 
@@ -98,6 +99,10 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
+    if (this._preview_features === undefined) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
+
     const sortedFeatures = this._sortedPreviewFeatures(
       this.hass.localize,
       this._preview_features

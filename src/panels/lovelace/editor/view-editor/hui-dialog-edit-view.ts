@@ -181,7 +181,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
             <hui-view-background-editor
               .hass=${this.hass}
               .config=${this._config}
-              @view-config-changed=${this._viewConfigChanged}
+              @background-config-changed=${this._viewConfigChanged}
             ></hui-view-background-editor>
           `;
           break;

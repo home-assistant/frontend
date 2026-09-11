@@ -38,7 +38,7 @@ jobs:
     name: Prepare container dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.0-noble
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       options: --user 1001
     defaults:
       run:
@@ -137,6 +137,7 @@ jobs:
         with:
           target: build-gallery
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
 
       - name: Upload gallery build
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -154,7 +155,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.0-noble
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -206,7 +207,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.0-noble
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -260,7 +261,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.62.0-noble
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       options: --user 1001 --ipc=host
     defaults:
       run:

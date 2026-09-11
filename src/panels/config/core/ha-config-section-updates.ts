@@ -53,20 +53,17 @@ interface UpdateGroup {
   key: string;
   title: string;
   entities: UpdateEntity[];
-  showUpdateAll: boolean;
+  showUpdateButton: boolean;
 }
 
 const SYSTEM_KEY = "__system__";
 const APPS_KEY = "__apps__";
-const INTEGRATIONS_KEY = "__integrations__";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _showSkipped = false;
 
@@ -155,9 +152,7 @@ class HaConfigSectionUpdates extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${
-          this._searchParms.has("historyBack") ? undefined : "/config/system"
-        }
+        back-path="/config/system"
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
@@ -219,7 +214,7 @@ class HaConfigSectionUpdates extends LitElement {
                       ${group.title}
                     </div>
                     ${
-                      group.showUpdateAll
+                      group.showUpdateButton
                         ? html`
                             <ha-button
                               appearance="plain"
@@ -228,10 +223,12 @@ class HaConfigSectionUpdates extends LitElement {
                               .disabled=${group.entities.every((entity) =>
                                 updateIsInstalling(entity)
                               )}
-                              @click=${this._updateAll}
+                              @click=${this._updateGroup}
                             >
                               ${this.hass.localize(
-                                "ui.panel.config.updates.update_all"
+                                group.entities.length > 1
+                                  ? "ui.panel.config.updates.update_all"
+                                  : "ui.common.update"
                               )}
                             </ha-button>
                           `
@@ -351,7 +348,7 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private async _updateAll(ev: Event) {
+  private async _updateGroup(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
     const entityIds = group.entities
       .filter((entity) => !updateIsInstalling(entity))
@@ -417,7 +414,6 @@ class HaConfigSectionUpdates extends LitElement {
       const systemEntities: UpdateEntity[] = [];
       const appEntities: UpdateEntity[] = [];
       const byDomain = new Map<string, UpdateEntity[]>();
-      const otherIntegrationEntities: UpdateEntity[] = [];
 
       for (const entity of entities) {
         if (isSystemUpdate(entity)) {
@@ -426,13 +422,10 @@ class HaConfigSectionUpdates extends LitElement {
         }
         const domain =
           entitySources?.[entity.entity_id]?.domain ??
-          entityRegistry[entity.entity_id]?.platform;
+          entityRegistry[entity.entity_id]?.platform ??
+          "unknown";
         if (domain === "hassio") {
           appEntities.push(entity);
-          continue;
-        }
-        if (!domain) {
-          otherIntegrationEntities.push(entity);
           continue;
         }
         if (!byDomain.has(domain)) {
@@ -441,21 +434,17 @@ class HaConfigSectionUpdates extends LitElement {
         byDomain.get(domain)!.push(entity);
       }
 
-      const multiInstanceGroups: UpdateGroup[] = [];
+      const integrationGroups: UpdateGroup[] = [];
       byDomain.forEach((entries, domain) => {
-        if (entries.length >= 2) {
-          multiInstanceGroups.push({
-            key: domain,
-            title: domainToName(localize, domain),
-            entities: entries,
-            showUpdateAll: true,
-          });
-        } else {
-          otherIntegrationEntities.push(...entries);
-        }
+        integrationGroups.push({
+          key: domain,
+          title: domainToName(localize, domain),
+          entities: entries,
+          showUpdateButton: true,
+        });
       });
 
-      multiInstanceGroups.sort((a, b) =>
+      integrationGroups.sort((a, b) =>
         caseInsensitiveStringCompare(a.title, b.title, language)
       );
 
@@ -466,27 +455,18 @@ class HaConfigSectionUpdates extends LitElement {
           key: SYSTEM_KEY,
           title: localize("ui.panel.config.updates.group_system"),
           entities: systemEntities,
-          showUpdateAll: false,
+          showUpdateButton: false,
         });
       }
 
-      groups.push(...multiInstanceGroups);
-
-      if (otherIntegrationEntities.length) {
-        groups.push({
-          key: INTEGRATIONS_KEY,
-          title: localize("ui.panel.config.updates.group_integrations"),
-          entities: otherIntegrationEntities,
-          showUpdateAll: true,
-        });
-      }
+      groups.push(...integrationGroups);
 
       if (appEntities.length) {
         groups.push({
           key: APPS_KEY,
           title: localize("ui.panel.config.updates.group_apps"),
           entities: appEntities,
-          showUpdateAll: true,
+          showUpdateButton: true,
         });
       }
 

@@ -111,7 +111,6 @@ export class HaMoreInfoStateHeader extends LitElement {
       padding: var(--ha-space-1) 0;
       cursor: pointer;
       user-select: none;
-      -webkit-user-select: none;
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
   `;

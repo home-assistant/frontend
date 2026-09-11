@@ -1,162 +1,165 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type {
+  GridCardConfig,
+  MediaControlCardConfig,
+} from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 import { createMediaPlayerEntities } from "../../data/media_players";
 
 const CONFIGS = [
   {
     heading: "Paused Music",
-    config: `
-  - type: media-control
-    entity: media_player.music_paused
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.music_paused",
+    },
   },
   {
     heading: "Playing Music",
-    config: `
-  - type: media-control
-    entity: media_player.music_playing
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.music_playing",
+    },
   },
   {
     heading: "Playing Stream",
-    config: `
-  - type: media-control
-    entity: media_player.stream_playing
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.stream_playing",
+    },
   },
   {
     heading: "Paused Stream",
-    config: `
-  - type: media-control
-    entity: media_player.stream_paused
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.stream_paused",
+    },
   },
   {
     heading: 'Playing Stream (with "previous" support)',
-    config: `
-  - type: media-control
-    entity: media_player.stream_playing_previous
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.stream_playing_previous",
+    },
   },
   {
     heading: "Playing non-skip TV Show",
-    config: `
-  - type: media-control
-    entity: media_player.tv_playing
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.tv_playing",
+    },
   },
   {
     heading: "Screen Casting",
-    config: `
-  - type: media-control
-    entity: media_player.android_cast
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.android_cast",
+    },
   },
   {
     heading: "Digital Picture Frame",
-    config: `
-  - type: media-control
-    entity: media_player.image_display
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.image_display",
+    },
   },
   {
     heading: "Sonos Idle",
-    config: `
-  - type: media-control
-    entity: media_player.sonos_idle
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.sonos_idle",
+    },
   },
   {
     heading: "Idle waiting for Browse Media",
-    config: `
-  - type: media-control
-    entity: media_player.idle_browse_media
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.idle_browse_media",
+    },
   },
   {
     heading: "Player Off",
-    config: `
-  - type: media-control
-    entity: media_player.theater_off
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_off",
+    },
   },
   {
     heading: "Player On",
-    config: `
-  - type: media-control
-    entity: media_player.theater_on
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_on",
+    },
   },
   {
     heading: "Player Off (cannot be switched on)",
-    config: `
-  - type: media-control
-    entity: media_player.theater_off_static
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_off_static",
+    },
   },
   {
     heading: "Player On (cannot be switched off)",
-    config: `
-  - type: media-control
-    entity: media_player.theater_on_static
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_on_static",
+    },
   },
   {
     heading: "Player Idle",
-    config: `
-  - type: media-control
-    entity: media_player.idle
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.idle",
+    },
   },
   {
     heading: "Player Playing",
-    config: `
-  - type: media-control
-    entity: media_player.playing
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.playing",
+    },
   },
   {
     heading: "Player Unavailable",
-    config: `
-  - type: media-control
-    entity: media_player.unavailable
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.unavailable",
+    },
   },
   {
     heading: "Player Unknown",
-    config: `
-  - type: media-control
-    entity: media_player.unknown
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.unknown",
+    },
   },
   {
     heading: "Receiver On (selectable sources)",
-    config: `
-  - type: media-control
-    entity: media_player.receiver_on
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.receiver_on",
+    },
   },
   {
     heading: "Receiver Off (selectable sources)",
-    config: `
-  - type: media-control
-    entity: media_player.receiver_off
-    `,
+    config: {
+      type: "media-control",
+      entity: "media_player.receiver_off",
+    },
   },
   {
     heading: "Grid Full Size",
-    config: `
-  - type: grid
-    columns: 1
-    cards:
-    - type: media-control
-      entity: media_player.music_paused
-    `,
+    config: {
+      type: "grid",
+      columns: 1,
+      cards: [{ type: "media-control", entity: "media_player.music_paused" }],
+    },
   },
-];
+] satisfies DemoCardConfig<MediaControlCardConfig | GridCardConfig>[];
 
 @customElement("demo-lovelace-media-control-card")
 class DemoHuiMediaControlCard extends LitElement {

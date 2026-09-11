@@ -370,6 +370,7 @@ export class HaAutomationAddSearch extends LitElement {
                     width: "var(--ha-space-12)",
                     position: "absolute",
                     top: "0",
+                    height: "100%",
                     left: rtl ? undefined : "var(--ha-space-1)",
                     right: rtl ? "var(--ha-space-1)" : undefined,
                     transform: rtl ? "scaleX(-1)" : "",

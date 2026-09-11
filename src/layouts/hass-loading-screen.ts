@@ -1,6 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { getHistoryState } from "../common/navigate";
 import "../components/animation/ha-fade-in";
 import "../components/ha-top-app-bar-fixed";
 import "../components/ha-spinner";
@@ -27,7 +28,7 @@ class HassLoadingScreen extends LitElement {
     return html`
       <ha-top-app-bar-fixed
         .narrow=${this.narrow}
-        .backButton=${!(this.rootnav || history.state?.root)}
+        .backButton=${!(this.rootnav || getHistoryState()?.root)}
       >
         ${this._renderContent()}
       </ha-top-app-bar-fixed>

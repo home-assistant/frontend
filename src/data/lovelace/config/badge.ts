@@ -1,9 +1,9 @@
-import type { Condition } from "../../../panels/lovelace/common/validate-condition";
+import type { VisibilityCondition } from "../../../panels/lovelace/common/validate-condition";
 
 export interface LovelaceBadgeConfig {
   type: string;
   [key: string]: any;
-  visibility?: Condition[];
+  visibility?: VisibilityCondition[];
   disabled?: boolean;
 }
 

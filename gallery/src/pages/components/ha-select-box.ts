@@ -108,6 +108,17 @@ export class DemoHaSelectBox extends LitElement {
       })}
       <ha-card>
         <div class="card-content">
+          <label>Disabled with a selected option</label>
+          <ha-select-box
+            .value=${"card"}
+            .options=${fullOptions}
+            .disabled=${true}
+          >
+          </ha-select-box>
+        </div>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
           <p class="title"><b>Column layout</b></p>
           <div class="vertical-selects">
             ${repeat(selects, (select) => {

@@ -163,9 +163,7 @@ class HaPanelDevEvent extends LitElement {
         }
 
         :host {
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
+          user-select: initial;
           display: block;
           height: 100%;
         }

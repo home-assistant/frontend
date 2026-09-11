@@ -14,7 +14,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
@@ -110,6 +110,7 @@ export class HaAutomationTrace extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        back-path="/config/automation/dashboard"
         .header=${title}
         .scrollable=${this.narrow}
       >
@@ -452,11 +453,7 @@ export class HaAutomationTrace extends LitElement {
       if (runId) {
         const params = new URLSearchParams(location.search);
         params.delete("run_id");
-        history.replaceState(
-          null,
-          "",
-          `${location.pathname}?${params.toString()}`
-        );
+        replaceCurrentUrl(`${location.pathname}?${params.toString()}`);
       }
 
       await showAlertDialog(this, {

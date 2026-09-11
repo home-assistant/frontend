@@ -73,7 +73,7 @@ export class DialogDeviceReplaced
     ) =>
       candidates.map((deviceId) => {
         const device = devices[deviceId];
-        const area = device ? getDeviceArea(device, areas) : undefined;
+        const area = device ? getDeviceArea(device, areas, devices) : undefined;
         const configEntry = device?.primary_config_entry
           ? configEntryLookup?.[device.primary_config_entry]
           : undefined;

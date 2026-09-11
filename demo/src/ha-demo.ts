@@ -7,6 +7,12 @@ import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
 import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry, setDemoAreas } from "./stubs/area_registry";
+import {
+  connectivityCommands,
+  connectivityComponents,
+  connectivityEntities,
+  connectivityEntityRegistryEntries,
+} from "./stubs/connectivity/fixtures";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
@@ -32,7 +38,6 @@ import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
 import { mockUsagePrediction } from "./stubs/usage_prediction";
-import "./cloud/cloud-demo-controls";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
@@ -59,6 +64,9 @@ const CONFIG_PANEL_COMMANDS = [
   "search/related",
   "tag/list",
   "assist_pipeline/",
+  "config/entity_registry/settings/",
+  "slugify",
+  ...connectivityCommands,
 ];
 
 @customElement("ha-demo")
@@ -86,15 +94,11 @@ export class HaDemo extends HomeAssistantAppEl {
           "assist_pipeline",
           "hassio",
           "hardware",
+          ...connectivityComponents,
         ],
       },
     });
 
-    // Demo-only floating panel to flip the mocked cloud state. Mounted once at
-    // the document level; it shows itself only on the cloud panel.
-    if (!document.querySelector("cloud-demo-controls")) {
-      document.body.appendChild(document.createElement("cloud-demo-controls"));
-    }
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
@@ -103,7 +107,7 @@ export class HaDemo extends HomeAssistantAppEl {
 
     mockLovelace(hass, localizePromise);
     mockAuth(hass);
-    mockTranslations(hass);
+    mockTranslations(hass, localizePromise);
     mockHistory(hass);
     mockRecorder(hass);
     mockTodo(hass);
@@ -176,9 +180,11 @@ export class HaDemo extends HomeAssistantAppEl {
         created_at: 0,
         modified_at: 0,
       },
+      ...connectivityEntityRegistryEntries,
     ]);
 
     hass.addEntities(energyEntities());
+    hass.addEntities(connectivityEntities());
 
     // Once config is loaded AND localize, set registries, entities and theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(

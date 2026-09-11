@@ -41,9 +41,6 @@ import { domainToName } from "../data/integration";
 import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
-  areaMeetsFilter,
-  deviceMeetsFilter,
-  entityRegMeetsFilter,
   getTargetComboBoxItemType,
   type TargetItem,
   type TargetType,
@@ -66,7 +63,6 @@ import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
 import "./target-picker/ha-target-picker-item-group";
-import "./target-picker/ha-target-picker-value-chip";
 
 const SEPARATOR = "________";
 const CREATE_ID = "___create-new-entity___";
@@ -84,8 +80,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public value?: HassServiceTarget;
 
   @property() public helper?: string;
-
-  @property({ type: Boolean, reflect: true }) public compact = false;
 
   @property({ attribute: false }) public createDomains?: string[];
 
@@ -114,9 +108,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ type: Boolean, reflect: true }) public disabled = false;
+  /**
+   * Entities that pass the filters the page currently has on. Narrows the
+   * counts, unlike `entityFilter`, which says what can be picked at all.
+   */
+  @property({ attribute: false })
+  public activeFilter?: (entityId: string) => boolean;
 
-  @property({ attribute: "add-on-top", type: Boolean }) public addOnTop = false;
+  @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @state() private _selectedSection?: TargetTypeFloorless;
 
@@ -158,6 +157,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         excludeDevices,
         value,
         idPrefix,
+        nested: true,
       })
   );
 
@@ -252,117 +252,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     Fuse.createIndex(keys, states);
 
   protected render() {
-    if (this.addOnTop) {
-      return html` ${this._renderPicker()} ${this._renderItems()} `;
-    }
     return html` ${this._renderItems()} ${this._renderPicker()} `;
-  }
-
-  private _renderValueChips() {
-    const entityIds = this.value?.entity_id
-      ? ensureArray(this.value.entity_id)
-      : [];
-    const deviceIds = this.value?.device_id
-      ? ensureArray(this.value.device_id)
-      : [];
-    const areaIds = this.value?.area_id ? ensureArray(this.value.area_id) : [];
-    const floorIds = this.value?.floor_id
-      ? ensureArray(this.value.floor_id)
-      : [];
-    const labelIds = this.value?.label_id
-      ? ensureArray(this.value.label_id)
-      : [];
-
-    if (
-      !entityIds.length &&
-      !deviceIds.length &&
-      !areaIds.length &&
-      !floorIds.length &&
-      !labelIds.length
-    ) {
-      return nothing;
-    }
-
-    return html`
-      <div class="items">
-        ${
-          floorIds.length
-            ? floorIds.map(
-                (floor_id) => html`
-                  <ha-target-picker-value-chip
-                    .hass=${this.hass}
-                    type="floor"
-                    .itemId=${floor_id}
-                    @remove-target-item=${this._handleRemove}
-                    @expand-target-item=${this._handleExpand}
-                  ></ha-target-picker-value-chip>
-                `
-              )
-            : nothing
-        }
-        ${
-          areaIds.length
-            ? areaIds.map(
-                (area_id) => html`
-                  <ha-target-picker-value-chip
-                    .hass=${this.hass}
-                    type="area"
-                    .itemId=${area_id}
-                    @remove-target-item=${this._handleRemove}
-                    @expand-target-item=${this._handleExpand}
-                  ></ha-target-picker-value-chip>
-                `
-              )
-            : nothing
-        }
-        ${
-          deviceIds.length
-            ? deviceIds.map(
-                (device_id) => html`
-                  <ha-target-picker-value-chip
-                    .hass=${this.hass}
-                    type="device"
-                    .itemId=${device_id}
-                    .compositeSplits=${this._compositeSplits}
-                    @remove-target-item=${this._handleRemove}
-                    @expand-target-item=${this._handleExpand}
-                  ></ha-target-picker-value-chip>
-                `
-              )
-            : nothing
-        }
-        ${
-          entityIds.length
-            ? entityIds.map(
-                (entity_id) => html`
-                  <ha-target-picker-value-chip
-                    .hass=${this.hass}
-                    type="entity"
-                    .itemId=${entity_id}
-                    @remove-target-item=${this._handleRemove}
-                    @expand-target-item=${this._handleExpand}
-                  ></ha-target-picker-value-chip>
-                `
-              )
-            : nothing
-        }
-        ${
-          labelIds.length
-            ? labelIds.map(
-                (label_id) => html`
-                  <ha-target-picker-value-chip
-                    .hass=${this.hass}
-                    type="label"
-                    .itemId=${label_id}
-                    @remove-target-item=${this._handleRemove}
-                    @expand-target-item=${this._handleExpand}
-                  ></ha-target-picker-value-chip>
-                `
-              )
-            : nothing
-        }
-      </div>
-    `;
   }
 
   private _renderValueGroups() {
@@ -403,6 +293,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -423,6 +314,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -446,6 +338,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -465,6 +358,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
+                  .activeFilter=${this.activeFilter}
                   .includeDomains=${this.includeDomains}
                   .includeDeviceClasses=${this.includeDeviceClasses}
                   .primaryEntitiesOnly=${this.primaryEntitiesOnly}
@@ -478,9 +372,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _renderItems() {
-    return html`
-      ${this.compact ? this._renderValueChips() : this._renderValueGroups()}
-    `;
+    return html` ${this._renderValueGroups()} `;
   }
 
   private _renderPicker() {
@@ -655,152 +547,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _handleExpand(ev: HASSDomEvent<HASSDomEvents["expand-target-item"]>) {
-    const type = ev.detail.type;
-    const itemId = ev.detail.id;
-    const newAreas: string[] = [];
-    const newDevices: string[] = [];
-    const newEntities: string[] = [];
-
-    if (type === "floor") {
-      Object.values(this.hass.areas).forEach((area) => {
-        if (
-          area.floor_id === itemId &&
-          !this.value!.area_id?.includes(area.area_id) &&
-          areaMeetsFilter(
-            area,
-            this.hass.devices,
-            this.hass.entities,
-            this.deviceFilter,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newAreas.push(area.area_id);
-        }
-      });
-    } else if (type === "area") {
-      Object.values(this.hass.devices).forEach((device) => {
-        if (
-          device.area_id === itemId &&
-          !this.value!.device_id?.includes(device.id) &&
-          deviceMeetsFilter(
-            device,
-            this.hass.entities,
-            this.deviceFilter,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newDevices.push(device.id);
-        }
-      });
-      Object.values(this.hass.entities).forEach((entity) => {
-        if (
-          entity.area_id === itemId &&
-          !this.value!.entity_id?.includes(entity.entity_id) &&
-          entityRegMeetsFilter(
-            entity,
-            false,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newEntities.push(entity.entity_id);
-        }
-      });
-    } else if (type === "device") {
-      Object.values(this.hass.entities).forEach((entity) => {
-        if (
-          entity.device_id === itemId &&
-          !this.value!.entity_id?.includes(entity.entity_id) &&
-          entityRegMeetsFilter(
-            entity,
-            false,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newEntities.push(entity.entity_id);
-        }
-      });
-    } else if (type === "label") {
-      Object.values(this.hass.areas).forEach((area) => {
-        if (
-          area.labels.includes(itemId) &&
-          !this.value!.area_id?.includes(area.area_id) &&
-          areaMeetsFilter(
-            area,
-            this.hass.devices,
-            this.hass.entities,
-            this.deviceFilter,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newAreas.push(area.area_id);
-        }
-      });
-      Object.values(this.hass.devices).forEach((device) => {
-        if (
-          device.labels.includes(itemId) &&
-          !this.value!.device_id?.includes(device.id) &&
-          deviceMeetsFilter(
-            device,
-            this.hass.entities,
-            this.deviceFilter,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newDevices.push(device.id);
-        }
-      });
-      Object.values(this.hass.entities).forEach((entity) => {
-        if (
-          entity.labels.includes(itemId) &&
-          !this.value!.entity_id?.includes(entity.entity_id) &&
-          entityRegMeetsFilter(
-            entity,
-            true,
-            this.includeDomains,
-            this.includeDeviceClasses,
-            this.hass.states,
-            this.entityFilter
-          )
-        ) {
-          newEntities.push(entity.entity_id);
-        }
-      });
-    } else {
-      return;
-    }
-    let value = this.value;
-    if (newEntities.length) {
-      value = this._addItems(value, "entity_id", newEntities);
-    }
-    if (newDevices.length) {
-      value = this._addItems(value, "device_id", newDevices);
-    }
-    if (newAreas.length) {
-      value = this._addItems(value, "area_id", newAreas);
-    }
-    value = this._removeItem(value, type, itemId);
-    fireEvent(this, "value-changed", { value });
-  }
-
   private _handleReplace(
     ev: HASSDomEvent<HASSDomEvents["replace-target-item"]>
   ) {
@@ -838,17 +584,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     this._replaceTarget = undefined;
     this._replaceTargetAnchor = undefined;
-  }
-
-  private _addItems(
-    value: this["value"],
-    type: string,
-    ids: string[]
-  ): this["value"] {
-    return {
-      ...value,
-      [type]: value![type] ? ensureArray(value![type])!.concat(ids) : ids,
-    };
   }
 
   private _removeItem(
@@ -1001,6 +736,28 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       }
 
       if (!filterType || filterType === "device") {
+        const selectedDeviceIds = targetValue?.device_id
+          ? replacingDeviceId
+            ? ensureArray(targetValue.device_id).filter(
+                (deviceId) => deviceId !== replacingDeviceId
+              )
+            : ensureArray(targetValue.device_id)
+          : undefined;
+        // A selected parent device already targets its children, so exclude
+        // those children from the picker too (mirrors selecting a floor
+        // removing its areas from the list).
+        const excludeDeviceIds = selectedDeviceIds
+          ? [
+              ...selectedDeviceIds,
+              ...Object.values(this.hass.devices)
+                .filter(
+                  (device) =>
+                    device.parent_device_id !== null &&
+                    selectedDeviceIds.includes(device.parent_device_id)
+                )
+                .map((device) => device.id),
+            ]
+          : undefined;
         let deviceItems = this._getDevicesMemoized(
           this.hass,
           configEntryLookup,
@@ -1008,25 +765,40 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
-          targetValue?.device_id
-            ? replacingDeviceId
-              ? ensureArray(targetValue.device_id).filter(
-                  (deviceId) => deviceId !== replacingDeviceId
-                )
-              : ensureArray(targetValue.device_id)
-            : undefined,
+          excludeDeviceIds,
           replacingDeviceId,
           `device${SEPARATOR}`
-        ).sort(this._sortBySortingLabel);
+        );
+        // getDevices already returns child devices nested under their parent
+        // with the top-level devices sorted; keep that order rather than
+        // re-sorting by label, which would separate children from their parent.
 
         if (searchTerm) {
+          // Keep the nested parent-then-children order (sort=false), matching
+          // the areas group; the default sorted search would reorder matches by
+          // relevance and pull children above their parent.
           deviceItems = this._filterGroup(
             "device",
             deviceItems,
             searchTerm,
-            deviceComboBoxKeys
+            deviceComboBoxKeys,
+            false
           );
         }
+
+        // Recompute the tree "last child" flag over the (possibly filtered)
+        // list so the last visible child of each parent draws its end connector.
+        deviceItems = deviceItems.map((item, index) => {
+          if (!(item as DevicePickerItem).is_child) {
+            return item;
+          }
+          const nextItem = deviceItems[index + 1] as
+            DevicePickerItem | undefined;
+          return {
+            ...item,
+            last: !nextItem || !nextItem.is_child,
+          };
+        });
 
         if (!filterType && deviceItems.length) {
           // show group title
@@ -1245,7 +1017,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     let hasFloor = false;
     let rtl = false;
     let showEntityId = false;
-    if (type === "area" || type === "floor") {
+    const isChildDeviceRow =
+      type === "device" && !!(item as DevicePickerItem).is_child;
+    if (type === "area" || type === "floor" || isChildDeviceRow) {
       rtl = computeRTL(
         this.hass.language,
         this.hass.translationMetadata.translations
@@ -1265,27 +1039,27 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
         style=${
-          (item as FloorComboBoxItem).type === "area" && hasFloor
+          ((item as FloorComboBoxItem).type === "area" && hasFloor) ||
+          isChildDeviceRow
             ? "--md-list-item-leading-space: var(--ha-space-12);"
             : ""
         }
       >
         ${
-          (item as FloorComboBoxItem).type === "area" && hasFloor
+          ((item as FloorComboBoxItem).type === "area" && hasFloor) ||
+          isChildDeviceRow
             ? html`
                 <ha-tree-indicator
                   style=${styleMap({
                     width: "var(--ha-space-12)",
                     position: "absolute",
                     top: "0",
+                    height: "100%",
                     left: rtl ? undefined : "var(--ha-space-1)",
                     right: rtl ? "var(--ha-space-1)" : undefined,
                     transform: rtl ? "scaleX(-1)" : "",
                   })}
-                  .end=${
-                    (item as FloorComboBoxItem & { last?: boolean | undefined })
-                      .last
-                  }
+                  .end=${(item as { last?: boolean }).last}
                   slot="start"
                 ></ha-tree-indicator>
               `
@@ -1387,13 +1161,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       width: 100%;
     }
 
-    .items {
-      z-index: 2;
-      display: flex;
-      flex-wrap: wrap;
-      padding: var(--ha-space-2) 0;
-      gap: var(--ha-space-2);
-    }
     .item-groups {
       overflow: hidden;
       border: var(--ha-border-width-sm) solid var(--divider-color);
@@ -1409,7 +1176,6 @@ declare global {
 
   interface HASSDomEvents {
     "remove-target-item": TargetItem;
-    "expand-target-item": TargetItem;
     "replace-target-item": TargetItem;
     "migrate-target-item": { id: string; replacements: string[] };
     "remove-target-group": string;

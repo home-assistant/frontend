@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -340,7 +341,7 @@ export class DialogEnergyBatterySettings
   }
 
   private _handlePowerConfigChanged(
-    ev: CustomEvent<{ powerType: PowerType; powerConfig: PowerConfig }>
+    ev: HASSDomEvent<HASSDomEvents["power-config-changed"]>
   ) {
     this._powerType = ev.detail.powerType;
     this._powerConfig = ev.detail.powerConfig;

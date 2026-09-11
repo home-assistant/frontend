@@ -1,4 +1,5 @@
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -9,11 +10,16 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { deepActiveElement } from "../../../common/dom/deep-active-element";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate } from "../../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
@@ -54,6 +60,10 @@ import type { ImprovDiscoveredDevice } from "../../../external_app/external_mess
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import type { HassTabsSubpage } from "../../../layouts/hass-tabs-subpage";
+import {
+  childPanelReadyContext,
+  type RegisterChildPanelReady,
+} from "../../../layouts/panel-ready";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -158,15 +168,24 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     window.location.hash.substring(1)
   );
 
-  @state() private _searchParams = new URLSearchParams(window.location.search);
-
-  @state() private _filter: string = history.state?.filter || "";
+  @state() private _filter: string = getHistoryState()?.filter || "";
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
   @query("hass-tabs-subpage") private _tabsSubpage?: HassTabsSubpage;
+
+  private _resolveInitialRender?: () => void;
+
+  private _initialRenderComplete = new Promise<void>((resolve) => {
+    this._resolveInitialRender = resolve;
+  });
+
+  private _childReadyRegistered = false;
+
+  @consume({ context: childPanelReadyContext, subscribe: true })
+  private _registerChildPanelReady?: RegisterChildPanelReady;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -249,6 +268,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           pref_disable_polling: false,
           disabled_by: null,
           reason: null,
+          error_reason_translation_domain: null,
           error_reason_translation_key: null,
           error_reason_translation_placeholders: null,
         })
@@ -388,6 +408,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   protected updated(changed: PropertyValues<this>) {
     super.updated(changed);
+    if (!this._childReadyRegistered && this._registerChildPanelReady) {
+      this._registerChildPanelReady(this._initialRenderComplete);
+      this._childReadyRegistered = true;
+    }
     if (changed.has("route")) {
       this._handleRouteChanged();
     }
@@ -415,6 +439,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
 
     if (this.configEntries && this.configEntriesInProgress) {
+      this._resolveInitialRender?.();
+      this._resolveInitialRender = undefined;
+
       const activeElement = deepActiveElement();
 
       if (
@@ -503,9 +530,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .backPath=${
-          this._searchParams.has("historyBack") ? undefined : "/config"
-        }
+        back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
         has-fab
@@ -653,7 +678,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                   ([domain, items]) =>
                     html`<ha-integration-card
                       data-domain=${domain}
-                      .hass=${this.hass}
                       .domain=${domain}
                       .items=${items}
                       .manifest=${this._manifests[domain]}
@@ -860,9 +884,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._showDisabled = !this._showDisabled;
   }
 
-  private _handleSearchChange(ev: InputEvent) {
-    this._filter = (ev.target as HaInputSearch).value ?? "";
-    history.replaceState({ filter: this._filter }, "");
+  private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = ev.target.value ?? "";
+    updateHistoryState({ filter: this._filter });
   }
 
   private async _highlightEntry() {

@@ -36,6 +36,10 @@ import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import {
+  computeCardFeatureLayout,
+  computeCardFeatureRows,
+} from "../card-features/common/feature-layout";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -151,14 +155,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    const featuresPosition =
-      this._config && this._featurePosition(this._config);
     const displayType = this._config?.display_type || "picture";
-    const featuresCount = this._config?.features?.length || 0;
+    const featureRows = this._config ? this._featureRows(this._config) : 0;
     return (
       1 +
       (displayType === "compact" ? (this._config?.vertical ? 1 : 0) : 2) +
-      (featuresPosition === "inline" ? 0 : featuresCount)
+      featureRows
     );
   }
 
@@ -170,13 +172,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       ? this._featurePosition(this._config)
       : "bottom";
     const featuresCount = this._config?.features?.length || 0;
-    if (featuresCount) {
+    if (this._config && featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
         columns = 12;
-      } else {
-        rows += featuresCount;
       }
+      rows += this._featureRows(this._config);
     }
 
     const displayType = this._config?.display_type || "picture";
@@ -555,15 +556,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return config.features_position || "bottom";
   });
 
-  private _displayedFeatures = memoizeOne((config: AreaCardConfig) => {
-    const features = config.features || [];
-    const featurePosition = this._featurePosition(config);
+  private _featureLayout = memoizeOne((config: AreaCardConfig) =>
+    computeCardFeatureLayout(config.features, this._featurePosition(config))
+  );
 
-    if (featurePosition === "inline") {
-      return features.slice(0, 1);
-    }
-    return features;
-  });
+  private _featureRows = memoizeOne((config: AreaCardConfig) =>
+    computeCardFeatureRows(config.features, this._featurePosition(config))
+  );
 
   public willUpdate(changedProps: PropertyValues) {
     if (changedProps.has("_config") || this._ratio === null) {
@@ -601,7 +600,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
-    const features = this._displayedFeatures(this._config);
+    const features = this._featureLayout(this._config);
 
     const displayType = this._config.display_type || "picture";
 
@@ -620,8 +619,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
+    /* the picture takes the extra height, so only the compact type reserves a row */
     const fixedInfoHeight =
-      this.layout === "grid" && this._config.grid_options?.rows !== "auto";
+      displayType === "compact" &&
+      this.layout === "grid" &&
+      this._config.grid_options?.rows !== "auto";
 
     return html`
       <ha-card style=${styleMap(style)}>
@@ -710,15 +712,30 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             .secondary=${secondary}
           ></ha-tile-info>
           ${
-            features.length > 0
+            features.inline.length > 0
               ? html`
                   <hui-card-features
-                    slot="features"
+                    slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
                     .color=${this._config.color}
-                    .features=${features}
+                    .features=${features.inline}
                     .position=${featurePosition}
+                  ></hui-card-features>
+                `
+              : nothing
+          }
+          ${
+            features.below.length > 0
+              ? html`
+                  <hui-card-features
+                    slot="features"
+                    .columns=${features.columns}
+                    .hass=${this.hass}
+                    .context=${this._featureContext}
+                    .color=${this._config.color}
+                    .features=${features.below}
+                    .position=${"bottom"}
                   ></hui-card-features>
                 `
               : nothing

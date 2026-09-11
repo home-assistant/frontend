@@ -1,8 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+import type { DemoCardConfig } from "../../components/demo-card";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type {
+  GridCardConfig,
+  StackCardConfig,
+} from "../../../../src/panels/lovelace/cards/types";
 import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 
@@ -70,159 +75,159 @@ const ENTITIES = [
 const CONFIGS = [
   {
     heading: "Default Grid",
-    config: `
-- type: grid
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    - type: entity
-      entity: device_tracker.demo_anne_therese
-    `,
+    config: {
+      type: "grid",
+      cards: [
+        { type: "entity", entity: "light.kitchen_lights" },
+        { type: "entity", entity: "light.bed_light" },
+        { type: "entity", entity: "device_tracker.demo_paulus" },
+        { type: "sensor", entity: "sensor.illumination", graph: "line" },
+        { type: "entity", entity: "device_tracker.demo_anne_therese" },
+      ],
+    },
   },
   {
     heading: "Non-square Grid with 2 columns",
-    config: `
-- type: grid
-  columns: 2
-  square: false
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    `,
+    config: {
+      type: "grid",
+      columns: 2,
+      square: false,
+      cards: [
+        { type: "entity", entity: "light.kitchen_lights" },
+        { type: "entity", entity: "light.bed_light" },
+        { type: "entity", entity: "device_tracker.demo_paulus" },
+        { type: "sensor", entity: "sensor.illumination", graph: "line" },
+      ],
+    },
   },
   {
     heading: "Default Grid with title",
-    config: `
-- type: grid
-  title: Kitchen
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    - type: entity
-      entity: device_tracker.demo_anne_therese
-    `,
+    config: {
+      type: "grid",
+      title: "Kitchen",
+      cards: [
+        { type: "entity", entity: "light.kitchen_lights" },
+        { type: "entity", entity: "light.bed_light" },
+        { type: "entity", entity: "device_tracker.demo_paulus" },
+        { type: "sensor", entity: "sensor.illumination", graph: "line" },
+        { type: "entity", entity: "device_tracker.demo_anne_therese" },
+      ],
+    },
   },
   {
     heading: "Columns 4",
-    config: `
-- type: grid
-  columns: 4
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    `,
+    config: {
+      type: "grid",
+      columns: 4,
+      cards: [
+        { type: "entity", entity: "light.kitchen_lights" },
+        { type: "entity", entity: "light.bed_light" },
+        { type: "entity", entity: "device_tracker.demo_paulus" },
+        { type: "sensor", entity: "sensor.illumination", graph: "line" },
+      ],
+    },
   },
   {
     heading: "Columns 2",
-    config: `
-- type: grid
-  columns: 2
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    `,
+    config: {
+      type: "grid",
+      columns: 2,
+      cards: [
+        { type: "entity", entity: "light.kitchen_lights" },
+        { type: "entity", entity: "light.bed_light" },
+      ],
+    },
   },
   {
     heading: "Columns 1",
-    config: `
-- type: grid
-  columns: 1
-  cards:
-  - type: entity
-    entity: light.kitchen_lights
-    `,
+    config: {
+      type: "grid",
+      columns: 1,
+      cards: [{ type: "entity", entity: "light.kitchen_lights" }],
+    },
   },
   {
     heading: "Size for single card",
-    config: `
-- type: grid
-  cards:
-  - type: entity
-    entity: light.kitchen_lights
-    `,
+    config: {
+      type: "grid",
+      cards: [{ type: "entity", entity: "light.kitchen_lights" }],
+    },
   },
 
   {
     heading: "Vertical Stack",
-    config: `
-- type: vertical-stack
-  cards:
-    - type: picture-entity
-      image: /images/kitchen.png
-      entity: light.kitchen_lights
-    - type: glance
-      entities:
-        - device_tracker.demo_anne_therese
-        - device_tracker.demo_home_boy
-        - device_tracker.demo_paulus
-    `,
+    config: {
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "picture-entity",
+          image: "/images/kitchen.png",
+          entity: "light.kitchen_lights",
+        },
+        {
+          type: "glance",
+          entities: [
+            "device_tracker.demo_anne_therese",
+            "device_tracker.demo_home_boy",
+            "device_tracker.demo_paulus",
+          ],
+        },
+      ],
+    },
   },
   {
     heading: "Horizontal Stack",
-    config: `
-- type: horizontal-stack
-  cards:
-    - type: picture-entity
-      image: /images/kitchen.png
-      entity: light.kitchen_lights
-    - type: glance
-      entities:
-        - device_tracker.demo_anne_therese
-        - device_tracker.demo_home_boy
-        - device_tracker.demo_paulus
-    `,
+    config: {
+      type: "horizontal-stack",
+      cards: [
+        {
+          type: "picture-entity",
+          image: "/images/kitchen.png",
+          entity: "light.kitchen_lights",
+        },
+        {
+          type: "glance",
+          entities: [
+            "device_tracker.demo_anne_therese",
+            "device_tracker.demo_home_boy",
+            "device_tracker.demo_paulus",
+          ],
+        },
+      ],
+    },
   },
   {
     heading: "Combination of both",
-    config: `
-- type: vertical-stack
-  cards:
-    - type: horizontal-stack
-      cards:
-        - type: picture-entity
-          image: /images/kitchen.png
-          entity: light.kitchen_lights
-        - type: glance
-          entities:
-            - device_tracker.demo_anne_therese
-            - device_tracker.demo_home_boy
-            - device_tracker.demo_paulus
-    - type: picture-entity
-      image: /images/bed.png
-      entity: light.bed_light
-    `,
+    config: {
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "picture-entity",
+              image: "/images/kitchen.png",
+              entity: "light.kitchen_lights",
+            },
+            {
+              type: "glance",
+              entities: [
+                "device_tracker.demo_anne_therese",
+                "device_tracker.demo_home_boy",
+                "device_tracker.demo_paulus",
+              ],
+            },
+          ],
+        },
+        {
+          type: "picture-entity",
+          image: "/images/bed.png",
+          entity: "light.bed_light",
+        },
+      ],
+    },
   },
-];
+] satisfies DemoCardConfig<GridCardConfig | StackCardConfig>[];
 
 @customElement("demo-lovelace-grid-and-stack-card")
 class DemoStack extends LitElement {

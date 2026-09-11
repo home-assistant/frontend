@@ -74,11 +74,6 @@ export class MockVacuumEntity extends MockBaseEntity {
       stateAttrs.fan_speed = attrs.fan_speed ?? null;
     }
 
-    if (supportsFeatureFromAttributes(attrs, VacuumEntityFeature.BATTERY)) {
-      stateAttrs.battery_level = attrs.battery_level ?? null;
-      stateAttrs.battery_icon = attrs.battery_icon ?? null;
-    }
-
     if (supportsFeatureFromAttributes(attrs, VacuumEntityFeature.STATUS)) {
       stateAttrs.status = attrs.status ?? null;
     }

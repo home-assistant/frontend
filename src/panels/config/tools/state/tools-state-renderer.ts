@@ -11,6 +11,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
@@ -260,7 +261,9 @@ class HaPanelDevStateRenderer extends LitElement {
     return output;
   }
 
-  private _copyEntity = async (ev: Event) => {
+  private _copyEntity = async (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entity: HassEntity }>
+  ) => {
     ev.preventDefault();
     const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
       .entity;
@@ -270,14 +273,18 @@ class HaPanelDevStateRenderer extends LitElement {
     });
   };
 
-  private _entityMoreInfo(ev: Event) {
+  private _entityMoreInfo(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entity: HassEntity }>
+  ) {
     ev.preventDefault();
     const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
       .entity;
     fireEvent(this, "hass-more-info", { entityId: entity.entity_id });
   }
 
-  private _entitySelected(ev: Event) {
+  private _entitySelected(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entity: HassEntity }>
+  ) {
     ev.preventDefault();
     const entity = (ev.currentTarget as HTMLElement & { entity: HassEntity })
       .entity;
