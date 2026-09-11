@@ -1,36 +1,36 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
 import "../components/ha-icon-next";
 import "../components/item/ha-list-item-button";
 import "../components/list/ha-list-base";
-import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-welcome")
 class OnboardingWelcome extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render(): TemplateResult {
     return html`
-      <h1>${this.localize("ui.panel.page-onboarding.welcome.header")}</h1>
-      <p>${this.localize("ui.panel.page-onboarding.intro")}</p>
+      <h1>${this._localize("ui.panel.page-onboarding.welcome.header")}</h1>
+      <p>${this._localize("ui.panel.page-onboarding.intro")}</p>
 
       <ha-button @click=${this._start} class="start">
-        ${this.localize("ui.panel.page-onboarding.welcome.start")}
+        ${this._localize("ui.panel.page-onboarding.welcome.start")}
       </ha-button>
 
       <div class="divider">
         <wa-divider></wa-divider>
         <div>
           <span
-            >${this.localize(
+            >${this._localize(
               "ui.panel.page-onboarding.welcome.or_restore"
             )}</span
           >
@@ -40,10 +40,10 @@ class OnboardingWelcome extends LitElement {
       <ha-list-base>
         <ha-list-item-button @click=${this._restoreBackupUpload}>
           <div slot="headline">
-            ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+            ${this._localize("ui.panel.page-onboarding.restore.upload_backup")}
           </div>
           <div slot="supporting-text">
-            ${this.localize(
+            ${this._localize(
               "ui.panel.page-onboarding.restore.options.upload_description"
             )}
           </div>
@@ -52,7 +52,7 @@ class OnboardingWelcome extends LitElement {
         <ha-list-item-button @click=${this._restoreBackupCloud}>
           <div slot="headline">Home Assistant Cloud</div>
           <div slot="supporting-text">
-            ${this.localize(
+            ${this._localize(
               "ui.panel.page-onboarding.restore.ha-cloud.description"
             )}
           </div>
