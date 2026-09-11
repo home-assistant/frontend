@@ -20,9 +20,7 @@ import {
   formatPowerShort,
   getNextEnergyPeriodStart,
   getEnergyDefaultPeriodStorageKey,
-  getEnergyFirstStatisticAt,
   getEnergyLiveDayPeriod,
-  shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
   EMPTY_PREFERENCES,
 } from "../../src/data/energy";
@@ -905,204 +903,61 @@ describe("getNextEnergyPeriodStart", () => {
       energyPeriodConfig
     ).getTime() === date.getTime();
 
-  it("rolls the real-time view over at midnight, statistics an hour later", () => {
+  it("schedules the next midnight in the configured zone", () => {
     const now = new Date("2026-06-19T15:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(
-      true,
-      now,
-      energyPeriodLocale,
-      energyPeriodConfig
-    );
-    const statistics = getNextEnergyPeriodStart(
-      false,
+    const next = getNextEnergyPeriodStart(
       now,
       energyPeriodLocale,
       energyPeriodConfig
     );
 
-    // Real-time rolls over exactly at the next midnight.
-    assert.isTrue(isMidnight(realTime));
+    assert.isTrue(isMidnight(next));
     assert.equal(
-      realTime.getTime(),
+      next.getTime(),
       new Date("2026-06-20T00:00:00-04:00").getTime()
     );
-
-    // Statistics roll over an hour after midnight, on the same day boundary.
-    assert.equal(statistics.getTime() - realTime.getTime(), 60 * 60 * 1000);
-    assert.equal(
-      calcDate(
-        statistics,
-        startOfDay,
-        energyPeriodLocale,
-        energyPeriodConfig
-      ).getTime(),
-      realTime.getTime()
-    );
   });
 
-  it("advances the real-time view to the next midnight when called after midnight", () => {
+  it("advances to the following midnight when called after midnight", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
 
-    const realTime = getNextEnergyPeriodStart(
-      true,
+    const next = getNextEnergyPeriodStart(
       now,
       energyPeriodLocale,
       energyPeriodConfig
     );
 
-    assert.isTrue(isMidnight(realTime));
+    assert.isTrue(isMidnight(next));
     // Next midnight is June 21, not the already-passed June 20 midnight.
     assert.equal(
-      realTime.getTime(),
+      next.getTime(),
       new Date("2026-06-21T00:00:00-04:00").getTime()
-    );
-  });
-
-  it("wakes a non-today live day at today 01:00 during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const todayOne = new Date("2026-06-20T01:00:00-04:00").getTime();
-
-    for (const offset of [-1, -2]) {
-      assert.equal(
-        getNextEnergyPeriodStart(
-          false,
-          now,
-          energyPeriodLocale,
-          energyPeriodConfig,
-          energyPeriodDay(now, offset).start
-        ).getTime(),
-        todayOne
-      );
-    }
-  });
-
-  it("keeps tomorrow 01:00 when statistics is already on today during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-
-    assert.equal(
-      getNextEnergyPeriodStart(
-        false,
-        now,
-        energyPeriodLocale,
-        energyPeriodConfig,
-        energyPeriodDay(now).start
-      ).getTime(),
-      new Date("2026-06-21T01:00:00-04:00").getTime()
-    );
-  });
-});
-
-describe("shouldFallbackEnergyPeriodToYesterday", () => {
-  it("is true for the statistics view before 01:00", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    assert.isTrue(
-      shouldFallbackEnergyPeriodToYesterday(
-        false,
-        now,
-        energyPeriodLocale,
-        energyPeriodConfig
-      )
-    );
-    assert.equal(
-      getEnergyFirstStatisticAt(
-        now,
-        energyPeriodLocale,
-        energyPeriodConfig
-      ).getTime(),
-      new Date("2026-06-20T01:00:00-04:00").getTime()
-    );
-  });
-
-  it("is false at 01:00 and for the real-time view", () => {
-    const atOne = new Date("2026-06-20T01:00:00-04:00");
-    const beforeOne = new Date("2026-06-20T00:30:00-04:00");
-    assert.isFalse(
-      shouldFallbackEnergyPeriodToYesterday(
-        false,
-        atOne,
-        energyPeriodLocale,
-        energyPeriodConfig
-      )
-    );
-    assert.isFalse(
-      shouldFallbackEnergyPeriodToYesterday(
-        true,
-        beforeOne,
-        energyPeriodLocale,
-        energyPeriodConfig
-      )
     );
   });
 });
 
 describe("getEnergyLiveDayPeriod", () => {
-  it("keeps yesterday during hour 0 when that is the current period", () => {
+  it("returns today during hour 0", () => {
     const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = energyPeriodDay(now, -1);
     const live = getEnergyLiveDayPeriod(
-      false,
       now,
       energyPeriodLocale,
-      energyPeriodConfig,
-      start
-    );
-    assert.equal(live.start.getTime(), start.getTime());
-    assert.equal(live.end.getTime(), end.getTime());
-  });
-
-  it("keeps today during hour 0 when the user already picked today", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const { start, end } = energyPeriodDay(now);
-    const live = getEnergyLiveDayPeriod(
-      false,
-      now,
-      energyPeriodLocale,
-      energyPeriodConfig,
-      start
-    );
-    assert.equal(live.start.getTime(), start.getTime());
-    assert.equal(live.end.getTime(), end.getTime());
-  });
-
-  it("advances a stale yesterday to today after 01:00", () => {
-    const now = new Date("2026-06-20T10:00:00-04:00");
-    const live = getEnergyLiveDayPeriod(
-      false,
-      now,
-      energyPeriodLocale,
-      energyPeriodConfig,
-      energyPeriodDay(now, -1).start
+      energyPeriodConfig
     );
     const expected = energyPeriodDay(now);
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
 
-  it("advances a two-day-old live day to today", () => {
+  it("returns today after 01:00", () => {
     const now = new Date("2026-06-20T10:00:00-04:00");
     const live = getEnergyLiveDayPeriod(
-      false,
       now,
       energyPeriodLocale,
-      energyPeriodConfig,
-      energyPeriodDay(now, -2).start
+      energyPeriodConfig
     );
     const expected = energyPeriodDay(now);
-    assert.equal(live.start.getTime(), expected.start.getTime());
-    assert.equal(live.end.getTime(), expected.end.getTime());
-  });
-
-  it("falls back to yesterday for a stale live day during hour 0", () => {
-    const now = new Date("2026-06-20T00:30:00-04:00");
-    const live = getEnergyLiveDayPeriod(
-      false,
-      now,
-      energyPeriodLocale,
-      energyPeriodConfig,
-      energyPeriodDay(now, -2).start
-    );
-    const expected = energyPeriodDay(now, -1);
     assert.equal(live.start.getTime(), expected.start.getTime());
     assert.equal(live.end.getTime(), expected.end.getTime());
   });
@@ -1114,11 +969,7 @@ describe("getEnergyDataCollection live day", () => {
     vi.useRealTimers();
   });
 
-  const createCollection = (
-    key: string,
-    preset?: string,
-    midnightRollover = false
-  ) => {
+  const createCollection = (key: string, preset?: string) => {
     const hass = createMockHass();
     hass.locale = energyPeriodLocale;
     hass.config = { ...hass.config, time_zone: "America/New_York" };
@@ -1143,7 +994,6 @@ describe("getEnergyDataCollection live day", () => {
       collection: getEnergyDataCollection(hass, {
         key,
         prefs: EMPTY_PREFERENCES,
-        midnightRollover,
       }),
       callWS,
     };
@@ -1152,10 +1002,18 @@ describe("getEnergyDataCollection live day", () => {
   const energyInfoFetches = (callWS: ReturnType<typeof vi.fn>) =>
     callWS.mock.calls.filter((call) => call[0].type === "energy/info");
 
-  it("advances hour-0 yesterday to today at 01:00 and fetches the new day", async () => {
+  it("starts today during hour 0 and rolls over at midnight", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-06-20T00:30:00-04:00"));
 
+    assert.equal(
+      createCollection("energy_hour0").collection.start.getTime(),
+      energyPeriodDay(new Date()).start.getTime()
+    );
+
+    // Create near end of day so a 30-minute advance hits midnight without
+    // also firing many hourly :20 refreshes.
+    vi.setSystemTime(new Date("2026-06-20T23:30:00-04:00"));
     const { collection, callWS } = createCollection("energy_timer");
     const refresh = vi.spyOn(collection, "refresh");
     const unsub = collection.subscribe(() => undefined);
@@ -1165,7 +1023,7 @@ describe("getEnergyDataCollection live day", () => {
 
     assert.equal(
       collection.start.getTime(),
-      energyPeriodDay(new Date(), -1).start.getTime()
+      energyPeriodDay(new Date()).start.getTime()
     );
 
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
@@ -1175,7 +1033,21 @@ describe("getEnergyDataCollection live day", () => {
       energyPeriodDay(new Date()).start.getTime()
     );
     // Cards render EnergyData from the websocket store, not collection.start.
-    // The 01:00 callback must refresh() so getEnergyData runs for today.
+    // The midnight callback must refresh() so getEnergyData runs for the new day.
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    // Midnight refresh is before the first short-term bucket. Schedule a
+    // follow-up after recorder's :05:10 compile, then resume :20 cadence.
+    refresh.mockClear();
+    callWS.mockClear();
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    refresh.mockClear();
+    callWS.mockClear();
+    await vi.advanceTimersByTimeAsync(14 * 60 * 1000 + 45 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 
@@ -1274,26 +1146,6 @@ describe("getEnergyDataCollection live day", () => {
     vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
 
     const { collection } = createCollection("energy_week_stored", "this_week");
-    const weekStart = collection.start.getTime();
-    const unsub = collection.subscribe(() => undefined);
-
-    vi.setSystemTime(new Date("2026-06-20T10:00:00-04:00"));
-    vi.advanceTimersByTime(48 * 60 * 60 * 1000);
-
-    assert.equal(collection.start.getTime(), weekStart);
-
-    unsub();
-  });
-
-  it("does not roll a remembered week preset over to today with midnightRollover", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-06-18T15:00:00-04:00"));
-
-    const { collection } = createCollection(
-      "energy_week_stored_now",
-      "this_week",
-      true
-    );
     const weekStart = collection.start.getTime();
     const unsub = collection.subscribe(() => undefined);
 
