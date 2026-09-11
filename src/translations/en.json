@@ -224,9 +224,11 @@
       },
       "home-summary": {
         "all_lights_off": "All off",
+        "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
         "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
         "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "count_warnings": "{count} {count, plural,\n one {warning}\n other {warnings}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
@@ -777,6 +779,7 @@
           "types": {
             "floor": "Floor",
             "area": "Area",
+            "parent_device": "[%key:ui::components::device-picker::parent_device%]",
             "device": "Device",
             "entity": "Entity",
             "area_missing": "No area assigned",
@@ -935,6 +938,7 @@
         "no_devices": "No devices available",
         "no_match": "No devices found for {term}",
         "device": "Device",
+        "parent_device": "Parent device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
         "placeholder": "Select a device",
@@ -1160,7 +1164,11 @@
         "category": "Category"
       },
       "map": {
-        "error": "Unable to load map"
+        "error": "Unable to load map",
+        "editing_unavailable": "Dragging markers and resizing zones aren't available on this map.",
+        "location": "Location",
+        "radius": "Radius in meters",
+        "radius_of": "Radius of {name} in meters"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -1479,6 +1487,7 @@
         "remaining_time": "Remaining time",
         "install_status": "Install status",
         "device_name": "Device name",
+        "parent_device_name": "Parent device name",
         "area_name": "Area name",
         "floor_name": "Floor name"
       },
@@ -1708,6 +1717,7 @@
         "state": "State",
         "context": "Context",
         "floor": "Floor",
+        "parent_device": "[%key:ui::components::device-picker::parent_device%]",
         "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
@@ -1891,6 +1901,7 @@
           "commands": "Lawn mower commands:",
           "start_mowing": "Start mowing",
           "pause": "Pause",
+          "stop": "Stop",
           "dock": "Return to dock"
         },
         "valve": {
@@ -2836,6 +2847,10 @@
           "serial": {
             "main": "Serial",
             "secondary": "Serial ports and the integrations and apps using them"
+          },
+          "modbus": {
+            "main": "Modbus",
+            "secondary": "Industrial devices sharing a serial or network link"
           },
           "knx": {
             "main": "KNX",
@@ -7637,6 +7652,7 @@
           "consumer_not_running": "{name} (not running)",
           "can_be_used_with": "Can be used with {integrations}",
           "discovered_by": "Discovered by {integration}, set it up",
+          "used_by_modbus": "Used by Modbus",
           "port_information": "Port information",
           "fields": {
             "device": "Device",
@@ -7649,6 +7665,26 @@
             "vid": "Vendor ID",
             "pid": "Product ID",
             "bcd_device": "Device revision"
+          }
+        },
+        "modbus": {
+          "title": "Modbus",
+          "status_summary": "{units, plural,\n one {# unit}\n other {# units}\n} on {total, plural,\n one {# connection}\n other {# connections}\n}",
+          "connections": "Connections",
+          "connections_description": "Every integration talking to a Modbus device shares one connection to it.",
+          "state_connected": "Connected",
+          "state_not_connected": "Not connected",
+          "state_open": "Open",
+          "state_closed": "Closed",
+          "no_connections": "No Modbus connections",
+          "no_connections_description": "A connection opens as soon as an integration starts talking to a Modbus device.",
+          "loading_error": "Failed to load Modbus connections",
+          "units": "{count, plural,\n one {Unit {ids}}\n other {Units {ids}}\n}",
+          "view_serial_port": "View this port under Serial",
+          "transport": {
+            "tcp": "TCP",
+            "udp": "UDP",
+            "serial": "Serial"
           }
         },
         "dhcp": {
@@ -8890,16 +8926,28 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
-            "preview": "Preview",
+            "preview": "Examples",
             "preview_error": "Failed to generate preview",
+            "unused_part": "{name} (not used in format)",
             "reset": "Reset to default",
             "examples": {
-              "area": "Living room",
-              "device": "Thermostat",
-              "entity": "Temperature",
-              "floor": "Ground floor"
+              "thermostat": {
+                "name": "Thermostat",
+                "floor": "Ground floor",
+                "area": "Living room",
+                "device": "Thermostat",
+                "entity": "Temperature"
+              },
+              "power_strip": {
+                "name": "Power strip",
+                "floor": "First floor",
+                "area": "Office",
+                "parent_device": "Power strip",
+                "device": "Outlet 1",
+                "entity": "Power"
+              }
             },
             "editor": {
               "label": "Format",
@@ -9220,6 +9268,7 @@
           },
           "home": {
             "summary_list": {
+              "alerts": "Alerts",
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
@@ -9879,13 +9928,15 @@
                 "headline": "Current visibility: Hidden",
                 "supporting": "Not all visibility conditions are met"
               },
+              "unknown": {
+                "headline": "Current visibility: Unknown",
+                "supporting": "Waiting for the result of one or more conditions"
+              },
               "invalid": {
-                "headline": "Visibility status unknown",
+                "headline": "Invalid configuration",
                 "supporting": "One or more conditions have an invalid configuration"
               }
             },
-            "invalid_config_title": "Invalid configuration",
-            "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
               "view_columns": {
                 "label": "Number of columns",
@@ -9939,6 +9990,18 @@
               },
               "and": {
                 "label": "And"
+              },
+              "template": {
+                "label": "Template"
+              },
+              "sun": {
+                "label": "Sun"
+              },
+              "zone": {
+                "label": "Zone"
+              },
+              "device": {
+                "label": "Device"
               }
             }
           },
@@ -10205,6 +10268,7 @@
               "group_by_area": "Group by area",
               "max_devices": "Maximum devices per parent",
               "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. The limit applies per upstream device, not per floor or area. Defaults to 20.",
+              "show_values": "Show values",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -11030,7 +11094,12 @@
                 "label": "Target temperature"
               },
               "target-humidity": {
-                "label": "Target humidity"
+                "label": "Target humidity",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                }
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
@@ -11048,6 +11117,7 @@
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "Start Pause",
+                  "stop": "[%key:ui::dialogs::more_info_control::lawn_mower::stop%]",
                   "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
                 }
               },

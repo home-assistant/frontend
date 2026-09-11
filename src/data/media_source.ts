@@ -69,6 +69,13 @@ export const isLocalMediaSourceContentId = (mediaId: string) =>
 export const isImageUploadMediaSourceContentId = (mediaId: string) =>
   mediaId.startsWith("media-source://image_upload");
 
+export const getImageEntityIdFromMediaSourceContentId = (
+  mediaId: string
+): string | undefined =>
+  mediaId.startsWith("media-source://image/image.")
+    ? mediaId.slice("media-source://image/".length)
+    : undefined;
+
 export const uploadLocalMedia = async (
   hass: HomeAssistant,
   media_content_id: string,

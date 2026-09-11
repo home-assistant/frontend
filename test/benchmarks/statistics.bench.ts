@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import {
   computeHistory,
   convertStatisticsToHistory,
@@ -43,17 +43,23 @@ idsFor(10).forEach((id, i) => {
 const historyResult = computeHistory(hass, recentStates, [], mockLocalize);
 
 describe("convertStatisticsToHistory", () => {
-  bench("hourly statistics, month, 5 entities", () => {
-    convertStatisticsToHistory(hass, hourlyMonth, idsFor(5));
+  test("hourly statistics, month, 5 entities", async ({ bench }) => {
+    await bench("hourly statistics, month, 5 entities", () => {
+      convertStatisticsToHistory(hass, hourlyMonth, idsFor(5));
+    }).run();
   });
 
-  bench("5-minute statistics, week, 5 entities", () => {
-    convertStatisticsToHistory(hass, fiveMinuteWeek, idsFor(5));
+  test("5-minute statistics, week, 5 entities", async ({ bench }) => {
+    await bench("5-minute statistics, week, 5 entities", () => {
+      convertStatisticsToHistory(hass, fiveMinuteWeek, idsFor(5));
+    }).run();
   });
 });
 
 describe("mergeHistoryResults", () => {
-  bench("month of LTS + recent history, 10 entities", () => {
-    mergeHistoryResults(historyResult, ltsResult);
+  test("month of LTS + recent history, 10 entities", async ({ bench }) => {
+    await bench("month of LTS + recent history, 10 entities", () => {
+      mergeHistoryResults(historyResult, ltsResult);
+    }).run();
   });
 });

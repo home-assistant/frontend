@@ -79,6 +79,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
+  // Render timeline row names inside the plot (under each bar) instead of in a
+  // left-hand column. Opt-in; used by the history panel.
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
+
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
 
@@ -227,6 +232,7 @@ export class StateHistoryCharts extends LitElement {
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
         .showNames=${this.showNames}
+        .insideLabels=${this.insideLabels}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
@@ -442,6 +448,10 @@ export class StateHistoryCharts extends LitElement {
     .entry-container:not(:first-child) {
       border-top: 2px solid var(--divider-color);
       margin-top: 16px;
+    }
+
+    .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
     }
 
     .container,

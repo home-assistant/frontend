@@ -129,21 +129,31 @@ export class HaMediaPlayerPicker extends LitElement {
         .filter(this._filterPlayerEntities)
         .map<MediaPlayerComboBoxItem>((stateObj) => {
           const friendlyName = computeStateName(stateObj);
-          const [entityName, deviceName, areaName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this._entities,
-            this._devices,
-            this._areas,
-            this._floors
-          );
+          const [entityName, deviceName, parentDeviceName, areaName] =
+            computeEntityNameList(
+              stateObj,
+              [
+                { type: "entity" },
+                { type: "device" },
+                { type: "parent_device" },
+                { type: "area" },
+              ],
+              this._entities,
+              this._devices,
+              this._areas,
+              this._floors
+            );
           const entityId = stateObj.entity_id;
           const domainName = domainToName(
             this._i18n.localize,
             computeDomain(entityId)
           );
           const primary = entityName || deviceName || entityId;
-          const secondary = [areaName, entityName ? deviceName : undefined]
+          const secondary = [
+            areaName,
+            parentDeviceName,
+            entityName ? deviceName : undefined,
+          ]
             .filter(Boolean)
             .join(isRTL ? " ◂ " : " ▸ ");
 
@@ -157,6 +167,7 @@ export class HaMediaPlayerPicker extends LitElement {
             search_labels: {
               entityName: entityName || null,
               deviceName: deviceName || null,
+              parentDeviceName: parentDeviceName || null,
               areaName: areaName || null,
               domainName: domainName || null,
               friendlyName: friendlyName || null,
