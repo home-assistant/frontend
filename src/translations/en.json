@@ -531,7 +531,11 @@
       },
       "selectors": {
         "serial_port": {
+          "connect_over_network": "Connect over the network",
+          "connect_over_network_description": "For a serial server or network gateway",
           "enter_manually": "Enter manually",
+          "host": "Host",
+          "port": "Port",
           "device_in_area": "{device}, {area}",
           "used_by": "Used by {integrations}",
           "type": {

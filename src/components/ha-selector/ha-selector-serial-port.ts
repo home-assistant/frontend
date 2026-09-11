@@ -1,5 +1,12 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiClose, mdiConnection, mdiMemory, mdiPencil, mdiUsb } from "@mdi/js";
+import {
+  mdiClose,
+  mdiConnection,
+  mdiLan,
+  mdiMemory,
+  mdiPencil,
+  mdiUsb,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -26,6 +33,11 @@ import {
 import "../input/ha-input";
 
 const MANUAL_ENTRY_ID = "__manual_entry__";
+const NETWORK_ENTRY_ID = "__network_entry__";
+
+// Matches the URL _fireNetworkValue() composes, so an already configured port
+// round-trips back into the host and port fields
+const SOCKET_URL = /^socket:\/\/(.+):(\d+)$/;
 
 const SERIAL_PORTS_REFRESH_INTERVAL = 5000;
 
@@ -131,6 +143,12 @@ export class HaSerialPortSelector extends LitElement {
   @state() private _serialPorts?: SerialPort[];
 
   @state() private _manualEntry = false;
+
+  @state() private _networkEntry = false;
+
+  @state() private _networkHost = "";
+
+  @state() private _networkPort = "";
 
   @query("ha-input") private _input?: HTMLElement;
 
@@ -424,6 +442,16 @@ export class HaSerialPortSelector extends LitElement {
 
   private _getAdditionalItems = (): PickerComboBoxItem[] => [
     {
+      id: NETWORK_ENTRY_ID,
+      primary: this.hass.localize(
+        "ui.components.selectors.serial_port.connect_over_network"
+      ),
+      secondary: this.hass.localize(
+        "ui.components.selectors.serial_port.connect_over_network_description"
+      ),
+      icon_path: mdiLan,
+    },
+    {
       id: MANUAL_ENTRY_ID,
       primary: this.hass.localize(
         "ui.components.selectors.serial_port.enter_manually"
@@ -433,15 +461,15 @@ export class HaSerialPortSelector extends LitElement {
   ];
 
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => {
-    const manual = item.id === MANUAL_ENTRY_ID;
+    const firstAdditional = item.id === NETWORK_ENTRY_ID;
     const { port_type, used_by, description } = item as SerialPickerItem;
     return html`
       <ha-combo-box-item
         type="button"
         compact
-        .borderTop=${manual}
+        .borderTop=${firstAdditional}
         style=${styleMap({
-          marginTop: manual ? "var(--ha-space-3)" : "",
+          marginTop: firstAdditional ? "var(--ha-space-3)" : "",
           opacity: port_type === "not_recommended" ? "0.6" : "",
           backgroundColor:
             port_type === "recommended"
@@ -485,6 +513,42 @@ export class HaSerialPortSelector extends LitElement {
 
   protected render() {
     const usbLoaded = this.hass && isComponentLoaded(this.hass.config, "usb");
+
+    if (this._networkEntry) {
+      return html`
+        <div class="network">
+          <ha-input
+            .value=${this._networkHost}
+            .label=${this.hass.localize(
+              "ui.components.selectors.serial_port.host"
+            )}
+            .disabled=${this.disabled}
+            .required=${this.required}
+            @input=${this._handleHostChange}
+            @change=${this._handleHostChange}
+          >
+            <ha-icon-button
+              slot="end"
+              @click=${this._revertToDropdown}
+              .path=${mdiClose}
+            ></ha-icon-button>
+          </ha-input>
+          <ha-input
+            type="number"
+            without-spin-buttons
+            .value=${this._networkPort}
+            .label=${this.hass.localize(
+              "ui.components.selectors.serial_port.port"
+            )}
+            .hint=${this.helper}
+            .disabled=${this.disabled}
+            .required=${this.required}
+            @input=${this._handlePortChange}
+            @change=${this._handlePortChange}
+          ></ha-input>
+        </div>
+      `;
+    }
 
     if (!usbLoaded || !this._serialPorts || this._manualEntry) {
       return html`
@@ -580,6 +644,18 @@ export class HaSerialPortSelector extends LitElement {
   private async _handlePickerChange(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
+    if (value === NETWORK_ENTRY_ID) {
+      const [, host, port] = SOCKET_URL.exec(this.value ?? "") ?? [];
+      this._networkHost = host ?? "";
+      this._networkPort = port ?? "";
+      this._networkEntry = true;
+      this._fireNetworkValue();
+      await this.updateComplete;
+      requestAnimationFrame(() => {
+        this._input?.focus();
+      });
+      return;
+    }
     if (value === MANUAL_ENTRY_ID) {
       this._manualEntry = true;
       fireEvent(this, "value-changed", { value: undefined });
@@ -594,6 +670,26 @@ export class HaSerialPortSelector extends LitElement {
     fireEvent(this, "value-changed", { value: value || undefined });
   }
 
+  private _handleHostChange(ev: InputEvent) {
+    ev.stopPropagation();
+    this._networkHost = (ev.target as HTMLInputElement).value;
+    this._fireNetworkValue();
+  }
+
+  private _handlePortChange(ev: InputEvent) {
+    ev.stopPropagation();
+    this._networkPort = (ev.target as HTMLInputElement).value;
+    this._fireNetworkValue();
+  }
+
+  private _fireNetworkValue() {
+    const host = this._networkHost.trim();
+    const port = this._networkPort.trim();
+    fireEvent(this, "value-changed", {
+      value: host && port ? `socket://${host}:${port}` : undefined,
+    });
+  }
+
   private _handleInputChange(ev: InputEvent) {
     ev.stopPropagation();
     const value = (ev.target as HTMLInputElement).value;
@@ -604,6 +700,7 @@ export class HaSerialPortSelector extends LitElement {
 
   private _revertToDropdown() {
     this._manualEntry = false;
+    this._networkEntry = false;
     const ports = this._serialPorts;
     const firstPort = ports?.[0]?.device;
     fireEvent(this, "value-changed", {
@@ -619,6 +716,10 @@ export class HaSerialPortSelector extends LitElement {
     ha-generic-picker,
     ha-input {
       width: 100%;
+    }
+    .network {
+      display: flex;
+      flex-direction: column;
     }
   `;
 }
