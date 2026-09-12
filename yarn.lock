@@ -10503,6 +10503,7 @@ __metadata:
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.70.0"
+    ulid: "npm:3.0.2"
     vite: "npm:8.2.2"
     vite-tsconfig-paths: "npm:6.1.1"
     vitest: "npm:5.0.0"
@@ -15694,6 +15695,15 @@ __metadata:
   version: 1.2.1
   resolution: "ua-regexes-lite@npm:1.2.1"
   checksum: 10/3545a3bd0bedc5a66912b5ba8248a230f0f31f6f6446dd0fa83f7bf77a5e9b206122ab30a8c4b1150bb5ffe5407da8d3b7a557adfa542c0af6bae5ebd77dd703
+  languageName: node
+  linkType: hard
+
+"ulid@npm:3.0.2":
+  version: 3.0.2
+  resolution: "ulid@npm:3.0.2"
+  bin:
+    ulid: dist/cli.js
+  checksum: 10/1adf14f7c5a4f6e68311ebc631390d09430332509bb04f9938e7c7be52a98546a789c5dad05c9339da9a9f1e5ecf8df1286ce85f749e4b78c591809d976ac6b3
   languageName: node
   linkType: hard
 

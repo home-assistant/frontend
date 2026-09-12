@@ -5852,11 +5852,18 @@
                 },
                 "trigger": {
                   "label": "Triggered by",
-                  "no_triggers": "There are no triggers with IDs set in this automation. Edit a trigger and give it a Trigger ID name.",
+                  "no_triggers": "There are no triggers in this automation. Add a trigger first.",
                   "id": "Trigger",
+                  "missing_trigger": "Missing trigger",
+                  "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
+                  "duplicate_ids": "Some triggers share the same trigger ID. Avoid reusing a trigger ID to group triggers and select multiple triggers here instead.",
+                  "duplicate_ids_fix": "Fix",
+                  "assign_unique_ids_title": "Assign unique trigger IDs?",
+                  "assign_unique_ids_description": "Each trigger sharing an ID gets a unique one, and conditions using it are updated to match. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
-                    "full": "If triggered by {id}"
+                    "full": "If triggered by {id}",
+                    "summary": "If triggered by"
                   }
                 },
                 "zone": {

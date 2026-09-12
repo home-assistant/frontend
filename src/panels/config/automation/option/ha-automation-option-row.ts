@@ -32,6 +32,7 @@ import "../../../../components/ha-svg-icon";
 import type {
   Condition,
   OptionSidebarConfig,
+  TriggerCondition,
 } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -45,6 +46,7 @@ import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
 import { showEditorToast } from "../editor-toast";
+import "../trigger/ha-automation-trigger-references";
 import {
   editorStyles,
   indentStyle,
@@ -106,7 +108,7 @@ export default class HaAutomationOptionRow extends LitElement {
     this._expanded = ev.detail.expanded;
   }
 
-  private _getDescription() {
+  private _getDescription(withTriggerReferences = false) {
     const conditions = ensureArray<Condition | string>(this.option!.conditions);
     if (!conditions || conditions.length === 0) {
       return this.hass.localize(
@@ -117,9 +119,12 @@ export default class HaAutomationOptionRow extends LitElement {
     if (typeof conditions[0] === "string") {
       str += conditions[0];
     } else {
-      str += describeCondition(conditions[0], this.hass, this._entityReg);
+      str += describeCondition(conditions[0], this.hass, this._entityReg, {
+        hideTriggerIds: withTriggerReferences,
+      });
     }
-    if (conditions.length > 1) {
+    // When chips are rendered, the additional-condition count follows them.
+    if (conditions.length > 1 && !withTriggerReferences) {
       str += this.hass.localize(
         "ui.panel.config.automation.editor.actions.type.choose.option_description_additional",
         { numberOfAdditionalConditions: conditions.length - 1 }
@@ -144,6 +149,17 @@ export default class HaAutomationOptionRow extends LitElement {
     `;
   }
   private _renderRow() {
+    const conditions = ensureArray<Condition | string>(
+      this.option?.conditions ?? []
+    );
+    const firstCondition = conditions[0];
+    const triggerCondition =
+      !this.option?.alias &&
+      !this._expanded &&
+      typeof firstCondition === "object" &&
+      firstCondition?.condition === "trigger"
+        ? (firstCondition as TriggerCondition)
+        : undefined;
     const noteTooltipText = truncateWithEllipsis(
       this.option?.note?.trim() || "",
       250
@@ -156,10 +172,27 @@ export default class HaAutomationOptionRow extends LitElement {
             ? `${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.option",
                 { number: this.index + 1 }
-              )}: ${this.option.alias || (this._expanded ? "" : this._getDescription())}`
+              )}: ${this.option.alias || (this._expanded ? "" : this._getDescription(!!triggerCondition))}`
             : this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.default"
               )
+        }
+        ${
+          triggerCondition
+            ? html`<ha-automation-trigger-references
+                .condition=${triggerCondition}
+                .hass=${this.hass}
+                .entityRegistry=${this._entityReg}
+              ></ha-automation-trigger-references>`
+            : nothing
+        }
+        ${
+          triggerCondition && conditions.length > 1
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.option_description_additional",
+                { numberOfAdditionalConditions: conditions.length - 1 }
+              )
+            : nothing
         }
         ${
           this.option?.note?.trim()

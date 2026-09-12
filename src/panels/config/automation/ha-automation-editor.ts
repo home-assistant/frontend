@@ -88,6 +88,8 @@ import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
+import { AutomationTriggerController } from "./trigger/automation-trigger-controller";
+
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-editor": HaAutomationEditor;
@@ -131,6 +133,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   > = {};
 
   private _configSubscriptionsId = 1;
+
+  private _triggerController = new AutomationTriggerController(this, {
+    getConfig: () => this.config,
+    canEdit: () => !this.readOnly && !this.saving,
+    commit: (config) => {
+      this._manualEditor?.resetPastedConfig();
+      this._updateConfig(config);
+    },
+  });
 
   private _newAutomationId?: string;
 
@@ -780,12 +791,20 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _valueChanged(ev: ValueChangedEvent<AutomationConfig>) {
     ev.stopPropagation();
+    const config = ev.detail.value;
+    this._updateConfig(
+      "use_blueprint" in config
+        ? config
+        : this._triggerController.cleanupRemovedIds(config)
+    );
+  }
 
+  private _updateConfig(config: AutomationConfig) {
     if (this.config) {
       this._undoRedoController.commit(this.config);
     }
 
-    this.config = ev.detail.value;
+    this.config = config;
     if (this.readOnly) {
       return;
     }

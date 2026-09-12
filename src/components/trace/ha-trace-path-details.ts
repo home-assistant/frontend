@@ -326,7 +326,7 @@ export class HaTracePathDetails extends LitElement {
                 this._entityReg,
                 currentDetail,
                 undefined,
-                false,
+                undefined,
                 this._manifests
               )
             : selectedType === "chooseOption"

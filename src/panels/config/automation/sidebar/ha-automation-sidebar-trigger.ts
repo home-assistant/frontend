@@ -6,7 +6,6 @@ import {
   mdiContentCut,
   mdiContentPaste,
   mdiDelete,
-  mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
@@ -57,8 +56,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
 
-  @state() private _requestShowId = false;
-
   @state() private _warnings?: string[];
 
   @query(".sidebar-editor")
@@ -66,7 +63,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
-      this._requestShowId = false;
       this._warnings = undefined;
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
@@ -153,28 +149,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
               </ha-dropdown-item>`
             : nothing
         }
-        ${
-          !this.yamlMode &&
-          !("id" in this.config.config) &&
-          !this._requestShowId
-            ? html`<ha-dropdown-item
-                slot="menu-items"
-                value="show_id"
-                .disabled=${this.disabled || type === "list"}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiIdentifier}></ha-svg-icon>
-                <div class="overflow-label">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.edit_id"
-                  )}
-                  <span
-                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
-                  ></span>
-                </div>
-              </ha-dropdown-item>`
-            : nothing
-        }
-
         <wa-divider slot="menu-items"></wa-divider>
 
         <ha-dropdown-item
@@ -366,7 +340,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}
-            .showId=${this._requestShowId}
             .yamlMode=${this.yamlMode}
             .disabled=${this.disabled}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
@@ -419,10 +392,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _showTriggerId = () => {
-    this._requestShowId = true;
-  };
-
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
@@ -436,9 +405,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         break;
       case "edit_note":
         this.config.editNote();
-        break;
-      case "show_id":
-        this._showTriggerId();
         break;
       case "duplicate":
         this.config.duplicate();

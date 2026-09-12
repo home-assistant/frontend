@@ -78,6 +78,10 @@ import { overflowStyles, rowStyles } from "../styles";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
+import {
+  automationTriggerContext,
+  type AutomationTriggerContext,
+} from "./automation-trigger-id";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -137,6 +141,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Number }) public index?: number;
+
   @property({ type: Boolean }) public highlight?: boolean;
 
   @property({ type: Boolean, attribute: "sidebar" })
@@ -181,6 +187,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
 
+  @state()
+  @consume({ context: automationTriggerContext, subscribe: true })
+  private _triggers?: AutomationTriggerContext;
+
   get selected() {
     return this._selected;
   }
@@ -206,6 +216,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderRow() {
+    const triggerIndex = this._triggers?.options.find(
+      (option) => option.trigger === this.trigger
+    )?.index;
     const type = this._getType(this.trigger, this.triggerDescriptions);
 
     const supported = this._uiSupported(type);
@@ -238,19 +251,26 @@ export default class HaAutomationTriggerRow extends LitElement {
     );
 
     return html`
-      ${
-        type === "list"
-          ? html`<ha-svg-icon
-              slot="leading-icon"
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>`
-          : html`<ha-trigger-icon
-              slot="leading-icon"
-              .hass=${this.hass}
-              .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
-            ></ha-trigger-icon>`
-      }
+      <div slot="leading-icon" class="trigger-leading">
+        ${
+          triggerIndex !== undefined
+            ? html`<span class="trigger-index-badge">${triggerIndex + 1}</span>`
+            : nothing
+        }
+        ${
+          type === "list"
+            ? html`<ha-svg-icon
+                class="trigger-icon"
+                .path=${TRIGGER_ICONS[type]}
+              ></ha-svg-icon>`
+            : html`<ha-trigger-icon
+                .hass=${this.hass}
+                .trigger=${
+                  (this.trigger as Exclude<Trigger, TriggerList>).trigger
+                }
+              ></ha-trigger-icon>`
+        }
+      </div>
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeTrigger(this.trigger, this.hass, this._entityReg)

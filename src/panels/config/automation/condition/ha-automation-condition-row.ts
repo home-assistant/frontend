@@ -24,6 +24,7 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import "../trigger/ha-automation-trigger-references";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -50,6 +51,7 @@ import type {
   AutomationClipboard,
   Condition,
   ConditionSidebarConfig,
+  TriggerCondition,
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -152,6 +154,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   private _testingTimeout?: number;
 
+  private _sidebarCondition?: Condition;
+
   get selected() {
     return this._selected;
   }
@@ -201,12 +205,25 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-automation-condition-summary
         slot="header"
         .label=${capitalizeFirstLetter(
-          describeCondition(this.condition, this.hass, this._entityReg)
+          describeCondition(this.condition, this.hass, this._entityReg, {
+            hideTriggerIds: true,
+          })
         )}
         .condition=${this.condition}
         .description=${this.conditionDescriptions[this.condition.condition]}
         .isNew=${this._isNew}
-      ></ha-automation-condition-summary>
+      >
+        ${
+          this.condition.condition === "trigger"
+            ? html`<ha-automation-trigger-references
+                slot="references"
+                .condition=${this.condition as TriggerCondition}
+                .hass=${this.hass}
+                .entityRegistry=${this._entityReg}
+              ></ha-automation-trigger-references>`
+            : nothing
+        }
+      </ha-automation-condition-summary>
       <ha-automation-row-event-chip
         .show=${this._testing}
         .variant=${this._testingResult ? "success" : "warning"}
@@ -567,6 +584,21 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Controller updates (trigger selection, ID migration, or cleanup) bypass the
+    // sidebar's save callback. Refresh its snapshot unless it already has this
+    // condition, so ordinary sidebar edits do not reopen it and disrupt focus.
+    if (
+      changedProperties.has("condition") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.condition !== this._sidebarCondition
+    ) {
+      this.openSidebar();
+    }
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._testingTimeout !== undefined) {
@@ -898,8 +930,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
+    this._sidebarCondition = sidebarCondition;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
+        this._sidebarCondition = value;
         fireEvent(this, "value-changed", { value });
       },
       close: (focus?: boolean) => {
