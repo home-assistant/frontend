@@ -1,6 +1,7 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { storage } from "../common/decorators/storage";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
@@ -28,11 +29,13 @@ const STATUS_INTERVAL_IN_MS = 5000;
 
 @customElement("onboarding-restore-backup")
 class OnboardingRestoreBackup extends LitElement {
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ type: Boolean }) public supervisor = false;
 
   @property() public mode!: "upload" | "cloud";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _view:
     | "loading"
@@ -78,33 +81,29 @@ class OnboardingRestoreBackup extends LitElement {
             ? html`
                 <onboarding-restore-backup-upload
                   .supervisor=${this.supervisor}
-                  .localize=${this.localize}
                   @backup-uploaded=${this._backupUploaded}
                 ></onboarding-restore-backup-upload>
               `
             : this._view === "cloud_login"
               ? html`
                   <onboarding-restore-backup-cloud-login
-                    .localize=${this.localize}
                     @ha-refresh-cloud-status=${this._showCloudBackup}
                   ></onboarding-restore-backup-cloud-login>
                 `
               : this._view === "empty_cloud"
                 ? html`
                     <onboarding-restore-backup-no-cloud-backup
-                      .localize=${this.localize}
                       @sign-out=${this._signOut}
                     ></onboarding-restore-backup-no-cloud-backup>
                   `
                 : this._view === "restore"
                   ? html`<onboarding-restore-backup-restore
                       .mode=${this.mode}
-                      .localize=${this.localize}
                       .backup=${this._backup!}
                       .supervisor=${this.supervisor}
                       .error=${
                         this._failed
-                          ? this.localize(
+                          ? this._localize(
                               `ui.panel.page-onboarding.restore.${this._backupInfo?.last_action_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
                             )
                           : this._error
@@ -118,7 +117,6 @@ class OnboardingRestoreBackup extends LitElement {
       ${
         this._view === "status" && this._backupInfo
           ? html`<onboarding-restore-backup-status
-              .localize=${this.localize}
               .backupInfo=${this._backupInfo}
               @restore-backup-back=${this._back}
             ></onboarding-restore-backup-status>`
@@ -302,7 +300,7 @@ class OnboardingRestoreBackup extends LitElement {
 
     showToast(this, {
       id: "sign-out-ha-cloud",
-      message: this.localize(
+      message: this._localize(
         "ui.panel.page-onboarding.restore.ha-cloud.sign_out_progress"
       ),
     });
@@ -312,7 +310,7 @@ class OnboardingRestoreBackup extends LitElement {
       await signOutHaCloud();
       showToast(this, {
         id: "sign-out-ha-cloud",
-        message: this.localize(
+        message: this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_out_success"
         ),
       });
@@ -321,7 +319,7 @@ class OnboardingRestoreBackup extends LitElement {
       console.error(err);
       showToast(this, {
         id: "sign-out-ha-cloud",
-        message: this.localize(
+        message: this._localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_out_error"
         ),
       });
