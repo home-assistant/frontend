@@ -9682,12 +9682,41 @@
             "move_to_view": "Move to view"
           },
           "edit_view_header": {
+            "dialog_title": "Edit header",
             "add_title": "Add title",
             "header": "Header settings",
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
             "default_title": "# Hello {user}\nAdd your text here, template variables are supported ✨",
+            "tab_heading": "Heading",
+            "tab_badges": "Badges",
+            "tab_layout": "Layout",
+            "preview": "Preview",
+            "preview_empty": "Your header preview will appear here as you add a heading and badges",
+            "add_badge_title": "Add a badge",
+            "configure_badge": "Configure badge",
+            "done": "Done",
+            "heading_custom": "Custom",
+            "heading_custom_placeholder": "Custom text",
+            "heading_add": "Add",
+            "heading_token_name": "Name",
+            "heading_token_greeting": "Time of day greeting",
+            "heading_token_location": "Location name",
+            "font_label": "Font",
+            "font_options": {
+              "default": "Default",
+              "serif": "Serif",
+              "mono": "Monospace",
+              "rounded": "Rounded",
+              "system": "System"
+            },
+            "add_heading": "Add sub-heading",
+            "remove_subheading": "Remove sub-heading",
+            "edit_as_code": "Edit as code",
+            "edit_visually": "Edit visually",
+            "badge_search": "Search for entity",
+            "badge_suggested": "Suggested",
             "settings": {
               "layout": "Layout",
               "layout_options": {
@@ -9697,16 +9726,21 @@
                 "start_description": "Always stacked",
                 "start_rtl": "Right aligned",
                 "center": "Centered",
-                "center_description": "Always stacked"
+                "center_description": "Always stacked",
+                "inline": "Inline",
+                "inline_description": "Heading and badges on one line"
               },
               "badges_position": "Badges position",
               "badges_position_options": {
                 "top": "Top",
-                "bottom": "Bottom"
+                "top_description": "Badges above the heading",
+                "bottom": "Bottom",
+                "bottom_description": "Badges below the heading"
               },
               "badges_wrap": "Badges behavior",
               "badges_wrap_options": {
                 "wrap": "Wrap",
+                "wrap_description": "Moves to new line",
                 "scroll": "Scroll",
                 "scroll_description": "Touchscreen-friendly"
               }
@@ -10586,11 +10620,11 @@
               },
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "auto": "Use user settings",
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
-                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
-                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
-                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]"
               },
               "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
               "time_zones": {
@@ -11422,10 +11456,10 @@
           "dropdown_label": "Time format",
           "description": "Choose how times are formatted.",
           "formats": {
-            "language": "Auto (use language setting)",
-            "system": "Use system locale",
             "12": "12 hours (AM/PM)",
-            "24": "24 hours"
+            "24": "24 hours",
+            "language": "Auto (use language setting)",
+            "system": "Use system locale"
           }
         },
         "time_zone": {
