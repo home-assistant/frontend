@@ -60,6 +60,7 @@ export const securityEntityFilters: EntityFilter[] = [
       // Safety
       "carbon_monoxide",
       "gas",
+      "glass_break",
       "moisture",
       "safety",
       "smoke",

@@ -14,6 +14,7 @@ import {
 const DANGER_BINARY_SENSOR_DEVICE_CLASSES = [
   "carbon_monoxide",
   "gas",
+  "glass_break",
   "moisture",
   "safety",
   "smoke",

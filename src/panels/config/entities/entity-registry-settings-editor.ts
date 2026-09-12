@@ -128,6 +128,7 @@ export const OVERRIDE_DEVICE_CLASSES = {
     [
       "smoke",
       "safety",
+      "glass_break",
       "sound",
       "problem",
       "tamper",
