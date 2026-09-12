@@ -44,8 +44,10 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    if (this._config?.date_size === "small") return 1;
-    return 2;
+    return this._config?.date_size === "medium" ||
+      this._config?.date_size === "large"
+      ? 2
+      : 1;
   }
 
   public getGridOptions(): LovelaceGridOptions {
@@ -92,10 +94,11 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const localeChanged =
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const localeOrServerTimeZoneChanged =
       changedProps.has("hass") &&
-      (changedProps.get("hass") as HomeAssistant | undefined)?.locale !==
-        this.hass?.locale;
+      (oldHass?.locale !== this.hass?.locale ||
+        oldHass?.config.time_zone !== this.hass?.config.time_zone);
 
     const oldConfig = changedProps.get("_config") as DateCardConfig | undefined;
     const relevantConfigChanged =
@@ -106,7 +109,11 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     // hass/_config can arrive in separate update cycles; force one init.
     const neverScheduled = !this._midnightTimer;
 
-    if (localeChanged || relevantConfigChanged || neverScheduled) {
+    if (
+      localeOrServerTimeZoneChanged ||
+      relevantConfigChanged ||
+      neverScheduled
+    ) {
       this._scheduleMidnightRefresh();
     }
   }
