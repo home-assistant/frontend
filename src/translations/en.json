@@ -518,7 +518,9 @@
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
       "markdown": "Markdown",
-      "none": "None"
+      "none": "None",
+      "first": "First",
+      "last": "Last"
     },
     "components": {
       "input": {
