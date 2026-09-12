@@ -187,6 +187,8 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                           <dashboard-card
                             .name=${strategy.name || strategy.type}
                             .description=${strategy.description || ""}
+                            .img=${this._customStrategyImage(strategy)}
+                            .alt=${strategy.name || strategy.type}
                             @click=${this._selected}
                             .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
                           ></dashboard-card>
@@ -252,6 +254,8 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                                   <dashboard-card
                                     .name=${strategy.name || strategy.type}
                                     .description=${strategy.description || ""}
+                                    .img=${this._customStrategyImage(strategy)}
+                                    .alt=${strategy.name || strategy.type}
                                     @click=${this._selected}
                                     .strategy=${CUSTOM_TYPE_PREFIX + strategy.type}
                                   ></dashboard-card>
@@ -298,6 +302,15 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       return fuse.search(filter).map((result) => result.item);
     }
   );
+
+  private _customStrategyImage(strategy: CustomStrategyEntry): string {
+    if (!strategy.images) {
+      return "";
+    }
+    return this.hass.themes.darkMode
+      ? strategy.images.dark
+      : strategy.images.light;
+  }
 
   private _filterCustomStrategies = memoizeOne(
     (

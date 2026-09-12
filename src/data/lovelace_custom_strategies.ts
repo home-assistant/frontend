@@ -5,6 +5,11 @@ export interface CustomStrategyEntry {
   name?: string;
   description?: string;
   documentationURL?: string;
+  /**
+   * Preview shown in the new dashboard dialog, one variant per theme mode.
+   * Should be a 160x160 image, like the built-in strategy previews.
+   */
+  images?: { light: string; dark: string };
   strategyType: LovelaceStrategyConfigType;
 }
 
