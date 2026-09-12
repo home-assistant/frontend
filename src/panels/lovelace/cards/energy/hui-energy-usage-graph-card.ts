@@ -27,7 +27,10 @@ import {
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
-import { getStatisticLabel } from "../../../../data/recorder";
+import {
+  calculateStatisticSumGrowth,
+  getStatisticLabel,
+} from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -104,6 +107,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _total?: number;
 
+  @state() private _totalCost?: number;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -144,6 +149,18 @@ export class HuiEnergyUsageGraphCard
           this._config.title
             ? html` <div class="card-header">
                 <span>${this._config.title}</span>
+                ${
+                  this._totalCost !== undefined
+                    ? html`<hui-energy-graph-chip
+                        .tooltip=${this._formatTotalCost(this._totalCost)}
+                      >
+                        ${formatNumber(this._totalCost, this.hass.locale, {
+                          style: "currency",
+                          currency: this.hass.config.currency!,
+                        })}
+                      </hui-energy-graph-chip>`
+                    : nothing
+                }
                 ${
                   this._total
                     ? html`<hui-energy-graph-chip
@@ -199,6 +216,21 @@ export class HuiEnergyUsageGraphCard
       </ha-card>
     `;
   }
+
+  private _formatTotalCost = (totalCost: number) =>
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_usage_graph.total_cost",
+      {
+        num: formatNumber(totalCost, this.hass.locale, {
+          style: "currency",
+          currency: this.hass.config.currency!,
+        }),
+      }
+    ) ||
+    `Total ${formatNumber(totalCost, this.hass.locale, {
+      style: "currency",
+      currency: this.hass.config.currency!,
+    })}`;
 
   private _formatTotal = (total: number) =>
     this.hass.localize(
@@ -482,6 +514,75 @@ export class HuiEnergyUsageGraphCard
       )
     );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
+
+    let totalCost = 0;
+    let hasCost = false;
+
+    const getMeterCost = (
+      energyStatId: string | null,
+      directCostStatId: string | null,
+      numberPrice: number | null | undefined
+    ): number | undefined => {
+      if (!energyStatId) return undefined;
+      let costStatId = directCostStatId;
+      if (!costStatId && energyData.info?.cost_sensors) {
+        costStatId = energyData.info.cost_sensors[energyStatId] || null;
+      }
+      if (costStatId && energyData.stats[costStatId]) {
+        const costStats = energyData.stats[costStatId];
+        const costGrowth = calculateStatisticSumGrowth(costStats);
+        if (costGrowth !== null && !isNaN(costGrowth)) {
+          return costGrowth;
+        }
+        const sumChange = costStats.reduce(
+          (acc, curr) => acc + (curr.change ?? 0),
+          0
+        );
+        return sumChange;
+      }
+      if (numberPrice !== null && numberPrice !== undefined) {
+        const energyStats = energyData.stats[energyStatId];
+        const energyGrowth = calculateStatisticSumGrowth(energyStats);
+        if (energyGrowth !== null && !isNaN(energyGrowth)) {
+          return energyGrowth * numberPrice;
+        }
+        if (energyStats) {
+          const sumChange = energyStats.reduce(
+            (acc, curr) => acc + (curr.change ?? 0),
+            0
+          );
+          return sumChange * numberPrice;
+        }
+      }
+      return undefined;
+    };
+
+    for (const source of energyData.prefs.energy_sources) {
+      if (source.type === "grid") {
+        const gridSource = source as GridSourceTypeEnergyPreference;
+        const importCost = getMeterCost(
+          gridSource.stat_energy_from,
+          gridSource.stat_cost,
+          gridSource.number_energy_price
+        );
+        if (importCost !== undefined) {
+          totalCost += importCost;
+          hasCost = true;
+        }
+
+        const exportCompensation = getMeterCost(
+          gridSource.stat_energy_to,
+          gridSource.stat_compensation,
+          gridSource.number_energy_price_export
+        );
+        if (exportCompensation !== undefined) {
+          totalCost -= exportCompensation;
+          hasCost = true;
+        }
+      }
+    }
+
+    this._totalCost = hasCost ? totalCost : undefined;
     this._chartData = datasets;
     this._legendData = this._getLegendData(datasets);
     this._total = this._processTotal(consumption);
