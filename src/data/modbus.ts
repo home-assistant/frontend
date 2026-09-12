@@ -3,10 +3,17 @@ import type { HomeAssistant } from "../types";
 /** Transport with host and port, or with the serial device path. */
 export type ModbusEndpoint = [string, string, number] | [string, string];
 
+/** Whether a connection belongs to a config entry or to a YAML hub. */
+export type ModbusConnectionSource = "config_entry" | "yaml";
+
 export interface ModbusConnection {
   endpoint: ModbusEndpoint;
   connected: boolean;
-  /** The unit IDs each config entry holds, keyed by config entry ID. */
+  source: ModbusConnectionSource;
+  /**
+   * The unit IDs each holder uses, keyed by config entry ID, or by hub name
+   * when `source` is `"yaml"`.
+   */
   units: Record<string, number[]>;
 }
 
