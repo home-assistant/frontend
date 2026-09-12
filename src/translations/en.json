@@ -9833,6 +9833,9 @@
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
             "create_section": "Create section",
+            "create_stack": "Add stack",
+            "wrap_in_stack": "Wrap in stack",
+            "remove_from_stack": "Remove from stack",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
             "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Move them into sections to display them in your view."

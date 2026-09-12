@@ -13,6 +13,7 @@ import type {
 import {
   DEFAULT_SECTION_BACKGROUND_OPACITY,
   resolveSectionBackground,
+  isStackSection,
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -33,6 +34,8 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
+
+  @property({ type: Boolean, attribute: "in-stack" }) public inStack = false;
 
   private _schema = memoizeOne(
     (maxColumns: number, localize: LocalizeFunc) =>
@@ -115,6 +118,10 @@ export class HuiDialogEditSection extends LitElement {
     const schema = this._schema(
       this.viewConfig.max_columns || 4,
       this._localize
+    ).filter((field) =>
+      isStackSection(this.config)
+        ? field.name === "column_span"
+        : !this.inStack || field.name !== "column_span"
     );
 
     return html`
@@ -148,8 +155,13 @@ export class HuiDialogEditSection extends LitElement {
 
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
-      column_span: newData.column_span,
+      column_span: this.inStack ? this.config.column_span : newData.column_span,
     };
+
+    if (isStackSection(this.config)) {
+      fireEvent(this, "value-changed", { value: newConfig });
+      return;
+    }
 
     if (newData.background_enabled) {
       const hasCustomColor =
