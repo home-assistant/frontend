@@ -8,8 +8,10 @@ import { truncateWithEllipsis } from "../../common/string/truncate-with-ellipsis
 import type { Condition } from "../../data/automation";
 import type { ConditionDescription } from "../../data/condition";
 import { internationalizationContext } from "../../data/context";
+import { getTargetEntityCount } from "../../data/target";
 import "../../panels/config/automation/ha-automation-row-behavior";
 import "../../panels/config/automation/ha-automation-row-options";
+import "../../panels/config/automation/ha-automation-row-threshold";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
 import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
 import "../../panels/config/automation/target/ha-automation-row-targets";
@@ -62,7 +64,7 @@ export class HaAutomationConditionSummary extends LitElement {
       <h3>
         ${this.label}
         ${
-          this.description && this.condition
+          targetRequired && this.condition && getTargetEntityCount(target) > 1
             ? html`<ha-automation-row-behavior
                 mode="condition"
                 .config=${this.condition}
@@ -81,6 +83,14 @@ export class HaAutomationConditionSummary extends LitElement {
                 }
                 .interactive=${this.condition?.condition !== "device"}
               ></ha-automation-row-targets>`
+            : nothing
+        }
+        ${
+          this.description && this.condition
+            ? html`<ha-automation-row-threshold
+                .config=${this.condition}
+                .description=${this.description}
+              ></ha-automation-row-threshold>`
             : nothing
         }
         ${
