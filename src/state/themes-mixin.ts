@@ -1,4 +1,5 @@
 import type { PropertyValues } from "lit";
+import { type Color, blend, wcagLuminance } from "culori";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
@@ -23,6 +24,10 @@ declare global {
 }
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
+
+function isLight(color: Color | string): boolean {
+  return wcagLuminance(color) >= 0.5;
+}
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -166,9 +171,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const computedStyles = getComputedStyle(document.documentElement);
       const themeMetaColor =
         computedStyles.getPropertyValue("--app-theme-color");
+      const themePrimaryBackgroundColor = computedStyles.getPropertyValue(
+        "--primary-background-color"
+      );
 
       document.documentElement.style.backgroundColor =
-        computedStyles.getPropertyValue("--primary-background-color");
+        themePrimaryBackgroundColor;
 
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {
@@ -184,5 +192,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       this.hass!.auth.external?.fireMessage({ type: "theme-update" });
+
+      const themeHeaderColor = computedStyles.getPropertyValue(
+        "--app-header-background-color"
+      );
+      const isAppearanceLightStatusBars = isLight(
+        blend([themePrimaryBackgroundColor, themeHeaderColor])
+      );
+
+      this.hass!.auth.external?.fireMessage({
+        type: "frontend/is_appearance_light_status_bars",
+        payload: { value: isAppearanceLightStatusBars },
+      });
     }
   };

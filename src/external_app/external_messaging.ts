@@ -195,6 +195,13 @@ interface EMOutgoingMessageReloadAndClearCache extends EMMessage {
   type: "frontend/reload_and_clear_cache";
 }
 
+interface EMOutgoingMessageIsAppearanceLightStatusBars extends EMMessage {
+  type: "frontend/is_appearance_light_status_bars";
+  payload: {
+    value: boolean;
+  };
+}
+
 // These types are handled internally by the Android app via postMessage.
 // They are not sent by the frontend and should not be used directly.
 // They are intentionally listed here to prevent anyone from using them unintentionally.
@@ -225,6 +232,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageAddEntityTo
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageReloadAndClearCache
+  | EMOutgoingMessageIsAppearanceLightStatusBars
   | EMOutgoingMessageAssistSettings;
 
 export interface EMIncomingMessageRestart {
