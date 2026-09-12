@@ -1,16 +1,14 @@
-import { mdiArrowRight } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import { formatNumericDuration } from "../../common/datetime/format_duration";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
+import "../../components/ha-icon-arrow-next";
 import type { HttpConfig } from "../../data/http";
 import {
   HTTP_CONFIG_FIELDS,
@@ -158,10 +156,6 @@ export class DialogHttpPendingConfig
 
     const changes = this._changedFields;
     const { stable, pending } = this._params.state;
-    const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    );
 
     return html`
       <ha-dialog
@@ -233,12 +227,7 @@ export class DialogHttpPendingConfig
                             <span class="old"
                               >${this._formatValue(key, stable[key])}</span
                             >
-                            <ha-svg-icon
-                              .path=${mdiArrowRight}
-                              style=${styleMap({
-                                transform: rtl ? "scaleX(-1)" : "",
-                              })}
-                            ></ha-svg-icon>
+                            <ha-icon-arrow-next></ha-icon-arrow-next>
                             <span class="new"
                               >${this._formatValue(key, pending![key])}</span
                             >
