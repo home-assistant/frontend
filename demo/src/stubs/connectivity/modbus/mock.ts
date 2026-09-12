@@ -28,9 +28,9 @@ const CONNECTIONS: ModbusConnection[] = [
     source: "config_entry",
     units: { [FRONIUS_ENTRY_ID]: [2] },
   },
-  // A YAML hub keeps a link of its own, on a bus a shared connection also uses
+  // A YAML hub keeps a link of its own to a device an integration also talks to
   {
-    endpoint: ["serial", RS485_PORT],
+    endpoint: ["tcp", "192.168.1.42", 502],
     connected: true,
     source: "yaml",
     units: { modbus_hub: [10, 11] },
