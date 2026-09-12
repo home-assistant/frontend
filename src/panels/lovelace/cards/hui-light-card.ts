@@ -1,14 +1,15 @@
 import { mdiDotsVertical } from "@mdi/js";
-import "@thomasloven/round-slider";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stateColorBrightness } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
+import "../../../components/ha-control-circular-slider";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
@@ -108,12 +109,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <div class="content">
           <div id="controls">
             <div id="slider">
-              <!-- @ts-ignore Round-slider has no tag definition or exported type -->
-              <round-slider
-                min="1"
-                max="100"
+              <ha-control-circular-slider
+                mode="start"
+                .min=${1}
+                .max=${100}
+                .step=${1}
                 .value=${brightness}
                 .disabled=${stateObj.state === UNAVAILABLE}
+                prevent-interaction-on-scroll
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
@@ -121,7 +124,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     ? "visible"
                     : "hidden",
                 })}
-              ></round-slider>
+              ></ha-control-circular-slider>
               <ha-icon-button
                 class="light-button ${classMap({
                   "slider-center": lightSupportsBrightness(stateObj),
@@ -191,9 +194,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
-      `${e.detail.value} %`;
+  private _dragEvent(ev: HASSDomEvent<HASSDomEvents["value-changing"]>): void {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${value} %`;
     this._showBrightness();
     this._hideBrightness();
   }
@@ -213,10 +217,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }, 500);
   }
 
-  private _setBrightness(e: any): void {
+  private _setBrightness(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ): void {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this.hass!.callService("light", "turn_on", {
       entity_id: this._config!.entity,
-      brightness_pct: e.detail.value,
+      brightness_pct: value,
     });
   }
 
@@ -292,10 +300,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       min-width: 100px;
     }
 
-    round-slider {
-      --round-slider-path-color: var(--slider-track-color);
-      --round-slider-bar-color: var(--primary-color);
-      padding-bottom: 10%;
+    ha-control-circular-slider {
+      width: 100%;
+      --control-circular-slider-color: var(--primary-color);
+      --control-circular-slider-background: var(--slider-track-color);
+      --control-circular-slider-background-opacity: 1;
     }
 
     .light-button {
