@@ -195,7 +195,7 @@
     "html-minifier-terser": "7.2.0",
     "husky": "9.1.7",
     "jsdom": "30.0.1",
-    "jszip": "3.10.1",
+    "jszip": "3.10.2",
     "license-checker-rseidelsohn": "5.0.1",
     "lightningcss": "1.33.0",
     "lint-staged": "17.5.0",
