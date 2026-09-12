@@ -50,7 +50,8 @@ import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import type { ChartSonification } from "./chart-sonification";
 import { canSonifyChart, sonifyChart } from "./chart-sonification";
-import { downSampleLineData } from "./down-sample";
+import { downSampleAlignedLineData, downSampleLineData } from "./down-sample";
+import type { Point } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
@@ -1134,8 +1135,32 @@ export class HaChartBase extends LitElement {
   }
 
   private _getSeries() {
-    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
-      XAXisOption | undefined;
+    const xAxes = ensureArray(this.options?.xAxis) as XAXisOption[];
+    const getAxisBounds = (axisIndex: unknown) => {
+      const axis = xAxes[typeof axisIndex === "number" ? axisIndex : 0];
+      return {
+        min:
+          axis?.min instanceof Date
+            ? axis.min.getTime()
+            : typeof axis?.min === "number"
+              ? axis.min
+              : undefined,
+        max:
+          axis?.max instanceof Date
+            ? axis.max.getTime()
+            : typeof axis?.max === "number"
+              ? axis.max
+              : undefined,
+      };
+    };
+    const pointX = (point: Point) =>
+      Number(
+        Array.isArray(point)
+          ? point[0]
+          : point && typeof point === "object" && "value" in point
+            ? point.value?.[0]
+            : NaN
+      );
     const series = ensureArray(this.data).map((s) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
@@ -1145,21 +1170,13 @@ export class HaChartBase extends LitElement {
         data,
       } as HaECSeriesItem;
       if (data && s.type === "line") {
-        if ((s as LineSeriesOption).sampling === "minmax") {
-          const minX = xAxis?.min
-            ? xAxis.min instanceof Date
-              ? xAxis.min.getTime()
-              : typeof xAxis.min === "number"
-                ? xAxis.min
-                : undefined
-            : undefined;
-          const maxX = xAxis?.max
-            ? xAxis.max instanceof Date
-              ? xAxis.max.getTime()
-              : typeof xAxis.max === "number"
-                ? xAxis.max
-                : undefined
-            : undefined;
+        if (
+          (s as LineSeriesOption).sampling === "minmax" &&
+          !(s as LineSeriesOption).stack
+        ) {
+          const { min: minX, max: maxX } = getAxisBounds(
+            (s as LineSeriesOption).xAxisIndex
+          );
           result = {
             ...result,
             sampling: undefined,
@@ -1176,6 +1193,68 @@ export class HaChartBase extends LitElement {
       }
       return processSeriesTooltipFormatter(result);
     });
+    const stackGroups = new Map<string, number[]>();
+    series.forEach((s, index) => {
+      if (
+        s?.type !== "line" ||
+        s.sampling !== "minmax" ||
+        !s.stack ||
+        !Array.isArray(s.data)
+      ) {
+        return;
+      }
+      const key = `${s.stack}|${s.xAxisIndex ?? 0}|${s.yAxisIndex ?? 0}`;
+      const group = stackGroups.get(key) || [];
+      group.push(index);
+      stackGroups.set(key, group);
+    });
+    for (const indexes of stackGroups.values()) {
+      if (
+        (series[indexes[0]] as LineSeriesOption).stackOrder === "seriesDesc"
+      ) {
+        indexes.reverse();
+      }
+      const dataSets = indexes.map((index) => series[index].data as Point[]);
+      const first = dataSets[0];
+      const aligned =
+        indexes.length > 1 &&
+        dataSets.every(
+          (data) =>
+            data.length === first.length &&
+            data.every(
+              (point, pointIndex) => pointX(point) === pointX(first[pointIndex])
+            )
+        );
+      const { min, max } = getAxisBounds(
+        (series[indexes[0]] as LineSeriesOption).xAxisIndex
+      );
+      const sampled = aligned
+        ? downSampleAlignedLineData(
+            dataSets,
+            (this.clientWidth || DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
+            min,
+            max,
+            indexes.map(
+              (index) => (series[index] as LineSeriesOption).stackStrategy
+            )
+          )
+        : dataSets.map((data) =>
+            downSampleLineData(
+              data,
+              (this.clientWidth || DEFAULT_CHART_WIDTH) *
+                window.devicePixelRatio,
+              min,
+              max
+            )
+          );
+      indexes.forEach((index, sampledIndex) => {
+        series[index] = {
+          ...series[index],
+          sampling: undefined,
+          data: sampled[sampledIndex],
+        } as RawSeriesOption;
+      });
+    }
     return series as ECOption["series"];
   }
 

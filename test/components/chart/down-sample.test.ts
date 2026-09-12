@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { downSampleLineData } from "../../../src/components/chart/down-sample";
+import {
+  downSampleAlignedLineData,
+  downSampleLineData,
+} from "../../../src/components/chart/down-sample";
 import { digestResult } from "../../fixtures/digest";
 import { FIXED_EPOCH_MS, SCALES } from "../../fixtures/history-states";
 import { createSeededRandom } from "../../fixtures/random";
@@ -403,5 +406,222 @@ describe("downSampleLineData", () => {
         )
       )
     ).toMatchSnapshot();
+  });
+});
+
+describe("downSampleAlignedLineData", () => {
+  it("keeps stacked series aligned while preserving each series extrema and gaps", () => {
+    const first: [number, number | null][] = [];
+    const second: [number, number | null][] = [];
+    for (let index = 0; index < 600; index++) {
+      first.push([index, index === 211 ? 1000 : index === 350 ? null : index]);
+      second.push([
+        index,
+        index === 87 ? -100 : index === 351 ? null : 600 - index,
+      ]);
+    }
+    const sampled = downSampleAlignedLineData([first, second], 40);
+    expect((sampled[0] as [number, number | null][]).map(([x]) => x)).toEqual(
+      (sampled[1] as [number, number | null][]).map(([x]) => x)
+    );
+    expect(sampled[0]).toContainEqual([211, 1000]);
+    expect(sampled[1]).toContainEqual([87, -100]);
+    expect(sampled[0]).toContainEqual([350, null]);
+    expect(sampled[1]).toContainEqual([351, null]);
+    expect(sampled[0][0]).toEqual(first[0]);
+    expect(sampled[0][sampled[0].length - 1]).toEqual(first[first.length - 1]);
+    expect(sampled[0].length).toBeLessThanOrEqual(40 * 2 * 2 + 2);
+  });
+
+  it("bounds long null runs while retaining both sides of gap transitions", () => {
+    const first: [number, number | null][] = Array.from(
+      { length: 100000 },
+      (_, i) => [i, i < 100 || i > 99900 ? 1 : null]
+    );
+    const second: [number, number | null][] = first.map(([x]) => [x, 2]);
+    const sampled = downSampleAlignedLineData([first, second], 40);
+    expect(sampled[0].length).toBeLessThan(200);
+    for (const index of [99, 100, 99900, 99901]) {
+      expect(sampled[0]).toContainEqual(first[index]);
+    }
+    expect(sampled[0].length).toBe(sampled[1].length);
+  });
+
+  it("keeps duplicate-time value/null boundaries inside one sampling frame", () => {
+    const first: [number, number | null][] = [
+      [0, 10],
+      [1, 10],
+      [1, null],
+      [2, null],
+      [2, 20],
+      [3, 20],
+    ];
+    const second: [number, number | null][] = first.map(([x]) => [x, 30]);
+    const sampled = downSampleAlignedLineData([first, second], 1);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
+  });
+
+  it("retains extrema of the displayed stack sum", () => {
+    const first: [number, number][] = [
+      [0, 0],
+      [1, 100],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ];
+    const second: [number, number][] = [
+      [0, 100],
+      [1, 0],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ];
+    const sampled = downSampleAlignedLineData([first, second], 1);
+    expect(sampled[0]).toEqual([
+      [0, 0],
+      [1, 100],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ]);
+    expect(sampled[1]).toEqual([
+      [0, 100],
+      [1, 0],
+      [2, 60],
+      [3, 0],
+      [4, 0],
+    ]);
+  });
+
+  it.each([1, -1])(
+    "keeps intermediate stack extrema across gaps (sign %s)",
+    (sign) => {
+      const values = [
+        [0, 100, 60, 0, 0],
+        [100, 0, 60, 0, 0],
+        [null, null, null, null, null],
+        [100, 100, 80, 100, 100],
+      ];
+      const data = values.map((row) =>
+        row.map((value, x): [number, number | null] => [
+          x,
+          value === null ? null : sign * value,
+        ])
+      );
+      const sampled = downSampleAlignedLineData(data, 1);
+      // The intermediate level peaks at 120 although the final level stays 200.
+      expect(sampled[0]).toContainEqual([2, sign * 60]);
+      expect(sampled[1]).toContainEqual([2, sign * 60]);
+    }
+  );
+
+  it.each(["all", "positive", "negative"] as const)(
+    "respects the %s stack strategy",
+    (strategy) => {
+      const sign = strategy === "negative" ? -1 : 1;
+      const data: [number, number][][] = [
+        [0, 100, 60, 0, 0].map((value, x) => [x, sign * value]),
+        [100, 0, 60, 0, 0].map((value, x) => [x, sign * value]),
+      ];
+      const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+        strategy,
+        strategy,
+      ]);
+      expect(sampled[0]).toContainEqual([2, sign * 60]);
+    }
+  );
+
+  it("uses ECharts decimal addition before choosing the next stack level", () => {
+    const values = [
+      [0.2, -0.8, -0.6, -0.5, 0.7, -0.2, -0.1, 0.9],
+      [0.4, -0.8, 0.5, 0.2, -0.9, 0.5, -0.7, -0.8],
+      [-0.6, 0.8, 0.1, 0, -0.6, -0.4, 0.5, 0.9],
+      [-1, -1, 0.5, 0.4, 0.8, -0.9, -0.9, 0.6],
+    ];
+    const data = values.map((row) =>
+      row.map((y, x): [number, number] => [x / 10, y])
+    );
+    const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+      "negative",
+      "samesign",
+      "positive",
+      "positive",
+    ]);
+    // Rounding 0.2 + 0.4 - 0.6 to zero changes the preceding positive level.
+    // The last level's actual minimum is at x=0.5, not x=0.
+    expect(sampled[3]).toContainEqual([0.5, -0.9]);
+  });
+
+  it("preserves finite all-stack extrema after a null middle member", () => {
+    const values = [
+      [11, 8, 0, 9, 18, 3, 1, 14, 11, 15, 11, 0, 4, 14, 10, 11, 15, 15, 13, 12],
+      [
+        11,
+        4,
+        15,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        2,
+        3,
+        1,
+        1,
+        14,
+        13,
+        15,
+        13,
+      ],
+      [
+        10, 17, 16, 8, 12, 18, 10, 14, 12, 7, 4, 17, 16, 13, 10, 4, 13, 20, 9,
+        11,
+      ],
+    ];
+    const data = values.map((row) =>
+      row.map((y, x): [number, number | null] => [x / 100, y])
+    );
+    const sampled = downSampleAlignedLineData(data, 1, undefined, undefined, [
+      "all",
+      "all",
+      "all",
+    ]);
+    // With "all", ECharts propagates the middle member's null into the top
+    // level. Skipping that null invents a smaller value inside the gap and
+    // discards the real minimum of 11 + 1 + 4 = 16 at x=0.15.
+    expect(sampled[2]).toContainEqual([0.15, 4]);
+  });
+
+  it("does not align mismatched series by corrupting their data", () => {
+    const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const second: [number, number][] = Array.from({ length: 199 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const sampled = downSampleAlignedLineData([first, second], 20);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
+  });
+
+  it("does not align equal-length series with different timestamps", () => {
+    const first: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x,
+      x,
+    ]);
+    const second: [number, number][] = Array.from({ length: 200 }, (_, x) => [
+      x + 1,
+      x,
+    ]);
+    const sampled = downSampleAlignedLineData([first, second], 20);
+    expect(sampled[0]).toEqual(first);
+    expect(sampled[1]).toEqual(second);
   });
 });

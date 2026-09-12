@@ -1,5 +1,8 @@
 import { describe, test } from "vitest";
-import { downSampleLineData } from "../../src/components/chart/down-sample";
+import {
+  downSampleAlignedLineData,
+  downSampleLineData,
+} from "../../src/components/chart/down-sample";
 import { FIXED_EPOCH_MS, SCALES } from "../fixtures/history-states";
 import { createSeededRandom } from "../fixtures/random";
 
@@ -35,6 +38,14 @@ const largeMostlyGaps = withGaps(
   large,
   (index) => Math.floor(index / 50) % 3 !== 0
 );
+const alignedDense = [
+  large,
+  large.map(([x, y]) => [x, y * 0.75 + 20] as [number, number]),
+] as const;
+const alignedMostlyGaps = [
+  largeMostlyGaps,
+  withGaps(large, (index) => Math.floor(index / 40) % 5 !== 0),
+] as const;
 
 describe("downSampleLineData", () => {
   test("min/max small (1k points)", async ({ bench }) => {
@@ -76,6 +87,20 @@ describe("downSampleLineData", () => {
   test("min/max large mostly gaps (100k points)", async ({ bench }) => {
     await bench("min/max large mostly gaps (100k points)", () => {
       downSampleLineData(largeMostlyGaps, MAX_DETAILS);
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
+
+  test("aligned stack min/max dense (2x100k points)", async ({ bench }) => {
+    await bench("aligned stack min/max dense (2x100k points)", () => {
+      downSampleAlignedLineData(alignedDense, MAX_DETAILS);
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
+
+  test("aligned stack min/max mostly gaps (2x100k points)", async ({
+    bench,
+  }) => {
+    await bench("aligned stack min/max mostly gaps (2x100k points)", () => {
+      downSampleAlignedLineData(alignedMostlyGaps, MAX_DETAILS);
     }).run({ time: 1000, warmupIterations: 2 });
   });
 });

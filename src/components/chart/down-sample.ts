@@ -1,6 +1,16 @@
 import type { LineSeriesOption } from "echarts";
+import { addSafe } from "echarts/lib/util/number";
 
-type Point = NonNullable<LineSeriesOption["data"]>[number];
+export type Point = NonNullable<LineSeriesOption["data"]>[number];
+
+interface AlignedFrame {
+  min: (number | undefined)[];
+  max: (number | undefined)[];
+  stackMin: (number | undefined)[];
+  stackMax: (number | undefined)[];
+  stackMinIndex: (number | undefined)[];
+  stackMaxIndex: (number | undefined)[];
+}
 
 interface MeanFrame {
   sumX: number;
@@ -224,6 +234,169 @@ export function downSampleLineData<
   }
 
   return result;
+}
+
+/**
+ * Downsample aligned line series with one shared index set. Stacked ECharts
+ * lines cannot be sampled independently because their values are combined by
+ * index. Every member contributes its extrema and gap markers to the shared
+ * set; the resulting point arrays therefore remain index-aligned.
+ */
+export function downSampleAlignedLineData(
+  dataSets: readonly Point[][],
+  maxDetails: number,
+  minX?: number,
+  maxX?: number,
+  stackStrategies: readonly LineSeriesOption["stackStrategy"][] = []
+): Point[][] {
+  if (!dataSets.length || dataSets.some((data) => !data.length)) {
+    return dataSets.map((data) => data.slice());
+  }
+  const length = dataSets[0].length;
+  if (
+    dataSets.some(
+      (data) =>
+        data.length !== length ||
+        data.some(
+          (point, index) =>
+            Number(getPointData(point)[0]) !==
+            Number(getPointData(dataSets[0][index])[0])
+        )
+    ) ||
+    length <= maxDetails
+  ) {
+    return dataSets.map((data) => data.slice());
+  }
+  const min = minX ?? Number(getPointData(dataSets[0][0])[0]);
+  const max = maxX ?? Number(getPointData(dataSets[0][length - 1])[0]);
+  const rawStep = Math.ceil((max - min) / Math.floor(maxDetails));
+  if (!Number.isFinite(rawStep) || rawStep <= 0) {
+    return dataSets.map((data) => data.slice());
+  }
+  const step = snapFrameSize(rawStep);
+  const selected = new Set<number>([0, length - 1]);
+  const frames = new Map<number, AlignedFrame>();
+  for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+    let previousNull: boolean | undefined;
+    for (let pointIndex = 0; pointIndex < length; pointIndex++) {
+      const point = dataSets[seriesIndex][pointIndex];
+      const pointData = getPointData(point);
+      if (!Array.isArray(pointData)) continue;
+      const x = Number(pointData[0]);
+      if (isNaN(x)) continue;
+      const frameIndex = Math.floor(x / step);
+      let frame = frames.get(frameIndex);
+      if (!frame) {
+        frame = {
+          min: Array(dataSets.length),
+          max: Array(dataSets.length),
+          stackMin: Array(dataSets.length),
+          stackMax: Array(dataSets.length),
+          stackMinIndex: Array(dataSets.length),
+          stackMaxIndex: Array(dataSets.length),
+        };
+        frames.set(frameIndex, frame);
+      }
+      const y = pointData[1] as number | null;
+      const isNull = y === null;
+      // Keep both sides of each transition, including value/null pairs at
+      // the same timestamp, without retaining every padded null in a gap.
+      if (previousNull !== undefined && previousNull !== isNull) {
+        selected.add(pointIndex - 1);
+        selected.add(pointIndex);
+      }
+      previousNull = isNull;
+      if (isNull) continue;
+      const numericY = Number(y);
+      if (isNaN(numericY)) continue;
+      const minIndex = frame.min[seriesIndex];
+      const maxIndex = frame.max[seriesIndex];
+      if (
+        minIndex === undefined ||
+        numericY < Number(getPointData(dataSets[seriesIndex][minIndex])[1])
+      ) {
+        frame.min[seriesIndex] = pointIndex;
+      }
+      if (
+        maxIndex === undefined ||
+        numericY > Number(getPointData(dataSets[seriesIndex][maxIndex])[1])
+      ) {
+        frame.max[seriesIndex] = pointIndex;
+      }
+    }
+  }
+  // Stacked ECharts lines display the cumulative value at each shared
+  // timestamp. Preserve extrema of that displayed sum as well as each member
+  // peak; otherwise a combined peak can disappear during reduction.
+  for (let pointIndex = 0; pointIndex < length; pointIndex++) {
+    const frameIndex = Math.floor(
+      Number(getPointData(dataSets[0][pointIndex])[0]) / step
+    );
+    const frame = frames.get(frameIndex);
+    if (!frame) continue;
+    // ECharts adds the nearest preceding cumulative value accepted by this
+    // member's strategy. Remember each sign to avoid rescanning the stack.
+    let previous: number | undefined;
+    let positive: number | undefined;
+    let negative: number | undefined;
+    let nonzero: number | undefined;
+    for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+      const raw = getPointData(dataSets[seriesIndex][pointIndex])[1];
+      let value = raw === null ? NaN : Number(raw);
+      const strategy = stackStrategies[seriesIndex] ?? "samesign";
+      const below =
+        strategy === "all"
+          ? previous
+          : strategy === "positive"
+            ? positive
+            : strategy === "negative"
+              ? negative
+              : value === 0
+                ? nonzero
+                : value > 0 && positive !== undefined
+                  ? positive
+                  : value <= 0
+                    ? negative
+                    : undefined;
+      if (below !== undefined) value = addSafe(value, below);
+      // "all" uses even a null preceding level; only sign-sensitive
+      // strategies skip it when searching for an earlier cumulative value.
+      previous = value;
+      if (value > 0) positive = value;
+      if (value < 0) negative = value;
+      if (value > 0 || value < 0) nonzero = value;
+      if (!Number.isFinite(value)) continue;
+      if (
+        frame.stackMin[seriesIndex] === undefined ||
+        value < frame.stackMin[seriesIndex]!
+      ) {
+        frame.stackMin[seriesIndex] = value;
+        frame.stackMinIndex[seriesIndex] = pointIndex;
+      }
+      if (
+        frame.stackMax[seriesIndex] === undefined ||
+        value > frame.stackMax[seriesIndex]!
+      ) {
+        frame.stackMax[seriesIndex] = value;
+        frame.stackMaxIndex[seriesIndex] = pointIndex;
+      }
+    }
+  }
+  for (const frame of frames.values()) {
+    for (let seriesIndex = 0; seriesIndex < dataSets.length; seriesIndex++) {
+      const minIndex = frame.min[seriesIndex];
+      const maxIndex = frame.max[seriesIndex];
+      if (minIndex !== undefined && maxIndex !== undefined) {
+        selected.add(minIndex);
+        selected.add(maxIndex);
+      }
+    }
+    for (const index of [...frame.stackMinIndex, ...frame.stackMaxIndex]) {
+      if (index !== undefined) selected.add(index);
+    }
+  }
+  const indexes = [...selected].sort((a, b) => a - b);
+  return dataSets.map((data) => indexes.map((index) => data[index]));
 }
 
 function getPointData(point: NonNullable<LineSeriesOption["data"]>[number]) {

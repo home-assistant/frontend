@@ -51,6 +51,7 @@ conclusions.
 | Transform                                                                       | Source                                                            | Benchmark                                | Characterization test                                                   |
 | ------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------- |
 | `downSampleLineData`                                                            | `src/components/chart/down-sample.ts`                             | `down-sample.bench.ts`                   | `test/components/chart/down-sample.test.ts`                             |
+| `downSampleAlignedLineData`                                                     | `src/components/chart/down-sample.ts`                             | `down-sample.bench.ts`                   | `test/components/chart/down-sample.test.ts`                             |
 | `computeHistory`                                                                | `src/data/history.ts`                                             | `history.bench.ts`                       | `test/data/history-characterization.test.ts`                            |
 | `HistoryStream.processMessage`                                                  | `src/data/history.ts`                                             | `history-stream.bench.ts`                | `test/data/history-characterization.test.ts`                            |
 | `convertStatisticsToHistory`, `mergeHistoryResults`                             | `src/data/history.ts`                                             | `statistics.bench.ts`                    | `test/data/history-characterization.test.ts`                            |
@@ -67,7 +68,8 @@ Call frequency notes (what makes a target worth optimizing):
   history graph card; `HistoryStream.processMessage` merges and purges on the
   same cadence.
 - `downSampleLineData` runs in `ha-chart-base._getSeries()` on **every chart
-  render** of every chart on screen.
+  render** of every chart on screen. `downSampleAlignedLineData` runs on the
+  same path for visible stacked line groups whose timestamp grids are aligned.
 - `generateStatisticsChartData` / `generateStateHistoryChartLineData` run on
   every data or config change of their charts (`MIN_TIME_BETWEEN_UPDATES` =
   5 minutes keeps charts refreshing even without new data).

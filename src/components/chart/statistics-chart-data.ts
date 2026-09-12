@@ -99,6 +99,68 @@ export function generateStatisticsChartData(
     endTime = now;
   }
 
+  // ECharts stacks lines by data index. Derive the common timeline from raw
+  // statistic boundaries before emitting datasets, so recorder gaps retain
+  // their value/null boundary slots without a later output-data rewrite.
+  const stackedLineTimes = new Map<number, number>();
+  const stackedLineStatistics = new Set<string>();
+  if (chartType === "line" && chartStacked) {
+    for (const [statisticId, stats] of statisticsData) {
+      if (
+        hiddenStats.has(statisticId) ||
+        !params.statTypes.some((type) => statisticsHaveType(stats, type))
+      ) {
+        continue;
+      }
+      let previousStart: number | undefined;
+      let previousEnd: number | undefined;
+      const statisticTimes = new Map<number, number>();
+      const addStatisticTime = (time: number) => {
+        statisticTimes.set(time, (statisticTimes.get(time) || 0) + 1);
+      };
+      for (const stat of stats) {
+        if (previousStart === stat.start) {
+          continue;
+        }
+        previousStart = stat.start;
+        const limit = Math.min(stat.end, endTime.getTime());
+        if (stat.start > limit) {
+          continue;
+        }
+        stackedLineStatistics.add(statisticId);
+        if (previousEnd !== undefined && previousEnd !== stat.start) {
+          addStatisticTime(previousEnd);
+          addStatisticTime(previousEnd);
+        }
+        addStatisticTime(stat.start);
+        previousEnd = limit;
+      }
+      if (previousEnd !== undefined) {
+        addStatisticTime(previousEnd);
+      }
+      for (const [time, slots] of statisticTimes) {
+        stackedLineTimes.set(
+          time,
+          Math.max(stackedLineTimes.get(time) || 0, slots)
+        );
+      }
+    }
+  }
+  let stackedLineOffset = 0;
+  const stackedLineTimeline = [...stackedLineTimes]
+    .sort(([a], [b]) => a - b)
+    .map(([time, slots]) => {
+      const offset = stackedLineOffset;
+      stackedLineOffset += slots;
+      return [time, slots, offset] as const;
+    });
+  const stackedLineSlots = new Map(
+    stackedLineTimeline.map(([time, slots, offset]) => [
+      time,
+      { slots, offset },
+    ])
+  );
+
   // Check if we need to display most recent data. Allow 10m of leeway for "now",
   // because stats are 5 minute aggregated.
   // Use same now point for all statistics even if processing time means the
@@ -141,6 +203,34 @@ export function generateStatisticsChartData(
     // The datasets for the current statistic
     const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
     const statLegendData: StatisticsChartLegendItem[] = [];
+    const statHidden = hiddenStats.has(statistic_id);
+    const emittedStackedLineSlots = new Map<
+      LineSeriesOption | BarSeriesOption,
+      Map<number, number>
+    >();
+
+    const pushLineData = (
+      dataset: LineSeriesOption | BarSeriesOption,
+      time: number,
+      value: (number | null)[]
+    ) => {
+      const stackedSlot = stackedLineSlots.get(time);
+      if (!stackedSlot || statHidden) {
+        dataset.data!.push([time, ...value]);
+        return;
+      }
+      let emittedSlotsByTime = emittedStackedLineSlots.get(dataset);
+      if (!emittedSlotsByTime) {
+        emittedSlotsByTime = new Map();
+        emittedStackedLineSlots.set(dataset, emittedSlotsByTime);
+      }
+      const emittedSlots = emittedSlotsByTime.get(time) || 0;
+      const point = [time, ...value];
+      for (let slot = emittedSlots; slot < stackedSlot.slots; slot++) {
+        dataset.data![stackedSlot.offset + slot] = point;
+      }
+      emittedSlotsByTime.set(time, emittedSlots + 1);
+    };
 
     // Place bars at centre of their specified time range if this is a bar chart
     // and the period is 5minute or hour.
@@ -185,10 +275,10 @@ export function generateStatisticsChartData(
           if (drawGap) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime!.getTime(), ...prevValues![i]!]);
-            d.data!.push([prevEndTime!.getTime(), null]);
+            pushLineData(d, prevEndTime!.getTime(), prevValues![i]!);
+            pushLineData(d, prevEndTime!.getTime(), [null]);
           }
-          d.data!.push([start.getTime(), ...dataValue!]);
+          pushLineData(d, start.getTime(), dataValue!);
           // For band-top rows dataValues[i] is [diff, top]; the actual Y is
           // the last element. For regular rows it's [value]. Same call works.
           trackY(dataValue[dataValue.length - 1]);
@@ -344,7 +434,20 @@ export function generateStatisticsChartData(
       return PLAIN_KIND;
     });
     const numTypes = statTypes.length;
-    const statHidden = hiddenStats.has(statistic_id);
+    if (
+      chartType === "line" &&
+      chartStacked &&
+      !statHidden &&
+      stackedLineStatistics.has(statistic_id)
+    ) {
+      statDataSets.forEach((dataset) => {
+        // ha-chart-base samples aligned members together before rendering.
+        dataset.sampling = "minmax";
+        dataset.data = stackedLineTimeline.flatMap(([time, slots]) =>
+          Array.from({ length: slots }, () => [time, null])
+        );
+      });
+    }
 
     for (const stat of stats) {
       // Skip consecutive stats that share the same start time. Compare the raw
@@ -390,7 +493,7 @@ export function generateStatisticsChartData(
     const lastValues = prevValues;
     if (chartType === "line" && lastEndTime && lastValues) {
       statDataSets.forEach((d, i) => {
-        d.data!.push([lastEndTime.getTime(), ...lastValues[i]!]);
+        pushLineData(d, lastEndTime.getTime(), lastValues[i]!);
       });
     }
 
