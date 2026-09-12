@@ -83,8 +83,8 @@ export type Selector =
   | TTSVoiceSelector
   | SerialPortSelector
   | UiActionSelector
-  | UiClockDateFormatSelector
   | UiColorSelector
+  | UiDateFormatPartsSelector
   | UiStateContentSelector
   | UiTimeFormatSelector
   | BackupLocationSelector;
@@ -620,8 +620,8 @@ export interface UiActionSelector {
   } | null;
 }
 
-export interface UiClockDateFormatSelector {
-  ui_clock_date_format: {} | null;
+export interface UiDateFormatPartsSelector {
+  ui_date_format_parts: {} | null;
 }
 
 export interface UiColorExtraOption {

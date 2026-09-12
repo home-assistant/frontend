@@ -1,21 +1,21 @@
 import { assert, describe, it } from "vitest";
-import type { ClockCardDatePart } from "../../../../src/panels/lovelace/cards/types";
+import type { DateFormatPart } from "../../../../src/panels/lovelace/cards/types";
 import {
-  formatClockCardDate,
-  getClockCardDateConfig,
-  getClockCardDateTimeFormatOptions,
-  hasClockCardDate,
-} from "../../../../src/panels/lovelace/cards/clock/clock-date-format";
+  formatDateFromParts,
+  getDateFormatConfig,
+  getDateFormatIntlOptions,
+  hasDateFormatParts,
+} from "../../../../src/panels/lovelace/cards/date-format";
 
-describe("clock-date-format", () => {
+describe("date-format", () => {
   const date = new Date("2024-11-08T10:20:30.000Z");
 
   it("returns an empty config when date format is missing", () => {
-    assert.deepEqual(getClockCardDateConfig(), { parts: [] });
+    assert.deepEqual(getDateFormatConfig(), { parts: [] });
   });
 
   it("preserves literal token order", () => {
-    const config = getClockCardDateConfig({
+    const config = getDateFormatConfig({
       date_format: [
         "day-numeric",
         "separator-dot",
@@ -39,19 +39,19 @@ describe("clock-date-format", () => {
   });
 
   it("filters invalid date tokens", () => {
-    const config = getClockCardDateConfig({
+    const config = getDateFormatConfig({
       date_format: [
         "month-short",
         "invalid",
         "year-2-digit",
-      ] as unknown as ClockCardDatePart[],
+      ] as unknown as DateFormatPart[],
     });
 
     assert.deepEqual(config.parts, ["month-short", "year-2-digit"]);
   });
 
   it("builds Intl options from selected date tokens", () => {
-    const options = getClockCardDateTimeFormatOptions({
+    const options = getDateFormatIntlOptions({
       parts: [
         "weekday-short",
         "separator-slash",
@@ -71,18 +71,18 @@ describe("clock-date-format", () => {
   });
 
   it("reports whether any date part is configured", () => {
-    assert.equal(hasClockCardDate(), false);
-    assert.equal(hasClockCardDate({ date_format: [] }), false);
-    assert.equal(hasClockCardDate({ date_format: ["separator-dot"] }), true);
+    assert.equal(hasDateFormatParts(), false);
+    assert.equal(hasDateFormatParts({ date_format: [] }), false);
+    assert.equal(hasDateFormatParts({ date_format: ["separator-dot"] }), true);
     assert.equal(
-      hasClockCardDate({ date_format: ["separator-new-line"] }),
+      hasDateFormatParts({ date_format: ["separator-new-line"] }),
       true
     );
-    assert.equal(hasClockCardDate({ date_format: ["weekday-short"] }), true);
+    assert.equal(hasDateFormatParts({ date_format: ["weekday-short"] }), true);
   });
 
   it("formats output in configured part order with literal separators", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -101,7 +101,7 @@ describe("clock-date-format", () => {
   });
 
   it("uses separator only for the next gap", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -119,7 +119,7 @@ describe("clock-date-format", () => {
   });
 
   it("supports using the same separator style multiple times", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -138,7 +138,7 @@ describe("clock-date-format", () => {
   });
 
   it("renders separators even when no value follows", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: ["day-numeric", "separator-dash", "separator-dot"],
@@ -151,7 +151,7 @@ describe("clock-date-format", () => {
   });
 
   it("renders separators even when no value precedes", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: ["separator-slash", "separator-dot", "day-numeric"],
@@ -164,7 +164,7 @@ describe("clock-date-format", () => {
   });
 
   it("renders all consecutive separators between values", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -183,7 +183,7 @@ describe("clock-date-format", () => {
   });
 
   it("renders repeated separators without deduplication", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -202,7 +202,7 @@ describe("clock-date-format", () => {
   });
 
   it("renders separator-only configurations", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: ["separator-dash", "separator-slash", "separator-dot"],
@@ -215,7 +215,7 @@ describe("clock-date-format", () => {
   });
 
   it("supports inserting a new line between date values", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: [
@@ -233,7 +233,7 @@ describe("clock-date-format", () => {
   });
 
   it("allows multiple variants for the same date part", () => {
-    const result = formatClockCardDate(
+    const result = formatDateFromParts(
       date,
       {
         parts: ["month-short", "month-long", "year-numeric"],
@@ -246,15 +246,15 @@ describe("clock-date-format", () => {
   });
 
   it("filters invalid tokens when formatting", () => {
-    const config = getClockCardDateConfig({
+    const config = getDateFormatConfig({
       date_format: [
         "month-numeric",
         "invalid",
         "year-numeric",
-      ] as unknown as ClockCardDatePart[],
+      ] as unknown as DateFormatPart[],
     });
 
-    const result = formatClockCardDate(date, config, "en", "UTC");
+    const result = formatDateFromParts(date, config, "en", "UTC");
 
     assert.equal(result, "11 2024");
   });
