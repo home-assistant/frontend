@@ -9665,6 +9665,8 @@
             "subview": "Subview",
             "max_columns": "Max number of sections wide",
             "section_specifics": "Sections view specific settings",
+            "compact_section_placement": "Compact section placement",
+            "compact_section_placement_helper": "Process sections in order, placing each below the preceding section when it fits and shifting the remaining sections over. Takes precedence over dense section placement except in single-column layouts or when a section uses a custom row span.",
             "dense_section_placement": "Dense section placement",
             "dense_section_placement_helper": "Will try to fill gaps with sections that fit the gap. This may make section placement less predictable.",
             "top_margin": "Add additional space above",
