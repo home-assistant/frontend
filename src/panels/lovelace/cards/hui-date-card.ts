@@ -125,8 +125,9 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
       return;
     }
 
+    const now = new Date();
     this._dateText = computeDateText(
-      new Date(),
+      now,
       this.hass.locale,
       this.hass.config,
       this._config
@@ -137,7 +138,7 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
       this.hass.config,
       this._config
     );
-    const delay = computeMsUntilMidnight(new Date(), timeZone);
+    const delay = computeMsUntilMidnight(now, timeZone);
 
     this._midnightTimer = window.setTimeout(() => {
       this._scheduleMidnightRefresh();
@@ -221,14 +222,14 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     }
 
     .date-text {
-      direction: ltr;
+      direction: inherit;
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-xl);
       font-weight: var(--ha-font-weight-medium);
       line-height: var(--ha-line-height-condensed);
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: pre-line;
       max-width: 100%;
     }
 
