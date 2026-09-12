@@ -199,6 +199,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   private _computeStateColor = memoizeOne(
     (entity: HassEntity, color?: string) => {
+      // Ignore state and use a constant icon color
+      if (color === "none") {
+        return "var(--state-icon-color)";
+      }
+
       // Use custom color if active
       if (color) {
         return stateActive(entity) ? computeCssColor(color) : undefined;
@@ -285,6 +290,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
+    const featureColor =
+      this._config.color === "none" ? undefined : this._config.color;
     const domain = computeDomain(stateObj.entity_id);
 
     const stateDisplay = this._config.hide_state
@@ -373,7 +380,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
-                    .color=${this._config.color}
+                    .color=${featureColor}
                     .features=${features.inline}
                   ></hui-card-features>
                 `
@@ -387,7 +394,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     .columns=${features.columns}
                     .hass=${this.hass}
                     .context=${this._featureContext}
-                    .color=${this._config.color}
+                    .color=${featureColor}
                     .features=${features.below}
                   ></hui-card-features>
                 `
