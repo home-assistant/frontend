@@ -8,6 +8,8 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -25,6 +27,7 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
@@ -193,6 +196,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _name!: string;
 
+  @state() private _useDeviceName = false;
+
   @state() private _icon!: string;
 
   @state() private _entityId!: EntitySettingsState["entityId"];
@@ -254,6 +259,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    this._device = this.entry.device_id
+      ? this.hass.devices[this.entry.device_id]
+      : undefined;
     if (
       !changedProperties.has("entry") ||
       changedProperties.get("entry")?.id === this.entry.id
@@ -261,7 +269,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._name = this.entry.name || "";
+    this._name = this.entry.name || this._originalName;
+    this._useDeviceName =
+      !!this._device && !(this.entry.name ?? this._originalName);
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -271,9 +281,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
     this._hiddenBy = this.entry.hidden_by;
-    this._device = this.entry.device_id
-      ? this.hass.devices[this.entry.device_id]
-      : undefined;
     this._switchAsInvert = this.entry.options?.switch_as_x?.invert === true;
 
     const domain = computeDomain(this.entry.entity_id);
@@ -386,7 +393,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     this._dirtyState?.setState(
       {
-        name: this._name || null,
+        name: this._computeName(),
         icon: this._icon || null,
         entityId: this._entityId,
         areaId: this._areaId ?? null,
@@ -464,10 +471,48 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     const defaultPrecision =
       this.entry.options?.sensor?.suggested_display_precision ?? undefined;
+    const defaultName = this._originalName;
 
     return html`
       ${
-        this.hideName
+        !this.hideName && this._device
+          ? html`<ha-md-list-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.use_device_name"
+                )}
+                (${computeDeviceNameDisplay(
+                  this._device,
+                  this.hass.localize,
+                  this.hass.states
+                )})</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.change_device_settings",
+                  {
+                    link: html`<button
+                      class="link"
+                      @click=${this._openDeviceSettings}
+                    >
+                      ${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.change_device_name_link"
+                      )}
+                    </button>`,
+                  }
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .checked=${this._useDeviceName}
+                .disabled=${this.disabled}
+                @change=${this._useDeviceNameChanged}
+              ></ha-switch>
+            </ha-md-list-item>`
+          : nothing
+      }
+      ${
+        this.hideName || (this._device && this._useDeviceName)
           ? nothing
           : html`<ha-input
               inset-label
@@ -480,22 +525,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
               @input=${this._nameChanged}
             >
               ${
-                this._device
-                  ? html`<span slot="hint"
-                      >${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.device_name_tip",
-                        {
-                          link: html`<button
-                            class="link"
-                            @click=${this._resetNameAndOpenDeviceSettings}
-                          >
-                            ${this.hass.localize(
-                              "ui.dialogs.entity_registry.editor.open_device_settings"
-                            )}
-                          </button>`,
-                        }
-                      )}</span
-                    >`
+                this._name !== defaultName
+                  ? html`<ha-icon-button
+                      slot="end"
+                      .path=${mdiRestore}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.restore_name"
+                      )}
+                      .disabled=${this.disabled}
+                      @click=${this._restoreName}
+                    ></ha-icon-button>`
                   : nothing
               }
             </ha-input>`
@@ -1245,7 +1284,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     const params: Partial<EntityRegistryEntryUpdateParams> = {
-      name: this._name.trim() || null,
+      name: this._computeName(),
       icon: this._icon.trim() || null,
       area_id: this._areaId || null,
       labels: this._labels || [],
@@ -1692,9 +1731,30 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private _resetNameAndOpenDeviceSettings() {
-    this._name = this.entry.name || "";
-    this._openDeviceSettings();
+  private _useDeviceNameChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
+    this._useDeviceName = ev.currentTarget.checked;
+  }
+
+  private get _originalName(): string {
+    return String(this.entry.original_name ?? "");
+  }
+
+  private _restoreName(): void {
+    this._name = this._originalName;
+    if (this._device && !this._originalName) {
+      this._useDeviceName = true;
+    }
+  }
+
+  private _computeName(): string | null {
+    if (this.hideName) {
+      return this.entry.name;
+    }
+    if (this._device && this._useDeviceName) {
+      return this._originalName ? "" : null;
+    }
+    const name = this._name.trim();
+    return name && name !== this._originalName ? name : null;
   }
 
   private _openDeviceSettings() {
@@ -1805,6 +1865,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
         ha-input.name {
           --ha-input-start-max-width: 35%;
+          --ha-input-padding-bottom: 0;
         }
         ha-input.entityId ha-icon-button:last-child {
           margin-inline-start: 0;
