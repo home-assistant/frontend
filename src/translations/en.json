@@ -9829,6 +9829,8 @@
             "success": "View moved successfully"
           },
           "section": {
+            "automatic": "Automatic section",
+            "edit_automatic": "Edit automatic section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -9846,8 +9848,9 @@
           },
           "edit_section": {
             "header": "Edit section",
+            "tab_strategy": "Configuration",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
-            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "tab_appearance": "Appearance",
             "edit_ui": "[%key:ui::panel::lovelace::editor::edit_view::edit_ui%]",
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
@@ -11206,6 +11209,16 @@
             }
           },
           "strategy": {
+            "common_controls": {
+              "limit": "Maximum number of cards",
+              "limit_helper": "Defaults to 8 cards",
+              "entities": "Entities",
+              "include_entities": "Always include",
+              "include_entities_helper": "Shown first, in the order you choose, within the card limit",
+              "exclude_entities": "Exclude from suggestions",
+              "exclude_entities_helper": "These entities will not be suggested based on your activity",
+              "hide_empty": "Hide when empty"
+            },
             "original-states": {
               "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
