@@ -69,6 +69,111 @@ test.describe("Home Assistant Demo", () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test("Bluetooth panel renders its mocked live data", async ({ page }) => {
+    // The connectivity mocks reach the panel through two mechanisms the rest of
+    // the demo suite never exercises: they are registered lazily, on the first
+    // WS command the config panel sends, and their subscriptions emit the first
+    // message from a timeout so it lands after `createCollection` has reset its
+    // store. If either breaks, the panel still renders but stays empty.
+    await loadDemo(page, "/#/config/bluetooth");
+
+    const dashboard = page.locator("bluetooth-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    // Adapters come from the config entries, connections and advertisements
+    // from the subscriptions. A count of zero means the data never arrived.
+    const rows = dashboard.locator("ha-md-list-item div[slot='headline']");
+    await expect(rows).toHaveCount(3, { timeout: PANEL_TIMEOUT });
+    // Asserted over the list as a whole so a single empty count still fails.
+    await expect(dashboard.locator("ha-md-list")).not.toHaveText(/\b0\b/, {
+      timeout: QUICK_TIMEOUT,
+    });
+
+    // The adapter page is the one that reads the scanner details subscription.
+    // Only a local adapter gets a settings button; the two proxies are known to
+    // be remote from their scanner type, so without those details all three
+    // would render one.
+    await loadDemo(page, "/#/config/bluetooth/adapter-info");
+
+    const adapters = page.locator(
+      "bluetooth-adapter-info-page ha-md-list-item"
+    );
+    await expect(adapters).toHaveCount(3, { timeout: PANEL_TIMEOUT });
+    await expect(adapters.locator("ha-icon-button")).toHaveCount(1, {
+      timeout: QUICK_TIMEOUT,
+    });
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test("Matter panel renders its mocked topology", async ({ page }) => {
+    // Same lazily registered mocks and deferred subscription delivery as the
+    // Bluetooth test above, reached through the topology this time.
+    await loadDemo(page, "/#/config/matter");
+
+    const dashboard = page.locator("matter-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+    // Only filled in once the topology reports a node that is both a Matter
+    // device and unavailable, so it covers the fetch reaching the panel.
+    await expect(dashboard.locator("small.offline")).not.toBeEmpty({
+      timeout: PANEL_TIMEOUT,
+    });
+    // The device and entity counts come from the registries; a zero means the
+    // fixtures did not reach them.
+    await expect(dashboard.locator("ha-md-list").first()).not.toHaveText(
+      /\b0\b/,
+      { timeout: QUICK_TIMEOUT }
+    );
+
+    // The map reads the topology over a subscription rather than a fetch.
+    await loadDemo(page, "/#/config/matter/visualization");
+
+    const graph = page.locator("matter-network-visualization ha-network-graph");
+    await expect(graph).toBeAttached({ timeout: PANEL_TIMEOUT });
+    await expect
+      .poll(
+        () =>
+          graph.evaluate(
+            (element) =>
+              (element as HTMLElement & { data?: { nodes?: unknown[] } }).data
+                ?.nodes?.length ?? 0
+          ),
+        { timeout: PANEL_TIMEOUT }
+      )
+      .toBeGreaterThan(0);
+
+    // Diagnostics are per device: the Wi-Fi plug and the offline sensor must
+    // not report the Thread router's node. Read over the connection, because
+    // the device page only renders a subset of them.
+    const diagnostics = await page.evaluate(async () => {
+      const demo = document.querySelector("ha-demo") as HTMLElement & {
+        hass: { connection: { sendMessagePromise: (msg: unknown) => any } };
+      };
+      const read = (device_id: string) =>
+        demo.hass.connection
+          .sendMessagePromise({ type: "matter/node_diagnostics", device_id })
+          .then(
+            (result: { network_type: string; available: boolean }) =>
+              `${result.network_type}:${result.available}`,
+            () => "rejected"
+          );
+      return {
+        thread: await read("matter-kitchen-light"),
+        wifi: await read("matter-office-plug"),
+        offline: await read("matter-patio-sensor"),
+        unknown: await read("not-a-matter-device"),
+      };
+    });
+    expect(diagnostics).toEqual({
+      thread: "thread:true",
+      wifi: "wifi:true",
+      offline: "thread:false",
+      unknown: "rejected",
+    });
+
+    expectNoPageErrors(pageErrors);
+  });
+
   for (const colorScheme of ["light", "dark"] as const) {
     test(`unset theme remains light with ${colorScheme} system color scheme`, async ({
       page,

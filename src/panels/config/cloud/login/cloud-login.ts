@@ -226,6 +226,7 @@ export class CloudLogin extends LitElement {
       }
       this.email = "";
       fireEvent(this, "ha-refresh-cloud-status");
+      fireEvent(this, "cloud-logged-in");
     } catch (err: any) {
       const error = await this._handleCloudLoginError(
         err,
@@ -283,7 +284,9 @@ export class CloudLogin extends LitElement {
   }
 
   private _handleForgotPassword() {
-    fireEvent(this, "cloud-forgot-password");
+    fireEvent(this, "cloud-forgot-password", {
+      email: this.emailField?.value ?? this.email ?? "",
+    });
   }
 
   static get styles() {
@@ -325,5 +328,6 @@ declare global {
     "cloud-forgot-password": {
       email: string;
     };
+    "cloud-logged-in": undefined;
   }
 }

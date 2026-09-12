@@ -42,6 +42,7 @@ export const updateHistoryState = (patch: Record<string, unknown>) => {
  */
 export const replaceCurrentUrl = (url: string) => {
   mainWindow.history.replaceState(mainWindow.history.state, "", url);
+  rememberCurrentEntry();
 };
 
 /**
@@ -100,6 +101,9 @@ export const unregisterUnsavedChangesGuard = (guard: UnsavedChangesGuard) => {
   unsavedChangesGuards.delete(guard);
 };
 
+const dirtyGuards = (): UnsavedChangesGuard[] =>
+  [...unsavedChangesGuards].filter((guard) => guard.isDirty());
+
 let pendingUnsavedPrompt: Promise<boolean> | undefined;
 
 /**
@@ -109,6 +113,43 @@ let pendingUnsavedPrompt: Promise<boolean> | undefined;
  */
 let committedNavigations = 0;
 
+interface HistoryEntry {
+  path: string;
+  /** Path of the entry behind this one, stamped by `performNavigation`. */
+  from?: string;
+}
+
+const readEntry = (): HistoryEntry => ({
+  path: currentPath(),
+  from: mainWindow.history.state?.from,
+});
+
+/**
+ * How far a pop moved from `entry`, signed, or undefined when it cannot be told:
+ * the entry behind us is the one our `from` names, the one ahead is the one
+ * whose `from` names us. A stack with the same path on both sides matches both,
+ * and back is then by far the likelier press.
+ */
+const popStep = (entry: HistoryEntry): number | undefined => {
+  if (currentPath() === entry.from) {
+    return -1;
+  }
+  return mainWindow.history.state?.from === entry.path ? 1 : undefined;
+};
+
+let currentEntry: HistoryEntry = readEntry();
+
+const rememberCurrentEntry = () => {
+  currentEntry = readEntry();
+};
+
+/** Where the pops held while a prompt is open left us. */
+let heldEntry: HistoryEntry | undefined;
+let heldSteps = 0;
+
+/** The entry `goBack()` asked to leave; the pop it triggers is not prompted. */
+let popRequestedFromPath: string | undefined;
+
 /**
  * Asks each dirty guard whether navigation may proceed. Returns true when
  * nothing is dirty or every prompt was confirmed. Concurrent navigations
@@ -117,16 +158,14 @@ let committedNavigations = 0;
  * its save action) cannot deadlock on its own promise.
  */
 const ensureUnsavedChangesConfirmed = (): Promise<boolean> => {
-  const dirtyGuards = [...unsavedChangesGuards].filter((guard) =>
-    guard.isDirty()
-  );
-  if (!dirtyGuards.length) {
+  const guards = dirtyGuards();
+  if (!guards.length) {
     return Promise.resolve(true);
   }
   if (!pendingUnsavedPrompt) {
     pendingUnsavedPrompt = (async () => {
       try {
-        for (const guard of dirtyGuards) {
+        for (const guard of guards) {
           // eslint-disable-next-line no-await-in-loop
           if (!(await guard.prompt())) {
             return false;
@@ -185,6 +224,7 @@ const performNavigation = async (path: string, options?: NavigateOptions) => {
     );
   }
 
+  rememberCurrentEntry();
   fireEvent(mainWindow, "location-changed", {
     replace,
   });
@@ -235,9 +275,75 @@ export const goBack = async (fallbackPath?: string): Promise<void> => {
   // Read after closing dialogs: their history entries are popped by then, so
   // this is the state of the page entry.
   if (canGoBack()) {
+    popRequestedFromPath = currentEntry.path;
     mainWindow.history.back();
     return;
   }
 
   await performNavigation(fallbackPath || "/", { replace: true });
+};
+
+/**
+ * Handles a history pop before the router acts on it. A pop cannot be cancelled,
+ * so one away from a page with unsaved changes holds the route and prompts;
+ * `resume` runs once the user agrees to leave. The prompt must add no history
+ * entry of its own, or the entries the pop left would be truncated.
+ */
+export const handleHistoryPop = (resume: () => void): void => {
+  if (heldEntry) {
+    const heldStep = popStep(heldEntry);
+    if (heldStep !== undefined) {
+      heldSteps += heldStep;
+      heldEntry = readEntry();
+    }
+    return;
+  }
+
+  if (currentPath() === currentEntry.path) {
+    // A dialog's history entry was popped, not a page.
+    rememberCurrentEntry();
+    resume();
+    return;
+  }
+
+  const step = popStep(currentEntry);
+  if (
+    popRequestedFromPath === currentEntry.path ||
+    // Not a pop we could undo, so do not hold it.
+    step === undefined ||
+    !dirtyGuards().length
+  ) {
+    popRequestedFromPath = undefined;
+    rememberCurrentEntry();
+    committedNavigations += 1;
+    resume();
+    return;
+  }
+
+  heldSteps = step;
+  heldEntry = readEntry();
+  const navigationsAtPop = committedNavigations;
+  ensureUnsavedChangesConfirmed().then(
+    (confirmed) => {
+      const steps = heldSteps;
+      heldEntry = undefined;
+      if (committedNavigations !== navigationsAtPop) {
+        // A navigation landed while the prompt was open.
+        return;
+      }
+      if (!confirmed) {
+        // go(0) would reload the document, and at zero we are already back.
+        if (steps) {
+          mainWindow.history.go(-steps);
+        }
+        return;
+      }
+      rememberCurrentEntry();
+      committedNavigations += 1;
+      resume();
+    },
+    () => {
+      heldEntry = undefined;
+    }
+  );
 };

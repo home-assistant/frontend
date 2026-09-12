@@ -52,6 +52,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.entityName", weight: 10 },
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
+  { name: "search_labels.parentDeviceName", weight: 6 },
   { name: "search_labels.areaName", weight: 6 },
   { name: "search_labels.domainName", weight: 4 },
   { name: "statisticId", weight: 3 },
@@ -292,17 +293,27 @@ export class HaStatisticPicker extends LitElement {
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
 
-        const [entityName, deviceName, areaName] = computeEntityNameList(
-          stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        );
+        const [entityName, deviceName, parentDeviceName, areaName] =
+          computeEntityNameList(
+            stateObj,
+            [
+              { type: "entity" },
+              { type: "device" },
+              { type: "parent_device" },
+              { type: "area" },
+            ],
+            hass.entities,
+            hass.devices,
+            hass.areas,
+            hass.floors
+          );
 
         const primary = entityName || deviceName || id;
-        const secondary = [areaName, entityName ? deviceName : undefined]
+        const secondary = [
+          areaName,
+          parentDeviceName,
+          entityName ? deviceName : undefined,
+        ]
           .filter(Boolean)
           .join(isRTL ? " ◂ " : " ▸ ");
 
@@ -318,6 +329,7 @@ export class HaStatisticPicker extends LitElement {
           search_labels: {
             entityName: entityName || null,
             deviceName: deviceName || null,
+            parentDeviceName: parentDeviceName || null,
             areaName: areaName || null,
             friendlyName,
           },
@@ -395,14 +407,20 @@ export class HaStatisticPicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const [entityName, deviceName, parentDeviceName, areaName] =
+        computeEntityNameList(
+          stateObj,
+          [
+            { type: "entity" },
+            { type: "device" },
+            { type: "parent_device" },
+            { type: "area" },
+          ],
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        );
 
       const isRTL = computeRTL(
         this.hass.language,
@@ -410,7 +428,11 @@ export class HaStatisticPicker extends LitElement {
       );
 
       const primary = entityName || deviceName || statisticId;
-      const secondary = [areaName, entityName ? deviceName : undefined]
+      const secondary = [
+        areaName,
+        parentDeviceName,
+        entityName ? deviceName : undefined,
+      ]
         .filter(Boolean)
         .join(isRTL ? " ◂ " : " ▸ ");
       const friendlyName = computeStateName(stateObj); // Keep this for search
@@ -427,6 +449,7 @@ export class HaStatisticPicker extends LitElement {
         search_labels: {
           entityName: entityName || null,
           deviceName: deviceName || null,
+          parentDeviceName: parentDeviceName || null,
           areaName: areaName || null,
           friendlyName,
           statisticId,

@@ -1,38 +1,55 @@
 #!/usr/bin/env node
 // Script to print Babel plugins and Core JS polyfills that will be used by browserslist environments
 
-import { version as babelVersion } from "@babel/core";
-import presetEnv from "@babel/preset-env";
-import compilationTargets from "@babel/helper-compilation-targets";
+import { transformSync } from "@babel/core";
+import compilationTargets, {
+  getInclusionReasons,
+} from "@babel/helper-compilation-targets";
 import coreJSCompat from "core-js-compat";
-import { logPlugin } from "@babel/preset-env/lib/debug.js";
-import shippedPolyfills from "../node_modules/babel-plugin-polyfill-corejs3/lib/shipped-proposals.js";
 import { babelOptions } from "./bundle.cjs";
 
 const detailsOpen = (heading) =>
   `<details>\n<summary><h4>${heading}</h4></summary>\n`;
 const detailsClose = "</details>\n";
 
-const dummyAPI = {
-  version: babelVersion,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  assertVersion: () => {},
-  caller: (callback) =>
-    callback({
-      name: "Dummy Bundler",
-      supportsStaticESM: true,
-      supportsDynamicImport: true,
-      supportsTopLevelAwait: true,
-      supportsExportNamespaceFrom: true,
-    }),
-  targets: () => ({}),
+// Copied from @babel/preset-env's internal `logPlugin`, which Babel 8 no
+// longer exposes (the package rolls up into lib/index.js and exports nothing
+// but the preset). Prints an item with the targets that require it.
+const logPlugin = (item, targetVersions, list) => {
+  const filteredList = getInclusionReasons(item, targetVersions, list);
+  const support = list[item];
+  if (!support) {
+    console.log(`  ${item}`);
+    return;
+  }
+  let formattedTargets = `{`;
+  let first = true;
+  for (const target of Object.keys(filteredList)) {
+    if (!first) formattedTargets += `,`;
+    first = false;
+    formattedTargets += ` ${target}`;
+    if (support[target]) formattedTargets += ` < ${support[target]}`;
+  }
+  formattedTargets += ` }`;
+  console.log(`  ${item} ${formattedTargets}`);
 };
+
+// Copied from babel-plugin-polyfill-corejs3's generated
+// corejs3ShippedProposalsList, which v1 no longer exposes (it is inlined in
+// the package's rolled-up bundle).
+const shippedProposalsList = new Set([
+  "esnext.array.group",
+  "esnext.array.group-to-map",
+  "esnext.iterator.zip",
+  "esnext.iterator.zip-keyed",
+  "esnext.symbol.metadata",
+]);
 
 // Generate filter function based on proposal/method inputs
 // Copied and adapted from babel-plugin-polyfill-corejs3/esm/index.mjs
 const polyfillFilter = (method, proposals, shippedProposals) => (name) => {
   if (proposals || method === "entry-global") return true;
-  if (shippedProposals && shippedPolyfills.default.has(name)) {
+  if (shippedProposals && shippedProposalsList.has(name)) {
     return true;
   }
   if (name.startsWith("esnext.")) {
@@ -47,7 +64,9 @@ const polyfillFilter = (method, proposals, shippedProposals) => (name) => {
 for (const buildType of ["Modern", "Legacy"]) {
   const browserslistEnv = buildType.toLowerCase();
   const babelOpts = babelOptions({ latestBuild: browserslistEnv === "modern" });
-  const presetEnvOpts = babelOpts.presets[0][1];
+  const presetEnvOpts = babelOpts.presets.find(
+    (preset) => Array.isArray(preset) && preset[0] === "@babel/preset-env"
+  )?.[1];
   // Core-JS polyfills are injected by babel-plugin-polyfill-corejs3 (Babel 8
   // removed preset-env's `useBuiltIns`), so read its options here.
   const corejsOpts = babelOpts.plugins.find(
@@ -55,22 +74,38 @@ for (const buildType of ["Modern", "Legacy"]) {
       Array.isArray(plugin) && plugin[0] === "babel-plugin-polyfill-corejs3"
   )?.[1];
 
-  // Invoking preset-env in debug mode will log the included plugins
+  // Transforming an empty file with preset-env in debug mode logs the included
+  // plugins. The caller declares the same capabilities babel-loader does, so
+  // plugins gated on bundler support (e.g. transform-export-namespace-from)
+  // match the build.
+  presetEnvOpts.debug = true;
   console.log(detailsOpen(`${buildType} Build Babel Plugins`));
-  presetEnv.default(dummyAPI, {
-    ...presetEnvOpts,
-    browserslistEnv,
-    debug: true,
+  transformSync("", {
+    ...babelOpts,
+    configFile: false,
+    filename: "audit.js",
+    caller: {
+      name: "list-plugins-and-polyfills",
+      supportsStaticESM: true,
+      supportsDynamicImport: true,
+      supportsTopLevelAwait: true,
+      supportsExportNamespaceFrom: true,
+    },
   });
   console.log(detailsClose);
 
   // Manually log the Core-JS polyfills using the same technique
   if (corejsOpts) {
     console.log(detailsOpen(`${buildType} Build Core-JS Polyfills`));
-    const targets = compilationTargets.default(babelOpts?.targets, {
+    const targets = compilationTargets(babelOpts.targets, {
       browserslistEnv,
     });
-    const polyfillList = coreJSCompat({ targets }).list.filter(
+    // `version` limits the list to modules the installed core-js ships,
+    // mirroring the provider's own filtering.
+    const polyfillList = coreJSCompat({
+      targets,
+      version: corejsOpts.version,
+    }).list.filter(
       polyfillFilter(
         corejsOpts.method,
         corejsOpts.proposals,

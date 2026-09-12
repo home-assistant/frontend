@@ -26,6 +26,7 @@ import {
 import {
   appRouteSmokeGroups,
   configLinks,
+  connectivityLinks,
   moreInfoViewElements,
 } from "./app/src/smoke";
 
@@ -173,11 +174,14 @@ test("keeps the launch screen until initial panel content renders", async ({
     resolvers: (
       | "rejectMediaBrowse"
       | "resolveCalendarRegistry"
+      | "resolveConnectivityConfigEntries"
       | "resolveConfigEntries"
       | "resolveConfigEntriesInProgress"
       | "resolveGeneratedDashboard"
       | "resolveLovelaceConfig"
       | "resolveMediaBrowse"
+      | "resolveSerialPorts"
+      | "resolveStorageHostInfo"
     )[];
   }[] = [
     {
@@ -200,6 +204,27 @@ test("keeps the launch screen until initial panel content renders", async ({
       loadingSelector: "ha-config-integrations-dashboard hass-loading-screen",
       readySelector: "ha-config-integrations-dashboard hass-tabs-subpage",
       resolvers: ["resolveConfigEntries", "resolveConfigEntriesInProgress"],
+    },
+    {
+      name: "connectivity",
+      path: "/?scenario=delayed-connectivity#/config/connectivity",
+      loadingSelector: "ha-config-connectivity ha-card",
+      readySelector: "ha-config-connectivity ha-list-item-button",
+      resolvers: ["resolveConnectivityConfigEntries"],
+    },
+    {
+      name: "serial",
+      path: "/?scenario=delayed-serial#/config/serial",
+      loadingSelector: "serial-config-dashboard ha-spinner",
+      readySelector: "serial-config-dashboard .empty",
+      resolvers: ["resolveSerialPorts"],
+    },
+    {
+      name: "storage",
+      path: "/?scenario=delayed-storage#/config/storage",
+      loadingSelector: "ha-config-section-storage",
+      readySelector: "ha-config-section-storage hass-subpage",
+      resolvers: ["resolveStorageHostInfo"],
     },
     {
       name: "media browser error",
@@ -389,8 +414,10 @@ test.describe("Light more-info dialog", () => {
   }
 });
 
-test.describe("Weather more-info deep link", () => {
-  test("opens and synchronizes the selected forecast", async ({ page }) => {
+test.describe("Weather more-info forecast", () => {
+  test("switches the rendered forecast when a tab is selected", async ({
+    page,
+  }) => {
     await goToPanel(
       page,
       "/?scenario=weather-more-info&more-info-entity-id=weather.test_weather&more-info-view=info#/lovelace"
@@ -406,40 +433,25 @@ test.describe("Weather more-info deep link", () => {
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
     ).toBeAttached();
 
-    await page.locator("ha-test").evaluate((el) => {
-      el.dispatchEvent(
-        new CustomEvent("hass-more-info", {
-          detail: {
-            entityId: "weather.test_weather",
-            hash: new URLSearchParams({ forecast: "hourly" }),
-          },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    // Only the hourly and twice daily forecasts group their items under a day
+    // header, so it tells the rendered forecast apart from the daily one.
+    await expect(weather.locator(".forecast-day-header")).toHaveCount(0);
+
+    await weather
+      .locator("ha-tab-group-tab")
+      .filter({ hasText: "Hourly" })
+      .click();
 
     await expect(
       weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Hourly" })
     ).toBeAttached();
+    await expect(weather.locator(".forecast-day-header").first()).toBeVisible();
 
     await dialog.getByRole("button", { name: "History" }).click();
     await expect(page).toHaveURL(/more-info-view=history/);
 
     await dialog.getByRole("button", { name: "Back" }).click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
-
-    await weather
-      .locator("ha-tab-group-tab")
-      .filter({ hasText: "Daily" })
-      .click();
-
-    await expect(
-      weather.locator("ha-tab-group-tab[active]").filter({ hasText: "Daily" })
-    ).toBeAttached();
+    await expect(page).toHaveURL(/more-info-view=info/);
 
     await dialog.getByRole("button", { name: "Close" }).click();
     await expect(dialog).toBeHidden();
@@ -603,5 +615,21 @@ test.describe("Config panel", () => {
     "config links point to expected pages",
     configLinks,
     getDashboard
+  );
+
+  // Reached by clicking through from the dashboard: the e2e harness only
+  // resolves config panel translations once the dashboard has mounted.
+  const getConnectivity = async (page) => {
+    const dashboard = await getDashboard(page);
+    await dashboard.getByRole("link", { name: /^Connectivity\b/ }).click();
+    const connectivity = page.locator("ha-config-connectivity");
+    await expect(connectivity).toBeAttached({ timeout: PANEL_TIMEOUT });
+    return connectivity;
+  };
+
+  defineLinkSmokeTests(
+    "connectivity links point to expected pages",
+    connectivityLinks,
+    getConnectivity
   );
 });

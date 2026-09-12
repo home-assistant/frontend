@@ -23,7 +23,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
+import type { VisibilityCondition } from "../../common/validate-condition";
 import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type { LovelaceGenericElementEditor } from "../../types";
 import { ACTION_RELATED_CONTEXT } from "../../components/hui-action-editor";
@@ -277,7 +277,7 @@ export class HuiHeadingEntityEditor
       return;
     }
 
-    const conditions = ev.detail.value as Condition[];
+    const conditions = ev.detail.value as VisibilityCondition[];
 
     const newConfig: EntityHeadingBadgeConfig = {
       ...this._config,

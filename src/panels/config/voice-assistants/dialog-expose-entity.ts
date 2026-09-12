@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeEntityNameList } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -85,6 +86,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
     const entities = this._filterEntities(
       this.params.exposedEntities,
+      this._registries,
       this._filter
     );
 
@@ -172,13 +174,14 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
     listItem.selected = !listItem.selected;
   }
 
-  private _filterChanged(e: InputEvent) {
-    this._filter = (e.target as HaInputSearch).value;
+  private _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
+    this._filter = e.target.value;
   }
 
   private _filterEntities = memoizeOne(
     (
       exposedEntities: Record<string, ExposeEntitySettings>,
+      registries: ContextType<typeof registriesContext>,
       filter?: string
     ): FilteredEntity[] => {
       const lowerFilter = filter?.toLowerCase();
@@ -195,11 +198,16 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
         const nameList = computeEntityNameList(
           entity,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this._registries.entities,
-          this._registries.devices,
-          this._registries.areas,
-          this._registries.floors
+          [
+            { type: "entity" },
+            { type: "device" },
+            { type: "parent_device" },
+            { type: "area" },
+          ],
+          registries.entities,
+          registries.devices,
+          registries.areas,
+          registries.floors
         );
 
         if (!lowerFilter) {
@@ -218,9 +226,14 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
           continue;
         }
 
-        const [, deviceName, areaName] = nameList;
+        const [, deviceName, parentDeviceName, areaName] = nameList;
 
         if (deviceName?.toLowerCase().includes(lowerFilter)) {
+          result.push({ entity, nameList });
+          continue;
+        }
+
+        if (parentDeviceName?.toLowerCase().includes(lowerFilter)) {
           result.push({ entity, nameList });
           continue;
         }
@@ -237,14 +250,18 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
 
   private _renderItem = (item: FilteredEntity) => {
     const { entity: entityState, nameList } = item;
-    const [entityName, deviceName, areaName] = nameList;
+    const [entityName, deviceName, parentDeviceName, areaName] = nameList;
 
     const isRTL = computeRTL(
       this._i18n.language,
       this._i18n.translationMetadata.translations
     );
     const primary = entityName || deviceName || entityState.entity_id;
-    const context = [areaName, entityName ? deviceName : undefined]
+    const context = [
+      areaName,
+      parentDeviceName,
+      entityName ? deviceName : undefined,
+    ]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
     const showEntityId = this._config?.userData?.showEntityIdPicker;

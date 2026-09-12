@@ -49,6 +49,7 @@ const LOAD_ELEMENTS = {
   selector: () => import("./ha-selector-selector"),
   serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
+  state_class: () => import("./ha-selector-state-class"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
   target: () => import("./ha-selector-target"),

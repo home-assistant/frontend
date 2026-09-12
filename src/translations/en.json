@@ -224,9 +224,11 @@
       },
       "home-summary": {
         "all_lights_off": "All off",
+        "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
         "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
         "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "count_warnings": "{count} {count, plural,\n one {warning}\n other {warnings}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
@@ -325,8 +327,10 @@
           "pause": "Pause",
           "cancel": "Cancel",
           "finish": "Finish",
+          "restart": "Restart",
           "set": "Set"
-        }
+        },
+        "presets": "Presets"
       },
       "vacuum": {
         "actions": {
@@ -663,14 +667,17 @@
             "options": {
               "each": {
                 "label": "Each",
+                "row_label": "each of",
                 "description": "Triggers once for every target that changes"
               },
               "first": {
                 "label": "First",
+                "row_label": "first of",
                 "description": "Triggers the first time any target changes"
               },
               "all": {
                 "label": "All",
+                "row_label": "all of",
                 "description": "Triggers once all targets have changed"
               }
             }
@@ -679,10 +686,12 @@
             "options": {
               "any": {
                 "label": "Any",
+                "row_label": "any of",
                 "description": "Is true if any target matches the desired state"
               },
               "all": {
                 "label": "All",
+                "row_label": "all of",
                 "description": "Is true if all targets match the desired state"
               }
             }
@@ -764,6 +773,7 @@
           "types": {
             "floor": "Floor",
             "area": "Area",
+            "parent_device": "[%key:ui::components::device-picker::parent_device%]",
             "device": "Device",
             "entity": "Entity",
             "area_missing": "No area assigned",
@@ -922,6 +932,7 @@
         "no_devices": "No devices available",
         "no_match": "No devices found for {term}",
         "device": "Device",
+        "parent_device": "Parent device",
         "unnamed_device": "Unnamed device",
         "no_area": "No area",
         "placeholder": "Select a device",
@@ -1147,7 +1158,11 @@
         "category": "Category"
       },
       "map": {
-        "error": "Unable to load map"
+        "error": "Unable to load map",
+        "editing_unavailable": "Dragging markers and resizing zones aren't available on this map.",
+        "location": "Location",
+        "radius": "Radius in meters",
+        "radius_of": "Radius of {name} in meters"
       },
       "statistics_charts": {
         "loading_statistics": "Loading statistics…",
@@ -1178,12 +1193,12 @@
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
-        "entity": "Related entities",
-        "group": "Part of the following groups",
-        "scene": "Part of the following scenes",
-        "script": "Part of the following scripts",
-        "automation": "Part of the following automations",
-        "blueprint": "Using blueprint"
+        "entity": "Entities",
+        "group": "Groups",
+        "scene": "Scenes",
+        "script": "Scripts",
+        "automation": "Automations",
+        "blueprint": "Blueprint"
       },
       "data-table": {
         "search": "Search",
@@ -1452,6 +1467,12 @@
         "test_on": "Turn on testing",
         "test_off": "Turn off testing"
       },
+      "state-class-picker": {
+        "state_class": "State class",
+        "add": "Add state class",
+        "no_state_classes": "No state classes available",
+        "no_match": "No state classes found for {term}"
+      },
       "state-content-picker": {
         "state": "State",
         "name": "Name",
@@ -1460,6 +1481,7 @@
         "remaining_time": "Remaining time",
         "install_status": "Install status",
         "device_name": "Device name",
+        "parent_device_name": "Parent device name",
         "area_name": "Area name",
         "floor_name": "Floor name"
       },
@@ -1633,7 +1655,8 @@
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
-            "ai-tasks": "[%key:ui::panel::config::ai_tasks::caption%]"
+            "connectivity": "[%key:ui::panel::config::dashboard::connectivity::main%]",
+            "ai": "[%key:ui::panel::config::ai::caption%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -1684,13 +1707,15 @@
           "person": "Edit person"
         },
         "details": "Details",
+        "entity": "Entity",
+        "state": "State",
+        "context": "Context",
         "floor": "Floor",
-        "entity_id": "Entity ID",
+        "parent_device": "[%key:ui::components::device-picker::parent_device%]",
+        "entity_id": "ID",
         "copy_value": "Copy {label}: {value}",
         "labels": "Labels",
         "toggle_yaml_mode": "Toggle YAML mode",
-        "translated": "Translated",
-        "raw": "Raw",
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
@@ -1870,6 +1895,7 @@
           "commands": "Lawn mower commands:",
           "start_mowing": "Start mowing",
           "pause": "Pause",
+          "stop": "Stop",
           "dock": "Return to dock"
         },
         "valve": {
@@ -1898,6 +1924,27 @@
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
+        },
+        "timer": {
+          "edit_mode": "Edit presets",
+          "reset_favorites": "Remove all presets",
+          "reset_favorites_text": "Do you want to remove all presets for this timer?",
+          "copy_favorites": "Copy presets to...",
+          "copy_favorites_helper": "Select one or more timers to receive the copied presets from this timer.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
+          "preset": {
+            "set": "Start timer for {value}",
+            "edit": "Edit preset {value}",
+            "delete": "Delete preset {number}",
+            "delete_confirm_title": "Delete preset?",
+            "delete_confirm_text": "This preset will be permanently deleted.",
+            "delete_confirm_action": "[%key:ui::common::delete%]",
+            "add": "Add new preset",
+            "edit_title": "Edit preset",
+            "add_title": "Add preset",
+            "duration": "[%key:ui::dialogs::helper_settings::timer::duration%]",
+            "duration_error": "The duration must be at least one second."
+          }
         }
       },
       "entity_registry": {
@@ -2716,6 +2763,10 @@
             "main": "Dashboards",
             "secondary": "Organize how you interact with your home"
           },
+          "connectivity": {
+            "main": "Connectivity",
+            "secondary": "Communication protocols and radios for your devices"
+          },
           "voice_assistants": {
             "main": "Voice assistants",
             "secondary": "Manage your voice assistants"
@@ -2790,6 +2841,10 @@
           "serial": {
             "main": "Serial",
             "secondary": "Serial ports and the integrations and apps using them"
+          },
+          "modbus": {
+            "main": "Modbus",
+            "secondary": "Industrial devices sharing a serial or network link"
           },
           "knx": {
             "main": "KNX",
@@ -2906,6 +2961,21 @@
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
           "gen_image_description": "Generate images."
+        },
+        "mcp": {
+          "header": "Model Context Protocol",
+          "description": "Add one of the URLs below to your AI agent. See the {documentation_link} for agent-specific instructions.",
+          "documentation": "documentation",
+          "enable": "[%key:ui::common::enable%]",
+          "disable": "[%key:ui::common::disable%]",
+          "disable_confirm_title": "Disable the Model Context Protocol server?",
+          "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
+          "your_api_header": "Your MCP API",
+          "apis_header": "Individual MCP APIs",
+          "copy_url": "Copy URL",
+          "configure": "Configure",
+          "error_load": "Failed to load the Model Context Protocol configuration",
+          "error_delete_entry": "Failed to disable the Model Context Protocol server"
         },
         "apps": {
           "caption": "Apps",
@@ -3123,8 +3193,9 @@
               "view_supervisor_logs": "View supervisor logs"
             },
             "uninstall_dialog": {
-              "title": "Uninstall {name}?",
-              "remove_data": "Also remove app data",
+              "title": "Uninstall app",
+              "text": "{name} and everything in its private data folder will be permanently deleted, including any databases, credentials, and other internal state it kept there.",
+              "remove_config": "Also delete the app's configuration folder (if used)",
               "uninstall": "Uninstall"
             },
             "restart_dialog": {
@@ -5058,10 +5129,7 @@
               }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud",
-              "register": {
-                "confirm_email": "Confirm email"
-              }
+              "title": "The power of Home Assistant Cloud"
             },
             "local": {
               "title": "Installing apps",
@@ -5203,6 +5271,12 @@
               "label": "Description",
               "placeholder": "Optional description",
               "add": "Add description"
+            },
+            "row_options": {
+              "for": "for {duration}",
+              "offset_before": "{offset} before",
+              "offset_after": "{offset} after",
+              "timeout": "timeout {duration}"
             },
             "note": {
               "label": "Note",
@@ -6501,9 +6575,7 @@
             "auto_login_failed": "We couldn't sign you in automatically. Confirm your email, then sign in.",
             "nothing_arrived": "Nothing arrived? Check your spam folder, or {resend_link}.",
             "resend_link": "resend the confirmation email",
-            "resend_confirm_email": "Resend confirmation email",
             "clicked_confirm": "I opened the confirmation link",
-            "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
             "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
@@ -7574,6 +7646,7 @@
           "consumer_not_running": "{name} (not running)",
           "can_be_used_with": "Can be used with {integrations}",
           "discovered_by": "Discovered by {integration}, set it up",
+          "used_by_modbus": "Used by Modbus",
           "port_information": "Port information",
           "fields": {
             "device": "Device",
@@ -7586,6 +7659,26 @@
             "vid": "Vendor ID",
             "pid": "Product ID",
             "bcd_device": "Device revision"
+          }
+        },
+        "modbus": {
+          "title": "Modbus",
+          "status_summary": "{units, plural,\n one {# unit}\n other {# units}\n} on {total, plural,\n one {# connection}\n other {# connections}\n}",
+          "connections": "Connections",
+          "connections_description": "Every integration talking to a Modbus device shares one connection to it.",
+          "state_connected": "Connected",
+          "state_not_connected": "Not connected",
+          "state_open": "Open",
+          "state_closed": "Closed",
+          "no_connections": "No Modbus connections",
+          "no_connections_description": "A connection opens as soon as an integration starts talking to a Modbus device.",
+          "loading_error": "Failed to load Modbus connections",
+          "units": "{count, plural,\n one {Unit {ids}}\n other {Units {ids}}\n}",
+          "view_serial_port": "View this port under Serial",
+          "transport": {
+            "tcp": "TCP",
+            "udp": "UDP",
+            "serial": "Serial"
           }
         },
         "dhcp": {
@@ -8506,6 +8599,7 @@
             "add_device": "Add device",
             "status_online": "Online",
             "status_offline": "Offline",
+            "devices_offline": "{count} offline",
             "my_network_title": "My network",
             "show_map": "[%key:ui::panel::config::bluetooth::show_map%]",
             "devices": "{count, plural,\n  one {# device}\n  other {# devices}\n}",
@@ -8817,25 +8911,37 @@
           "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
           "download_device_info": "Preview device analytics"
         },
-        "ai_tasks": {
-          "caption": "AI tasks",
-          "description": "Configure AI suggestions and task preferences"
+        "ai": {
+          "caption": "AI",
+          "description": "Configure AI suggestions, task preferences, and the Model Context Protocol server"
         },
         "entity_id_format": {
           "caption": "Entity ID format",
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
-            "preview": "Preview",
+            "preview": "Examples",
             "preview_error": "Failed to generate preview",
+            "unused_part": "{name} (not used in format)",
             "reset": "Reset to default",
             "examples": {
-              "area": "Living room",
-              "device": "Thermostat",
-              "entity": "Temperature",
-              "floor": "Ground floor"
+              "thermostat": {
+                "name": "Thermostat",
+                "floor": "Ground floor",
+                "area": "Living room",
+                "device": "Thermostat",
+                "entity": "Temperature"
+              },
+              "power_strip": {
+                "name": "Power strip",
+                "floor": "First floor",
+                "area": "Office",
+                "parent_device": "Power strip",
+                "device": "Outlet 1",
+                "entity": "Power"
+              }
             },
             "editor": {
               "label": "Format",
@@ -9156,6 +9262,7 @@
           },
           "home": {
             "summary_list": {
+              "alerts": "Alerts",
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
@@ -9818,13 +9925,15 @@
                 "headline": "Current visibility: Hidden",
                 "supporting": "Not all visibility conditions are met"
               },
+              "unknown": {
+                "headline": "Current visibility: Unknown",
+                "supporting": "Waiting for the result of one or more conditions"
+              },
               "invalid": {
-                "headline": "Visibility status unknown",
+                "headline": "Invalid configuration",
                 "supporting": "One or more conditions have an invalid configuration"
               }
             },
-            "invalid_config_title": "Invalid configuration",
-            "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
               "view_columns": {
                 "label": "Number of columns",
@@ -9878,6 +9987,18 @@
               },
               "and": {
                 "label": "And"
+              },
+              "template": {
+                "label": "Template"
+              },
+              "sun": {
+                "label": "Sun"
+              },
+              "zone": {
+                "label": "Zone"
+              },
+              "device": {
+                "label": "Device"
               }
             }
           },
@@ -10170,6 +10291,7 @@
               "group_by_area": "Group by area",
               "max_devices": "Maximum devices per parent",
               "max_devices_description": "Devices beyond this limit are grouped into an \"Other\" node, smallest first. The limit applies per upstream device, not per floor or area. Defaults to 20.",
+              "show_values": "Show values",
               "layout": "Graph direction",
               "layout_directions": {
                 "auto": "Automatic",
@@ -10916,6 +11038,26 @@
                   "reset": "Reset"
                 }
               },
+              "timer-actions": {
+                "label": "Timer actions",
+                "customize": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::customize%]",
+                "actions": "[%key:ui::panel::lovelace::editor::features::types::counter-actions::actions%]",
+                "actions_list": {
+                  "start": "[%key:ui::card::timer::actions::start%]",
+                  "pause": "[%key:ui::card::timer::actions::pause%]",
+                  "cancel": "[%key:ui::card::timer::actions::cancel%]",
+                  "finish": "[%key:ui::card::timer::actions::finish%]"
+                }
+              },
+              "timer-presets": {
+                "label": "Timer presets",
+                "description": "This feature uses the timer's presets. To manage them, open the timer's more info dialog and select 'Edit presets' in the overflow menu.",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]"
+                }
+              },
               "fan-preset-modes": {
                 "label": "Fan preset modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
@@ -10941,6 +11083,11 @@
               },
               "select-options": {
                 "label": "Select options",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
+                "style_list": {
+                  "dropdown": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style_list::dropdown%]",
+                  "buttons": "Buttons"
+                },
                 "options": "Options",
                 "customize_options": "Customize options"
               },
@@ -10959,7 +11106,12 @@
                 "label": "Target temperature"
               },
               "target-humidity": {
-                "label": "Target humidity"
+                "label": "Target humidity",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                }
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
@@ -10977,6 +11129,7 @@
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "Start Pause",
+                  "stop": "[%key:ui::dialogs::more_info_control::lawn_mower::stop%]",
                   "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
                 }
               },
@@ -11886,7 +12039,6 @@
       "history": {
         "sources": "Sources",
         "sources_count": "Sources: {count}",
-        "add_targets": "Add targets",
         "change_sources": "Change sources",
         "no_targets": "No targets selected",
         "start_search_title": "Nothing to show yet",

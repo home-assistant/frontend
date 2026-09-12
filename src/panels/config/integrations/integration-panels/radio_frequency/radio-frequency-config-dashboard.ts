@@ -43,7 +43,7 @@ export class RadioFrequencyConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.radio_frequency.title")}
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <div class="container">
           <ha-card class="network-status">

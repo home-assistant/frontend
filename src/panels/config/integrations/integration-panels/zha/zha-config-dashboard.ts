@@ -101,7 +101,7 @@ class ZHAConfigDashboard extends LitElement {
           .hass=${this.hass}
           .narrow=${this.narrow}
           .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
-          back-path="/config"
+          back-path="/config/connectivity"
         >
           <div class="loading">
             <ha-spinner></ha-spinner>
@@ -129,7 +129,7 @@ class ZHAConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
-        back-path="/config"
+        back-path="/config/connectivity"
         has-fab
       >
         <div class="container">

@@ -1,6 +1,6 @@
 import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -37,7 +37,8 @@ interface StateConditionData {
   state?: string | string[];
 }
 
-@customElement("ha-card-condition-state")
+// Base for the entity-filter (no-entity) state editor. Not registered itself;
+// dashboard editing uses the automation condition editor.
 export class HaCardConditionState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -227,10 +228,4 @@ export class HaCardConditionState extends LitElement {
         return "";
     }
   };
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "ha-card-condition-state": HaCardConditionState;
-  }
 }

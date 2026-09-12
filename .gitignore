@@ -75,5 +75,3 @@ test/e2e/app/dist/
 
 test/benchmarks/results/
 
-# Downloaded map glyph and sprite archives
-.map-assets/

@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus, subscribeCloudEvents } from "../../data/cloud";
@@ -17,6 +18,12 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "ha-refresh-cloud-status": undefined;
+  }
+
+  interface GlobalEventHandlersEventMap {
+    "ha-refresh-cloud-status": HASSDomEvent<
+      HASSDomEvents["ha-refresh-cloud-status"]
+    >;
   }
 }
 
@@ -62,6 +69,11 @@ class HaPanelConfig extends HassRouterPage {
       cloud: {
         tag: "ha-config-cloud",
         load: () => import("./cloud/ha-config-cloud"),
+      },
+      connectivity: {
+        tag: "ha-config-connectivity",
+        load: () => import("./connectivity/ha-config-connectivity"),
+        waitForReady: true,
       },
       devices: {
         tag: "ha-config-devices",
@@ -140,6 +152,7 @@ class HaPanelConfig extends HassRouterPage {
       storage: {
         tag: "ha-config-section-storage",
         load: () => import("./storage/ha-config-section-storage"),
+        waitForReady: true,
       },
       updates: {
         tag: "ha-config-section-updates",
@@ -170,9 +183,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-labs",
         load: () => import("./labs/ha-config-labs"),
       },
-      "ai-tasks": {
-        tag: "ha-config-section-ai-tasks",
-        load: () => import("./core/ha-config-section-ai-tasks"),
+      ai: {
+        tag: "ha-config-section-ai",
+        load: () => import("./core/ha-config-section-ai"),
       },
       "entity-id-format": {
         tag: "ha-config-section-entity-id-format",
@@ -217,6 +230,13 @@ class HaPanelConfig extends HassRouterPage {
         tag: "serial-config-dashboard",
         load: () =>
           import("./integrations/integration-panels/serial/serial-config-dashboard"),
+        waitForReady: true,
+      },
+      modbus: {
+        tag: "modbus-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/modbus/modbus-config-dashboard"),
+        waitForReady: true,
       },
       dhcp: {
         tag: "dhcp-config-panel",
@@ -273,7 +293,19 @@ class HaPanelConfig extends HassRouterPage {
         this._wideSidebar = matches;
       })
     );
-    if (this.hass && isComponentLoaded(this.hass.config, "cloud")) {
+    this._listenOnWindow("ha-refresh-cloud-status", () => {
+      if (this._cloudLoaded()) {
+        this._updateCloudStatus();
+      }
+    });
+    this._listenOnWindow("connection-status", (ev) => {
+      if (ev.detail === "connected" && this._cloudLoaded()) {
+        this._updateCloudStatus();
+        this._subscribeCloudEvents();
+      }
+    });
+
+    if (this._cloudLoaded()) {
       this._subscribeCloudEvents();
       this._updateCloudStatus();
     }
@@ -290,12 +322,20 @@ class HaPanelConfig extends HassRouterPage {
     entityRegistryById.clear();
   }
 
+  private _cloudLoaded(): boolean {
+    return !!this.hass && isComponentLoaded(this.hass.config, "cloud");
+  }
+
+  private _listenOnWindow<EventName extends keyof GlobalEventHandlersEventMap>(
+    type: EventName,
+    listener: (ev: GlobalEventHandlersEventMap[EventName]) => void
+  ) {
+    window.addEventListener(type, listener);
+    this._listeners.push(() => window.removeEventListener(type, listener));
+  }
+
   private _subscribeCloudEvents() {
-    if (
-      this._unsubCloudEvents ||
-      !this.hass ||
-      !isComponentLoaded(this.hass.config, "cloud")
-    ) {
+    if (this._unsubCloudEvents || !this._cloudLoaded()) {
       return;
     }
 
@@ -315,18 +355,6 @@ class HaPanelConfig extends HassRouterPage {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");
-    if (isComponentLoaded(this.hass.config, "cloud")) {
-      this.addEventListener("connection-status", (ev) => {
-        if (ev.detail === "connected") {
-          this._updateCloudStatus();
-          this._subscribeCloudEvents();
-        }
-      });
-    }
-
-    this.addEventListener("ha-refresh-cloud-status", () =>
-      this._updateCloudStatus()
-    );
     this.style.setProperty(
       "--app-header-background-color",
       "var(--sidebar-background-color)"

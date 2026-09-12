@@ -62,17 +62,27 @@ class HaMediaPlayerToggle extends LitElement {
       isRTL: boolean,
       stateObj: HassEntity
     ) => {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        entities,
-        devices,
-        areas,
-        floors
-      );
+      const [entityName, deviceName, parentDeviceName, areaName] =
+        computeEntityNameList(
+          stateObj,
+          [
+            { type: "entity" },
+            { type: "device" },
+            { type: "parent_device" },
+            { type: "area" },
+          ],
+          entities,
+          devices,
+          areas,
+          floors
+        );
 
       const primary = entityName || deviceName || entityId;
-      const secondary = [areaName, entityName ? deviceName : undefined]
+      const secondary = [
+        areaName,
+        parentDeviceName,
+        entityName ? deviceName : undefined,
+      ]
         .filter(Boolean)
         .join(isRTL ? " ◂ " : " ▸ ");
 

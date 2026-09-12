@@ -300,6 +300,12 @@ export class DialogForm
       return;
     }
 
+    const validationError = this._params?.validate?.(this._data);
+    if (validationError && Object.keys(validationError).length) {
+      this._error = validationError;
+      return;
+    }
+
     const submit = this._params?.submit;
     const data = this._data;
     const stackEntry = this._popStack();

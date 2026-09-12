@@ -8,14 +8,17 @@ import {
   mdiPowerPlugOff,
   mdiPuzzle,
   mdiRefresh,
+  mdiTransitConnectionVariant,
   mdiUsb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-alert";
+import "../../../../../components/ha-app-icon";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
@@ -23,7 +26,14 @@ import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
-import { domainToName } from "../../../../../data/integration";
+import {
+  domainToName,
+  getConfigPanelPath,
+} from "../../../../../data/integration";
+import {
+  listModbusConnections,
+  modbusSerialDevice,
+} from "../../../../../data/modbus";
 import type {
   SerialPort,
   SerialPortConsumer,
@@ -35,6 +45,7 @@ import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-di
 import { mdiEsphomeLogo } from "../../../../../resources/esphome-logo-svg";
 import { showSerialPortInfoDialog } from "./show-dialog-serial-port-info";
 import "../../../../../layouts/hass-subpage";
+import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
@@ -50,6 +61,12 @@ const TYPE_ICONS: Record<SerialPortType, string> = {
   usb: mdiUsb,
   embedded: mdiMemory,
   unnamed: mdiMemory,
+};
+
+// A Thread radio is held by the Open Thread Border Router app rather than by a
+// config entry, so its panel is found through the integration behind the app
+const APP_INTEGRATIONS: Record<string, string> = {
+  core_openthread_border_router: "thread",
 };
 
 const getPortType = (port: SerialPort): SerialPortType => {
@@ -90,19 +107,45 @@ export class SerialConfigDashboard extends LitElement {
 
   @state() private _ports?: SerialPortUsage[];
 
+  @state() private _modbusDevices?: Set<string>;
+
   @state() private _error?: string;
 
-  protected firstUpdated(): void {
-    this._fetchPorts();
+  protected async firstUpdated(): Promise<void> {
+    await this._fetchPorts();
+    await panelIsReady(this);
   }
 
   private async _fetchPorts(): Promise<void> {
     try {
-      this._ports = await listSerialPortsWithUsage(this.hass);
+      const [ports, modbusConnections] = await Promise.all([
+        listSerialPortsWithUsage(this.hass),
+        // Modbus only annotates the ports; failing to reach it is not an error
+        isComponentLoaded(this.hass.config, "modbus")
+          ? listModbusConnections(this.hass).catch(() => [])
+          : [],
+      ]);
+      this._ports = ports;
+      this._modbusDevices = new Set(
+        modbusConnections
+          .map((connection) => modbusSerialDevice(connection.endpoint))
+          .filter((device) => device !== undefined)
+      );
       this._error = undefined;
     } catch (err: any) {
       this._error = err.message;
     }
+  }
+
+  // Modbus keeps the device path it was configured with verbatim, which may be
+  // an alias of the scanned path, so both are matched
+  private _usedByModbus(port: SerialPort): boolean {
+    return (
+      this._modbusDevices !== undefined &&
+      (this._modbusDevices.has(port.device) ||
+        (port.resolved_device !== null &&
+          this._modbusDevices.has(port.resolved_device)))
+    );
   }
 
   private _portListItem(
@@ -192,42 +235,66 @@ export class SerialConfigDashboard extends LitElement {
         });
   }
 
-  private _renderConsumerIcon(src: string, alt: string): TemplateResult {
-    return html`<img
-      slot="start"
-      .src=${src}
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-      alt=${alt}
-    />`;
+  // The panel the integration behind this consumer is configured in, if it has
+  // one. A stopped consumer has no panel loaded to send the user to.
+  private _consumerPanel(consumer: SerialPortConsumer): string | undefined {
+    if (!consumer.active) {
+      return undefined;
+    }
+    const domain =
+      consumer.kind === "config_entry"
+        ? consumer.domain
+        : consumer.slug && APP_INTEGRATIONS[consumer.slug];
+
+    if (!domain || !isComponentLoaded(this.hass.config, domain)) {
+      return undefined;
+    }
+
+    return getConfigPanelPath(domain, this.hass.panels);
+  }
+
+  // Where the port's use is managed, falling back to the consumer's own page
+  private _consumerHref(consumer: SerialPortConsumer): string {
+    const panel = this._consumerPanel(consumer);
+
+    if (consumer.kind !== "config_entry") {
+      return panel ? `/${panel}` : `/config/app/${consumer.slug}/info`;
+    }
+
+    return panel
+      ? `/${panel}?config_entry=${consumer.config_entry_id}`
+      : `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`;
   }
 
   private _renderConsumer(consumer: SerialPortConsumer): TemplateResult {
-    const href =
-      consumer.kind === "config_entry"
-        ? `/config/integrations/integration/${consumer.domain}#config_entry=${consumer.config_entry_id}`
-        : `/config/app/${consumer.slug}/info`;
+    const href = this._consumerHref(consumer);
 
     return html`
       <ha-md-list-item type="link" href=${href} class="consumer">
         ${
           consumer.kind === "config_entry"
-            ? this._renderConsumerIcon(
-                brandsUrl(
+            ? html`<img
+                slot="start"
+                .src=${brandsUrl(
                   {
                     domain: consumer.domain!,
                     type: "icon",
                     darkOptimized: this.hass.themes?.darkMode,
                   },
                   this.hass.auth.data.hassUrl
-                ),
-                consumer.domain!
-              )
+                )}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                alt=${consumer.domain!}
+              />`
             : consumer.kind === "app"
-              ? this._renderConsumerIcon(
-                  `/api/hassio/addons/${consumer.slug}/icon`,
-                  consumer.slug!
-                )
+              ? html`<ha-app-icon
+                  slot="start"
+                  .slug=${consumer.slug!}
+                  .alt=${consumer.title || consumer.slug!}
+                >
+                  <ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>
+                </ha-app-icon>`
               : html`<ha-svg-icon
                   slot="start"
                   .path=${mdiPuzzle}
@@ -265,6 +332,21 @@ export class SerialConfigDashboard extends LitElement {
           ${this.hass.localize("ui.panel.config.serial.discovered_by", {
             integration: domainToName(this.hass.localize, flow.domain),
           })}
+        </div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-md-list-item>
+    `;
+  }
+
+  private _renderModbusLink(): TemplateResult {
+    return html`
+      <ha-md-list-item type="link" class="consumer" href="/config/modbus">
+        <ha-svg-icon
+          slot="start"
+          .path=${mdiTransitConnectionVariant}
+        ></ha-svg-icon>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.serial.used_by_modbus")}
         </div>
         <ha-icon-next slot="end"></ha-icon-next>
       </ha-md-list-item>
@@ -335,6 +417,7 @@ export class SerialConfigDashboard extends LitElement {
         }
       </ha-md-list-item>
       ${item.consumers.map((consumer) => this._renderConsumer(consumer))}
+      ${this._usedByModbus(item.port) ? this._renderModbusLink() : nothing}
       ${item.discoveryFlows.map((flow) => this._renderDiscoveryFlow(flow))}
     `;
   }
@@ -409,7 +492,7 @@ export class SerialConfigDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.serial.title")}
-        back-path="/config"
+        back-path="/config/connectivity"
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -632,7 +715,8 @@ export class SerialConfigDashboard extends LitElement {
           --md-list-item-leading-space: var(--ha-space-14);
         }
 
-        ha-md-list-item.consumer img[slot="start"] {
+        ha-md-list-item.consumer img[slot="start"],
+        ha-md-list-item.consumer ha-app-icon[slot="start"] {
           width: 24px;
           height: 24px;
         }

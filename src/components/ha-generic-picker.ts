@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
+import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume, type ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
@@ -12,6 +13,7 @@ import {
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
 import { configContext } from "../data/context";
@@ -120,6 +122,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
+  @query("wa-popover") private _popover?: WaPopover;
+
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig?: ContextType<typeof configContext>;
@@ -129,6 +133,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @state() private _pickerWrapperOpen = false;
 
   @state() private _popoverWidth = 0;
+
+  @state() private _popoverMinHeight = 0;
 
   @state() private _openedNarrow = false;
 
@@ -240,9 +246,12 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
               : html`
                   <wa-popover
                     .open=${this._pickerWrapperOpen}
-                    style="--body-width: ${this._popoverWidth}px;"
+                    style=${styleMap({
+                      "--body-width": `${this._popoverWidth}px`,
+                      "--body-min-height": `${this._popoverMinHeight}px`,
+                    })}
                     without-arrow
-                    distance="-4"
+                    distance="0"
                     .placement=${this.popoverPlacement}
                     .for=${this.popoverAnchor ? null : "picker"}
                     .anchor=${this.popoverAnchor ?? null}
@@ -265,12 +274,14 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   }
 
   private _renderComboBox(dialogMode = false) {
-    if (!this._opened) {
+    // The list sizes the popover, so it is rendered as it opens, not once shown.
+    if (!this._pickerWrapperOpen && !this._opened) {
       return nothing;
     }
     return html`
       <ha-picker-combo-box
         id="combo-box"
+        .shown=${this._opened}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
         .value=${this._selectedValue ?? this.value}
@@ -339,6 +350,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _dialogOpened = () => {
     this._opened = true;
+    // Filtering must not shrink the popover under the size it opened with.
+    this._popoverMinHeight = this._popover?.body.offsetHeight ?? 0;
     fireEvent(this, "picker-opened");
     requestAnimationFrame(() => {
       // Set initial field value if needed
@@ -372,6 +385,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
     this._opened = false;
     this._pickerWrapperOpen = false;
+    this._popoverMinHeight = 0;
     this._selectedValue = undefined;
     this._unsubscribeTinyKeys?.();
     fireEvent(this, "picker-closed");
@@ -474,6 +488,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
         wa-popover {
           --wa-space-l: 0;
+          /* The surface of a dropdown menu, not of a dialog. */
+          --wa-panel-border-radius: var(--ha-border-radius-md);
         }
 
         wa-popover::part(dialog)::backdrop {
@@ -486,14 +502,18 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
             --ha-generic-picker-max-width,
             var(--ha-generic-picker-width, max(var(--body-width), 250px))
           );
-          max-height: 500px;
-          height: 70vh;
+          display: flex;
+          flex-direction: column;
+          box-shadow: var(--ha-box-shadow-m);
+          height: fit-content;
+          min-height: var(--body-min-height, 0);
+          max-height: min(70vh, 500px);
           overflow: hidden;
         }
 
         @media (max-height: 1000px) {
           wa-popover::part(body) {
-            max-height: 400px;
+            max-height: min(70vh, 400px);
           }
         }
 

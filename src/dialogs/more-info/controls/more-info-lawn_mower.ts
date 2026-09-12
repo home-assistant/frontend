@@ -1,5 +1,5 @@
 import { consume } from "@lit/context";
-import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
+import { mdiHomeImportOutline, mdiPause, mdiPlay, mdiStop } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -29,6 +29,7 @@ import {
   LawnMowerEntityFeature,
   canDock,
   canStartMowing,
+  canStop,
   isMowing,
 } from "../../../data/lawn_mower";
 import "../../../state-control/lawn_mower/ha-state-control-lawn_mower-status";
@@ -173,6 +174,14 @@ class MoreInfoLawnMower extends LitElement {
     }
   }
 
+  private _handleStop() {
+    if (!this.stateObj) return;
+    forwardHaptic(this, "light");
+    this._api.callService("lawn_mower", "stop", {
+      entity_id: this.stateObj.entity_id,
+    });
+  }
+
   private _handleDock() {
     if (!this.stateObj) return;
     forwardHaptic(this, "light");
@@ -188,9 +197,11 @@ class MoreInfoLawnMower extends LitElement {
 
     const stateObj = this.stateObj;
     const isUnavailable = stateObj.state === UNAVAILABLE;
+    const supportsStop = supportsFeature(stateObj, LawnMowerEntityFeature.STOP);
     const supportsDock = supportsFeature(stateObj, LawnMowerEntityFeature.DOCK);
 
-    const hasAnyCommand = this._supportsStartPause || supportsDock;
+    const hasAnyCommand =
+      this._supportsStartPause || supportsStop || supportsDock;
 
     return html`
       <ha-more-info-state-header .stateObj=${this.stateObj}>
@@ -218,6 +229,21 @@ class MoreInfoLawnMower extends LitElement {
                               <ha-svg-icon
                                 .path=${this._startPauseIcon}
                               ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsStop
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.lawn_mower.stop"
+                              )}
+                              @click=${this._handleStop}
+                              .disabled=${isUnavailable || !canStop(stateObj)}
+                            >
+                              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
                             </ha-control-button>
                           `
                         : nothing

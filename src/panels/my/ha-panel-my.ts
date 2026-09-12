@@ -164,8 +164,11 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth/visualization",
   },
+  config_ai: {
+    redirect: "/config/ai",
+  },
   config_ai_task: {
-    redirect: "/config/ai-tasks",
+    redirect: "/config/ai",
   },
   config_bluetooth: {
     component: "bluetooth",
@@ -388,7 +391,16 @@ export const getMyRedirects = (): Redirects => ({
     component: "hassio",
     redirect: "/config/apps/available",
   },
+  supervisor_apps: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
   supervisor_addons: {
+    component: "hassio",
+    redirect: "/config/apps",
+  },
+  supervisor: {
+    // Supervisor panel was removed in 2026.2, fallback to apps
     component: "hassio",
     redirect: "/config/apps",
   },
@@ -427,9 +439,6 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
-  },
-  lights: {
-    redirect: "/lights",
   },
 });
 

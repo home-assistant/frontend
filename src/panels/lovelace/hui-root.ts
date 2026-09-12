@@ -1336,9 +1336,7 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
+          user-select: none;
         }
         .header {
           background-color: var(--app-header-background-color);
@@ -1351,7 +1349,6 @@ class HUIRoot extends LitElement {
                 0px
               )
           );
-          -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
