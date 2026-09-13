@@ -190,8 +190,10 @@ export class HuiCalendarCard
     }
 
     const loading = !this._entityRegistry || !this._eventsLoaded;
-    const autoHeight =
-      this.layout === "grid" && this._config.grid_options?.rows === "auto";
+    const rows = this._config.grid_options
+      ? this._config.grid_options.rows
+      : this._config.layout_options?.grid_rows;
+    const autoHeight = this.layout === "grid" && rows === "auto";
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
