@@ -160,11 +160,17 @@ export class DialogVacuumSegmentMapping
     const deviceName = context?.device
       ? computeDeviceName(context.device)
       : undefined;
+    const parentDeviceName = context?.parentDevice
+      ? computeDeviceName(context.parentDevice)
+      : undefined;
     const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
+    const breadcrumb = [
+      areaName,
+      parentDeviceName,
+      deviceName,
+      entityName,
+    ].filter((v): v is string => Boolean(v));
 
     return html`
       <ha-dialog

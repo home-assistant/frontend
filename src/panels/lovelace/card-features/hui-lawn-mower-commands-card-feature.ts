@@ -1,5 +1,5 @@
 import { consume } from "@lit/context";
-import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
+import { mdiHomeImportOutline, mdiPause, mdiPlay, mdiStop } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -20,6 +20,7 @@ import {
   LawnMowerEntityFeature,
   canDock,
   canStartMowing,
+  canStop,
 } from "../../../data/lawn_mower";
 import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -46,6 +47,7 @@ export const LAWN_MOWER_COMMANDS_FEATURES: Record<
     LawnMowerEntityFeature.PAUSE,
     LawnMowerEntityFeature.START_MOWING,
   ],
+  stop: [LawnMowerEntityFeature.STOP],
   dock: [LawnMowerEntityFeature.DOCK],
 };
 
@@ -81,6 +83,12 @@ export const LAWN_MOWER_COMMANDS_BUTTONS: Record<
             !canStartMowing(stateObj),
         };
   },
+  stop: (stateObj) => ({
+    translationKey: "stop",
+    icon: mdiStop,
+    serviceName: "stop",
+    disabled: !canStop(stateObj),
+  }),
   dock: (stateObj) => ({
     translationKey: "dock",
     icon: mdiHomeImportOutline,

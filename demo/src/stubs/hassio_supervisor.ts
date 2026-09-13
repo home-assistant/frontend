@@ -358,6 +358,12 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
       return data;
     }
 
+    if (msg.endpoint === "/ingress/panels") {
+      // The navigation picker waits for this collection before it enables
+      // itself, so it has to answer even when no add-on exposes a panel.
+      return { panels: {} };
+    }
+
     if (msg.endpoint === "/store/reload") {
       return null;
     }

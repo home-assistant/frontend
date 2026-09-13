@@ -21,6 +21,8 @@ import "../../../../src/components/ha-settings-row";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
+import { StatisticMeanType } from "../../../../src/data/recorder";
+import type { SerialPort } from "../../../../src/data/usb";
 import {
   showDialog,
   type ShowDialogParams,
@@ -293,9 +295,72 @@ const LABELS: LabelRegistryEntry[] = [
   },
 ];
 
+const serialPort = (port: Partial<SerialPort>): SerialPort => ({
+  device: "/dev/ttyUSB0",
+  resolved_device: null,
+  serial_number: null,
+  manufacturer: null,
+  description: null,
+  matching_integrations: [],
+  present: true,
+  ...port,
+});
+
+// One port per section the picker groups by, relative to the "zha" domain the
+// serial port selector below is given as its flow context
+const SERIAL_PORTS: SerialPort[] = [
+  serialPort({
+    device:
+      "/dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_9e2adbd75b8beb119fe564a0f320645d-if00-port0",
+    description: "SkyConnect v1.0",
+    manufacturer: "Nabu Casa",
+    serial_number: "9e2adbd75b8beb119fe564a0f320645d",
+    vid: "10C4",
+    pid: "EA60",
+    matching_integrations: ["zha"],
+  }),
+  serialPort({
+    device: "esphome-hass://01JQ8Z5X9WQ0/?port_name=UART0",
+  }),
+  serialPort({
+    device: "socket://192.168.1.10:6638",
+  }),
+  serialPort({
+    device: "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_AB0KVD1L-if00-port0",
+    description: "FT232R USB UART",
+    manufacturer: "FTDI",
+    serial_number: "AB0KVD1L",
+    vid: "0403",
+    pid: "6001",
+  }),
+  serialPort({
+    device: "/dev/ttyS0",
+    description: "ttyS0",
+    manufacturer: "Intel",
+  }),
+  serialPort({ device: "/dev/ttyAMA0" }),
+  serialPort({
+    device:
+      "/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0",
+    description: "CP2102 USB to UART Bridge Controller",
+    manufacturer: "Silicon Labs",
+    serial_number: "0001",
+    vid: "10C4",
+    pid: "EA60",
+    matching_integrations: ["matter"],
+  }),
+];
+
 const SCHEMAS: {
   name: string;
-  input: Record<string, (BlueprintInput & { required?: boolean }) | null>;
+  input: Record<
+    string,
+    | (BlueprintInput & {
+        required?: boolean;
+        context?: Record<string, unknown>;
+      })
+    | null
+  >;
 }[] = [
   {
     name: "One of each",
@@ -320,6 +385,13 @@ const SCHEMAS: {
       },
       duration: { name: "Duration", selector: { duration: {} } },
       app: { name: "App", selector: { app: {} } },
+      serial_port: {
+        name: "Serial port",
+        selector: { serial_port: {} },
+        // A config flow passes its own domain as context, which is what the
+        // picker groups recommended and not recommended ports by
+        context: { domain: "zha" },
+      },
       number_box: {
         name: "Number Box",
         selector: {
@@ -504,6 +576,99 @@ const SCHEMAS: {
           },
         },
       },
+      addon: { name: "Add-on", selector: { addon: {} } },
+      areas_display: {
+        name: "Areas display",
+        selector: { areas_display: {} },
+      },
+      assist_pipeline: {
+        name: "Assist pipeline",
+        selector: { assist_pipeline: {} },
+      },
+      automation_behavior: {
+        name: "Automation behavior",
+        selector: { automation_behavior: { mode: "trigger" } },
+      },
+      backup_location: {
+        name: "Backup location",
+        selector: { backup_location: {} },
+      },
+      button_toggle: {
+        name: "Button toggle",
+        selector: {
+          button_toggle: {
+            options: [
+              { label: "Left", value: "left" },
+              { label: "Center", value: "center" },
+              { label: "Right", value: "right" },
+            ],
+          },
+        },
+      },
+      condition: { name: "Condition", selector: { condition: {} } },
+      conversation_agent: {
+        name: "Conversation agent",
+        selector: { conversation_agent: {} },
+      },
+      country: {
+        name: "Country",
+        selector: { country: { countries: ["DE", "GB", "NL", "US"] } },
+      },
+      entity_name: {
+        name: "Entity name",
+        selector: { entity_name: { entity_id: "light.bedroom" } },
+      },
+      file: {
+        name: "File",
+        selector: { file: { accept: "image/png,image/jpeg" } },
+      },
+      language: { name: "Language", selector: { language: {} } },
+      navigation: { name: "Navigation", selector: { navigation: {} } },
+      numeric_threshold: {
+        name: "Numeric threshold",
+        selector: { numeric_threshold: {} },
+      },
+      period: {
+        name: "Period",
+        selector: {
+          period: {
+            options: ["today", "yesterday", "this_week", "this_month"],
+          },
+        },
+        // Without a value that matches one of the options the selector offers
+        // its custom-period editor instead of the list
+        default: { calendar: { period: "day" } },
+      },
+      selector: {
+        name: "Selector",
+        selector: { selector: {} },
+        default: { text: {} },
+      },
+      state_class: { name: "State class", selector: { state_class: {} } },
+      statistic: { name: "Statistic", selector: { statistic: {} } },
+      stt: { name: "Speech-to-text", selector: { stt: {} } },
+      theme: { name: "Theme", selector: { theme: {} } },
+      timezone: { name: "Time zone", selector: { timezone: {} } },
+      trigger: { name: "Trigger", selector: { trigger: {} } },
+      tts: { name: "Text-to-speech", selector: { tts: {} } },
+      tts_voice: {
+        name: "Text-to-speech voice",
+        selector: { tts_voice: { engineId: "tts.cloud", language: "en-US" } },
+      },
+      ui_action: { name: "UI action", selector: { ui_action: {} } },
+      ui_clock_date_format: {
+        name: "Clock date format",
+        selector: { ui_clock_date_format: {} },
+      },
+      ui_color: { name: "UI color", selector: { ui_color: {} } },
+      ui_state_content: {
+        name: "State content",
+        selector: { ui_state_content: { entity_id: "light.bedroom" } },
+      },
+      ui_time_format: {
+        name: "Time format",
+        selector: { ui_time_format: {} },
+      },
     },
   },
   {
@@ -605,8 +770,98 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
     mockFloorRegistry(hass, FLOORS);
     mockLabelRegistry(hass, LABELS);
     mockHassioSupervisor(hass);
+    hass.addTranslations({
+      "component.matter.title": "Matter",
+      "component.zha.title": "Zigbee Home Automation",
+    });
+    hass.updateHass({
+      config: {
+        ...hass.config,
+        components: [...hass.config.components, "usb"],
+      },
+    });
     hass.mockWS("auth/sign_path", (params) => params);
     hass.mockWS("media_player/browse_media", this._browseMedia);
+    hass.mockWS("usb/list_serial_ports", () => SERIAL_PORTS);
+    hass.mockWS("recorder/list_statistic_ids", () => [
+      {
+        statistic_id: "sensor.energy_consumption",
+        statistics_unit_of_measurement: "kWh",
+        source: "recorder",
+        name: null,
+        has_sum: true,
+        mean_type: StatisticMeanType.NONE,
+        unit_class: "energy",
+      },
+      {
+        statistic_id: "sensor.outside_temperature",
+        statistics_unit_of_measurement: "\u00b0C",
+        source: "recorder",
+        name: null,
+        has_sum: false,
+        mean_type: StatisticMeanType.ARITHMETIC,
+        unit_class: "temperature",
+      },
+    ]);
+    hass.mockWS("assist_pipeline/pipeline/list", () => ({
+      pipelines: [
+        {
+          id: "pipeline_home",
+          name: "Home Assistant",
+          language: "en",
+          conversation_engine: "conversation.home_assistant",
+          conversation_language: "en",
+          stt_engine: "stt.cloud",
+          stt_language: "en-US",
+          tts_engine: "tts.cloud",
+          tts_language: "en-US",
+          tts_voice: "JennyNeural",
+          wake_word_entity: null,
+          wake_word_id: null,
+        },
+      ],
+      preferred_pipeline: "pipeline_home",
+    }));
+    hass.mockWS("conversation/agent/list", () => ({
+      agents: [
+        {
+          id: "conversation.home_assistant",
+          name: "Home Assistant",
+          supported_languages: "*",
+        },
+        {
+          id: "conversation.openai",
+          name: "OpenAI Conversation",
+          supported_languages: ["en"],
+        },
+      ],
+    }));
+    hass.mockWS("stt/engine/list", () => ({
+      providers: [
+        {
+          engine_id: "stt.cloud",
+          name: "Home Assistant Cloud",
+          supported_languages: ["en-US"],
+          deprecated: false,
+        },
+      ],
+    }));
+    hass.mockWS("tts/engine/list", () => ({
+      providers: [
+        {
+          engine_id: "tts.cloud",
+          name: "Home Assistant Cloud",
+          supported_languages: ["en-US"],
+          deprecated: false,
+        },
+      ],
+    }));
+    hass.mockWS("tts/engine/voices", () => ({
+      voices: [
+        { voice_id: "JennyNeural", name: "Jenny" },
+        { voice_id: "GuyNeural", name: "Guy" },
+      ],
+    }));
   }
 
   public provideHass(el) {
@@ -776,6 +1031,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}
+                      .context=${value!.context}
                       .key=${key}
                       .label=${this._label ? value!.name : undefined}
                       .value=${data[key] ?? value!.default}

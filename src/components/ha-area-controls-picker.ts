@@ -197,17 +197,27 @@ export class HaAreaControlsPicker extends LitElement {
               return;
             }
 
-            const [entityName, deviceName, areaName] = computeEntityNameList(
-              stateObj,
-              [{ type: "entity" }, { type: "device" }, { type: "area" }],
-              this.hass!.entities,
-              this.hass!.devices,
-              this.hass!.areas,
-              this.hass!.floors
-            );
+            const [entityName, deviceName, parentDeviceName, areaName] =
+              computeEntityNameList(
+                stateObj,
+                [
+                  { type: "entity" },
+                  { type: "device" },
+                  { type: "parent_device" },
+                  { type: "area" },
+                ],
+                this.hass!.entities,
+                this.hass!.devices,
+                this.hass!.areas,
+                this.hass!.floors
+              );
 
             const primary = entityName || deviceName || entityId;
-            const secondary = [areaName, entityName ? deviceName : undefined]
+            const secondary = [
+              areaName,
+              parentDeviceName,
+              entityName ? deviceName : undefined,
+            ]
               .filter(Boolean)
               .join(isRTL ? " ◂ " : " ▸ ");
 
