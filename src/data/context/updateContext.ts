@@ -115,6 +115,7 @@ const updateUi = (
     value.panelUrl !== hass.panelUrl ||
     value.dockedSidebar !== hass.dockedSidebar ||
     value.kioskMode !== hass.kioskMode ||
+    value.kioskElementsHidden !== hass.kioskElementsHidden ||
     value.enableShortcuts !== hass.enableShortcuts ||
     value.vibrate !== hass.vibrate ||
     value.suspendWhenHidden !== hass.suspendWhenHidden
@@ -126,6 +127,7 @@ const updateUi = (
       panelUrl: hass.panelUrl,
       dockedSidebar: hass.dockedSidebar,
       kioskMode: hass.kioskMode,
+      kioskElementsHidden: hass.kioskElementsHidden,
       enableShortcuts: hass.enableShortcuts,
       vibrate: hass.vibrate,
       suspendWhenHidden: hass.suspendWhenHidden,

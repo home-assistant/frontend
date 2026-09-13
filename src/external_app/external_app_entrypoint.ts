@@ -98,7 +98,27 @@ export const handleExternalMessage = (
   } else if (msg.command === "bar_code/aborted") {
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
-    fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
+    const { enable, excluded_elements, included_elements } = msg.payload;
+    // The two lists are two ways of describing the same set, so a message
+    // carrying both has no single meaning we could act on.
+    if (excluded_elements && included_elements) {
+      bus.fireMessage({
+        id: msg.id,
+        type: "result",
+        success: false,
+        error: {
+          code: "invalid_format",
+          message:
+            "Pass either excluded_elements or included_elements, not both",
+        },
+      });
+      return true;
+    }
+    fireEvent(window, "hass-kiosk-mode", {
+      enable,
+      excludedElements: excluded_elements,
+      includedElements: included_elements,
+    });
   } else {
     return false;
   }

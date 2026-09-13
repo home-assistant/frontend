@@ -49,8 +49,6 @@ class HaPanelApp extends LitElement {
 
   @state() private _loadingMessage?: string;
 
-  @state() private _kioskMode = false;
-
   @state() private _iframeLoaded = false;
 
   // Set when the addon signals (via subscribe-properties) that it handles the
@@ -82,11 +80,6 @@ class HaPanelApp extends LitElement {
       (changedProps.has("narrow") || changedProps.has("route"))
     ) {
       this._sendPropertiesToIframe();
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass && oldHass.kioskMode !== this.hass.kioskMode) {
-      this._kioskMode = this.hass.kioskMode;
     }
   }
 
@@ -121,10 +114,12 @@ class HaPanelApp extends LitElement {
       ></hass-loading-screen>`;
     }
 
+    const hideHeader = this.hass.kioskElementsHidden.has("app_panel_header");
+
     // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
     return html`
       ${
-        !this._kioskMode &&
+        !hideHeader &&
         (this.narrow || this.hass.dockedSidebar === "always_hidden")
           ? html`
               <div class="header">
@@ -141,7 +136,7 @@ class HaPanelApp extends LitElement {
       <iframe
         class=${classMap({
           loaded: this._iframeLoaded,
-          "kiosk-mode": this._kioskMode,
+          "kiosk-mode": hideHeader,
           "handle-safe-area": this._handleSafeArea,
         })}
         title=${this._addon.name}

@@ -51,7 +51,9 @@ export class HomeAssistantMain extends LitElement {
 
   protected render(): TemplateResult {
     const sidebarNarrow =
-      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode;
+      this._sidebarNarrow ||
+      this._externalSidebar ||
+      this.hass.kioskElementsHidden.has("sidebar");
 
     const isPanelReady =
       this.hass.panels && this.hass.userData && this.hass.systemData;
@@ -105,7 +107,7 @@ export class HomeAssistantMain extends LitElement {
         });
         return;
       }
-      if (this._sidebarNarrow || this.hass.kioskMode) {
+      if (this._sidebarNarrow || this.hass.kioskElementsHidden.has("sidebar")) {
         this._drawerOpen = ev.detail?.open ?? !this._drawerOpen;
       } else {
         fireEvent(this, "hass-dock-sidebar", {
@@ -144,7 +146,9 @@ export class HomeAssistantMain extends LitElement {
 
     this.toggleAttribute(
       "modal",
-      this._sidebarNarrow || this._externalSidebar || this.hass.kioskMode
+      this._sidebarNarrow ||
+        this._externalSidebar ||
+        this.hass.kioskElementsHidden.has("sidebar")
     );
   }
 

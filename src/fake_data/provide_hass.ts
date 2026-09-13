@@ -24,6 +24,7 @@ import {
 } from "../data/context";
 import { updateHassGroups } from "../data/context/updateContext";
 import type { IconCategory } from "../data/icons";
+import { NO_KIOSK_ELEMENTS_HIDDEN } from "../data/kiosk_mode";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   DateFormat,
@@ -464,6 +465,7 @@ export const provideHass = (
     vibrate: true,
     debugConnection: false,
     kioskMode: false,
+    kioskElementsHidden: NO_KIOSK_ELEMENTS_HIDDEN,
     suspendWhenHidden: false,
     // @ts-ignore
     async callService(domain, service, data, target, _notify, returnResponse) {
