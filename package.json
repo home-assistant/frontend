@@ -197,7 +197,7 @@
     "jszip": "3.10.2",
     "license-checker-rseidelsohn": "5.0.1",
     "lightningcss": "1.33.0",
-    "lint-staged": "17.5.0",
+    "lint-staged": "17.5.1",
     "lit-analyzer": "2.0.3",
     "lodash.merge": "4.6.2",
     "lodash.template": "4.18.1",
