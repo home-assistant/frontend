@@ -103,6 +103,7 @@ class HaConfigSectionNetwork extends LitElement {
       max-width: 600px;
     }
     .discovery-card ha-md-list {
+      background: none;
       padding-top: 0;
     }
   `;
