@@ -10747,6 +10747,14 @@
               "show_entity_picture": "Show entity picture",
               "hide_state": "Hide state",
               "state_content": "State content",
+              "state_position": "State position",
+              "state_position_options": {
+                "secondary": "Secondary",
+                "secondary_description": "Displays the state below the name",
+                "inline": "Inline",
+                "inline_description": "Displays the state next to the name"
+              },
+              "state_position_helper_vertical": "Always displayed below the name if the content layout is vertical",
               "features_position": "Features position",
               "features_position_options": {
                 "bottom": "Bottom",
@@ -10755,11 +10763,13 @@
                 "inline_description": "Displays features in two columns, starting next to the name"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
+              "features_position_helper_inline_state": "Always displayed at the bottom if the state position is inline",
               "content_layout": "Content layout",
               "content_layout_options": {
                 "horizontal": "Horizontal",
                 "vertical": "Vertical"
-              }
+              },
+              "content_layout_helper_inline_state": "Always horizontal if the state position is inline"
             },
             "vertical-stack": {
               "name": "Vertical stack",

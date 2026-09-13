@@ -683,11 +683,14 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export type TileCardStatePosition = "secondary" | "inline";
+
 export interface TileCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
   state_content?: string | string[];
+  state_position?: TileCardStatePosition;
   icon?: string;
   color?: string;
   show_entity_picture?: boolean;

@@ -163,6 +163,24 @@ const ENTITIES = [
         FanEntityFeature.OSCILLATE,
     },
   },
+  {
+    entity_id: "select.home_mode",
+    state: "Away",
+    attributes: {
+      friendly_name: "Home mode",
+      options: ["Home", "Away", "Night", "Vacation"],
+    },
+  },
+  {
+    entity_id: "sensor.outside_temperature",
+    state: "15.6",
+    attributes: {
+      friendly_name: "Outside temperature sensor on the north wall",
+      device_class: "temperature",
+      state_class: "measurement",
+      unit_of_measurement: "°C",
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -416,6 +434,61 @@ const CONFIGS = [
         { type: "climate-swing-modes", style: "dropdown" },
         { type: "climate-swing-horizontal-modes", style: "dropdown" },
       ],
+    },
+  },
+  {
+    heading: "Secondary state, the default",
+    config: {
+      type: "tile",
+      entity: "select.home_mode",
+    },
+  },
+  {
+    heading: "Inline state",
+    config: {
+      type: "tile",
+      entity: "select.home_mode",
+      state_position: "inline",
+    },
+  },
+  {
+    heading: "Inline state: long name and long value",
+    config: {
+      type: "tile",
+      entity: "sensor.outside_temperature",
+      state_position: "inline",
+      state_content: ["state", "last_changed"],
+    },
+  },
+  {
+    heading: "Inline state with a bottom feature",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      state_position: "inline",
+      features: [{ type: "climate-hvac-modes", style: "dropdown" }],
+    },
+  },
+  {
+    heading: "Inline state moves inline features below",
+    config: {
+      type: "tile",
+      entity: "climate.dual_thermostat",
+      state_position: "inline",
+      features_position: "inline",
+      features: [
+        { type: "climate-hvac-modes", style: "dropdown" },
+        { type: "climate-preset-modes", style: "dropdown" },
+      ],
+    },
+  },
+  {
+    heading: "Inline state is ignored in the vertical layout",
+    config: {
+      type: "tile",
+      entity: "select.home_mode",
+      state_position: "inline",
+      vertical: true,
     },
   },
 ] satisfies DemoCardConfig<TileCardConfig>[];

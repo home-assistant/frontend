@@ -59,7 +59,7 @@ export class HaTileContainer extends LitElement {
         class="background"
         role=${ifDefined(this.interactive ? "button" : undefined)}
         tabindex=${ifDefined(this.interactive ? "0" : undefined)}
-        aria-labelledby="info"
+        aria-labelledby="info state"
         .actionHandler=${actionHandler(this.actionHandlerOptions)}
         @focus=${this._handleFocus}
         @blur=${this._handleBlur}
@@ -75,6 +75,9 @@ export class HaTileContainer extends LitElement {
           <div class="content ${classMap(contentClasses)}">
             <slot name="icon"></slot>
             <slot name="info" id="info"></slot>
+            <!-- part of the accessible name, so an inline state is announced
+                 the same way the secondary state is -->
+            <slot name="state" id="state"></slot>
           </div>
           <slot name="features-inline"></slot>
         </div>
@@ -171,6 +174,20 @@ export class HaTileContainer extends LitElement {
       min-width: 0;
       transition: background-color 180ms ease-in-out;
       box-sizing: border-box;
+    }
+    ::slotted([slot="state"]) {
+      position: relative;
+      /* keep the natural width so the info block is the one that shrinks */
+      flex: none;
+      max-width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: end;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+      color: var(--primary-text-color);
     }
     ::slotted([slot="features"]) {
       padding: 0 var(--ha-space-3) var(--ha-space-3) var(--ha-space-3);
