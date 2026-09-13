@@ -190,6 +190,8 @@ export class HuiCalendarCard
     }
 
     const loading = !this._entityRegistry || !this._eventsLoaded;
+    const autoHeight =
+      this.layout === "grid" && this._config.grid_options?.rows === "auto";
 
     const views: FullCalendarView[] = [
       "dayGridMonth",
@@ -206,11 +208,12 @@ export class HuiCalendarCard
         }
         <ha-full-calendar
           class=${classMap({
-            "is-grid": this.layout === "grid",
+            "is-grid": this.layout === "grid" && !autoHeight,
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
             loading: loading,
           })}
+          ?auto-height=${autoHeight}
           ?add-fab=${this._config.show_add_event}
           add-fab-style=${this._config.show_add_event ? (this._config.add_event_style ?? "below") : nothing}
           add-fab-size=${this._config.show_add_event && this._config.add_event_style !== "header" ? (this._config.add_event_size ?? "small") : nothing}
@@ -401,6 +404,11 @@ export class HuiCalendarCard
       width: 100%;
       height: 100%;
       min-height: var(--calendar-height);
+    }
+
+    ha-full-calendar[auto-height] {
+      --calendar-height: auto;
+      height: auto;
     }
 
     ha-full-calendar.loading {
