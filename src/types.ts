@@ -18,6 +18,7 @@ import type { AreaRegistryEntry } from "./data/area/area_registry";
 import type { DeviceRegistryEntry } from "./data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "./data/entity/entity_registry";
 import type { FloorRegistryEntry } from "./data/floor_registry";
+import type { KioskElement } from "./data/kiosk_mode";
 import type {
   CoreFrontendSystemData,
   CoreFrontendUserData,
@@ -305,6 +306,8 @@ export interface HomeAssistantUI {
   panelUrl: string;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   kioskMode: boolean;
+  /** Parts of the UI a kiosk client asked to hide. Empty when kiosk mode is off. */
+  kioskElementsHidden: ReadonlySet<KioskElement>;
   enableShortcuts: boolean;
   vibrate: boolean;
   suspendWhenHidden: boolean;

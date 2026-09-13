@@ -93,7 +93,8 @@ class HaMenuButton extends LitElement {
     }
 
     const showButton =
-      this._ui?.kioskMode === false &&
+      !!this._ui &&
+      !this._ui.kioskElementsHidden.has("sidebar_button") &&
       (this._narrow || this._ui.dockedSidebar === "always_hidden");
 
     this._show = showButton || this._alwaysVisible;

@@ -10,6 +10,7 @@ import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_eleme
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../src/common/dom/fire_event";
 import { setDirectionStyles } from "../../src/common/util/compute_rtl";
+import { NO_KIOSK_ELEMENTS_HIDDEN } from "../../src/data/kiosk_mode";
 import "../../src/components/ha-button";
 import "../../src/components/ha-drawer";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
@@ -633,6 +634,7 @@ class HaGallery extends LitElement {
       floors: {},
       hassUrl: (path) => path,
       kioskMode: false,
+      kioskElementsHidden: NO_KIOSK_ELEMENTS_HIDDEN,
       language: "en",
       loadBackendTranslation: async () => galleryLocalize,
       loadFragmentTranslation: async () => undefined,

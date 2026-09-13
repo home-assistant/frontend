@@ -18,6 +18,7 @@ import {
   subscribeFrontendUserData,
 } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
+import { NO_KIOSK_ELEMENTS_HIDDEN } from "../data/kiosk_mode";
 import { serviceCallWillDisconnect } from "../data/service";
 import {
   DateFormat,
@@ -85,6 +86,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         localize: () => "",
         translationMetadata,
         kioskMode: false,
+        kioskElementsHidden: NO_KIOSK_ELEMENTS_HIDDEN,
         dockedSidebar: "docked",
         vibrate: true,
         debugConnection: __DEV__,

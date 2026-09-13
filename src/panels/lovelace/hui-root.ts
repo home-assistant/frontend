@@ -257,7 +257,9 @@ class HUIRoot extends LitElement {
         icon: mdiPlus,
         key: "ui.panel.lovelace.menu.add",
         visible:
-          !this._editMode && this.hass.user?.is_admin && !this.hass.kioskMode,
+          !this._editMode &&
+          this.hass.user?.is_admin &&
+          !this.hass.kioskElementsHidden.has("dashboard_add_button"),
         overflow: this.narrow,
         subItems: [
           {
@@ -300,7 +302,9 @@ class HUIRoot extends LitElement {
               ? "(⌘ + K)"
               : "(Ctrl + K)"
             : undefined,
-        visible: !this._editMode && !this.hass.kioskMode,
+        visible:
+          !this._editMode &&
+          !this.hass.kioskElementsHidden.has("dashboard_search_button"),
         overflow: this.narrow,
       },
       {
@@ -311,7 +315,9 @@ class HUIRoot extends LitElement {
         suffix:
           this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
         visible:
-          !this._editMode && this._conversation(this.hass.config.components),
+          !this._editMode &&
+          this._conversation(this.hass.config.components) &&
+          !this.hass.kioskElementsHidden.has("dashboard_assist_button"),
         overflow: this.narrow,
       },
       {
@@ -347,7 +353,7 @@ class HUIRoot extends LitElement {
           !this._editMode &&
           this.hass!.user?.is_admin &&
           !this.hass!.config.recovery_mode &&
-          !this.hass.kioskMode &&
+          !this.hass.kioskElementsHidden.has("dashboard_edit_button") &&
           !this.noEdit,
         overflow: true,
         overflow_can_promote: true,
@@ -549,6 +555,7 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
+    const hideTabs = this.hass.kioskElementsHidden.has("dashboard_tabs");
 
     return html`
       <div
@@ -605,13 +612,19 @@ class HUIRoot extends LitElement {
                                 ${curViewConfig.title}
                               </div>
                             `
-                          : hasTabViews
-                            ? tabs
-                            : html`
+                          : hideTabs
+                            ? html`
                                 <div class="main-title">
-                                  ${views[0]?.title ?? dashboardTitle}
+                                  ${curViewConfig?.title ?? dashboardTitle}
                                 </div>
                               `
+                            : hasTabViews
+                              ? tabs
+                              : html`
+                                  <div class="main-title">
+                                    ${views[0]?.title ?? dashboardTitle}
+                                  </div>
+                                `
                       }
                       <div class="action-items">
                         ${this._renderActionItems()}

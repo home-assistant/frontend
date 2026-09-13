@@ -1,5 +1,7 @@
 import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
+import type { KioskModeParams } from "../data/kiosk_mode";
+import { resolveKioskElementsHidden } from "../data/kiosk_mode";
 import type { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -12,7 +14,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-dock-sidebar": DockSidebarParams;
-    "hass-kiosk-mode": { enable: boolean };
+    "hass-kiosk-mode": KioskModeParams;
   }
   // for add event listener
   interface HTMLElementEventMap {
@@ -32,7 +34,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         storeState(this.hass!);
       });
       window.addEventListener("hass-kiosk-mode", (ev) => {
-        this._updateHass({ kioskMode: ev.detail.enable });
+        this._updateHass({
+          kioskMode: ev.detail.enable,
+          kioskElementsHidden: resolveKioskElementsHidden(ev.detail),
+        });
       });
     }
   };

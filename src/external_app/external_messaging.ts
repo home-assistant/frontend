@@ -1,5 +1,6 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
+import type { KioskElement } from "../data/kiosk_mode";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -327,6 +328,16 @@ export interface EMIncomingMessageKioskModeSet {
   command: "kiosk_mode/set";
   payload: {
     enable: boolean;
+    /**
+     * Hide exactly these parts of the UI. Mutually exclusive with
+     * `included_elements`; sending both fails the command.
+     */
+    excluded_elements?: KioskElement[];
+    /**
+     * Hide every part of the UI except these. Mutually exclusive with
+     * `excluded_elements`; sending both fails the command.
+     */
+    included_elements?: KioskElement[];
   };
 }
 
