@@ -17,6 +17,7 @@ import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { navigate } from "../common/navigate";
+import { buildLiteInternationalization } from "../common/translations/lite-internationalization";
 import {
   addSearchParam,
   extractSearchParam,
@@ -24,6 +25,7 @@ import {
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import "../components/ha-card";
+import "../components/progress/ha-progress-bar";
 import type { AuthUrlSearchParams } from "../data/auth";
 import { hassUrl } from "../data/auth";
 import { saveFrontendSystemData } from "../data/frontend";
@@ -40,7 +42,6 @@ import { HassElement } from "../state/hass-element";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
-import "../components/progress/ha-progress-bar";
 import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
@@ -165,9 +166,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
 
     if (this._init) {
-      return html`<onboarding-welcome
-        .localize=${this.localize}
-      ></onboarding-welcome>`;
+      return html`<onboarding-welcome></onboarding-welcome>`;
     }
 
     const step = this._curStep()!;
@@ -228,6 +227,20 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     }
     makeDialogManager(this);
     import("../components/ha-language-picker");
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    // Before `hass` connects, feed the context providers from the lite localize
+    // state so context-consuming components render on the onboarding screens.
+    if (
+      !this.hass &&
+      (changedProps.has("localize") || changedProps.has("language"))
+    ) {
+      this._provideLiteInternationalization(
+        buildLiteInternationalization(this.language, this.localize)
+      );
+    }
   }
 
   protected updated(changedProps: PropertyValues) {

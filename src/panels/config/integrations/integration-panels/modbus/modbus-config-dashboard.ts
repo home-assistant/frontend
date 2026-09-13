@@ -1,5 +1,6 @@
 import {
   mdiCableData,
+  mdiFileDocumentOutline,
   mdiLan,
   mdiPuzzle,
   mdiRefresh,
@@ -22,7 +23,10 @@ import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { domainToName } from "../../../../../data/integration";
-import type { ModbusConnection } from "../../../../../data/modbus";
+import type {
+  ModbusConnection,
+  ModbusConnectionSource,
+} from "../../../../../data/modbus";
 import {
   listModbusConnections,
   modbusEndpointTarget,
@@ -43,7 +47,8 @@ const isKnownTransport = (transport: string): transport is ModbusTransport =>
   (TRANSPORTS as readonly string[]).includes(transport);
 
 interface ConnectionHolder {
-  entryId: string;
+  /** A config entry ID, or a hub name on a YAML connection. */
+  id: string;
   entry?: ConfigEntry;
   units: number[];
 }
@@ -51,9 +56,10 @@ interface ConnectionHolder {
 interface ConnectionListItem {
   icon: string;
   primary: string;
-  transport: string;
+  secondary: string;
   state: string;
   serialDevice?: string;
+  source: ModbusConnectionSource;
   holders: ConnectionHolder[];
   connection: ModbusConnection;
 }
@@ -114,22 +120,34 @@ export class ModbusConfigDashboard extends LitElement {
     );
   }
 
+  // A YAML hub is a link of its own rather than a hold on a shared
+  // connection, so the same device can be listed twice
+  private _secondaryName(connection: ModbusConnection): string {
+    const transport = this._transportName(connection.endpoint[0]);
+    if (connection.source !== "yaml") {
+      return transport;
+    }
+    return `${transport} • ${this.hass.localize(
+      "ui.panel.config.modbus.configured_in_yaml"
+    )}`;
+  }
+
   private _connectionListItem(
     connection: ModbusConnection,
     entries: Record<string, ConfigEntry>
   ): ConnectionListItem {
-    const [transport] = connection.endpoint;
     const serialDevice = modbusSerialDevice(connection.endpoint);
 
     return {
       icon: serialDevice ? mdiCableData : mdiLan,
       primary: modbusEndpointTarget(connection.endpoint),
-      transport: this._transportName(transport),
+      secondary: this._secondaryName(connection),
       state: this._stateName(connection.connected, serialDevice !== undefined),
       serialDevice,
-      holders: Object.entries(connection.units).map(([entryId, units]) => ({
-        entryId,
-        entry: entries[entryId],
+      source: connection.source,
+      holders: Object.entries(connection.units).map(([id, units]) => ({
+        id,
+        entry: connection.source === "yaml" ? undefined : entries[id],
         units,
       })),
       connection,
@@ -161,13 +179,20 @@ export class ModbusConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderHolder(holder: ConnectionHolder): TemplateResult {
-    // An entry removed while the connection was listed has nowhere to link to
+  private _renderHolder(
+    holder: ConnectionHolder,
+    source: ModbusConnectionSource
+  ): TemplateResult {
+    // A YAML hub is named by the key it is configured under, and an entry
+    // removed while the connection was listed has nowhere to link to
     if (!holder.entry) {
       return html`
         <ha-md-list-item class="holder">
-          <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
-          <div slot="headline">${holder.entryId}</div>
+          <ha-svg-icon
+            slot="start"
+            .path=${source === "yaml" ? mdiFileDocumentOutline : mdiPuzzle}
+          ></ha-svg-icon>
+          <div slot="headline">${holder.id}</div>
           ${this._renderUnits(holder)}
         </ha-md-list-item>
       `;
@@ -179,7 +204,7 @@ export class ModbusConfigDashboard extends LitElement {
       <ha-md-list-item
         type="link"
         class="holder"
-        href=${`/config/integrations/integration/${domain}#config_entry=${holder.entryId}`}
+        href=${`/config/integrations/integration/${domain}#config_entry=${holder.id}`}
       >
         <img
           slot="start"
@@ -234,10 +259,10 @@ export class ModbusConfigDashboard extends LitElement {
       <ha-md-list-item class="connection">
         <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
-        <div slot="supporting-text">${item.transport}</div>
+        <div slot="supporting-text">${item.secondary}</div>
         ${this._renderState(item)}
       </ha-md-list-item>
-      ${item.holders.map((holder) => this._renderHolder(holder))}
+      ${item.holders.map((holder) => this._renderHolder(holder, item.source))}
       ${
         item.serialDevice && isComponentLoaded(this.hass.config, "usb")
           ? this._renderSerialPortLink()
