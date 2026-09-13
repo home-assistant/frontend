@@ -392,7 +392,7 @@ export class DialogHttpPendingConfig
       .values .new {
         color: var(--primary-text-color);
       }
-      .values ha-svg-icon {
+      .values ha-icon-arrow-next {
         --mdc-icon-size: 18px;
         flex-shrink: 0;
       }
