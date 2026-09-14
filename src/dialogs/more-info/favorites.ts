@@ -298,10 +298,16 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
       ...new Set(favoriteColors.map((item) => Object.keys(item)[0])),
     ];
 
-    const compatibleLights = Object.values(hass.states).filter(
-      (candidate) =>
+    const compatibleLights = Object.values(hass.states).filter((candidate) => {
+      const candidateLight = candidate as LightEntity;
+
+      return (
         candidate.entity_id !== lightStateObj.entity_id &&
         computeStateDomain(candidate) === "light" &&
+        supportsColorFavorites ===
+          lightSupportsFavoriteColors(candidateLight) &&
+        supportsBrightnessFavorites ===
+          lightBrightnessFavoritesSpec.supports(candidateLight) &&
         (!supportsColorFavorites ||
           favoriteColorTypes.every((type) =>
             type === "color_temp_kelvin"
@@ -322,10 +328,9 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
                         LightColorMode.RGBWW
                       )
                     : false
-          )) &&
-        (!supportsBrightnessFavorites ||
-          lightBrightnessFavoritesSpec.supports(candidate as LightEntity))
-    );
+          ))
+      );
+    });
 
     const options: Partial<Record<FavoriteOption, LightColor[] | number[]>> =
       {};
