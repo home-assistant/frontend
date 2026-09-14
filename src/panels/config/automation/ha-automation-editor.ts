@@ -42,6 +42,7 @@ import type {
   AutomationEntity,
   BlueprintAutomationConfig,
   Condition,
+  SidebarConfig,
   Trigger,
 } from "../../../data/automation";
 import {
@@ -514,6 +515,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                               @value-changed=${this._valueChanged}
                               @save-automation=${this._handleSaveAutomation}
                               @editor-save=${this._handleSaveAutomation}
+                              @sidebar-config-changed=${this._sidebarConfigChanged}
                             >
                               <div class="alert-wrapper" slot="alerts">
                                 ${this._renderDeprecatedMigratedAlert()}
@@ -798,6 +800,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         : this._triggerController.cleanupRemovedIds(config)
     );
   }
+
+  private _sidebarConfigChanged = (
+    ev: CustomEvent<{ value: SidebarConfig | undefined }>
+  ) => {
+    this._triggerController.checkShowIndices(ev.detail.value);
+  };
 
   private _updateConfig(config: AutomationConfig) {
     if (this.config) {

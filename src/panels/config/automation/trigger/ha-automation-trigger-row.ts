@@ -48,6 +48,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
@@ -254,7 +255,27 @@ export default class HaAutomationTriggerRow extends LitElement {
       <div slot="leading-icon" class="trigger-leading">
         ${
           triggerIndex !== undefined
-            ? html`<span class="trigger-index-badge">${triggerIndex + 1}</span>`
+            ? html`
+                <span
+                  class="trigger-index-badge ${
+                    this._triggers?.showIndices ? "" : "hidden"
+                  }"
+                  aria-label=${`Trigger ${triggerIndex + 1}`}
+                  aria-hidden=${this._triggers?.showIndices ? "false" : "true"}
+                  >${triggerIndex + 1}</span
+                >
+                ${
+                  this._triggers?.showIndices
+                    ? html`<ha-tooltip for="trigger-index-badge-${triggerIndex}"
+                        ><p>
+                          ${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.trigger_index_tooltip"
+                          )}
+                        </p></ha-tooltip
+                      >`
+                    : nothing
+                }
+              `
             : nothing
         }
         ${

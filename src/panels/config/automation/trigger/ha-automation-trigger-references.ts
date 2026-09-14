@@ -40,6 +40,14 @@ export class HaAutomationTriggerReferences extends LitElement {
       (id) => !options.some((option) => option.id === id)
     );
 
+    if (options.length && !selectedIds.length) {
+      return html`<span class="trigger-reference no-selection">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers_selected"
+        )}
+      </span>`;
+    }
+
     return [
       selectedTriggers.map(
         (option) => html`
@@ -91,7 +99,8 @@ export class HaAutomationTriggerReferences extends LitElement {
       color: var(--ha-color-text-secondary);
     }
 
-    .trigger-reference.missing {
+    .trigger-reference.missing,
+    .trigger-reference.no-selection {
       background: var(--ha-color-fill-warning-normal-resting);
       color: var(--ha-color-on-warning-normal);
     }

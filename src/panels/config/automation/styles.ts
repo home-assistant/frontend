@@ -107,6 +107,22 @@ export const rowStyles = css`
     line-height: 1;
     text-box-trim: both;
     text-box-edge: cap alphabetic;
+    overflow: hidden;
+    transition:
+      opacity 180ms ease-out,
+      transform 180ms ease-out,
+      width 180ms ease-out,
+      margin-inline-end 180ms ease-out,
+      border-width 180ms ease-out;
+  }
+
+  .trigger-index-badge.hidden {
+    opacity: 0;
+    transform: translateX(-8px);
+    width: 0;
+    margin-inline-end: 0;
+    border-width: 0;
+    pointer-events: none;
   }
 
   .note-indicator {

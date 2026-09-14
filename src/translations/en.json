@@ -5412,6 +5412,7 @@
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
+              "trigger_index_tooltip": "Position of this trigger, used to reference it in the Triggered by condition",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
               "groups": {
@@ -5853,6 +5854,7 @@
                 "trigger": {
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers in this automation. Add a trigger first.",
+                  "no_triggers_selected": "No triggers selected.",
                   "id": "Trigger",
                   "missing_trigger": "Missing trigger",
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",

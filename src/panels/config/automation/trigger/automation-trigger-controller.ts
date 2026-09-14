@@ -3,6 +3,7 @@ import type { LitElement, ReactiveController } from "lit";
 import memoizeOne from "memoize-one";
 import type {
   AutomationConfig,
+  SidebarConfig,
   TriggerCondition,
 } from "../../../../data/automation";
 import { internationalizationContext } from "../../../../data/context";
@@ -23,6 +24,8 @@ import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin"
 interface AutomationTriggerControllerOptions {
   /** Read the editor's current configuration, including after an awaited dialog. */
   getConfig: () => AutomationConfig | undefined;
+  /** Read the editor's current sidebar selection, used to decide whether trigger rows should expose their index. */
+  getSidebarConfig?: () => SidebarConfig | undefined;
   canEdit: () => boolean;
   /** Apply one complete change through the editor's undo and dirty-state handling. */
   commit: (config: AutomationConfig) => void;
@@ -63,6 +66,7 @@ export class AutomationTriggerController implements ReactiveController {
       context: automationTriggerContext,
       initialValue: {
         options: [],
+        showIndices: false,
         select: this._selectTriggerIds,
         fixDuplicateIds: this._fixDuplicateTriggerIds,
       },
@@ -80,6 +84,32 @@ export class AutomationTriggerController implements ReactiveController {
     if (options !== this._provider.value.options) {
       this._provider.setValue({ ...this._provider.value, options });
     }
+  }
+
+  public checkShowIndices(sidebarConfig: SidebarConfig | undefined) {
+    const showIndices = this._isTriggerConditionSidebarActive(sidebarConfig);
+    if (showIndices !== this._provider.value.showIndices) {
+      this._provider.setValue({ ...this._provider.value, showIndices });
+    }
+  }
+
+  private _isTriggerConditionSidebarActive(
+    sidebarConfig: SidebarConfig | undefined
+  ): boolean {
+    if (!sidebarConfig || !("config" in sidebarConfig)) {
+      return false;
+    }
+    const config = sidebarConfig.config as
+      { condition?: unknown } | { action?: { condition?: unknown } };
+    if ("condition" in config && config.condition === "trigger") {
+      return true;
+    }
+    return !!(
+      "action" in config &&
+      config.action &&
+      "condition" in config.action &&
+      config.action.condition === "trigger"
+    );
   }
 
   /**

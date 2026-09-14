@@ -1,5 +1,5 @@
 import { createContext } from "@lit/context";
-import { ulid } from "ulid";
+import { nanoid } from "nanoid";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import {
   expandConditionWithShorthand,
@@ -32,8 +32,8 @@ export interface TriggerIdOption {
   trigger: Trigger;
   /** Zero-based position among flattened leaf triggers; list wrappers are excluded. */
   index: number;
-  /** The ID is an unstored candidate, not an existing ID with the generated prefix. */
-  generated: boolean;
+  /** The ID is an unstored candidate, not an existing ID already on the trigger. */
+  draft: boolean;
   /** Another leaf trigger has the same nonempty stored ID. */
   duplicate: boolean;
 }
@@ -41,6 +41,8 @@ export interface TriggerIdOption {
 /** Controller-provided options and operations for editors, sidebars, and row summaries. */
 export interface AutomationTriggerContext {
   options: TriggerIdOption[];
+  /** True while the user is editing a `triggered_by` condition; trigger rows show their index badges only in this state. */
+  showIndices: boolean;
   /** Pass the original condition object so identical conditions remain distinguishable. */
   select: (condition: TriggerCondition, ids: string[]) => void;
   /** Requests confirmation before migrating duplicate IDs throughout the automation. */
@@ -85,9 +87,9 @@ const getGeneratedTriggerId = (
   reservedIds: Set<string>,
   generatedIds: Set<string>
 ): string => {
-  let id = `${GENERATED_TRIGGER_ID_PREFIX}${ulid()}`;
+  let id = `${GENERATED_TRIGGER_ID_PREFIX}${nanoid(4)}`;
   while (reservedIds.has(id) || generatedIds.has(id)) {
-    id = `${GENERATED_TRIGGER_ID_PREFIX}${ulid()}`;
+    id = `${GENERATED_TRIGGER_ID_PREFIX}${nanoid(4)}`;
   }
   generatedIds.add(id);
   return id;
@@ -120,7 +122,7 @@ export const getTriggerIdOptions = (
       id: explicitId || getGeneratedTriggerId(reservedIds, generatedIds),
       trigger,
       index,
-      generated: !explicitId,
+      draft: !explicitId,
       duplicate: explicitId ? duplicates.has(explicitId) : false,
     };
   });
@@ -167,7 +169,7 @@ export const assignGeneratedTriggerIds = (
   const assignments = new Map<Trigger, string>();
 
   triggerIdOptions.forEach((option) => {
-    if (option.generated && selected.has(option.id)) {
+    if (option.draft && selected.has(option.id)) {
       assignments.set(option.trigger, option.id);
     }
   });
@@ -366,6 +368,31 @@ export const updateTriggerCondition = (
     ...new AutomationTriggerConditionMapper(replace).map(config),
     triggers,
   };
+};
+
+/**
+ * Recursively strip generated IDs from a trigger or trigger list. Manual IDs
+ * are preserved. Trigger-list wrappers keep their structure; their inner
+ * triggers are stripped the same way.
+ */
+export const stripGeneratedTriggerIds = (trigger: Trigger): Trigger => {
+  if (isTriggerList(trigger)) {
+    if (!trigger.triggers) {
+      return trigger;
+    }
+    const newInner = Array.isArray(trigger.triggers)
+      ? trigger.triggers.map(stripGeneratedTriggerIds)
+      : stripGeneratedTriggerIds(trigger.triggers);
+    if (newInner === trigger.triggers) {
+      return trigger;
+    }
+    return { ...trigger, triggers: newInner };
+  }
+  if (!trigger.id || !isGeneratedTriggerId(trigger.id)) {
+    return trigger;
+  }
+  const { id: _id, ...rest } = trigger;
+  return rest as Trigger;
 };
 
 /** Remove generated IDs from triggers that no trigger condition references. */
