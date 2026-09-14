@@ -57,6 +57,8 @@ export const lightSupportsFavoriteColors = (entity: LightEntity) =>
   lightSupportsColor(entity) ||
   lightSupportsColorMode(entity, LightColorMode.COLOR_TEMP);
 
+export const DEFAULT_LIGHT_FAVORITE_BRIGHTNESS = [10, 25, 50, 100];
+
 export const getLightCurrentModeRgbColor = (
   entity: LightEntity
 ): number[] | undefined =>
