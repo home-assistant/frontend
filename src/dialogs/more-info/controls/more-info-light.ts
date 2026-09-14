@@ -147,6 +147,9 @@ class MoreInfoLight extends LitElement {
           )))
     );
 
+    const showBothFavoriteSections =
+      showFavoriteColors && showFavoriteBrightness;
+
     return html`
       <ha-more-info-state-header
         .stateObj=${this.stateObj}
@@ -288,6 +291,12 @@ class MoreInfoLight extends LitElement {
                           .stateObj=${this.stateObj}
                           .entry=${this.entry}
                           .editMode=${this.editMode}
+                          .label=${
+                            showBothFavoriteSections
+                              ? this._localize("ui.card.light.color")
+                              : undefined
+                          }
+                          .showDone=${!showBothFavoriteSections}
                           @favorite-color-edit-started=${this._resetMainControl}
                         >
                         </ha-more-info-light-favorite-colors>
@@ -301,6 +310,11 @@ class MoreInfoLight extends LitElement {
                           .stateObj=${this.stateObj}
                           .entry=${this.entry}
                           .editMode=${this.editMode}
+                          .label=${
+                            showBothFavoriteSections
+                              ? this._localize("ui.card.light.brightness")
+                              : undefined
+                          }
                         >
                         </ha-more-info-light-favorite-brightness>
                       `

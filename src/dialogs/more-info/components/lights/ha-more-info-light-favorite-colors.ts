@@ -1,6 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -43,6 +43,10 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry | null;
 
   @property({ attribute: false }) public editMode?: boolean;
+
+  @property({ attribute: false }) public label?: string;
+
+  @property({ attribute: false }) public showDone = true;
 
   @state() private _favoriteColors: LightColor[] = [];
 
@@ -214,27 +218,53 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-more-info-favorites
-        .items=${this._favoriteColors}
-        .renderItem=${this._renderFavorite as HaMoreInfoFavorites["renderItem"]}
-        .deleteLabel=${this._deleteLabel as HaMoreInfoFavorites["deleteLabel"]}
-        .editMode=${this.editMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
-        .isAdmin=${Boolean(this._config.user?.is_admin)}
-        .addLabel=${this._localize(
-          "ui.dialogs.more_info_control.light.favorite_color.add"
-        )}
-        .doneLabel=${this._localize(
-          "ui.dialogs.more_info_control.exit_edit_mode"
-        )}
-        @favorite-item-action=${this._handleFavoriteAction}
-        @favorite-item-moved=${this._handleFavoriteMoved}
-        @favorite-item-delete=${this._handleFavoriteDelete}
-        @favorite-item-add=${this._handleFavoriteAdd}
-        @favorite-item-done=${this._handleFavoriteDone}
-      ></ha-more-info-favorites>
+      <div class="group">
+        ${this.label ? html`<h4>${this.label}</h4>` : nothing}
+        <ha-more-info-favorites
+          .items=${this._favoriteColors}
+          .renderItem=${this._renderFavorite as HaMoreInfoFavorites["renderItem"]}
+          .deleteLabel=${this._deleteLabel as HaMoreInfoFavorites["deleteLabel"]}
+          .editMode=${this.editMode}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
+          .isAdmin=${Boolean(this._config.user?.is_admin)}
+          .showDone=${this.showDone}
+          .addLabel=${this._localize(
+            "ui.dialogs.more_info_control.light.favorite_color.add"
+          )}
+          .doneLabel=${this._localize(
+            "ui.dialogs.more_info_control.exit_edit_mode"
+          )}
+          @favorite-item-action=${this._handleFavoriteAction}
+          @favorite-item-moved=${this._handleFavoriteMoved}
+          @favorite-item-delete=${this._handleFavoriteDelete}
+          @favorite-item-add=${this._handleFavoriteAdd}
+          @favorite-item-done=${this._handleFavoriteDone}
+        ></ha-more-info-favorites>
+      </div>
     `;
   }
+
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+    }
+
+    .group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    h4 {
+      margin: 0 0 var(--ha-space-2);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      text-align: center;
+    }
+  `;
 }
 
 declare global {
