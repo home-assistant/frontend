@@ -123,7 +123,7 @@ export class AutomationTriggerController implements ReactiveController {
     const nextIds = new Set(getExplicitTriggerIds(config.triggers));
     const removedIds = new Set(
       [...previousIds].filter(
-        (id) => isGeneratedTriggerId(id) && !nextIds.has(id)
+        (id) => !nextIds.has(id) && isGeneratedTriggerId(id)
       )
     );
     let cleaned = cleanupUnusedGeneratedTriggerIds(config);
