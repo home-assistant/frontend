@@ -347,7 +347,6 @@ class HUIRoot extends LitElement {
           !this._editMode &&
           this.hass!.user?.is_admin &&
           !this.hass!.config.recovery_mode &&
-          !this.hass.kioskMode &&
           !this.noEdit,
         overflow: true,
         overflow_can_promote: true,
