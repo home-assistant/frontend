@@ -1,6 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -16,6 +16,7 @@ import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
 import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
 import "./ha-favorite-color-button";
+import { favoriteSectionStyle } from "./favorite-section-style";
 import { showLightColorFavoriteDialog } from "./show-dialog-light-color-favorite";
 
 declare global {
@@ -218,7 +219,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="group">
+      <section class="group">
         ${this.label ? html`<h4>${this.label}</h4>` : nothing}
         <ha-more-info-favorites
           .items=${this._favoriteColors}
@@ -240,31 +241,11 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
           @favorite-item-add=${this._handleFavoriteAdd}
           @favorite-item-done=${this._handleFavoriteDone}
         ></ha-more-info-favorites>
-      </div>
+      </section>
     `;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      width: 100%;
-    }
-
-    .group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
-    h4 {
-      margin: 0 0 var(--ha-space-2);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
-      text-align: center;
-    }
-  `;
+  static styles = favoriteSectionStyle;
 }
 
 declare global {

@@ -283,38 +283,48 @@ class MoreInfoLight extends LitElement {
                   }
                 </ha-icon-button-group>
                 ${
-                  showFavoriteColors
+                  showFavoriteColors || showFavoriteBrightness
                     ? html`
-                        <ha-more-info-light-favorite-colors
-                          .stateObj=${this.stateObj}
-                          .entry=${this.entry}
-                          .editMode=${this.editMode}
-                          .label=${
-                            showBothFavoriteSections
-                              ? this._localize("ui.card.light.color")
-                              : undefined
+                        <div class="favorites">
+                          ${
+                            showFavoriteColors
+                              ? html`
+                                  <ha-more-info-light-favorite-colors
+                                    .stateObj=${this.stateObj}
+                                    .entry=${this.entry}
+                                    .editMode=${this.editMode}
+                                    .label=${
+                                      showBothFavoriteSections
+                                        ? this._localize("ui.card.light.color")
+                                        : undefined
+                                    }
+                                    .showDone=${!showBothFavoriteSections}
+                                    @favorite-color-edit-started=${this._resetMainControl}
+                                  >
+                                  </ha-more-info-light-favorite-colors>
+                                `
+                              : nothing
                           }
-                          .showDone=${!showBothFavoriteSections}
-                          @favorite-color-edit-started=${this._resetMainControl}
-                        >
-                        </ha-more-info-light-favorite-colors>
-                      `
-                    : nothing
-                }
-                ${
-                  showFavoriteBrightness
-                    ? html`
-                        <ha-more-info-light-favorite-brightness
-                          .stateObj=${this.stateObj}
-                          .entry=${this.entry}
-                          .editMode=${this.editMode}
-                          .label=${
-                            showBothFavoriteSections
-                              ? this._localize("ui.card.light.brightness")
-                              : undefined
+                          ${
+                            showFavoriteBrightness
+                              ? html`
+                                  <ha-more-info-light-favorite-brightness
+                                    .stateObj=${this.stateObj}
+                                    .entry=${this.entry}
+                                    .editMode=${this.editMode}
+                                    .label=${
+                                      showBothFavoriteSections
+                                        ? this._localize(
+                                            "ui.card.light.brightness"
+                                          )
+                                        : undefined
+                                    }
+                                  >
+                                  </ha-more-info-light-favorite-brightness>
+                                `
+                              : nothing
                           }
-                        >
-                        </ha-more-info-light-favorite-brightness>
+                        </div>
                       `
                     : nothing
                 }
@@ -424,6 +434,13 @@ class MoreInfoLight extends LitElement {
         .buttons {
           flex-wrap: wrap;
           max-width: 250px;
+        }
+        .favorites {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-3);
+          width: 100%;
         }
       `,
     ];
