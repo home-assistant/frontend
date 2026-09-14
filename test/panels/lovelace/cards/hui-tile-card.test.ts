@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import "../../../../src/panels/lovelace/cards/hui-tile-card";
+import { computeTileStatePosition } from "../../../../src/panels/lovelace/cards/hui-tile-card";
 import type { LovelaceCardFeatureConfig } from "../../../../src/panels/lovelace/card-features/types";
 import type {
   LovelaceCard,
@@ -40,6 +40,32 @@ const makeCard = (config: Partial<TileCardConfig>): LovelaceCard => {
   } as TileCardConfig);
   return card;
 };
+
+// The card and its editor both read the state position through this helper. If
+// they disagree, the editor greys out options the card still honors.
+describe("computeTileStatePosition", () => {
+  it("defaults to secondary", () => {
+    expect(computeTileStatePosition({})).toBe("secondary");
+  });
+
+  it("returns the configured position", () => {
+    expect(computeTileStatePosition({ state_position: "inline" })).toBe(
+      "inline"
+    );
+  });
+
+  it("falls back to secondary when the state is hidden", () => {
+    expect(
+      computeTileStatePosition({ state_position: "inline", hide_state: true })
+    ).toBe("secondary");
+  });
+
+  it("falls back to secondary in the vertical layout", () => {
+    expect(
+      computeTileStatePosition({ state_position: "inline", vertical: true })
+    ).toBe("secondary");
+  });
+});
 
 describe("hui-tile-card getCardSize", () => {
   it("is 1 for a bare tile", () => {
@@ -97,6 +123,29 @@ describe("hui-tile-card getCardSize", () => {
       }).getCardSize()
     ).toBe(4);
   });
+
+  it("ignores inline mode when the state takes the name row", () => {
+    // an inline state forces bottom positioning, so all features are stacked
+    expect(
+      makeCard({
+        state_position: "inline",
+        features_position: "inline",
+        features: features(2),
+      }).getCardSize()
+    ).toBe(3);
+  });
+
+  it("keeps inline mode when the state is hidden", () => {
+    // hide_state drops the state, so the features keep the name row
+    expect(
+      makeCard({
+        hide_state: true,
+        state_position: "inline",
+        features_position: "inline",
+        features: features(2),
+      }).getCardSize()
+    ).toBe(2);
+  });
 });
 
 describe("hui-tile-card getGridOptions", () => {
@@ -151,6 +200,22 @@ describe("hui-tile-card getGridOptions", () => {
       rows: 1,
       min_columns: 12,
       min_rows: 1,
+    });
+  });
+
+  it("stacks all features and stays 6 columns wide when the state is inline", () => {
+    // an inline state forces bottom positioning, so the tile never needs 12 columns
+    expect(
+      gridOptions({
+        state_position: "inline",
+        features_position: "inline",
+        features: features(2),
+      })
+    ).toEqual({
+      columns: 6,
+      rows: 3,
+      min_columns: 6,
+      min_rows: 3,
     });
   });
 
