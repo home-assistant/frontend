@@ -1,57 +1,32 @@
-import "@home-assistant/webawesome/dist/components/skeleton/skeleton";
 import { consume } from "@lit/context";
-import type { HassConfig } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { customElement, property, query, state } from "lit/decorators";
 import { BINARY_STATE_OFF } from "../../../common/const";
-import { relativeTime } from "../../../common/datetime/relative_time";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
-import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
-import "../../../components/animation/ha-fade-in";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
-import "../../../components/ha-switch";
-import "../../../components/item/ha-row-item";
 import "../../../components/progress/ha-progress-bar";
-import type { BackupConfig } from "../../../data/backup";
-import { fetchBackupConfig } from "../../../data/backup";
-import {
-  apiContext,
-  configContext,
-  formattersContext,
-  internationalizationContext,
-  statesContext,
-} from "../../../data/context";
+import { apiContext, formattersContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
-import type { EntitySources } from "../../../data/entity/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
-import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
-import type { FrontendLocaleData } from "../../../data/translation";
-import type { UpdateEntity, UpdateType } from "../../../data/update";
+import type { UpdateEntity } from "../../../data/update";
 import {
-  getUpdateType,
   latestVersionIsSkipped,
   updateButtonIsDisabled,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
 } from "../../../data/update";
-import type {
-  HomeAssistant,
-  HomeAssistantApi,
-  HomeAssistantConfig,
-  HomeAssistantFormatters,
-  HomeAssistantInternationalization,
-} from "../../../types";
+import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
+import "../components/update/ha-more-info-update-backup";
+import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -62,30 +37,11 @@ class MoreInfoUpdate extends LitElement {
   private _localize!: LocalizeFunc;
 
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
-
-  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
 
-  @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: HomeAssistant["states"];
-
-  @state()
-  @consume({ context: configContext, subscribe: true })
-  @transform<HomeAssistantConfig, HassConfig>({
-    transformer: ({ config }) => config,
-  })
-  private _config!: HassConfig;
 
   @state() private _releaseNotes?: string | null;
 
@@ -93,150 +49,8 @@ class MoreInfoUpdate extends LitElement {
 
   @state() private _markdownLoading = true;
 
-  @state() private _backupConfigLoading = true;
-
-  @state() private _backupConfig?: BackupConfig;
-
-  @state() private _createBackupLoading = true;
-
-  @state() private _createBackup = false;
-
-  @state() private _entitySources?: EntitySources;
-
-  private async _fetchBackupConfig() {
-    try {
-      const { config } = await fetchBackupConfig(this._api);
-      this._backupConfig = config;
-    } catch (err) {
-      // ignore error, because user will get a manual backup option
-      // eslint-disable-next-line no-console
-      console.error(err);
-    } finally {
-      this._backupConfigLoading = false;
-    }
-  }
-
-  private async _fetchUpdateBackupConfig(type: UpdateType) {
-    try {
-      const config = await getSupervisorUpdateConfig(this._api);
-
-      // for home assistant and OS updates
-      if (this._isHaOrOsUpdate(type)) {
-        this._createBackup = config.core_backup_before_update;
-        this._createBackupLoading = false;
-        return;
-      }
-
-      if (type === "addon") {
-        this._createBackup = config.add_on_backup_before_update;
-      }
-    } catch (err) {
-      // ignore error, because user can still set the config
-      // eslint-disable-next-line no-console
-      console.error(err);
-      this._createBackup = false;
-    } finally {
-      this._createBackupLoading = false;
-    }
-  }
-
-  private async _fetchEntitySources() {
-    this._entitySources = await fetchEntitySourcesWithCache({
-      callWS: this._api.callWS,
-      states: this._states,
-    });
-  }
-
-  private _isHaOrOsUpdate(type: UpdateType): boolean {
-    return ["home_assistant", "home_assistant_os"].includes(type);
-  }
-
-  private _computeCreateBackupTexts():
-    { title: string; description?: string } | undefined {
-    if (
-      !this.stateObj ||
-      !supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
-    ) {
-      return undefined;
-    }
-
-    const updateType = this._entitySources
-      ? getUpdateType(this.stateObj, this._entitySources)
-      : "generic";
-
-    if (this._isHaOrOsUpdate(updateType)) {
-      if (this._backupConfigLoading) {
-        return undefined;
-      }
-
-      const isBackupConfigValid =
-        !!this._backupConfig &&
-        !!this._backupConfig.automatic_backups_configured &&
-        !!this._backupConfig.create_backup.password &&
-        this._backupConfig.create_backup.agent_ids.length > 0;
-
-      if (!isBackupConfigValid) {
-        return {
-          title: this._localize(
-            "ui.dialogs.more_info_control.update.create_backup.manual"
-          ),
-          description: this._localize(
-            "ui.dialogs.more_info_control.update.create_backup.manual_description"
-          ),
-        };
-      }
-
-      const lastAutomaticBackupDate = this._backupConfig
-        ?.last_completed_automatic_backup
-        ? new Date(this._backupConfig?.last_completed_automatic_backup)
-        : null;
-      const now = new Date();
-
-      return {
-        title: this._localize(
-          "ui.dialogs.more_info_control.update.create_backup.automatic"
-        ),
-        description: lastAutomaticBackupDate
-          ? this._localize(
-              "ui.dialogs.more_info_control.update.create_backup.automatic_description_last",
-              {
-                relative_time: relativeTime(
-                  lastAutomaticBackupDate,
-                  this._locale,
-                  now,
-                  true
-                ),
-              }
-            )
-          : this._localize(
-              "ui.dialogs.more_info_control.update.create_backup.automatic_description_none"
-            ),
-      };
-    }
-
-    // App backup
-    if (updateType === "addon") {
-      const version = this.stateObj.attributes.installed_version;
-      return {
-        title: this._localize(
-          "ui.dialogs.more_info_control.update.create_backup.app"
-        ),
-        description: version
-          ? this._localize(
-              "ui.dialogs.more_info_control.update.create_backup.app_description",
-              { version: version }
-            )
-          : undefined,
-      };
-    }
-
-    // Fallback to generic UI
-    return {
-      title: this._localize(
-        "ui.dialogs.more_info_control.update.create_backup.generic"
-      ),
-    };
-  }
+  @query("ha-more-info-update-backup")
+  private _backupElement?: HaMoreInfoUpdateBackup;
 
   protected render() {
     if (
@@ -248,7 +62,6 @@ class MoreInfoUpdate extends LitElement {
       return nothing;
     }
 
-    const createBackupTexts = this._computeCreateBackupTexts();
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
 
     return html`
@@ -347,39 +160,9 @@ class MoreInfoUpdate extends LitElement {
         }
       </div>
       <div class="footer">
-        ${
-          createBackupTexts || this._backupConfigLoading
-            ? html`
-                <ha-row-item
-                  .headline=${createBackupTexts ? createBackupTexts.title : undefined}
-                  .supportingText=${createBackupTexts ? createBackupTexts.description : undefined}
-                >
-                  ${
-                    !createBackupTexts
-                      ? html`<ha-fade-in slot="headline" .delay=${500}
-                          ><wa-skeleton effect="sheen"></wa-skeleton
-                        ></ha-fade-in>`
-                      : nothing
-                  }
-                  ${
-                    this._createBackupLoading
-                      ? html`<ha-fade-in
-                          class="skeleton-end"
-                          slot="end"
-                          .delay=${500}
-                          ><wa-skeleton effect="sheen"></wa-skeleton
-                        ></ha-fade-in>`
-                      : html`<ha-switch
-                          slot="end"
-                          .checked=${this._createBackup}
-                          @change=${this._createBackupChanged}
-                          .disabled=${updateIsInstalling(this.stateObj)}
-                        ></ha-switch>`
-                  }
-                </ha-row-item>
-              `
-            : nothing
-        }
+        <ha-more-info-update-backup
+          .stateObj=${this.stateObj}
+        ></ha-more-info-update-backup>
         <div class="actions">
           ${
             this.stateObj.state === BINARY_STATE_OFF &&
@@ -440,36 +223,6 @@ class MoreInfoUpdate extends LitElement {
     if (supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES)) {
       this._fetchReleaseNotes();
     }
-    if (supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      this._fetchEntitySources()
-        .then(() => {
-          const type = getUpdateType(this.stateObj!, this._entitySources!);
-          if (
-            isComponentLoaded(this._config, "hassio") &&
-            ["addon", "home_assistant", "home_assistant_os"].includes(type)
-          ) {
-            this._fetchUpdateBackupConfig(type);
-          } else {
-            this._createBackupLoading = false;
-          }
-
-          if (this._isHaOrOsUpdate(type)) {
-            this._fetchBackupConfig();
-          } else {
-            this._backupConfigLoading = false;
-          }
-        })
-        .catch((err) => {
-          // ignore error, because the generic backup option remains available
-          // eslint-disable-next-line no-console
-          console.error(err);
-          this._createBackupLoading = false;
-          this._backupConfigLoading = false;
-        });
-    } else {
-      this._createBackupLoading = false;
-      this._backupConfigLoading = false;
-    }
   }
 
   private async _markdownLoaded() {
@@ -489,19 +242,12 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  get _shouldCreateBackup(): boolean {
-    if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
-      return false;
-    }
-    return this._createBackup;
-  }
-
   private _handleInstall(): void {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
 
-    if (this._shouldCreateBackup) {
+    if (this._backupElement?.createBackup ?? false) {
       installData.backup = true;
     }
 
@@ -513,10 +259,6 @@ class MoreInfoUpdate extends LitElement {
     }
 
     this._api.callService("update", "install", installData);
-  }
-
-  private _createBackupChanged(ev) {
-    this._createBackup = ev.target.checked;
   }
 
   private _handleSkip(): void {
@@ -589,11 +331,6 @@ class MoreInfoUpdate extends LitElement {
       z-index: 10;
     }
 
-    ha-row-item {
-      width: 100%;
-      --ha-row-item-padding-inline: var(--ha-space-6);
-    }
-
     .actions {
       width: 100%;
       display: flex;
@@ -626,11 +363,6 @@ class MoreInfoUpdate extends LitElement {
       height: 80px;
       box-sizing: border-box;
       padding-bottom: var(--ha-space-4);
-    }
-    .skeleton-end {
-      width: 48px;
-      height: 24px;
-      display: block;
     }
   `;
 }
