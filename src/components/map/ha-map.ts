@@ -1452,6 +1452,7 @@ export class HaMap extends ReactiveElement {
       display: flex;
       flex-direction: column;
       align-items: center;
+      isolation: isolate;
     }
     .cluster-open-members {
       display: flex;
@@ -1464,6 +1465,13 @@ export class HaMap extends ReactiveElement {
       background: var(--card-background-color, #fff);
       border-radius: 14px;
       box-shadow: var(--ha-box-shadow-s);
+    }
+    /* Both tails are a rotated square whose upper half sits under the bubble;
+       drawn behind it, so it never covers a member's frame or selected ring */
+    .cluster-open-tail,
+    .cluster-bubble-tail {
+      position: relative;
+      z-index: -1;
     }
     .cluster-open-tail {
       width: 10px;
@@ -1542,6 +1550,7 @@ export class HaMap extends ReactiveElement {
       display: flex;
       flex-direction: column;
       align-items: center;
+      isolation: isolate;
     }
     .cluster-bubble-tail {
       width: ${CLUSTER_TAIL_SIZE}px;
