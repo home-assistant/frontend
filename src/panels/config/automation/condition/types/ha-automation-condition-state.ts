@@ -64,9 +64,7 @@ const SCHEMA = memoizeOne(
       // `for` is not supported together with `attribute`: the legacy state
       // condition measures the duration against `last_changed`, which only
       // updates on state changes, not attribute changes.
-      ...(hasAttribute
-        ? ([] as const)
-        : ([{ name: "for", selector: { duration: {} } }] as const)),
+      { name: "for", disabled: hasAttribute, selector: { duration: {} } },
     ] as const
 );
 
@@ -164,9 +162,9 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   private _computeHelperCallback = (
     schema: SchemaUnion<ReturnType<typeof SCHEMA>>
   ): string | undefined => {
-    if (schema.name === "attribute" && this.condition.attribute) {
+    if (schema.name === "for" && this.condition.attribute) {
       return this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.type.state.attribute_no_for"
+        "ui.panel.config.automation.editor.conditions.type.state.for_unavailable_with_attribute"
       );
     }
     return undefined;
