@@ -25,6 +25,7 @@ import {
 import type { LightColor, LightEntity } from "../../data/light";
 import {
   DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+  LIGHT_FAVORITE_BRIGHTNESS_MIN,
   LightColorMode,
   computeDefaultFavoriteColors,
   lightSupportsBrightness,
@@ -257,7 +258,7 @@ const lightBrightnessFavoritesSpec: NumericFavoritesSpec<LightEntity> = {
     normalizeFavoritePositions(
       entry.options?.light?.favorite_brightness ??
         DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
-      { min: 1 }
+      { min: LIGHT_FAVORITE_BRIGHTNESS_MIN }
     ),
 };
 
