@@ -1,17 +1,24 @@
+import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../components/ha-card";
 import "../components/ha-ripple";
 import "../components/ha-svg-icon";
+import { translationsReadyContext } from "../mixins/lit-localize-lite-mixin";
+import { renderSkeleton, skeletonStyles } from "./render-skeleton";
 
 @customElement("onboarding-welcome-link")
 class OnboardingWelcomeLink extends LitElement {
-  @property() public label!: string;
+  @property() public label?: string;
 
   @property({ attribute: false }) public iconPath!: string;
 
   @property({ type: Boolean }) public noninteractive = false;
+
+  @state()
+  @consume({ context: translationsReadyContext, subscribe: true })
+  private _translationsReady = true;
 
   protected render(): TemplateResult {
     return html`
@@ -20,7 +27,7 @@ class OnboardingWelcomeLink extends LitElement {
         @keydown=${this._handleKeyDown}
       >
         <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
-        ${this.label}
+        ${this._translationsReady ? this.label : renderSkeleton("label")}
         <ha-ripple></ha-ripple>
       </ha-card>
     `;
@@ -32,36 +39,39 @@ class OnboardingWelcomeLink extends LitElement {
     }
   }
 
-  static styles = css`
-    :host {
-      cursor: pointer;
-    }
-    ha-card {
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      font-weight: var(--ha-font-weight-medium);
-      padding: 32px 16px;
-      height: 100%;
-    }
-    ha-svg-icon {
-      color: var(--text-primary-color);
-      background: var(--welcome-link-color, var(--primary-color));
-      border-radius: var(--ha-border-radius-circle);
-      padding: 8px;
-      margin-bottom: 16px;
-    }
-    ha-card:focus-visible:before {
-      position: absolute;
-      display: block;
-      content: "";
-      inset: 0;
-      background-color: var(--secondary-text-color);
-      opacity: 0.08;
-    }
-  `;
+  static styles = [
+    skeletonStyles,
+    css`
+      :host {
+        cursor: pointer;
+      }
+      ha-card {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-weight: var(--ha-font-weight-medium);
+        padding: 32px 16px;
+        height: 100%;
+      }
+      ha-svg-icon {
+        color: var(--text-primary-color);
+        background: var(--welcome-link-color, var(--primary-color));
+        border-radius: var(--ha-border-radius-circle);
+        padding: 8px;
+        margin-bottom: 16px;
+      }
+      ha-card:focus-visible:before {
+        position: absolute;
+        display: block;
+        content: "";
+        inset: 0;
+        background-color: var(--secondary-text-color);
+        opacity: 0.08;
+      }
+    `,
+  ];
 }
 
 declare global {
