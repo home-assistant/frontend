@@ -405,7 +405,6 @@ export default class HaAutomationActionRow extends LitElement {
             ? html` <ha-automation-trigger-references
                 .condition=${this.action as TriggerCondition}
                 .hass=${this.hass}
-                .entityRegistry=${this._entityReg}
               ></ha-automation-trigger-references>`
             : nothing
         }

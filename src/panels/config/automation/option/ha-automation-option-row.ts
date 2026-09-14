@@ -182,7 +182,6 @@ export default class HaAutomationOptionRow extends LitElement {
             ? html`<ha-automation-trigger-references
                 .condition=${triggerCondition}
                 .hass=${this.hass}
-                .entityRegistry=${this._entityReg}
               ></ha-automation-trigger-references>`
             : nothing
         }

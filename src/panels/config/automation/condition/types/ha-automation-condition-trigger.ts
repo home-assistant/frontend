@@ -5,14 +5,14 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-trigger-icon";
+import "../../../../../components/item/ha-list-item-option";
+import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
+import "../../../../../components/list/ha-list-selectable";
 import type { TriggerCondition } from "../../../../../data/automation";
 import {
   automationTriggerContext,
@@ -89,70 +89,90 @@ export class HaTriggerCondition extends LitElement {
             </ha-alert>`
           : nothing
       }
-      <div class="trigger-list">
+      <ha-list-selectable
+        multi
+        controlled
+        @ha-list-item-selected=${this._handleSelected}
+        @ha-list-item-deselected=${this._handleDeselected}
+      >
         ${triggerIdOptions.map(
           (option) => html`
-            <ha-checkbox
-              .checked=${selectedIds.includes(option.id)}
+            <ha-list-item-option
               .value=${option.id}
+              .selected=${selectedIds.includes(option.id)}
               .disabled=${this.disabled}
-              @change=${this._checkedChanged}
             >
-              <span class="trigger-option">
+              <span slot="start" class="trigger-row-leading">
                 <span class="trigger-index-badge">${option.index + 1}</span>
                 <ha-trigger-icon
-                  .trigger=${"trigger" in option.trigger ? option.trigger.trigger : ""}
+                  .trigger=${
+                    "trigger" in option.trigger ? option.trigger.trigger : ""
+                  }
                 ></ha-trigger-icon>
-                ${
-                  option.duplicate
-                    ? html`<span class="duplicate-trigger-badge">
-                        <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
-                        <span class="duplicate-trigger-id">${option.id}</span>
-                      </span>`
-                    : nothing
-                }
-                <span
-                  >${capitalizeFirstLetter(describeTrigger(option.trigger, this.hass, this._entityReg))}</span
-                >
               </span>
-            </ha-checkbox>
+              <span slot="headline">
+                ${capitalizeFirstLetter(
+                  describeTrigger(option.trigger, this.hass, this._entityReg)
+                )}
+              </span>
+              ${
+                option.duplicate
+                  ? html`<span slot="end" class="duplicate-trigger-badge">
+                      <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
+                      <span class="duplicate-trigger-id">${option.id}</span>
+                    </span>`
+                  : nothing
+              }
+            </ha-list-item-option>
           `
         )}
         ${missingIds.map(
           (id) => html`
-            <ha-checkbox
-              .checked=${true}
+            <ha-list-item-option
               .value=${id}
+              .selected=${true}
               .disabled=${this.disabled}
-              @change=${this._checkedChanged}
             >
-              <span class="trigger-option">
-                <span class="missing-trigger-badge">
-                  <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
-                  ${selectedIds.indexOf(id) + 1}
-                </span>
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
-                  )}
-                </span>
+              <span slot="start" class="missing-trigger-badge">
+                <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
+                <span class="missing-trigger-id">${id}</span>
               </span>
-            </ha-checkbox>
+              <span slot="headline">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type.trigger.missing_trigger"
+                )}
+              </span>
+            </ha-list-item-option>
           `
         )}
-      </div>
+      </ha-list-selectable>
     `;
   }
 
-  private _checkedChanged(ev: HASSDomCurrentTargetEvent<HaCheckbox>): void {
+  private _handleSelected = (ev: CustomEvent<number>) => {
     ev.stopPropagation();
-    const id = ev.currentTarget.value;
+    const list = ev.currentTarget as HaListSelectable;
+    const item = list.items[ev.detail] as HTMLElement & { value?: string };
+    const id = item?.value;
     if (!id) {
       return;
     }
+    this._selectId(id, true);
+  };
 
+  private _handleDeselected = (ev: CustomEvent<number>) => {
+    ev.stopPropagation();
+    const list = ev.currentTarget as HaListSelectable;
+    const item = list.items[ev.detail] as HTMLElement & { value?: string };
+    const id = item?.value;
+    if (!id) {
+      return;
+    }
+    this._selectId(id, false);
+  };
+
+  private _selectId(id: string, checked: boolean) {
     const ids = ensureArray(this.condition.id).filter(Boolean);
-    const checked = ev.currentTarget.checked;
     const selectedIds = checked
       ? ids.includes(id)
         ? ids
@@ -162,13 +182,12 @@ export class HaTriggerCondition extends LitElement {
       this._triggers.select(this.condition, selectedIds);
       return;
     }
-
-    const newValue: TriggerCondition = {
-      ...this.condition,
-      id: selectedIds.length ? selectedIds : "",
-    };
-
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.condition,
+        id: selectedIds.length ? selectedIds : "",
+      },
+    });
   }
 
   private _fixDuplicateIds = () => {
@@ -192,12 +211,14 @@ export class HaTriggerCondition extends LitElement {
         display: block;
         margin-bottom: var(--ha-space-4);
       }
-      .trigger-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--ha-space-4);
+      ha-list-selectable {
+        --ha-list-gap: var(--ha-space-2);
+        --ha-list-padding: 0;
       }
-      .trigger-option {
+      ha-list-item-option {
+        --ha-list-item-padding: var(--ha-space-1) var(--ha-space-2);
+      }
+      .trigger-row-leading {
         display: inline-flex;
         align-items: center;
         gap: var(--ha-space-2);
@@ -206,39 +227,30 @@ export class HaTriggerCondition extends LitElement {
         --mdc-icon-size: 20px;
         color: var(--ha-color-on-neutral-quiet);
       }
-      .missing-trigger-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--ha-space-1);
-        padding: 2px var(--ha-space-2);
-        border-radius: var(--ha-border-radius-md);
-        background: var(--ha-color-fill-warning-normal-resting);
-        color: var(--ha-color-on-warning-normal);
-        line-height: 18px;
-      }
-      .missing-trigger-badge ha-svg-icon {
-        --mdc-icon-size: 18px;
-      }
+      .missing-trigger-badge,
       .duplicate-trigger-badge {
         display: inline-flex;
         align-items: center;
         gap: var(--ha-space-1);
-        max-width: 120px;
         padding: 2px var(--ha-space-2);
         border-radius: var(--ha-border-radius-md);
         background: var(--ha-color-fill-warning-normal-resting);
         color: var(--ha-color-on-warning-normal);
         line-height: 18px;
       }
-      .duplicate-trigger-id {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+      .missing-trigger-badge ha-svg-icon,
       .duplicate-trigger-badge ha-svg-icon {
         --mdc-icon-size: 18px;
         flex-shrink: 0;
+      }
+      .missing-trigger-id,
+      .duplicate-trigger-id {
+        font-family: var(--ha-font-family-code);
+        font-size: var(--ha-font-size-s);
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     `,
   ];

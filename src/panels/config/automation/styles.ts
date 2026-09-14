@@ -103,8 +103,10 @@ export const rowStyles = css`
     border-radius: var(--ha-border-radius-circle);
     box-sizing: border-box;
     color: var(--ha-color-text-secondary);
-    font-size: var(--ha-font-size-xs);
+    font-size: var(--ha-font-size-s);
     line-height: 1;
+    text-box-trim: both;
+    text-box-edge: cap alphabetic;
   }
 
   .note-indicator {

@@ -8,8 +8,9 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-trigger-icon";
 import type { TriggerCondition } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
-import type { HomeAssistant } from "../../../../types";
+import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { HomeAssistant } from "../../../../types";
 import {
   automationTriggerContext,
   type AutomationTriggerContext,
@@ -21,8 +22,9 @@ export class HaAutomationTriggerReferences extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityRegistry: EntityRegistryEntry[] =
-    [];
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
 
   @state()
   @consume({ context: automationTriggerContext, subscribe: true })
@@ -48,7 +50,7 @@ export class HaAutomationTriggerReferences extends LitElement {
             ></ha-trigger-icon>
             <span class="trigger-reference-label">
               ${capitalizeFirstLetter(
-                describeTrigger(option.trigger, this.hass, this.entityRegistry)
+                describeTrigger(option.trigger, this.hass, this._entityReg)
               )}
             </span>
           </span>
@@ -117,8 +119,10 @@ export class HaAutomationTriggerReferences extends LitElement {
       border-radius: var(--ha-border-radius-circle);
       box-sizing: border-box;
       color: var(--ha-color-text-secondary);
-      font-size: var(--ha-font-size-xs);
+      font-size: var(--ha-font-size-s);
       line-height: 1;
+      text-box-trim: both;
+      text-box-edge: cap alphabetic;
     }
   `;
 }

@@ -44,6 +44,7 @@ import {
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
+import { stripGeneratedTriggerIds } from "./trigger/automation-trigger-id";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -409,7 +410,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
     if ("triggers" in config) {
       workingCopy.triggers = ensureArray(workingCopy.triggers || []).concat(
-        ensureArray(config.triggers)
+        ensureArray(config.triggers).map((t) => stripGeneratedTriggerIds(t))
       );
     }
     if ("conditions" in config) {

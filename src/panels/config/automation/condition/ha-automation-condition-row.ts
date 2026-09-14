@@ -219,7 +219,6 @@ export default class HaAutomationConditionRow extends LitElement {
                 slot="references"
                 .condition=${this.condition as TriggerCondition}
                 .hass=${this.hass}
-                .entityRegistry=${this._entityReg}
               ></ha-automation-trigger-references>`
             : nothing
         }

@@ -12,12 +12,13 @@ import {
   GENERATED_TRIGGER_ID_PREFIX,
   getTriggerIdOptions,
   makeDuplicateTriggerIdsUnique,
+  stripGeneratedTriggerIds,
   updateTriggerCondition,
 } from "../../../../../src/panels/config/automation/trigger/automation-trigger-id";
 import type { Action } from "../../../../../src/data/script";
 
 const GENERATED_TRIGGER_ID_PATTERN = new RegExp(
-  `^${GENERATED_TRIGGER_ID_PREFIX}[0-9A-HJKMNP-TV-Z]{26}$`
+  `^${GENERATED_TRIGGER_ID_PREFIX}[A-Za-z0-9_-]{4}$`
 );
 
 describe("automation trigger IDs", () => {
@@ -28,7 +29,7 @@ describe("automation trigger IDs", () => {
       {
         trigger: "event",
         event_type: "homeassistant_start",
-        id: `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`,
+        id: `${GENERATED_TRIGGER_ID_PREFIX}aB3x`,
       },
     ];
 
@@ -38,16 +39,12 @@ describe("automation trigger IDs", () => {
     expect(options[0].id).toMatch(GENERATED_TRIGGER_ID_PATTERN);
     expect(options[1].id).toMatch(GENERATED_TRIGGER_ID_PATTERN);
     expect(options[0].id).not.toBe(options[1].id);
-    expect(
-      options.map(({ generated, index }) => ({ generated, index }))
-    ).toEqual([
-      { generated: true, index: 0 },
-      { generated: true, index: 1 },
-      { generated: false, index: 2 },
+    expect(options.map(({ draft, index }) => ({ draft, index }))).toEqual([
+      { draft: true, index: 0 },
+      { draft: true, index: 1 },
+      { draft: false, index: 2 },
     ]);
-    expect(options[2].id).toBe(
-      `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`
-    );
+    expect(options[2].id).toBe(`${GENERATED_TRIGGER_ID_PREFIX}aB3x`);
   });
 
   it("stores a generated ID on the selected trigger", () => {
@@ -175,16 +172,13 @@ describe("automation trigger IDs", () => {
       conditions: [
         {
           condition: "trigger",
-          id: [
-            `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`,
-            "manual-id",
-          ],
+          id: [`${GENERATED_TRIGGER_ID_PREFIX}aB3x`, "manual-id"],
         },
       ],
       actions: [
         {
           condition: "trigger",
-          id: `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`,
+          id: `${GENERATED_TRIGGER_ID_PREFIX}aB3x`,
         } as Action,
       ],
     };
@@ -192,7 +186,7 @@ describe("automation trigger IDs", () => {
     expect(
       cleanupRemovedGeneratedTriggerReferences(
         config,
-        new Set([`${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`])
+        new Set([`${GENERATED_TRIGGER_ID_PREFIX}aB3x`])
       )
     ).toMatchObject({
       conditions: [{ condition: "trigger", id: ["manual-id"] }],
@@ -201,7 +195,7 @@ describe("automation trigger IDs", () => {
   });
 
   it("removes dangling generated references when no triggers remain", () => {
-    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`;
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
     const config: AutomationConfig = {
       triggers: [],
       conditions: [
@@ -221,7 +215,7 @@ describe("automation trigger IDs", () => {
   });
 
   it("keeps a dangling generated reference during unrelated cleanup", () => {
-    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`;
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
     const config: AutomationConfig = {
       triggers: [],
       conditions: [{ condition: "trigger", id: generatedId }],
@@ -295,8 +289,8 @@ describe("automation trigger IDs", () => {
   });
 
   it("removes generated trigger IDs that no condition or action references", () => {
-    const generatedA = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`;
-    const generatedB = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RD0`;
+    const generatedA = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
+    const generatedB = `${GENERATED_TRIGGER_ID_PREFIX}yZ7w`;
     const config: AutomationConfig = {
       triggers: [
         { trigger: "state", entity_id: "light.kitchen", id: generatedA },
@@ -318,7 +312,7 @@ describe("automation trigger IDs", () => {
   });
 
   it("preserves generated trigger IDs still referenced by another condition", () => {
-    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}01K4P0Q7JZ6HYBRP7F86VW9RCD`;
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
     const config: AutomationConfig = {
       triggers: [
         { trigger: "state", entity_id: "light.kitchen", id: generatedId },
@@ -343,5 +337,49 @@ describe("automation trigger IDs", () => {
     };
 
     expect(cleanupUnusedGeneratedTriggerIds(config)).toBe(config);
+  });
+
+  it("strips generated trigger IDs but keeps manual IDs on paste/duplicate", () => {
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
+    const trigger = {
+      trigger: "state" as const,
+      entity_id: "light.kitchen",
+      id: generatedId,
+    };
+
+    expect(stripGeneratedTriggerIds(trigger)).toEqual({
+      trigger: "state",
+      entity_id: "light.kitchen",
+    });
+    expect(
+      stripGeneratedTriggerIds({
+        trigger: "state",
+        entity_id: "light.kitchen",
+        id: "manual",
+      })
+    ).toEqual({
+      trigger: "state",
+      entity_id: "light.kitchen",
+      id: "manual",
+    });
+  });
+
+  it("strips generated IDs recursively from trigger lists", () => {
+    const generatedId = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
+    const list: Trigger = {
+      trigger: "list" as const,
+      triggers: [
+        { trigger: "state", entity_id: "light.kitchen", id: generatedId },
+        { trigger: "time", at: "12:00:00" },
+      ],
+    };
+
+    expect(stripGeneratedTriggerIds(list)).toEqual({
+      trigger: "list",
+      triggers: [
+        { trigger: "state", entity_id: "light.kitchen" },
+        { trigger: "time", at: "12:00:00" },
+      ],
+    });
   });
 });
