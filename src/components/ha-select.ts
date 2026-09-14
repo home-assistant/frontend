@@ -145,7 +145,7 @@ export class HaSelect extends LitElement {
         type="button"
         class=${this._opened ? "opened" : ""}
         compact
-        aria-label=${ifDefined(this.label)}
+        aria-label=${ifDefined(this.ariaLabel || this.label)}
         @clear=${this._clearValue}
         .label=${this.label}
         .value=${valueLabel}

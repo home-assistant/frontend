@@ -72,8 +72,13 @@ const SELECTOR_SCHEMAS = {
       selector: { boolean: {} },
     },
     {
-      name: "allow_negative",
-      selector: { boolean: {} },
+      name: "mode",
+      selector: {
+        select: {
+          mode: "dropdown",
+          options: ["positive", "signed", "offset"],
+        },
+      },
     },
   ] as const,
   entity: [
@@ -253,6 +258,13 @@ export class HaSelectorSelector extends LitElement {
         type,
         ...(typeof value0 === "object" ? value0 : []),
       };
+      if (
+        type === "duration" &&
+        data.mode === undefined &&
+        data.allow_negative
+      ) {
+        data.mode = "signed";
+      }
     }
 
     const schema = this._schema(type, this._localize!);
@@ -293,6 +305,9 @@ export class HaSelectorSelector extends LitElement {
       this._yamlMode = false;
     }
     delete value.type;
+    if (type === "duration" && value.mode !== undefined) {
+      delete value.allow_negative;
+    }
 
     let newValue;
     if (type === "manual") {

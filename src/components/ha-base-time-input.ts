@@ -1,18 +1,28 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiMenuDown, mdiMinus, mdiPlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import "./ha-dropdown";
+import type { HaDropdownSelectEvent } from "./ha-dropdown";
+import "./ha-dropdown-item";
 import "./ha-icon-button";
+import "./ha-svg-icon";
 import "./ha-input-helper-text";
 import "./ha-select";
 import type { HaSelectSelectEvent } from "./ha-select";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
 
+const SIGNS = [
+  { negative: false, label: "+" },
+  { negative: true, label: "−" },
+];
+
 export interface TimeChangedEvent {
+  negative?: boolean;
   days?: number;
   hours: number;
   minutes: number;
@@ -132,6 +142,10 @@ export class HaBaseTimeInput extends LitElement {
    */
   @property({ attribute: false }) amPm: "AM" | "PM" = "AM";
 
+  @property({ attribute: "enable-sign", type: Boolean }) enableSign = false;
+
+  @property({ type: Boolean }) negative = false;
+
   @property({ type: Boolean, reflect: true }) public clearable?: boolean;
 
   @property({ attribute: "placeholder-labels", type: Boolean })
@@ -165,6 +179,43 @@ export class HaBaseTimeInput extends LitElement {
           role="group"
           aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
         >
+          ${
+            this.enableSign
+              ? html`<ha-dropdown
+                    placement="bottom-start"
+                    @wa-select=${this._signSelected}
+                    @wa-after-hide=${stopPropagation}
+                    @wa-hide=${stopPropagation}
+                  >
+                    <button
+                      slot="trigger"
+                      type="button"
+                      class="sign"
+                      aria-label=${this.negative ? "-" : "+"}
+                      .disabled=${this.disabled}
+                    >
+                      <ha-svg-icon
+                        .path=${this.negative ? mdiMinus : mdiPlus}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        class="chevron"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon>
+                    </button>
+                    ${SIGNS.map(
+                      ({ negative, label }) => html`
+                        <ha-dropdown-item
+                          .value=${negative ? "-" : "+"}
+                          .selected=${this.negative === negative}
+                        >
+                          ${label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                  </ha-dropdown>
+                  <div class="sign-divider"></div>`
+              : nothing
+          }
           ${
             this.enableDay
               ? html`
@@ -324,18 +375,35 @@ export class HaBaseTimeInput extends LitElement {
     fireEvent(this, "value-changed");
   }
 
+  private _signSelected(ev: HaDropdownSelectEvent): void {
+    ev.stopPropagation();
+    const negative = ev.detail.item.value === "-";
+    if (negative === this.negative) {
+      return;
+    }
+    this.negative = negative;
+    this._fireValue();
+  }
+
   private _valueChanged(ev: InputEvent | HaSelectSelectEvent): void {
     const textField = ev.currentTarget as HaInput;
     this[textField.name || ""] =
       textField.name === "amPm"
         ? (ev as HaSelectSelectEvent).detail.value
         : Number(textField.value);
+    this._fireValue();
+  }
+
+  private _fireValue(): void {
     const value: TimeChangedEvent = {
       hours: this.hours,
       minutes: this.minutes,
       seconds: this.seconds,
       milliseconds: this.milliseconds,
     };
+    if (this.enableSign) {
+      value.negative = this.negative;
+    }
     if (this.enableDay) {
       value.days = this.days;
     }
@@ -411,6 +479,10 @@ export class HaBaseTimeInput extends LitElement {
       padding-inline-start: var(--ha-space-4);
     }
 
+    .sign-divider + ha-input::part(wa-base) {
+      padding-inline-start: var(--ha-space-2);
+    }
+
     ha-input:last-child::part(wa-base) {
       padding-inline-end: var(--ha-space-4);
     }
@@ -423,6 +495,53 @@ export class HaBaseTimeInput extends LitElement {
       text-align: center;
     }
 
+    .sign {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      height: 56px;
+      padding: 0;
+      padding-inline: var(--ha-space-3) var(--ha-space-1);
+      border: none;
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+      background-color: var(--ha-color-form-background);
+      color: var(--ha-color-text-secondary);
+      cursor: pointer;
+      --mdc-icon-size: 20px;
+    }
+    .sign .chevron {
+      --mdc-icon-size: 18px;
+    }
+    .sign:hover {
+      background-color: var(--ha-color-form-background-hover);
+    }
+    .sign:disabled {
+      cursor: default;
+      color: var(--ha-color-text-disabled);
+    }
+    .sign:focus-visible {
+      outline: 2px solid var(--ha-color-border-primary-normal);
+      outline-offset: -2px;
+    }
+    ha-dropdown-item {
+      font-size: var(--ha-font-size-l);
+      text-align: center;
+    }
+    .sign-divider {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      height: 56px;
+      padding-inline: 0 var(--ha-space-1);
+      background-color: var(--ha-color-form-background);
+      border-bottom: 1px solid var(--ha-color-border-neutral-loud);
+    }
+    .sign-divider::after {
+      content: "";
+      width: 1px;
+      height: 24px;
+      background-color: var(--ha-color-border-neutral-quiet);
+    }
     .time-separator,
     ha-icon-button {
       background-color: var(--ha-color-form-background);

@@ -75,6 +75,7 @@ export interface BlueprintAutomationConfig extends ManualAutomationConfig {
 }
 
 export interface ForDict {
+  negative?: boolean;
   days?: number;
   hours?: number;
   minutes?: number;
