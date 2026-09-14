@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   computeEntityNameDisplay,
+  computeEntityNameDisplayWithoutContext,
   computeEntityNameList,
 } from "../../../src/common/entity/compute_entity_name_display";
 import type { HomeAssistant } from "../../../src/types";
@@ -462,5 +463,55 @@ describe("computeEntityNameList", () => {
     );
 
     expect(result).toEqual([undefined, undefined, undefined]);
+  });
+});
+
+describe("computeEntityNameDisplayWithoutContext", () => {
+  const stateObj = mockStateObj({
+    entity_id: "sensor.kitchen_sensor_battery",
+    attributes: { friendly_name: "Kitchen Sensor Battery" },
+  });
+
+  it("returns string name directly", () => {
+    expect(
+      computeEntityNameDisplayWithoutContext(stateObj, "Custom Name")
+    ).toBe("Custom Name");
+  });
+
+  it("returns text items", () => {
+    expect(
+      computeEntityNameDisplayWithoutContext(stateObj, [
+        { type: "text", text: "Hello" },
+        { type: "text", text: "World" },
+      ])
+    ).toBe("Hello World");
+  });
+
+  it("uses custom separator for text items", () => {
+    expect(
+      computeEntityNameDisplayWithoutContext(
+        stateObj,
+        [
+          { type: "text", text: "Hello" },
+          { type: "text", text: "World" },
+        ],
+        { separator: " - " }
+      )
+    ).toBe("Hello - World");
+  });
+
+  it("falls back to the friendly name when no name is configured", () => {
+    expect(computeEntityNameDisplayWithoutContext(stateObj, undefined)).toBe(
+      "Kitchen Sensor Battery"
+    );
+  });
+
+  it("falls back to the friendly name for items needing entity context", () => {
+    expect(
+      computeEntityNameDisplayWithoutContext(stateObj, [
+        { type: "area" },
+        { type: "entity" },
+      ])
+    ).toBe("Kitchen Sensor Battery");
   });
 });

@@ -40,6 +40,42 @@ export interface EntityNameOptions {
   separator?: string;
 }
 
+// Joins items that need no entity context. Returns undefined as soon as one
+// item references the registries (device, area, ...).
+const computeTextOnlyName = (
+  items: EntityNameItem[],
+  options?: EntityNameOptions
+): string | undefined =>
+  items.every((n) => n.type === "text")
+    ? items
+        .map((item) => item.text)
+        .join(options?.separator ?? DEFAULT_SEPARATOR)
+    : undefined;
+
+/**
+ * Name formatter used before the registry-aware one is installed
+ * (see state/connection-mixin and state/state-display-mixin). It honours a
+ * configured string or text-only name and falls back to the friendly name for
+ * anything that needs entity context, so a configured name is never dropped
+ * while the real formatter is still loading.
+ */
+export const computeEntityNameDisplayWithoutContext = (
+  stateObj: HassEntity,
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
+  options?: EntityNameOptions
+): string => {
+  if (typeof name === "string") {
+    return name;
+  }
+  if (!name) {
+    return computeStateName(stateObj);
+  }
+  return (
+    computeTextOnlyName(ensureArray(name), options) ??
+    computeStateName(stateObj)
+  );
+};
+
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
   name: string | EntityNameItem | EntityNameItem[] | undefined,
@@ -63,8 +99,9 @@ export const computeEntityNameDisplay = (
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
   // If all items are text, just join them
-  if (items.every((n) => n.type === "text")) {
-    return items.map((item) => item.text).join(separator);
+  const textOnlyName = computeTextOnlyName(items, options);
+  if (textOnlyName !== undefined) {
+    return textOnlyName;
   }
 
   const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
