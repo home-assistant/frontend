@@ -24,8 +24,10 @@ import {
 } from "../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../data/light";
 import {
+  DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
   LightColorMode,
   computeDefaultFavoriteColors,
+  lightSupportsBrightness,
   lightSupportsColor,
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
@@ -245,59 +247,106 @@ const coverFavoritesHandler = createNumericFavoritesDialogHandler<CoverEntity>({
   ],
 });
 
+const lightBrightnessFavoritesSpec: NumericFavoritesSpec<LightEntity> = {
+  option: "favorite_brightness",
+  supports: lightSupportsBrightness,
+  getStoredFavorites: (entry) => entry.options?.light?.favorite_brightness,
+  getFavorites: (entry) =>
+    normalizeFavoritePositions(
+      entry.options?.light?.favorite_brightness ??
+        DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+      { min: 1 }
+    ),
+};
+
 const lightFavoritesHandler: FavoritesDialogHandler = {
   domain: "light",
-  supports: (stateObj) => lightSupportsFavoriteColors(stateObj as LightEntity),
+  supports: (stateObj) =>
+    lightSupportsFavoriteColors(stateObj as LightEntity) ||
+    lightBrightnessFavoritesSpec.supports(stateObj as LightEntity),
   hasCustomFavorites: (entry) =>
-    hasCustomFavoriteOptionValues(entry.options?.light?.favorite_colors),
-  getResetOptions: () => ({
-    favorite_colors: undefined,
-  }),
+    hasCustomFavoriteOptionValues(entry.options?.light?.favorite_colors) ||
+    hasCustomFavoriteOptionValues(
+      lightBrightnessFavoritesSpec.getStoredFavorites(entry)
+    ),
+  getResetOptions: (stateObj) => {
+    const lightStateObj = stateObj as LightEntity;
+    const options: Partial<Record<FavoriteOption, undefined>> = {};
+
+    if (lightSupportsFavoriteColors(lightStateObj)) {
+      options.favorite_colors = undefined;
+    }
+
+    if (lightBrightnessFavoritesSpec.supports(lightStateObj)) {
+      options.favorite_brightness = undefined;
+    }
+
+    return options;
+  },
   getLabels: (hass) => getFavoritesDialogLabels(hass, "light"),
   copy: async ({ entry, hass, host, stateObj }) => {
     const lightStateObj = stateObj as LightEntity;
-    const favorites: LightColor[] =
+    const supportsColorFavorites = lightSupportsFavoriteColors(lightStateObj);
+    const supportsBrightnessFavorites =
+      lightBrightnessFavoritesSpec.supports(lightStateObj);
+
+    const favoriteColors: LightColor[] =
       entry.options?.light?.favorite_colors ??
       computeDefaultFavoriteColors(lightStateObj);
 
-    const favoriteTypes = [
-      ...new Set(favorites.map((item) => Object.keys(item)[0])),
+    const favoriteColorTypes = [
+      ...new Set(favoriteColors.map((item) => Object.keys(item)[0])),
     ];
 
     const compatibleLights = Object.values(hass.states).filter(
       (candidate) =>
         candidate.entity_id !== lightStateObj.entity_id &&
         computeStateDomain(candidate) === "light" &&
-        favoriteTypes.every((type) =>
-          type === "color_temp_kelvin"
-            ? lightSupportsColorMode(
-                candidate as LightEntity,
-                LightColorMode.COLOR_TEMP
-              )
-            : type === "hs_color" || type === "rgb_color"
-              ? lightSupportsColor(candidate as LightEntity)
-              : type === "rgbw_color"
-                ? lightSupportsColorMode(
-                    candidate as LightEntity,
-                    LightColorMode.RGBW
-                  )
-                : type === "rgbww_color"
+        (!supportsColorFavorites ||
+          favoriteColorTypes.every((type) =>
+            type === "color_temp_kelvin"
+              ? lightSupportsColorMode(
+                  candidate as LightEntity,
+                  LightColorMode.COLOR_TEMP
+                )
+              : type === "hs_color" || type === "rgb_color"
+                ? lightSupportsColor(candidate as LightEntity)
+                : type === "rgbw_color"
                   ? lightSupportsColorMode(
                       candidate as LightEntity,
-                      LightColorMode.RGBWW
+                      LightColorMode.RGBW
                     )
-                  : false
-        )
+                  : type === "rgbww_color"
+                    ? lightSupportsColorMode(
+                        candidate as LightEntity,
+                        LightColorMode.RGBWW
+                      )
+                    : false
+          )) &&
+        (!supportsBrightnessFavorites ||
+          lightBrightnessFavoritesSpec.supports(candidate as LightEntity))
     );
+
+    const options: Partial<Record<FavoriteOption, LightColor[] | number[]>> =
+      {};
+
+    if (supportsColorFavorites) {
+      options.favorite_colors = favoriteColors;
+    }
+
+    if (supportsBrightnessFavorites) {
+      options.favorite_brightness = lightBrightnessFavoritesSpec.getFavorites(
+        entry,
+        lightStateObj
+      );
+    }
 
     await copyFavoriteOptionsToEntities(
       host,
       hass,
       "light",
       compatibleLights.map((light) => light.entity_id),
-      {
-        favorite_colors: favorites,
-      }
+      options
     );
   },
 };
