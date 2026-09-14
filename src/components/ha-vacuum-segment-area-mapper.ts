@@ -1,14 +1,16 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiArrowRightThin } from "@mdi/js";
+import { mdiArrowRightThin, mdiDelete } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeAreaName } from "../common/entity/compute_area_name";
 import type { Segment } from "../data/vacuum";
 import { getVacuumSegments } from "../data/vacuum";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-area-picker";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 type AreaSegmentMapping = Record<string, string[]>; // area ID -> segment IDs
@@ -76,6 +78,8 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     // Group segments by group (if available)
     const groupedSegments = this._groupSegments(this._segments);
 
+    const orphanedAreas = this._getOrphanedAreas();
+
     return html`
       ${Object.entries(groupedSegments).map(
         ([groupName, segments]) => html`
@@ -83,8 +87,67 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
           ${segments.map((segment) => this._renderSegment(segment))}
         `
       )}
+      ${orphanedAreas.length ? this._renderOrphanedAreas(orphanedAreas) : nothing}
     `;
   }
+
+  private _getOrphanedAreas(): string[] {
+    if (!this.value || !this._segments || this._segments.length === 0) {
+      return [];
+    }
+    const liveIds = new Set(this._segments.map((segment) => segment.id));
+    return Object.entries(this.value)
+      .filter(([, segmentIds]) => segmentIds.some((id) => !liveIds.has(id)))
+      .map(([areaId]) => areaId);
+  }
+
+  private _renderOrphanedAreas(areaIds: string[]) {
+    return html`
+      <h2>
+        ${this.hass.localize(
+          "ui.dialogs.vacuum_segment_mapping.orphaned_header"
+        )}
+      </h2>
+      <p class="orphaned-description">
+        ${this.hass.localize(
+          "ui.dialogs.vacuum_segment_mapping.orphaned_description"
+        )}
+      </p>
+      ${areaIds.map((areaId) => {
+        const area = this.hass.areas[areaId];
+        const name = (area ? computeAreaName(area) : undefined) || areaId;
+        return html`
+          <div class="orphaned-row">
+            <span class="orphaned-name">${name}</span>
+            <ha-icon-button
+              .path=${mdiDelete}
+              .label=${this.hass.localize(
+                "ui.dialogs.vacuum_segment_mapping.orphaned_remove"
+              )}
+              data-area-id=${areaId}
+              @click=${this._removeOrphanedArea}
+            ></ha-icon-button>
+          </div>
+        `;
+      })}
+    `;
+  }
+
+  private _removeOrphanedArea = (ev: Event) => {
+    const areaId = (ev.currentTarget as HTMLElement).dataset.areaId;
+    if (!areaId || !this.value || !this._segments) {
+      return;
+    }
+    const liveIds = new Set(this._segments.map((segment) => segment.id));
+    const newMapping: AreaSegmentMapping = { ...this.value };
+    const kept = (newMapping[areaId] ?? []).filter((id) => liveIds.has(id));
+    if (kept.length) {
+      newMapping[areaId] = kept;
+    } else {
+      delete newMapping[areaId];
+    }
+    fireEvent(this, "value-changed", { value: newMapping });
+  };
 
   private _groupSegments(segments: Segment[]): Record<string, Segment[]> {
     const grouped: Record<string, Segment[]> = {};
@@ -209,8 +272,33 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
       }
 
       h2 {
-        margin: 0;
-        margin-inline-start: var(--ha-space-4);
+        margin: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-bold);
+        line-height: var(--ha-line-height-normal);
+        color: var(--primary-text-color);
+      }
+
+      .orphaned-description {
+        margin: var(--ha-space-1) var(--ha-space-4) var(--ha-space-2);
+        color: var(--secondary-text-color);
+        font: var(--ha-font-body-s);
+      }
+
+      .orphaned-row {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-4);
+        padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-2)
+          var(--ha-space-4);
+      }
+
+      .orphaned-name {
+        flex: 1;
+        font: var(--ha-font-body-l);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .loading {
