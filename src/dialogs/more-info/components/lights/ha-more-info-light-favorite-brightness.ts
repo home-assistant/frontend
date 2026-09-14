@@ -34,6 +34,7 @@ import {
 } from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
 import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
+import { favoriteSectionStyle } from "./favorite-section-style";
 
 const BRIGHTNESS_MIN = 1;
 const BRIGHTNESS_MAX = 100;
@@ -323,7 +324,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
     }
 
     return html`
-      <div class="group">
+      <section class="group">
         ${this.label ? html`<h4>${this.label}</h4>` : nothing}
         <ha-more-info-favorites
           .items=${this._favoriteBrightness}
@@ -343,36 +344,21 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
           @favorite-item-add=${this._handleFavoriteAdd}
           @favorite-item-done=${this._handleFavoriteDone}
         ></ha-more-info-favorites>
-      </div>
+      </section>
     `;
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      width: 100%;
-    }
-
-    .group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-
-    h4 {
-      margin: 0 0 var(--ha-space-2);
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-      font-weight: var(--ha-font-weight-medium);
-      text-align: center;
-    }
-
-    .group ha-more-info-favorites {
-      --favorite-items-max-width: 384px;
-      --favorite-item-active-background-color: var(--state-light-active-color);
-    }
-  `;
+  static styles = [
+    favoriteSectionStyle,
+    css`
+      .group ha-more-info-favorites {
+        --favorite-items-max-width: 384px;
+        --favorite-item-active-background-color: var(
+          --state-light-active-color
+        );
+      }
+    `,
+  ];
 }
 
 declare global {
