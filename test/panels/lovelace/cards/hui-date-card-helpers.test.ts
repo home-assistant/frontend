@@ -47,9 +47,9 @@ describe("computeResolvedTimeZone", () => {
 });
 
 describe("computeDateText", () => {
-  it("falls back to weekday-long + day-numeric + month-long when date_format is unset", () => {
+  it("falls back to a locale-formatted weekday + day + month string when date_format is unset", () => {
     expect(computeDateText(dateObj, locale, demoConfig, { type: "date" })).toBe(
-      "Saturday 18 November"
+      "Saturday, November 18"
     );
   });
 
@@ -59,7 +59,7 @@ describe("computeDateText", () => {
         type: "date",
         date_format: [],
       })
-    ).toBe("Saturday 18 November");
+    ).toBe("Saturday, November 18");
   });
 
   it("formats using configured tokens in the given order, honoring separators", () => {
@@ -91,7 +91,7 @@ describe("computeDateText", () => {
         type: "date",
         date_format: ["not_a_real_token"] as unknown as DateFormatPart[],
       })
-    ).toBe("Saturday 18 November");
+    ).toBe("Saturday, November 18");
   });
 
   it("respects a card-level time_zone override", () => {
@@ -121,6 +121,19 @@ describe("computeDateText", () => {
         time_zone: "Etc/GMT+12",
       })
     ).toBe("2017-November-17");
+  });
+
+  it("respects a card-level time_zone override for the default format too", () => {
+    // demoConfig.time_zone is "America/Los_Angeles", which would resolve
+    // this UTC instant to Friday, November 17 without the override.
+    const utcDateObj = new Date(Date.UTC(2017, 10, 18, 4, 0, 0));
+
+    expect(
+      computeDateText(utcDateObj, locale, demoConfig, {
+        type: "date",
+        time_zone: "Pacific/Auckland",
+      })
+    ).toBe("Saturday, November 18");
   });
 });
 

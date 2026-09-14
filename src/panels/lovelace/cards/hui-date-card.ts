@@ -81,13 +81,24 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
 
   public connectedCallback() {
     super.connectedCallback();
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
     this._scheduleMidnightRefresh();
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     this._clearMidnightTimer();
   }
+
+  private _handleVisibilityChange = () => {
+    if (!document.hidden) {
+      this._scheduleMidnightRefresh();
+    }
+  };
 
   protected updated(changedProps: PropertyValues) {
     if (!changedProps.has("hass") && !changedProps.has("_config")) {

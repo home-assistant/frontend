@@ -3,13 +3,24 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../../data/translation";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import { formatDateFromParts, getDateFormatConfig } from "./date-format";
-import type { DateCardConfig, DateFormatPart } from "./types";
+import type { DateCardConfig } from "./types";
 
-const DEFAULT_DATE_FORMAT_PARTS: DateFormatPart[] = [
-  "weekday-long",
-  "day-numeric",
-  "month-long",
-];
+/**
+ * Formats the card's default (no date_format configured) display. A single
+ * Intl.DateTimeFormat call lets the locale control field order and
+ * punctuation.
+ */
+const formatDefaultDate = (
+  dateObj: Date,
+  language: string,
+  timeZone: string
+): string =>
+  new Intl.DateTimeFormat(language, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone,
+  }).format(dateObj);
 
 /**
  * Resolves the actual IANA time zone the card should display, honoring a
@@ -25,7 +36,7 @@ export const computeResolvedTimeZone = (
 
 /**
  * Formats "now" per the card's configured date_format tokens (same token
- * system as the Clock card), falling back to default when no valid
+ * system as the Clock card), falling back to `formatDefaultDate` when no
  * tokens are configured.
  */
 export const computeDateText = (
@@ -37,12 +48,11 @@ export const computeDateText = (
   const { parts } = getDateFormatConfig(cardConfig);
   const timeZone = computeResolvedTimeZone(locale, config, cardConfig);
 
-  return formatDateFromParts(
-    dateObj,
-    { parts: parts.length ? parts : DEFAULT_DATE_FORMAT_PARTS },
-    locale.language,
-    timeZone
-  );
+  if (!parts.length) {
+    return formatDefaultDate(dateObj, locale.language, timeZone);
+  }
+
+  return formatDateFromParts(dateObj, { parts }, locale.language, timeZone);
 };
 
 /**
