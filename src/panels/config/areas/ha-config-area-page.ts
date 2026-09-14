@@ -1,7 +1,6 @@
 import { startOfYesterday } from "date-fns";
 import { consume } from "@lit/context";
 import {
-  mdiChevronRight,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -39,6 +38,7 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-button-next";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -604,12 +604,11 @@ class HaConfigAreaPage extends LitElement {
                       back: "1",
                     })}"
                   >
-                    <ha-icon-button
-                      .path=${mdiChevronRight}
+                    <ha-icon-button-next
                       .label=${this.hass.localize(
                         "ui.dialogs.more_info_control.show_more"
                       )}
-                    ></ha-icon-button>
+                    ></ha-icon-button-next>
                   </a>
                 </div>
                 <ha-logbook
