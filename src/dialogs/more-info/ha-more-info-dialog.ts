@@ -53,6 +53,7 @@ import {
 } from "../../common/url/more-info-query-params";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { setExternalOnscreenEntity } from "../../external_app/external_onscreen_context";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-adaptive-dialog";
 import "../../components/ha-dropdown";
@@ -1030,6 +1031,16 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (changedProps.has("_currView")) {
       this._infoEditMode = false;
       this._detailsYamlMode = false;
+    }
+
+    // Report the entity this dialog is about to the external app, so a voice assistant can act on
+    // what is on screen. Drilling into a related entity swaps `_entityId` without reopening, so the
+    // report follows the entity rather than the dialog being shown.
+    if (changedProps.has("_entityId") || changedProps.has("_open")) {
+      setExternalOnscreenEntity(
+        this.hass,
+        this._open ? (this._entityId ?? null) : null
+      );
     }
   }
 

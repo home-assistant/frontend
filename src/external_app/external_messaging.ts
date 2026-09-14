@@ -184,6 +184,16 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageOnscreenContextSet extends EMMessage {
+  type: "onscreen_context/set";
+  payload: {
+    // The entity the frontend is currently showing front and centre, or null when it stopped
+    // showing one. The external app hands this to the platform so voice assistants can resolve
+    // "this one" against what is on screen.
+    entity_id: string | null;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -224,6 +234,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImprovConfigureDevice
   | EMOutgoingMessageAddEntityTo
   | EMOutgoingMessageFocusElement
+  | EMOutgoingMessageOnscreenContextSet
   | EMOutgoingMessageReloadAndClearCache
   | EMOutgoingMessageAssistSettings;
 
@@ -377,6 +388,7 @@ export interface ExternalConfig {
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
+  hasOnscreenContext?: boolean; // Accepts onscreen_context/set, so the app can tell the platform which entity is on screen
 }
 
 export interface ExternalEntityAddToAction {
