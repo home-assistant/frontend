@@ -224,9 +224,11 @@
       },
       "home-summary": {
         "all_lights_off": "All off",
+        "count_active_alerts": "{count} {count, plural,\n one {active alert}\n other {active alerts}\n}",
         "count_lights_on": "{count} {count, plural,\n one {on}\n other {on}\n}",
         "count_locks_unlocked": "{count} {count, plural,\n one {unlocked}\n other {unlocked}\n}",
         "count_alarms_disarmed": "{count} {count, plural,\n one {disarmed}\n other {disarmed}\n}",
+        "count_warnings": "{count} {count, plural,\n one {warning}\n other {warnings}\n}",
         "all_secure": "All secure",
         "no_media_playing": "No media playing",
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
@@ -1907,6 +1909,7 @@
           "commands": "Lawn mower commands:",
           "start_mowing": "Start mowing",
           "pause": "Pause",
+          "stop": "Stop",
           "dock": "Return to dock"
         },
         "valve": {
@@ -8931,16 +8934,28 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
-            "preview": "Preview",
+            "preview": "Examples",
             "preview_error": "Failed to generate preview",
+            "unused_part": "{name} (not used in format)",
             "reset": "Reset to default",
             "examples": {
-              "area": "Living room",
-              "device": "Thermostat",
-              "entity": "Temperature",
-              "floor": "Ground floor"
+              "thermostat": {
+                "name": "Thermostat",
+                "floor": "Ground floor",
+                "area": "Living room",
+                "device": "Thermostat",
+                "entity": "Temperature"
+              },
+              "power_strip": {
+                "name": "Power strip",
+                "floor": "First floor",
+                "area": "Office",
+                "parent_device": "Power strip",
+                "device": "Outlet 1",
+                "entity": "Power"
+              }
             },
             "editor": {
               "label": "Format",
@@ -9261,6 +9276,7 @@
           },
           "home": {
             "summary_list": {
+              "alerts": "Alerts",
               "media_players": "Media players",
               "other_devices": "Other devices",
               "weather": "Weather",
@@ -11086,7 +11102,12 @@
                 "label": "Target temperature"
               },
               "target-humidity": {
-                "label": "Target humidity"
+                "label": "Target humidity",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                }
               },
               "water-heater-operation-modes": {
                 "label": "Water heater operation modes",
@@ -11104,6 +11125,7 @@
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "Start Pause",
+                  "stop": "[%key:ui::dialogs::more_info_control::lawn_mower::stop%]",
                   "dock": "[%key:ui::dialogs::more_info_control::lawn_mower::dock%]"
                 }
               },

@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { theme2hex } from "../../../common/color/convert-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { createSearchParam } from "../../../common/url/search-params";
@@ -105,10 +106,22 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
     this._names = {};
     this._entities.forEach((entity) => {
-      const stateObj = this.hass!.states[entity.entity];
-      this._names[entity.entity] = stateObj
-        ? this.hass!.formatEntityName(stateObj, entity.name)
-        : entity.entity;
+      // Leave unset so timeline/line charts use computeHistory's Device ▸ Entity
+      // labels. Only YAML `name` overrides that default.
+      if (entity.name === undefined) {
+        return;
+      }
+      const stateObj =
+        this.hass!.states[entity.entity] ??
+        ({
+          entity_id: entity.entity,
+          state: "unavailable",
+          attributes: {},
+        } as HassEntity);
+      this._names[entity.entity] = this.hass!.formatEntityName(
+        stateObj,
+        entity.name
+      );
     });
   }
 
@@ -315,6 +328,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     const columns = this._config.grid_options?.columns ?? 12;
     const narrow = typeof columns === "number" && columns <= 12;
     const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+    const showNames = this._config.show_names !== false;
 
     return html`
       <ha-card>
@@ -360,11 +374,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                     .names=${this._names}
                     up-to-now
                     .hoursToShow=${this._hoursToShow}
-                    .showNames=${
-                      this._config.show_names !== undefined
-                        ? this._config.show_names
-                        : true
-                    }
+                    .showNames=${showNames}
+                    ?inside-labels=${showNames}
                     .logarithmicScale=${this._config.logarithmic_scale || false}
                     .minYAxis=${this._config.min_y_axis}
                     .maxYAxis=${this._config.max_y_axis}

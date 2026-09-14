@@ -179,6 +179,64 @@ describe("buildEntityTree", () => {
     ]);
   });
 
+  it("nests a child device under its parent, even when the parent has no entities", () => {
+    const hass = makeHass({
+      states: {
+        "switch.outlet_1": state("switch.outlet_1"),
+        "switch.outlet_2": state("switch.outlet_2"),
+      },
+      entities: {
+        "switch.outlet_1": entity({ device_id: "outlet_1" }),
+        "switch.outlet_2": entity({ device_id: "outlet_2" }),
+      },
+      devices: {
+        strip: device("strip", { name: "Power strip", area_id: "office" }),
+        outlet_1: device("outlet_1", {
+          name: "Outlet 1",
+          parent_device_id: "strip",
+        }),
+        outlet_2: device("outlet_2", {
+          name: "Outlet 2",
+          parent_device_id: "strip",
+        }),
+      },
+      areas: { office: area("office") },
+    });
+
+    const tree = buildTree(hass);
+    const office = tree.otherAreas[0];
+    expect(office.devices.map((d) => d.id)).toEqual(["strip"]);
+    expect(office.devices[0].entityIds).toEqual([]);
+    expect(office.devices[0].children.map((d) => d.id)).toEqual([
+      "outlet_1",
+      "outlet_2",
+    ]);
+    expect(office.devices[0].children[0].entityIds).toEqual([
+      "switch.outlet_1",
+    ]);
+  });
+
+  it("keeps a child device at the top level when its parent is in another area", () => {
+    const hass = makeHass({
+      states: { "switch.outlet_1": state("switch.outlet_1") },
+      entities: { "switch.outlet_1": entity({ device_id: "outlet_1" }) },
+      devices: {
+        strip: device("strip", { area_id: "office" }),
+        outlet_1: device("outlet_1", {
+          area_id: "kitchen",
+          parent_device_id: "strip",
+        }),
+      },
+      areas: { office: area("office"), kitchen: area("kitchen") },
+    });
+
+    const tree = buildTree(hass);
+    const kitchen = tree.otherAreas.find((a) => a.id === "kitchen")!;
+    expect(kitchen.devices.map((d) => d.id)).toEqual(["outlet_1"]);
+    expect(kitchen.devices[0].children).toEqual([]);
+    expect(tree.otherAreas.find((a) => a.id === "office")).toBeUndefined();
+  });
+
   it("treats entities with their own area_id as direct area entities (not under device)", () => {
     const hass = makeHass({
       states: { "sensor.temp": state("sensor.temp") },
@@ -350,6 +408,27 @@ describe("pathToEntity", () => {
       otherAreasFloor,
       areaKey(otherAreasFloor, "kitchen"),
       deviceKey(areaKey(otherAreasFloor, "kitchen"), "dev1"),
+    ]);
+  });
+
+  it("includes the parent device key for an entity on a child device", () => {
+    const hass = makeHass({
+      states: { "switch.outlet_1": state("switch.outlet_1") },
+      entities: { "switch.outlet_1": entity({ device_id: "outlet_1" }) },
+      devices: {
+        strip: device("strip", { area_id: "office" }),
+        outlet_1: device("outlet_1", { parent_device_id: "strip" }),
+      },
+      areas: { office: area("office") },
+    });
+    const tree = buildTree(hass);
+    const aKey = areaKey(floorKey(OTHER_AREAS_ID), "office");
+    const stripKey = deviceKey(aKey, "strip");
+    expect(pathToEntity(tree, "switch.outlet_1")).toEqual([
+      floorKey(OTHER_AREAS_ID),
+      aKey,
+      stripKey,
+      deviceKey(stripKey, "outlet_1"),
     ]);
   });
 

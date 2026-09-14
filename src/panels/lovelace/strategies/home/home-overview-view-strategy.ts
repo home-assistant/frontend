@@ -11,6 +11,7 @@ import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
+import type { SecurityAlertEntityConfig } from "../../../../data/frontend";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -24,6 +25,7 @@ import type { HomeAssistant } from "../../../../types";
 import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
   AreaCardConfig,
+  ConditionalCardConfig,
   DiscoveredDevicesCardConfig,
   EmptyStateCardConfig,
   HeadingCardConfig,
@@ -36,16 +38,23 @@ import type {
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
 import {
+  computeDefaultSecurityAlertVisibility,
+  filterSecurityAlertEntities,
+  resolveSecurityAlertSeverity,
+} from "../../../security/strategies/security-alerts";
+import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
 import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
+import { generateLovelaceSectionStrategy } from "../get-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOverviewViewStrategyConfig {
   type: "home-overview";
+  alert_entities?: SecurityAlertEntityConfig[];
   favorite_entities?: string[];
   home_panel?: boolean;
   hide_welcome_message?: boolean;
@@ -111,6 +120,28 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     "floors",
     "panels",
   ];
+
+  static shouldRegenerate(
+    config: HomeOverviewViewStrategyConfig,
+    oldHass: HomeAssistant,
+    newHass: HomeAssistant
+  ) {
+    return (
+      this.registryDependencies.some((key) => oldHass[key] !== newHass[key]) ||
+      (config.alert_entities?.some(
+        (alertEntity) =>
+          resolveSecurityAlertSeverity(
+            alertEntity,
+            oldHass.states[alertEntity.entity]
+          ) !==
+          resolveSecurityAlertSeverity(
+            alertEntity,
+            newHass.states[alertEntity.entity]
+          )
+      ) ??
+        false)
+    );
+  }
 
   static async generate(
     config: HomeOverviewViewStrategyConfig,
@@ -256,16 +287,25 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     let favoritesSection: LovelaceSectionRawConfig | undefined;
     if (!config.hide_suggested_entities) {
-      favoritesSection = {
-        strategy: {
-          type: "common-controls",
-          limit: maxCommonControls,
-          include_entities: favoriteEntities,
-          hide_empty: true,
-          heading: favoritesHeadingCard,
-        } satisfies CommonControlsSectionStrategyConfig,
-        column_span: maxColumns,
-      } satisfies LovelaceStrategySectionConfig;
+      const generatedFavoritesSection = await generateLovelaceSectionStrategy(
+        {
+          strategy: {
+            type: "common-controls",
+            limit: maxCommonControls,
+            include_entities: favoriteEntities,
+            hide_empty: true,
+            heading: favoritesHeadingCard,
+          } satisfies CommonControlsSectionStrategyConfig,
+          column_span: maxColumns,
+        } satisfies LovelaceStrategySectionConfig,
+        hass
+      );
+      if (!generatedFavoritesSection.disabled) {
+        favoritesSection = {
+          ...generatedFavoritesSection,
+          column_span: maxColumns,
+        };
+      }
     } else if (favoriteEntities.length > 0) {
       favoritesSection = {
         type: "grid",
@@ -304,6 +344,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const hasMaintenance =
       hass.panels.maintenance &&
       findEntities(allEntities, maintenanceFilters).length > 0;
+
+    const alertEntities = config.alert_entities ?? [];
+    const alertSeverityEntities = filterSecurityAlertEntities(
+      alertEntities,
+      hass,
+      "alert"
+    );
+    const alertActiveConditions = alertSeverityEntities.map((alertEntity) => ({
+      condition: "and" as const,
+      conditions: computeDefaultSecurityAlertVisibility(alertEntity.entity),
+    }));
 
     const weatherFilter = generateEntityFilter(hass, {
       domain: "weather",
@@ -350,17 +401,23 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
               },
             } satisfies HomeSummaryCard)
           : undefined,
-      security: () =>
-        hasSecurity
-          ? ({
-              type: "home-summary",
-              summary: "security",
-              tap_action: {
-                action: "navigate",
-                navigation_path: "/security?historyBack=1",
-              },
-            } satisfies HomeSummaryCard)
-          : undefined,
+      security: () => {
+        if (!hasSecurity) {
+          return undefined;
+        }
+        const card: HomeSummaryCard = {
+          type: "home-summary",
+          summary: "security",
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/security?historyBack=1",
+          },
+        };
+        if (alertEntities.length) {
+          card.alert_entities = alertEntities;
+        }
+        return card;
+      },
       media_players: () =>
         hasMediaPlayers
           ? ({
@@ -454,6 +511,10 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       }
     }
 
+    const hasVisibleSummaryCards = summaryCards.some(
+      (card) => !("hide_empty" in card && card.hide_empty)
+    );
+
     // Build summary cards for sidebar (full width: columns 12)
     const sidebarSummaryCards = summaryCards.map((card) => ({
       ...card,
@@ -474,6 +535,33 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       heading_style: "title",
     };
 
+    const alertsCard: HomeSummaryCard | undefined = alertSeverityEntities.length
+      ? ({
+          type: "home-summary",
+          summary: "alerts",
+          alert_entities: alertSeverityEntities,
+          tap_action: {
+            action: "navigate",
+            navigation_path: "/security?historyBack=1",
+          },
+          visibility: [
+            {
+              condition: "or",
+              conditions: alertActiveConditions,
+            },
+          ],
+        } satisfies HomeSummaryCard)
+      : undefined;
+
+    const mobileAlertsSection: LovelaceSectionConfig | undefined = alertsCard
+      ? {
+          type: "grid",
+          column_span: maxColumns,
+          visibility: [SMALL_SCREEN_CONDITION],
+          cards: [{ ...alertsCard, grid_options: { columns: 6 } }],
+        }
+      : undefined;
+
     // Mobile summary section (visible on small screens only)
     const mobileSummarySection: LovelaceSectionConfig | undefined =
       mobileSummaryCards.length > 0
@@ -487,7 +575,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     // Sidebar section
     const sidebarSection: LovelaceSectionConfig | undefined =
-      sidebarSummaryCards.length > 0
+      sidebarSummaryCards.length > 0 || alertsCard
         ? {
             type: "grid",
             cards: [
@@ -495,67 +583,103 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                 ...summaryHeadingCard,
                 grid_options: { rows: "auto" }, // Compact style
               },
+              ...(alertsCard
+                ? [{ ...alertsCard, grid_options: { columns: 12 } }]
+                : []),
               ...sidebarSummaryCards,
             ],
           }
         : undefined;
 
+    const emptyStateCard = {
+      type: "empty-state",
+      icon: "mdi:home-assistant",
+      content_only: true,
+      title: hass.localize("ui.panel.lovelace.strategy.home.welcome_title"),
+      content: hass.localize("ui.panel.lovelace.strategy.home.welcome_content"),
+      ...(config.home_panel && hass.user?.is_admin
+        ? {
+            buttons: [
+              {
+                icon: "mdi:plus",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_add_device"
+                ),
+                appearance: "filled" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "fire-dom-event" as const,
+                  home_panel: {
+                    type: "add_integration",
+                  },
+                },
+              },
+              {
+                icon: "mdi:home-edit",
+                text: hass.localize(
+                  "ui.panel.lovelace.strategy.home.welcome_edit_areas"
+                ),
+                appearance: "plain" as const,
+                variant: "brand" as const,
+                tap_action: {
+                  action: "navigate" as const,
+                  navigation_path: "/config/areas/dashboard",
+                },
+              },
+            ],
+          }
+        : {}),
+    } as EmptyStateCardConfig;
+
     // No sections, show empty state
-    if (floorsSections.length === 0) {
+    if (
+      floorsSections.length === 0 &&
+      !alertsCard &&
+      !favoritesSection &&
+      !hasVisibleSummaryCards
+    ) {
       return {
         type: "panel",
-        cards: [
-          {
-            type: "empty-state",
-            icon: "mdi:home-assistant",
-            content_only: true,
-            title: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_title"
-            ),
-            content: hass.localize(
-              "ui.panel.lovelace.strategy.home.welcome_content"
-            ),
-            ...(config.home_panel && hass.user?.is_admin
-              ? {
-                  buttons: [
-                    {
-                      icon: "mdi:plus",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_add_device"
-                      ),
-                      appearance: "filled",
-                      variant: "brand",
-                      tap_action: {
-                        action: "fire-dom-event",
-                        home_panel: {
-                          type: "add_integration",
-                        },
-                      },
-                    },
-                    {
-                      icon: "mdi:home-edit",
-                      text: hass.localize(
-                        "ui.panel.lovelace.strategy.home.welcome_edit_areas"
-                      ),
-                      appearance: "plain",
-                      variant: "brand",
-                      tap_action: {
-                        action: "navigate",
-                        navigation_path: "/config/areas/dashboard",
-                      },
-                    },
-                  ],
-                }
-              : {}),
-          } as EmptyStateCardConfig,
-        ],
+        cards: [emptyStateCard],
       };
     }
 
+    const emptyStateSection: LovelaceSectionConfig | undefined =
+      floorsSections.length === 0 &&
+      !favoritesSection &&
+      !hasVisibleSummaryCards &&
+      alertSeverityEntities.length
+        ? {
+            type: "grid",
+            column_span: maxColumns,
+            cards: [
+              {
+                type: "conditional",
+                conditions: [
+                  {
+                    condition: "not",
+                    conditions: [
+                      {
+                        condition: "or",
+                        conditions: alertActiveConditions,
+                      },
+                    ],
+                  },
+                ],
+                card: emptyStateCard,
+              } satisfies ConditionalCardConfig,
+            ],
+          }
+        : undefined;
+
     const sections = (
-      [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        LovelaceSectionRawConfig | undefined
-      )[]
+      [
+        emptyStateSection,
+        mobileAlertsSection,
+        favoritesSection,
+        mobileSummarySection,
+        ...floorsSections,
+      ] satisfies (LovelaceSectionRawConfig | undefined)[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 
     return {
