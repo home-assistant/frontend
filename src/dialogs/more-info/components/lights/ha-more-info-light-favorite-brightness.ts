@@ -19,7 +19,10 @@ import type {
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { normalizeFavoritePositions } from "../../../../data/favorite_positions";
 import type { LightEntity } from "../../../../data/light";
-import { DEFAULT_LIGHT_FAVORITE_BRIGHTNESS } from "../../../../data/light";
+import {
+  DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+  lightSupportsBrightness,
+} from "../../../../data/light";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -81,10 +84,12 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
     ) {
       const options = this.entry.options?.light;
 
-      this._favoriteBrightness = normalizeFavoritePositions(
-        options?.favorite_brightness ?? DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
-        { min: BRIGHTNESS_MIN }
-      );
+      this._favoriteBrightness = lightSupportsBrightness(this.stateObj)
+        ? normalizeFavoritePositions(
+            options?.favorite_brightness ?? DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+            { min: BRIGHTNESS_MIN }
+          )
+        : [];
     }
   }
 
@@ -365,6 +370,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
 
     .group ha-more-info-favorites {
       --favorite-items-max-width: 384px;
+      --favorite-item-active-background-color: var(--state-light-active-color);
     }
   `;
 }
