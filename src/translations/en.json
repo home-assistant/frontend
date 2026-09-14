@@ -5486,7 +5486,7 @@
                   "label": "State changed",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
-                  "for": "For",
+                  "for": "For at least",
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
@@ -5599,7 +5599,7 @@
                 "template": {
                   "label": "Template",
                   "value_template": "Value template",
-                  "for": "For",
+                  "for": "For at least",
                   "description": {
                     "picker": "Triggers when a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
