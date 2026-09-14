@@ -5801,6 +5801,7 @@
                 "state": {
                   "label": "State",
                   "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
+                  "for_unavailable_with_attribute": "Not available when matching on an attribute.",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
