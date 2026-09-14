@@ -146,23 +146,8 @@ export class HaMoreInfoUpdateBackup extends LitElement {
       });
       const type = getUpdateType(this.stateObj!, this._entitySources!);
 
-      const requests: Promise<any>[] = [];
-      if (
-        isComponentLoaded(this._config, "hassio") &&
-        ["addon", "home_assistant", "home_assistant_os"].includes(type)
-      ) {
-        requests.push(this._fetchUpdateBackupConfig(type));
-      }
-
-      if (this._isHaOrOsUpdate(type)) {
-        requests.push(this._fetchBackupConfig());
-      }
-
-      const results = await Promise.allSettled(requests);
-      const failures = results.filter((r) => r.status === "rejected");
-      if (failures.length) {
-        throw failures[0].reason;
-      }
+      this._fetchUpdateBackupConfig(type);
+      this._fetchBackupConfig(type);
     } catch (err) {
       // ignore error, because the generic backup option remains available
       // eslint-disable-next-line no-console
@@ -175,28 +160,45 @@ export class HaMoreInfoUpdateBackup extends LitElement {
 
   private async _fetchUpdateBackupConfig(type: UpdateType) {
     try {
-      const config = await getSupervisorUpdateConfig(this._api);
+      if (
+        isComponentLoaded(this._config, "hassio") &&
+        ["addon", "home_assistant", "home_assistant_os"].includes(type)
+      ) {
+        const config = await getSupervisorUpdateConfig(this._api);
 
-      // for home assistant and OS updates
-      if (this._isHaOrOsUpdate(type)) {
-        this._createBackup = config.core_backup_before_update;
-        return;
-      }
+        // for home assistant and OS updates
+        if (this._isHaOrOsUpdate(type)) {
+          this._createBackup = config.core_backup_before_update;
+          return;
+        }
 
-      if (type === "addon") {
-        this._createBackup = config.add_on_backup_before_update;
+        if (type === "addon") {
+          this._createBackup = config.add_on_backup_before_update;
+        }
       }
     } catch (err) {
       // ignore error, because user can still set the config
       // eslint-disable-next-line no-console
       console.error(err);
       this._createBackup = false;
+    } finally {
+      this._createBackupLoading = false;
     }
   }
 
-  private async _fetchBackupConfig(): Promise<void> {
-    const { config } = await fetchBackupConfig(this._api);
-    this._backupConfig = config;
+  private async _fetchBackupConfig(type: UpdateType): Promise<void> {
+    try {
+      if (this._isHaOrOsUpdate(type)) {
+        const { config } = await fetchBackupConfig(this._api);
+        this._backupConfig = config;
+      }
+    } catch (err) {
+      // ignore error, because user can still set the config
+      // eslint-disable-next-line no-console
+      console.error(err);
+    } finally {
+      this._backupConfigLoading = false;
+    }
   }
 
   private _isHaOrOsUpdate(type: UpdateType): boolean {
