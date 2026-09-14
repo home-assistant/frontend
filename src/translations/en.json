@@ -10917,6 +10917,10 @@
               "light-brightness": {
                 "label": "Light brightness"
               },
+              "light-brightness-favorites": {
+                "label": "Light brightness favorites",
+                "description": "This feature uses the light's favorite brightness levels. To edit them, open the light's more info dialog and press and hold a favorite."
+              },
               "light-color-favorites": {
                 "label": "Light color favorites",
                 "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
