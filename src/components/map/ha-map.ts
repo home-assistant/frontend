@@ -1426,12 +1426,19 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* A cluster bubble and its tail cast a single shadow around their
+         combined silhouette (drop-shadow on the wrapper), so no shadow seam
+         appears between the bubble and its tail. */
+      --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
     }
     #map.clickable {
       cursor: pointer;
     }
     #map.dark {
       background: #090909;
+      --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
     #map.forced-dark {
       color: #ffffff;
@@ -1452,6 +1459,8 @@ export class HaMap extends ReactiveElement {
       display: flex;
       flex-direction: column;
       align-items: center;
+      isolation: isolate;
+      filter: var(--ha-cluster-shadow);
     }
     .cluster-open-members {
       display: flex;
@@ -1463,7 +1472,13 @@ export class HaMap extends ReactiveElement {
       max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
       background: var(--card-background-color, #fff);
       border-radius: 14px;
-      box-shadow: var(--ha-box-shadow-s);
+    }
+    /* Both tails are a rotated square whose upper half sits under the bubble;
+       drawn behind it, so it never covers a member's frame or selected ring */
+    .cluster-open-tail,
+    .cluster-bubble-tail {
+      position: relative;
+      z-index: -1;
     }
     .cluster-open-tail {
       width: 10px;
@@ -1542,6 +1557,13 @@ export class HaMap extends ReactiveElement {
       display: flex;
       flex-direction: column;
       align-items: center;
+      isolation: isolate;
+      filter: var(--ha-cluster-shadow);
+    }
+    /* The wrapper carries the shadow around the bubble-plus-tail outline, so
+       the bubble itself drops its own to avoid a seam at the tail. */
+    .cluster-marker .cluster-bubble {
+      filter: none;
     }
     .cluster-bubble-tail {
       width: ${CLUSTER_TAIL_SIZE}px;
@@ -1559,7 +1581,7 @@ export class HaMap extends ReactiveElement {
       box-sizing: border-box;
       background: var(--card-background-color, #fff);
       border-radius: 14px;
-      box-shadow: var(--ha-box-shadow-s);
+      filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
