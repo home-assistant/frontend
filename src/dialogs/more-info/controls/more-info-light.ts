@@ -131,20 +131,18 @@ class MoreInfoLight extends LitElement {
 
     const showFavoriteColors = Boolean(
       this.entry &&
+      lightSupportsFavoriteColors(this.stateObj) &&
       (this.editMode ||
-        (lightSupportsFavoriteColors(this.stateObj) &&
-          shouldShowFavoriteOptions(
-            this.entry.options?.light?.favorite_colors
-          )))
+        shouldShowFavoriteOptions(this.entry.options?.light?.favorite_colors))
     );
 
     const showFavoriteBrightness = Boolean(
       this.entry &&
+      supportsBrightness &&
       (this.editMode ||
-        (supportsBrightness &&
-          shouldShowFavoriteOptions(
-            this.entry.options?.light?.favorite_brightness
-          )))
+        shouldShowFavoriteOptions(
+          this.entry.options?.light?.favorite_brightness
+        ))
     );
 
     const showBothFavoriteSections =
