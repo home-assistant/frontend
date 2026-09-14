@@ -259,6 +259,35 @@ const lightBrightnessFavoritesSpec: NumericFavoritesSpec<LightEntity> = {
     ),
 };
 
+export const isLightCompatibleForFavoritesCopy = (
+  candidate: HassEntity,
+  sourceEntityId: string,
+  supportsColorFavorites: boolean,
+  supportsBrightnessFavorites: boolean,
+  favoriteColorTypes: string[]
+): boolean => {
+  const candidateLight = candidate as LightEntity;
+
+  return (
+    candidate.entity_id !== sourceEntityId &&
+    computeStateDomain(candidate) === "light" &&
+    supportsColorFavorites === lightSupportsFavoriteColors(candidateLight) &&
+    supportsBrightnessFavorites === lightSupportsBrightness(candidateLight) &&
+    (!supportsColorFavorites ||
+      favoriteColorTypes.every((type) =>
+        type === "color_temp_kelvin"
+          ? lightSupportsColorMode(candidateLight, LightColorMode.COLOR_TEMP)
+          : type === "hs_color" || type === "rgb_color"
+            ? lightSupportsColor(candidateLight)
+            : type === "rgbw_color"
+              ? lightSupportsColorMode(candidateLight, LightColorMode.RGBW)
+              : type === "rgbww_color"
+                ? lightSupportsColorMode(candidateLight, LightColorMode.RGBWW)
+                : false
+      ))
+  );
+};
+
 const lightFavoritesHandler: FavoritesDialogHandler = {
   domain: "light",
   supports: (stateObj) =>
@@ -298,39 +327,15 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
       ...new Set(favoriteColors.map((item) => Object.keys(item)[0])),
     ];
 
-    const compatibleLights = Object.values(hass.states).filter((candidate) => {
-      const candidateLight = candidate as LightEntity;
-
-      return (
-        candidate.entity_id !== lightStateObj.entity_id &&
-        computeStateDomain(candidate) === "light" &&
-        supportsColorFavorites ===
-          lightSupportsFavoriteColors(candidateLight) &&
-        supportsBrightnessFavorites ===
-          lightBrightnessFavoritesSpec.supports(candidateLight) &&
-        (!supportsColorFavorites ||
-          favoriteColorTypes.every((type) =>
-            type === "color_temp_kelvin"
-              ? lightSupportsColorMode(
-                  candidate as LightEntity,
-                  LightColorMode.COLOR_TEMP
-                )
-              : type === "hs_color" || type === "rgb_color"
-                ? lightSupportsColor(candidate as LightEntity)
-                : type === "rgbw_color"
-                  ? lightSupportsColorMode(
-                      candidate as LightEntity,
-                      LightColorMode.RGBW
-                    )
-                  : type === "rgbww_color"
-                    ? lightSupportsColorMode(
-                        candidate as LightEntity,
-                        LightColorMode.RGBWW
-                      )
-                    : false
-          ))
-      );
-    });
+    const compatibleLights = Object.values(hass.states).filter((candidate) =>
+      isLightCompatibleForFavoritesCopy(
+        candidate,
+        lightStateObj.entity_id,
+        supportsColorFavorites,
+        supportsBrightnessFavorites,
+        favoriteColorTypes
+      )
+    );
 
     const options: Partial<Record<FavoriteOption, LightColor[] | number[]>> =
       {};
