@@ -40,6 +40,7 @@ import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-favorite-colors";
+import "../components/lights/ha-more-info-light-favorite-brightness";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
@@ -134,6 +135,15 @@ class MoreInfoLight extends LitElement {
         (lightSupportsFavoriteColors(this.stateObj) &&
           shouldShowFavoriteOptions(
             this.entry.options?.light?.favorite_colors
+          )))
+    );
+
+    const showFavoriteBrightness = Boolean(
+      this.entry &&
+      (this.editMode ||
+        (supportsBrightness &&
+          shouldShowFavoriteOptions(
+            this.entry.options?.light?.favorite_brightness
           )))
     );
 
@@ -281,6 +291,18 @@ class MoreInfoLight extends LitElement {
                           @favorite-color-edit-started=${this._resetMainControl}
                         >
                         </ha-more-info-light-favorite-colors>
+                      `
+                    : nothing
+                }
+                ${
+                  showFavoriteBrightness
+                    ? html`
+                        <ha-more-info-light-favorite-brightness
+                          .stateObj=${this.stateObj}
+                          .entry=${this.entry}
+                          .editMode=${this.editMode}
+                        >
+                        </ha-more-info-light-favorite-brightness>
                       `
                     : nothing
                 }
