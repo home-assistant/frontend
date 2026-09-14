@@ -1031,6 +1031,32 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this._infoEditMode = false;
       this._detailsYamlMode = false;
     }
+
+    if (changedProps.has("_entityId")) {
+      this._reportShownEntityToExternalApp(
+        changedProps.get("_entityId") as string | null | undefined
+      );
+    }
+  }
+
+  private _reportShownEntityToExternalApp(
+    previousEntityId: string | null | undefined
+  ) {
+    const external = this.hass.auth.external;
+    if (!external) {
+      return;
+    }
+    if (this._entityId) {
+      external.fireMessage({
+        type: "more_info/opened",
+        payload: { entity_id: this._entityId },
+      });
+    } else if (previousEntityId) {
+      external.fireMessage({
+        type: "more_info/closed",
+        payload: { entity_id: previousEntityId },
+      });
+    }
   }
 
   private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
