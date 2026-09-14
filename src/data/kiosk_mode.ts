@@ -50,8 +50,20 @@ export const DEFAULT_KIOSK_ELEMENTS_HIDDEN: ReadonlySet<KioskElement> = new Set(
   ]
 );
 
+/**
+ * Who asked for kiosk mode. Each source's request is kept on its own and the
+ * hidden elements are their union, so one source switching kiosk mode off
+ * doesn't undo what another still asks for.
+ *
+ * - `external_app`: the companion app, over `kiosk_mode/set`.
+ * - `app_panel`: an ingress add-on, via `home-assistant/subscribe-properties`.
+ */
+export type KioskModeSource = "external_app" | "app_panel";
+
 export interface KioskModeParams {
   enable: boolean;
+  /** Defaults to `external_app`. */
+  source?: KioskModeSource;
   /** Hide exactly these. Mutually exclusive with `includedElements`. */
   excludedElements?: readonly string[];
   /** Hide everything except these. Mutually exclusive with `excludedElements`. */
@@ -84,4 +96,24 @@ export const resolveKioskElementsHidden = ({
     return new Set(KIOSK_ELEMENTS.filter((element) => !shown.has(element)));
   }
   return DEFAULT_KIOSK_ELEMENTS_HIDDEN;
+};
+
+/**
+ * Combine the elements each kiosk source hides into the set the UI hides.
+ *
+ * Returns a source's set unchanged when it is the only one hiding anything, and
+ * the shared empty set when none is, so context consumers comparing by
+ * reference only see a change when the combined result actually changes shape.
+ */
+export const combineKioskElementsHidden = (
+  requests: Iterable<ReadonlySet<KioskElement>>
+): ReadonlySet<KioskElement> => {
+  const nonEmpty = [...requests].filter((request) => request.size > 0);
+  if (nonEmpty.length === 0) {
+    return NO_KIOSK_ELEMENTS_HIDDEN;
+  }
+  if (nonEmpty.length === 1) {
+    return nonEmpty[0];
+  }
+  return new Set(nonEmpty.flatMap((request) => [...request]));
 };

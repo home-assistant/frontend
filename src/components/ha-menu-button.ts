@@ -65,7 +65,9 @@ class HaMenuButton extends LitElement {
     }
     const hasNotifications =
       this._hasNotifications &&
-      (this._narrow || this._ui.dockedSidebar === "always_hidden");
+      (this._narrow ||
+        this._ui.dockedSidebar === "always_hidden" ||
+        this._ui.kioskElementsHidden.has("sidebar"));
     return html`
       <ha-icon-button
         .label=${this._localize("ui.sidebar.sidebar_toggle")}
@@ -92,10 +94,14 @@ class HaMenuButton extends LitElement {
       this._unsubNotifications = undefined;
     }
 
+    // A hidden sidebar is only reachable as an overlay, so it needs this
+    // button on wide screens too, unless the button itself is hidden.
     const showButton =
       !!this._ui &&
       !this._ui.kioskElementsHidden.has("sidebar_button") &&
-      (this._narrow || this._ui.dockedSidebar === "always_hidden");
+      (this._narrow ||
+        this._ui.dockedSidebar === "always_hidden" ||
+        this._ui.kioskElementsHidden.has("sidebar"));
 
     this._show = showButton || this._alwaysVisible;
 

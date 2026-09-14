@@ -19,6 +19,7 @@ import type {
   EMIncomingMessageImprovDeviceSetupDone,
   EMIncomingMessageBarCodeScanResult,
   EMIncomingMessageBarCodeScanAborted,
+  EMIncomingMessageKioskModeSet,
 } from "../../src/external_app/external_messaging";
 
 vi.mock("../../src/common/dom/fire_event", () => ({
@@ -282,6 +283,76 @@ describe("handleExternalMessage", () => {
       type: "result",
       success: true,
       result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  it("handles kiosk_mode/set command with excluded_elements", () => {
+    const msg: EMIncomingMessageKioskModeSet = {
+      type: "command",
+      command: "kiosk_mode/set",
+      id: 13,
+      payload: { enable: true, excluded_elements: ["sidebar_button"] },
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(fireEvent).toHaveBeenCalledWith(window, "hass-kiosk-mode", {
+      enable: true,
+      excludedElements: ["sidebar_button"],
+      includedElements: undefined,
+    });
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 13,
+      type: "result",
+      success: true,
+      result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  it("handles kiosk_mode/set command with included_elements", () => {
+    const msg: EMIncomingMessageKioskModeSet = {
+      type: "command",
+      command: "kiosk_mode/set",
+      id: 14,
+      payload: { enable: true, included_elements: ["dashboard_tabs"] },
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(fireEvent).toHaveBeenCalledWith(window, "hass-kiosk-mode", {
+      enable: true,
+      excludedElements: undefined,
+      includedElements: ["dashboard_tabs"],
+    });
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 14,
+      type: "result",
+      success: true,
+      result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  it("rejects kiosk_mode/set command with both element lists", () => {
+    const msg: EMIncomingMessageKioskModeSet = {
+      type: "command",
+      command: "kiosk_mode/set",
+      id: 15,
+      payload: {
+        enable: true,
+        excluded_elements: ["sidebar"],
+        included_elements: ["dashboard_tabs"],
+      },
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(fireEvent).not.toHaveBeenCalled();
+    expect(fireMessage).toHaveBeenCalledTimes(1);
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 15,
+      type: "result",
+      success: false,
+      error: {
+        code: "invalid_format",
+        message: "Pass either excluded_elements or included_elements, not both",
+      },
     });
     expect(result).toBe(true);
   });

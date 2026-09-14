@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { KioskElement } from "../../src/data/kiosk_mode";
 import {
+  combineKioskElementsHidden,
   DEFAULT_KIOSK_ELEMENTS_HIDDEN,
   KIOSK_ELEMENTS,
   NO_KIOSK_ELEMENTS_HIDDEN,
@@ -60,5 +61,40 @@ describe("resolveKioskElementsHidden", () => {
         includedElements: [...KIOSK_ELEMENTS, "from_the_future"],
       })
     ).toEqual([]);
+  });
+});
+
+// The companion app and an ingress add-on can each ask for kiosk mode. Neither
+// may undo or narrow what the other still asks to hide.
+describe("combineKioskElementsHidden", () => {
+  it("hides nothing when no source hides anything", () => {
+    expect(combineKioskElementsHidden([])).toBe(NO_KIOSK_ELEMENTS_HIDDEN);
+    expect(combineKioskElementsHidden([new Set(), new Set()])).toBe(
+      NO_KIOSK_ELEMENTS_HIDDEN
+    );
+  });
+
+  it("keeps a lone source's set as is", () => {
+    const external: ReadonlySet<KioskElement> = new Set(["sidebar_button"]);
+    expect(combineKioskElementsHidden([external, new Set()])).toBe(external);
+  });
+
+  it("hides what any source hides", () => {
+    expect(
+      [
+        ...combineKioskElementsHidden([
+          new Set<KioskElement>(["sidebar_button"]),
+          DEFAULT_KIOSK_ELEMENTS_HIDDEN,
+        ]),
+      ].sort()
+    ).toEqual([...DEFAULT_KIOSK_ELEMENTS_HIDDEN].sort());
+    expect(
+      [
+        ...combineKioskElementsHidden([
+          new Set<KioskElement>(["dashboard_tabs"]),
+          new Set<KioskElement>(["app_panel_header"]),
+        ]),
+      ].sort()
+    ).toEqual(["app_panel_header", "dashboard_tabs"]);
   });
 });

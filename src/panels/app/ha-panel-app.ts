@@ -103,7 +103,10 @@ class HaPanelApp extends LitElement {
       this._fetchDataTimeout = undefined;
     }
     if (this._enabledKioskMode) {
-      fireEvent(window, "hass-kiosk-mode", { enable: false });
+      fireEvent(window, "hass-kiosk-mode", {
+        enable: false,
+        source: "app_panel",
+      });
     }
   }
 
@@ -115,19 +118,31 @@ class HaPanelApp extends LitElement {
     }
 
     const hideHeader = this.hass.kioskElementsHidden.has("app_panel_header");
+    const sidebarHidden = this.hass.kioskElementsHidden.has("sidebar");
+    const hideMenuButton = this.hass.kioskElementsHidden.has("sidebar_button");
 
     // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
     return html`
       ${
         !hideHeader &&
-        (this.narrow || this.hass.dockedSidebar === "always_hidden")
+        (this.narrow ||
+          this.hass.dockedSidebar === "always_hidden" ||
+          sidebarHidden)
           ? html`
               <div class="header">
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-                  .path=${mdiMenu}
-                  @click=${this._toggleMenu}
-                ></ha-icon-button>
+                ${
+                  hideMenuButton
+                    ? nothing
+                    : html`
+                        <ha-icon-button
+                          .label=${this.hass.localize(
+                            "ui.sidebar.sidebar_toggle"
+                          )}
+                          .path=${mdiMenu}
+                          @click=${this._toggleMenu}
+                        ></ha-icon-button>
+                      `
+                }
                 <div class="main-title">${this._addon.name}</div>
               </div>
             `
@@ -178,7 +193,10 @@ class HaPanelApp extends LitElement {
       this._iframeLoaded = false;
       // Reset state when switching apps
       if (this._enabledKioskMode) {
-        fireEvent(window, "hass-kiosk-mode", { enable: false });
+        fireEvent(window, "hass-kiosk-mode", {
+          enable: false,
+          source: "app_panel",
+        });
         this._enabledKioskMode = false;
       }
       this._iframeSubscribeUpdates = false;
@@ -424,9 +442,14 @@ class HaPanelApp extends LitElement {
         // safe area itself; we then forward the inset values below.
         this._handleSafeArea = !!data.handleSafeArea;
         this._sendPropertiesToIframe();
-        if (data.kioskMode && !this.hass.kioskMode) {
+        // Kept apart from the companion app's own kiosk request, so it adds
+        // to that selection and leaves it in place when the addon lets go.
+        if (data.kioskMode && !this._enabledKioskMode) {
           this._enabledKioskMode = true;
-          fireEvent(window, "hass-kiosk-mode", { enable: true });
+          fireEvent(window, "hass-kiosk-mode", {
+            enable: true,
+            source: "app_panel",
+          });
         }
         break;
 
@@ -434,7 +457,10 @@ class HaPanelApp extends LitElement {
         this._iframeSubscribeUpdates = false;
         this._handleSafeArea = false;
         if (this._enabledKioskMode) {
-          fireEvent(window, "hass-kiosk-mode", { enable: false });
+          fireEvent(window, "hass-kiosk-mode", {
+            enable: false,
+            source: "app_panel",
+          });
           this._enabledKioskMode = false;
         }
         break;

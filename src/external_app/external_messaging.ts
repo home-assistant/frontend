@@ -1,6 +1,5 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
-import type { KioskElement } from "../data/kiosk_mode";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -330,14 +329,17 @@ export interface EMIncomingMessageKioskModeSet {
     enable: boolean;
     /**
      * Hide exactly these parts of the UI. Mutually exclusive with
-     * `included_elements`; sending both fails the command.
+     * `included_elements`; sending both fails the command. Plain strings, as a
+     * newer client may name elements this frontend doesn't know; those are
+     * ignored (see `resolveKioskElementsHidden`).
      */
-    excluded_elements?: KioskElement[];
+    excluded_elements?: string[];
     /**
      * Hide every part of the UI except these. Mutually exclusive with
-     * `excluded_elements`; sending both fails the command.
+     * `excluded_elements`; sending both fails the command. Unknown names are
+     * ignored, as for `excluded_elements`.
      */
-    included_elements?: KioskElement[];
+    included_elements?: string[];
   };
 }
 
