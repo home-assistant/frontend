@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/buttons/ha-progress-button";
@@ -28,8 +29,6 @@ export class CloudLogin extends LitElement {
 
   @property() public email?: string;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     "page-onboarding.restore.ha-cloud" | "config.cloud" = "config.cloud";
 
@@ -40,6 +39,10 @@ export class CloudLogin extends LitElement {
   @query("#email", true) public emailField!: HaInput;
 
   @query("#password", true) private _passwordField!: HaInput;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _error?: string;
 
@@ -63,7 +66,7 @@ export class CloudLogin extends LitElement {
             : nothing
         }
         <ha-input
-          .label=${this.localize(
+          .label=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.email`
           )}
           id="email"
@@ -74,7 +77,7 @@ export class CloudLogin extends LitElement {
           .value=${this.email ?? ""}
           @keydown=${this._keyDown}
           .disabled=${this._inProgress}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
           )}
         ></ha-input>
@@ -83,7 +86,7 @@ export class CloudLogin extends LitElement {
           type="password"
           password-toggle
           name="password"
-          .label=${this.localize(
+          .label=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.password`
           )}
           autocomplete="current-password"
@@ -91,7 +94,7 @@ export class CloudLogin extends LitElement {
           minlength="8"
           @keydown=${this._keyDown}
           .disabled=${this._inProgress}
-          .validationMessage=${this.localize(
+          .validationMessage=${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
           )}
         ></ha-input>
@@ -102,14 +105,14 @@ export class CloudLogin extends LitElement {
           .disabled=${this._inProgress}
           @click=${this._handleForgotPassword}
         >
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.forgot_password`
           )}
         </ha-button>
         <ha-progress-button
           @click=${this._handleLogin}
           .progress=${this._inProgress}
-          >${this.localize(
+          >${this._localize(
             `ui.panel.${this.translationKeyPanel}.login.sign_in`
           )}</ha-progress-button
         >
@@ -132,18 +135,18 @@ export class CloudLogin extends LitElement {
     const errCode = err && err.body && err.body.code;
     if (errCode === "mfarequired") {
       const totpCode = await showPromptDialog(this, {
-        title: this.localize(
+        title: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.totp_code_prompt_title`
         ),
-        inputLabel: this.localize(
+        inputLabel: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.totp_code`
         ),
         inputType: "text",
         defaultValue: "",
-        confirmText: this.localize(
+        confirmText: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.submit`
         ),
-        dismissText: this.localize(
+        dismissText: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.cancel`
         ),
       });
@@ -164,7 +167,7 @@ export class CloudLogin extends LitElement {
     }
     if (errCode === "PasswordChangeRequired") {
       showAlertDialog(this, {
-        title: this.localize(
+        title: this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_password_change_required`
         ),
       });
@@ -177,19 +180,19 @@ export class CloudLogin extends LitElement {
 
     switch (errCode) {
       case "UserNotConfirmed":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_email_confirm_necessary`
         );
       case "mfarequired":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_mfa_code_required`
         );
       case "mfaexpiredornotstarted":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_mfa_expired_or_not_started`
         );
       case "invalidtotpcode":
-        return this.localize(
+        return this._localize(
           `ui.panel.${this.translationKeyPanel}.login.alert_totp_code_invalid`
         );
       default:

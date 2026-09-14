@@ -272,6 +272,11 @@ export class HaDurationInput extends LitElement {
       display: flex;
       align-items: center;
     }
+    /* Full width: bigger touch targets, no ragged right edge in a form. */
+    ha-base-time-input {
+      flex: 1;
+      --time-input-flex: 1;
+    }
     ha-button-toggle-group {
       margin: var(--ha-space-2);
     }

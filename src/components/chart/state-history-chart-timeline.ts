@@ -44,7 +44,8 @@ export class StateHistoryChartTimeline extends LitElement {
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
 
   // Render each row's name inside the plot (under its bar) instead of in a
-  // left-hand category-label column. Opt-in; used by the history panel.
+  // left-hand category-label column. Opt-in; used by the history panel and
+  // history-graph card.
   @property({ attribute: "inside-labels", type: Boolean })
   public insideLabels = false;
 
@@ -79,7 +80,9 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${
           this.data.length *
-            (this.insideLabels ? ROW_HEIGHT_INSIDE_LABELS : ROW_HEIGHT) +
+            (this.insideLabels && (this.chunked || this.showNames)
+              ? ROW_HEIGHT_INSIDE_LABELS
+              : ROW_HEIGHT) +
           GRID_BOTTOM
         }px`}
         .data=${this._chartData as HaECSeries}

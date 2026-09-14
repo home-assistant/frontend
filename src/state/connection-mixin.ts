@@ -8,7 +8,7 @@ import {
   subscribeServices,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { computeEntityNameDisplayWithoutContext } from "../common/entity/compute_entity_name_display";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
@@ -218,7 +218,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               value != null ? value : (stateObj.attributes[attribute] ?? ""),
           },
         ],
-        formatEntityName: (stateObj) => computeStateName(stateObj),
+        formatEntityName: computeEntityNameDisplayWithoutContext,
         ...getState(),
         ...this._pendingHass,
       };

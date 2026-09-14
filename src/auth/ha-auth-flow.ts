@@ -23,6 +23,7 @@ import type {
 } from "../data/data_entry_flow";
 import "./ha-auth-form";
 import type { HaAuthForm } from "./ha-auth-form";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 
 type State = "loading" | "error" | "step";
 
@@ -36,11 +37,13 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public oauth2State?: string;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
-
   @property({ attribute: false }) public step?: DataEntryFlowStep;
 
   @property({ attribute: false }) public initStoreToken = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _storeToken = false;
 
@@ -184,8 +187,8 @@ export class HaAuthFlow extends LitElement {
             >
               ${
                 this.step.type === "form"
-                  ? this.localize("ui.panel.page-authorize.form.next")
-                  : this.localize("ui.panel.page-authorize.form.start_over")
+                  ? this._localize("ui.panel.page-authorize.form.next")
+                  : this._localize("ui.panel.page-authorize.form.start_over")
               }
             </ha-button>
           </div>
@@ -193,20 +196,20 @@ export class HaAuthFlow extends LitElement {
       case "error":
         return html`
           <ha-alert alert-type="error">
-            ${this.localize("ui.panel.page-authorize.form.error", {
+            ${this._localize("ui.panel.page-authorize.form.error", {
               error: this._errorMessage,
             })}
           </ha-alert>
           <div class="action">
             <ha-button @click=${this._startOver}>
-              ${this.localize("ui.panel.page-authorize.form.start_over")}
+              ${this._localize("ui.panel.page-authorize.form.start_over")}
             </ha-button>
           </div>
         `;
       case "loading":
         return html`
           <ha-alert alert-type="info">
-            ${this.localize("ui.panel.page-authorize.form.working")}
+            ${this._localize("ui.panel.page-authorize.form.working")}
           </ha-alert>
         `;
       default:
@@ -218,8 +221,8 @@ export class HaAuthFlow extends LitElement {
     switch (step.type) {
       case "abort":
         return html`
-          ${this.localize("ui.panel.page-authorize.abort_intro")}:
-          ${this.localize(
+          ${this._localize("ui.panel.page-authorize.abort_intro")}:
+          ${this._localize(
             `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
           )}
         `;
@@ -228,15 +231,14 @@ export class HaAuthFlow extends LitElement {
           <h1>
             ${
               !["select_mfa_module", "mfa"].includes(step.step_id)
-                ? this.localize("ui.panel.page-authorize.welcome_home")
-                : this.localize("ui.panel.page-authorize.just_checking")
+                ? this._localize("ui.panel.page-authorize.welcome_home")
+                : this._localize("ui.panel.page-authorize.just_checking")
             }
           </h1>
           ${this._computeStepDescription(step)}
           ${keyed(
             step.step_id,
             html`<ha-auth-form
-              .localize=${this.localize}
               .data=${this._stepData!}
               .schema=${autocompleteLoginFields(step.data_schema)}
               .error=${step.errors}
@@ -256,7 +258,7 @@ export class HaAuthFlow extends LitElement {
                       .checked=${this._storeToken}
                       @change=${this._storeTokenChanged}
                     >
-                      ${this.localize("ui.panel.page-authorize.store_token")}
+                      ${this._localize("ui.panel.page-authorize.store_token")}
                     </ha-checkbox>
                   `
                 : ""
@@ -266,7 +268,7 @@ export class HaAuthFlow extends LitElement {
               href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
               target="_blank"
               rel="noreferrer noopener"
-              >${this.localize("ui.panel.page-authorize.forgot_password")}</a
+              >${this._localize("ui.panel.page-authorize.forgot_password")}</a
             >
           </div>
         `;
@@ -336,13 +338,13 @@ export class HaAuthFlow extends LitElement {
   private _computeStepDescription(step: DataEntryFlowStepForm) {
     const resourceKey =
       `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description` as const;
-    return this.localize(resourceKey, step.description_placeholders);
+    return this._localize(resourceKey, step.description_placeholders);
   }
 
   private _computeLabelCallback(step: DataEntryFlowStepForm) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
-      this.localize(
+      this._localize(
         `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.data.${schema.name}`
       );
   }
@@ -350,13 +352,13 @@ export class HaAuthFlow extends LitElement {
   private _computeErrorCallback(step: DataEntryFlowStepForm) {
     // Returns a callback for ha-form to calculate error messages
     return (error) =>
-      this.localize(
+      this._localize(
         `ui.panel.page-authorize.form.providers.${step.handler[0]}.error.${error}`
       );
   }
 
   private _unknownError() {
-    return this.localize("ui.panel.page-authorize.form.unknown_error");
+    return this._localize("ui.panel.page-authorize.form.unknown_error");
   }
 
   private _startOver() {
