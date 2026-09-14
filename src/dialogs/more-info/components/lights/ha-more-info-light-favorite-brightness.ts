@@ -69,6 +69,8 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
 
   @property({ attribute: false }) public editMode?: boolean;
 
+  @property({ attribute: false }) public label?: string;
+
   @state() private _favoriteBrightness: number[] = [];
 
   protected updated(changedProps: PropertyValues<this>): void {
@@ -317,6 +319,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
 
     return html`
       <div class="group">
+        ${this.label ? html`<h4>${this.label}</h4>` : nothing}
         <ha-more-info-favorites
           .items=${this._favoriteBrightness}
           .renderItem=${this._renderFavoriteButton}
@@ -347,8 +350,17 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
 
     .group {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
+    }
+
+    h4 {
+      margin: 0 0 var(--ha-space-2);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-medium);
+      text-align: center;
     }
 
     .group ha-more-info-favorites {
