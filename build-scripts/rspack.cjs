@@ -133,11 +133,19 @@ const createRspackConfig = ({
             [
               {
                 loader: "babel-loader",
+                // Options are stored per loader identity, not per call. A
+                // file imported by both the page and a worker gets two
+                // modules but, without distinct idents, one set of options:
+                // whichever layer resolved it first. That handed the worker
+                // the page's transform, polyfills included, and the page the
+                // worker's.
+                ident: `babel-loader-${info.issuerLayer ?? "page"}`,
                 options: {
                   ...bundle.babelOptions({
                     latestBuild,
                     isTestBuild,
                     sw: info.issuerLayer === "sw",
+                    worker: info.issuerLayer === "worker",
                   }),
                   cacheDirectory: !isProdBuild,
                   cacheCompression: false,
@@ -175,6 +183,19 @@ const createRspackConfig = ({
           },
           parser: {
             worker: ["*context.audioWorklet.addModule()", "..."],
+          },
+        },
+        {
+          // MapLibre's worker loads ESM plugins through `import(url)`, and the
+          // page side builds a blob import from `new URL(url, import.meta.url)`
+          // for a cross-origin worker. Neither path is taken here: the RTL
+          // plugin is UMD and the worker is served from the page's origin.
+          // Rspack's stubs for these fully dynamic requests are exactly what
+          // should remain - rejecting, and free of syntax the legacy floor
+          // cannot parse - so the warnings about them are noise.
+          test: /[\\/]maplibre-gl[\\/]dist[\\/]maplibre-gl(?:-worker)?\.mjs$/,
+          parser: {
+            exprContextCritical: false,
           },
         },
         {
@@ -258,7 +279,12 @@ const createRspackConfig = ({
           }
         ),
       new rspack.DefinePlugin(
-        bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
+        bundle.definedVars({
+          isProdBuild,
+          latestBuild,
+          publicPath,
+          defineOverlay,
+        })
       ),
       new rspack.IgnorePlugin({
         checkResource(resource, context) {
@@ -401,9 +427,12 @@ const createRspackConfig = ({
     output: {
       module: latestBuild,
       filename: ({ chunk }) =>
-        !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
-          ? "[name].js"
-          : "[name].[contenthash].js",
+        // Versioned instead of hashed; MapLibre gets the URL at build time
+        chunk.name === bundle.mapWorkerName
+          ? bundle.mapWorkerFilename()
+          : !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
+            ? "[name].js"
+            : "[name].[contenthash].js",
       chunkFilename:
         isProdBuild && !isStatsBuild ? "[name].[contenthash].js" : "[name].js",
       assetModuleFilename:
