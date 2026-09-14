@@ -555,6 +555,9 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
+    // Only honored outside edit mode. In edit mode the tabs are the view
+    // editor (select, move, edit and add views), so hiding them there would
+    // make views uneditable; see `dashboard_tabs` in data/kiosk_mode.
     const hideTabs = this.hass.kioskElementsHidden.has("dashboard_tabs");
 
     return html`

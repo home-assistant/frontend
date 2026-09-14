@@ -325,6 +325,14 @@ export interface EMIncomingMessageKioskModeSet {
   id: number;
   type: "command";
   command: "kiosk_mode/set";
+  /**
+   * Element names are listed in `KIOSK_ELEMENTS`. Two of them depend on
+   * another element:
+   * - `app_panel_header` holds the app panel's sidebar button, so hiding the
+   *   header hides that button even when `sidebar_button` is not hidden.
+   * - `dashboard_tabs` is only hidden outside edit mode, where the tabs are the
+   *   view editor; hide `dashboard_edit_button` too to keep them out of reach.
+   */
   payload: {
     enable: boolean;
     /**

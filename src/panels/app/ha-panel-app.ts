@@ -117,6 +117,9 @@ class HaPanelApp extends LitElement {
       ></hass-loading-screen>`;
     }
 
+    // The sidebar button only exists inside this header, so hiding the header
+    // hides the button too (documented on `app_panel_header`). Keeping it would
+    // need a floating control over the add-on, which kiosk mode never had.
     const hideHeader = this.hass.kioskElementsHidden.has("app_panel_header");
     const sidebarHidden = this.hass.kioskElementsHidden.has("sidebar");
     const hideMenuButton = this.hass.kioskElementsHidden.has("sidebar_button");

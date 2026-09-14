@@ -8,9 +8,18 @@
 export const KIOSK_ELEMENTS = [
   /** The sidebar itself: never docked, only reachable as an overlay. */
   "sidebar",
-  /** The hamburger button that opens the sidebar, in every panel's toolbar. */
+  /**
+   * The hamburger button that opens the sidebar, in every panel's toolbar.
+   * In the app panel it lives in `app_panel_header`, so hiding that header
+   * hides this button too, whatever this element is set to.
+   */
   "sidebar_button",
-  /** The dashboard view tabs. The current view's title is shown instead. */
+  /**
+   * The dashboard view tabs. The current view's title is shown instead.
+   * Only outside edit mode: in edit mode the tabs are how views are selected,
+   * moved, edited and added, so they stay. Hide `dashboard_edit_button` as well
+   * to keep that button from being a way back to them.
+   */
   "dashboard_tabs",
   /** The "+" menu that adds a device, automation, area or person. */
   "dashboard_add_button",
@@ -20,7 +29,11 @@ export const KIOSK_ELEMENTS = [
   "dashboard_assist_button",
   /** The pencil that switches the dashboard into edit mode. */
   "dashboard_edit_button",
-  /** The header the app panel draws above an ingress add-on iframe. */
+  /**
+   * The header the app panel draws above an ingress add-on iframe, including
+   * its sidebar button. With it hidden the iframe takes the full height; a
+   * client can still open the sidebar with `sidebar/show` or `sidebar/toggle`.
+   */
   "app_panel_header",
 ] as const;
 
