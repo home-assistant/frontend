@@ -293,6 +293,9 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
   supports: (stateObj) =>
     lightSupportsFavoriteColors(stateObj as LightEntity) ||
     lightBrightnessFavoritesSpec.supports(stateObj as LightEntity),
+  // Colors have no numeric-favorites spec object (they're not a plain number[]
+  // favorite), so they're read inline here. Brightness routes through
+  // lightBrightnessFavoritesSpec since a dedicated spec object exists for it.
   hasCustomFavorites: (entry) =>
     hasCustomFavoriteOptionValues(entry.options?.light?.favorite_colors) ||
     hasCustomFavoriteOptionValues(

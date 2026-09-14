@@ -46,7 +46,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   @property({ attribute: false }) public label?: string;
 
-  @property({ attribute: false }) public showDone = true;
+  @property({ type: Boolean, attribute: false }) public showDone = true;
 
   @state() private _favoriteColors: LightColor[] = [];
 
