@@ -9394,7 +9394,7 @@
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",
               "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
-              "named_grid_consumed": "Consumed {name}",
+              "named_grid_consumed": "{name} consumed",
               "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {
