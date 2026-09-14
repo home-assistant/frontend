@@ -180,7 +180,8 @@
         "speed": {
           "low": "Low",
           "medium": "Medium",
-          "high": "High"
+          "high": "High",
+          "numbered": "Speed {speed}"
         }
       },
       "humidifier": {
