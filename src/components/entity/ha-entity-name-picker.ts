@@ -136,9 +136,7 @@ export class HaEntityNamePicker extends LitElement {
       ${
         this.helper
           ? html`
-              <ha-input-helper-text .disabled=${this.disabled}>
-                ${this.helper}
-              </ha-input-helper-text>
+              <ha-input-helper-text> ${this.helper} </ha-input-helper-text>
             `
           : nothing
       }
