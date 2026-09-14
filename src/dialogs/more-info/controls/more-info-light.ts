@@ -343,18 +343,6 @@ class MoreInfoLight extends LitElement {
                       `
                     : nothing
                 }
-                ${
-                  showFavoriteBrightness
-                    ? html`
-                        <ha-more-info-light-favorite-brightness
-                          .stateObj=${this.stateObj}
-                          .entry=${this.entry}
-                          .editMode=${this.editMode}
-                        >
-                        </ha-more-info-light-favorite-brightness>
-                      `
-                    : nothing
-                }
               `
             : nothing
         }
