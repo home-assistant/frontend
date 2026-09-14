@@ -21,6 +21,8 @@ import { normalizeFavoritePositions } from "../../../../data/favorite_positions"
 import type { LightEntity } from "../../../../data/light";
 import {
   DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+  LIGHT_FAVORITE_BRIGHTNESS_MIN,
+  lightBrightnessToPercent,
   lightSupportsBrightness,
 } from "../../../../data/light";
 import type {
@@ -36,7 +38,6 @@ import "../ha-more-info-favorites";
 import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
 import { favoriteSectionStyle } from "./favorite-section-style";
 
-const BRIGHTNESS_MIN = 1;
 const BRIGHTNESS_MAX = 100;
 
 type FavoriteLocalizeKey =
@@ -88,7 +89,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
       this._favoriteBrightness = lightSupportsBrightness(this.stateObj)
         ? normalizeFavoritePositions(
             options?.favorite_brightness ?? DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
-            { min: BRIGHTNESS_MIN }
+            { min: LIGHT_FAVORITE_BRIGHTNESS_MIN }
           )
         : [];
     }
@@ -105,10 +106,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
   }
 
   private _getCurrentValue(): number | undefined {
-    const brightness = this.stateObj.attributes.brightness;
-    return brightness == null
-      ? undefined
-      : Math.round((brightness / 255) * 100);
+    return lightBrightnessToPercent(this.stateObj.attributes.brightness);
   }
 
   private async _save(favoriteBrightness: number[]): Promise<void> {
@@ -137,7 +135,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
 
   private async _setFavorites(favorites: number[]): Promise<void> {
     const normalized = normalizeFavoritePositions(favorites, {
-      min: BRIGHTNESS_MIN,
+      min: LIGHT_FAVORITE_BRIGHTNESS_MIN,
     });
 
     this._favoriteBrightness = normalized;
@@ -173,7 +171,7 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
       ),
       inputLabel: this._localize("ui.card.light.brightness"),
       inputType: "number",
-      inputMin: String(BRIGHTNESS_MIN),
+      inputMin: String(LIGHT_FAVORITE_BRIGHTNESS_MIN),
       inputMax: String(BRIGHTNESS_MAX),
       inputSuffix: "%",
       defaultValue: value === undefined ? undefined : String(value),
@@ -189,7 +187,10 @@ export class HaMoreInfoLightFavoriteBrightness extends LitElement {
       return undefined;
     }
 
-    return Math.max(BRIGHTNESS_MIN, Math.min(BRIGHTNESS_MAX, number));
+    return Math.max(
+      LIGHT_FAVORITE_BRIGHTNESS_MIN,
+      Math.min(BRIGHTNESS_MAX, number)
+    );
   }
 
   private async _addFavorite(): Promise<void> {

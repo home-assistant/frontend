@@ -2,6 +2,8 @@ import { customElement } from "lit/decorators";
 import type { LightEntity } from "../../../data/light";
 import {
   DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
+  LIGHT_FAVORITE_BRIGHTNESS_MIN,
+  lightBrightnessToPercent,
   lightSupportsBrightness,
 } from "../../../data/light";
 import { normalizeFavoritePositions } from "../../../data/favorite_positions";
@@ -23,11 +25,11 @@ const lightBrightnessFavoritesCardFeatureDefinition: NumericFavoriteCardFeatureD
     supportsPosition: lightSupportsBrightness,
     getFavoritePositions: (entry) => entry?.options?.light?.favorite_brightness,
     getCurrentValue: (stateObj) =>
-      stateObj.attributes.brightness != null
-        ? Math.round((stateObj.attributes.brightness / 255) * 100)
-        : undefined,
+      lightBrightnessToPercent(stateObj.attributes.brightness),
     normalizeFavoritePositions: (positions) =>
-      normalizeFavoritePositions(positions, { min: 1 }),
+      normalizeFavoritePositions(positions, {
+        min: LIGHT_FAVORITE_BRIGHTNESS_MIN,
+      }),
     defaultFavoritePositions: DEFAULT_LIGHT_FAVORITE_BRIGHTNESS,
     setPositionService: "turn_on",
     serviceDataKey: "brightness_pct",
