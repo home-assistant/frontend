@@ -3,9 +3,9 @@ import type { LeafletModuleType } from "../../../src/common/dom/setup-leaflet-ma
 
 // The fallback to raster tiles is what keeps the map working on devices
 // without WebGL2, on instances that cannot load the MapLibre chunk, and when
-// building the MapLibre map itself fails - a blocked worker, an exhausted
-// WebGL context budget. None of that is reachable from the `ha-map` tests,
-// which run in jsdom and therefore only ever take the raster branch.
+// building the MapLibre map itself fails - an exhausted WebGL context budget.
+// None of that is reachable from the `ha-map` tests, which run in jsdom and
+// therefore only ever take the raster branch.
 
 const maplibreLayer = vi.hoisted(() => ({
   addTo: vi.fn(),
@@ -145,6 +145,34 @@ describe("createBaseLayer", () => {
     // OSM refuses a browser that sends neither, and the demo page's meta
     // policy strips the referrer unless the tiles ask for it back.
     expect(options.referrerPolicy).toBe("origin");
+  });
+
+  // MapLibre's code has BigInt literals in it, which Babel cannot transpile
+  // away, and a worker that fails to parse is silent - so no BigInt, no vector.
+  it("falls back to raster tiles without BigInt", async () => {
+    vi.stubGlobal("BigInt", undefined);
+    const createBaseLayer = await setWebGL2(true);
+
+    await createBaseLayer(leaflet, map, false, TOKEN);
+
+    expect(isRaster()).toBe(true);
+    expect(maplibreGL).not.toHaveBeenCalled();
+  });
+
+  // The worker is an entry of the build, and the build hands over its URL.
+  // Absolute, because on Cast the page is not served from the instance.
+  it("points MapLibre at the built worker once, before the first map", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+    await createBaseLayer(leaflet, map, false, TOKEN);
+
+    expect(setWorkerUrl).toHaveBeenCalledOnce();
+    expect(setWorkerUrl).toHaveBeenCalledWith(
+      `${location.origin}/frontend_latest/maplibre-gl-worker.test.js`
+    );
+    expect(setWorkerUrl.mock.invocationCallOrder[0]).toBeLessThan(
+      maplibreGL.mock.invocationCallOrder[0]
+    );
   });
 
   it("registers the RTL text plugin once, lazily, from our own host", async () => {

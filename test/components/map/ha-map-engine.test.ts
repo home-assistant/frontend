@@ -18,7 +18,7 @@ const webgl2 = vi.hoisted(() => ({ supported: true }));
 
 vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
-  supportsWebGL2: () => webgl2.supported,
+  supportsVectorMaps: () => webgl2.supported,
 }));
 
 const fakeEngine = vi.hoisted(() => {

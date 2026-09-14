@@ -16,7 +16,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
-import { supportsWebGL2 } from "../../common/map/base-layer";
+import { supportsVectorMaps } from "../../common/map/base-layer";
 import type { LeafletMapEngine } from "../../common/map/engines/leaflet-map-engine";
 import type {
   MapClusterIcon,
@@ -336,7 +336,11 @@ export class HaMap extends ReactiveElement {
 
   // Each engine is its own chunk; a map only downloads the one it uses
   private async _createEngine(): Promise<MapEngine> {
-    if (this.engine === "leaflet" || this._forceLeaflet || !supportsWebGL2()) {
+    if (
+      this.engine === "leaflet" ||
+      this._forceLeaflet ||
+      !supportsVectorMaps()
+    ) {
       const leaflet =
         await import("../../common/map/engines/leaflet-map-engine");
       return new leaflet.LeafletMapEngine();
@@ -348,7 +352,7 @@ export class HaMap extends ReactiveElement {
 
   // An engine that cannot start hands over to the Leaflet fallback
   private async _loadMap(): Promise<void> {
-    const onFallback = this._forceLeaflet || !supportsWebGL2();
+    const onFallback = this._forceLeaflet || !supportsVectorMaps();
     try {
       await this._setUpEngine();
     } catch (err) {
