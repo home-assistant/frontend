@@ -139,23 +139,28 @@ export class HaMoreInfoUpdateBackup extends LitElement {
       return;
     }
 
+    let type: UpdateType | undefined = undefined;
+
     try {
       this._entitySources = await fetchEntitySourcesWithCache({
         callWS: this._api.callWS,
         states: this._states,
       });
-      const type = getUpdateType(this.stateObj!, this._entitySources!);
-
-      this._fetchUpdateBackupConfig(type);
-      this._fetchBackupConfig(type);
+      type = getUpdateType(this.stateObj!, this._entitySources!);
     } catch (err) {
       // ignore error, because the generic backup option remains available
       // eslint-disable-next-line no-console
       console.error(err);
-    } finally {
+    }
+
+    if (type === undefined) {
       this._createBackupLoading = false;
       this._backupConfigLoading = false;
+      return;
     }
+
+    this._fetchUpdateBackupConfig(type);
+    this._fetchBackupConfig(type);
   }
 
   private async _fetchUpdateBackupConfig(type: UpdateType) {
