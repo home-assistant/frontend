@@ -253,6 +253,8 @@ export class StatisticsChart extends LitElement {
     }[] = [];
     for (const param of params) {
       if (rendered[param.seriesIndex]) continue;
+      // stacked lines are padded with null where a statistic has no data
+      if (!chartIsBar && param.value[1] === null) continue;
       rendered[param.seriesIndex] = true;
 
       const statisticId = this._statisticIds[param.seriesIndex];
