@@ -33,7 +33,7 @@ export type FormatEntityAttributeNameFunc = (
 
 export type FormatEntityNameFunc = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[],
+  name: string | EntityNameItem | EntityNameItem[] | undefined,
   options?: EntityNameOptions
 ) => string;
 

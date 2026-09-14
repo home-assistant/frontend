@@ -1,5 +1,4 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiChevronRight } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -9,7 +8,7 @@ import type {
   HASSDomEvent,
 } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-button-next";
 import "../../../../../components/ha-list";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
@@ -186,15 +185,14 @@ export class ZHADeviceEndpointList extends LitElement {
         ${
           this.showDeviceLink
             ? html`
-                <ha-icon-button
+                <ha-icon-button-next
                   slot="end"
-                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
                   )}
                   @click=${this._stopPropagation}
-                ></ha-icon-button>
+                ></ha-icon-button-next>
               `
             : nothing
         }
@@ -214,14 +212,13 @@ export class ZHADeviceEndpointList extends LitElement {
         ${
           this.showDeviceLink
             ? html`
-                <ha-icon-button
+                <ha-icon-button-next
                   slot="end"
-                  .path=${mdiChevronRight}
                   .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
                   .label=${this._i18n.localize(
                     "ui.panel.config.zha.groups.open_device"
                   )}
-                ></ha-icon-button>
+                ></ha-icon-button-next>
               `
             : nothing
         }

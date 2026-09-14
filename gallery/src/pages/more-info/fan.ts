@@ -21,6 +21,61 @@ const ENTITIES = [
         FanEntityFeature.SET_SPEED,
     },
   },
+  {
+    entity_id: "fan.one_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "One speed fan",
+      device_class: "fan",
+      percentage: 100,
+      percentage_step: 100,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.two_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Two speed fan",
+      device_class: "fan",
+      percentage: 50,
+      percentage_step: 50,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.three_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Three speed fan",
+      device_class: "fan",
+      percentage: 67,
+      percentage_step: 100 / 3,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.four_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Four speed fan",
+      device_class: "fan",
+      percentage: 50,
+      percentage_step: 25,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.five_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Five speed fan",
+      device_class: "fan",
+      percentage: 80,
+      percentage_step: 20,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
 ];
 
 @customElement("demo-more-info-fan")

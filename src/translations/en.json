@@ -180,7 +180,8 @@
         "speed": {
           "low": "Low",
           "medium": "Medium",
-          "high": "High"
+          "high": "High",
+          "numbered": "Speed {speed}"
         }
       },
       "humidifier": {
@@ -518,7 +519,9 @@
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
       "markdown": "Markdown",
-      "none": "None"
+      "none": "None",
+      "first": "First",
+      "last": "Last"
     },
     "components": {
       "input": {
@@ -1994,6 +1997,7 @@
               "cold": "Cold",
               "connectivity": "Connectivity",
               "gas": "Gas",
+              "glass_break": "Glass break",
               "heat": "Heat",
               "light": "Light",
               "lock": "Lock",
@@ -5484,7 +5488,7 @@
                   "label": "State changed",
                   "attribute": "Attribute (optional)",
                   "from": "From (optional)",
-                  "for": "For",
+                  "for": "For at least",
                   "to": "To (optional)",
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
@@ -5597,7 +5601,7 @@
                 "template": {
                   "label": "Template",
                   "value_template": "Value template",
-                  "for": "For",
+                  "for": "For at least",
                   "description": {
                     "picker": "Triggers when a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
@@ -5799,6 +5803,7 @@
                 "state": {
                   "label": "State",
                   "state": "[%key:ui::panel::config::automation::editor::conditions::type::state::label%]",
+                  "for_unavailable_with_attribute": "Not available when matching on an attribute.",
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "is": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n} is {states}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
@@ -7674,7 +7679,8 @@
           "title": "Modbus",
           "status_summary": "{units, plural,\n one {# unit}\n other {# units}\n} on {total, plural,\n one {# connection}\n other {# connections}\n}",
           "connections": "Connections",
-          "connections_description": "Every integration talking to a Modbus device shares one connection to it.",
+          "connections_description": "Every integration talking to a Modbus device shares one connection to it. A hub configured in YAML keeps a connection of its own.",
+          "configured_in_yaml": "Configured in YAML",
           "state_connected": "Connected",
           "state_not_connected": "Not connected",
           "state_open": "Open",
@@ -9400,7 +9406,7 @@
               "consumed_solar": "Solar",
               "consumed_battery": "Battery",
               "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
-              "named_grid_consumed": "Consumed {name}",
+              "named_grid_consumed": "{name} consumed",
               "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {

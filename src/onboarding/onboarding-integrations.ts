@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -32,7 +33,9 @@ const HIDDEN_DOMAINS = new Set([
 class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public onboardingLocalize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _entries: ConfigEntry[] = [];
 
@@ -125,20 +128,14 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
       return html`
         <div class="all-set-icon">🎉</div>
         <h1>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.integration.all_set"
-          )}
+          ${this._localize("ui.panel.page-onboarding.integration.all_set")}
         </h1>
         <p>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.integration.lets_start"
-          )}
+          ${this._localize("ui.panel.page-onboarding.integration.lets_start")}
         </p>
         <div class="footer">
           <ha-button @click=${this._finish}>
-            ${this.onboardingLocalize(
-              "ui.panel.page-onboarding.integration.finish"
-            )}
+            ${this._localize("ui.panel.page-onboarding.integration.finish")}
           </ha-button>
         </div>
       `;
@@ -149,14 +146,8 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <h1>
-        ${this.onboardingLocalize(
-          "ui.panel.page-onboarding.integration.header"
-        )}
-      </h1>
-      <p>
-        ${this.onboardingLocalize("ui.panel.page-onboarding.integration.intro")}
-      </p>
+      <h1>${this._localize("ui.panel.page-onboarding.integration.header")}</h1>
+      <p>${this._localize("ui.panel.page-onboarding.integration.intro")}</p>
       <div class="badges">
         ${domains.map(
           ([domain, title]) =>
@@ -169,7 +160,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
         ${
           foundIntegrations > domains.length
             ? html`<div class="more">
-                ${this.onboardingLocalize(
+                ${this._localize(
                   "ui.panel.page-onboarding.integration.more_integrations",
                   { count: foundIntegrations - domains.length }
                 )}
@@ -179,9 +170,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
       </div>
       <div class="footer">
         <ha-button @click=${this._finish}>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.integration.finish"
-          )}
+          ${this._localize("ui.panel.page-onboarding.integration.finish")}
         </ha-button>
       </div>
     `;
