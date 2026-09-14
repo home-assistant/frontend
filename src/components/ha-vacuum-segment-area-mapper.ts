@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiArrowRightThin, mdiDelete } from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import type { Segment } from "../data/vacuum";
 import { getVacuumSegments } from "../data/vacuum";
@@ -133,8 +134,10 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     `;
   }
 
-  private _removeOrphanedArea = (ev: Event) => {
-    const areaId = (ev.currentTarget as HTMLElement).dataset.areaId;
+  private _removeOrphanedArea = (
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-icon-button"]>
+  ) => {
+    const areaId = ev.currentTarget.dataset.areaId;
     if (!areaId || !this.value || !this._segments) {
       return;
     }
@@ -289,8 +292,8 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
         display: flex;
         align-items: center;
         gap: var(--ha-space-4);
-        padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-2)
-          var(--ha-space-4);
+        padding-block: var(--ha-space-2);
+        padding-inline: var(--ha-space-4) var(--ha-space-2);
       }
 
       .orphaned-name {
