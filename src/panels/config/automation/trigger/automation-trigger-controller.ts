@@ -24,8 +24,6 @@ import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin"
 interface AutomationTriggerControllerOptions {
   /** Read the editor's current configuration, including after an awaited dialog. */
   getConfig: () => AutomationConfig | undefined;
-  /** Read the editor's current sidebar selection, used to decide whether trigger rows should expose their index. */
-  getSidebarConfig?: () => SidebarConfig | undefined;
   canEdit: () => boolean;
   /** Apply one complete change through the editor's undo and dirty-state handling. */
   commit: (config: AutomationConfig) => void;
