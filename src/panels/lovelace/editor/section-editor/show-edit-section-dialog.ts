@@ -1,13 +1,13 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { Lovelace } from "../../types";
+import type { LovelacePath } from "../lovelace-path";
 
 export interface EditSectionDialogParams {
   lovelace: Lovelace;
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
-  viewIndex: number;
-  sectionIndex: number;
+  path: LovelacePath;
 }
 
 const importEditSectionDialog = () => import("./hui-dialog-edit-section");

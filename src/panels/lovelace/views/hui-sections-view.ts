@@ -22,13 +22,9 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
-import { addSection, moveCard, moveSection } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
-import {
-  findLovelaceItems,
-  getLovelaceContainerPath,
-  parseLovelaceCardPath,
-} from "../editor/lovelace-path";
+import { addSection } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { getAtPath, moveAtPath } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
 import "../sections/hui-section-background";
 import type { Lovelace } from "../types";
@@ -48,7 +44,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -223,7 +219,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .hass=${this.hass}
           .badges=${this.badges}
           .lovelace=${this.lovelace}
-          .viewIndex=${this.index}
+          .path=${this.path!}
           .config=${this._config?.header}
         ></hui-view-header>
         ${
@@ -287,8 +283,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                               <hui-section-edit-mode
                                 .hass=${this.hass}
                                 .lovelace=${this.lovelace}
-                                .index=${idx}
-                                .viewIndex=${this.index}
+                                .path=${[...this.path!, "sections", idx]}
                               >
                                 ${this._renderSection(
                                   section,
@@ -354,7 +349,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     .hass=${this.hass}
                     .badges=${this.badges}
                     .lovelace=${this.lovelace}
-                    .viewIndex=${this.index}
+                    .path=${this.path!}
                     .config=${this._config.sidebar}
                     @sidebar-visibility-changed=${
                       this._handleSidebarVisibilityChanged
@@ -367,7 +362,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <hui-view-footer
           .hass=${this.hass}
           .lovelace=${this.lovelace}
-          .viewIndex=${this.index}
+          .path=${this.path!}
           .config=${this._config?.footer}
         ></hui-view-footer>
         <div class="imported-cards-section">
@@ -394,7 +389,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                       .config=${this._importedCardSectionConfig(
                         this._config.cards
                       )}
-                      .viewIndex=${this.index}
+                      .path=${this.path!}
                       preview
                       import-only
                     ></hui-section>
@@ -408,32 +403,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _handleCardAdded(ev) {
-    const { data } = ev.detail;
-    const oldPath = data as LovelaceCardPath;
-
-    const { cardIndex } = parseLovelaceCardPath(oldPath);
-    const containerPath = getLovelaceContainerPath(oldPath);
-    const cards = findLovelaceItems(
-      "cards",
-      this.lovelace!.config,
-      containerPath
-    );
-    const cardConfig = cards![cardIndex];
+    const oldPath = ev.detail.data as LovelacePath;
+    const config = this.lovelace!.config;
+    const cardConfig = getAtPath<LovelaceCardConfig>(config, oldPath);
+    if (!cardConfig) {
+      return;
+    }
 
     const configWithNewSection = addSection(
-      this.lovelace!.config,
-      this.index!,
+      config,
+      this.path!,
       generateDefaultSection(this.hass.localize, cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
     );
-    const viewConfig = configWithNewSection.views[
-      this.index!
-    ] as LovelaceViewConfig;
-    const newPath = [
-      this.index!,
-      viewConfig.sections!.length - 1,
-      1,
-    ] as LovelaceCardPath;
-    const newConfig = moveCard(configWithNewSection, oldPath, newPath);
+    const sectionsPath = [...this.path!, "sections"];
+    const newIndex =
+      getAtPath<unknown[]>(configWithNewSection, sectionsPath)!.length - 1;
+    const cardCount =
+      getAtPath<unknown[]>(configWithNewSection, [
+        ...sectionsPath,
+        newIndex,
+        "cards",
+      ])?.length ?? 0;
+    const newConfig = moveAtPath(configWithNewSection, oldPath, [
+      ...sectionsPath,
+      newIndex,
+      "cards",
+      cardCount,
+    ]);
     this.lovelace!.saveConfig(newConfig);
   }
 
@@ -471,7 +467,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   private _createSection(): void {
     const newConfig = addSection(
       this.lovelace!.config,
-      this.index!,
+      this.path!,
       generateDefaultSection(this.hass.localize, true)
     );
     this.lovelace!.saveConfig(newConfig);
@@ -481,10 +477,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const newConfig = moveSection(
+    const newConfig = moveAtPath(
       this.lovelace!.config,
-      [this.index!, oldIndex],
-      [this.index!, newIndex]
+      [...this.path!, "sections", oldIndex],
+      [...this.path!, "sections", newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }

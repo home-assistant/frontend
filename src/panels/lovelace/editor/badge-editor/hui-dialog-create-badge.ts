@@ -11,12 +11,10 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { addBadge } from "../config-util";
-import { findLovelaceContainer } from "../lovelace-path";
+import { appendAtPath, getAtPath, getParentPath } from "../lovelace-path";
 import "./hui-badge-picker";
 import "./hui-badge-suggestion-picker";
 import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
@@ -33,7 +31,7 @@ export class HuiCreateDialogBadge
 
   @state() private _open = false;
 
-  @state() private _containerConfig!: LovelaceViewConfig;
+  @state() private _containerConfig!: { title?: string };
 
   @state() private _currTab: "badge" | "entity" = "entity";
 
@@ -46,10 +44,11 @@ export class HuiCreateDialogBadge
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
-    const containerConfig = findLovelaceContainer(
+    const containerPath = getParentPath(params.path);
+    const containerConfig = getAtPath<{ title?: string }>(
       params.lovelaceConfig,
-      params.path
-    );
+      containerPath
+    )!;
 
     if ("strategy" in containerConfig) {
       throw new Error("Can't edit strategy");
@@ -221,7 +220,7 @@ export class HuiCreateDialogBadge
     const lovelaceConfig = this._params!.lovelaceConfig;
     const containerPath = this._params!.path;
     const saveConfig = this._params!.saveConfig;
-    const newConfig = addBadge(lovelaceConfig, containerPath, config);
+    const newConfig = appendAtPath(lovelaceConfig, containerPath, config);
     await saveConfig(newConfig);
     this.closeDialog();
   }
