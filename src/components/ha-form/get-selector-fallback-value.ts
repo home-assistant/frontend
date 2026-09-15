@@ -72,8 +72,8 @@ const SELECTOR_FALLBACK_VALUES = {
     return selector.color_temp?.min ?? selector.color_temp?.min_mireds ?? 153;
   },
   ui_action: undefined,
-  ui_clock_date_format: undefined,
   ui_color: undefined,
+  ui_date_format_parts: undefined,
   ui_state_content: undefined,
   ui_time_format: undefined,
 } satisfies SelectorFallbackValues;

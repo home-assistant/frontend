@@ -1,14 +1,14 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { UiClockDateFormatSelector } from "../../data/selector";
+import type { UiDateFormatPartsSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-clock-date-format-picker";
+import "../ha-date-format-parts-picker";
 
-@customElement("ha-selector-ui_clock_date_format")
-export class HaSelectorUiClockDateFormat extends LitElement {
+@customElement("ha-selector-ui_date_format_parts")
+export class HaSelectorUiDateFormatParts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public selector!: UiClockDateFormatSelector;
+  @property({ attribute: false }) public selector!: UiDateFormatPartsSelector;
 
   @property() public value?: string | string[];
 
@@ -22,20 +22,20 @@ export class HaSelectorUiClockDateFormat extends LitElement {
 
   protected render() {
     return html`
-      <ha-clock-date-format-picker
+      <ha-date-format-parts-picker
         .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}
         .required=${this.required}
-      ></ha-clock-date-format-picker>
+      ></ha-date-format-parts-picker>
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-ui_clock_date_format": HaSelectorUiClockDateFormat;
+    "ha-selector-ui_date_format_parts": HaSelectorUiDateFormatParts;
   }
 }
