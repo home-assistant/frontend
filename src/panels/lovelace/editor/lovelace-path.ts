@@ -2,7 +2,7 @@ import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 
 export type LovelacePath = (string | number)[];
 export type LovelaceItemKind = "view" | "section" | "card" | "badge";
-export type LovelacePathTarget = "item" | "list" | "slot";
+export type LovelacePathTarget = "item" | "list" | "slot" | "node";
 
 const LIST_KEYS: Record<string, LovelaceItemKind> = {
   views: "view",
@@ -40,9 +40,7 @@ export const getParentPath = (path: LovelacePath): LovelacePath =>
 export const getViewPath = (path: LovelacePath): LovelacePath =>
   path.slice(0, 2);
 
-export const getPathTarget = (
-  path: LovelacePath
-): LovelacePathTarget | undefined => {
+export const getPathTarget = (path: LovelacePath): LovelacePathTarget => {
   const last = path[path.length - 1];
   if (typeof last === "number") {
     return "item";
@@ -53,7 +51,7 @@ export const getPathTarget = (
   if (last in SLOT_KEYS) {
     return "slot";
   }
-  return undefined;
+  return "node";
 };
 
 // Temporary compatibility: custom view layouts still pass [view, card] or [view, section, card] index tuples

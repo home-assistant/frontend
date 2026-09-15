@@ -104,7 +104,8 @@ describe("path helpers", () => {
     assert.strictEqual(getPathTarget(["views", 0, "header", "card"]), "slot");
     assert.strictEqual(getPathTarget(["views", 0, "cards"]), "list");
     assert.strictEqual(getPathTarget(["views", 0, "cards", 1]), "item");
-    assert.strictEqual(getPathTarget(["views", 0, "header"]), undefined);
+    assert.strictEqual(getPathTarget(["views", 0, "header"]), "node");
+    assert.strictEqual(getPathTarget(["views", 0]), "item");
   });
 
   it("returns the parent path", () => {
