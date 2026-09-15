@@ -133,6 +133,7 @@ export class HaTriggerCondition extends LitElement {
               .value=${id}
               .selected=${true}
               .disabled=${this.disabled}
+              appearance="checkbox"
             >
               <span slot="start" class="missing-trigger-badge">
                 <ha-svg-icon .path=${mdiLinkVariantOff}></ha-svg-icon>
