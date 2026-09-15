@@ -403,6 +403,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _handleCardAdded(ev) {
+    ev.stopPropagation();
+    // The dropped node only serves as a drop target, the new section renders the card from the config
+    (ev.detail.item as HTMLElement).remove();
     const oldPath = ev.detail.data as LovelacePath;
     const config = this.lovelace!.config;
     const cardConfig = getAtPath<LovelaceCardConfig>(config, oldPath);
