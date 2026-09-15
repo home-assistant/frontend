@@ -113,6 +113,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _filteredMapEntities: HaMapEntity[] = [];
 
+  // The overview lists people even when their location is currently unknown,
+  // so it holds the map entities plus those location-less people, who have no
+  // map marker of their own.
+  private _overviewEntities: HaMapEntity[] = [];
+
   @state() private _error?: { code: string; message: string };
 
   // Registry creation order decides the palette colors
@@ -338,7 +343,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               ? html`<hui-map-overview
                   id="overview"
                   .hass=${this.hass}
-                  .entities=${this._filteredMapEntities}
+                  .entities=${this._overviewEntities}
                   .selected=${this._overviewSelected}
                   @map-overview-select=${this._handleOverviewSelect}
                   @map-overview-resize=${this._handleOverviewResize}
@@ -445,7 +450,35 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           : undefined,
         this.preview
       );
+      // show_all keeps only located entities for the map; the overview also
+      // lists people whose location is currently unknown.
+      this._overviewEntities = this._config?.show_all
+        ? this._withLocationlessPeople(this._filteredMapEntities)
+        : this._filteredMapEntities;
     }
+  }
+
+  // People without a current location have no map marker, so show_all leaves
+  // them out of the map entities. Add them back for the overview alone.
+  private _withLocationlessPeople(entities: HaMapEntity[]): HaMapEntity[] {
+    const hass = this.hass;
+    if (!hass) {
+      return entities;
+    }
+    const present = new Set(entities.map((entity) => entity.entity_id));
+    const extra: HaMapEntity[] = [];
+    Object.values(hass.states).forEach((stateObj) => {
+      const entityId = stateObj.entity_id;
+      if (
+        computeStateDomain(stateObj) === "person" &&
+        !present.has(entityId) &&
+        !hass.entities?.[entityId]?.hidden &&
+        !getEntityLocation(stateObj, hass.states)
+      ) {
+        extra.push({ entity_id: entityId, color: this._getColor(entityId) });
+      }
+    });
+    return extra.length ? [...entities, ...extra] : entities;
   }
 
   // In panel layout, only the selected zone shows its radius (all of them
