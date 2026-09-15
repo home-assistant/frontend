@@ -84,6 +84,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
       {
         options_domain: "light",
         options: {
+          ...(this.entry!.options?.light ?? {}),
           favorite_colors: newFavoriteColors,
         },
       }
