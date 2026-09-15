@@ -192,6 +192,10 @@ class MoreInfoContent extends LitElement {
           features.push({
             type: "cover-position",
           });
+        } else if (lightMainControl === "color") {
+          // There is no RGB tile feature yet, so when the group is set to
+          // color the members show no control rather than a mismatched
+          // brightness slider.
         } else if (
           lightMainControl === "color_temp" &&
           supportsLightColorTempCardFeature(hass, context)
