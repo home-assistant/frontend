@@ -171,7 +171,6 @@ overrides:
   tslib: 2.8.1
 
 patchedDependencies:
-  '@material/mwc-formfield@0.27.0': 8b1c2ec43c93e3df718ac366dc3013ce79d5a333c0891bc357f41b348a3d7ccd
   '@material/mwc-list@0.27.0': 9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987
   echarts@6.1.0: b02e30d0fb3e2b865321c17ca1234593db0d05a1365cb6c932cd47c0e673fca0
   sortablejs@1.15.7: f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06
@@ -296,9 +295,6 @@ importers:
       '@maplibre/maplibre-gl-leaflet':
         specifier: 0.1.4
         version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.12.0)
-      '@material/mwc-formfield':
-        specifier: 0.27.0
-        version: 0.27.0(patch_hash=8b1c2ec43c93e3df718ac366dc3013ce79d5a333c0891bc357f41b348a3d7ccd)
       '@material/mwc-list':
         specifier: 0.27.0
         version: 0.27.0(patch_hash=9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987)
@@ -2308,9 +2304,6 @@ packages:
   '@material/focus-ring@14.0.0-canary.53b3cad2f.0':
     resolution: {integrity: sha512-exPX5VrjQimipBwgcFDGRiEE783sOBgpkFui59A6i6iGvS2UrLHlYY2E65fyyyQnD1f/rv4Po1OOnCesE1kulg==}
 
-  '@material/form-field@14.0.0-canary.53b3cad2f.0':
-    resolution: {integrity: sha512-h9jFm9f5WeMHJWGpQsZ9sPrERLGcDQdW8uvbHAHZ/zN35Mqj43s8+alXROiibx+m1oHLvf2Z01pPWtFSXLYzxA==}
-
   '@material/list@14.0.0-canary.53b3cad2f.0':
     resolution: {integrity: sha512-mkMpltSKAYLBtFnTTCk/mQIDzwxF/VLh1gh59ehOtmRXt7FvTz83RoAa4tqe53hpVrbX4HoLDBu+vILhq/wkjw==}
 
@@ -2320,10 +2313,6 @@ packages:
 
   '@material/mwc-checkbox@0.27.0':
     resolution: {integrity: sha512-EY0iYZLwo8qaqMwR5da4fdn0xI0BZNAvKTcwoubYWpDDHlGxDcqwvjp/40ChGo3Q/zv8/4/A0Qp7cwapI82EkA==}
-    deprecated: MWC beta is longer supported. Please upgrade to @material/web
-
-  '@material/mwc-formfield@0.27.0':
-    resolution: {integrity: sha512-XGZtC1MTyGQ8b2osnaygGzS3qe2QvlWfXZepcFs9i6MW+b6VimQQ4c/KsKIF7dHmeY6N0o4k9pAZ086EGesXOQ==}
     deprecated: MWC beta is longer supported. Please upgrade to @material/web
 
   '@material/mwc-list@0.27.0':
@@ -9855,16 +9844,6 @@ snapshots:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/rtl': 14.0.0-canary.53b3cad2f.0
 
-  '@material/form-field@14.0.0-canary.53b3cad2f.0':
-    dependencies:
-      '@material/base': 14.0.0-canary.53b3cad2f.0
-      '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
-      '@material/ripple': 14.0.0-canary.53b3cad2f.0
-      '@material/rtl': 14.0.0-canary.53b3cad2f.0
-      '@material/theme': 14.0.0-canary.53b3cad2f.0
-      '@material/typography': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
-
   '@material/list@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/base': 14.0.0-canary.53b3cad2f.0
@@ -9889,13 +9868,6 @@ snapshots:
     dependencies:
       '@material/mwc-base': 0.27.0
       '@material/mwc-ripple': 0.27.0
-      lit: 3.3.3
-      tslib: 2.8.1
-
-  '@material/mwc-formfield@0.27.0(patch_hash=8b1c2ec43c93e3df718ac366dc3013ce79d5a333c0891bc357f41b348a3d7ccd)':
-    dependencies:
-      '@material/form-field': 14.0.0-canary.53b3cad2f.0
-      '@material/mwc-base': 0.27.0
       lit: 3.3.3
       tslib: 2.8.1
 
