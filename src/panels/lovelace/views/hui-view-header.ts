@@ -8,17 +8,15 @@ import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewHeaderConfig,
-} from "../../../data/lovelace/config/view";
+import type { LovelaceViewHeaderConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { replaceView } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
 
@@ -38,7 +36,7 @@ export class HuiViewHeader extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewHeaderConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   private _checkHidden() {
     const allHidden =
@@ -130,55 +128,22 @@ export class HuiViewHeader extends LitElement {
       cardConfig,
       lovelaceConfig: this.lovelace.config,
       saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
-        const newConfig = { ...this.config };
-        newConfig.card = newCardConfig;
-        this._saveHeaderConfig(newConfig);
+        this.lovelace.saveConfig(
+          setAtPath(this.lovelace.config, this._cardPath, newCardConfig)
+        );
       },
       isNew: true,
     });
   }
 
-  private _deleteCard(ev) {
-    ev.stopPropagation();
-    const newConfig = { ...this.config };
-    delete newConfig.card;
-    this._saveHeaderConfig(newConfig);
-  }
-
-  private _editCard(ev) {
-    ev.stopPropagation();
-    const cardConfig = this.config!.card;
-
-    if (!cardConfig) {
-      return;
-    }
-
-    showEditCardDialog(this, {
-      cardConfig,
-      lovelaceConfig: this.lovelace.config,
-      saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
-        const newConfig = { ...this.config };
-        newConfig.card = newCardConfig;
-        this._saveHeaderConfig(newConfig);
-      },
-    });
+  private get _cardPath(): LovelacePath {
+    return [...this.path, "header", "card"];
   }
 
   private _saveHeaderConfig(headerConfig: LovelaceViewHeaderConfig) {
-    const viewConfig = this.lovelace.config.views[
-      this.viewIndex
-    ] as LovelaceViewConfig;
-
-    const config = { ...viewConfig };
-    config.header = headerConfig;
-
-    const updatedConfig = replaceView(
-      this.hass,
-      this.lovelace.config,
-      this.viewIndex,
-      config
+    this.lovelace.saveConfig(
+      setAtPath(this.lovelace.config, [...this.path, "header"], headerConfig)
     );
-    this.lovelace.saveConfig(updatedConfig);
   }
 
   private _configure = () => {
@@ -244,10 +209,8 @@ export class HuiViewHeader extends LitElement {
                         ? card
                           ? html`
                               <hui-card-edit-mode
-                                @ll-edit-card=${this._editCard}
-                                @ll-delete-card=${this._deleteCard}
                                 .lovelace=${this.lovelace!}
-                                .path=${[0]}
+                                .path=${this._cardPath}
                                 no-duplicate
                                 no-move
                               >
@@ -278,7 +241,7 @@ export class HuiViewHeader extends LitElement {
                     <hui-view-badges
                       .badges=${this.badges}
                       .lovelace=${this.lovelace!}
-                      .viewIndex=${this.viewIndex!}
+                      .path=${[...this.path, "badges"]}
                       .showAddLabel=${this.badges.length === 0}
                     ></hui-view-badges>
                   </div>

@@ -1,11 +1,11 @@
 import type { HomeAssistant } from "../../../types";
 import type { Lovelace } from "../types";
-import { deleteBadge } from "./config-util";
-import type { LovelaceCardPath } from "./lovelace-path";
+import type { LovelacePath } from "./lovelace-path";
+import { deleteAtPath } from "./lovelace-path";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface DeleteBadgeParams {
-  path: LovelaceCardPath;
+  path: LovelacePath;
   silent: boolean;
 }
 
@@ -17,7 +17,7 @@ export async function performDeleteBadge(
   try {
     const { path, silent } = params;
     const oldConfig = lovelace.config;
-    const newConfig = deleteBadge(oldConfig, path);
+    const newConfig = deleteAtPath(oldConfig, path);
     await lovelace.saveConfig(newConfig);
 
     if (silent) {

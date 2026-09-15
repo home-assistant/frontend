@@ -6,14 +6,15 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../components/hui-badge-edit-mode";
-import { moveBadge } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { moveAtPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { HuiBadge } from "./hui-badge";
 
@@ -30,7 +31,7 @@ export class HuiViewBadges extends LitElement {
 
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   @property({ type: Boolean, attribute: "show-add-label" })
   public showAddLabel!: boolean;
@@ -82,27 +83,29 @@ export class HuiViewBadges extends LitElement {
     return this._badgeConfigKeys.get(badge)!;
   }
 
-  private _badgeMoved(ev) {
+  private _badgeMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
-    const newConfig = moveBadge(
-      this.lovelace!.config,
-      [this.viewIndex!, oldIndex],
-      [this.viewIndex!, newIndex]
+    const newConfig = moveAtPath(
+      this.lovelace.config,
+      [...this.path, oldIndex],
+      [...this.path, newIndex]
     );
-    this.lovelace!.saveConfig(newConfig);
+    this.lovelace.saveConfig(newConfig);
   }
 
-  private _badgeAdded(ev) {
+  private _badgeAdded(ev: HASSDomEvent<HASSDomEvents["item-added"]>) {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const oldPath = data as LovelaceCardPath;
-    const newPath = [this.viewIndex!, index] as LovelaceCardPath;
-    const newConfig = moveBadge(this.lovelace!.config, oldPath, newPath);
-    this.lovelace!.saveConfig(newConfig);
+    const oldPath = data as LovelacePath;
+    const newConfig = moveAtPath(this.lovelace.config, oldPath, [
+      ...this.path,
+      index,
+    ]);
+    this.lovelace.saveConfig(newConfig);
   }
 
-  private _badgeRemoved(ev) {
+  private _badgeRemoved(ev: HASSDomEvent<HASSDomEvents["item-removed"]>) {
     ev.stopPropagation();
     // Do nothing, it's handled by the "item-added" event from the new parent.
   }
@@ -116,7 +119,7 @@ export class HuiViewBadges extends LitElement {
   }
 
   private _addBadge() {
-    fireEvent(this, "ll-create-badge");
+    fireEvent(this, "ll-create-badge", { path: this.path });
   }
 
   render() {
@@ -139,7 +142,6 @@ export class HuiViewBadges extends LitElement {
                 @drag-end=${this._dragEnd}
                 group="badge"
                 draggable-selector="[data-sortable]"
-                .rollback=${false}
                 .options=${BADGE_SORTABLE_OPTIONS}
                 invert-swap
               >
@@ -148,10 +150,7 @@ export class HuiViewBadges extends LitElement {
                     badges,
                     (badge) => this._getBadgeKey(badge),
                     (badge, idx) => {
-                      const badgePath = [
-                        this.viewIndex,
-                        idx,
-                      ] as LovelaceCardPath;
+                      const badgePath = [...this.path, idx];
                       return html`
                         ${
                           editMode
@@ -238,6 +237,7 @@ export class HuiViewBadges extends LitElement {
       margin-right: -8px;
       margin-inline-end: -8px;
       margin-inline-start: 0;
+      order: 2;
     }
 
     .badges > * {
@@ -252,6 +252,7 @@ export class HuiViewBadges extends LitElement {
     }
 
     .add {
+      order: 1;
       position: relative;
       display: flex;
       flex-direction: row;

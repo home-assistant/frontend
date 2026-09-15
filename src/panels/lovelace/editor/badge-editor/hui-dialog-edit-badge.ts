@@ -16,7 +16,6 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomBadgeEntry,
   isCustomType,
@@ -34,11 +33,16 @@ import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
 import { getConfigEntityId } from "../../common/get-config-entity-id";
 import "../../sections/hui-section";
-import { addBadge, replaceBadge } from "../config-util";
 import { getBadgeDefaultConfig } from "../get-badge-default-config";
 import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
-import { findLovelaceContainer } from "../lovelace-path";
+import type { LovelacePath } from "../lovelace-path";
+import {
+  appendAtPath,
+  getAtPath,
+  getParentPath,
+  setAtPath,
+} from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
@@ -70,7 +74,7 @@ export class HuiDialogEditBadge
 
   @state() private _badgeConfig?: LovelaceBadgeConfig;
 
-  @state() private _containerConfig!: LovelaceViewConfig;
+  @state() private _containerConfig!: { title?: string };
 
   @state() private _saving = false;
 
@@ -91,10 +95,11 @@ export class HuiDialogEditBadge
     this._guiModeAvailable = true;
     this._open = true;
 
-    const containerConfig = findLovelaceContainer(
+    const containerPath = getParentPath(this._collectionPath);
+    const containerConfig = getAtPath<{ title?: string }>(
       params.lovelaceConfig,
-      params.path
-    );
+      containerPath
+    )!;
 
     if ("strategy" in containerConfig) {
       throw new Error("Can't edit strategy");
@@ -105,7 +110,10 @@ export class HuiDialogEditBadge
     if ("badgeConfig" in params) {
       this._badgeConfig = params.badgeConfig;
     } else {
-      const badge = this._containerConfig.badges?.[params.badgeIndex];
+      const badge = getAtPath<Partial<LovelaceBadgeConfig> | string>(
+        params.lovelaceConfig,
+        params.path
+      );
       this._badgeConfig = badge != null ? ensureBadgeConfig(badge) : badge;
     }
 
@@ -124,6 +132,11 @@ export class HuiDialogEditBadge
     } else {
       this._initDirtyTracking({ type: "deep" }, this._badgeConfig, normalize);
     }
+  }
+
+  private get _collectionPath(): LovelacePath {
+    const params = this._params!;
+    return "badgeConfig" in params ? params.path : getParentPath(params.path);
   }
 
   public closeDialog(): boolean {
@@ -409,15 +422,15 @@ export class HuiDialogEditBadge
       return;
     }
     this._saving = true;
-    const path = this._params!.path;
-    await this._params!.saveConfig(
-      "badgeConfig" in this._params!
-        ? addBadge(this._params!.lovelaceConfig, path, this._badgeConfig!)
-        : replaceBadge(
-            this._params!.lovelaceConfig,
-            [...path, this._params!.badgeIndex],
+    const params = this._params!;
+    await params.saveConfig(
+      "badgeConfig" in params
+        ? appendAtPath(
+            params.lovelaceConfig,
+            this._collectionPath,
             this._badgeConfig!
           )
+        : setAtPath(params.lovelaceConfig, params.path, this._badgeConfig!)
     );
     this._saving = false;
     this._markDirtyStateClean();
