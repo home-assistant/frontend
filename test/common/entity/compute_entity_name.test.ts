@@ -8,6 +8,7 @@ import * as computeStateNameModule from "../../../src/common/entity/compute_stat
 import * as stripPrefixModule from "../../../src/common/entity/strip_prefix_from_entity_name";
 import type { HomeAssistant } from "../../../src/types";
 import {
+  mockDevice,
   mockEntity,
   mockEntityEntry,
   mockStateObj,
@@ -130,6 +131,20 @@ describe("computeEntityEntryName", () => {
       states: {},
     } as unknown as HomeAssistant;
     expect(computeEntityEntryName(entry, hass.devices)).toBe("Old Name");
+  });
+
+  it("preserves an explicitly empty name instead of the integration name", () => {
+    const entry = mockEntityEntry({
+      device_id: "dev1",
+      name: "",
+      original_name: "Temperature",
+    });
+    const devices = { dev1: mockDevice({ id: "dev1", name: "Living room" }) };
+
+    expect(computeEntityEntryName(entry, devices)).toBe("");
+    expect(computeEntityEntryName({ ...entry, name: null }, devices)).toBe(
+      "Temperature"
+    );
   });
 
   it("returns undefined if no name, original_name, or device", () => {
