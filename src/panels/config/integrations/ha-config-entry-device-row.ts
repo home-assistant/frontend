@@ -75,6 +75,16 @@ class HaConfigEntryDeviceRow extends LitElement {
       area ? area.name : undefined,
     ].filter(Boolean);
 
+    const entityCountText = entities.length
+      ? this.hass.localize(
+          "ui.panel.config.integrations.config_entry.entities",
+          { count: entities.length }
+        )
+      : "";
+
+    const entitySupportingText =
+      (supportingText.length && entities.length ? " • " : "") + entityCountText;
+
     return html`<ha-md-list-item
       type="button"
       @click=${this._handleNavigateToDevice}
@@ -116,13 +126,9 @@ class HaConfigEntryDeviceRow extends LitElement {
       </div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
-        ${supportingText.length && entities.length ? " • " : nothing}
         ${
-          entities.length
-            ? this.hass.localize(
-                "ui.panel.config.integrations.config_entry.entities",
-                { count: entities.length }
-              )
+          entitySupportingText
+            ? html`<span>${html`&nbsp;`} ${entitySupportingText}</span>`
             : nothing
         }</span
       >
