@@ -221,7 +221,11 @@ class ZHAConfigDashboard extends LitElement {
           </ha-button>
         </div>
         <div class="card-content">
-          <ha-list-nav>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.my_network_title"
+            )}
+          >
             <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
@@ -288,7 +292,11 @@ class ZHAConfigDashboard extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-list-nav>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.zha.configuration_page.options_title"
+            )}
+          >
             <ha-list-item-button href="/config/zha/options">
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">

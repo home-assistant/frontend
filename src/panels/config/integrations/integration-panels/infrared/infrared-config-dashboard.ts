@@ -82,7 +82,11 @@ export class InfraredConfigDashboard extends LitElement {
               ${this.hass.localize("ui.panel.config.infrared.my_devices")}
             </div>
             <div class="card-content network-card-content">
-              <ha-list-nav>
+              <ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.infrared.my_devices"
+                )}
+              >
                 <ha-list-item-button href="/config/infrared/devices">
                   <ha-svg-icon slot="start" .path=${mdiRemote}></ha-svg-icon>
                   <div slot="headline">

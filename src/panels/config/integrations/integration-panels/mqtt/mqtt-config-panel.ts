@@ -187,7 +187,11 @@ export class MQTTConfigPanel extends LitElement {
           ${this.hass.localize("ui.panel.config.mqtt.my_network_title")}
         </div>
         <div class="card-content">
-          <ha-list-nav>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.mqtt.my_network_title"
+            )}
+          >
             <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >

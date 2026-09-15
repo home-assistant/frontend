@@ -73,7 +73,11 @@ export class RadioFrequencyConfigDashboard extends LitElement {
 
           <ha-card class="network-card">
             <div class="card-content">
-              <ha-list-nav>
+              <ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.radio_frequency.title"
+                )}
+              >
                 <ha-list-item-button href="/config/radio-frequency/devices">
                   <ha-svg-icon
                     slot="start"

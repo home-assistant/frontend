@@ -1,15 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
-  expectNoPageErrors,
-  NAVIGATION_TIMEOUT,
-  PANEL_TIMEOUT,
-  QUICK_TIMEOUT,
-  SHELL_TIMEOUT,
-  trackPageErrors,
-} from "./helpers";
-import {
-  DEMO_THEME_STORAGE_KEY,
   activateDemoSidebarPanel,
+  DEMO_THEME_STORAGE_KEY,
   demoCardSelector,
   expectDemoDarkMode,
   expectStoredDemoTheme,
@@ -18,6 +10,14 @@ import {
   openDemoSidebar,
   reloadDemo,
 } from "./demo/helpers";
+import {
+  expectNoPageErrors,
+  NAVIGATION_TIMEOUT,
+  PANEL_TIMEOUT,
+  QUICK_TIMEOUT,
+  SHELL_TIMEOUT,
+  trackPageErrors,
+} from "./helpers";
 
 test.describe("Home Assistant Demo", () => {
   let pageErrors: ReturnType<typeof trackPageErrors>;
@@ -82,10 +82,10 @@ test.describe("Home Assistant Demo", () => {
 
     // Adapters come from the config entries, connections and advertisements
     // from the subscriptions. A count of zero means the data never arrived.
-    const rows = dashboard.locator("ha-md-list-item div[slot='headline']");
+    const rows = dashboard.locator("ha-list-item-button div[slot='headline']");
     await expect(rows).toHaveCount(3, { timeout: PANEL_TIMEOUT });
     // Asserted over the list as a whole so a single empty count still fails.
-    await expect(dashboard.locator("ha-md-list")).not.toHaveText(/\b0\b/, {
+    await expect(dashboard.locator("ha-list-nav")).not.toHaveText(/\b0\b/, {
       timeout: QUICK_TIMEOUT,
     });
 
@@ -120,7 +120,7 @@ test.describe("Home Assistant Demo", () => {
     });
     // The device and entity counts come from the registries; a zero means the
     // fixtures did not reach them.
-    await expect(dashboard.locator("ha-md-list").first()).not.toHaveText(
+    await expect(dashboard.locator("ha-list-nav").first()).not.toHaveText(
       /\b0\b/,
       { timeout: QUICK_TIMEOUT }
     );

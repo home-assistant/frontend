@@ -167,7 +167,11 @@ export class MatterConfigDashboard extends LitElement {
           </ha-button>
         </div>
         <div class="card-content">
-          <ha-list-nav>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.matter.panel.my_network_title"
+            )}
+          >
             <ha-list-item-button
               href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
@@ -202,7 +206,11 @@ export class MatterConfigDashboard extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-list-nav>
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.matter.panel.options_title"
+            )}
+          >
             <ha-list-item-button href="/config/matter/options">
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">

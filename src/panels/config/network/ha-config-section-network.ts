@@ -57,7 +57,11 @@ class HaConfigSectionNetwork extends LitElement {
                       "ui.panel.config.network.discovery.title"
                     )}
                   >
-                    <ha-list-nav>
+                    <ha-list-nav
+                      .ariaLabel=${this.hass.localize(
+                        "ui.panel.config.network.discovery.title"
+                      )}
+                    >
                       ${NETWORK_BROWSERS.map(
                         (domain) => html`
                           <ha-list-item-button href="/config/${domain}">

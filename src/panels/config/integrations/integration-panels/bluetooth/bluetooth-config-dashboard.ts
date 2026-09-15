@@ -213,7 +213,11 @@ export class BluetoothConfigDashboard extends LitElement {
               </ha-button>
             </div>
             <div class="card-content network-card-content">
-              <ha-list-nav>
+              <ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.bluetooth.my_network"
+                )}
+              >
                 <ha-list-item-button href="/config/bluetooth/adapter-info">
                   <ha-svg-icon
                     slot="start"
