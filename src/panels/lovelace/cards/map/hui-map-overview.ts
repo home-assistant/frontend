@@ -124,6 +124,10 @@ export class HuiMapOverview extends LitElement {
 
   @state() private _activityFailed = false;
 
+  // Counts activity loads so only the newest one may show its result, even
+  // when the same entity is selected again while an older load is pending
+  private _activityRequest = 0;
+
   private _resizeObserver?: ResizeObserver;
 
   public connectedCallback(): void {
@@ -271,8 +275,9 @@ export class HuiMapOverview extends LitElement {
     if (changedProps.has("selected")) {
       this._activity = undefined;
       this._activityFailed = false;
+      const request = ++this._activityRequest;
       if (this.selected) {
-        this._loadActivity(this.selected);
+        this._loadActivity(this.selected, request);
       }
     }
   }
@@ -299,19 +304,25 @@ export class HuiMapOverview extends LitElement {
     }
   }
 
-  private async _loadActivity(entityId: string): Promise<void> {
+  private async _loadActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
     if (computeDomain(entityId) === "zone") {
-      await this._loadZoneActivity(entityId);
+      await this._loadZoneActivity(entityId, request);
     } else {
-      await this._loadPersonActivity(entityId);
+      await this._loadPersonActivity(entityId, request);
     }
   }
 
-  private async _loadPersonActivity(entityId: string): Promise<void> {
+  private async _loadPersonActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
     const since = this._activitySince();
     const history = await this._fetchHistory([entityId], since);
-    if (this.selected !== entityId) {
-      // Selection changed while loading
+    if (request !== this._activityRequest) {
+      // A newer selection took over while loading
       return;
     }
     if (history === null) {
@@ -322,7 +333,10 @@ export class HuiMapOverview extends LitElement {
     this._activity = personActivity(history?.[entityId], since);
   }
 
-  private async _loadZoneActivity(entityId: string): Promise<void> {
+  private async _loadZoneActivity(
+    entityId: string,
+    request: number
+  ): Promise<void> {
     const zone = this._states[entityId];
     if (!zone) {
       this._activity = [];
@@ -333,8 +347,8 @@ export class HuiMapOverview extends LitElement {
     const history = personIds.length
       ? await this._fetchHistory(personIds, since)
       : {};
-    if (this.selected !== entityId) {
-      // Selection changed while loading
+    if (request !== this._activityRequest) {
+      // A newer selection took over while loading
       return;
     }
     if (history === null) {
