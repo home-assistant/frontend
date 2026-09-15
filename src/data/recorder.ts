@@ -1,5 +1,5 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
@@ -348,8 +348,9 @@ export const getStatisticLabel = (
 ): string => {
   const entity = hass.states[statisticsId];
   if (entity) {
-    return computeStateName(entity);
+    return hass.formatEntityName(entity, DEFAULT_ENTITY_NAME);
   }
+  // External statistics have no entity to resolve a name against.
   return statisticsMetaData?.name || statisticsId;
 };
 
