@@ -26,7 +26,6 @@ import "../../components/ha-button";
 import "../../components/ha-date-input";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import "../../components/ha-textarea";
 import "../../components/ha-time-input";
@@ -240,15 +239,12 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
             required
             @value-changed=${this._handleCalendarChanged}
           ></ha-entity-picker>
-          <ha-formfield
-            .label=${this.hass.localize("ui.components.calendar.event.all_day")}
+          <ha-switch
+            id="all_day"
+            .checked=${this._allDay}
+            @change=${this._allDayToggleChanged}
+            >${this.hass.localize("ui.components.calendar.event.all_day")}</ha-switch
           >
-            <ha-switch
-              id="all_day"
-              .checked=${this._allDay}
-              @change=${this._allDayToggleChanged}
-            ></ha-switch>
-          </ha-formfield>
 
           <div>
             <span class="label"
@@ -665,8 +661,8 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
         ha-textarea {
           margin-bottom: 16px;
         }
-        ha-formfield {
-          display: block;
+        ha-switch {
+          display: flex;
           padding: 16px 0;
         }
         ha-date-input {

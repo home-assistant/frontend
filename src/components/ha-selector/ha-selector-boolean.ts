@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-formfield";
 import "../ha-switch";
 import "../ha-input-helper-text";
 
@@ -19,21 +18,14 @@ export class HaBooleanSelector extends LitElement {
 
   protected render() {
     return html`
-      <ha-formfield alignEnd spaceBetween .label=${this.label}>
-        <ha-switch
-          .checked=${this.value ?? this.placeholder === true}
-          @change=${this._handleChange}
-          .disabled=${this.disabled}
-        ></ha-switch>
-        <span slot="label">
-          <p class="primary">${this.label}</p>
-          ${
-            this.helper
-              ? html`<p class="secondary">${this.helper}</p>`
-              : nothing
-          }
-        </span>
-      </ha-formfield>
+      <ha-switch
+        .checked=${this.value ?? this.placeholder === true}
+        @change=${this._handleChange}
+        .disabled=${this.disabled}
+      >
+        <p class="primary">${this.label}</p>
+        ${this.helper ? html`<p class="secondary">${this.helper}</p>` : nothing}
+      </ha-switch>
     `;
   }
 
@@ -46,11 +38,26 @@ export class HaBooleanSelector extends LitElement {
   }
 
   static styles = css`
-    ha-formfield {
+    :host {
+      display: block;
+    }
+    ha-switch {
       display: flex;
+      width: 100%;
       min-height: 56px;
       align-items: center;
-      --mdc-typography-body2-font-size: 1em;
+    }
+    /* The switch renders its control before the label, so flip the row to keep
+       the label on the start side with the control pushed to the end. */
+    ha-switch::part(base) {
+      width: 100%;
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      gap: var(--ha-space-2);
+    }
+    ha-switch::part(label) {
+      margin-inline-start: 0;
+      line-height: var(--ha-line-height-normal);
     }
     p {
       margin: 0;
