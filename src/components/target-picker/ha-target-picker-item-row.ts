@@ -639,9 +639,10 @@ export class HaTargetPickerItemRow extends LitElement {
       const area = device
         ? getDeviceArea(device, this.hass.areas, this.hass.devices)
         : undefined;
-      const parentDevice = device?.parent_device_id
-        ? this.hass.devices[device.parent_device_id]
-        : undefined;
+      const parentDevice =
+        device?.parent_device_id && device.context_source !== "area"
+          ? this.hass.devices[device.parent_device_id]
+          : undefined;
       const context = [
         area ? computeAreaName(area) : undefined,
         parentDevice ? computeDeviceName(parentDevice) : undefined,

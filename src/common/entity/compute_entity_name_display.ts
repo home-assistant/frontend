@@ -10,15 +10,11 @@ import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
 import {
   computeEntityEntryName,
-  computeEntityName,
   entityUseDeviceName,
 } from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
 import { computeStateName } from "./compute_state_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "./context/get_entity_context";
+import { getEntityEntryContext } from "./context/get_entity_context";
 
 const DEFAULT_SEPARATOR = " ";
 
@@ -131,7 +127,8 @@ export const computeEntityNameDisplay = (
     entities,
     devices,
     areas,
-    floors
+    floors,
+    { followContext: false }
   );
 
   // If after processing there is only one name, return that
@@ -142,13 +139,18 @@ export const computeEntityNameDisplay = (
   return names.filter((n) => n).join(separator);
 };
 
+export interface EntityNameListOptions {
+  followContext?: boolean;
+}
+
 export const computeEntityNameList = (
   stateObj: HassEntity,
   name: EntityNameItem[],
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
+  floors: HomeAssistant["floors"],
+  options?: EntityNameListOptions
 ): (string | undefined)[] => {
   const entry = entities[stateObj.entity_id] as
     EntityRegistryDisplayEntry | undefined;
@@ -169,7 +171,8 @@ export const computeEntityNameList = (
     entities,
     devices,
     areas,
-    floors
+    floors,
+    options
   );
 };
 
@@ -179,7 +182,8 @@ export const computeEntityEntryNameList = (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
+  floors: HomeAssistant["floors"],
+  options?: EntityNameListOptions
 ): (string | undefined)[] => {
   const { device, parentDevice, area, floor } = getEntityEntryContext(
     entry,
@@ -188,15 +192,32 @@ export const computeEntityEntryNameList = (
     areas,
     floors
   );
+  const entityName = computeEntityEntryName(entry, devices);
+  const followContext = options?.followContext ?? true;
+
+  // Same rule as core's follow_context: owners above the first node with its
+  // own area are left out. An entity without a name of its own is still named
+  // after its device.
+  const nameDevice =
+    !followContext || entry.context_source !== "area" || !entityName
+      ? device
+      : null;
+  const nameParentDevice =
+    !followContext ||
+    (entry.context_source !== "area" && device?.context_source !== "area")
+      ? parentDevice
+      : null;
 
   return name.map((item) => {
     switch (item.type) {
       case "entity":
-        return computeEntityEntryName(entry, devices);
+        return entityName;
       case "device":
-        return device ? computeDeviceName(device) : undefined;
+        return nameDevice ? computeDeviceName(nameDevice) : undefined;
       case "parent_device":
-        return parentDevice ? computeDeviceName(parentDevice) : undefined;
+        return nameParentDevice
+          ? computeDeviceName(nameParentDevice)
+          : undefined;
       case "area":
         return area ? computeAreaName(area) : undefined;
       case "floor":
@@ -216,19 +237,27 @@ export const computeEntitySearchLabels = (
   areas: HomeAssistant["areas"],
   floors: HomeAssistant["floors"]
 ) => {
-  const { device, parentDevice, area } = getEntityContext(
-    stateObj,
-    entities,
-    devices,
-    areas,
-    floors
-  );
+  const [entityName, deviceName, parentDeviceName, areaName] =
+    computeEntityNameList(
+      stateObj,
+      [
+        { type: "entity" },
+        { type: "device" },
+        { type: "parent_device" },
+        { type: "area" },
+      ],
+      entities,
+      devices,
+      areas,
+      floors,
+      { followContext: false }
+    );
   return {
-    entityName: computeEntityName(stateObj, entities, devices) || null,
+    entityName: entityName || null,
     friendlyName: computeStateName(stateObj) || null,
-    deviceName: (device && computeDeviceName(device)) || null,
-    parentDeviceName: (parentDevice && computeDeviceName(parentDevice)) || null,
-    areaName: (area && computeAreaName(area)) || null,
+    deviceName: deviceName || null,
+    parentDeviceName: parentDeviceName || null,
+    areaName: areaName || null,
   };
 };
 
