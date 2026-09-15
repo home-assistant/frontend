@@ -17,15 +17,19 @@ describe("getServiceCallEntityIds", () => {
     ]);
   });
 
-  it("merges and deduplicates entity lists", () => {
-    const result = getServiceCallEntityIds(
-      { entity_id: ["light.a", "light.b"] },
-      { entity_id: ["light.b", "light.c"] }
-    );
-    expect(result).toHaveLength(3);
-    expect(result).toEqual(
-      expect.arrayContaining(["light.a", "light.b", "light.c"])
-    );
+  it("prefers the target over the legacy service data entity ids", () => {
+    expect(
+      getServiceCallEntityIds(
+        { entity_id: ["light.a", "light.b"] },
+        { entity_id: ["light.b", "light.c"] }
+      )
+    ).toEqual(["light.b", "light.c"]);
+  });
+
+  it("deduplicates entity ids", () => {
+    expect(
+      getServiceCallEntityIds({}, { entity_id: ["light.a", "light.a"] })
+    ).toEqual(["light.a"]);
   });
 
   it("ignores wildcard, malformed, and non-string entity ids", () => {

@@ -142,6 +142,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service, serviceData)
             ) {
+              this._reportEntityControlToExternalApp(
+                domain,
+                service,
+                serviceData,
+                target
+              );
               return { context: { id: "" } };
             }
             if (this.hass?.debugConnection) {

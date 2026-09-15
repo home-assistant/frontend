@@ -25,15 +25,14 @@ export const serviceCallWillDisconnect = (
       "update.home_assistant_operating_system_update",
     ].includes(serviceData?.entity_id));
 
+// Core merges the target into the service data, so a target entity_id
+// replaces the legacy service data one rather than adding to it.
 export const getServiceCallEntityIds = (
   serviceData?: ServiceCallRequest["serviceData"],
   target?: ServiceCallRequest["target"]
 ): string[] => [
   ...new Set(
-    [
-      ...(ensureArray(target?.entity_id) ?? []),
-      ...(ensureArray(serviceData?.entity_id) ?? []),
-    ].filter(
+    (ensureArray(target?.entity_id ?? serviceData?.entity_id) ?? []).filter(
       (id): id is string => typeof id === "string" && isValidEntityId(id)
     )
   ),
