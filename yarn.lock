@@ -2798,12 +2798,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-messageformat-parser@npm:3.5.17":
-  version: 3.5.17
-  resolution: "@formatjs/icu-messageformat-parser@npm:3.5.17"
+"@formatjs/icu-messageformat-parser@npm:3.5.18":
+  version: 3.5.18
+  resolution: "@formatjs/icu-messageformat-parser@npm:3.5.18"
   dependencies:
     "@formatjs/icu-skeleton-parser": "npm:2.1.11"
-  checksum: 10/cbb9daf23f65e4ef3697eae3be4c6888eda942fcde18929dfc6e96ef6c45052409d20340ece13476eeadd062e222809c46a2f26e3b453c9cbd4979bb6c0b0ae5
+  checksum: 10/fc2215a16571fcff3eb9f446878ef7649d40064a79648352ab79f68f4b48ce7b196125495eec82caa02edec78a9a094d8fd6fd5db0abeb353b95afb62672c2a2
   languageName: node
   linkType: hard
 
@@ -10472,7 +10472,7 @@ __metadata:
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.7"
     idb-keyval: "npm:6.3.0"
-    intl-messageformat: "npm:11.2.14"
+    intl-messageformat: "npm:11.2.15"
     js-yaml: "npm:5.4.1"
     jsdom: "npm:30.0.1"
     jszip: "npm:3.10.2"
@@ -10879,13 +10879,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"intl-messageformat@npm:11.2.14":
-  version: 11.2.14
-  resolution: "intl-messageformat@npm:11.2.14"
+"intl-messageformat@npm:11.2.15":
+  version: 11.2.15
+  resolution: "intl-messageformat@npm:11.2.15"
   dependencies:
     "@formatjs/fast-memoize": "npm:3.1.7"
-    "@formatjs/icu-messageformat-parser": "npm:3.5.17"
-  checksum: 10/2720155c42bfd99a00d41f7bc9e2f5c2c83c2b6cb2353006b7d8e736a0f1ed20d0147406c1aeba0748731a0ce588c67304b52eb2fe92b42b928bf1ef6bffdcdf
+    "@formatjs/icu-messageformat-parser": "npm:3.5.18"
+  checksum: 10/71d1448964e685c821b3680a89668aae3fe92f6b7774842ea5eb08830417846d4fcbcaf691930e4da1ceb2cc414eeab468c7e3dd4eb530a38ffed91530468ac5
   languageName: node
   linkType: hard
 

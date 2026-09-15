@@ -7,12 +7,12 @@ import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import type { HaInput } from "../../../components/input/ha-input";
 import "../../../components/input/ha-input-copy";
 import type { HaInputCopy } from "../../../components/input/ha-input-copy";
+import "../../../components/item/ha-row-item";
 import type { CloudStatus } from "../../../data/cloud";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
@@ -161,7 +161,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
           ${
             hasCloud
               ? html`
-                  <ha-md-list-item>
+                  <ha-row-item>
                     <span slot="headline"
                       >${this.hass.localize(
                         "ui.panel.config.url.external_use_ha_cloud"
@@ -173,7 +173,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                       .checked=${this._cloudChecked}
                       @change=${this._toggleCloud}
                     ></ha-switch>
-                  </ha-md-list-item>
+                  </ha-row-item>
                 `
               : nothing
           }
@@ -261,7 +261,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
           <h4>
             ${this.hass.localize("ui.panel.config.url.internal_url_label")}
           </h4>
-          <ha-md-list-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.hass.localize(
                 "ui.panel.config.url.internal_url_automatic"
@@ -278,7 +278,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               .checked=${!this._showCustomInternalUrl}
               @change=${this._toggleInternalAutomatic}
             ></ha-switch>
-          </ha-md-list-item>
+          </ha-row-item>
 
           <div class="url-container">
             <ha-input-copy
@@ -466,12 +466,10 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
       flex: 1;
     }
 
-    ha-md-list-item {
-      --md-list-item-top-space: 0;
-      --md-list-item-bottom-space: 0;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-list-item-two-line-container-height: 48px;
+    ha-row-item {
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-padding-inline: 0;
+      --ha-row-item-min-height: 48px;
     }
 
     .no-wrap {
