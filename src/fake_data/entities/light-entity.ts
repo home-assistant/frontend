@@ -56,6 +56,7 @@ export class MockLightEntity extends MockBaseEntity {
         attrs.color_temp_kelvin = data.color_temp_kelvin;
         attrs.color_temp = kelvin2mired(data.color_temp_kelvin);
         rgb = temperature2rgb(data.color_temp_kelvin);
+        hs = rgbToHaHs(rgb);
         attrs.color_mode = LightColorMode.COLOR_TEMP;
       } else if (data.hs_color) {
         hs = data.hs_color;

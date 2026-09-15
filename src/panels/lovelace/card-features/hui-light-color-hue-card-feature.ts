@@ -128,10 +128,14 @@ class HuiLightColorHueCardFeature
       return nothing;
     }
 
+    // Like the color temperature slider, only show a handle while the light
+    // is actually in this slider's mode.
     const hs: [number, number] | undefined =
       this._hue != null
         ? [this._hue, computeLightHueSaturation(this._stateObj)]
-        : this._stateObj.attributes.hs_color;
+        : lightIsInColorMode(this._stateObj)
+          ? this._stateObj.attributes.hs_color
+          : undefined;
 
     return html`
       <ha-control-slider
