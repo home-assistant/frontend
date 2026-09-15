@@ -339,7 +339,8 @@ export class StatisticsChart extends LitElement {
             .color=${row.color}
           ></ha-chart-tooltip-marker>
           ${row.seriesName}:
-          ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+          <span dir="ltr">${row.value}</span
+          >${i < rows.length - 1 ? html`<br />` : nothing}`
     )}`;
   };
 
@@ -432,7 +433,7 @@ export class StatisticsChart extends LitElement {
       ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
-        name: this.unit,
+        name: this._formatYAxisNameLTR(this.unit),
         nameGap: 2,
         nameTextStyle: {
           align: "left",
@@ -563,6 +564,8 @@ export class StatisticsChart extends LitElement {
       minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
+
+  private _formatYAxisNameLTR = (value: number) => "\u202A" + value + "\u202C";
 
   static styles = css`
     :host {
