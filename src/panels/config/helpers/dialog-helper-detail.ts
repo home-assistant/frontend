@@ -141,9 +141,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
-      await HELPERS[this._domain].import();
-      this._initDirtyTracking({ type: "deep" }, undefined);
-      this._loading = false;
+      try {
+        await HELPERS[this._domain].import();
+        this._initDirtyTracking({ type: "deep" }, undefined);
+      } finally {
+        this._loading = false;
+      }
     }
     this._open = true;
     await this.updateComplete;
