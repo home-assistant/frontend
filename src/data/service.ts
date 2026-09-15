@@ -26,14 +26,17 @@ export const serviceCallWillDisconnect = (
     ].includes(serviceData?.entity_id));
 
 // Core merges the target into the service data, so a target entity_id
-// replaces the legacy service data one rather than adding to it.
+// replaces the legacy service data one rather than adding to it. Its schema
+// also accepts comma separated ids and lowercases them.
 export const getServiceCallEntityIds = (
   serviceData?: ServiceCallRequest["serviceData"],
   target?: ServiceCallRequest["target"]
 ): string[] => [
   ...new Set(
-    (ensureArray(target?.entity_id ?? serviceData?.entity_id) ?? []).filter(
-      (id): id is string => typeof id === "string" && isValidEntityId(id)
-    )
+    (ensureArray(target?.entity_id ?? serviceData?.entity_id) ?? [])
+      .filter((id): id is string => typeof id === "string")
+      .flatMap((id) => id.split(","))
+      .map((id) => id.trim().toLowerCase())
+      .filter(isValidEntityId)
   ),
 ];

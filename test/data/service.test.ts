@@ -32,13 +32,17 @@ describe("getServiceCallEntityIds", () => {
     ).toEqual(["light.a"]);
   });
 
+  it("splits comma separated ids and lowercases them like Core does", () => {
+    expect(
+      getServiceCallEntityIds({}, { entity_id: "Light.A, light.b ,light.a" })
+    ).toEqual(["light.a", "light.b"]);
+  });
+
   it("ignores wildcard, malformed, and non-string entity ids", () => {
     expect(
       getServiceCallEntityIds(
         { entity_id: "all" },
-        {
-          entity_id: ["none", "", "light.a, light.b", 5] as unknown as string[],
-        }
+        { entity_id: ["none", "", "light", 5] as unknown as string[] }
       )
     ).toEqual([]);
   });
