@@ -11,13 +11,20 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type {
+  LovelaceSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../../data/lovelace/config/section";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewRawConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { addCard } from "../config-util";
-import { findLovelaceContainer } from "../lovelace-path";
+import { addCardAtPath, getCardSectionConfig } from "../config-util";
+import type { LovelacePath } from "../lovelace-path";
+import { getAtPath, getParentPath, getPathTarget } from "../lovelace-path";
 import "./hui-card-picker";
 import "./hui-suggestion-picker";
 import type { CreateCardDialogParams } from "./show-create-card-dialog";
@@ -48,10 +55,13 @@ export class HuiCreateDialogCard
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
-    const containerConfig = findLovelaceContainer(
-      params.lovelaceConfig,
-      params.path
-    );
+    const containerConfig = getAtPath<
+      LovelaceViewRawConfig | LovelaceSectionRawConfig
+    >(params.lovelaceConfig, this._containerPath(params.path));
+
+    if (!containerConfig) {
+      throw new Error("Container does not exist");
+    }
 
     if ("strategy" in containerConfig) {
       throw new Error("Can't edit strategy");
@@ -64,6 +74,13 @@ export class HuiCreateDialogCard
   public closeDialog(): boolean {
     this._open = false;
     return true;
+  }
+
+  private _containerPath(path: LovelacePath): LovelacePath {
+    const parentPath = getParentPath(path);
+    return getPathTarget(path) === "slot"
+      ? getParentPath(parentPath)
+      : parentPath;
   }
 
   private _dialogClosed(): void {
@@ -103,7 +120,7 @@ export class HuiCreateDialogCard
           <span slot="title">${title}</span>
 
           ${
-            !this._params.saveCard
+            getPathTarget(this._params.path) !== "slot"
               ? html`
                   <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
                     <ha-tab-group-tab
@@ -223,15 +240,10 @@ export class HuiCreateDialogCard
     ev: CustomEvent<{ config: LovelaceCardConfig }>
   ): Promise<void> {
     const config = ev.detail.config;
-    if (this._params!.saveCard) {
-      await this._params!.saveCard(config);
-    } else {
-      const lovelaceConfig = this._params!.lovelaceConfig;
-      const containerPath = this._params!.path;
-      const saveConfig = this._params!.saveConfig;
-      const newConfig = addCard(lovelaceConfig, containerPath, config);
-      await saveConfig(newConfig);
-    }
+    const lovelaceConfig = this._params!.lovelaceConfig;
+    const path = this._params!.path;
+    const saveConfig = this._params!.saveConfig;
+    await saveConfig(addCardAtPath(lovelaceConfig, path, config));
     this.closeDialog();
   }
 
@@ -245,34 +257,17 @@ export class HuiCreateDialogCard
       }
     }
 
-    if (this._params!.saveCard) {
-      showEditCardDialog(this, {
-        lovelaceConfig: this._params!.lovelaceConfig,
-        saveCardConfig: this._params!.saveCard,
-        cardConfig: config,
-        isNew: true,
-      });
-      this.closeDialog();
-      return;
-    }
-
     const lovelaceConfig = this._params!.lovelaceConfig;
-    const containerPath = this._params!.path;
+    const path = this._params!.path;
     const saveConfig = this._params!.saveConfig;
-
-    const sectionConfig =
-      containerPath.length === 2
-        ? findLovelaceContainer(lovelaceConfig, containerPath)
-        : undefined;
 
     showEditCardDialog(this, {
       lovelaceConfig,
       saveCardConfig: async (newCardConfig) => {
-        const newConfig = addCard(lovelaceConfig, containerPath, newCardConfig);
-        await saveConfig(newConfig);
+        await saveConfig(addCardAtPath(lovelaceConfig, path, newCardConfig));
       },
       cardConfig: config,
-      sectionConfig,
+      sectionConfig: getCardSectionConfig(lovelaceConfig, path),
       isNew: true,
     });
 

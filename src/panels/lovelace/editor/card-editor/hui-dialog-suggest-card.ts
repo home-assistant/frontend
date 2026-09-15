@@ -13,6 +13,7 @@ import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -21,8 +22,8 @@ import "../../cards/hui-card";
 import "../../sections/hui-section";
 import { getViewType } from "../../views/get-view-type";
 import { addCards, addSection } from "../config-util";
-import type { LovelaceContainerPath } from "../lovelace-path";
-import { parseLovelaceContainerPath } from "../lovelace-path";
+import type { LovelacePath } from "../lovelace-path";
+import { getAtPath, getParentPath, getViewPath } from "../lovelace-path";
 import { showCreateCardDialog } from "./show-create-card-dialog";
 import type { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
@@ -74,11 +75,16 @@ export class HuiDialogSuggestCard extends LitElement {
       return false;
     }
 
-    const { viewIndex } = parseLovelaceContainerPath(this._params.path);
-    const viewConfig = this._params!.lovelaceConfig.views[viewIndex];
+    const viewPath = getViewPath(this._params.path);
+    const viewConfig = getAtPath<LovelaceViewRawConfig>(
+      this._params.lovelaceConfig,
+      viewPath
+    );
 
     return (
-      !isStrategyView(viewConfig) && getViewType(viewConfig) === "sections"
+      !!viewConfig &&
+      !isStrategyView(viewConfig) &&
+      getViewType(viewConfig) === "sections"
     );
   }
 
@@ -228,7 +234,7 @@ export class HuiDialogSuggestCard extends LitElement {
     showCreateCardDialog(this, {
       lovelaceConfig: this._params!.lovelaceConfig,
       saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      path: [...this._params!.path, "cards"],
       entities: this._params!.entities,
     });
     this.closeDialog();
@@ -236,28 +242,27 @@ export class HuiDialogSuggestCard extends LitElement {
 
   private _computeNewConfig(
     config: LovelaceConfig,
-    path: LovelaceContainerPath
+    path: LovelacePath
   ): LovelaceConfig {
     if (!this._viewSupportsSection) {
       return addCards(config, path, this._cardConfig!);
     }
 
-    const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
-
     // If container is a view, add a section
-    if (sectionIndex === undefined) {
+    const parentPath = getParentPath(path);
+    if (parentPath[parentPath.length - 1] !== "sections") {
       const newSection = this._sectionConfig ?? {
         type: "grid",
         cards: this._cardConfig,
       };
-      return addSection(config, viewIndex, newSection);
+      return addSection(config, path, newSection);
     }
 
     // Else add cards to section
     const newCards = this._sectionConfig
       ? this._sectionConfig.cards || []
       : this._cardConfig!;
-    return addCards(config, [viewIndex, sectionIndex], newCards);
+    return addCards(config, path, newCards);
   }
 
   private async _save(): Promise<void> {

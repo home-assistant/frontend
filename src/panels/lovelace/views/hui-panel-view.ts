@@ -12,6 +12,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
+import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 let editCodeLoaded = false;
@@ -22,7 +23,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -96,7 +97,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "ll-create-card");
+    fireEvent(this, "ll-create-card", { path: [...this.path!, "cards"] });
   }
 
   private _createCard(): void {
@@ -117,7 +118,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     const wrapper = document.createElement("hui-card-options");
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
-    wrapper.path = [this.index!, 0];
+    wrapper.path = [...this.path!, "cards", 0];
     wrapper.hidePosition = true;
     card.preview = true;
     wrapper.appendChild(card);

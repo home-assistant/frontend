@@ -14,6 +14,7 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
+import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 // Find column with < 5 size, else smallest column
@@ -42,7 +43,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -86,7 +87,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       <hui-view-badges
         .badges=${this.badges}
         .lovelace=${this.lovelace}
-        .viewIndex=${this.index}
+        .path=${[...this.path!, "badges"]}
         show-add-label
       ></hui-view-badges>
       <div
@@ -161,7 +162,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _addCard(): void {
-    fireEvent(this, "ll-create-card");
+    fireEvent(this, "ll-create-card", { path: [...this.path!, "cards"] });
   }
 
   private _createRootElement(columns: HTMLDivElement[]) {
@@ -269,7 +270,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       const wrapper = document.createElement("hui-card-options");
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
-      wrapper.path = [this.index!, index];
+      wrapper.path = [...this.path!, "cards", index];
       card.preview = true;
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
