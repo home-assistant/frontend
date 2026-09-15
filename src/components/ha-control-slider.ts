@@ -194,6 +194,7 @@ export class HaControlSlider extends LitElement {
         this.pressed = false;
         this._hideTooltip();
         this.value = savedValue;
+        fireEvent(this, "slider-moved", { value: undefined });
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;
@@ -637,7 +638,10 @@ export class HaControlSlider extends LitElement {
     .slider .slider-track-cursor:after {
       display: block;
       content: "";
-      background-color: var(--secondary-text-color);
+      background-color: var(
+        --control-slider-cursor-indicator-color,
+        var(--secondary-text-color)
+      );
       position: absolute;
       top: 0;
       left: 0;

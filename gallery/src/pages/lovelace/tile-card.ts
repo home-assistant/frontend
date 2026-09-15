@@ -32,6 +32,9 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Bed Light",
       supported_color_modes: [LightColorMode.HS, LightColorMode.COLOR_TEMP],
+      color_mode: LightColorMode.HS,
+      hs_color: [200, 60],
+      rgb_color: [102, 204, 255],
     },
   },
   {
@@ -281,6 +284,14 @@ const CONFIGS = [
       type: "tile",
       entity: "light.bed_light",
       features: [{ type: "light-color-temp" }],
+    },
+  },
+  {
+    heading: "Light color hue feature",
+    config: {
+      type: "tile",
+      entity: "light.bed_light",
+      features: [{ type: "light-color-hue" }],
     },
   },
   {
