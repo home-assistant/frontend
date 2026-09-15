@@ -12,7 +12,6 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-badge";
-import "../../../components/ha-ripple";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import { cameraUrlWithWidthHeight } from "../../../data/camera";

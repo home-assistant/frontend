@@ -13,7 +13,6 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";

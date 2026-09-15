@@ -42,7 +42,6 @@ import {
   haStyleDialogFixedTop,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../components/hui-entity-editor";
 import type { Lovelace } from "../../types";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";

@@ -38,7 +38,6 @@ import "../../../state-control/light/ha-state-control-light-brightness";
 import { apiContext, formattersContext } from "../../../data/context";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
-import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";

@@ -11,7 +11,6 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-ripple";
 import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";

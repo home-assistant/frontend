@@ -25,7 +25,6 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
