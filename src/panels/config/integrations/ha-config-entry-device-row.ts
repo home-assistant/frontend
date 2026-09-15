@@ -37,7 +37,6 @@ import {
   showConfirmationDialog,
 } from "../../lovelace/custom-card-helpers";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import "./ha-config-sub-entry-row";
 
 @customElement("ha-config-entry-device-row")
 class HaConfigEntryDeviceRow extends LitElement {

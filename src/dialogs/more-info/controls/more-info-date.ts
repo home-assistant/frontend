@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-date-input";
-import "../../../components/ha-time-input";
 import { apiContext, internationalizationContext } from "../../../data/context";
 import { setDateValue } from "../../../data/date";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";

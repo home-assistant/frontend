@@ -5,7 +5,6 @@ import { assert, assign, object, optional, string, union } from "superstruct";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-theme-picker";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
