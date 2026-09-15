@@ -17,7 +17,8 @@ export interface LovelaceStrategy<T = any> {
     newHass: HomeAssistant
   ): boolean;
   registryDependencies?: readonly LovelaceStrategyDependency[];
-  getConfigElement?: () => LovelaceStrategyEditor;
+  getConfigElement?: () =>
+    LovelaceStrategyEditor | Promise<LovelaceStrategyEditor>;
   noEditor?: boolean;
   configRequired?: boolean;
 }

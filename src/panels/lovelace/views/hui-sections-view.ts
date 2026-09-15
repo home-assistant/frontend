@@ -17,6 +17,7 @@ import "../../../components/ha-svg-icon";
 import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -290,6 +291,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                                 .lovelace=${this.lovelace}
                                 .index=${idx}
                                 .viewIndex=${this.index}
+                                .isStrategy=${isStrategySection(section.config)}
                               >
                                 ${this._renderSection(
                                   section,
