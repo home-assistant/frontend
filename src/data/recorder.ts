@@ -1,5 +1,5 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/entity_name_config";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
