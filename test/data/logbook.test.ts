@@ -1,10 +1,75 @@
 import { describe, it, expect } from "vitest";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
+  localizeStateMessage,
   localizeTriggerSource,
   parseTriggerSource,
 } from "../../src/data/logbook";
+import type { HomeAssistant } from "../../src/types";
 
 const fakeLocalize = ((key: string) => `<${key}>`) as any;
+
+const fakeHass = {
+  localize: fakeLocalize,
+  formatEntityState: (_stateObj, state: string) => `<state:${state}>`,
+} as unknown as HomeAssistant;
+
+const fakeStateObj = {
+  entity_id: "button.restart",
+  state: "unknown",
+  attributes: {},
+} as HassEntity;
+
+describe("localizeStateMessage", () => {
+  it.each(["unknown", "unavailable"])(
+    "preserves the %s lifecycle state for timestamp entities",
+    (state) => {
+      expect(
+        localizeStateMessage(fakeHass, state, fakeStateObj, "button")
+      ).toBe(`<state:${state}>`);
+    }
+  );
+
+  it("uses the action label for a timestamp state", () => {
+    expect(
+      localizeStateMessage(
+        fakeHass,
+        "2026-09-15T11:05:05+00:00",
+        fakeStateObj,
+        "button",
+        {
+          name: "Restart",
+          when: Date.parse("2026-09-15T11:05:05+00:00") / 1000,
+        }
+      )
+    ).toBe("<ui.components.logbook.messages.pressed>");
+  });
+
+  it("does not treat a restored timestamp as a new action", () => {
+    const restoredState = "2026-09-15T10:55:25+00:00";
+    expect(
+      localizeStateMessage(fakeHass, restoredState, fakeStateObj, "button", {
+        name: "Restart",
+        when: Date.parse("2026-09-15T11:05:05+00:00") / 1000,
+      })
+    ).toBe(`<state:${restoredState}>`);
+  });
+
+  it("keeps the action label for a producer timestamp", () => {
+    expect(
+      localizeStateMessage(
+        fakeHass,
+        "2026-09-15T10:55:25+00:00",
+        fakeStateObj,
+        "image",
+        {
+          name: "Satellite image",
+          when: Date.parse("2026-09-15T11:05:05+00:00") / 1000,
+        }
+      )
+    ).toBe("<ui.components.logbook.messages.updated>");
+  });
+});
 
 describe("localizeTriggerSource", () => {
   it("replaces a known phrase with the bare translation", () => {

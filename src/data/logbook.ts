@@ -5,6 +5,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 import { isNumericEntity } from "./history";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
@@ -280,17 +281,22 @@ const STATE_ACTION_MESSAGES: Record<
   radio_frequency: "command_sent",
 };
 
+const RESTORABLE_BUTTON_DOMAINS = new Set(["button", "input_button"]);
+
 export const localizeStateMessage = (
   hass: HomeAssistant,
   state: string,
   stateObj: HassEntity,
   domain: string,
-  attributes?: LogbookEntry["attributes"]
+  entry?: LogbookEntry
 ): string => {
+  if (state === UNKNOWN || state === UNAVAILABLE) {
+    return hass.formatEntityState(stateObj, state);
+  }
   // Events show the triggered event type, falling back to a generic label when
   // the type is unknown (the timestamp state is meaningless on its own).
   if (domain === "event") {
-    const eventType = attributes?.event_type;
+    const eventType = entry?.attributes?.event_type;
     if (eventType != null) {
       return hass.formatEntityAttributeValue(stateObj, "event_type", eventType);
     }
@@ -298,7 +304,27 @@ export const localizeStateMessage = (
   }
   const actionKey: LogbookActionMessage | undefined =
     STATE_ACTION_MESSAGES[domain as keyof typeof STATE_ACTION_MESSAGES];
-  if (actionKey) {
+  const hasActionContext = Boolean(
+    entry?.context_user_id ||
+    entry?.context_event_type ||
+    entry?.context_domain ||
+    entry?.context_service ||
+    entry?.context_entity_id ||
+    entry?.context_state ||
+    entry?.context_source ||
+    entry?.context_message
+  );
+  const stateTimestamp = Date.parse(state);
+  const matchesEntryTime =
+    entry === undefined ||
+    (Number.isFinite(stateTimestamp) &&
+      Math.abs(stateTimestamp - entry.when * 1000) < 1000);
+  if (
+    actionKey &&
+    (!RESTORABLE_BUTTON_DOMAINS.has(domain) ||
+      hasActionContext ||
+      matchesEntryTime)
+  ) {
     return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.${actionKey}`);
   }
   // Every other domain reuses the backend state translation, so the logbook
