@@ -130,9 +130,11 @@ export const noUnusedElementImport = {
 
     return {
       Program(program) {
-        const sideEffectImports = program.body.filter(
+        const imports = program.body.filter(
+          (node) => node.type === "ImportDeclaration"
+        );
+        const sideEffectImports = imports.filter(
           (node) =>
-            node.type === "ImportDeclaration" &&
             node.specifiers.length === 0 &&
             typeof node.source.value === "string" &&
             node.source.value.startsWith(".")
@@ -145,10 +147,13 @@ export const noUnusedElementImport = {
         if (RUNTIME_REGISTRY.test(filename) || RUNTIME_REGISTRY.test(source)) {
           return;
         }
+        // Every import declaration, not just the side-effect ones: a module
+        // path is never a usage, and `import type { HaCard } from "./ha-card"`
+        // would otherwise pass off its own path as one.
         const body =
           withoutRanges(
             source,
-            sideEffectImports.map((node) => node.range)
+            imports.map((node) => node.range)
           ) + siblingMarkup(filename);
 
         for (const node of sideEffectImports) {
