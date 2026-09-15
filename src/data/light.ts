@@ -48,6 +48,10 @@ export const lightSupportsColor = (entity: LightEntity) =>
     modesSupportingColor.includes(mode)
   ) || false;
 
+export const lightIsInColorMode = (entity: LightEntity) =>
+  !!entity.attributes.color_mode &&
+  modesSupportingColor.includes(entity.attributes.color_mode);
+
 export const lightSupportsBrightness = (entity: LightEntity) =>
   entity.attributes.supported_color_modes?.some((mode) =>
     modesSupportingBrightness.includes(mode)

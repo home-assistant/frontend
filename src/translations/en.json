@@ -208,6 +208,7 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
+        "hue": "Hue",
         "white_value": "White brightness",
         "color_brightness": "Color brightness",
         "cold_white_value": "Cold white brightness",
@@ -10908,6 +10909,9 @@
               "light-color-favorites": {
                 "label": "Light color favorites",
                 "description": "This feature uses the light's favorite colors. To edit them, open the light's more info dialog and press and hold a favorite."
+              },
+              "light-color-hue": {
+                "label": "Light color hue"
               },
               "light-color-temp": {
                 "label": "Light color temperature"
