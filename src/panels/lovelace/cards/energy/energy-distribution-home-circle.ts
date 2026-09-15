@@ -4,7 +4,7 @@
  * Hourly allocation can produce used_solar + used_battery + used_grid larger
  * than net used_total when some hours export more than they produce. Dividing
  * by net used_total then overflows the circle and the leftover grid arc goes
- * negative, which some browsers paint as a solid grid ring.
+ * negative, which browsers paint as a solid grid ring.
  *
  * These arcs use the sum of the allocated home flows as the denominator so
  * they always fit the circumference.
@@ -41,10 +41,14 @@ export const computeEnergyDistributionHomeCircleArcs = ({
   const grid = Math.max(usedGrid, 0);
   const ringTotal = solar + battery + grid;
 
-  const share = (value: number): number =>
-    ringTotal > 0 ? circumference * (value / ringTotal) : 0;
-
   const arcs: EnergyDistributionHomeCircleArcs = {};
+  // Leave arcs unset so the card can fall back to the plain home border
+  // instead of painting zero-length dashes over a borderless circle.
+  if (ringTotal <= 0) {
+    return arcs;
+  }
+
+  const share = (value: number): number => circumference * (value / ringTotal);
 
   if (hasSolar) {
     arcs.solar = share(solar);

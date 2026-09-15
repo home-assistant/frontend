@@ -61,11 +61,7 @@ describe("computeEnergyDistributionHomeCircleArcs", () => {
       hasGrid: true,
     });
 
-    assert.equal(arcs.solar, 0);
-    assert.isUndefined(arcs.battery);
-    assert.equal(arcs.grid, 0);
-    assert.isFalse(Number.isNaN(arcs.solar));
-    assert.isFalse(Number.isNaN(arcs.grid));
+    assert.deepEqual(arcs, {});
   });
 
   it("splits grid into low-carbon and high-carbon without exceeding the grid share", () => {
