@@ -1537,7 +1537,10 @@
         "title": "Map vacuum segments to areas",
         "no_segments": "No segments available",
         "area_label": "Area",
-        "description": "Configure which areas correspond to each vacuum segment"
+        "description": "Configure which areas correspond to each vacuum segment",
+        "orphaned_header": "Segments no longer on the vacuum",
+        "orphaned_description": "These areas were mapped to segments the vacuum no longer reports. Remove them to keep the mapping up to date.",
+        "orphaned_remove": "Remove mapping"
       },
       "codemirror": {
         "open_documentation": "Open documentation"
