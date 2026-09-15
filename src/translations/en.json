@@ -5417,6 +5417,7 @@
               "copied_to_clipboard": "Trigger copied to clipboard",
               "cut_to_clipboard": "Trigger cut to clipboard",
               "trigger_index_tooltip": "Position of this trigger, used to reference it in the Triggered by condition",
+              "trigger_index_aria_label": "Trigger {number}",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
               "groups": {

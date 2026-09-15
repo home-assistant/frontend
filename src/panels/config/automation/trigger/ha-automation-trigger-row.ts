@@ -257,10 +257,15 @@ export default class HaAutomationTriggerRow extends LitElement {
           triggerIndex !== undefined
             ? html`
                 <span
+                  id="trigger-index-badge-${triggerIndex}"
+                  tabindex=${this._triggers?.showIndices ? "0" : "-1"}
                   class="trigger-index-badge ${
                     this._triggers?.showIndices ? "" : "hidden"
                   }"
-                  aria-label=${`Trigger ${triggerIndex + 1}`}
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.trigger_index_aria_label",
+                    { number: triggerIndex + 1 }
+                  )}
                   aria-hidden=${this._triggers?.showIndices ? "false" : "true"}
                   >${triggerIndex + 1}</span
                 >

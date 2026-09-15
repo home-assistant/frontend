@@ -118,7 +118,7 @@ export const rowStyles = css`
 
   .trigger-index-badge.hidden {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(calc(-8px * var(--scale-direction)));
     width: 0;
     margin-inline-end: 0;
     border-width: 0;

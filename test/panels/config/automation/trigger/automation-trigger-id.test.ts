@@ -10,7 +10,9 @@ import {
   cleanupRemovedGeneratedTriggerReferences,
   cleanupUnusedGeneratedTriggerIds,
   GENERATED_TRIGGER_ID_PREFIX,
+  getExplicitTriggerIds,
   getTriggerIdOptions,
+  isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
   stripGeneratedTriggerIds,
   updateTriggerCondition,
@@ -381,5 +383,52 @@ describe("automation trigger IDs", () => {
         { trigger: "time", at: "12:00:00" },
       ],
     });
+  });
+
+  it("collects only generated trigger IDs when stripping for paste", () => {
+    const generatedA = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
+    const generatedB = `${GENERATED_TRIGGER_ID_PREFIX}yZ7w`;
+    const triggers: Trigger[] = [
+      { trigger: "state", entity_id: "light.kitchen", id: generatedA },
+      { trigger: "time", at: "12:00:00", id: "manual" },
+      { trigger: "event", event_type: "homeassistant_start", id: generatedB },
+    ];
+
+    expect(
+      new Set(getExplicitTriggerIds(triggers).filter(isGeneratedTriggerId))
+    ).toEqual(new Set([generatedA, generatedB]));
+  });
+
+  it("cleans pasted trigger conditions when their generated IDs are stripped", () => {
+    const generatedA = `${GENERATED_TRIGGER_ID_PREFIX}aB3x`;
+    const generatedB = `${GENERATED_TRIGGER_ID_PREFIX}yZ7w`;
+    const pastedTriggers: Trigger[] = [
+      { trigger: "state", entity_id: "light.kitchen", id: generatedA },
+      { trigger: "event", event_type: "homeassistant_start", id: generatedB },
+    ];
+    const config: AutomationConfig = {
+      triggers: pastedTriggers,
+      conditions: [{ condition: "trigger", id: generatedA }],
+      actions: [
+        {
+          if: [{ condition: "trigger", id: [generatedA, generatedB] }],
+          then: [],
+        },
+      ],
+    };
+    const strippedIds = new Set(
+      getExplicitTriggerIds(pastedTriggers).filter(isGeneratedTriggerId)
+    );
+
+    expect(strippedIds.size).toBe(2);
+    const cleaned = cleanupRemovedGeneratedTriggerReferences(
+      config,
+      strippedIds
+    );
+    expect(cleaned.conditions).toEqual([{ condition: "trigger", id: "" }]);
+    expect(cleaned.actions).toEqual([
+      { if: [{ condition: "trigger", id: [] }], then: [] },
+    ]);
+    expect(cleaned.triggers).toBe(config.triggers);
   });
 });
