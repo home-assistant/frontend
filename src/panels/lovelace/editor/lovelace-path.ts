@@ -1,212 +1,242 @@
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
-import { isStrategyView } from "../../../data/lovelace/config/view";
 
-export type LovelaceCardPath = [number, number] | [number, number, number];
-export type LovelaceContainerPath = [number] | [number, number];
+export type LovelacePath = (string | number)[];
+export type LovelaceItemKind = "view" | "section" | "card" | "badge";
+export type LovelacePathTarget = "item" | "list" | "slot";
 
-export const parseLovelaceCardPath = (
-  path: LovelaceCardPath
-): { viewIndex: number; sectionIndex?: number; cardIndex: number } => {
-  if (path.length === 2) {
-    return {
-      viewIndex: path[0],
-      cardIndex: path[1],
-    };
+const LIST_KEYS: Record<string, LovelaceItemKind> = {
+  views: "view",
+  sections: "section",
+  cards: "card",
+  badges: "badge",
+};
+
+const SLOT_KEYS: Record<string, LovelaceItemKind> = {
+  card: "card",
+};
+
+export const stringifyPath = (path: LovelacePath): string => path.join("/");
+
+export const parsePath = (path: string): LovelacePath =>
+  path === ""
+    ? []
+    : path
+        .split("/")
+        .map((segment) => (/^\d+$/.test(segment) ? Number(segment) : segment));
+
+export const pathEquals = (a: LovelacePath, b: LovelacePath): boolean =>
+  a.length === b.length && a.every((segment, index) => segment === b[index]);
+
+export const isAncestorPath = (
+  ancestor: LovelacePath,
+  path: LovelacePath
+): boolean =>
+  ancestor.length < path.length &&
+  ancestor.every((segment, index) => segment === path[index]);
+
+export const getParentPath = (path: LovelacePath): LovelacePath =>
+  path.slice(0, -1);
+
+export const getViewPath = (path: LovelacePath): LovelacePath =>
+  path.slice(0, 2);
+
+export const getPathTarget = (
+  path: LovelacePath
+): LovelacePathTarget | undefined => {
+  const last = path[path.length - 1];
+  if (typeof last === "number") {
+    return "item";
   }
+  if (last in LIST_KEYS) {
+    return "list";
+  }
+  if (last in SLOT_KEYS) {
+    return "slot";
+  }
+  return undefined;
+};
+
+// Temporary compatibility: custom view layouts still pass [view, card] or [view, section, card] index tuples
+export const normalizeCardPath = (path: LovelacePath): LovelacePath => {
+  if (path.length < 2 || path.some((segment) => typeof segment === "string")) {
+    return path;
+  }
+  const [viewIndex, ...rest] = path;
+  return rest.length === 1
+    ? ["views", viewIndex, "cards", rest[0]]
+    : ["views", viewIndex, "sections", rest[0], "cards", rest[1]];
+};
+
+export const getItemKind = (
+  path: LovelacePath
+): LovelaceItemKind | undefined => {
+  for (let index = path.length - 1; index >= 0; index--) {
+    const segment = path[index];
+    if (typeof segment === "string") {
+      return LIST_KEYS[segment] ?? SLOT_KEYS[segment];
+    }
+  }
+  return undefined;
+};
+
+const isRecord = (node: unknown): node is Record<string, unknown> =>
+  typeof node === "object" && node !== null && !Array.isArray(node);
+
+const isStrategyNode = (node: unknown): boolean =>
+  isRecord(node) && "strategy" in node;
+
+const strategyError = (path: LovelacePath, depth: number): Error =>
+  new Error(
+    `Cannot edit inside a strategy: ${stringifyPath(path.slice(0, depth))}`
+  );
+
+const getChild = (node: unknown, segment: string | number): unknown => {
+  if (Array.isArray(node)) {
+    return typeof segment === "number" ? node[segment] : undefined;
+  }
+  if (isRecord(node) && typeof segment === "string") {
+    return node[segment];
+  }
+  return undefined;
+};
+
+const readAtPath = (node: unknown, path: LovelacePath, depth = 0): unknown => {
+  if (depth === path.length) {
+    return node;
+  }
+  if (node === undefined) {
+    return undefined;
+  }
+  if (isStrategyNode(node)) {
+    throw strategyError(path, depth);
+  }
+  return readAtPath(getChild(node, path[depth]), path, depth + 1);
+};
+
+const updateAtPath = (
+  node: unknown,
+  path: LovelacePath,
+  updater: (node: unknown) => unknown,
+  depth = 0
+): unknown => {
+  if (depth === path.length) {
+    return updater(node);
+  }
+  if (isStrategyNode(node)) {
+    throw strategyError(path, depth);
+  }
+  const segment = path[depth];
+  if (typeof segment === "number") {
+    const items = Array.isArray(node) ? node.slice() : [];
+    items[segment] = updateAtPath(items[segment], path, updater, depth + 1);
+    return items;
+  }
+  const record = isRecord(node) ? node : {};
   return {
-    viewIndex: path[0],
-    sectionIndex: path[1],
-    cardIndex: path[2],
+    ...record,
+    [segment]: updateAtPath(record[segment], path, updater, depth + 1),
   };
 };
 
-export const parseLovelaceContainerPath = (
-  path: LovelaceContainerPath
-): { viewIndex: number; sectionIndex?: number } => {
-  if (path.length === 1) {
-    return {
-      viewIndex: path[0],
-    };
-  }
-  return {
-    viewIndex: path[0],
-    sectionIndex: path[1],
-  };
-};
-
-export const getLovelaceContainerPath = (
-  path: LovelaceCardPath
-): LovelaceContainerPath => path.slice(0, -1) as LovelaceContainerPath;
-
-interface FindLovelaceContainer {
-  (config: LovelaceConfig, path: [number]): LovelaceViewRawConfig;
-  (config: LovelaceConfig, path: [number, number]): LovelaceSectionRawConfig;
-  (
-    config: LovelaceConfig,
-    path: LovelaceContainerPath
-  ): LovelaceViewRawConfig | LovelaceSectionRawConfig;
-}
-export const findLovelaceContainer: FindLovelaceContainer = ((
+const update = (
   config: LovelaceConfig,
-  path: LovelaceContainerPath
-): LovelaceViewRawConfig | LovelaceSectionRawConfig => {
-  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
+  path: LovelacePath,
+  updater: (node: unknown) => unknown
+): LovelaceConfig => updateAtPath(config, path, updater) as LovelaceConfig;
 
-  const view = config.views[viewIndex];
-
-  if (!view) {
-    throw new Error("View does not exist");
-  }
-  if (sectionIndex === undefined) {
-    return view;
-  }
-  if (isStrategyView(view)) {
-    throw new Error("Can not find section in a strategy view");
-  }
-
-  const section = view.sections?.[sectionIndex];
-
-  if (!section) {
-    throw new Error("Section does not exist");
-  }
-  return section;
-}) as FindLovelaceContainer;
-
-export const updateLovelaceContainer = (
+export const getAtPath = <T = unknown>(
   config: LovelaceConfig,
-  path: LovelaceContainerPath,
-  containerConfig: LovelaceViewRawConfig | LovelaceSectionRawConfig
+  path: LovelacePath
+): T | undefined => readAtPath(config, path) as T | undefined;
+
+export const setAtPath = (
+  config: LovelaceConfig,
+  path: LovelacePath,
+  value: unknown
+): LovelaceConfig => update(config, path, () => value);
+
+export const insertAtPath = (
+  config: LovelaceConfig,
+  path: LovelacePath,
+  value: unknown
 ): LovelaceConfig => {
-  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
-
-  let updated = false;
-  const newViews = config.views.map((view, vIndex) => {
-    if (vIndex !== viewIndex) return view;
-
-    if (sectionIndex === undefined) {
-      updated = true;
-      return containerConfig as LovelaceViewRawConfig;
-    }
-
-    if (isStrategyView(view)) {
-      throw new Error("Can not update section in a strategy view");
-    }
-
-    if (view.sections === undefined) {
-      throw new Error("Section does not exist");
-    }
-
-    const newSections = view.sections.map((section, sIndex) => {
-      if (sIndex !== sectionIndex) return section;
-      updated = true;
-      return containerConfig as LovelaceSectionRawConfig;
-    });
-    return {
-      ...view,
-      sections: newSections,
-    };
-  });
-
-  if (!updated) {
-    throw new Error("Can not update cards in a non-existing view/section");
+  const index = path[path.length - 1];
+  if (typeof index !== "number") {
+    return setAtPath(config, path, value);
   }
-  return {
-    ...config,
-    views: newViews,
-  };
+  return update(config, getParentPath(path), (node) => {
+    const items = Array.isArray(node) ? node.slice() : [];
+    items.splice(Math.max(0, Math.min(index, items.length)), 0, value);
+    return items;
+  });
 };
 
-interface LovelaceItemKeys {
-  cards: LovelaceCardConfig[];
-  badges: (Partial<LovelaceBadgeConfig> | string)[];
-}
-
-export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
-  key: T,
+export const appendAtPath = (
   config: LovelaceConfig,
-  path: LovelaceContainerPath,
-  items: LovelaceItemKeys[T]
+  collectionPath: LovelacePath,
+  value: unknown
+): LovelaceConfig =>
+  update(config, collectionPath, (node) =>
+    Array.isArray(node) ? [...node, value] : [value]
+  );
+
+export const deleteAtPath = (
+  config: LovelaceConfig,
+  path: LovelacePath
 ): LovelaceConfig => {
-  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
-
-  let updated = false;
-  const newViews = config.views.map((view, vIndex) => {
-    if (vIndex !== viewIndex) return view;
-    if (isStrategyView(view)) {
-      throw new Error(`Can not update ${key} in a strategy view`);
-    }
-    if (sectionIndex === undefined) {
-      updated = true;
-      return {
-        ...view,
-        [key]: items,
-      };
-    }
-
-    if (view.sections === undefined) {
-      throw new Error("Section does not exist");
-    }
-
-    const newSections = view.sections.map((section, sIndex) => {
-      if (sIndex !== sectionIndex) return section;
-      if (isStrategySection(section)) {
-        throw new Error(`Can not update ${key} in a strategy section`);
-      }
-      updated = true;
-      return {
-        ...section,
-        [key]: items,
-      };
-    });
-    return {
-      ...view,
-      sections: newSections,
-    };
-  });
-
-  if (!updated) {
-    throw new Error(`Can not update ${key} in a non-existing view/section`);
+  if (path.length === 0 || getAtPath(config, path) === undefined) {
+    return config;
   }
-  return {
-    ...config,
-    views: newViews,
-  };
+  const key = path[path.length - 1];
+  return update(config, getParentPath(path), (node) => {
+    if (typeof key === "number") {
+      return Array.isArray(node)
+        ? node.filter((_item, index) => index !== key)
+        : node;
+    }
+    if (!isRecord(node)) {
+      return node;
+    }
+    const record = { ...node };
+    delete record[key];
+    return record;
+  });
 };
 
-export const findLovelaceItems = <T extends keyof LovelaceItemKeys>(
-  key: T,
+export const moveAtPath = (
   config: LovelaceConfig,
-  path: LovelaceContainerPath
-): LovelaceItemKeys[T] | undefined => {
-  const { viewIndex, sectionIndex } = parseLovelaceContainerPath(path);
-
-  const view = config.views[viewIndex];
-
-  if (!view) {
-    throw new Error("View does not exist");
+  from: LovelacePath,
+  to: LovelacePath
+): LovelaceConfig => {
+  if (pathEquals(from, to)) {
+    return config;
   }
-  if (isStrategyView(view)) {
-    throw new Error("Can not find cards in a strategy view");
+  if (isAncestorPath(from, to)) {
+    throw new Error(
+      `Cannot move ${stringifyPath(from)} into itself: ${stringifyPath(to)}`
+    );
   }
-  if (sectionIndex === undefined) {
-    return view[key] as LovelaceItemKeys[T] | undefined;
+  const value = getAtPath(config, from);
+  if (value === undefined) {
+    throw new Error(`Nothing to move at ${stringifyPath(from)}`);
   }
-
-  const section = view.sections?.[sectionIndex];
-
-  if (!section) {
-    throw new Error("Section does not exist");
+  const deleted = deleteAtPath(config, from);
+  const target = [...to];
+  const sameList =
+    to.length === from.length &&
+    pathEquals(getParentPath(from), getParentPath(to));
+  const shiftedIndex = from.length - 1;
+  const fromIndex = from[shiftedIndex];
+  const toIndex = to[shiftedIndex];
+  if (
+    !sameList &&
+    to.length > from.length &&
+    isAncestorPath(getParentPath(from), to) &&
+    typeof toIndex === "number" &&
+    typeof fromIndex === "number" &&
+    toIndex > fromIndex
+  ) {
+    target[shiftedIndex] = toIndex - 1;
   }
-  if (isStrategySection(section)) {
-    throw new Error("Can not find cards in a strategy section");
-  }
-  if (key === "cards") {
-    return section[key as "cards"] as LovelaceItemKeys[T] | undefined;
-  }
-  throw new Error(`${key} is not supported in section`);
+  return insertAtPath(deleted, target, value);
 };
