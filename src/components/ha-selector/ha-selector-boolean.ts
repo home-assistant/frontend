@@ -61,10 +61,7 @@ export class HaBooleanSelector extends LitElement {
       box-sizing: border-box;
       color: var(--secondary-text-color);
       font-size: 0.875rem;
-      font-weight: var(
-        --mdc-typography-body2-font-weight,
-        var(--ha-font-weight-normal)
-      );
+      font-weight: var(--ha-font-weight-normal);
     }
   `;
 }
