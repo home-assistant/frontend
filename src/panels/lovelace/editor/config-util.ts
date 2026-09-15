@@ -2,18 +2,22 @@ import deepClone from "deep-clone-simple";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { isStackSection } from "../../../data/lovelace/config/section";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardPath, LovelaceContainerPath } from "./lovelace-path";
+import type {
+  LovelaceCardPath,
+  LovelaceContainerPath,
+  LovelaceSectionPath,
+} from "./lovelace-path";
 import {
   findLovelaceContainer,
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
-  parseLovelaceContainerPath,
   updateLovelaceContainer,
   updateLovelaceItems,
 } from "./lovelace-path";
@@ -139,19 +143,15 @@ export const moveCardToContainer = (
   fromPath: LovelaceCardPath,
   toPath: LovelaceContainerPath
 ): LovelaceConfig => {
-  const {
-    cardIndex: fromCardIndex,
-    viewIndex: fromViewIndex,
-    sectionIndex: fromSectionIndex,
-  } = parseLovelaceCardPath(fromPath);
-  const { viewIndex: toViewIndex, sectionIndex: toSectionIndex } =
-    parseLovelaceContainerPath(toPath);
-
-  if (fromViewIndex === toViewIndex && fromSectionIndex === toSectionIndex) {
+  const { cardIndex: fromCardIndex } = parseLovelaceCardPath(fromPath);
+  const fromContainerPath = getLovelaceContainerPath(fromPath);
+  if (
+    fromContainerPath.length === toPath.length &&
+    fromContainerPath.every((index, i) => index === toPath[i])
+  ) {
     throw new Error("You cannot move a card to the view or section it is in.");
   }
 
-  const fromContainerPath = getLovelaceContainerPath(fromPath);
   const cards = findLovelaceItems("cards", config, fromContainerPath);
   const card = cards![fromCardIndex];
 
@@ -264,95 +264,146 @@ export const moveViewToDashboard = (
   ];
 };
 
+const sectionContainerPath = (
+  viewIndex: number,
+  stackIndex?: number
+): [number] | [number, number] =>
+  stackIndex === undefined ? [viewIndex] : [viewIndex, stackIndex];
+
+const findSectionContainer = (
+  config: LovelaceConfig,
+  path: [number] | [number, number]
+) => {
+  if (path.length === 1) {
+    const view = findLovelaceContainer(config, path);
+    if (isStrategyView(view)) {
+      throw new Error("Editing sections in a strategy is not supported.");
+    }
+    return view;
+  }
+  const stack = findLovelaceContainer(config, path);
+  if (!isStackSection(stack)) throw new Error("Section is not a stack");
+  return stack;
+};
+
 export const addSection = (
   config: LovelaceConfig,
   viewIndex: number,
-  sectionConfig: LovelaceSectionRawConfig
+  sectionConfig: LovelaceSectionRawConfig,
+  stackIndex?: number
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]);
-  if (isStrategyView(view)) {
-    throw new Error("Deleting sections in a strategy is not supported.");
-  }
-  const sections = view.sections
-    ? [...view.sections, sectionConfig]
-    : [sectionConfig];
-
-  const newConfig = updateLovelaceContainer(config, [viewIndex], {
-    ...view,
-    sections,
-  });
-  return newConfig;
+  const container = findSectionContainer(
+    config,
+    sectionContainerPath(viewIndex, stackIndex)
+  );
+  return insertSection(
+    config,
+    viewIndex,
+    container.sections?.length ?? 0,
+    sectionConfig,
+    stackIndex
+  );
 };
 
 export const deleteSection = (
   config: LovelaceConfig,
   viewIndex: number,
-  sectionIndex: number
+  sectionIndex: number,
+  stackIndex?: number
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]);
-  if (isStrategyView(view)) {
-    throw new Error("Deleting sections in a strategy is not supported.");
-  }
-  const sections = view.sections?.filter(
-    (_origSection, index) => index !== sectionIndex
-  );
-
-  const newConfig = updateLovelaceContainer(config, [viewIndex], {
-    ...view,
-    sections,
+  const path = sectionContainerPath(viewIndex, stackIndex);
+  const container = findSectionContainer(config, path);
+  return updateLovelaceContainer(config, path, {
+    ...container,
+    sections: container.sections?.filter((_, index) => index !== sectionIndex),
   });
-  return newConfig;
 };
 
 export const duplicateSection = (
   config: LovelaceConfig,
   viewIndex: number,
-  sectionIndex: number
+  sectionIndex: number,
+  stackIndex?: number
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]);
-  if (isStrategyView(view)) {
-    throw new Error("Duplicating sections in a strategy is not supported.");
-  }
-  const clone = deepClone(view.sections![sectionIndex]);
-  return insertSection(config, viewIndex, sectionIndex + 1, clone);
+  const container = findSectionContainer(
+    config,
+    sectionContainerPath(viewIndex, stackIndex)
+  );
+  const clone = deepClone(container.sections![sectionIndex]);
+  return insertSection(config, viewIndex, sectionIndex + 1, clone, stackIndex);
 };
 
 export const insertSection = (
   config: LovelaceConfig,
   viewIndex: number,
   sectionIndex: number,
-  sectionConfig: LovelaceSectionRawConfig
+  sectionConfig: LovelaceSectionRawConfig,
+  stackIndex?: number
 ): LovelaceConfig => {
-  const view = findLovelaceContainer(config, [viewIndex]);
-  if (isStrategyView(view)) {
-    throw new Error("Inserting sections in a strategy is not supported.");
+  const path = sectionContainerPath(viewIndex, stackIndex);
+  const container = findSectionContainer(config, path);
+  if (stackIndex !== undefined && isStackSection(sectionConfig)) {
+    throw new Error("Nested section stacks are not supported");
   }
-  const sections = view.sections
-    ? [
-        ...view.sections.slice(0, sectionIndex),
-        sectionConfig,
-        ...view.sections.slice(sectionIndex),
-      ]
-    : [sectionConfig];
-
-  const newConfig = updateLovelaceContainer(config, [viewIndex], {
-    ...view,
-    sections,
+  const sections = container.sections ?? [];
+  return updateLovelaceContainer(config, path, {
+    ...container,
+    sections: [
+      ...sections.slice(0, sectionIndex),
+      sectionConfig,
+      ...sections.slice(sectionIndex),
+    ],
   });
-  return newConfig;
+};
+
+export const wrapSectionInStack = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionIndex: number
+): LovelaceConfig => {
+  const path: [number, number] = [viewIndex, sectionIndex];
+  const section = findLovelaceContainer(config, path);
+  if (isStackSection(section)) {
+    throw new Error("Nested section stacks are not supported");
+  }
+  return updateLovelaceContainer(config, path, {
+    type: "stack",
+    ...(section.column_span === undefined
+      ? {}
+      : { column_span: section.column_span }),
+    sections: [section],
+  });
 };
 
 export const moveSection = (
   config: LovelaceConfig,
-  fromPath: [number, number],
-  toPath: [number, number]
+  fromPath: LovelaceSectionPath,
+  toPath: LovelaceSectionPath
 ): LovelaceConfig => {
   const section = findLovelaceContainer(config, fromPath);
-
-  let newConfig = deleteSection(config, fromPath[0], fromPath[1]);
-  newConfig = insertSection(newConfig, toPath[0], toPath[1], section);
-
-  return newConfig;
+  const fromIndex = fromPath[fromPath.length - 1];
+  const toIndex = toPath[toPath.length - 1];
+  const fromStackIndex = fromPath.length === 3 ? fromPath[1] : undefined;
+  let toStackIndex = toPath.length === 3 ? toPath[1] : undefined;
+  if (isStackSection(section) && toStackIndex !== undefined) {
+    throw new Error("Nested section stacks are not supported");
+  }
+  // Removing a top-level section shifts a later destination stack left.
+  if (
+    fromPath[0] === toPath[0] &&
+    fromStackIndex === undefined &&
+    toStackIndex !== undefined &&
+    fromIndex < toStackIndex
+  ) {
+    toStackIndex--;
+  }
+  const newConfig = deleteSection(
+    config,
+    fromPath[0],
+    fromIndex,
+    fromStackIndex
+  );
+  return insertSection(newConfig, toPath[0], toIndex, section, toStackIndex);
 };
 
 export const addBadge = (

@@ -14,7 +14,10 @@ import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
 } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  isStackSection,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
@@ -24,7 +27,11 @@ import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dia
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { addCard, replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
-import { parseLovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelaceSectionPath } from "../editor/lovelace-path";
+import {
+  getCardSectionConfig,
+  parseLovelaceCardPath,
+} from "../editor/lovelace-path";
 import {
   checkStrategyShouldRegenerate,
   generateLovelaceSectionStrategy,
@@ -56,6 +63,12 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
   @property({ type: Number }) public index!: number;
 
   @property({ attribute: false }) public viewIndex!: number;
+
+  @property({ attribute: false }) public sectionPath?: LovelaceSectionPath;
+
+  public get path(): LovelaceSectionPath {
+    return this.sectionPath ?? [this.viewIndex, this.index];
+  }
 
   @state() private _cards: HuiCard[] = [];
 
@@ -165,6 +178,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
     // If no layout element, we're still creating one
     if (this._layoutElement) {
+      if (
+        changedProperties.has("sectionPath") ||
+        changedProperties.has("index") ||
+        changedProperties.has("viewIndex")
+      ) {
+        this._layoutElement.sectionPath = this.path;
+        this._layoutElement.index = this.index;
+        this._layoutElement.viewIndex = this.viewIndex;
+      }
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._cards.forEach((element) => {
@@ -251,6 +273,8 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._layoutElement!.isStrategy = isStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.lovelace = this.lovelace;
+    this._layoutElement!.sectionPath = this.path;
+    this._layoutElement!.preview = this.preview;
     this._layoutElement!.index = this.index;
     this._layoutElement!.viewIndex = this.viewIndex;
     this._layoutElement!.cards = this._cards;
@@ -293,7 +317,9 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     const allCardsHidden =
       this._cards.length > 0 && this._cards.every((card) => card.hidden);
 
-    this._setElementVisibility(!allCardsHidden);
+    const allSectionsHidden =
+      isStackSection(this._config) && this._layoutElement.hidden;
+    this._setElementVisibility(!allCardsHidden && !allSectionsHidden);
   }
 
   private _setElementVisibility(visible: boolean) {
@@ -317,13 +343,17 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       config
     ) as LovelaceSectionElement;
     this._layoutElementType = config.type;
+    this._layoutElement.addEventListener("section-visibility-changed", (ev) => {
+      ev.stopPropagation();
+      this._updateVisibility();
+    });
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       ev.stopPropagation();
       if (!this.lovelace) return;
       showCreateCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
         saveConfig: this.lovelace.saveConfig,
-        path: [this.viewIndex, this.index],
+        path: this.path,
         suggestedCards: ev.detail?.suggested,
       });
     });
@@ -331,7 +361,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       ev.stopPropagation();
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
+      const sectionConfig = getCardSectionConfig(
+        this.lovelace.config,
+        this.path
+      );
       if (isStrategySection(sectionConfig)) {
         return;
       }
@@ -341,7 +374,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
         saveCardConfig: async (newCardConfig) => {
           const newConfig = replaceCard(
             this.lovelace!.config,
-            [this.viewIndex, this.index, cardIndex],
+            [...this.path, cardIndex],
             newCardConfig
           );
           await this.lovelace!.saveConfig(newConfig);
@@ -359,7 +392,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       ev.stopPropagation();
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
+      const sectionConfig = getCardSectionConfig(
+        this.lovelace.config,
+        this.path
+      );
       if (isStrategySection(sectionConfig)) {
         return;
       }
@@ -370,7 +406,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
         saveCardConfig: async (newCardConfig) => {
           const newConfig = addCard(
             this.lovelace!.config,
-            [this.viewIndex, this.index],
+            this.path,
             newCardConfig
           );
           await this.lovelace!.saveConfig(newConfig);
@@ -384,7 +420,10 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       ev.stopPropagation();
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
+      const sectionConfig = getCardSectionConfig(
+        this.lovelace.config,
+        this.path
+      );
 
       if (isStrategySection(sectionConfig)) {
         return;
