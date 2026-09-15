@@ -59,13 +59,13 @@ class MatterOptionsPage extends LitElement {
                 ? html`<ha-row-item>
                     <span slot="headline">
                       ${this.hass.localize(
-                          "ui.panel.config.matter.panel.mobile_app_commisioning"
-                        )}
+                        "ui.panel.config.matter.panel.mobile_app_commisioning"
+                      )}
                     </span>
                     <span slot="supporting-text">
                       ${this.hass.localize(
-                          "ui.panel.config.matter.panel.mobile_app_commisioning_description"
-                        )}
+                        "ui.panel.config.matter.panel.mobile_app_commisioning_description"
+                      )}
                     </span>
                     <ha-button
                       appearance="plain"
@@ -74,8 +74,8 @@ class MatterOptionsPage extends LitElement {
                       @click=${this._startMobileCommissioning}
                     >
                       ${this.hass.localize(
-                          "ui.panel.config.matter.panel.mobile_app_commisioning_action"
-                        )}
+                        "ui.panel.config.matter.panel.mobile_app_commisioning_action"
+                      )}
                     </ha-button>
                   </ha-row-item>`
                 : nothing
