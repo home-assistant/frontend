@@ -6,6 +6,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { RuleTester } from "eslint";
+import tseslint from "typescript-eslint";
 import { afterAll, describe, it } from "vitest";
 import { noUnusedElementImport } from "../../build-scripts/eslint-rules/no-unused-element-import.mjs";
 
@@ -33,7 +34,11 @@ RuleTester.it = it;
 RuleTester.itOnly = it.only;
 
 const ruleTester = new RuleTester({
-  languageOptions: { ecmaVersion: 2022, sourceType: "module" },
+  languageOptions: {
+    parser: tseslint.parser,
+    ecmaVersion: 2022,
+    sourceType: "module",
+  },
 });
 
 describe("no-unused-element-import", () => {
@@ -85,6 +90,14 @@ describe("no-unused-element-import", () => {
         name: "element never referenced",
         filename: file("never-uses-it.js"),
         code: 'import "./ha-thing";\nhtml`<div></div>`;',
+        errors: [{ messageId: "unused" }],
+      },
+      {
+        // An erased type import registers nothing, so the side-effect import is
+        // still the only registration -- and still dead.
+        name: "type import from the same module is not a usage",
+        filename: file("type-import.ts"),
+        code: 'import "./ha-thing";\nimport type { HaThing } from "./ha-thing";\nhtml`<div></div>`;',
         errors: [{ messageId: "unused" }],
       },
       {
