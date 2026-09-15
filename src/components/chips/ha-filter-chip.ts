@@ -1,54 +1,81 @@
-import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles.cssresult.js";
-import { FilterChip } from "@material/web/chips/internal/filter-chip";
-import { styles } from "@material/web/chips/internal/filter-styles.cssresult.js";
-import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles.cssresult.js";
-import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles.cssresult.js";
-import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles.cssresult.js";
-import { css, html } from "lit";
+import { mdiCheck } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
+import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { HaChipBase } from "./ha-chip-base";
 
 @customElement("ha-filter-chip")
-export class HaFilterChip extends FilterChip {
+export class HaFilterChip extends HaChipBase {
+  @property({ type: Boolean, reflect: true }) selected = false;
+
+  @property({ type: Boolean, reflect: true }) elevated = false;
+
   @property({ type: Boolean, reflect: true, attribute: "no-leading-icon" })
   noLeadingIcon = false;
 
-  static override styles = [
-    sharedStyles,
-    elevatedStyles,
-    trailingIconStyles,
-    selectableStyles,
-    styles,
-    css`
-      :host {
-        --md-sys-color-primary: var(--primary-text-color);
-        --md-sys-color-on-surface: var(--primary-text-color);
-        --md-sys-color-on-surface-variant: var(--primary-text-color);
-        --md-sys-color-on-secondary-container: var(--primary-text-color);
-        --md-filter-chip-container-shape: var(--ha-border-radius-md);
-        --md-filter-chip-outline-color: var(--outline-color);
-        --md-filter-chip-selected-container-color: rgba(
-          var(--rgb-primary-text-color),
-          0.15
-        );
-        --_label-text-font: var(--ha-font-family-body);
-      }
-    `,
-  ];
-
-  protected getContainerClasses() {
-    const classes = super.getContainerClasses();
-    if (this.noLeadingIcon) {
-      classes["has-icon"] = false;
-    }
-    return classes;
+  protected override get pressed() {
+    return this.selected;
   }
 
-  protected renderLeadingIcon() {
+  protected override renderLeadingIcon() {
     if (this.noLeadingIcon) {
-      // eslint-disable-next-line lit/prefer-nothing
-      return html``;
+      return nothing;
     }
-    return super.renderLeadingIcon();
+
+    return this.selected
+      ? html`<span class="icon" aria-hidden="true">
+          <slot name="selected-icon">
+            <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+          </slot>
+        </span>`
+      : super.renderLeadingIcon();
+  }
+
+  protected override handlePrimaryClick(event: MouseEvent) {
+    if (this.disabled || this.softDisabled) {
+      return;
+    }
+
+    const previous = this.selected;
+    this.selected = !this.selected;
+    event.stopPropagation();
+
+    // Dispatch from the chip so listeners see the new selection before deciding
+    // whether to cancel it. Preserve pointer and modifier-key information.
+    const click =
+      typeof PointerEvent !== "undefined" && event instanceof PointerEvent
+        ? new PointerEvent("click", event)
+        : new MouseEvent("click", event);
+
+    if (!this.dispatchEvent(click)) {
+      this.selected = previous;
+      event.preventDefault();
+    }
+  }
+
+  static override get styles(): CSSResultGroup {
+    return [
+      super.styles,
+      css`
+        :host {
+          --ha-button-border-radius: var(--ha-border-radius-md);
+          --ha-chip-label-weight: var(--ha-font-weight-medium);
+        }
+        :host([selected]) {
+          --ha-chip-outline-width: var(
+            --md-filter-chip-selected-outline-width,
+            0px
+          );
+          --ha-chip-container-color: var(
+            --md-filter-chip-selected-container-color,
+            rgba(var(--rgb-primary-text-color), 0.15)
+          );
+        }
+        :host([selected]:not([no-leading-icon])) .primary {
+          padding-inline-start: var(--ha-space-2);
+        }
+      `,
+    ];
   }
 }
 
