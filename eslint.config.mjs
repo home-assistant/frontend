@@ -12,6 +12,7 @@ import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
 import importX from "eslint-plugin-import-x";
+import ha from "./build-scripts/eslint-rules/index.mjs";
 
 const rspackConfigPath = fileURLToPath(
   new URL("./rspack.config.cjs", import.meta.url)
@@ -33,6 +34,7 @@ export default tseslint.config(
   {
     plugins: {
       "unused-imports": unusedImports,
+      ha,
     },
 
     languageOptions: {
@@ -212,6 +214,10 @@ export default tseslint.config(
       ],
 
       "unused-imports/no-unused-imports": "error",
+      // Registered so disable comments resolve. Off here because the
+      // existing backlog would fail lint:eslint's --max-warnings=0; run
+      // lint:element-imports to see it.
+      "ha/no-unused-element-import": "off",
       "lit/attribute-names": "error",
       "lit/attribute-value-entities": "off",
       "lit/no-template-map": "off",

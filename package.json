@@ -14,6 +14,7 @@
     "format:prettier": "prettier . --cache --write",
     "lint:types": "node ./node_modules/@typescript/native/bin/tsc",
     "lint:lit": "lit-analyzer \"{.,*}/src/**/*.ts\"",
+    "lint:element-imports": "eslint \"**/src/**/*.{js,ts,html}\" --ignore-pattern=.gitignore --rule '{\"ha/no-unused-element-import\": \"warn\"}'",
     "lint:licenses": "node --no-deprecation script/check-licenses",
     "lint": "yarn run lint:eslint && yarn run lint:prettier && yarn run lint:types && yarn run lint:lit",
     "format": "yarn run format:eslint && yarn run format:prettier",
