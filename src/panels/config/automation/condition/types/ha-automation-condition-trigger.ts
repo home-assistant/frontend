@@ -101,6 +101,7 @@ export class HaTriggerCondition extends LitElement {
               .value=${option.id}
               .selected=${selectedIds.includes(option.id)}
               .disabled=${this.disabled}
+              appearance="checkbox"
             >
               <span slot="start" class="trigger-row-leading">
                 <span class="trigger-index-badge">${option.index + 1}</span>
