@@ -145,6 +145,7 @@ export class HaResizableBottomSheet extends LitElement {
     });
     document.addEventListener("touchend", this._handleTouchEnd);
     document.addEventListener("touchcancel", this._handleTouchEnd);
+    window.addEventListener("resize", this._handleViewportResize);
   }
 
   disconnectedCallback() {
@@ -156,7 +157,15 @@ export class HaResizableBottomSheet extends LitElement {
     document.removeEventListener("touchmove", this._handleTouchMove);
     document.removeEventListener("touchend", this._handleTouchEnd);
     document.removeEventListener("touchcancel", this._handleTouchEnd);
+    window.removeEventListener("resize", this._handleViewportResize);
   }
+
+  // minHeight is a pixel value, so its viewport-relative minimum depends on the
+  // window height; recompute it when the viewport changes (for example on
+  // rotation) so the cached percentage cannot clip the persistent peek content.
+  private _handleViewportResize = () => {
+    this._applyMinViewportHeight();
+  };
 
   private _handleMouseDown = (ev: MouseEvent) => {
     this._startDrag(ev.clientY);
@@ -221,13 +230,32 @@ export class HaResizableBottomSheet extends LitElement {
     super.updated(changedProperties);
     // A minimum set after opening applies right away
     if (changedProperties.has("minHeight") && this._opened) {
-      this._dialogMinViewpointHeight = this._minViewportHeight();
+      this._applyMinViewportHeight();
     }
   }
 
+  // Applies the current pixel minimum as a viewport percentage and, once it has
+  // rendered, reports the size if it changed: raising the minimum can grow a
+  // sheet resting at the old one, and the host needs the new height to keep its
+  // overlay padding in step.
+  private _applyMinViewportHeight() {
+    if (!this._opened) {
+      return;
+    }
+    this._dialogMinViewpointHeight = this._minViewportHeight();
+    this.updateComplete.then(() => {
+      if (this._dialog.offsetHeight !== this._lastReportedHeight) {
+        this._fireResized();
+      }
+    });
+  }
+
+  private _lastReportedHeight?: number;
+
   private _fireResized() {
+    this._lastReportedHeight = this._dialog.offsetHeight;
     fireEvent(this, "bottom-sheet-resized", {
-      height: this._dialog.offsetHeight,
+      height: this._lastReportedHeight,
     });
   }
 
