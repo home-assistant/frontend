@@ -1,6 +1,5 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 import type { HomeAssistant } from "../../../src/types";
 import "./demo-card";
@@ -18,9 +17,7 @@ class DemoCards extends LitElement {
   render() {
     return html`
       <ha-demo-options>
-        <ha-formfield label="Show config">
-          <ha-switch @change=${this._showConfigToggled}> </ha-switch>
-        </ha-formfield>
+        <ha-switch @change=${this._showConfigToggled}>Show config</ha-switch>
       </ha-demo-options>
       <div id="container">
         <div class="cards">
@@ -51,7 +48,7 @@ class DemoCards extends LitElement {
     demo-card {
       margin: 16px 16px 32px;
     }
-    ha-formfield {
+    ha-switch {
       margin-right: 16px;
     }
     #container {

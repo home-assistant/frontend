@@ -5,7 +5,6 @@ import { assert } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import "../../../../components/input/ha-input";
 import type { HomeAssistant } from "../../../../types";
@@ -61,17 +60,14 @@ export class HuiGraphFooterEditor
           @value-changed=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">
-          <ha-formfield
-            label=${this.hass.localize(
+          <ha-switch
+            .checked=${this._detail === 2}
+            .configValue=${"detail"}
+            @change=${this._change}
+            >${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.show_more_detail"
-            )}
+            )}</ha-switch
           >
-            <ha-switch
-              .checked=${this._detail === 2}
-              .configValue=${"detail"}
-              @change=${this._change}
-            ></ha-switch>
-          </ha-formfield>
           <ha-input
             type="number"
             .label="${this.hass.localize(

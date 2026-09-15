@@ -15,7 +15,6 @@ import {
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
@@ -983,34 +982,30 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   protected render(): TemplateResult {
     return html`
       <div class="options">
-        <ha-formfield label="Labels">
-          <ha-switch
-            .name=${"label"}
-            .checked=${this._label}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Required">
-          <ha-switch
-            .name=${"required"}
-            .checked=${this._required}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Disabled">
-          <ha-switch
-            .name=${"disabled"}
-            .checked=${this._disabled}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Helper text">
-          <ha-switch
-            .name=${"helper"}
-            .checked=${this._helper}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
+        <ha-switch
+          .name=${"label"}
+          .checked=${this._label}
+          @change=${this._handleOptionChange}
+          >Labels</ha-switch
+        >
+        <ha-switch
+          .name=${"required"}
+          .checked=${this._required}
+          @change=${this._handleOptionChange}
+          >Required</ha-switch
+        >
+        <ha-switch
+          .name=${"disabled"}
+          .checked=${this._disabled}
+          @change=${this._handleOptionChange}
+          >Disabled</ha-switch
+        >
+        <ha-switch
+          .name=${"helper"}
+          .checked=${this._helper}
+          @change=${this._handleOptionChange}
+          >Helper text</ha-switch
+        >
       </div>
       ${SCHEMAS.map((info, idx) => {
         const data = this.data[idx];
@@ -1069,7 +1064,7 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
       max-width: 800px;
       margin: 16px auto;
     }
-    .options ha-formfield {
+    .options ha-switch {
       margin-right: 16px;
     }
   `;
