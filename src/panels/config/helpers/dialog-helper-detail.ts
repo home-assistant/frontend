@@ -140,8 +140,13 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._domain = params.domain;
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
-      await HELPERS[this._domain].import();
-      this._initDirtyTracking({ type: "deep" }, undefined);
+      this._loading = true;
+      try {
+        await HELPERS[this._domain].import();
+        this._initDirtyTracking({ type: "deep" }, undefined);
+      } finally {
+        this._loading = false;
+      }
     }
     this._open = true;
     await this.updateComplete;
@@ -185,7 +190,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     let content: TemplateResult;
     let footer: TemplateResult | typeof nothing = nothing;
 
-    if (this._domain) {
+    if (this._domain && !this._loading) {
       content = html`
         <div class="form" @value-changed=${this._valueChanged}>
           ${this._error ? html`<div class="error">${this._error}</div>` : ""}
