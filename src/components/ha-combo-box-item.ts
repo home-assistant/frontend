@@ -28,12 +28,8 @@ export class HaComboBoxItem extends HaMdListItem {
       [slot="overline"] {
         /* mimicing a floating label of mdc-select */
         line-height: 1.15rem;
-        font-size: calc(var(--mdc-typography-subtitle1-font-size, 1rem) * 0.75);
-        font-weight: var(--mdc-typography-subtitle1-font-weight, 400);
-        font-family: var(
-          --mdc-typography-subtitle1-font-family,
-          var(--mdc-typography-font-family)
-        );
+        font-size: 0.75rem;
+        font-weight: 400;
         color: var(--mdc-select-label-ink-color, rgba(0, 0, 0, 0.6));
       }
       [slot="headline"] {
