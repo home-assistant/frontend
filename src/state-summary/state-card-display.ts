@@ -87,6 +87,7 @@ class StateCardDisplay extends LitElement {
         }
         .state.has-unit_of_measurement {
           white-space: nowrap;
+          direction: ltr;
         }
       `,
     ];
