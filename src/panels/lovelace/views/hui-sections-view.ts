@@ -3,7 +3,13 @@ import { ContextProvider } from "@lit/context";
 import { mdiEyeOff, mdiViewGridPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
@@ -38,6 +44,10 @@ import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
+import { computeCompactLayout } from "./sections-compact-layout";
+import type { CompactRow } from "./sections-compact-layout";
+import { measureSectionFootprint } from "./sections-compact-measurement";
+import { waitForSectionRender } from "./sections-compact-readiness";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -66,6 +76,27 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @state() private _sectionColumnCount = 0;
 
   private _maxColumns = 0;
+
+  private _contentColumnCount = 1;
+
+  private _compactEligible = false;
+
+  @state() private _compactLayout?: CompactRow[];
+
+  private _compactLayoutColumnCount?: number;
+
+  private _compactLayoutGeneration = 0;
+
+  private _compactLayoutPending = false;
+
+  private _compactFrame?: number;
+
+  private _compactReadyController?: AbortController;
+
+  @query(".content") private _content?: HTMLDivElement;
+
+  @queryAll(".content > .section > .section-container")
+  private _nativeSectionContainers!: NodeListOf<HTMLDivElement>;
 
   private _maxColumnsProvider = new ContextProvider(this, {
     context: maxColumnsContext,
@@ -109,6 +140,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   });
 
   public setConfig(config: LovelaceViewConfig): void {
+    // setConfig is the configuration-edit boundary, not an entity update.
+    if (this._config?.sections !== config.sections) {
+      this._invalidateCompactLayout();
+    }
     this._config = config;
   }
 
@@ -139,10 +174,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._sectionVisibilityChanged
     );
     this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
+    this.requestUpdate();
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._invalidateCompactLayout();
     this.removeEventListener(
       "section-visibility-changed",
       this._sectionVisibilityChanged
@@ -152,8 +189,33 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
+      const previous = changedProperties.get("sections");
+      if (
+        !previous ||
+        previous.length !== this.sections.length ||
+        previous.some((section, index) => section !== this.sections[index])
+      ) {
+        this._invalidateCompactLayout();
+      }
     }
     this._updateMaxColumnCount();
+    const { contentColumnCount } = this._columnCounts();
+    this._contentColumnCount = contentColumnCount;
+    const eligible = Boolean(
+      this.lovelace &&
+      this._config?.compact_section_placement === true &&
+      !this.lovelace.editMode &&
+      contentColumnCount > 1 &&
+      this.sections.every((section) => (section.config.row_span ?? 1) === 1)
+    );
+    if (
+      eligible !== this._compactEligible ||
+      (this._compactLayoutColumnCount !== undefined &&
+        this._compactLayoutColumnCount !== contentColumnCount)
+    ) {
+      this._invalidateCompactLayout();
+    }
+    this._compactEligible = eligible;
   }
 
   private _updateMaxColumnCount(): void {
@@ -170,6 +232,137 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._maxColumns = maxColumnCount;
       this._maxColumnsProvider.setValue(maxColumnCount);
     }
+  }
+
+  private _columnCounts() {
+    const editMode = this.lovelace?.editMode;
+    const hasSidebar =
+      this._config?.sidebar && (this._sidebarVisible || editMode);
+    const totalSectionCount =
+      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
+    const columnCount = Math.max(
+      Math.min(this._maxColumns, totalSectionCount),
+      1
+    );
+    return {
+      columnCount,
+      contentColumnCount: hasSidebar
+        ? Math.max(1, columnCount - 1)
+        : columnCount,
+    };
+  }
+
+  private _invalidateCompactLayout() {
+    this._compactLayoutGeneration++;
+    this._compactReadyController?.abort();
+    this._compactReadyController = undefined;
+    if (this._compactFrame !== undefined) {
+      cancelAnimationFrame(this._compactFrame);
+    }
+    this._compactFrame = undefined;
+    this._compactLayoutPending = false;
+    this._compactLayout = undefined;
+    this._compactLayoutColumnCount = undefined;
+  }
+
+  protected updated() {
+    if (
+      !this.isConnected ||
+      !this._compactEligible ||
+      this._compactLayout ||
+      this._compactLayoutPending
+    ) {
+      return;
+    }
+
+    const generation = this._compactLayoutGeneration;
+    const columnCount = this._contentColumnCount;
+    this._compactLayoutColumnCount = columnCount;
+    this._compactLayoutPending = true;
+    const controller = new AbortController();
+    this._compactReadyController = controller;
+    void this.updateComplete.then(async () => {
+      await waitForSectionRender(this.sections, controller.signal);
+      if (!this.isConnected || generation !== this._compactLayoutGeneration) {
+        return;
+      }
+      this._compactReadyController = undefined;
+      this._compactFrame = requestAnimationFrame(() => {
+        if (!this.isConnected || generation !== this._compactLayoutGeneration) {
+          return;
+        }
+        this._compactFrame = undefined;
+
+        // Read all dimensions before calculating or installing any layout state.
+        // During measurement, all plain containers carry alignment margins. The
+        // pure helper uses them only for the actual compact row's top peers.
+        const containers = this._nativeSectionContainers;
+        const measurements = this.sections.map((section, index) => {
+          const footprint = section.hidden
+            ? { height: 0, margin: 0 }
+            : measureSectionFootprint(containers[index]);
+          return {
+            index,
+            columnSpan: section.config.column_span,
+            rowSpan: section.config.row_span,
+            height: footprint.height - footprint.margin,
+            alignmentMargin: footprint.margin,
+            hasBackground: section.config.background !== undefined,
+            hidden: Boolean(section.hidden),
+          };
+        });
+        const rowGap = parseFloat(getComputedStyle(this._content!).rowGap) || 0;
+        this._compactLayout = computeCompactLayout(
+          measurements,
+          columnCount,
+          rowGap
+        );
+        this._compactLayoutPending = false;
+      });
+    });
+  }
+
+  private _renderCompactRows() {
+    return repeat(
+      this._compactLayout!,
+      (row) =>
+        this._getSectionKey(this.sections[row.lanes[0].sectionIndices[0]]),
+      (row) => html`
+        <div class="compact-row">
+          ${repeat(
+            row.lanes,
+            (lane) => lane.columnStart,
+            (lane) => html`
+              <div
+                class="compact-lane"
+                style=${styleMap({
+                  "grid-column": `${lane.columnStart} / span ${lane.columnSpan}`,
+                })}
+              >
+                ${repeat(
+                  lane.sectionIndices,
+                  (index) => this._getSectionKey(this.sections[index]),
+                  (index) => html`
+                    <div
+                      class="section"
+                      style=${styleMap({
+                        "--column-span": lane.columnSpan,
+                        "--row-span": 1,
+                      })}
+                    >
+                      ${this._renderSection(
+                        this.sections[index],
+                        row.alignedSectionIndices.includes(index)
+                      )}
+                    </div>
+                  `
+                )}
+              </div>
+            `
+          )}
+        </div>
+      `
+    );
   }
 
   protected render() {
@@ -190,17 +383,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       this._config?.sidebar?.sidebar_label
     );
 
-    const totalSectionCount =
-      this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
-
-    const columnCount = Math.max(
-      Math.min(this._maxColumns, totalSectionCount),
-      1
-    );
-
-    const contentColumnCount = hasSidebar
-      ? Math.max(1, columnCount - 1)
-      : columnCount;
+    const { columnCount, contentColumnCount } = this._columnCounts();
 
     const sectionNeedsMargin = computeSectionsBackgroundAlignment(
       sections,
@@ -260,52 +443,61 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           >
             <div
               class="content ${classMap({
-                dense: Boolean(this._config?.dense_section_placement),
+                dense:
+                  !this._compactEligible &&
+                  Boolean(this._config?.dense_section_placement),
+                compact: Boolean(this._compactLayout),
                 hidden: useSidebarTabs && this._sidebarTabActive,
               })}"
             >
-              ${repeat(
-                sections,
-                (section) => this._getSectionKey(section),
-                (section, idx) => {
-                  const columnSpan = Math.min(
-                    section.config.column_span || 1,
-                    contentColumnCount
-                  );
-                  const rowSpan = section.config.row_span || 1;
+              ${
+                this._compactLayout
+                  ? this._renderCompactRows()
+                  : repeat(
+                      sections,
+                      (section) => this._getSectionKey(section),
+                      (section, idx) => {
+                        const columnSpan = Math.min(
+                          section.config.column_span || 1,
+                          contentColumnCount
+                        );
+                        const rowSpan = section.config.row_span || 1;
 
-                  return html`
-                    <div
-                      class="section"
-                      style=${styleMap({
-                        "--column-span": columnSpan,
-                        "--row-span": rowSpan,
-                      })}
-                    >
-                      ${
-                        editMode
-                          ? html`
-                              <hui-section-edit-mode
-                                .hass=${this.hass}
-                                .lovelace=${this.lovelace}
-                                .index=${idx}
-                                .viewIndex=${this.index}
-                              >
-                                ${this._renderSection(
-                                  section,
-                                  sectionNeedsMargin.has(idx)
-                                )}
-                              </hui-section-edit-mode>
-                            `
-                          : this._renderSection(
-                              section,
-                              sectionNeedsMargin.has(idx)
-                            )
+                        return html`
+                          <div
+                            class="section"
+                            style=${styleMap({
+                              "--column-span": columnSpan,
+                              "--row-span": rowSpan,
+                            })}
+                          >
+                            ${
+                              editMode
+                                ? html`
+                                    <hui-section-edit-mode
+                                      .hass=${this.hass}
+                                      .lovelace=${this.lovelace}
+                                      .index=${idx}
+                                      .viewIndex=${this.index}
+                                    >
+                                      ${this._renderSection(
+                                        section,
+                                        sectionNeedsMargin.has(idx)
+                                      )}
+                                    </hui-section-edit-mode>
+                                  `
+                                : this._renderSection(
+                                    section,
+                                    this._compactEligible
+                                      ? section.config.background === undefined
+                                      : sectionNeedsMargin.has(idx)
+                                  )
+                            }
+                          </div>
+                        `;
                       }
-                    </div>
-                  `;
-                }
-              )}
+                    )
+              }
               ${
                 editMode
                   ? html`
@@ -683,6 +875,36 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       padding-bottom: calc(
         var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
       );
+    }
+
+    .content.compact {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .compact-row {
+      display: grid;
+      grid-template-columns: repeat(var(--content-column-count), 1fr);
+      column-gap: var(--column-gap);
+      align-items: start;
+      width: 100%;
+    }
+
+    .compact-lane {
+      display: flex;
+      flex-direction: column;
+      gap: var(--row-gap);
+      min-width: 0;
+    }
+
+    .compact-lane > .section {
+      display: flow-root;
+      flex: none;
+    }
+
+    .compact-lane > .section:has(hui-section[hidden]),
+    .compact-row:not(:has(hui-section:not([hidden]))) {
+      display: none;
     }
 
     .content.dense {
