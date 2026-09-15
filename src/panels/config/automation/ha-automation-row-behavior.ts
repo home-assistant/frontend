@@ -1,5 +1,5 @@
 import { consume, type ContextType } from "@lit/context";
-import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { internationalizationContext } from "../../../data/context";
 import type {
@@ -16,7 +16,7 @@ interface HaAutomationRowBehaviorConfig {
 
 @customElement("ha-automation-row-behavior")
 export class HaAutomationRowBehavior extends LitElement {
-  @property({ attribute: false }) public config!: HaAutomationRowBehaviorConfig;
+  @property({ attribute: false }) public config?: HaAutomationRowBehaviorConfig;
 
   @property() public mode: "trigger" | "condition" = "trigger";
 
@@ -40,20 +40,16 @@ export class HaAutomationRowBehavior extends LitElement {
     );
   }
 
-  protected render() {
-    const label = this._label;
-
-    if (!label) {
-      return nothing;
-    }
-
-    return html`<span class="dot-separator"></span>${label}`;
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     // Collapse the host when empty so the parent flex gap is not reserved.
     this.toggleAttribute("hidden", !this._label);
+  }
+
+  protected render() {
+    const label = this._label;
+
+    return html`<span class="dot-separator"></span>${label}`;
   }
 
   static styles = rowSummaryStyles;
