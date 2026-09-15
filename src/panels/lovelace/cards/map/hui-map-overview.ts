@@ -116,6 +116,11 @@ export class HuiMapOverview extends LitElement {
 
   @query(".peek") private _peek?: HTMLElement;
 
+  @query(".detail-name") private _detailName?: HTMLElement;
+
+  @queryAll("ha-md-list-item")
+  private _listItems!: NodeListOf<HTMLElement>;
+
   private _peekObserver?: ResizeObserver;
 
   private _observedPeek?: HTMLElement;
@@ -161,6 +166,22 @@ export class HuiMapOverview extends LitElement {
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     this._watchPeek();
+    if (changedProps.has("selected")) {
+      this._moveFocus(changedProps.get("selected"));
+    }
+  }
+
+  // Selecting an item replaces the list with the detail view and going back
+  // replaces it again; move focus with the content so keyboard and screen
+  // reader users keep their place instead of losing it on the removed element.
+  private _moveFocus(previous: string | undefined): void {
+    if (this.selected) {
+      this._detailName?.focus();
+    } else if (previous) {
+      [...this._listItems]
+        .find((item) => item.dataset.entityId === previous)
+        ?.focus();
+    }
   }
 
   // Measures the tabs or the detail header, whichever the sheet shows, plus
