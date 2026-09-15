@@ -108,7 +108,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
               const { rows, columns } = computeCardGridSize(gridOptions);
 
-              const cardPath: LovelacePath = [...this.path!, "cards", idx];
+              const cardPath: LovelacePath | undefined = editMode
+                ? [...this.path!, "cards", idx]
+                : undefined;
               return html`
                 <div
                   style=${styleMap({
@@ -127,7 +129,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                       ? html`
                           <hui-card-edit-mode
                             .lovelace=${this.lovelace!}
-                            .path=${cardPath}
+                            .path=${cardPath!}
                             .hiddenOverlay=${this._dragging}
                             .noEdit=${this.importOnly}
                             .noDuplicate=${this.importOnly}

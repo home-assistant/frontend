@@ -150,23 +150,20 @@ export class HuiViewBadges extends LitElement {
                     badges,
                     (badge) => this._getBadgeKey(badge),
                     (badge, idx) => {
+                      if (!editMode) {
+                        return badge;
+                      }
                       const badgePath = [...this.path, idx];
                       return html`
-                        ${
-                          editMode
-                            ? html`
-                                <hui-badge-edit-mode
-                                  data-sortable
-                                  .lovelace=${this.lovelace}
-                                  .path=${badgePath}
-                                  .hiddenOverlay=${this._dragging}
-                                  .sortableData=${badgePath}
-                                >
-                                  ${badge}
-                                </hui-badge-edit-mode>
-                              `
-                            : badge
-                        }
+                        <hui-badge-edit-mode
+                          data-sortable
+                          .lovelace=${this.lovelace}
+                          .path=${badgePath}
+                          .hiddenOverlay=${this._dragging}
+                          .sortableData=${badgePath}
+                        >
+                          ${badge}
+                        </hui-badge-edit-mode>
                       `;
                     }
                   )}
