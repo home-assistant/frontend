@@ -441,9 +441,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       if (!entityIds.length) {
         return;
       }
-      external.fireMessage({
-        type: "entity/controlled",
-        payload: { entity_ids: entityIds, domain, service },
-      });
+      try {
+        external.fireMessage({
+          type: "entity/controlled",
+          payload: { entity_ids: entityIds, domain, service },
+        });
+      } catch (_err) {
+        // Reporting is best effort and must not fail the service call.
+      }
     }
   };
