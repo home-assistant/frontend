@@ -5,7 +5,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import "../../components/ha-button";
 import type { HaSwitch } from "../../components/ha-switch";
@@ -88,56 +87,50 @@ class DialogConfigEntrySystemOptions extends DirtyStateProviderMixin<SystemOptio
         @closed=${this._dialogClosed}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-        <ha-formfield
-          .label=${html`<p>
-              ${this.hass.localize(
-                "ui.dialogs.config_entry_system_options.enable_new_entities_label"
-              )}
-            </p>
-            <p class="secondary">
-              ${this.hass.localize(
-                "ui.dialogs.config_entry_system_options.enable_new_entities_description",
-                {
-                  integration:
-                    this.hass.localize(
-                      `component.${this._params.entry.domain}.title`
-                    ) || this._params.entry.domain,
-                }
-              )}
-            </p>`}
+        <ha-switch
+          autofocus
+          .checked=${!this._disableNewEntities}
+          @change=${this._disableNewEntitiesChanged}
+          .disabled=${this._submitting}
+          ><p>
+            ${this.hass.localize(
+              "ui.dialogs.config_entry_system_options.enable_new_entities_label"
+            )}
+          </p>
+          <p class="secondary">
+            ${this.hass.localize(
+              "ui.dialogs.config_entry_system_options.enable_new_entities_description",
+              {
+                integration:
+                  this.hass.localize(
+                    `component.${this._params.entry.domain}.title`
+                  ) || this._params.entry.domain,
+              }
+            )}
+          </p></ha-switch
         >
-          <ha-switch
-            autofocus
-            .checked=${!this._disableNewEntities}
-            @change=${this._disableNewEntitiesChanged}
-            .disabled=${this._submitting}
-          ></ha-switch>
-        </ha-formfield>
 
-        <ha-formfield
-          .label=${html`<p>
-              ${this.hass.localize(
-                "ui.dialogs.config_entry_system_options.enable_polling_label"
-              )}
-            </p>
-            <p class="secondary">
-              ${this.hass.localize(
-                "ui.dialogs.config_entry_system_options.enable_polling_description",
-                {
-                  integration:
-                    this.hass.localize(
-                      `component.${this._params.entry.domain}.title`
-                    ) || this._params.entry.domain,
-                }
-              )}
-            </p>`}
+        <ha-switch
+          .checked=${!this._disablePolling}
+          @change=${this._disablePollingChanged}
+          .disabled=${this._submitting}
+          ><p>
+            ${this.hass.localize(
+              "ui.dialogs.config_entry_system_options.enable_polling_label"
+            )}
+          </p>
+          <p class="secondary">
+            ${this.hass.localize(
+              "ui.dialogs.config_entry_system_options.enable_polling_description",
+              {
+                integration:
+                  this.hass.localize(
+                    `component.${this._params.entry.domain}.title`
+                  ) || this._params.entry.domain,
+              }
+            )}
+          </p></ha-switch
         >
-          <ha-switch
-            .checked=${!this._disablePolling}
-            @change=${this._disablePollingChanged}
-            .disabled=${this._submitting}
-          ></ha-switch>
-        </ha-formfield>
 
         <ha-dialog-footer slot="footer">
           <ha-button
