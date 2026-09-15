@@ -39,10 +39,11 @@ describe("getServiceCallEntityIds", () => {
   });
 
   it("ignores wildcard, malformed, and non-string entity ids", () => {
+    expect(getServiceCallEntityIds({ entity_id: "all" })).toEqual([]);
     expect(
       getServiceCallEntityIds(
-        { entity_id: "all" },
-        { entity_id: ["none", "", "light", 5] as unknown as string[] }
+        {},
+        { entity_id: ["all", "none", "", "light", 5] as unknown as string[] }
       )
     ).toEqual([]);
   });
