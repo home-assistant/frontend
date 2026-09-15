@@ -121,7 +121,6 @@ export default [
           "thermostat-card",
           "alarm-panel-card",
           "gauge-card",
-          "energy-distribution-card",
           "plant-card",
           "map-card",
           "media-control-card",
