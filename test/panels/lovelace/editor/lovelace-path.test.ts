@@ -231,6 +231,18 @@ describe("setAtPath", () => {
     });
   });
 
+  it("refuses to create a missing list item", () => {
+    const config = createConfig();
+    assert.throws(
+      () => setAtPath(config, ["views", 9, "header", "card"], { type: "x" }),
+      "Cannot edit missing item: views/9"
+    );
+    assert.throws(
+      () => setAtPath(config, ["views", 0, "cards", 5], { type: "x" }),
+      "Cannot edit missing item: views/0/cards/5"
+    );
+  });
+
   it("creates a missing header object", () => {
     const config = createConfig();
     const result = setAtPath(config, ["views", 0, "header", "card"], {
