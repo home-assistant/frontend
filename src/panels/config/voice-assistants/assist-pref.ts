@@ -27,8 +27,8 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/item/ha-list-item-base";
 import "../../../components/item/ha-list-item-button";
+import "../../../components/item/ha-row-item";
 import "../../../components/list/ha-list-base";
 import "../../../components/voice-assistant-brand-icon";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
@@ -212,7 +212,7 @@ export class AssistPref extends LitElement {
           )}
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
-        <ha-list-item-base>
+        <ha-row-item>
           <span slot="headline"
             >${this.hass!.localize(
               "ui.panel.config.voice_assistants.expose.expose_new_entities"
@@ -229,7 +229,7 @@ export class AssistPref extends LitElement {
             .disabled=${this._exposeNew === undefined}
             @change=${this._exposeNewToggleChanged}
           ></ha-switch>
-        </ha-list-item-base>
+        </ha-row-item>
         <div class="card-actions">
           <ha-button
             appearance="plain"
