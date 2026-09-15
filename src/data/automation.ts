@@ -301,7 +301,7 @@ export interface TemplateCondition extends BaseCondition {
 
 export interface TriggerCondition extends BaseCondition {
   condition: "trigger";
-  id: string;
+  id: string | string[];
 }
 
 type ShorthandBaseCondition = Omit<BaseCondition, "condition">;
