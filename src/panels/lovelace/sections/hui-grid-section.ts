@@ -177,6 +177,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
   }
 
   private _cardAdded(ev) {
+    ev.stopPropagation();
     const { index, data } = ev.detail;
     const newConfig = moveAtPath(this.lovelace!.config, data as LovelacePath, [
       ...this.path!,
