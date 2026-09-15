@@ -16,7 +16,11 @@ export const setMarkerAccessibility = (
 ): void => {
   clearMarkerAccessibility(element);
   const owned: string[] = [];
-  if (title && !element.hasAttribute("aria-label")) {
+  if (
+    title &&
+    !element.hasAttribute("aria-label") &&
+    !element.hasAttribute("aria-labelledby")
+  ) {
     element.setAttribute("aria-label", title);
     owned.push("aria-label");
   }
