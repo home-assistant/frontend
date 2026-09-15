@@ -18,7 +18,7 @@ class OnboardingWelcomeLink extends LitElement {
 
   @state()
   @consume({ context: translationsReadyContext, subscribe: true })
-  private _translationsReady = true;
+  private _translationsReady?;
 
   protected render(): TemplateResult {
     return html`
@@ -27,7 +27,7 @@ class OnboardingWelcomeLink extends LitElement {
         @keydown=${this._handleKeyDown}
       >
         <ha-svg-icon .path=${this.iconPath}></ha-svg-icon>
-        ${this._translationsReady ? this.label : renderSkeleton("label")}
+        ${this._translationsReady === false ? renderSkeleton("label") : this.label}
         <ha-ripple></ha-ripple>
       </ha-card>
     `;
