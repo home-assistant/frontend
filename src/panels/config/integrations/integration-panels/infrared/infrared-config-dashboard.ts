@@ -9,9 +9,9 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { InfraredDevice } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -82,8 +82,8 @@ export class InfraredConfigDashboard extends LitElement {
               ${this.hass.localize("ui.panel.config.infrared.my_devices")}
             </div>
             <div class="card-content network-card-content">
-              <ha-md-list>
-                <ha-md-list-item type="link" href="/config/infrared/devices">
+              <ha-list-nav>
+                <ha-list-item-button href="/config/infrared/devices">
                   <ha-svg-icon slot="start" .path=${mdiRemote}></ha-svg-icon>
                   <div slot="headline">
                     ${this.hass.localize(
@@ -92,8 +92,8 @@ export class InfraredConfigDashboard extends LitElement {
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
-              </ha-md-list>
+                </ha-list-item-button>
+              </ha-list-nav>
             </div>
           </ha-card>
         </div>
@@ -116,11 +116,6 @@ export class InfraredConfigDashboard extends LitElement {
 
         .content {
           margin-top: var(--ha-space-6);
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
         }
 
         .network-card {
