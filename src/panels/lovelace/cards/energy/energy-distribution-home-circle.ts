@@ -60,10 +60,9 @@ export const computeEnergyDistributionHomeCircleArcs = ({
     if (highCarbonConsumption !== undefined) {
       const highCarbon = Math.min(Math.max(highCarbonConsumption, 0), grid);
       arcs.highCarbon = share(highCarbon);
-      const lowCarbon = grid - highCarbon;
-      if (lowCarbon > 0) {
-        arcs.lowCarbon = share(lowCarbon);
-      }
+      // Keep 0 defined: the card mounts the home SVG when solar or
+      // lowCarbon is defined, not when the low-carbon stroke is painted.
+      arcs.lowCarbon = share(grid - highCarbon);
       arcs.grid = arcs.highCarbon;
     } else {
       arcs.grid = share(grid);

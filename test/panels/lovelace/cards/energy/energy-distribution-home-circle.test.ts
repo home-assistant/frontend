@@ -93,8 +93,27 @@ describe("computeEnergyDistributionHomeCircleArcs", () => {
       highCarbonConsumption: 50,
     });
 
-    assert.isUndefined(arcs.lowCarbon);
+    assert.equal(arcs.lowCarbon, 0);
     assert.approximately(arcs.grid!, CIRCLE * 0.5, 1e-6);
+    assert.approximately(sumDefinedArcs(arcs), CIRCLE, 1e-6);
+  });
+
+  it("keeps a defined zero low-carbon arc so a grid-only high-carbon ring still renders", () => {
+    // The card only mounts the home SVG when solar or lowCarbon is defined.
+    // Omitting 0 would drop battery/grid arcs in a no-solar 100% fossil grid.
+    const arcs = computeEnergyDistributionHomeCircleArcs({
+      usedSolar: 0,
+      usedBattery: 4,
+      usedGrid: 6,
+      hasSolar: false,
+      hasGrid: true,
+      highCarbonConsumption: 6,
+    });
+
+    assert.isUndefined(arcs.solar);
+    assert.equal(arcs.lowCarbon, 0);
+    assert.approximately(arcs.battery!, CIRCLE * 0.4, 1e-6);
+    assert.approximately(arcs.grid!, CIRCLE * 0.6, 1e-6);
     assert.approximately(sumDefinedArcs(arcs), CIRCLE, 1e-6);
   });
 });
