@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/input/ha-input";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -17,6 +16,7 @@ import {
   FanEntityFeature,
 } from "../../../data/fan";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { HaSlider } from "../../../components/ha-slider";
 
 @customElement("hui-fan-entity-row")
 class HuiFanEntityRow extends LitElement implements LovelaceRow {
@@ -88,10 +88,11 @@ class HuiFanEntityRow extends LitElement implements LovelaceRow {
       computeFanSpeedCount(stateObj) > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
 
     const showToggle =
-      stateObj.state === "on" ||
-      stateObj.state === "off" ||
-      stateObj.state === UNAVAILABLE ||
-      stateObj.state === UNKNOWN;
+      supportsOnOff &&
+      (stateObj.state === "on" ||
+        stateObj.state === "off" ||
+        stateObj.state === UNAVAILABLE ||
+        stateObj.state === UNKNOWN);
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
@@ -147,16 +148,6 @@ class HuiFanEntityRow extends LitElement implements LovelaceRow {
       min-width: 45px;
       text-align: end;
     }
-    .box {
-      flex-grow: 0;
-      min-width: 45px;
-    }
-    ha-input {
-      width: 100%;
-    }
-    ha-input::part(wa-input) {
-      text-align: end;
-    }
     ha-slider {
       width: 100%;
       max-width: 200px;
@@ -196,11 +187,12 @@ class HuiFanEntityRow extends LitElement implements LovelaceRow {
 
   private _selectedValueChanged(ev: Event): void {
     const stateObj = this.hass!.states[this._config!.entity];
+    const value = Number((ev.target as HaSlider).value);
 
-    if ((ev.target as HTMLInputElement).value !== stateObj.state) {
+    if (value !== stateObj.attributes.percentage) {
       this.hass!.callService("fan", "set_percentage", {
         entity_id: stateObj.entity_id,
-        percentage: (ev.target as HTMLInputElement).value,
+        percentage: value,
       });
     }
   }
