@@ -445,7 +445,7 @@ export class HaScriptTrace extends LitElement {
   }
 
   private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
-    this._splitPosition = (ev.target as HaSplitPanel).position;
+    this._splitPosition = ev.target.position;
     this._storeSplitPosition();
   }
 
