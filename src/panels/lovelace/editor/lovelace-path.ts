@@ -125,7 +125,12 @@ const updateAtPath = (
   }
   const segment = path[depth];
   if (typeof segment === "number") {
-    const items = Array.isArray(node) ? node.slice() : [];
+    if (!Array.isArray(node) || segment >= node.length) {
+      throw new Error(
+        `Cannot edit missing item: ${stringifyPath(path.slice(0, depth + 1))}`
+      );
+    }
+    const items = node.slice();
     items[segment] = updateAtPath(items[segment], path, updater, depth + 1);
     return items;
   }
