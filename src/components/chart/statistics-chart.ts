@@ -19,7 +19,6 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { computeRTL } from "../../common/util/compute_rtl";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -438,12 +437,7 @@ export class StatisticsChart extends LitElement {
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(
-          this.hass.language,
-          this.hass.translationMetadata.translations
-        )
-          ? "right"
-          : "left",
+        position: "left",
         scale: yAxisScale,
         ...createYAxisPrecisionBounds({
           min: this._clampYAxis(minYAxis),
