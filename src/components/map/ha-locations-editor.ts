@@ -1,19 +1,18 @@
+import type { ContextType } from "@lit/context";
 import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
 import type { MapLatLng } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { internationalizationContext, uiContext } from "../../data/context";
-import type {
-  HomeAssistantInternationalization,
-  HomeAssistantUI,
-  ThemeMode,
-} from "../../types";
+import type { Themes } from "../../data/ws-themes";
+import type { HomeAssistantInternationalization, ThemeMode } from "../../types";
 import "../ha-alert";
 import "../ha-input-helper-text";
 import "./ha-map";
@@ -76,10 +75,14 @@ export class HaLocationsEditor extends LitElement {
 
   @state() private _editingAvailable = true;
 
-  // Marker elements bake in theme colors, so they are rebuilt on a theme change
+  // Marker elements bake in theme colors, so they are rebuilt on a theme
+  // change; narrow the UI context to themes to avoid unrelated rerenders
   @state()
   @consume({ context: uiContext, subscribe: true })
-  private _ui?: HomeAssistantUI;
+  @transform<ContextType<typeof uiContext>, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes?: Themes;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -123,7 +126,7 @@ export class HaLocationsEditor extends LitElement {
         <ha-map
           .editableLocations=${this._editableLocations(
             this.locations,
-            this._ui?.themes
+            this._themes
           )}
           .zoom=${this.zoom}
           .autoFit=${this.autoFit}
@@ -158,7 +161,7 @@ export class HaLocationsEditor extends LitElement {
   private _editableLocations = memoizeOne(
     (
       locations: MarkerLocation[] | undefined,
-      themes: HomeAssistantUI["themes"] | undefined
+      themes: Themes | undefined
     ): HaMapEditableLocation[] => {
       if (themes !== this._elementsThemes) {
         this._elementsThemes = themes;
@@ -190,7 +193,7 @@ export class HaLocationsEditor extends LitElement {
   // Reused while unchanged, so ha-map moves markers instead of rebuilding them
   private _elements = new Map<string, { key: string; element?: HTMLElement }>();
 
-  private _elementsThemes?: HomeAssistantUI["themes"];
+  private _elementsThemes?: Themes;
 
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
     const isZone = !!location.radius;
