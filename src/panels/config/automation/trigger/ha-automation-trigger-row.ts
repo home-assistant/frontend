@@ -62,7 +62,6 @@ import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
-import { getTargetEntityCount } from "../../../../data/target";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -73,7 +72,6 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
@@ -258,10 +256,18 @@ export default class HaAutomationTriggerRow extends LitElement {
           describeTrigger(this.trigger, this.hass, this._entityReg)
         )}
         ${
-          type === "platform" && targetRequired
-            ? html`<ha-automation-row-behavior
-                .config=${getTargetEntityCount(target) > 1 ? this.trigger : undefined}
-              ></ha-automation-row-behavior>`
+          type === "platform"
+            ? html`<ha-automation-row-threshold
+                  .config=${this.trigger}
+                  .description=${
+                    this.triggerDescriptions[
+                      (this.trigger as PlatformTrigger).trigger
+                    ]
+                  }
+                ></ha-automation-row-threshold>
+                <ha-automation-row-options
+                  .config=${this.trigger}
+                ></ha-automation-row-options>`
             : nothing
         }
         ${
@@ -272,25 +278,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 triggerTargetSpec,
                 type !== "device"
               )
-            : nothing
-        }
-        ${
-          type === "platform"
-            ? html`<ha-automation-row-threshold
-                .config=${this.trigger}
-                .description=${
-                  this.triggerDescriptions[
-                    (this.trigger as PlatformTrigger).trigger
-                  ]
-                }
-              ></ha-automation-row-threshold>`
-            : nothing
-        }
-        ${
-          type === "platform"
-            ? html`<ha-automation-row-options
-                .config=${this.trigger}
-              ></ha-automation-row-options>`
             : nothing
         }
         ${

@@ -65,7 +65,6 @@ import {
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { TargetSelector } from "../../../../data/selector";
-import { getTargetEntityCount } from "../../../../data/target";
 import {
   showAlertDialog,
   showPromptDialog,
@@ -74,7 +73,6 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-automation-row-behavior";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
@@ -234,11 +232,16 @@ export default class HaAutomationConditionRow extends LitElement {
         )}
         ${
           this._getType(this.condition, this.conditionDescriptions) ===
-            "platform" && targetRequired
-            ? html`<ha-automation-row-behavior
-                mode="condition"
-                .config=${getTargetEntityCount(target) > 1 ? this.condition : undefined}
-              ></ha-automation-row-behavior>`
+          "platform"
+            ? html`<ha-automation-row-threshold
+                  .config=${this.condition}
+                  .description=${
+                    this.conditionDescriptions[this.condition.condition]
+                  }
+                ></ha-automation-row-threshold>
+                <ha-automation-row-options
+                  .config=${this.condition}
+                ></ha-automation-row-options> `
             : nothing
         }
         ${
@@ -249,25 +252,6 @@ export default class HaAutomationConditionRow extends LitElement {
                 conditionTargetSpec,
                 this.condition.condition !== "device"
               )
-            : nothing
-        }
-        ${
-          this._getType(this.condition, this.conditionDescriptions) ===
-          "platform"
-            ? html`<ha-automation-row-threshold
-                .config=${this.condition}
-                .description=${
-                  this.conditionDescriptions[this.condition.condition]
-                }
-              ></ha-automation-row-threshold>`
-            : nothing
-        }
-        ${
-          this._getType(this.condition, this.conditionDescriptions) ===
-          "platform"
-            ? html`<ha-automation-row-options
-                .config=${this.condition}
-              ></ha-automation-row-options>`
             : nothing
         }
         ${
