@@ -1,48 +1,14 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { repeat } from "lit/directives/repeat";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-scrubber";
 
-const scrubbers: {
-  id: string;
-  label: string;
-  unit?: string;
-  class?: string;
-  disabled?: boolean;
-}[] = [
-  {
-    id: "scrubber-default",
-    label: "Scrubber",
-    unit: "%",
-  },
-  {
-    id: "scrubber-zoomed",
-    label: "Scrubber with a wider strip",
-    unit: "%",
-    class: "zoomed",
-  },
-  {
-    id: "scrubber-disabled",
-    label: "Scrubber (disabled)",
-    unit: "%",
-    disabled: true,
-  },
-];
-
 @customElement("demo-components-ha-control-scrubber")
 export class DemoHaControlScrubber extends LitElement {
-  @state() private value = 50;
-
   @state() private hue = 200;
 
   @state() private position?: number;
-
-  handleValueChanged(e: CustomEvent) {
-    this.value = e.detail.value as number;
-  }
 
   handleHueChanged(e: CustomEvent) {
     this.hue = e.detail.value as number;
@@ -65,43 +31,17 @@ export class DemoHaControlScrubber extends LitElement {
               </tr>
               <tr>
                 <td>value</td>
-                <td>${this.value ?? "-"}</td>
-              </tr>
-              <tr>
-                <td>hue</td>
                 <td>${this.hue ?? "-"}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </ha-card>
-      ${repeat(scrubbers, (scrubber) => {
-        const { id, label, ...config } = scrubber;
-        return html`
-          <ha-card>
-            <div class="card-content">
-              <label id=${id}>${label}</label>
-              <pre>Config: ${JSON.stringify(config)}</pre>
-              <ha-control-scrubber
-                .value=${this.value}
-                class=${ifDefined(config.class)}
-                .disabled=${config.disabled ?? false}
-                @value-changed=${this.handleValueChanged}
-                @slider-moved=${this.handleMoved}
-                .label=${label}
-                .unit=${config.unit}
-              >
-              </ha-control-scrubber>
-            </div>
-          </ha-card>
-        `;
-      })}
       <ha-card>
         <div class="card-content">
           <label id="scrubber-hue">Hue (wrap)</label>
           <pre>Config: {"wrap":true,"min":0,"max":360}</pre>
           <ha-control-scrubber
-            class="hue"
             wrap
             min="0"
             max="360"
@@ -133,16 +73,6 @@ export class DemoHaControlScrubber extends LitElement {
       font-weight: var(--ha-font-weight-bold);
     }
     ha-control-scrubber {
-      --control-scrubber-background: linear-gradient(
-        to right,
-        var(--disabled-color),
-        var(--primary-color)
-      );
-    }
-    .zoomed {
-      --control-scrubber-track-width: 300%;
-    }
-    .hue {
       --control-scrubber-track-width: 200%;
       --control-scrubber-background: linear-gradient(
         to right,
