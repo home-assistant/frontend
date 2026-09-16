@@ -2,8 +2,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import { fetchZwaveNetworkStatus } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-subpage";
@@ -49,8 +49,8 @@ class ZWaveJSNetworkInfoPage extends LitElement {
           <ha-card>
             ${
               this._network
-                ? html`<ha-md-list>
-                    <ha-md-list-item>
+                ? html`<ha-list-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.home_id"
@@ -59,8 +59,8 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                       <span slot="supporting-text">
                         ${formatHomeIdAsHex(this._network.controller.home_id)}
                       </span>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.driver_version"
@@ -69,8 +69,8 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                       <span slot="supporting-text">
                         ${this._network.client.driver_version}
                       </span>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.server_version"
@@ -79,8 +79,8 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                       <span slot="supporting-text">
                         ${this._network.client.server_version}
                       </span>
-                    </ha-md-list-item>
-                    <ha-md-list-item>
+                    </ha-list-item-base>
+                    <ha-list-item-base>
                       <span slot="headline">
                         ${this.hass.localize(
                           "ui.panel.config.zwave_js.dashboard.server_url"
@@ -89,8 +89,8 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                       <span slot="supporting-text">
                         ${this._network.client.ws_server_url}
                       </span>
-                    </ha-md-list-item>
-                  </ha-md-list>`
+                    </ha-list-item-base>
+                  </ha-list-base>`
                 : nothing
             }
           </ha-card>
@@ -110,19 +110,6 @@ class ZWaveJSNetworkInfoPage extends LitElement {
         ha-card {
           max-width: 600px;
           margin: auto;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
-          --md-list-item-supporting-text-size: var(
-            --md-list-item-label-text-size,
-            var(--md-sys-typescale-body-large-size, 1rem)
-          );
         }
       `,
     ];

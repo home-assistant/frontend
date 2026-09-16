@@ -77,6 +77,54 @@ export const rowStyles = css`
     display: inline-flex;
   }
 
+  .trigger-leading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+  }
+
+  .trigger-leading {
+    color: var(--ha-color-on-neutral-quiet);
+  }
+
+  .trigger-leading ha-trigger-icon,
+  .trigger-leading ha-svg-icon {
+    --mdc-icon-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trigger-index-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px dotted var(--ha-color-border-neutral-normal);
+    border-radius: var(--ha-border-radius-circle);
+    box-sizing: border-box;
+    color: var(--ha-color-text-secondary);
+    font-size: var(--ha-font-size-s);
+    line-height: 1;
+    text-box-trim: both;
+    text-box-edge: cap alphabetic;
+    overflow: hidden;
+    transition:
+      opacity 180ms ease-out,
+      transform 180ms ease-out,
+      width 180ms ease-out,
+      margin-inline-end 180ms ease-out,
+      border-width 180ms ease-out;
+  }
+
+  .trigger-index-badge.hidden {
+    opacity: 0;
+    transform: translateX(calc(-8px * var(--scale-direction)));
+    width: 0;
+    margin-inline-end: 0;
+    border-width: 0;
+    pointer-events: none;
+  }
+
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }

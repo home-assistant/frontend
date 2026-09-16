@@ -5,11 +5,12 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
-import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-card";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
+import "../../../components/voice-assistant-brand-icon";
 import type { CloudStatusLoggedIn } from "../../../data/cloud";
 import { updateCloudPref } from "../../../data/cloud";
 import type { ExposeEntitySettings } from "../../../data/expose";
@@ -18,7 +19,6 @@ import {
   setExposeNewEntities,
 } from "../../../data/expose";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/voice-assistant-brand-icon";
 
 @customElement("cloud-alexa-pref")
 export class CloudAlexaPref extends LitElement {
@@ -139,7 +139,7 @@ export class CloudAlexaPref extends LitElement {
                         </ha-alert>`
                       : nothing
                   }
-                  <ha-md-list-item>
+                  <ha-row-item>
                     <span slot="headline"
                       >${this.hass!.localize(
                         "ui.panel.config.cloud.account.alexa.expose_new_entities"
@@ -156,11 +156,11 @@ export class CloudAlexaPref extends LitElement {
                       .disabled=${this._exposeNew === undefined}
                       @change=${this._exposeNewToggleChanged}
                     ></ha-switch>
-                  </ha-md-list-item>
+                  </ha-row-item>
                   ${
                     alexa_registered
                       ? html`
-                          <ha-md-list-item>
+                          <ha-row-item>
                             <span slot="headline"
                               >${this.hass!.localize(
                                 "ui.panel.config.cloud.account.alexa.enable_state_reporting"
@@ -176,7 +176,7 @@ export class CloudAlexaPref extends LitElement {
                               .checked=${alexa_report_state}
                               @change=${this._reportToggleChanged}
                             ></ha-switch>
-                          </ha-md-list-item>
+                          </ha-row-item>
                         `
                       : nothing
                   }
@@ -262,10 +262,8 @@ export class CloudAlexaPref extends LitElement {
     a {
       color: var(--primary-color);
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-item-overflow: visible;
+    ha-row-item {
+      --ha-row-item-padding-inline: 0;
     }
     .header-actions {
       position: absolute;

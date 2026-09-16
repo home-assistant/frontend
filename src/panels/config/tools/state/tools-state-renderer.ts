@@ -216,7 +216,7 @@ class HaPanelDevStateRenderer extends LitElement {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <span class="secondary">
-                  ${displayName ?? deviceName ?? item.attributes.friendly_name}
+                  ${displayName || deviceName || item.attributes.friendly_name}
                 </span>
               </div>
             </div>
@@ -226,10 +226,10 @@ class HaPanelDevStateRenderer extends LitElement {
           <span class="padded">${item.state}</span>
         </div>
         <div class="cell" role="cell">
-          <span class="padded">${deviceName ?? "\u2014"}</span>
+          <span class="padded">${deviceName || "\u2014"}</span>
         </div>
         <div class="cell" role="cell">
-          <span class="padded">${areaName ?? "\u2014"}</span>
+          <span class="padded">${areaName || "\u2014"}</span>
         </div>
         <div class="cell" role="cell">
           <span class="padded">${this._attributeString(item)}</span>
