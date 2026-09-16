@@ -52,6 +52,7 @@ export default [
           "ha-control-switch",
           "ha-slider",
           "ha-control-slider",
+          "ha-control-scrubber",
           "ha-control-circular-slider",
           "ha-control-number-buttons",
           "ha-control-select",

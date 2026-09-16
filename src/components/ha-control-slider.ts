@@ -422,6 +422,7 @@ export class HaControlSlider extends LitElement {
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 40px;
       --control-slider-border-radius: var(--ha-border-radius-md);
+      --control-slider-inset-shadow: none;
       --control-slider-tooltip-font-size: var(--ha-font-size-m);
       height: var(--control-slider-thickness);
       width: 100%;
@@ -530,6 +531,14 @@ export class HaControlSlider extends LitElement {
       box-shadow: 0 0 0 2px var(--control-slider-color);
     }
     .slider * {
+      pointer-events: none;
+    }
+    .slider::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: var(--control-slider-inset-shadow);
       pointer-events: none;
     }
     .slider .slider-track-background {
