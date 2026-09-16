@@ -1352,8 +1352,10 @@ export class MapLibreMapEngine implements MapEngine {
       const group = this._clusterGroups.find((candidate) =>
         candidate.members.includes(focusedMember)
       );
-      if (group?.iconMarker && !group.open) {
-        group.iconMarker.getElement().focus();
+      if (group && !group.open) {
+        // A singleton group has no bubble icon; the member shows on its own,
+        // so send focus back to that member rather than to the document.
+        (group.iconMarker?.getElement() ?? focusedMember.element).focus();
       }
     }
   }
