@@ -89,6 +89,8 @@ class HuiLightColorCardFeature
 
   @state() private _expanded: ColorAxis = "hue";
 
+  @state() private _liveHue?: number;
+
   static getStubConfig(): LightColorCardFeatureConfig {
     return {
       type: "light-color",
@@ -121,7 +123,8 @@ class HuiLightColorCardFeature
     const hue = hsColor?.[0];
     const saturation = hsColor?.[1];
 
-    const saturationGradient = `hsl(${hue ?? 0} 0% 100%), hsl(${hue ?? 0} 100% 50%)`;
+    const previewHue = this._liveHue ?? hue ?? 0;
+    const saturationGradient = `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
 
     const controls = this._config.controls ?? "hue";
     const showHue = controls !== "saturation";
@@ -150,6 +153,7 @@ class HuiLightColorCardFeature
                     wrap
                     .disabled=${disabled}
                     @value-changed=${this._hueChanged}
+                    @slider-moved=${this._hueMoved}
                     .label=${hueLabel}
                     min="0"
                     max="360"
@@ -234,6 +238,11 @@ class HuiLightColorCardFeature
   private _expandSaturation = (ev: Event) => {
     ev.stopPropagation();
     this._expanded = "saturation";
+  };
+
+  private _hueMoved = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    this._liveHue = ev.detail.value;
   };
 
   private _hueChanged = (ev: CustomEvent) => {
