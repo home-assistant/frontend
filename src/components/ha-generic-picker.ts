@@ -329,7 +329,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
       return nothing;
     }
 
-    return html`<ha-input-helper-text .disabled=${this.disabled}>
+    return html`<ha-input-helper-text>
       ${
         showError
           ? html`<span class="error">${this.errorMessage}</span> ${

@@ -6,7 +6,7 @@ import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
-import { describeCondition } from "./automation_i18n";
+import { describeCondition, type DescribeOptions } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device/device_automation";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
 import { domainToName } from "./integration";
@@ -47,7 +47,7 @@ export const describeAction = <T extends ActionType>(
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false,
+  options?: DescribeOptions,
   manifests?: DomainManifestLookup
 ): string => {
   try {
@@ -56,7 +56,7 @@ export const describeAction = <T extends ActionType>(
       entityRegistry,
       action,
       actionType,
-      ignoreAlias,
+      options,
       manifests
     );
     if (typeof description !== "string") {
@@ -79,10 +79,10 @@ const tryDescribeAction = <T extends ActionType>(
   entityRegistry: EntityRegistryEntry[],
   action: ActionTypes[T],
   actionType?: T,
-  ignoreAlias = false,
+  options?: DescribeOptions,
   manifests?: DomainManifestLookup
 ): string => {
-  if (action.alias && !ignoreAlias) {
+  if (action.alias && !options?.ignoreAlias) {
     return action.alias;
   }
   if (!actionType) {
@@ -322,7 +322,12 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.check_condition.description.full`,
       {
-        condition: describeCondition(action as Condition, hass, entityRegistry),
+        condition: describeCondition(
+          action as Condition,
+          hass,
+          entityRegistry,
+          options
+        ),
       }
     );
   }

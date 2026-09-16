@@ -86,6 +86,7 @@ export class HaAutomationConditionSummary extends LitElement {
               ></ha-automation-row-targets>`
             : nothing
         }
+        <slot name="references"></slot>
         ${
           note
             ? html`

@@ -21,7 +21,6 @@ import {
 } from "../common/datetime/calc_date";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
-import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
@@ -326,12 +325,6 @@ export const computeEnergyLabel = (
 ): string => {
   if (customName) {
     return customName;
-  }
-
-  const stateObj = hass.states[statisticId];
-
-  if (stateObj) {
-    return hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
   }
 
   return getStatisticLabel(hass, statisticId, statisticsMetaData);

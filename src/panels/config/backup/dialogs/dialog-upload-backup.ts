@@ -91,7 +91,6 @@ export class DialogUploadBackup
           .uploading=${this._uploading}
           .icon=${mdiFolderUpload}
           .accept=${SUPPORTED_UPLOAD_FORMAT}
-          .localize=${this.hass.localize}
           .label=${this.hass.localize(
             "ui.panel.config.backup.dialogs.upload.input_label"
           )}

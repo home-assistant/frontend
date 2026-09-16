@@ -13,9 +13,13 @@ import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -49,8 +53,13 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import "../../../components/ha-trace-picker";
+import "../../../components/ha-split-panel";
+import type { HaSplitPanel } from "../../../components/ha-split-panel";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
+
+const STORAGE_KEY_SPLIT_POSITION = "automation-trace-split-position";
+const DEFAULT_SPLIT_POSITION = 20;
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {
@@ -84,16 +93,14 @@ export class HaAutomationTrace extends LitElement {
 
   @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
 
+  @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
+
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
-
-    const graph = this._graph;
-    const trackedNodes = graph?.trackedNodes;
-    const renderedNodes = graph?.renderedNodes;
 
     const title = stateObj?.attributes.friendly_name || this._entityId;
 
@@ -240,98 +247,118 @@ export class HaAutomationTrace extends LitElement {
                 ? ""
                 : html`
                     <div class="main">
-                      <div class="graph">
-                        <hat-script-graph
-                          .trace=${this._trace}
-                          .selected=${this._selected?.path}
-                          @graph-node-selected=${this._pickNode}
-                        ></hat-script-graph>
-                      </div>
-
-                      <div class="info">
-                        <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                          ${TABS.map(
-                            (view) => html`
-                              <ha-tab-group-tab
-                                slot="nav"
-                                .active=${this._view === view}
-                                .panel=${view}
+                      ${
+                        this.narrow
+                          ? this._renderPanes()
+                          : html`
+                              <ha-split-panel
+                                class="split"
+                                .position=${this._splitPosition}
+                                @wa-reposition=${this._splitRepositioned}
                               >
-                                ${this.hass!.localize(
-                                  `ui.panel.config.automation.trace.tabs.${view}`
-                                )}
-                              </ha-tab-group-tab>
+                                ${this._renderPanes()}
+                              </ha-split-panel>
                             `
-                          )}
-                          ${
-                            this._trace.blueprint_inputs
-                              ? html`
-                                  <ha-tab-group-tab
-                                    slot="nav"
-                                    .active=${this._view === "blueprint"}
-                                    panel="blueprint"
-                                  >
-                                    ${this.hass!.localize(
-                                      `ui.panel.config.automation.trace.tabs.blueprint_config`
-                                    )}
-                                  </ha-tab-group-tab>
-                                `
-                              : ""
-                          }
-                        </ha-tab-group>
-                        ${
-                          this._selected === undefined ||
-                          this._logbookEntries === undefined ||
-                          trackedNodes === undefined
-                            ? nothing
-                            : this._view === "details"
-                              ? html`
-                                  <ha-trace-path-details
-                                    .hass=${this.hass}
-                                    .narrow=${this.narrow}
-                                    .trace=${this._trace}
-                                    .selected=${this._selected}
-                                    .logbookEntries=${this._logbookEntries}
-                                    .trackedNodes=${trackedNodes}
-                                    .renderedNodes=${renderedNodes!}
-                                  ></ha-trace-path-details>
-                                `
-                              : this._view === "automation_config"
-                                ? html`
-                                    <ha-trace-config
-                                      .trace=${this._trace}
-                                    ></ha-trace-config>
-                                  `
-                                : this._view === "logbook"
-                                  ? html`
-                                      <ha-trace-logbook
-                                        .hass=${this.hass}
-                                        .narrow=${this.narrow}
-                                        .trace=${this._trace}
-                                        .logbookEntries=${this._logbookEntries}
-                                      ></ha-trace-logbook>
-                                    `
-                                  : this._view === "blueprint"
-                                    ? html`
-                                        <ha-trace-blueprint-config
-                                          .trace=${this._trace}
-                                        ></ha-trace-blueprint-config>
-                                      `
-                                    : html`
-                                        <ha-trace-timeline
-                                          .hass=${this.hass}
-                                          .trace=${this._trace}
-                                          .logbookEntries=${this._logbookEntries}
-                                          .selected=${this._selected}
-                                          @value-changed=${this._timelinePathPicked}
-                                        ></ha-trace-timeline>
-                                      `
-                        }
-                      </div>
+                      }
                     </div>
                   `
         }
       </hass-subpage>
+    `;
+  }
+
+  private _renderPanes(): TemplateResult {
+    const graph = this._graph;
+    const trackedNodes = graph?.trackedNodes;
+    const renderedNodes = graph?.renderedNodes;
+
+    return html`
+      <div class="graph" slot="start">
+        <hat-script-graph
+          .trace=${this._trace}
+          .selected=${this._selected?.path}
+          @graph-node-selected=${this._pickNode}
+        ></hat-script-graph>
+      </div>
+
+      <div class="info" slot="end">
+        <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+          ${TABS.map(
+            (view) => html`
+              <ha-tab-group-tab
+                slot="nav"
+                .active=${this._view === view}
+                .panel=${view}
+              >
+                ${this.hass!.localize(
+                  `ui.panel.config.automation.trace.tabs.${view}`
+                )}
+              </ha-tab-group-tab>
+            `
+          )}
+          ${
+            this._trace!.blueprint_inputs
+              ? html`
+                  <ha-tab-group-tab
+                    slot="nav"
+                    .active=${this._view === "blueprint"}
+                    panel="blueprint"
+                  >
+                    ${this.hass!.localize(
+                      `ui.panel.config.automation.trace.tabs.blueprint_config`
+                    )}
+                  </ha-tab-group-tab>
+                `
+              : ""
+          }
+        </ha-tab-group>
+        ${
+          this._selected === undefined ||
+          this._logbookEntries === undefined ||
+          trackedNodes === undefined
+            ? nothing
+            : this._view === "details"
+              ? html`
+                  <ha-trace-path-details
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .trace=${this._trace}
+                    .selected=${this._selected}
+                    .logbookEntries=${this._logbookEntries}
+                    .trackedNodes=${trackedNodes}
+                    .renderedNodes=${renderedNodes!}
+                  ></ha-trace-path-details>
+                `
+              : this._view === "automation_config"
+                ? html`
+                    <ha-trace-config .trace=${this._trace}></ha-trace-config>
+                  `
+                : this._view === "logbook"
+                  ? html`
+                      <ha-trace-logbook
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .trace=${this._trace}
+                        .logbookEntries=${this._logbookEntries}
+                      ></ha-trace-logbook>
+                    `
+                  : this._view === "blueprint"
+                    ? html`
+                        <ha-trace-blueprint-config
+                          .trace=${this._trace}
+                        ></ha-trace-blueprint-config>
+                      `
+                    : html`
+                        <ha-trace-timeline
+                          .hass=${this.hass}
+                          .trace=${this._trace}
+                          .logbookEntries=${this._logbookEntries}
+                          .selected=${this._selected}
+                          @value-changed=${this._timelinePathPicked}
+                        ></ha-trace-timeline>
+                      `
+        }
+      </div>
     `;
   }
 
@@ -340,6 +367,14 @@ export class HaAutomationTrace extends LitElement {
 
     this.hass.loadBackendTranslation("triggers");
     this.hass.loadBackendTranslation("conditions");
+
+    const storedPosition = localStorage?.[STORAGE_KEY_SPLIT_POSITION];
+    if (storedPosition) {
+      const parsed = parseFloat(storedPosition);
+      if (!isNaN(parsed) && parsed > 0 && parsed < 100) {
+        this._splitPosition = parsed;
+      }
+    }
 
     if (!this.automationId) {
       return;
@@ -427,6 +462,19 @@ export class HaAutomationTrace extends LitElement {
   private _pickNode(ev) {
     this._selected = ev.detail;
   }
+
+  private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
+    this._splitPosition = ev.target.position;
+    this._storeSplitPosition();
+  }
+
+  private _storeSplitPosition = debounce(
+    () => {
+      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(this._splitPosition);
+    },
+    500,
+    false
+  );
 
   private _refreshTraces() {
     this._loadTraces();
@@ -618,13 +666,22 @@ export class HaAutomationTrace extends LitElement {
           padding: 16px;
         }
 
+        ha-split-panel.split {
+          flex: 1;
+          min-height: 0;
+          min-width: 0;
+          --ha-split-panel-min: 10%;
+          --ha-split-panel-max: 80%;
+          --ha-split-panel-divider-hit-area: var(--ha-space-4);
+        }
+
         .graph {
-          border-right: 1px solid var(--divider-color);
-          max-width: 50%;
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          min-width: 0;
+          min-height: 0;
         }
         hat-script-graph {
           flex: 1;
@@ -642,6 +699,8 @@ export class HaAutomationTrace extends LitElement {
         }
         .info {
           flex: 1;
+          min-width: 0;
+          min-height: 0;
           overflow-y: auto;
           background-color: var(--card-background-color);
         }

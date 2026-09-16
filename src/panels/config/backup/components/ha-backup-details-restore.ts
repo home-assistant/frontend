@@ -1,22 +1,25 @@
-import memoizeOne from "memoize-one";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-card";
-import "../../../../components/ha-button";
-import "./ha-backup-data-picker";
-import type { HomeAssistant } from "../../../../types";
+import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import type {
   BackupContentExtended,
   BackupData,
 } from "../../../../data/backup";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
+import "./ha-backup-data-picker";
 
 @customElement("ha-backup-details-restore")
 class HaBackupDetailsRestore extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public localize!: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Object }) public backup!: BackupContentExtended;
 
@@ -44,14 +47,13 @@ class HaBackupDetailsRestore extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          ${this.localize(
+          ${this._localize(
             `ui.panel.${this.translationKeyPanel}.details.restore.title`
           )}
         </div>
         <div class="card-content">
           <ha-backup-data-picker
             .translationKeyPanel=${this.translationKeyPanel}
-            .localize=${this.localize}
             .hass=${this.hass}
             .data=${this.backup}
             .value=${this._selectedData}
@@ -67,7 +69,7 @@ class HaBackupDetailsRestore extends LitElement {
             variant="danger"
             appearance="plain"
           >
-            ${this.localize(
+            ${this._localize(
               `ui.panel.${this.translationKeyPanel}.details.restore.action`
             )}
           </ha-button>

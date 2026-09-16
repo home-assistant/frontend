@@ -85,6 +85,14 @@ export const hasGasRateSource = (prefs: EnergyPreferences): boolean =>
     (source) => source.type === "gas" && !!source.stat_rate
   );
 
+/** Whether the Now view has any live power or flow-rate content to show. */
+export const hasNowViewContent = (prefs: EnergyPreferences): boolean =>
+  hasPowerSources(prefs) ||
+  hasPowerDevices(prefs) ||
+  hasWaterRateSource(prefs) ||
+  hasWaterRateDevices(prefs) ||
+  hasGasRateSource(prefs);
+
 // --- Card catalog ----------------------------------------------------------
 
 export interface EnergyCardCatalogEntry {
