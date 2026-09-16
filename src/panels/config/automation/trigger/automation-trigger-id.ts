@@ -454,9 +454,11 @@ export const cleanupRemovedGeneratedTriggerReferences = (
 };
 
 /**
- * Assign a fresh generated ID to every leaf sharing a stored ID, including manual IDs.
+ * Assign a fresh generated ID to every referenced leaf sharing a stored ID.
  * Expand trigger-condition references to all replacements for the old ID, preserving
- * their original "any of these triggers" meaning. Return the original config if IDs are unique.
+ * their original "any of these triggers" meaning. Duplicate IDs that no trigger
+ * condition references are stripped instead, so the fix does not create generated
+ * IDs nobody uses. Return the original config if IDs are unique.
  * Templates and action data that inspect trigger.id directly are not rewritten;
  * the controller's confirmation dialog warns about that limitation.
  */
@@ -470,6 +472,21 @@ export const makeDuplicateTriggerIdsUnique = (
     return config;
   }
 
+  const referencedIds = new Set<string>();
+  new AutomationTriggerConditionMapper((condition) =>
+    mapReferencedTriggerIds(condition, (id) => {
+      referencedIds.add(id);
+      return id;
+    })
+  ).map(config);
+
+  const referencedDuplicates = new Set(
+    [...duplicates].filter((id) => referencedIds.has(id))
+  );
+  const unreferencedDuplicates = new Set(
+    [...duplicates].filter((id) => !referencedIds.has(id))
+  );
+
   const reservedIds = new Set(ids.filter((id) => !duplicates.has(id)));
   const generatedIds = new Set<string>();
   const assignments = new Map<Trigger, string>();
@@ -479,7 +496,7 @@ export const makeDuplicateTriggerIdsUnique = (
   // trigger its own ID, references to the old ID must expand to every new ID.
   flattenTriggers(config.triggers).forEach((trigger) => {
     const id = getTriggerId(trigger);
-    if (!id || !duplicates.has(id)) {
+    if (!id || !referencedDuplicates.has(id)) {
       return;
     }
     const generatedId = getGeneratedTriggerId(reservedIds, generatedIds);
@@ -487,14 +504,32 @@ export const makeDuplicateTriggerIdsUnique = (
     replacementIds.set(id, [...(replacementIds.get(id) || []), generatedId]);
   });
 
+  const triggers = walkLeafTriggers(config.triggers, (trigger) => {
+    if (assignments.has(trigger)) {
+      return { ...trigger, id: assignments.get(trigger) };
+    }
+    if (isTriggerList(trigger)) {
+      return trigger;
+    }
+    const id = getTriggerId(trigger);
+    if (id && unreferencedDuplicates.has(id)) {
+      const { id: _id, ...rest } = trigger;
+      return rest as Trigger;
+    }
+    return trigger;
+  }) as Trigger | Trigger[];
+
+  if (!referencedDuplicates.size) {
+    return {
+      ...config,
+      triggers,
+    };
+  }
+
   return {
     ...new AutomationTriggerConditionMapper((condition) =>
       mapReferencedTriggerIds(condition, (id) => replacementIds.get(id) ?? id)
     ).map(config),
-    triggers: walkLeafTriggers(config.triggers, (trigger) =>
-      assignments.has(trigger)
-        ? { ...trigger, id: assignments.get(trigger) }
-        : trigger
-    ) as Trigger | Trigger[],
+    triggers,
   };
 };
