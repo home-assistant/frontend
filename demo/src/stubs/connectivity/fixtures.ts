@@ -1,6 +1,7 @@
 import { bluetoothFixtures } from "./bluetooth/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { matterFixtures } from "./matter/fixtures";
+import { modbusFixtures } from "./modbus/fixtures";
 import { mqttFixtures } from "./mqtt/fixtures";
 import { radioFrequencyFixtures } from "./radio_frequency/fixtures";
 import { serialFixtures } from "./serial/fixtures";
@@ -16,6 +17,7 @@ import { zwaveJsFixtures } from "./zwave_js/fixtures";
 const INTEGRATIONS: ConnectivityFixtures[] = [
   bluetoothFixtures,
   serialFixtures,
+  modbusFixtures,
   mqttFixtures,
   matterFixtures,
   infraredFixtures,

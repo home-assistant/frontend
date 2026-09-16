@@ -1,22 +1,19 @@
-import type {
-  Circle,
-  DivIcon,
-  DragEndEvent,
-  LatLng,
-  LatLngExpression,
-  Marker,
-  MarkerOptions,
-} from "leaflet";
+import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
-import type { ThemeMode } from "../../types";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
+import type { MapLatLng } from "../../common/map/map-engine";
+import { circleBoundsPoints } from "../../common/map/map-engine";
+import { internationalizationContext } from "../../data/context";
+import type { HomeAssistantInternationalization, ThemeMode } from "../../types";
+import "../ha-alert";
 import "../ha-input-helper-text";
 import "./ha-map";
-import type { HaMap } from "./ha-map";
+import type { HaMap, HaMapEditableLocation } from "./ha-map";
 import type { HaIcon } from "../ha-icon";
 import type { HaSvgIcon } from "../ha-svg-icon";
 
@@ -41,8 +38,16 @@ export interface MarkerLocation {
   radius_color?: string;
   location_editable?: boolean;
   radius_editable?: boolean;
+  /** Clicking or activating the marker fires marker-clicked */
+  clickable?: boolean;
 }
 
+const ICON_SIZE = 24;
+
+/**
+ * A map with draggable markers and zone circles, drawn by ha-map. Without
+ * editing support (the Leaflet fallback) they are static, with a notice.
+ */
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
   @property({ attribute: false }) public locations?: MarkerLocation[];
@@ -59,35 +64,20 @@ export class HaLocationsEditor extends LitElement {
   @property({ type: Boolean, attribute: "pin-on-click" })
   public pinOnClick = false;
 
-  @state() private _locationMarkers?: Record<string, Marker | Circle>;
-
-  @state() private _circles: Record<string, Circle> = {};
-
   @query("ha-map", true) private map!: HaMap;
 
-  private Leaflet?: LeafletModuleType;
+  @state() private _editingAvailable = true;
 
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  private _loadPromise: Promise<boolean | undefined | void>;
-
-  constructor() {
-    super();
-
-    this._loadPromise = import("leaflet").then((module) =>
-      import("leaflet-draw").then(() => {
-        this.Leaflet = module.default as LeafletModuleType;
-        this._updateMarkers();
-        return this.updateComplete.then(() => this.fitMap());
-      })
-    );
-  }
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
     this.map.fitMap(options);
   }
 
   public fitBounds(
-    boundingbox: LatLngExpression[],
+    boundingbox: MapLatLng[],
     options?: { zoom?: number; pad?: number }
   ) {
     this.map.fitBounds(boundingbox, options);
@@ -97,42 +87,50 @@ export class HaLocationsEditor extends LitElement {
     id: string,
     options?: { zoom?: number }
   ): Promise<void> {
-    if (!this.Leaflet) {
-      await this._loadPromise;
-    }
-    if (!this.map.leafletMap || !this._locationMarkers) {
+    await this.updateComplete;
+    const location = this.locations?.find((loc) => loc.id === id);
+    if (!location) {
       return;
     }
-    const marker = this._locationMarkers[id];
-    if (!marker) {
-      return;
-    }
-    if ("getBounds" in marker) {
-      this.map.leafletMap.fitBounds(marker.getBounds());
-      (marker as Circle).bringToFront();
+    const center: MapLatLng = [location.latitude, location.longitude];
+    if (location.radius) {
+      // Only the map's maximum caps the zoom, however small the zone
+      this.map.fitBounds(circleBoundsPoints(center, location.radius), {
+        pad: 0,
+        zoom: MAP_MAX_ZOOM,
+      });
     } else {
-      const circle = this._circles[id];
-      if (circle) {
-        this.map.leafletMap.fitBounds(circle.getBounds());
-      } else {
-        this.map.leafletMap.setView(
-          marker.getLatLng(),
-          options?.zoom || this.zoom
-        );
-      }
+      this.map.setView(center, options?.zoom || this.zoom);
     }
   }
 
   protected render(): TemplateResult {
     return html`
-      <ha-map
-        .layers=${this._getLayers(this._circles, this._locationMarkers)}
-        .zoom=${this.zoom}
-        .autoFit=${this.autoFit}
-        .themeMode=${this.themeMode}
-        .clickable=${this.pinOnClick}
-        @map-clicked=${this._mapClicked}
-      ></ha-map>
+      <div class="map">
+        <ha-map
+          .editableLocations=${this._editableLocations(this.locations)}
+          .zoom=${this.zoom}
+          .autoFit=${this.autoFit}
+          .themeMode=${this.themeMode}
+          .clickable=${this.pinOnClick}
+          @map-clicked=${this._mapClicked}
+          @editable-location-moved=${this._locationMoved}
+          @editable-location-resized=${this._radiusChanged}
+          @editable-location-clicked=${this._markerClicked}
+          @editing-available-changed=${this._editingAvailableChanged}
+        ></ha-map>
+        ${
+          !this._editingAvailable &&
+          this._i18n &&
+          this.locations?.some(
+            (location) => location.location_editable || location.radius_editable
+          )
+            ? html`<ha-alert alert-type="warning">
+                ${this._i18n.localize("ui.components.map.editing_unavailable")}
+              </ha-alert>`
+            : ""
+        }
+      </div>
       ${
         this.helper
           ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
@@ -141,61 +139,100 @@ export class HaLocationsEditor extends LitElement {
     `;
   }
 
-  private _getLayers = memoizeOne(
-    (
-      circles: Record<string, Circle>,
-      markers?: Record<string, Marker | Circle>
-    ): (Marker | Circle)[] => {
-      const layers: (Marker | Circle)[] = [];
-      Array.prototype.push.apply(layers, Object.values(circles));
-      if (markers) {
-        Array.prototype.push.apply(layers, Object.values(markers));
+  private _editableLocations = memoizeOne(
+    (locations?: MarkerLocation[]): HaMapEditableLocation[] => {
+      const ids = new Set((locations ?? []).map((location) => location.id));
+      for (const id of this._elements.keys()) {
+        if (!ids.has(id)) {
+          this._elements.delete(id);
+        }
       }
-      return layers;
+      return (locations ?? []).map((location) => ({
+        id: location.id,
+        location: [location.latitude, location.longitude],
+        radius: location.radius,
+        element: this._elementFor(location),
+        elementSize: [ICON_SIZE, ICON_SIZE],
+        title: location.name,
+        color: location.radius_color,
+        locationEditable: location.location_editable,
+        radiusEditable: location.radius_editable,
+        activatable: location.clickable,
+      }));
     }
   );
 
-  public willUpdate(changedProps: PropertyValues<this>): void {
-    super.willUpdate(changedProps);
+  // Reused while unchanged, so ha-map moves markers instead of rebuilding them
+  private _elements = new Map<string, { key: string; element?: HTMLElement }>();
 
-    // Still loading.
-    if (!this.Leaflet) {
-      return;
+  private _elementFor(location: MarkerLocation): HTMLElement | undefined {
+    const key = JSON.stringify([
+      location.icon,
+      location.iconPath,
+      location.name,
+      location.location_editable,
+    ]);
+    const cached = this._elements.get(location.id);
+    if (cached?.key === key) {
+      return cached.element;
     }
+    const element = this._createIcon(location);
+    this._elements.set(location.id, { key, element });
+    return element;
+  }
 
-    if (changedProps.has("locations")) {
-      this._updateMarkers();
+  private _createIcon(location: MarkerLocation): HTMLElement | undefined {
+    if (!location.icon && !location.iconPath) {
+      return undefined;
     }
+    const el = document.createElement("div");
+    el.className = `named-icon ${
+      location.location_editable ? "draggable" : ""
+    }`;
+    if (location.name !== undefined) {
+      el.innerText = location.name;
+    }
+    let iconEl: HaIcon | HaSvgIcon;
+    if (location.icon) {
+      iconEl = document.createElement("ha-icon");
+      iconEl.setAttribute("icon", location.icon);
+    } else {
+      iconEl = document.createElement("ha-svg-icon");
+      iconEl.setAttribute("path", location.iconPath!);
+    }
+    el.prepend(iconEl);
+    return el;
   }
 
   public updated(changedProps: PropertyValues): void {
-    // Still loading.
-    if (!this.Leaflet) {
-      return;
-    }
-
     if (changedProps.has("locations")) {
-      const oldLocations = changedProps.get("locations");
+      fireEvent(this, "markers-updated");
+
+      // Follow a location that was edited out of view
+      const oldLocations = changedProps.get("locations") as
+        MarkerLocation[] | undefined;
       const movedLocations = this.locations?.filter(
         (loc, idx) =>
-          !oldLocations[idx] ||
+          !oldLocations?.[idx] ||
           ((loc.latitude !== oldLocations[idx].latitude ||
             loc.longitude !== oldLocations[idx].longitude) &&
-            this.map.leafletMap?.getBounds().contains({
-              lat: oldLocations[idx].latitude,
-              lng: oldLocations[idx].longitude,
-            }) &&
-            !this.map.leafletMap
-              ?.getBounds()
-              .contains({ lat: loc.latitude, lng: loc.longitude }))
+            this.map.containsLocation([
+              oldLocations[idx].latitude,
+              oldLocations[idx].longitude,
+            ]) &&
+            !this.map.containsLocation([loc.latitude, loc.longitude]))
       );
       if (movedLocations?.length === 1) {
-        this.map.leafletMap?.panTo({
-          lat: movedLocations[0].latitude,
-          lng: movedLocations[0].longitude,
-        });
+        this.map.panTo([
+          movedLocations[0].latitude,
+          movedLocations[0].longitude,
+        ]);
       }
     }
+  }
+
+  private _editingAvailableChanged(ev: HASSDomEvent<{ available: boolean }>) {
+    this._editingAvailable = ev.detail.available;
   }
 
   private _normalizeLongitude(longitude: number): number {
@@ -206,40 +243,37 @@ export class HaLocationsEditor extends LitElement {
     return longitude;
   }
 
-  private _updateLocation(ev: DragEndEvent) {
-    const marker = ev.target;
-    const latlng: LatLng = marker.getLatLng();
-    const location: [number, number] = [
-      latlng.lat,
-      this._normalizeLongitude(latlng.lng),
-    ];
+  private _locationMoved(
+    ev: HASSDomEvent<{ id: string; location: MapLatLng }>
+  ) {
+    const [latitude, longitude] = ev.detail.location;
     fireEvent(
       this,
       "location-updated",
-      { id: marker.id, location },
+      {
+        id: ev.detail.id,
+        location: [latitude, this._normalizeLongitude(longitude)],
+      },
       { bubbles: false }
     );
   }
 
-  private _updateRadius(ev: DragEndEvent) {
-    const marker = ev.target;
-    const circle = this._locationMarkers![marker.id] as Circle;
+  private _radiusChanged(ev: HASSDomEvent<{ id: string; radius: number }>) {
     fireEvent(
       this,
       "radius-updated",
-      { id: marker.id, radius: circle.getRadius() },
+      { id: ev.detail.id, radius: ev.detail.radius },
       { bubbles: false }
     );
   }
 
-  private _markerClicked(ev: DragEndEvent) {
-    const marker = ev.target;
-    fireEvent(this, "marker-clicked", { id: marker.id }, { bubbles: false });
+  private _markerClicked(ev: HASSDomEvent<{ id: string }>) {
+    fireEvent(this, "marker-clicked", { id: ev.detail.id }, { bubbles: false });
   }
 
-  private _mapClicked(ev) {
-    if (this.pinOnClick && this._locationMarkers) {
-      const id = Object.keys(this._locationMarkers)[0];
+  private _mapClicked(ev: HASSDomEvent<{ location: [number, number] }>) {
+    if (this.pinOnClick && this.locations?.length) {
+      const id = this.locations[0].id;
       const location: [number, number] = [
         ev.detail.location[0],
         this._normalizeLongitude(ev.detail.location[1]),
@@ -248,135 +282,27 @@ export class HaLocationsEditor extends LitElement {
 
       // If the normalized longitude wraps around the globe, pan to the new location.
       if (location[1] !== ev.detail.location[1]) {
-        this.map.leafletMap?.panTo({ lat: location[0], lng: location[1] });
+        this.map.panTo(location);
       }
     }
-  }
-
-  private _updateMarkers(): void {
-    if (!this.locations || !this.locations.length) {
-      this._circles = {};
-      this._locationMarkers = undefined;
-      return;
-    }
-
-    const locationMarkers = {};
-    const circles = {};
-
-    const defaultZoneRadiusColor =
-      getComputedStyle(this).getPropertyValue("--accent-color");
-
-    this.locations.forEach((location: MarkerLocation) => {
-      let icon: DivIcon | undefined;
-      if (location.icon || location.iconPath) {
-        // create icon
-        const el = document.createElement("div");
-        el.className = "named-icon";
-        if (location.name !== undefined) {
-          el.innerText = location.name;
-        }
-        let iconEl: HaIcon | HaSvgIcon;
-        if (location.icon) {
-          iconEl = document.createElement("ha-icon");
-          iconEl.setAttribute("icon", location.icon);
-        } else {
-          iconEl = document.createElement("ha-svg-icon");
-          iconEl.setAttribute("path", location.iconPath!);
-        }
-        el.prepend(iconEl);
-
-        icon = this.Leaflet!.divIcon({
-          html: el.outerHTML,
-          iconSize: [24, 24],
-          className: "light",
-        });
-      }
-      if (location.radius) {
-        const circle = this.Leaflet!.circle(
-          [location.latitude, location.longitude],
-          {
-            color: location.radius_color || defaultZoneRadiusColor,
-            radius: location.radius,
-          }
-        );
-        if (location.radius_editable || location.location_editable) {
-          // @ts-ignore
-          circle.editing.enable();
-          circle.addEventListener("add", () => {
-            // @ts-ignore
-            const moveMarker = circle.editing._moveMarker;
-            // @ts-ignore
-            const resizeMarker = circle.editing._resizeMarkers[0];
-            if (icon) {
-              moveMarker.setIcon(icon);
-            }
-            resizeMarker.id = moveMarker.id = location.id;
-            moveMarker
-              .addEventListener(
-                "dragend",
-                // @ts-ignore
-                (ev: DragEndEvent) => this._updateLocation(ev)
-              )
-              .addEventListener(
-                "click",
-                // @ts-ignore
-                (ev: MouseEvent) => this._markerClicked(ev)
-              );
-            if (location.radius_editable) {
-              resizeMarker.addEventListener(
-                "dragend",
-                // @ts-ignore
-                (ev: DragEndEvent) => this._updateRadius(ev)
-              );
-            } else {
-              resizeMarker.remove();
-            }
-          });
-          locationMarkers[location.id] = circle;
-        } else {
-          circles[location.id] = circle;
-        }
-      }
-      if (
-        !location.radius ||
-        (!location.radius_editable && !location.location_editable)
-      ) {
-        const options: MarkerOptions = {
-          title: location.name,
-          draggable: location.location_editable,
-        };
-
-        if (icon) {
-          options.icon = icon;
-        }
-
-        const marker = this.Leaflet!.marker(
-          [location.latitude, location.longitude],
-          options
-        )
-          .addEventListener("dragend", (ev: DragEndEvent) =>
-            this._updateLocation(ev)
-          )
-          .addEventListener(
-            // @ts-ignore
-            "click",
-            // @ts-ignore
-            (ev: MouseEvent) => this._markerClicked(ev)
-          );
-        (marker as any).id = location.id;
-
-        locationMarkers[location.id] = marker;
-      }
-    });
-    this._circles = circles;
-    this._locationMarkers = locationMarkers;
-    fireEvent(this, "markers-updated");
   }
 
   static styles = css`
+    .map {
+      position: relative;
+      height: 100%;
+    }
     ha-map {
       display: block;
       height: 100%;
+    }
+    /* Over the map, clear of the zoom control, so a fixed-height host shows it */
+    ha-alert {
+      position: absolute;
+      top: var(--ha-space-2);
+      inset-inline-start: 56px;
+      inset-inline-end: var(--ha-space-2);
+      z-index: 1;
     }
   `;
 }

@@ -7,7 +7,6 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { getConfigEntityId } from "../common/get-config-entity-id";
-import { checkConditionsMet } from "../common/validate-condition";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createErrorBadgeConfig } from "../create-element/create-element-base";
 import type { LovelaceBadge } from "../types";
@@ -68,6 +67,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
     if (this.hass) {
       this._element.hass = this.hass;
     }
+    this._element.preview = this.preview;
     // Update element when the visibility of the badge changes, e.g. custom badge
     this._element.addEventListener("badge-visibility-changed", (ev: Event) => {
       ev.stopPropagation();
@@ -129,11 +129,12 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
           }
         }
       }
-      if (changedProps.has("hass")) {
+      if (changedProps.has("hass") || changedProps.has("preview")) {
         try {
           if (this.hass) {
             this._element.hass = this.hass;
           }
+          this._element.preview = this.preview;
         } catch (e: any) {
           this._loadElement(createErrorBadgeConfig(e.message, null));
         }
@@ -165,14 +166,7 @@ export class HuiBadge extends ConditionalListenerMixin<LovelaceBadgeConfig>(
       return;
     }
 
-    const visible =
-      conditionsMet ??
-      (!this.config?.visibility ||
-        checkConditionsMet(
-          this.config.visibility,
-          this.hass,
-          this._conditionContext
-        ));
+    const visible = conditionsMet ?? this._conditionsVisible();
     this._setElementVisibility(visible);
   }
 

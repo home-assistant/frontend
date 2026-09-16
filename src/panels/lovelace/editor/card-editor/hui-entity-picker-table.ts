@@ -32,6 +32,7 @@ interface EntityPickerTableRowData extends DataTableRowData {
   name: string;
   entity_name?: string;
   device_name?: string;
+  parent_device_name?: string;
   area_name?: string;
   domain_name: string;
   last_changed: string;
@@ -53,21 +54,31 @@ export class HuiEntityPickerTable extends LitElement {
   private _data = memoizeOne(
     (
       states: HomeAssistant["states"],
+      entityRegistry: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"],
       localize: LocalizeFunc,
       entities?: string[]
     ): EntityPickerTableRowData[] =>
       (entities || Object.keys(states)).map<EntityPickerTableRowData>(
         (entity) => {
-          const stateObj = this.hass.states[entity];
+          const stateObj = states[entity];
 
-          const [entityName, deviceName, areaName] = computeEntityNameList(
-            stateObj,
-            [{ type: "entity" }, { type: "device" }, { type: "area" }],
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          );
+          const [entityName, deviceName, parentDeviceName, areaName] =
+            computeEntityNameList(
+              stateObj,
+              [
+                { type: "entity" },
+                { type: "device" },
+                { type: "parent_device" },
+                { type: "area" },
+              ],
+              entityRegistry,
+              devices,
+              areas,
+              floors
+            );
           const name = [deviceName, entityName].filter(Boolean).join(" ");
           const domain = computeDomain(entity);
 
@@ -78,6 +89,7 @@ export class HuiEntityPickerTable extends LitElement {
             name: name,
             entity_name: entityName,
             device_name: deviceName,
+            parent_device_name: parentDeviceName,
             area_name: areaName,
             domain_name: domainToName(localize, domain),
             last_changed: stateObj!.last_changed,
@@ -89,6 +101,10 @@ export class HuiEntityPickerTable extends LitElement {
   protected render(): TemplateResult {
     const data = this._data(
       this.hass.states,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors,
       this.hass.localize,
       this.entities
     );
@@ -152,6 +168,7 @@ export class HuiEntityPickerTable extends LitElement {
               entity.entity_name || entity.device_name || entity.entity_id;
             const secondary = [
               entity.area_name,
+              entity.parent_device_name,
               entity.entity_name ? entity.device_name : undefined,
             ]
               .filter(Boolean)
@@ -187,6 +204,12 @@ export class HuiEntityPickerTable extends LitElement {
 
       columns.device_name = {
         title: "device_name",
+        filterable: true,
+        hidden: true,
+      };
+
+      columns.parent_device_name = {
+        title: "parent_device_name",
         filterable: true,
         hidden: true,
       };

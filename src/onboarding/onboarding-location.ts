@@ -267,6 +267,7 @@ class OnboardingLocation extends LitElement {
                 ? location[1]
                 : Number(place.lon),
             location_editable: place.place_id === highlightedMarker,
+            clickable: true,
           }))
         : [];
     }

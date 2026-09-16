@@ -82,7 +82,7 @@ class HaMoreInfoRelated extends LitElement {
       ? (domain as ItemType)
       : "entity";
 
-    const { floor, area, device } = getEntityContext(
+    const { floor, area, device, parentDevice } = getEntityContext(
       this._stateObj,
       this.hass.entities,
       this.hass.devices,
@@ -91,6 +91,13 @@ class HaMoreInfoRelated extends LitElement {
     );
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
+    const parentDeviceName = parentDevice
+      ? computeDeviceNameDisplay(
+          parentDevice,
+          this.hass.localize,
+          this.hass.states
+        )
+      : undefined;
     const deviceName = device
       ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : undefined;
@@ -122,6 +129,14 @@ class HaMoreInfoRelated extends LitElement {
         icon: area.icon
           ? html`<ha-icon slot="end" .icon=${area.icon}></ha-icon>`
           : html`<ha-svg-icon slot="end" .path=${mdiTextureBox}></ha-svg-icon>`,
+      });
+    }
+    if (parentDevice && parentDeviceName) {
+      contextEntries.push({
+        translationKey: "ui.dialogs.more_info_control.parent_device",
+        value: parentDeviceName,
+        href: `/config/devices/device/${parentDevice.id}`,
+        icon: html`<ha-svg-icon slot="end" .path=${mdiDevices}></ha-svg-icon>`,
       });
     }
     if (device && deviceName) {

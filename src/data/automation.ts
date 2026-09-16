@@ -663,6 +663,8 @@ export const subscribeCondition = (
   onChange: (result: {
     result?: boolean;
     error?: string | { code: string; message: string };
+    /** Template errors while still producing a result. */
+    template_errors?: string[];
   }) => void,
   condition: Condition
 ) =>

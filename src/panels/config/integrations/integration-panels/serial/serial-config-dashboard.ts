@@ -8,6 +8,7 @@ import {
   mdiPowerPlugOff,
   mdiPuzzle,
   mdiRefresh,
+  mdiTransitConnectionVariant,
   mdiUsb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -29,6 +30,10 @@ import {
   domainToName,
   getConfigPanelPath,
 } from "../../../../../data/integration";
+import {
+  listModbusConnections,
+  modbusSerialDevice,
+} from "../../../../../data/modbus";
 import type {
   SerialPort,
   SerialPortConsumer,
@@ -102,6 +107,8 @@ export class SerialConfigDashboard extends LitElement {
 
   @state() private _ports?: SerialPortUsage[];
 
+  @state() private _modbusDevices?: Set<string>;
+
   @state() private _error?: string;
 
   protected async firstUpdated(): Promise<void> {
@@ -111,11 +118,34 @@ export class SerialConfigDashboard extends LitElement {
 
   private async _fetchPorts(): Promise<void> {
     try {
-      this._ports = await listSerialPortsWithUsage(this.hass);
+      const [ports, modbusConnections] = await Promise.all([
+        listSerialPortsWithUsage(this.hass),
+        // Modbus only annotates the ports; failing to reach it is not an error
+        isComponentLoaded(this.hass.config, "modbus")
+          ? listModbusConnections(this.hass).catch(() => [])
+          : [],
+      ]);
+      this._ports = ports;
+      this._modbusDevices = new Set(
+        modbusConnections
+          .map((connection) => modbusSerialDevice(connection.endpoint))
+          .filter((device) => device !== undefined)
+      );
       this._error = undefined;
     } catch (err: any) {
       this._error = err.message;
     }
+  }
+
+  // Modbus keeps the device path it was configured with verbatim, which may be
+  // an alias of the scanned path, so both are matched
+  private _usedByModbus(port: SerialPort): boolean {
+    return (
+      this._modbusDevices !== undefined &&
+      (this._modbusDevices.has(port.device) ||
+        (port.resolved_device !== null &&
+          this._modbusDevices.has(port.resolved_device)))
+    );
   }
 
   private _portListItem(
@@ -308,6 +338,21 @@ export class SerialConfigDashboard extends LitElement {
     `;
   }
 
+  private _renderModbusLink(): TemplateResult {
+    return html`
+      <ha-md-list-item type="link" class="consumer" href="/config/modbus">
+        <ha-svg-icon
+          slot="start"
+          .path=${mdiTransitConnectionVariant}
+        ></ha-svg-icon>
+        <div slot="headline">
+          ${this.hass.localize("ui.panel.config.serial.used_by_modbus")}
+        </div>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-md-list-item>
+    `;
+  }
+
   private _continueFlow(ev: Event): void {
     showConfigFlowDialog(this, {
       continueFlowId: (ev.currentTarget as any).flowId,
@@ -372,6 +417,7 @@ export class SerialConfigDashboard extends LitElement {
         }
       </ha-md-list-item>
       ${item.consumers.map((consumer) => this._renderConsumer(consumer))}
+      ${this._usedByModbus(item.port) ? this._renderModbusLink() : nothing}
       ${item.discoveryFlows.map((flow) => this._renderDiscoveryFlow(flow))}
     `;
   }

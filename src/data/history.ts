@@ -1,14 +1,15 @@
 import type {
   HassConfig,
-  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
@@ -336,7 +337,7 @@ const processTimelineEntity = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
-  entities: HomeAssistant["entities"],
+  hass: HomeAssistant,
   entityId: string,
   states: EntityHistoryState[],
   current_state: HassEntity | undefined
@@ -358,7 +359,7 @@ const processTimelineEntity = (
         localize,
         locale,
         config,
-        entities[entityId],
+        hass.entities[entityId],
         entityId,
         {
           ...(state.a || first.a),
@@ -374,10 +375,16 @@ const processTimelineEntity = (
   }
 
   return {
-    name: computeStateNameFromEntityAttributes(
-      entityId,
-      current_state?.attributes || first.a
-    ),
+    name: current_state
+      ? hass.formatEntityName(current_state, DEFAULT_ENTITY_NAME, {
+          separator: computeRTL(
+            hass.language,
+            hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ ",
+        }) || current_state.entity_id
+      : computeStateNameFromEntityAttributes(entityId, first.a),
     entity_id: entityId,
     data,
   };
@@ -387,9 +394,15 @@ const processLineChartEntities = (
   unit: string,
   device_class: string | undefined,
   entities: HistoryStates,
-  hassEntities: HassEntities
+  hass: HomeAssistant
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
+  const nameSeparator = computeRTL(
+    hass.language,
+    hass.translationMetadata.translations
+  )
+    ? " ◂ "
+    : " ▸ ";
 
   const entityIds = Object.keys(entities);
   entityIds.forEach((entityId) => {
@@ -436,16 +449,19 @@ const processLineChartEntities = (
       processedStates.push(processedState);
     }
 
-    const attributes =
-      entityId in hassEntities
-        ? hassEntities[entityId].attributes
-        : "friendly_name" in first.a
-          ? first.a
-          : undefined;
+    const name =
+      entityId in hass.states
+        ? hass.formatEntityName(hass.states[entityId], DEFAULT_ENTITY_NAME, {
+            separator: nameSeparator,
+          }) || entityId
+        : computeStateNameFromEntityAttributes(
+            entityId,
+            "friendly_name" in first.a ? first.a : {}
+          );
 
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, attributes || {}),
+      name,
       entity_id: entityId,
       states: processedStates,
     });
@@ -610,7 +626,7 @@ export const computeHistory = (
           localize,
           hass.locale,
           hass.config,
-          hass.entities,
+          hass,
           entityId,
           stateInfo,
           currentState
@@ -638,7 +654,7 @@ export const computeHistory = (
       unit,
       deviceClass,
       lineChartDevices[key],
-      hass.states
+      hass
     );
   });
 

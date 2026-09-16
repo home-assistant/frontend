@@ -32,6 +32,10 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
     weight: 7,
   },
   {
+    name: "search_labels.parentDeviceName",
+    weight: 6,
+  },
+  {
     name: "search_labels.areaName",
     weight: 6,
   },
@@ -129,14 +133,20 @@ export const getEntities = (
     const stateObj = hass.states[entityId];
 
     const friendlyName = computeStateName(stateObj); // Keep this for search
-    const [entityName, deviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
+    const [entityName, deviceName, parentDeviceName, areaName] =
+      computeEntityNameList(
+        stateObj,
+        [
+          { type: "entity" },
+          { type: "device" },
+          { type: "parent_device" },
+          { type: "area" },
+        ],
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors
+      );
 
     const domain = computeDomain(entityId);
     let domainName = domainNames.get(domain);
@@ -146,7 +156,11 @@ export const getEntities = (
     }
 
     const primary = entityName || deviceName || entityId;
-    const secondary = [areaName, entityName ? deviceName : undefined]
+    const secondary = [
+      areaName,
+      parentDeviceName,
+      entityName ? deviceName : undefined,
+    ]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ");
 
@@ -159,6 +173,7 @@ export const getEntities = (
       search_labels: {
         entityName: entityName || null,
         deviceName: deviceName || null,
+        parentDeviceName: parentDeviceName || null,
         areaName: areaName || null,
         domainName: domainName || null,
         friendlyName: friendlyName || null,

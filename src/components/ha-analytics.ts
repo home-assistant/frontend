@@ -50,7 +50,11 @@ export class HaAnalytics extends LitElement {
           .preference=${"base"}
           .disabled=${loading}
           name="base"
-        ></ha-switch>
+        >
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.base.title`
+          )}
+        </ha-switch>
       </ha-row-item>
       ${ADDITIONAL_PREFERENCES.map(
         (preference) => html`
@@ -72,7 +76,11 @@ export class HaAnalytics extends LitElement {
               .checked=${!!this.analytics?.preferences[preference]}
               .preference=${preference}
               name=${preference}
-            ></ha-switch>
+            >
+              ${this.localize(
+                `ui.panel.${this.translationKeyPanel}.analytics.preferences.${preference}.title`
+              )}
+            </ha-switch>
             ${
               baseEnabled
                 ? nothing
@@ -106,7 +114,11 @@ export class HaAnalytics extends LitElement {
           .preference=${"diagnostics"}
           .disabled=${loading}
           name="diagnostics"
-        ></ha-switch>
+        >
+          ${this.localize(
+            `ui.panel.${this.translationKeyPanel}.analytics.preferences.diagnostics.title`
+          )}
+        </ha-switch>
       </ha-row-item>
     `;
   }
@@ -141,6 +153,19 @@ export class HaAnalytics extends LitElement {
       css`
         .error {
           color: var(--error-color);
+        }
+
+        /* The visible headline already names the row. Keep the switch's
+           slotted label available to assistive technology without repeating it. */
+        ha-switch::part(label) {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
         }
 
         ha-row-item {

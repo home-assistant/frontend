@@ -31,6 +31,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.entityName", weight: 10 },
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
+  { name: "search_labels.parentDeviceName", weight: 6 },
   { name: "search_labels.areaName", weight: 6 },
   { name: "search_labels.domainName", weight: 4 },
   { name: "id", weight: 2 },
@@ -64,14 +65,20 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const [entityName, deviceName, parentDeviceName, areaName] =
+        computeEntityNameList(
+          stateObj,
+          [
+            { type: "entity" },
+            { type: "device" },
+            { type: "parent_device" },
+            { type: "area" },
+          ],
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        );
 
       const friendlyName = computeStateName(stateObj); // Keep this for search
 
@@ -89,6 +96,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
         search_labels: {
           entityName: entityName || null,
           deviceName: deviceName || null,
+          parentDeviceName: parentDeviceName || null,
           areaName: areaName || null,
           friendlyName,
         },

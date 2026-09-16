@@ -81,6 +81,8 @@ async function copyMapPanel(staticDir) {
     npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
     staticPath("map/")
   );
+  // Controls and popups of the native MapLibre engine
+  copyFileDir(npmPath("maplibre-gl/dist/maplibre-gl.css"), staticPath("map/"));
 }
 
 function copyZXingWasm(staticDir) {

@@ -1,4 +1,4 @@
-import { bench, describe } from "vitest";
+import { describe, test } from "vitest";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyData,
@@ -119,27 +119,27 @@ const run = (data: EnergyData) =>
   });
 
 describe("generateEnergyDevicesDetailGraphData", () => {
-  bench("day of hourly data", () => {
-    run(dayHourly);
+  test("day of hourly data", async ({ bench }) => {
+    await bench("day of hourly data", () => {
+      run(dayHourly);
+    }).run();
   });
 
-  bench("week of hourly data", () => {
-    run(weekHourly);
+  test("week of hourly data", async ({ bench }) => {
+    await bench("week of hourly data", () => {
+      run(weekHourly);
+    }).run();
   });
 
-  bench(
-    "month of 5-minute data with compare",
-    () => {
+  test("month of 5-minute data with compare", async ({ bench }) => {
+    await bench("month of 5-minute data with compare", () => {
       run(monthFiveMinute);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 
-  bench(
-    "month of hourly data, 20 parents x 5 children",
-    () => {
+  test("month of hourly data, 20 parents x 5 children", async ({ bench }) => {
+    await bench("month of hourly data, 20 parents x 5 children", () => {
       run(hierarchyData as EnergyData);
-    },
-    { time: 1000, warmupIterations: 2 }
-  );
+    }).run({ time: 1000, warmupIterations: 2 });
+  });
 });

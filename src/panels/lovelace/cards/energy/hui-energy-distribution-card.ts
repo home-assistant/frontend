@@ -36,8 +36,13 @@ import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
+import { round } from "../../../../common/number/round";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
+
+// Flows are differences of sums; anything that rounds to 0 Wh is noise
+const hasFlow = (value: number | null): value is number =>
+  round(value ?? 0, 3) > 0;
 
 const periodIncludesNow = (data: EnergyData): boolean =>
   !data.end || data.end.getTime() >= Date.now();
@@ -843,8 +848,8 @@ class HuiEnergyDistrubutionCard
                       ? svg`<path
                           id="battery-grid"
                           class=${classMap({
-                            "battery-from-grid": Boolean(batteryFromGrid),
-                            "battery-to-grid": Boolean(batteryToGrid),
+                            "battery-from-grid": hasFlow(batteryFromGrid),
+                            "battery-to-grid": hasFlow(batteryToGrid),
                           })}
                           d="M45,100 v-15 c0,-35 -10,-30 -30,-30 h-20"
                           vector-effect="non-scaling-stroke"
@@ -875,14 +880,14 @@ class HuiEnergyDistrubutionCard
                   : nothing
               }
               ${
-                solarToGrid && this._animate
+                hasFlow(solarToGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="return"
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (solarToGrid / totalLines) * 6}s"
+                      dur="${6 - (solarToGrid / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -892,7 +897,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                solarConsumption && this._animate
+                hasFlow(solarConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="solar"
@@ -909,7 +914,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                gridConsumption && this._animate
+                hasFlow(gridConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="grid"
@@ -926,7 +931,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                solarToBattery && this._animate
+                hasFlow(solarToBattery) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -943,7 +948,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryConsumption && this._animate
+                hasFlow(batteryConsumption) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -960,7 +965,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryFromGrid && this._animate
+                hasFlow(batteryFromGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -978,7 +983,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                batteryToGrid && this._animate
+                hasFlow(batteryToGrid) && this._animate
                   ? svg`<circle
                     r="1"
                     class="battery-to-grid"

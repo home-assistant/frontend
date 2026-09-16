@@ -8,6 +8,15 @@ import {
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import type {
+  NumericStateCondition as CoreNumericStateCondition,
+  PlatformCondition as CorePlatformCondition,
+  StateCondition as CoreStateCondition,
+  SunCondition,
+  TemplateCondition,
+  ZoneCondition,
+} from "../../../data/automation";
+import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
@@ -99,6 +108,46 @@ export interface NotCondition extends BaseCondition {
   conditions?: Condition[];
 }
 
+/**
+ * Dashboard visibility: client-only lovelace types (`screen`, `user`,
+ * `view_columns`, `location`, `time`) plus core automation conditions.
+ * Lovelace `state`/`numeric_state` (`entity`) and core (`entity_id`) both
+ * exist; existing dashboards keep the old shape until edited.
+ * See `common/condition/translate.ts`.
+ */
+export type VisibilityCondition =
+  | ScreenCondition
+  | UserCondition
+  | ViewColumnsCondition
+  | LocationCondition
+  | TimeCondition
+  | StateCondition
+  | NumericStateCondition
+  | LegacyCondition
+  | CoreVisibilityCondition
+  | VisibilityLogicalCondition;
+
+/**
+ * Core conditions used for dashboard visibility. Omits client `time` and
+ * `trigger`. `PlatformCondition` also covers core `state` / `numeric_state`.
+ */
+export type CoreVisibilityCondition =
+  | CoreStateCondition
+  | CoreNumericStateCondition
+  | SunCondition
+  | ZoneCondition
+  | TemplateCondition
+  | DeviceCondition
+  | CorePlatformCondition;
+
+/**
+ * Mixed `and` / `or` / `not`. `conditions` may be one item or a list.
+ */
+export interface VisibilityLogicalCondition extends BaseCondition {
+  condition: "and" | "or" | "not";
+  conditions?: VisibilityCondition | VisibilityCondition[];
+}
+
 function getValueFromEntityId(
   hass: HomeAssistant,
   value: string
@@ -114,7 +163,13 @@ function checkStateCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  const entityId = condition.entity || context.entity_id;
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const attribute = "attribute" in condition ? condition.attribute : undefined;
   let state: string;
@@ -157,7 +212,13 @@ function checkStateNumericCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  const entityId = condition.entity || context.entity_id;
+  // Prefer core `entity_id` over lovelace `entity` / the host entity.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const state = condition.attribute
     ? stateObj?.attributes[condition.attribute]
@@ -415,9 +476,10 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
  * @returns true if conditions are validated
  */
 export function validateConditionalConfig(
-  conditions: (Condition | LegacyCondition)[]
+  conditions: VisibilityCondition[]
 ): boolean {
-  return conditions.every((c) => {
+  return conditions.every((visibilityCondition) => {
+    const c = visibilityCondition as Condition | LegacyCondition;
     if ("condition" in c) {
       switch (c.condition) {
         case "view_columns":
@@ -432,6 +494,8 @@ export function validateConditionalConfig(
           return validateLocationCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
+        case "state":
+          return validateStateCondition(c);
         case "and":
           return validateAndCondition(c);
         case "not":
@@ -439,7 +503,8 @@ export function validateConditionalConfig(
         case "or":
           return validateOrCondition(c);
         default:
-          return validateStateCondition(c);
+          // template / sun / zone / device / integrations: core validates these.
+          return true;
       }
     }
     return validateStateCondition(c);
@@ -452,26 +517,29 @@ export function validateConditionalConfig(
  * @param entityId base the condition on that entity
  * @returns a new condition with entity id
  */
-export function addEntityToCondition(
-  condition: Condition,
+export function addEntityToCondition<T extends VisibilityCondition>(
+  condition: T,
   entityId: string
-): Condition {
+): T {
   if ("conditions" in condition && condition.conditions) {
     return {
       ...condition,
-      conditions: condition.conditions.map((c) =>
-        addEntityToCondition(c, entityId)
-      ),
-    };
+      conditions: ensureArray(
+        condition.conditions as VisibilityCondition | VisibilityCondition[]
+      ).map((c) => addEntityToCondition(c, entityId)),
+    } as T;
   }
 
+  // Entity-less lovelace state/numeric_state (including `{ entity, state }`)
+  // target the host entity. Don't stamp `entity` onto a core `entity_id` leaf.
+  const type = (condition as { condition?: string }).condition ?? "state";
   if (
-    condition.condition === "state" ||
-    condition.condition === "numeric_state"
+    (type === "state" || type === "numeric_state") &&
+    !("entity_id" in condition)
   ) {
     return {
-      entity: entityId,
       ...condition,
+      entity: (condition as { entity?: string }).entity || entityId,
     };
   }
   return condition;
