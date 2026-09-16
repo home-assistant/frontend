@@ -209,7 +209,7 @@ export class StorageBreakdownChart extends LitElement {
     }
   );
 
-  private _roundWithOneDecimalString(value: number): string {
+  private _roundWithOneDecimalString(value: number): TemplateResult {
     return html`<span dir="ltr">${roundWithOneDecimal(value)} GB</span>`;
   }
 

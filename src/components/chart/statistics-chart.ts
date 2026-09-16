@@ -565,7 +565,7 @@ export class StatisticsChart extends LitElement {
       maximumFractionDigits: this._yAxisFractionDigits,
     });
 
-  private _formatYAxisNameLTR = (value: number) => "\u202A" + value + "\u202C";
+  private _formatYAxisNameLTR = (value: string) => "\u202A" + value + "\u202C";
 
   static styles = css`
     :host {
