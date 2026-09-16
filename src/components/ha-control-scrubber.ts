@@ -152,6 +152,7 @@ export class HaControlScrubber extends LitElement {
         if (this.disabled) return;
         this.pressed = false;
         this.value = savedValue;
+        fireEvent(this, "slider-moved", { value: undefined });
       });
       this._mc.on("panmove", (e) => {
         if (this.disabled) return;

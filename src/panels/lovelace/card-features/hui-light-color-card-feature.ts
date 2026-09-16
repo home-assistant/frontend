@@ -18,7 +18,11 @@ import "../../../components/ha-control-scrubber";
 import "../../../components/ha-control-slider";
 import { apiContext, internationalizationContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import { lightSupportsColor, type LightEntity } from "../../../data/light";
+import {
+  lightIsInColorMode,
+  lightSupportsColor,
+  type LightEntity,
+} from "../../../data/light";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
@@ -234,8 +238,9 @@ class HuiLightColorCardFeature
 
   private _hueChanged = (ev: CustomEvent) => {
     ev.stopPropagation();
-    const saturation = this._stateObj!.attributes.hs_color?.[1] ?? 100;
-    this._setColor([ev.detail.value, saturation]);
+    const current = this._stateObj!.attributes.hs_color?.[1];
+    const visible = current && lightIsInColorMode(this._stateObj!);
+    this._setColor([ev.detail.value, visible ? current : 100]);
   };
 
   private _saturationChanged = (ev: CustomEvent) => {
