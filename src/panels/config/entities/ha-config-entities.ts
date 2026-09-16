@@ -69,7 +69,6 @@ import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";

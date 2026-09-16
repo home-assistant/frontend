@@ -53,7 +53,6 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
