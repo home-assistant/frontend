@@ -11,6 +11,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
@@ -85,12 +86,26 @@ class MoreInfoLight extends LitElement {
 
   private _setMainControl(ev: any) {
     ev.stopPropagation();
-    this._mainControl = ev.currentTarget.control;
+    this._changeMainControl(ev.currentTarget.control);
   }
 
   private _resetMainControl(ev: any) {
     ev.stopPropagation();
-    this._mainControl = "brightness";
+    this._changeMainControl("brightness");
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // A container that outlives this control (e.g. more-info-content when the
+    // dialog moves between entities) resyncs with the default control.
+    fireEvent(this, "light-main-control-changed", {
+      control: this._mainControl,
+    });
+  }
+
+  private _changeMainControl(control: MainControl) {
+    this._mainControl = control;
+    fireEvent(this, "light-main-control-changed", { control });
   }
 
   private get _stateOverride() {
@@ -398,5 +413,15 @@ class MoreInfoLight extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "more-info-light": MoreInfoLight;
+  }
+
+  interface HASSDomEvents {
+    "light-main-control-changed": { control: MainControl };
+  }
+
+  interface HTMLElementEventMap {
+    "light-main-control-changed": HASSDomEvent<
+      HASSDomEvents["light-main-control-changed"]
+    >;
   }
 }
