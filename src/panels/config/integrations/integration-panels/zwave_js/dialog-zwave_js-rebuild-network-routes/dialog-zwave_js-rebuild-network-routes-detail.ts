@@ -8,14 +8,14 @@ import { computeAreaName } from "../../../../../../common/entity/compute_area_na
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../../../../common/entity/context/get_device_context";
 import { caseInsensitiveStringCompare } from "../../../../../../common/string/compare";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-domain-icon";
-import "../../../../../../components/animation/ha-fade-in";
-import "../../../../../../components/ha-md-list";
-import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-spinner";
+import "../../../../../../components/item/ha-list-item-base";
+import "../../../../../../components/list/ha-list-base";
 import {
   configEntriesContext,
   devicesContext,
@@ -115,13 +115,13 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
                   )}
                 </p>`
               : this._zwaveDevices
-                ? html`<ha-md-list>
+                ? html`<ha-list-base>
                     ${this._filteredDevices(
                       this._progress,
                       this._zwaveDevices
                     ).map(
                       (device) => html`
-                        <ha-md-list-item>
+                        <ha-list-item-base>
                           <ha-domain-icon
                             slot="start"
                             .domain=${device.domain}
@@ -129,10 +129,10 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
                           ></ha-domain-icon>
                           <span slot="headline">${device.name}</span>
                           <span slot="supporting-text">${device.areaName}</span>
-                        </ha-md-list-item>
+                        </ha-list-item-base>
                       `
                     )}
-                  </ha-md-list>`
+                  </ha-list-base>`
                 : nothing
         }
       </ha-dialog>
@@ -208,16 +208,14 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-md-list {
-          gap: var(--ha-space-2);
+        ha-list-base {
+          --ha-list-gap: var(--ha-space-2);
           min-height: 300px;
         }
-        ha-md-list-item {
-          --md-list-item-two-line-container-height: 0;
-          --md-list-item-top-space: var(--ha-space-1);
-          --md-list-item-bottom-space: var(--ha-space-1);
-          --md-list-item-leading-space: var(--ha-space-2);
-          --md-list-item-trailing-space: var(--ha-space-2);
+        ha-list-item-base {
+          --ha-row-item-min-height: 0;
+          --ha-row-item-padding-block: var(--ha-space-1);
+          --ha-row-item-padding-inline: var(--ha-space-2);
           border: var(--ha-border-width-sm) solid
             var(--ha-color-border-neutral-normal);
           border-radius: var(--ha-border-radius-lg);

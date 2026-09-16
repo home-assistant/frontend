@@ -17,8 +17,8 @@ import {
 import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import "../../../components/voice-assistant-brand-icon";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
@@ -190,7 +190,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
     const exposedToAssist = this.exposed.conversation;
 
     return html`
-      <ha-md-list-item>
+      <ha-row-item>
         <h3 slot="headline">
           ${this.hass.localize("ui.dialogs.voice-settings.expose_header")}
         </h3>
@@ -200,7 +200,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           .assistants=${uiAssistants}
           .checked=${anyExposed}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
       ${
         anyExposed
           ? showAssistants.map((key) => {
@@ -224,7 +224,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 this._googleEntity?.might_2fa;
 
               return html`
-                <ha-md-list-item>
+                <ha-row-item>
                   <voice-assistant-brand-icon
                     slot="start"
                     .voiceAssistantId=${key}
@@ -274,7 +274,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                     .disabled=${manualConfig || (!exposed && !supported)}
                     .checked=${exposed}
                   ></ha-switch>
-                </ha-md-list-item>
+                </ha-row-item>
               `;
             })
           : nothing
@@ -321,7 +321,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               )}
             </ha-alert>`
           : html`
-              <ha-md-list-item>
+              <ha-row-item>
                 <span slot="headline">
                   ${
                     this.hass.states[this.entityId]
@@ -339,7 +339,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                   .checked=${(this._aliases ?? this.entry.aliases).includes(null)}
                   @change=${this._toggleEntityNameAlias}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-row-item>
               <ha-aliases-editor
                 .aliases=${(this._aliases ?? this.entry.aliases).filter(
                   (a): a is string => a !== null
@@ -445,10 +445,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
           margin: 32px;
           margin-top: 0;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         img {
           height: 32px;

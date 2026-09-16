@@ -4,8 +4,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  computeEntityNameList,
+  computeEntitySearchLabels,
+} from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
@@ -65,22 +67,14 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, parentDeviceName, areaName] =
-        computeEntityNameList(
-          stateObj,
-          [
-            { type: "entity" },
-            { type: "device" },
-            { type: "parent_device" },
-            { type: "area" },
-          ],
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        );
-
-      const friendlyName = computeStateName(stateObj); // Keep this for search
+      const [areaName] = computeEntityNameList(
+        stateObj,
+        [{ type: "area" }],
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
 
       return {
         id: statisticId,
@@ -93,13 +87,13 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
         ),
         secondary: areaName,
         stateObj,
-        search_labels: {
-          entityName: entityName || null,
-          deviceName: deviceName || null,
-          parentDeviceName: parentDeviceName || null,
-          areaName: areaName || null,
-          friendlyName,
-        },
+        search_labels: computeEntitySearchLabels(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        ),
       };
     }
 

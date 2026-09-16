@@ -44,6 +44,12 @@ import {
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
+import {
+  cleanupRemovedGeneratedTriggerReferences,
+  getExplicitTriggerIds,
+  isGeneratedTriggerId,
+  stripGeneratedTriggerIds,
+} from "./trigger/automation-trigger-id";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -407,19 +413,29 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
       }
     });
 
+    let appendedConfig = config;
     if ("triggers" in config) {
+      const pastedTriggers = ensureArray(config.triggers);
+      // Strip generated trigger IDs and remove matching references from pasted
+      // conditions/actions so they do not dangle against the stripped triggers.
+      const strippedIds = new Set(
+        getExplicitTriggerIds(pastedTriggers).filter(isGeneratedTriggerId)
+      );
+      appendedConfig = strippedIds.size
+        ? cleanupRemovedGeneratedTriggerReferences(config, strippedIds)
+        : config;
       workingCopy.triggers = ensureArray(workingCopy.triggers || []).concat(
-        ensureArray(config.triggers)
+        pastedTriggers.map((t) => stripGeneratedTriggerIds(t))
       );
     }
-    if ("conditions" in config) {
+    if ("conditions" in appendedConfig) {
       workingCopy.conditions = ensureArray(workingCopy.conditions || []).concat(
-        ensureArray(config.conditions)
+        ensureArray(appendedConfig.conditions)
       );
     }
-    if ("actions" in config) {
+    if ("actions" in appendedConfig) {
       workingCopy.actions = ensureArray(workingCopy.actions || []).concat(
-        ensureArray(config.actions)
+        ensureArray(appendedConfig.actions)
       ) as Action[];
     }
 

@@ -3,8 +3,8 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { ZWaveJSControllerStatisticsUpdatedMessage } from "../../../../../data/zwave_js";
 import { subscribeZwaveControllerStatistics } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-subpage";
@@ -60,7 +60,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
       >
         <div class="container">
           <ha-card>
-            <ha-md-list>
+            <ha-list-base>
               ${this._renderStat("messages_tx")}
               ${this._renderStat("messages_rx")}
               ${this._renderStat("messages_dropped_tx")}
@@ -69,7 +69,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
               ${this._renderStat("timeout_ack")}
               ${this._renderStat("timeout_response")}
               ${this._renderStat("timeout_callback")}
-            </ha-md-list>
+            </ha-list-base>
           </ha-card>
         </div>
       </hass-subpage>
@@ -78,7 +78,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
 
   private _renderStat(key: string) {
     return html`
-      <ha-md-list-item>
+      <ha-list-item-base>
         <span slot="headline">
           ${this.hass.localize(
             `ui.panel.config.zwave_js.dashboard.statistics.${key}.label`
@@ -90,7 +90,7 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
           )}
         </span>
         <span slot="end">${this._statistics?.[key] ?? 0}</span>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 
@@ -102,15 +102,6 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
           margin: auto;
           margin-top: var(--ha-space-4);
           max-width: 600px;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
 
         span[slot="end"] {
