@@ -19,7 +19,6 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
 import "../../ha-adaptive-dialog";
-import "../../ha-dialog-header";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
 import "../../ha-svg-icon";
