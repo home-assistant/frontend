@@ -301,20 +301,13 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
     hasCustomFavoriteOptionValues(
       lightBrightnessFavoritesSpec.getStoredFavorites(entry)
     ),
-  getResetOptions: (stateObj) => {
-    const lightStateObj = stateObj as LightEntity;
-    const options: Partial<Record<FavoriteOption, undefined>> = {};
-
-    if (lightSupportsFavoriteColors(lightStateObj)) {
-      options.favorite_colors = undefined;
-    }
-
-    if (lightBrightnessFavoritesSpec.supports(lightStateObj)) {
-      options.favorite_brightness = undefined;
-    }
-
-    return options;
-  },
+  // Both keys are always cleared regardless of current capability: a stale
+  // stored value can exist for an option the light no longer supports (e.g.
+  // after a hardware/firmware change), and Reset should clear it too.
+  getResetOptions: (_stateObj) => ({
+    favorite_colors: undefined,
+    favorite_brightness: undefined,
+  }),
   getLabels: (hass) => getFavoritesDialogLabels(hass, "light"),
   copy: async ({ entry, hass, host, stateObj }) => {
     const lightStateObj = stateObj as LightEntity;
