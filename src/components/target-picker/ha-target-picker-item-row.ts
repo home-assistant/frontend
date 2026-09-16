@@ -26,12 +26,11 @@ import {
   computeDeviceNameDisplay,
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import {
   getDeviceArea,
   getDeviceAreaId,
 } from "../../common/entity/context/get_device_context";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
@@ -672,40 +671,12 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     if (type === "entity") {
       const stateObject: HassEntity | undefined = this.hass.states[item];
-      const entityName = stateObject
-        ? computeEntityName(stateObject, this.hass.entities, this.hass.devices)
-        : item;
-      const { area, device, parentDevice } = stateObject
-        ? getEntityContext(
-            stateObject,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
-        : { area: undefined, device: undefined, parentDevice: undefined };
-      const deviceName = device ? computeDeviceName(device) : undefined;
-      const parentDeviceName = parentDevice
-        ? computeDeviceName(parentDevice)
-        : undefined;
-      const areaName = area ? computeAreaName(area) : undefined;
-      const context = [
-        areaName,
-        parentDeviceName,
-        entityName ? deviceName : undefined,
-      ]
-        .filter(Boolean)
-        .join(
-          computeRTL(
-            this.hass.language,
-            this.hass.translationMetadata.translations
-          )
-            ? " ◂ "
-            : " ▸ "
-        );
+      const { primary, secondary } = stateObject
+        ? computeEntityPickerDisplay(this.hass, stateObject)
+        : { primary: item, secondary: undefined };
       return {
-        name: entityName || deviceName || item,
-        context,
+        name: primary,
+        context: secondary,
         stateObject,
         notFound: !stateObject && item !== "all" && item !== "none",
       };

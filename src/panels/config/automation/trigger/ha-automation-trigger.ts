@@ -6,6 +6,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
@@ -28,6 +29,7 @@ import {
 } from "../show-add-automation-element-dialog";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
+import { stripGeneratedTriggerIds } from "./automation-trigger-id";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
@@ -166,7 +168,9 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger!));
+      triggers = this.triggers.concat(
+        stripGeneratedTriggerIds(deepClone(this._clipboard!.trigger!))
+      );
     } else if (isDynamic(value)) {
       triggers = this.triggers.concat({
         trigger: getValueFromDynamic(value),
@@ -255,6 +259,47 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       )!;
     triggerRows.forEach((row) => {
       row.expand();
+    });
+  }
+
+  protected override duplicateItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(
+        index + 1,
+        0,
+        stripGeneratedTriggerIds(deepClone(this.items[index]))
+      ),
+    });
+  }
+
+  protected override pasteItem(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.item) return;
+
+    const index = (ev.target as any).index;
+    const clonedItem = stripGeneratedTriggerIds(deepClone(ev.detail.item));
+
+    this.setHighlightedItems(ensureArray(clonedItem));
+
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, clonedItem),
+    });
+  }
+
+  protected override insertAfter(ev: CustomEvent) {
+    ev.stopPropagation();
+    const index = (ev.target as any).index;
+    const inserted = ensureArray(ev.detail.value).map((item) =>
+      stripGeneratedTriggerIds(deepClone(item))
+    );
+    this.setHighlightedItems(inserted);
+    fireEvent(this, "value-changed", {
+      // @ts-expect-error Requires library bump to ES2023
+      value: this.items.toSpliced(index + 1, 0, ...inserted),
     });
   }
 

@@ -149,6 +149,8 @@ const formatNumericLimitValue = (
 export interface DescribeOptions {
   // Skip the user defined alias and describe the underlying config.
   ignoreAlias?: boolean;
+  // Rows with trigger-reference chips render the IDs separately.
+  hideTriggerIds?: boolean;
 }
 
 export const describeTrigger = (
@@ -921,6 +923,12 @@ const tryDescribeCondition = (
 
   if (condition.alias && !options?.ignoreAlias) {
     return condition.alias;
+  }
+
+  if (condition.condition === "trigger" && options?.hideTriggerIds) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.trigger.description.summary`
+    );
   }
 
   if (!condition.condition) {

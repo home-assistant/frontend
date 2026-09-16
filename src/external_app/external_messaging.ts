@@ -184,6 +184,20 @@ interface EMOutgoingMessageAddEntityTo extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageMoreInfoOpened extends EMMessage {
+  type: "more_info/opened";
+  payload: {
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
+  type: "more_info/closed";
+  payload: {
+    entity_id: string;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -216,6 +230,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageMoreInfoOpened
+  | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
