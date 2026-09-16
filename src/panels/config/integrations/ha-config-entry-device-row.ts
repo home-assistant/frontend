@@ -127,8 +127,10 @@ class HaConfigEntryDeviceRow extends LitElement {
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
         ${
-          entitySupportingText
-            ? html`<span>${html`&nbsp;`} ${entitySupportingText}</span>`
+          entitySupportingText.length
+            ? html`<span
+                >${supportingText.length ? html`&nbsp;` : nothing}${entitySupportingText}</span
+              >`
             : nothing
         }</span
       >
