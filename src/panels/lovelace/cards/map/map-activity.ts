@@ -2,6 +2,10 @@ import type {
   EntityHistoryState,
   HistoryStates,
 } from "../../../../data/history";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
+
+// A person or tracker without a location; skipped so a dropout is not an event
+const NO_LOCATION_STATES: string[] = [UNAVAILABLE, UNKNOWN];
 
 /** One line of the overview's activity timeline */
 export interface ActivityEntry {
@@ -16,7 +20,7 @@ export const ACTIVITY_MAX_ENTRIES = 20;
 
 /**
  * A person's state changes inside the window, newest first. History starts
- * with the state at the window's start, which is not an event; unavailable
+ * with the state at the window's start, which is not an event; no-location
  * samples are skipped so a dropout does not count as a change.
  */
 export const personActivity = (
@@ -26,7 +30,7 @@ export const personActivity = (
   const entries: ActivityEntry[] = [];
   let previous: string | undefined;
   for (const entry of history ?? []) {
-    if (entry.s === "unavailable") {
+    if (NO_LOCATION_STATES.includes(entry.s)) {
       continue;
     }
     const changed = entry.s !== previous;
@@ -53,17 +57,13 @@ export const zoneActivity = (
   for (const personId of personIds) {
     let wasInZone: boolean | undefined;
     for (const entry of history?.[personId] ?? []) {
-      if (entry.s === "unavailable") {
+      if (NO_LOCATION_STATES.includes(entry.s)) {
         continue;
       }
       const inZone = entry.s === zoneState;
-      // Only changes inside the window are events; the first sample is the
-      // state at its start
-      if (
-        wasInZone !== undefined &&
-        inZone !== wasInZone &&
-        entry.lu * 1000 >= since
-      ) {
+      // The first sample is an event only if it is an in-window arrival.
+      const isEvent = wasInZone === undefined ? inZone : inZone !== wasInZone;
+      if (isEvent && entry.lu * 1000 >= since) {
         entries.push({
           state: entry.s,
           personId,

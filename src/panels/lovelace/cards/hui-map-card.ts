@@ -33,6 +33,7 @@ import type {
   MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { MapFitPadding, MapLatLng } from "../../../common/map/map-engine";
+import { circleBoundsPoints } from "../../../common/map/map-engine";
 import {
   entityMapColor,
   zoneColor,
@@ -113,9 +114,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _filteredMapEntities: HaMapEntity[] = [];
 
-  // The overview lists people even when their location is currently unknown,
-  // so it holds the map entities plus those location-less people, who have no
-  // map marker of their own.
+  // The overview lists people the map snapshot missed (e.g. no location yet),
+  // so it holds the map entities plus those, who may have no marker of their
+  // own until they are located.
   private _overviewEntities: HaMapEntity[] = [];
 
   @state() private _error?: { code: string; message: string };
@@ -426,13 +427,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     // Filter entities by conditions
     if (this._config?.conditions && this._mapEntities) {
-      const conditions = this._config.conditions;
-      this._filteredMapEntities = this._mapEntities.filter((entity) => {
-        const conditionWithEntity = conditions.map((condition) =>
-          addEntityToCondition(condition, entity.entity_id)
-        );
-        return checkConditionsMet(conditionWithEntity, this.hass!, {});
-      });
+      this._filteredMapEntities = this._mapEntities.filter((entity) =>
+        this._meetsConditions(entity.entity_id)
+      );
     } else {
       this._filteredMapEntities = this._mapEntities;
     }
@@ -442,25 +439,39 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._overviewLoaded = true;
         void import("./map/hui-map-overview");
       }
+      // Keep people the snapshot missed so a marker appears once they locate.
+      const entities = this._config?.show_all
+        ? this._withMissingPeople(this._filteredMapEntities)
+        : this._filteredMapEntities;
       this._filteredMapEntities = this._decorateOverviewEntities(
-        this._filteredMapEntities,
+        entities,
         this._overviewSelected,
         this._overviewSelected
           ? this.hass.states[this._overviewSelected]
           : undefined,
         this.preview
       );
-      // show_all keeps only located entities for the map; the overview also
-      // lists people whose location is currently unknown.
-      this._overviewEntities = this._config?.show_all
-        ? this._withLocationlessPeople(this._filteredMapEntities)
-        : this._filteredMapEntities;
+      this._overviewEntities = this._filteredMapEntities;
     }
   }
 
-  // People without a current location have no map marker, so show_all leaves
-  // them out of the map entities. Add them back for the overview alone.
-  private _withLocationlessPeople(entities: HaMapEntity[]): HaMapEntity[] {
+  private _meetsConditions(entityId: string): boolean {
+    const conditions = this._config?.conditions;
+    if (!conditions) {
+      return true;
+    }
+    return checkConditionsMet(
+      conditions.map((condition) => addEntityToCondition(condition, entityId)),
+      this.hass!,
+      {}
+    );
+  }
+
+  // show_all snapshots only located entities, so a person without a location
+  // then is missing. Add every eligible missing person regardless of their
+  // current location: the map skips them until they have coordinates, and this
+  // keeps them once they do instead of dropping them from the frozen snapshot.
+  private _withMissingPeople(entities: HaMapEntity[]): HaMapEntity[] {
     const hass = this.hass;
     if (!hass) {
       return entities;
@@ -473,7 +484,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         computeStateDomain(stateObj) === "person" &&
         !present.has(entityId) &&
         !hass.entities?.[entityId]?.hidden &&
-        !getEntityLocation(stateObj, hass.states)
+        this._meetsConditions(entityId)
       ) {
         extra.push({ entity_id: entityId, color: this._getColor(entityId) });
       }
@@ -630,7 +641,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _handleOverviewResize(
     ev: HASSDomEvent<{ width: number; height: number }>
   ) {
-    this._overviewSize = ev.detail;
+    const { width, height } = ev.detail;
+    // A collapsed overview keeps its width; zero both so it reserves no space.
+    this._overviewSize =
+      width && height ? { width, height } : { width: 0, height: 0 };
+    // A focused fit pauses auto-fit, so refit to apply the new padding.
+    if (this._overviewSelected) {
+      this._focusEntity(this._overviewSelected);
+    }
   }
 
   private _handleOverviewSelect(ev: HASSDomEvent<{ entityId?: string }>) {
@@ -647,15 +665,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (computeStateDomain(stateObj) === "zone") {
       const { latitude, longitude, radius } = stateObj.attributes;
-      // Convert the zone radius (meters) to a degree offset for a bounding box
-      const latOffset = (radius ?? 100) / 111320;
-      const lngOffset =
-        latOffset / Math.max(Math.cos((latitude * Math.PI) / 180), 0.01);
       this._map?.fitBounds(
-        [
-          [latitude - latOffset, longitude - lngOffset],
-          [latitude + latOffset, longitude + lngOffset],
-        ],
+        circleBoundsPoints([latitude, longitude], radius ?? 100),
         {
           pad: 0.2,
           zoom: FOCUS_ZONE_MAX_ZOOM,
@@ -665,12 +676,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
     const location = getEntityLocation(stateObj, this.hass.states);
-    if (location) {
-      this._map?.fitBounds([[location.latitude, location.longitude]], {
+    if (!location) {
+      return;
+    }
+    const center: MapLatLng = [location.latitude, location.longitude];
+    const accuracy = location.gpsAccuracy ?? 0;
+    // Fit the accuracy circle so it is not mostly off-screen, capping the zoom
+    if (accuracy > IMPRECISE_GPS_ACCURACY) {
+      this._map?.fitBounds(circleBoundsPoints(center, accuracy), {
+        pad: 0.2,
         zoom: FOCUS_PERSON_ZOOM,
         padding: this._overviewPadding(),
       });
+      return;
     }
+    this._map?.fitBounds([center], {
+      zoom: FOCUS_PERSON_ZOOM,
+      padding: this._overviewPadding(),
+    });
   }
 
   // The part of the map the overview covers, so fitted markers land next to
@@ -678,6 +701,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   // otherwise (see the #overview styles). Memoized so the map only refits
   // when the drawer actually changes size.
   private _overviewPadding(): MapFitPadding | undefined {
+    // The overview, and its padding, only exist in panel layout.
+    if (this.layout !== PANEL_VIEW_LAYOUT) {
+      return undefined;
+    }
     return this._paddingFor(
       this._overviewSize.width,
       this._overviewSize.height,

@@ -29,13 +29,15 @@ describe("personActivity", () => {
     ]);
   });
 
-  it("ignores repeated states and unavailable dropouts", () => {
+  it("ignores repeated states and unavailable or unknown dropouts", () => {
     const entries = personActivity(
       [
         sample("home", 900),
         sample("home", 1100),
         sample("unavailable", 1150),
         sample("home", 1160),
+        sample("unknown", 1170),
+        sample("home", 1180),
         sample("not_home", 1200),
       ],
       SINCE
@@ -92,13 +94,29 @@ describe("zoneActivity", () => {
     expect(entries).toEqual([]);
   });
 
-  it("bridges an unavailable dropout without an event", () => {
+  it("counts an in-window first sample as an arrival", () => {
+    // A newly created person has no state at the window's start, so their
+    // first sample inside the window is a real arrival
+    const entries = zoneActivity(
+      { "person.anne": [sample("Work", 1100)] },
+      ["person.anne"],
+      "Work",
+      SINCE
+    );
+    expect(entries.map((e) => [e.arrived, e.when.getTime() / 1000])).toEqual([
+      [true, 1100],
+    ]);
+  });
+
+  it("bridges an unavailable or unknown dropout without an event", () => {
     const entries = zoneActivity(
       {
         "person.anne": [
           sample("Work", 900),
           sample("unavailable", 1100),
-          sample("Work", 1200),
+          sample("Work", 1150),
+          sample("unknown", 1200),
+          sample("Work", 1250),
         ],
       },
       ["person.anne"],

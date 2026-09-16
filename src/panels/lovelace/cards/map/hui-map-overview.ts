@@ -178,9 +178,16 @@ export class HuiMapOverview extends LitElement {
     if (this.selected) {
       this._detailName?.focus();
     } else if (previous) {
-      [...this._listItems]
-        .find((item) => item.dataset.entityId === previous)
-        ?.focus();
+      const item = [...this._listItems].find(
+        (listItem) => listItem.dataset.entityId === previous
+      );
+      // The row may be on another tab; fall back to the selected tab button.
+      (
+        item ??
+        [...this._tabButtons].find(
+          (button) => button.getAttribute("aria-selected") === "true"
+        )
+      )?.focus();
     }
   }
 
@@ -195,6 +202,8 @@ export class HuiMapOverview extends LitElement {
     this._observedPeek = peek;
     if (!peek) {
       this._sheetMinHeight = undefined;
+      // The phone sheet is gone; clear the size so the host drops its inset.
+      fireEvent(this, "map-overview-resize", { width: 0, height: 0 });
       return;
     }
     this._peekObserver = new ResizeObserver(() => {
@@ -529,17 +538,13 @@ export class HuiMapOverview extends LitElement {
   ) {
     const itemsPerTab: Partial<Record<OverviewTab, HassEntity[]>> = {
       people,
-      // No devices tab without devices that have a location
-      ...(devices.length ? { devices } : {}),
+      // A devices tab only for devices with a location, or while it is selected
+      ...(devices.length || this._tab === "devices" ? { devices } : {}),
       zones,
     };
     const tabs = Object.keys(itemsPerTab) as OverviewTab[];
-    const wanted = tabs.includes(this._tab) ? this._tab : "people";
-    // An empty tab is disabled, so the selection falls back to the first tab
-    // that has anything to show
-    const tab = itemsPerTab[wanted]!.length
-      ? wanted
-      : (tabs.find((tabId) => itemsPerTab[tabId]!.length) ?? wanted);
+    // The selected tab stays selected even when empty; never switch away from it
+    const tab = tabs.includes(this._tab) ? this._tab : "people";
     const items = itemsPerTab[tab]!;
 
     return html`
@@ -563,7 +568,7 @@ export class HuiMapOverview extends LitElement {
                 aria-selected=${tab === tabId}
                 tabindex=${tab === tabId ? 0 : -1}
                 data-tab=${tabId}
-                .disabled=${!itemsPerTab[tabId]!.length}
+                .disabled=${!itemsPerTab[tabId]!.length && tabId !== tab}
                 @click=${this._handleTabClick}
               >
                 ${this._i18n.localize(
@@ -580,13 +585,21 @@ export class HuiMapOverview extends LitElement {
         role="tabpanel"
         aria-labelledby="tab-${tab}"
       >
-        <ha-md-list>
-          ${items.map((stateObj) =>
-            tab === "zones"
-              ? this._renderZone(stateObj)
-              : this._renderEntity(stateObj)
-          )}
-        </ha-md-list>
+        ${
+          items.length
+            ? html`<ha-md-list>
+                ${items.map((stateObj) =>
+                  tab === "zones"
+                    ? this._renderZone(stateObj)
+                    : this._renderEntity(stateObj)
+                )}
+              </ha-md-list>`
+            : html`<div class="empty">
+                ${this._i18n.localize(
+                  `ui.panel.lovelace.cards.map.overview.no_${tab}`
+                )}
+              </div>`
+        }
       </div>
     `;
   }
@@ -819,6 +832,16 @@ export class HuiMapOverview extends LitElement {
       min-height: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    .empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--ha-space-6) var(--ha-space-3);
+      color: var(--secondary-text-color);
+      text-align: center;
     }
 
     ha-md-list {
