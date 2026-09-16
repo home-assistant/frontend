@@ -213,9 +213,9 @@ export class StorageBreakdownChart extends LitElement {
     return html`<span dir="ltr">${roundWithOneDecimal(value)} GB</span>`;
   }
 
-  private _formatBytes = (bytes: number): string => {
+  private _formatBytes = (bytes: number): TemplateResult => {
     const gb = this._bytesToGB(bytes);
-    return `${this._roundWithOneDecimalString(gb)}`;
+    return this._roundWithOneDecimalString(gb);
   };
 
   private _formatLabel = (id: string): string =>
