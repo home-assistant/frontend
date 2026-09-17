@@ -64,7 +64,12 @@ export const LIGHT_FAVORITE_BRIGHTNESS_MIN = 1;
 export const lightBrightnessToPercent = (
   brightness?: number
 ): number | undefined =>
-  brightness == null ? undefined : Math.round((brightness / 255) * 100);
+  brightness == null
+    ? undefined
+    : Math.max(
+        Math.round((brightness / 255) * 100),
+        LIGHT_FAVORITE_BRIGHTNESS_MIN
+      );
 
 export const getLightCurrentModeRgbColor = (
   entity: LightEntity
