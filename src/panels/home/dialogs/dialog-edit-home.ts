@@ -94,12 +94,14 @@ export class DialogEditHome
       // redundant regeneration in the panel behind the dialog.
       changedProps.get("_state") !== undefined
     ) {
-      this._params.onPreview(buildHomeConfig(this._params.config, this._state));
+      this._params.previewConfig(
+        buildHomeConfig(this._params.config, this._state)
+      );
     }
   }
 
   private _dialogClosed(): void {
-    this._params?.onPreview(undefined);
+    this._params?.previewConfig(undefined);
     this._params = undefined;
     this._state = undefined;
     this._submitting = false;

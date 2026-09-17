@@ -266,7 +266,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
-      onPreview: (config) => {
+      previewConfig: (config) => {
         this._previewConfig = config;
         this._debounceRegenerateStrategy();
       },

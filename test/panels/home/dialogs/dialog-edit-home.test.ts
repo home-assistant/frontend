@@ -19,6 +19,16 @@ describe("buildHomeConfig", () => {
     expect(result.shortcuts).toBeUndefined();
   });
 
+  it("clears previously saved favorite_entities and shortcuts when the draft is emptied", () => {
+    const baseConfig: HomeFrontendSystemData = {
+      favorite_entities: ["light.old"],
+      shortcuts: [{ type: "custom", path: "/lovelace/0" }],
+    };
+    const result = buildHomeConfig(baseConfig, emptyState);
+    expect(result.favorite_entities).toBeUndefined();
+    expect(result.shortcuts).toBeUndefined();
+  });
+
   it("keeps non-empty favorite_entities and shortcuts arrays", () => {
     const state: EditorState = {
       ...emptyState,
