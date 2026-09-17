@@ -231,6 +231,18 @@ interface EMOutgoingMessageMoreInfoClose extends EMMessage {
   };
 }
 
+/**
+ * Sent by the standalone more-info page instead of navigating to another page
+ * (device page, entity editor, related items). The screen shows one entity, so
+ * the app shows the destination in its main frontend and dismisses the screen.
+ */
+interface EMOutgoingMessageMoreInfoNavigate extends EMMessage {
+  type: "more_info/navigate";
+  payload: {
+    path: string;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -267,6 +279,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageMoreInfoOpened
   | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageMoreInfoClose
+  | EMOutgoingMessageMoreInfoNavigate
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
