@@ -39,11 +39,15 @@ export class HatGraphBranch extends LitElement {
   @query("#branches slot") private _slot?: HTMLSlotElement;
 
   // The branch children are Lit rendered by the parent, so their track
-  // attribute can flip (another trace, another run) without a slot change.
+  // attribute can flip (another trace, another run) without a slot change,
+  // and nested nodes can change without the assigned elements changing.
   private _trackObserver = new MutationObserver((mutations) => {
     if (
       this._slot &&
-      mutations.some((m) => (m.target as Element).parentElement === this)
+      mutations.some(
+        (m) =>
+          m.type === "childList" || (m.target as Element).parentElement === this
+      )
     ) {
       this._updateBranches(this._slot);
     }
@@ -54,6 +58,7 @@ export class HatGraphBranch extends LitElement {
     this._trackObserver.observe(this, {
       subtree: true,
       attributes: true,
+      childList: true,
       attributeFilter: ["track", "unfinished"],
     });
   }

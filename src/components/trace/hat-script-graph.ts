@@ -178,15 +178,34 @@ export class HatScriptGraph extends LitElement {
   }
 
   /**
-   * A branch is only finished if its last configured step was reached. A run
-   * that raised part way through leaves the later steps untraced, so the paths
-   * leaving the branch must not be drawn as taken.
+   * A branch is only finished if its last configured step was reached and did
+   * not stop the run. A run that raised part way through leaves the later
+   * steps untraced, so the paths leaving the branch must not be drawn as
+   * taken. An error on the last step still stops the run unless that step
+   * sets `continue_on_error`.
    */
-  private _branchFinished(pathPrefix: string, steps: unknown[]) {
-    return (
-      steps.length === 0 ||
-      `${pathPrefix}${steps.length - 1}` in this.trace.trace
-    );
+  private _branchFinished(pathPrefix: string, steps: Action[]) {
+    if (steps.length === 0) {
+      return true;
+    }
+    const lastPath = `${pathPrefix}${steps.length - 1}`;
+    if (!(lastPath in this.trace.trace)) {
+      return false;
+    }
+    const lastStepError = this.trace.trace[lastPath]?.some((tr) => tr.error);
+    const lastStep = steps[steps.length - 1];
+    if (
+      lastStepError &&
+      !(
+        typeof lastStep === "object" &&
+        lastStep !== null &&
+        "continue_on_error" in lastStep &&
+        lastStep.continue_on_error
+      )
+    ) {
+      return false;
+    }
+    return true;
   }
 
   private _renderChooseNode(
@@ -320,7 +339,7 @@ export class HatScriptGraph extends LitElement {
       if (!trackThen && trc.result?.choice === "then") {
         trackThen = true;
       }
-      if ((!trackElse && trc.result?.choice === "else") || !trc.result) {
+      if (!trackElse && trc.result?.choice === "else") {
         trackElse = true;
       }
       if (trackElse && trackThen) {
@@ -511,6 +530,7 @@ export class HatScriptGraph extends LitElement {
     const trace: any = this.trace.trace[path];
     const repeats = this.trace?.trace[`${path}/repeat/sequence/0`]?.length;
     const sequencePath = `${path}/repeat/sequence/`;
+    const sequenceSteps = ensureArray<Action>(node.repeat.sequence);
     const trackSequence = this._hasTracedSteps(sequencePath);
     return html`
       <hat-graph-branch
@@ -532,8 +552,14 @@ export class HatScriptGraph extends LitElement {
           slot="head"
           nofocus
         ></hat-graph-node>
-        <div class="repeat-sequence" ?track=${trackSequence}>
-          ${ensureArray<Action>(node.repeat.sequence).map((action, i) =>
+        <div
+          class="repeat-sequence"
+          ?track=${trackSequence}
+          ?unfinished=${
+            trackSequence && !this._branchFinished(sequencePath, sequenceSteps)
+          }
+        >
+          ${sequenceSteps.map((action, i) =>
             this._renderActionNode(
               action,
               `${path}/repeat/sequence/${i}`,
