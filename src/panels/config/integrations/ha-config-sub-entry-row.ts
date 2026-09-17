@@ -195,27 +195,27 @@ class HaConfigSubEntryRow extends LitElement {
         this._expanded
           ? html`
               ${groupDevicesByParent(devices).map(
-                  ({ device, isChild, isLastChild }) =>
-                    html`<ha-config-entry-device-row
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .entry=${this.entry}
-                      .device=${device}
-                      .entities=${this.entities}
-                      .isChild=${isChild}
-                      .isLastChild=${isLastChild}
-                    ></ha-config-entry-device-row>`
-                )}
+                ({ device, isChild, isLastChild }) =>
+                  html`<ha-config-entry-device-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .entry=${this.entry}
+                    .device=${device}
+                    .entities=${this.entities}
+                    .isChild=${isChild}
+                    .isLastChild=${isLastChild}
+                  ></ha-config-entry-device-row>`
+              )}
               ${services.map(
-                  (service) =>
-                    html`<ha-config-entry-device-row
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .entry=${this.entry}
-                      .device=${service}
-                      .entities=${this.entities}
-                    ></ha-config-entry-device-row>`
-                )}
+                (service) =>
+                  html`<ha-config-entry-device-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .entry=${this.entry}
+                    .device=${service}
+                    .entities=${this.entities}
+                  ></ha-config-entry-device-row>`
+              )}
             `
           : nothing
       }
