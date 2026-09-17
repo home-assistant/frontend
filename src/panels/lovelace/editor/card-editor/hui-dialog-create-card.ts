@@ -17,7 +17,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { addCard } from "../config-util";
-import { findLovelaceContainer } from "../lovelace-path";
+import { findLovelaceContainer, getCardSectionConfig } from "../lovelace-path";
 import "./hui-card-picker";
 import "./hui-suggestion-picker";
 import type { CreateCardDialogParams } from "./show-create-card-dialog";
@@ -261,8 +261,8 @@ export class HuiCreateDialogCard
     const saveConfig = this._params!.saveConfig;
 
     const sectionConfig =
-      containerPath.length === 2
-        ? findLovelaceContainer(lovelaceConfig, containerPath)
+      containerPath.length !== 1
+        ? getCardSectionConfig(lovelaceConfig, containerPath)
         : undefined;
 
     showEditCardDialog(this, {

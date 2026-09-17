@@ -19,6 +19,30 @@ function mockSection(
 }
 
 describe("computeSectionsBackgroundAlignment", () => {
+  it.each([
+    [true, true],
+    [true, undefined],
+    [undefined, true],
+    [undefined, undefined],
+  ])(
+    "preserves row alignment when a section becomes a stack (%s, %s)",
+    (background, adjacentBackground) => {
+      const first = mockSection({ background, column_span: 2 });
+      const adjacent = mockSection({ background: adjacentBackground });
+      const stack = {
+        hidden: false,
+        config: {
+          type: "stack",
+          column_span: 2,
+          sections: [first.config, { background: true }],
+        },
+      } as unknown as HuiSection;
+      expect(computeSectionsBackgroundAlignment([stack, adjacent], 3)).toEqual(
+        computeSectionsBackgroundAlignment([first, adjacent], 3)
+      );
+    }
+  );
+
   it("returns empty set for single column layout", () => {
     const sections = [mockSection(), mockSection({ background: true })];
     const result = computeSectionsBackgroundAlignment(sections, 1);
