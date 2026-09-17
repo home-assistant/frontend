@@ -761,8 +761,7 @@ export class HatScriptGraph extends LitElement {
   static get styles() {
     return css`
       :host {
-        display: flex;
-        flex-direction: row;
+        display: grid;
         overflow: hidden;
         position: relative;
         --stroke-clr: var(--stroke-color, var(--secondary-text-color));
@@ -783,9 +782,10 @@ export class HatScriptGraph extends LitElement {
         --hat-graph-branch-height: ${BRANCH_HEIGHT}px;
       }
       .graph-scroll {
-        flex: 1;
+        grid-area: 1 / 1;
         overflow: auto;
         min-width: 0;
+        min-height: 0;
       }
       .graph-container {
         display: flex;
@@ -796,9 +796,11 @@ export class HatScriptGraph extends LitElement {
       .actions {
         display: flex;
         flex-direction: column;
-        position: absolute;
-        top: var(--ha-space-2);
-        inset-inline-end: var(--ha-space-3);
+        grid-area: 1 / 1;
+        justify-self: end;
+        align-self: start;
+        margin-top: var(--ha-space-2);
+        margin-inline-end: var(--ha-space-3);
         z-index: 1;
         background-color: color-mix(
           in srgb,
