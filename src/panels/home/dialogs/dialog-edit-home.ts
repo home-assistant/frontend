@@ -1,4 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
+import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -82,7 +83,23 @@ export class DialogEditHome
     return true;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (
+      changedProps.has("_state") &&
+      this._state &&
+      this._params &&
+      // Skip the first _state assignment from showDialog(): it mirrors the
+      // already-rendered saved config, so previewing it would just trigger a
+      // redundant regeneration in the panel behind the dialog.
+      changedProps.get("_state") !== undefined
+    ) {
+      this._params.onPreview(buildHomeConfig(this._params.config, this._state));
+    }
+  }
+
   private _dialogClosed(): void {
+    this._params?.onPreview(undefined);
     this._params = undefined;
     this._state = undefined;
     this._submitting = false;

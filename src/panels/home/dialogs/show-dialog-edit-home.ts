@@ -4,6 +4,7 @@ import type { HomeFrontendSystemData } from "../../../data/frontend";
 export interface EditHomeDialogParams {
   config: HomeFrontendSystemData;
   saveConfig: (config: HomeFrontendSystemData) => Promise<void>;
+  onPreview: (config: HomeFrontendSystemData | undefined) => void;
 }
 
 export const loadEditHomeDialog = () => import("./dialog-edit-home");

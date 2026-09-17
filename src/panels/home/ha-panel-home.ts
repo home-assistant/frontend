@@ -52,6 +52,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _config: FrontendSystemData["home"] = {};
 
+  @state() private _previewConfig?: HomeFrontendSystemData;
+
   @state() private _securityConfig: SecurityFrontendSystemData = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
@@ -264,6 +266,10 @@ class PanelHome extends SubscribeMixin(LitElement) {
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
+      onPreview: (config) => {
+        this._previewConfig = config;
+        this._debounceRegenerateStrategy();
+      },
     });
   };
 
@@ -393,15 +399,16 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private get _strategyConfig(): LovelaceDashboardStrategyConfig {
+    const config = this._previewConfig ?? this._config;
     return {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
-        favorite_entities: this._config.favorite_entities,
+        favorite_entities: config.favorite_entities,
         home_panel: true,
-        hide_welcome_message: this._config.hide_welcome_message,
-        hide_suggested_entities: this._config.hide_suggested_entities,
-        shortcuts: this._config.shortcuts,
+        hide_welcome_message: config.hide_welcome_message,
+        hide_suggested_entities: config.hide_suggested_entities,
+        shortcuts: config.shortcuts,
       },
     };
   }
