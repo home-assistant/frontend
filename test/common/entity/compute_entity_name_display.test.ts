@@ -395,7 +395,7 @@ describe("name context", () => {
     id: "strip",
     name: "Power strip",
     area_id: "kitchen",
-    context_source: "area",
+    next_name_part: "area",
   });
   const stateObj = mockStateObj({ entity_id: "switch.freezer" });
   const chain: EntityNameItem[] = [
@@ -438,8 +438,8 @@ describe("name context", () => {
   it("leaves out the parent device when the child device has its own area", () => {
     const result = joinedNameList(
       registries(
-        { name: "Power", context_source: "device" },
-        { area_id: "garage", context_source: "area" }
+        { name: "Power", next_name_part: "device" },
+        { area_id: "garage", next_name_part: "area" }
       )
     );
 
@@ -449,8 +449,8 @@ describe("name context", () => {
   it("leaves out the device and its parent when the entity has its own area", () => {
     const result = joinedNameList(
       registries(
-        { name: "Power", area_id: "garage", context_source: "area" },
-        { context_source: "parent_device" }
+        { name: "Power", area_id: "garage", next_name_part: "area" },
+        { next_name_part: "parent_device" }
       )
     );
 
@@ -460,8 +460,8 @@ describe("name context", () => {
   it("keeps the device name for an entity without a name of its own", () => {
     const result = joinedNameList(
       registries(
-        { area_id: "garage", context_source: "area" },
-        { context_source: "parent_device" }
+        { area_id: "garage", next_name_part: "area" },
+        { next_name_part: "parent_device" }
       ),
       DEFAULT_ENTITY_NAME
     );
@@ -471,8 +471,8 @@ describe("name context", () => {
 
   it("keeps every configured part in the formatted name", () => {
     const { entities, devices } = registries(
-      { name: "Power", area_id: "garage", context_source: "area" },
-      { context_source: "parent_device" }
+      { name: "Power", area_id: "garage", next_name_part: "area" },
+      { next_name_part: "parent_device" }
     );
 
     expect(
@@ -482,8 +482,8 @@ describe("name context", () => {
 
   it("keeps the owners left out of the name in the search labels", () => {
     const { entities, devices } = registries(
-      { name: "Power", area_id: "garage", context_source: "area" },
-      { context_source: "parent_device" }
+      { name: "Power", area_id: "garage", next_name_part: "area" },
+      { next_name_part: "parent_device" }
     );
 
     expect(
