@@ -216,6 +216,10 @@ interface EMOutgoingMessageMoreInfoOpen extends EMMessage {
   type: "more_info/open";
   payload: {
     entity_id: string;
+    /** What the dialog's header would show, for the app's own header. */
+    title: string;
+    /** The area and device breadcrumb above the title, when there is one. */
+    subtitle?: string;
   };
 }
 
@@ -241,6 +245,51 @@ interface EMOutgoingMessageMoreInfoNavigate extends EMMessage {
   payload: {
     path: string;
   };
+}
+
+/** An icon button in the more-info header, or an item of its overflow menu. */
+export interface MoreInfoHeaderAction {
+  /** Sent back in `more_info/action` when the user picks it. */
+  id: string;
+  /** Translated, for the button's accessibility label or the menu item. */
+  label: string;
+  /** MDI icon name, like `mdi:chart-box-outline`. */
+  icon: string;
+}
+
+export interface MoreInfoHeaderMenuItem extends MoreInfoHeaderAction {
+  disabled?: boolean;
+  /** A separator follows this item. */
+  divider_after?: boolean;
+}
+
+export interface MoreInfoNativeHeader {
+  entity_id: string;
+  title: string;
+  /** The area and device breadcrumb above the title, when there is one. */
+  subtitle?: string;
+  /** What the leading button does: dismiss the screen, or return to the previous view. */
+  navigation: "close" | "back";
+  /** Translated accessibility label of the leading button. */
+  navigation_label: string;
+  /** Translated accessibility label of the overflow menu button. */
+  menu_label: string;
+  /** Icon buttons, in order, before the overflow menu. */
+  actions: MoreInfoHeaderAction[];
+  /** Items of the overflow menu; empty means no menu button. */
+  menu: MoreInfoHeaderMenuItem[];
+}
+
+/**
+ * Sent by the standalone more-info page whenever the header it leaves out
+ * (`hasNativeMoreInfoHeader`) would change: on open, when the view changes,
+ * when the dialog follows a related entity. The app draws exactly this and
+ * answers a tap with the `more_info/action` command, so what the header offers
+ * is decided by the frontend alone.
+ */
+interface EMOutgoingMessageMoreInfoHeader extends EMMessage {
+  type: "more_info/header";
+  payload: MoreInfoNativeHeader;
 }
 
 interface EMOutgoingMessageFocusElement extends EMMessage {
@@ -280,6 +329,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageMoreInfoClosed
   | EMOutgoingMessageMoreInfoClose
   | EMOutgoingMessageMoreInfoNavigate
+  | EMOutgoingMessageMoreInfoHeader
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
@@ -395,6 +445,16 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
+/** The user picked an item of the native more-info header; `id` is from `more_info/header`. */
+export interface EMIncomingMessageMoreInfoAction {
+  id: number;
+  type: "command";
+  command: "more_info/action";
+  payload: {
+    id: string;
+  };
+}
+
 export interface MatterCommissionFinish {
   name: string | null;
   success: boolean;
@@ -419,7 +479,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
   | EMIncomingMessageMatterCommissionFinish
-  | EMIncomingMessageKioskModeSet;
+  | EMIncomingMessageKioskModeSet
+  | EMIncomingMessageMoreInfoAction;
 
 type EMIncomingMessage =
   EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
@@ -441,6 +502,7 @@ export interface ExternalConfig {
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasNativeMoreInfo?: boolean; // Shows more-info in a native screen: the frontend sends more_info/open instead of opening the dialog
+  hasNativeMoreInfoHeader?: boolean; // The native more-info screen draws the header from more_info/header (title, buttons, menu) and sends more_info/action, so the standalone page leaves its own out
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }

@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import {
   registerNavigationInterceptor,
@@ -40,6 +41,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.addEventListener("location-changed", this._readUrl);
     mainWindow.addEventListener("popstate", this._readUrl);
     registerNavigationInterceptor(this._relayNavigation);
+    this.addEventListener("more-info-header-action", this._headerAction);
   }
 
   public disconnectedCallback() {
@@ -47,6 +49,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.removeEventListener("location-changed", this._readUrl);
     mainWindow.removeEventListener("popstate", this._readUrl);
     unregisterNavigationInterceptor(this._relayNavigation);
+    this.removeEventListener("more-info-header-action", this._headerAction);
   }
 
   protected render() {
@@ -58,7 +61,11 @@ export class HaMoreInfoPage extends LitElement {
       `;
     }
     return html`
-      <ha-more-info-dialog standalone .hass=${this.hass}></ha-more-info-dialog>
+      <ha-more-info-dialog
+        standalone
+        .hideHeader=${!!this.hass.auth.external?.config.hasNativeMoreInfoHeader}
+        .hass=${this.hass}
+      ></ha-more-info-dialog>
     `;
   }
 
@@ -108,6 +115,13 @@ export class HaMoreInfoPage extends LitElement {
     return true;
   };
 
+  /** The app's native header was tapped; the dialog answers as if its own button was. */
+  private _headerAction = (
+    ev: HASSDomEvent<HASSDomEvents["more-info-header-action"]>
+  ) => {
+    this._dialog?.performHeaderAction(ev.detail.id);
+  };
+
   private _readUrl = () => {
     const { entityId, view } = decodeMoreInfoUrl(mainWindow.location.search);
     this._entityId = entityId;
@@ -146,5 +160,11 @@ export class HaMoreInfoPage extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-more-info-page": HaMoreInfoPage;
+  }
+
+  interface HTMLElementEventMap {
+    "more-info-header-action": HASSDomEvent<
+      HASSDomEvents["more-info-header-action"]
+    >;
   }
 }

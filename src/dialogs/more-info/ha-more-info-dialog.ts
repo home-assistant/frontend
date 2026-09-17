@@ -33,7 +33,6 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import {
   computeEntityEntryNameList,
   computeEntityNameList,
-  type EntityNameItem,
 } from "../../common/entity/compute_entity_name_display";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
@@ -84,6 +83,11 @@ import {
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   type MoreInfoView,
 } from "./const";
+import {
+  computeNativeMoreInfoHeader,
+  MORE_INFO_BREADCRUMB_NAME,
+} from "./compute-more-info-header";
+import type { MoreInfoNativeHeader } from "../../external_app/external_messaging";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
@@ -125,13 +129,6 @@ declare global {
 
 const DEFAULT_VIEW: MoreInfoView = "info";
 
-const BREADCRUMB_NAME: EntityNameItem[] = [
-  { type: "area" },
-  { type: "parent_device" },
-  { type: "device" },
-  { type: "entity" },
-];
-
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
   EntitySettingsState | Helper | Record<string, string[]> | null,
@@ -147,6 +144,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
    * `more_info/close` on the external bus instead of hiding a dialog.
    */
   @property({ type: Boolean, reflect: true }) public standalone = false;
+
+  /**
+   * Leave out the header in standalone mode: the app draws the title and the
+   * close button in its own screen chrome, from the `more_info/open` payload.
+   */
+  @property({ type: Boolean, attribute: "hide-header" }) public hideHeader =
+    false;
 
   @state() private _fill = false;
 
@@ -186,6 +190,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   @state() private _detailsYamlMode = false;
 
   @state() private _isEscapeEnabled = true;
+
+  /** The header as last described to the app; see `_sendNativeHeader`. */
+  private _sentNativeHeader?: string;
 
   protected scrollFadeThreshold = 24;
 
@@ -464,7 +471,37 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private _handleMenuAction(ev: HaDropdownSelectEvent) {
-    const action = ev.detail?.item?.value;
+    this._performMenuAction(ev.detail?.item?.value);
+  }
+
+  /**
+   * Answers a tap on the app's native header (`more_info/action`) with what the
+   * dialog's own button or menu item would do; ids are those `more_info/header`
+   * named. See `computeNativeMoreInfoHeader`.
+   */
+  public performHeaderAction(id: string) {
+    switch (id) {
+      case "close":
+        this.closeDialog();
+        break;
+      case "back":
+        this._goBack();
+        break;
+      case "history":
+        this._goToHistory();
+        break;
+      case "settings":
+        this._goToSettings();
+        break;
+      case "toggle_yaml":
+        this._toggleDetailsYamlMode();
+        break;
+      default:
+        this._performMenuAction(id);
+    }
+  }
+
+  private _performMenuAction(action: string | undefined) {
     switch (action) {
       case "device":
         this._goToDevice();
@@ -572,6 +609,150 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("related");
   }
 
+  private get _isDefaultView(): boolean {
+    return this._currView === DEFAULT_VIEW && !this._childView;
+  }
+
+  /** Nothing to go back to: the header closes instead. */
+  private get _showsCloseIcon(): boolean {
+    return (
+      this._isDefaultView &&
+      this._parentEntityIds.length === 0 &&
+      !this._childView
+    );
+  }
+
+  /**
+   * The header's title and the names above it. A view named by the current
+   * view keeps the entity's own name in the breadcrumb; the entity's view
+   * takes it as the title.
+   */
+  private _computeHeaderText(
+    entityId: string,
+    stateObj: HassEntity | undefined
+  ): { breadcrumb: string[]; title: string } {
+    const breadcrumb = (
+      stateObj
+        ? computeEntityNameList(
+            stateObj,
+            MORE_INFO_BREADCRUMB_NAME,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
+        : this._entry
+          ? computeEntityEntryNameList(
+              this._entry,
+              MORE_INFO_BREADCRUMB_NAME,
+              this.hass.entities,
+              this.hass.devices,
+              this.hass.areas,
+              this.hass.floors
+            )
+          : [entityId]
+    ).filter((v): v is string => Boolean(v));
+    const viewTitle =
+      this._currView === "details"
+        ? this.hass.localize("ui.dialogs.more_info_control.details")
+        : this._currView === "related"
+          ? this.hass.localize("ui.dialogs.more_info_control.related")
+          : this._currView === "add_to"
+            ? this.hass.localize("ui.dialogs.more_info_control.add_to.item")
+            : this._childView?.viewTitle;
+    const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
+    if (!viewTitle) {
+      breadcrumb.pop();
+    }
+    return { breadcrumb, title: viewTitle || defaultTitle };
+  }
+
+  private _computeFavoritesState(stateObj: HassEntity | undefined) {
+    const favoritesContext =
+      this._entry && stateObj
+        ? {
+            host: this,
+            hass: this.hass,
+            entry: this._entry,
+            stateObj,
+          }
+        : undefined;
+
+    const favoritesHandler = favoritesContext
+      ? getFavoritesDialogHandler(favoritesContext.stateObj)
+      : undefined;
+
+    return {
+      favoritesLabels: favoritesHandler?.getLabels(this.hass),
+      supportsFavorites: Boolean(favoritesHandler && favoritesContext),
+      resetFavoritesDisabled:
+        favoritesContext && favoritesHandler
+          ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
+          : false,
+      copyFavoritesDisabled:
+        favoritesContext && favoritesHandler?.canCopy
+          ? !favoritesHandler.canCopy(favoritesContext.entry)
+          : false,
+    };
+  }
+
+  /**
+   * The header the page leaves out, described for the app that draws it
+   * (`hasNativeMoreInfoHeader`), from the same state and conditions as the
+   * header `render` would show.
+   */
+  private _computeNativeHeader(): MoreInfoNativeHeader | undefined {
+    if (!this.standalone || !this.hideHeader || !this._entityId) {
+      return undefined;
+    }
+    const entityId = this._entityId;
+    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
+    const domain = computeDomain(entityId);
+    const deviceId = this._getDeviceId();
+    const { breadcrumb, title } = this._computeHeaderText(entityId, stateObj);
+    const {
+      favoritesLabels,
+      supportsFavorites,
+      resetFavoritesDisabled,
+      copyFavoritesDisabled,
+    } = this._computeFavoritesState(stateObj);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    return computeNativeMoreInfoHeader({
+      localize: this.hass.localize,
+      entityId,
+      domain,
+      title,
+      subtitle: breadcrumb.length
+        ? breadcrumb.join(isRTL ? " ◂ " : " ▸ ")
+        : undefined,
+      canGoBack: !this._showsCloseIcon,
+      isDefaultView: this._isDefaultView,
+      view: this._currView,
+      hasChildViewHeader: !!this._childView?.viewHeaderTag,
+      showHistory: this._shouldShowHistory(domain),
+      isAdmin: !__DEMO__ && !!this.hass.user?.is_admin,
+      showAddTo: !__DEMO__ && this._shouldShowAddEntityTo(),
+      favorites:
+        supportsFavorites && favoritesLabels
+          ? {
+              editMode: this._infoEditMode,
+              editModeLabel: favoritesLabels.editMode,
+              resetLabel: favoritesLabels.reset,
+              copyLabel: favoritesLabels.copy,
+              canReset: !resetFavoritesDisabled,
+              canCopy: !copyFavoritesDisabled,
+            }
+          : undefined,
+      device: deviceId
+        ? { type: this.hass.devices[deviceId]?.entry_type || "device" }
+        : undefined,
+      showEdit: this._shouldShowEditIcon(domain, stateObj),
+    });
+  }
+
   protected render() {
     if (!this._entityId) {
       return nothing;
@@ -587,75 +768,20 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const deviceType =
       (deviceId && this.hass.devices[deviceId].entry_type) || "device";
 
-    const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
-    const showCloseIcon =
-      isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
+    const isDefaultView = this._isDefaultView;
+    const showCloseIcon = this._showsCloseIcon;
 
-    const breadcrumb = (
-      stateObj
-        ? computeEntityNameList(
-            stateObj,
-            BREADCRUMB_NAME,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
-        : this._entry
-          ? computeEntityEntryNameList(
-              this._entry,
-              BREADCRUMB_NAME,
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
-            )
-          : [entityId]
-    ).filter((v): v is string => Boolean(v));
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const viewTitle =
-      this._currView === "details"
-        ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "related"
-          ? this.hass.localize("ui.dialogs.more_info_control.related")
-          : this._currView === "add_to"
-            ? addToMenuItem
-            : this._childView?.viewTitle;
-    const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
-    if (!viewTitle) {
-      breadcrumb.pop();
-    }
-    const title = viewTitle || defaultTitle;
+    const { breadcrumb, title } = this._computeHeaderText(entityId, stateObj);
 
-    const favoritesContext =
-      this._entry && stateObj
-        ? {
-            host: this,
-            hass: this.hass,
-            entry: this._entry,
-            stateObj,
-          }
-        : undefined;
-
-    const favoritesHandler = favoritesContext
-      ? getFavoritesDialogHandler(favoritesContext.stateObj)
-      : undefined;
-
-    const favoritesLabels = favoritesHandler?.getLabels(this.hass);
-
-    const supportsFavorites = Boolean(favoritesHandler && favoritesContext);
-
-    const resetFavoritesDisabled =
-      favoritesContext && favoritesHandler
-        ? !favoritesHandler.hasCustomFavorites(favoritesContext.entry)
-        : false;
-
-    const copyFavoritesDisabled =
-      favoritesContext && favoritesHandler?.canCopy
-        ? !favoritesHandler.canCopy(favoritesContext.entry)
-        : false;
+    const {
+      favoritesLabels,
+      supportsFavorites,
+      resetFavoritesDisabled,
+      copyFavoritesDisabled,
+    } = this._computeFavoritesState(stateObj);
 
     const isRTL = computeRTL(
       this.hass.language,
@@ -703,6 +829,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       <ha-adaptive-dialog
         .open=${this._open}
         .standalone=${this.standalone}
+        .withoutHeader=${this.standalone && this.hideHeader}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
@@ -1054,6 +1181,30 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         changedProps.get("_entityId") as string | null | undefined
       );
     }
+
+    this._sendNativeHeader();
+  }
+
+  /**
+   * Tells the app what its header should show now. Every update describes the
+   * header anew (view changes, edit mode, a related entity), so only a changed
+   * description goes over the bus.
+   */
+  private _sendNativeHeader() {
+    const external = this.hass.auth.external;
+    if (!external) {
+      return;
+    }
+    const header = this._computeNativeHeader();
+    if (!header) {
+      return;
+    }
+    const serialized = JSON.stringify(header);
+    if (serialized === this._sentNativeHeader) {
+      return;
+    }
+    this._sentNativeHeader = serialized;
+    external.fireMessage({ type: "more_info/header", payload: header });
   }
 
   private _reportShownEntityToExternalApp(
