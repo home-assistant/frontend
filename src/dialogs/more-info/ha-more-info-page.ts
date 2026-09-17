@@ -2,7 +2,14 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { mainWindow } from "../../common/dom/get_main_window";
-import { decodeMoreInfoUrl } from "../../common/url/more-info-query-params";
+import {
+  registerNavigationInterceptor,
+  unregisterNavigationInterceptor,
+} from "../../common/navigate";
+import {
+  decodeMoreInfoUrl,
+  isMoreInfoStandalonePath,
+} from "../../common/url/more-info-query-params";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-alert";
 import type { HomeAssistant } from "../../types";
@@ -32,12 +39,14 @@ export class HaMoreInfoPage extends LitElement {
     this._readUrl();
     mainWindow.addEventListener("location-changed", this._readUrl);
     mainWindow.addEventListener("popstate", this._readUrl);
+    registerNavigationInterceptor(this._relayNavigation);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     mainWindow.removeEventListener("location-changed", this._readUrl);
     mainWindow.removeEventListener("popstate", this._readUrl);
+    unregisterNavigationInterceptor(this._relayNavigation);
   }
 
   protected render() {
@@ -79,6 +88,25 @@ export class HaMoreInfoPage extends LitElement {
       this._showEntity();
     }
   }
+
+  /**
+   * A link out of the page (device page, entity editor, related items) is for
+   * the app's main frontend; this screen keeps showing its entity until the app
+   * dismisses it. Without an app the page is replaced by the framed frontend.
+   */
+  private _relayNavigation = (path: string): boolean => {
+    const external = this.hass?.auth.external;
+    if (
+      !external ||
+      isMoreInfoStandalonePath(
+        new URL(path, mainWindow.location.origin).pathname
+      )
+    ) {
+      return false;
+    }
+    external.fireMessage({ type: "more_info/navigate", payload: { path } });
+    return true;
+  };
 
   private _readUrl = () => {
     const { entityId, view } = decodeMoreInfoUrl(mainWindow.location.search);
