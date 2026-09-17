@@ -19,10 +19,12 @@ import {
   mdiShuffleDisabled,
 } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { Condition, Trigger } from "../../data/automation";
 import {
   getActionType,
@@ -60,6 +62,10 @@ declare global {
 
 @customElement("hat-script-graph")
 export class HatScriptGraph extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @property({ attribute: false }) public trace!: TraceExtended;
 
   @property({ attribute: false }) public selected?: string;
@@ -472,11 +478,17 @@ export class HatScriptGraph extends LitElement {
         </div>
         <div class="actions">
           <ha-icon-button
+            label=${this._localize(
+              "ui.panel.config.automation.trace.previous_tracked_node"
+            )}
             .disabled=${paths.length === 0 || paths[0] === this.selected}
             @click=${this._previousTrackedNode}
             .path=${mdiChevronUp}
           ></ha-icon-button>
           <ha-icon-button
+            label=${this._localize(
+              "ui.panel.config.automation.trace.next_tracked_node"
+            )}
             .disabled=${
               paths.length === 0 || paths[paths.length - 1] === this.selected
             }
