@@ -207,6 +207,30 @@ interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
   };
 }
 
+/**
+ * Sent instead of opening the more-info dialog when the app reports
+ * `hasNativeMoreInfo`. The app then shows the entity in a native screen, for
+ * example by loading the standalone page (`/more-info`) in its own webview.
+ */
+interface EMOutgoingMessageMoreInfoOpen extends EMMessage {
+  type: "more_info/open";
+  payload: {
+    entity_id: string;
+  };
+}
+
+/**
+ * Sent by the standalone more-info page (`/more-info`) when the user asks to
+ * close it. The page has no dialog to hide, so the app owning the native
+ * screen dismisses it.
+ */
+interface EMOutgoingMessageMoreInfoClose extends EMMessage {
+  type: "more_info/close";
+  payload: {
+    entity_id: string;
+  };
+}
+
 interface EMOutgoingMessageFocusElement extends EMMessage {
   type: "focus_element";
   payload: {
@@ -239,8 +263,10 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
+  | EMOutgoingMessageMoreInfoOpen
   | EMOutgoingMessageMoreInfoOpened
   | EMOutgoingMessageMoreInfoClosed
+  | EMOutgoingMessageMoreInfoClose
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
@@ -401,6 +427,7 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
+  hasNativeMoreInfo?: boolean; // Shows more-info in a native screen: the frontend sends more_info/open instead of opening the dialog
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }

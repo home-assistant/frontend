@@ -6,7 +6,10 @@ import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { handleHistoryPop, navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { decodeMoreInfoUrl } from "../common/url/more-info-query-params";
+import {
+  decodeMoreInfoUrl,
+  isMoreInfoStandalonePath,
+} from "../common/url/more-info-query-params";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { afterNextRender } from "../common/util/render-status";
 import { fetchHttpConfig } from "../data/http";
@@ -76,6 +79,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _visiblePromiseResolve?: () => void;
 
+  private _moreInfoPageLoaded = false;
+
   constructor() {
     super();
     const path = redirectLegacyToolsPath(curPath());
@@ -88,6 +93,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   }
 
   protected renderHass() {
+    if (isMoreInfoStandalonePath(this._route.path)) {
+      // Frameless more-info for external apps: no sidebar, no panel.
+      return html`<ha-more-info-page .hass=${this.hass}></ha-more-info-page>`;
+    }
     return html`
       <home-assistant-main
         .hass=${this.hass}
@@ -98,6 +107,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    if (
+      !this._moreInfoPageLoaded &&
+      isMoreInfoStandalonePath(this._route.path)
+    ) {
+      this._moreInfoPageLoaded = true;
+      import("../dialogs/more-info/ha-more-info-page");
+    }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._databaseMigration === undefined &&
@@ -314,6 +330,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Only restore once the main UI is rendered so the dialog has access to
     // the loaded entities.
     if (this.render !== this.renderHass) {
+      return;
+    }
+    // The standalone page shows the entity itself; no dialog on top of it.
+    if (isMoreInfoStandalonePath(this._route.path)) {
       return;
     }
     const searchParams = extractSearchParamsObject();
