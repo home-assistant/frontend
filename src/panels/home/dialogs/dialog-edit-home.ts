@@ -20,12 +20,24 @@ import "../../../components/entity/ha-favorites-editor";
 import "../components/home-shortcuts-editor";
 import type { EditHomeDialogParams } from "./show-dialog-edit-home";
 
-interface EditorState {
+export interface EditorState {
   favorite_entities: string[];
   show_suggested_entities: boolean;
   show_welcome_message: boolean;
   shortcuts: ShortcutItem[];
 }
+
+export const buildHomeConfig = (
+  baseConfig: HomeFrontendSystemData,
+  draft: EditorState
+): HomeFrontendSystemData => ({
+  ...baseConfig,
+  favorite_entities:
+    draft.favorite_entities.length > 0 ? draft.favorite_entities : undefined,
+  hide_suggested_entities: draft.show_suggested_entities ? undefined : true,
+  hide_welcome_message: draft.show_welcome_message ? undefined : true,
+  shortcuts: draft.shortcuts.length > 0 ? draft.shortcuts : undefined,
+});
 
 // The common-controls strategy caps the section at 8 (or the favorites count,
 // whichever is larger); once favorites reach the cap, predictions never render
@@ -261,20 +273,7 @@ export class DialogEditHome
     if (!this._params || !this._state) return;
 
     this._submitting = true;
-    const editor = this._state;
-
-    const config: HomeFrontendSystemData = {
-      ...this._params.config,
-      favorite_entities:
-        editor.favorite_entities.length > 0
-          ? editor.favorite_entities
-          : undefined,
-      hide_suggested_entities: editor.show_suggested_entities
-        ? undefined
-        : true,
-      hide_welcome_message: editor.show_welcome_message ? undefined : true,
-      shortcuts: editor.shortcuts.length > 0 ? editor.shortcuts : undefined,
-    };
+    const config = buildHomeConfig(this._params.config, this._state);
 
     try {
       await this._params.saveConfig(config);
