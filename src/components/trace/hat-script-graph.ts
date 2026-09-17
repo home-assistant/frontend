@@ -41,6 +41,7 @@ import type {
   WaitForTriggerAction,
 } from "../../data/script";
 import type {
+  ActionTraceStep,
   ChooseActionTraceStep,
   ConditionTraceStep,
   DelayActionTraceStep,
@@ -189,32 +190,54 @@ export class HatScriptGraph extends LitElement {
     if (!lastTrace?.length) {
       return false;
     }
-    const lastRecord = lastTrace[lastTrace.length - 1];
-    const lastStep = steps[steps.length - 1];
-    if (
-      lastTrace.some((tr) => tr.error) &&
-      !("continue_on_error" in lastStep && lastStep.continue_on_error)
-    ) {
-      return false;
+    const finished = this._actionFinished(steps[steps.length - 1], lastTrace);
+    if (finished !== undefined) {
+      return finished;
     }
-    if ("stop" in lastStep) {
-      return false;
-    }
-    if (
-      getAutomationActionType(lastStep) === "condition" &&
-      (lastTrace as ConditionTraceStep[]).some(
-        (tr) => tr.result?.result === false
+    // Core awaits all parallel branches before propagating an error. Once
+    // stopped normally, a branch without a local failure completed even if
+    // a sibling failed. External cancellation may still interrupt it.
+    return (
+      (this.trace.state === "stopped" &&
+        ["finished", "aborted", "error"].includes(
+          this.trace.script_execution
+        )) ||
+      this._hasContinuedAfter(
+        lastPath,
+        lastTrace[lastTrace.length - 1].timestamp
       )
+    );
+  }
+
+  // Undefined means the action has no explicit completion result; the caller
+  // must check run state or subsequent execution instead.
+  private _actionFinished(
+    action: Action,
+    trace: ActionTraceStep[]
+  ): boolean | undefined {
+    if (
+      trace.some((tr) => tr.error) &&
+      !("continue_on_error" in action && action.continue_on_error)
     ) {
       return false;
     }
-    if ("wait_template" in lastStep || "wait_for_trigger" in lastStep) {
+    if ("stop" in action) {
+      return false;
+    }
+    if (
+      getAutomationActionType(action) === "condition" &&
+      (trace as ConditionTraceStep[]).some((tr) => tr.result?.result === false)
+    ) {
+      return false;
+    }
+    const lastRecord = trace[trace.length - 1];
+    if ("wait_template" in action || "wait_for_trigger" in action) {
       if (
-        (lastTrace as WaitActionTraceStep[]).some(
+        (trace as WaitActionTraceStep[]).some(
           ({ result }) =>
             result?.timeout ||
             (result?.wait?.completed === false &&
-              (lastStep.continue_on_timeout === false ||
+              (action.continue_on_timeout === false ||
                 result.wait.remaining !== 0))
         )
       ) {
@@ -225,25 +248,19 @@ export class HatScriptGraph extends LitElement {
         return true;
       }
     }
-    if ("delay" in lastStep) {
+    if ("delay" in action) {
       const result = (lastRecord as DelayActionTraceStep).result;
       if (result && "done" in result) {
         return result.done;
       }
     }
-    // Core awaits all parallel branches before propagating an error. Once
-    // stopped normally, a branch that reached its final action without a
-    // local failure completed even if a sibling aborted or errored. External
-    // cancellation, unlike a sibling error, may interrupt a successful action.
-    if (
-      this.trace.state === "stopped" &&
-      ["finished", "aborted", "error"].includes(this.trace.script_execution)
-    ) {
-      return true;
-    }
+    return undefined;
+  }
+
+  private _hasContinuedAfter(path: string, timestamp: string) {
     // A newer parallel sibling is not evidence of completion. Look for a
     // subsequent action in this sequence or after an ancestor's rejoin.
-    const parts = lastPath.split("/");
+    const parts = path.split("/");
     for (let index = parts.length - 1; index > 0; index--) {
       if (
         !["action", "sequence", "then", "else", "default"].includes(
@@ -256,7 +273,7 @@ export class HatScriptGraph extends LitElement {
       const nextTrace = this.trace.trace[nextPath];
       const nextRecord = nextTrace?.[nextTrace.length - 1];
       // Repeats may retain continuation records from an earlier iteration.
-      if (nextRecord && nextRecord.timestamp > lastRecord.timestamp) {
+      if (nextRecord && nextRecord.timestamp > timestamp) {
         return true;
       }
     }
