@@ -125,7 +125,23 @@ export class StatisticsChart extends LitElement {
   private _yAxisFractionDigits = 1;
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return changedProps.size > 1 || !changedProps.has("hass");
+    return (
+      changedProps.size > 1 ||
+      !changedProps.has("hass") ||
+      this._entityNamesChanged(changedProps)
+    );
+  }
+
+  // Series names are resolved once and cached in _chartData, so a hass update
+  // that only replaces the formatters has to regenerate them. The formatters are
+  // swapped as a set whenever the registries change, which is what renames a
+  // series.
+  private _entityNamesChanged(changedProps: PropertyValues): boolean {
+    if (!changedProps.has("hass")) {
+      return false;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    return !!oldHass && oldHass.formatEntityName !== this.hass.formatEntityName;
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -135,7 +151,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
       changedProps.has("_hiddenStats") ||
-      changedProps.has("names")
+      changedProps.has("names") ||
+      this._entityNamesChanged(changedProps)
     ) {
       this._generateData();
     }
