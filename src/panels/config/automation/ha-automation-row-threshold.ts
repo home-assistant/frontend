@@ -122,7 +122,7 @@ export class HaAutomationRowThreshold extends LitElement {
           threshold.value_min?.unit_of_measurement !==
           threshold.value_max?.unit_of_measurement;
 
-        const range = `${formatNumber(min, this._i18n.locale)}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""}-${formatNumber(max, this._i18n.locale)}${this._unit(threshold.value_max?.unit_of_measurement)}`;
+        const range = `${formatNumber(min, this._i18n.locale)}${separateUnits ? this._unit(threshold.value_min?.unit_of_measurement) : ""} – ${formatNumber(max, this._i18n.locale)}${this._unit(threshold.value_max?.unit_of_measurement)}`;
 
         return i18n.localize(
           `ui.components.selectors.numeric_threshold.row_label.${threshold.type}`,
