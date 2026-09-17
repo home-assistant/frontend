@@ -1488,6 +1488,13 @@
         "area_name": "Area name",
         "floor_name": "Floor name"
       },
+      "unit-of-measurement-picker": {
+        "unit_of_measurement": "Unit of measurement",
+        "add": "Add unit",
+        "no_units": "No units available",
+        "no_match": "No units found for {term}",
+        "null": "No unit"
+      },
       "multi-textfield": {
         "add_item": "Add {item}"
       },

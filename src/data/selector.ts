@@ -87,6 +87,7 @@ export type Selector =
   | UiColorSelector
   | UiStateContentSelector
   | UiTimeFormatSelector
+  | UnitOfMeasurementSelector
   | BackupLocationSelector;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
@@ -650,6 +651,13 @@ export interface UiStateContentSelector {
 
 export interface UiTimeFormatSelector {
   ui_time_format: {} | null;
+}
+
+export interface UnitOfMeasurementSelector {
+  unit_of_measurement: {
+    device_class?: string | string[];
+    state_class?: string | string[];
+  } | null;
 }
 
 export interface EntityNameSelector {
