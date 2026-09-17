@@ -109,65 +109,71 @@ class HaConfigSubEntryRow extends LitElement {
           ${
             devices.length || services.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${
                       devices.length === 1
                         ? `/config/devices/device/${devices[0].id}`
                         : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`
                     }
-                    value="devices"
                   >
-                    <ha-svg-icon .path=${mdiDevices} slot="icon"></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.devices`,
-                      { count: devices.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="devices">
+                      <ha-svg-icon
+                        .path=${mdiDevices}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.devices`,
+                        { count: devices.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
           ${
             services.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${
                       services.length === 1
                         ? `/config/devices/device/${services[0].id}`
                         : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`
                     }
-                    value="services"
                   >
-                    <ha-svg-icon
-                      .path=${mdiHandExtendedOutline}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.services`,
-                      { count: services.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="services">
+                      <ha-svg-icon
+                        .path=${mdiHandExtendedOutline}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.services`,
+                        { count: services.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
           ${
             entities.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${`/config/entities?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
-                    value="entities"
                   >
-                    <ha-svg-icon
-                      .path=${mdiShapeOutline}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.entities`,
-                      { count: entities.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="entities">
+                      <ha-svg-icon
+                        .path=${mdiShapeOutline}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.entities`,
+                        { count: entities.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
@@ -316,6 +322,9 @@ class HaConfigSubEntryRow extends LitElement {
     }
     ha-row-item.has-subentries {
       border-bottom: 1px solid var(--divider-color);
+    }
+    ha-dropdown a {
+      text-decoration: none;
     }
   `;
 }
