@@ -478,7 +478,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return html`
       ${
         !this.hideName && this._device
-          ? html`<ha-md-list-item>
+          ? html`<ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.use_device_name"
@@ -510,7 +510,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 .disabled=${this.disabled}
                 @change=${this._useDeviceNameChanged}
               ></ha-switch>
-            </ha-md-list-item>`
+            </ha-row-item>`
           : nothing
       }
       ${
