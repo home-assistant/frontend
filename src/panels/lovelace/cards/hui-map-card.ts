@@ -439,9 +439,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._overviewLoaded = true;
         void import("./map/hui-map-overview");
       }
-      // Keep people the snapshot missed so a marker appears once they locate.
+      // Keep people and standalone trackers the snapshot missed so they appear
+      // once they locate.
       const entities = this._config?.show_all
-        ? this._withMissingPeople(this._filteredMapEntities)
+        ? this._withMissingTracked(this._filteredMapEntities)
         : this._filteredMapEntities;
       this._filteredMapEntities = this._decorateOverviewEntities(
         entities,
@@ -467,21 +468,34 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     );
   }
 
-  // show_all snapshots only located entities, so a person without a location
-  // then is missing. Add every eligible missing person regardless of their
-  // current location: the map skips them until they have coordinates, and this
-  // keeps them once they do instead of dropping them from the frozen snapshot.
-  private _withMissingPeople(entities: HaMapEntity[]): HaMapEntity[] {
+  // show_all freezes located entities, so a person or standalone tracker that
+  // locates later is missing. Add every eligible one and let the map and
+  // overview skip it until it has coordinates. Trackers owned by a person are
+  // shown through that person, so they are left out here.
+  private _withMissingTracked(entities: HaMapEntity[]): HaMapEntity[] {
     const hass = this.hass;
     if (!hass) {
       return entities;
     }
     const present = new Set(entities.map((entity) => entity.entity_id));
+    const personSources = new Set<string>();
+    Object.values(hass.states).forEach((stateObj) => {
+      if (
+        computeStateDomain(stateObj) === "person" &&
+        stateObj.attributes.source
+      ) {
+        personSources.add(stateObj.attributes.source);
+      }
+    });
     const extra: HaMapEntity[] = [];
     Object.values(hass.states).forEach((stateObj) => {
       const entityId = stateObj.entity_id;
+      const domain = computeStateDomain(stateObj);
+      const eligible =
+        domain === "person" ||
+        (domain === "device_tracker" && !personSources.has(entityId));
       if (
-        computeStateDomain(stateObj) === "person" &&
+        eligible &&
         !present.has(entityId) &&
         !hass.entities?.[entityId]?.hidden &&
         this._meetsConditions(entityId)
