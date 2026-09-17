@@ -346,6 +346,20 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${
+          "enabled" in this.trigger &&
+          this.trigger.enabled === false &&
+          !this._triggered
+        }
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._triggered}
         slot="event"
         class="event-chip"
@@ -622,17 +636,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     return html`
       <ha-card outlined class=${this._selected ? "selected" : ""}>
-        ${
-          "enabled" in this.trigger && this.trigger.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

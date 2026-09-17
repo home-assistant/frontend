@@ -56,6 +56,7 @@ import {
   ACTION_BUILDING_BLOCKS,
   ACTION_COMBINED_BLOCKS,
   ACTION_ICONS,
+  getAutomationActionType,
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
@@ -81,7 +82,7 @@ import type {
   RepeatAction,
   ServiceAction,
 } from "../../../../data/script";
-import { getActionType, isAction } from "../../../../data/script";
+import { isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
@@ -114,23 +115,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-export const getAutomationActionType = memoizeOne(
-  (action: Action | undefined) => {
-    if (!action) {
-      return undefined;
-    }
-    if ("action" in action) {
-      return getActionType(action) as "action";
-    }
-    if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
-      return "condition" as const;
-    }
-    return Object.keys(ACTION_ICONS).find(
-      (option) => option in action
-    ) as keyof typeof ACTION_ICONS;
-  }
-);
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -442,6 +426,16 @@ export default class HaAutomationActionRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${this.action.enabled === false && !this._running}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
         slot="event"
@@ -748,17 +742,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        ${
-          this.action.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

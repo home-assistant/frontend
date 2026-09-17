@@ -78,12 +78,10 @@ export class HaConditionIcon extends LitElement {
       return nothing;
     }
 
-    if (!this._connection || !this._config) {
+    // Render the static icon while the icon is being resolved, so the icon
+    // does not pop in.
+    if (!this._connection || !this._config || !this._iconTask.resolved) {
       return this._renderFallback();
-    }
-
-    if (!this._iconTask.resolved) {
-      return nothing;
     }
     return this._iconTask.value
       ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`

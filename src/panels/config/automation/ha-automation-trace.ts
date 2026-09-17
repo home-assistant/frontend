@@ -676,6 +676,7 @@ export class HaAutomationTrace extends LitElement {
         }
 
         .graph {
+          background-color: var(--primary-background-color);
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
