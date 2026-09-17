@@ -43,6 +43,7 @@ import type {
 import type {
   ChooseActionTraceStep,
   ConditionTraceStep,
+  DelayActionTraceStep,
   IfActionTraceStep,
   TraceExtended,
   WaitActionTraceStep,
@@ -188,15 +189,7 @@ export class HatScriptGraph extends LitElement {
     if (!lastTrace?.length) {
       return false;
     }
-    // Also covers an interrupted action nested inside the final building block.
-    if (
-      (this.trace.last_step === lastPath ||
-        this.trace.last_step?.startsWith(`${lastPath}/`)) &&
-      (this.trace.state !== "stopped" ||
-        this.trace.script_execution !== "finished")
-    ) {
-      return false;
-    }
+    const lastRecord = lastTrace[lastTrace.length - 1];
     const lastStep = steps[steps.length - 1];
     if (
       lastTrace.some((tr) => tr.error) &&
@@ -216,15 +209,58 @@ export class HatScriptGraph extends LitElement {
       return false;
     }
     if ("wait_template" in lastStep || "wait_for_trigger" in lastStep) {
-      return !(lastTrace as WaitActionTraceStep[]).some(
-        ({ result }) =>
-          result?.timeout ||
-          (result?.wait?.completed === false &&
-            (lastStep.continue_on_timeout === false ||
-              result.wait.remaining !== 0))
-      );
+      if (
+        (lastTrace as WaitActionTraceStep[]).some(
+          ({ result }) =>
+            result?.timeout ||
+            (result?.wait?.completed === false &&
+              (lastStep.continue_on_timeout === false ||
+                result.wait.remaining !== 0))
+        )
+      ) {
+        return false;
+      }
+      const result = (lastRecord as WaitActionTraceStep).result;
+      if (result?.wait || result?.enabled === false) {
+        return true;
+      }
     }
-    return true;
+    if ("delay" in lastStep) {
+      const result = (lastRecord as DelayActionTraceStep).result;
+      if (result && "done" in result) {
+        return result.done;
+      }
+    }
+    // Core awaits all parallel branches before propagating an error. Once
+    // stopped normally, a branch that reached its final action without a
+    // local failure completed even if a sibling aborted or errored. External
+    // cancellation, unlike a sibling error, may interrupt a successful action.
+    if (
+      this.trace.state === "stopped" &&
+      ["finished", "aborted", "error"].includes(this.trace.script_execution)
+    ) {
+      return true;
+    }
+    // A newer parallel sibling is not evidence of completion. Look for a
+    // subsequent action in this sequence or after an ancestor's rejoin.
+    const parts = lastPath.split("/");
+    for (let index = parts.length - 1; index > 0; index--) {
+      if (
+        !["action", "sequence", "then", "else", "default"].includes(
+          parts[index - 1]
+        )
+      ) {
+        continue;
+      }
+      const nextPath = `${parts.slice(0, index).join("/")}/${Number(parts[index]) + 1}`;
+      const nextTrace = this.trace.trace[nextPath];
+      const nextRecord = nextTrace?.[nextTrace.length - 1];
+      // Repeats may retain continuation records from an earlier iteration.
+      if (nextRecord && nextRecord.timestamp > lastRecord.timestamp) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private _renderChooseNode(
@@ -551,7 +587,12 @@ export class HatScriptGraph extends LitElement {
     disabled = false
   ) {
     const trace: any = this.trace.trace[path];
-    const repeats = this.trace?.trace[`${path}/repeat/sequence/0`]?.length;
+    const iterations = this.trace.trace[`${path}/repeat/sequence/0`];
+    const repeats =
+      (
+        iterations?.[iterations.length - 1]?.changed_variables?.repeat as
+          { index?: number } | undefined
+      )?.index ?? iterations?.length;
     const sequencePath = `${path}/repeat/sequence/`;
     const sequenceSteps = ensureArray<Action>(node.repeat.sequence);
     const trackSequence = this._hasTracedSteps(sequencePath);

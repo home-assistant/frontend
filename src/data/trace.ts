@@ -72,6 +72,10 @@ export interface WaitActionTraceStep extends BaseTraceStep {
   };
 }
 
+export interface DelayActionTraceStep extends BaseTraceStep {
+  result?: { delay: number; done: boolean };
+}
+
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
   result?: { result: boolean };
 }
@@ -83,6 +87,7 @@ export type ActionTraceStep =
   | CallServiceActionTraceStep
   | ChooseActionTraceStep
   | WaitActionTraceStep
+  | DelayActionTraceStep
   | ChooseChoiceActionTraceStep;
 
 interface BaseTrace {
