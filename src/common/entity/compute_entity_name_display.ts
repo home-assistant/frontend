@@ -107,7 +107,7 @@ export const computeEntityNameDisplay = (
     devices,
     areas,
     floors,
-    { followContext: false }
+    { keepAllParts: true }
   );
 
   // If after processing there is only one name, return that
@@ -119,7 +119,7 @@ export const computeEntityNameDisplay = (
 };
 
 export interface EntityNameListOptions {
-  followContext?: boolean;
+  keepAllParts?: boolean;
 }
 
 export const computeEntityNameList = (
@@ -172,18 +172,19 @@ export const computeEntityEntryNameList = (
     floors
   );
   const entityName = computeEntityEntryName(entry, devices);
-  const followContext = options?.followContext ?? true;
+  const keepAllParts = options?.keepAllParts ?? false;
 
-  // Same rule as core's follow_context: owners above the first node with its
-  // own area are left out. An entity without a name of its own is still named
+  // Same rule as the backend: an owner only adds its name part while the
+  // next_name_part links reach it, so owners above the first node with its own
+  // area are left out. An entity without a name of its own is still named
   // after its device.
   const nameDevice =
-    !followContext || entry.context_source !== "area" || !entityName
+    keepAllParts || entry.next_name_part !== "area" || !entityName
       ? device
       : null;
   const nameParentDevice =
-    !followContext ||
-    (entry.context_source !== "area" && device?.context_source !== "area")
+    keepAllParts ||
+    (entry.next_name_part !== "area" && device?.next_name_part !== "area")
       ? parentDevice
       : null;
 
@@ -229,7 +230,7 @@ export const computeEntitySearchLabels = (
       devices,
       areas,
       floors,
-      { followContext: false }
+      { keepAllParts: true }
     );
   return {
     entityName: entityName || null,

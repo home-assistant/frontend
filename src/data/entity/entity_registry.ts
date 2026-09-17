@@ -8,7 +8,7 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
 import type { HomeAssistant } from "../../types";
 import type { LightColor } from "../light";
-import type { ContextSource, RegistryEntry } from "../registry";
+import type { NextNamePart, RegistryEntry } from "../registry";
 import type { Segment } from "../vacuum";
 
 type EntityCategory = "config" | "diagnostic";
@@ -19,7 +19,7 @@ export interface EntityRegistryDisplayEntry {
   icon?: string;
   device_id?: string;
   area_id?: string;
-  context_source?: ContextSource;
+  next_name_part?: NextNamePart;
   labels: string[];
   hidden?: boolean;
   entity_category?: EntityCategory;
@@ -34,7 +34,7 @@ export interface EntityRegistryDisplayEntryResponse {
     ei: string;
     di?: string;
     ai?: string;
-    cs?: ContextSource;
+    np?: NextNamePart;
     lb: string[];
     ec?: number;
     en?: string;
@@ -58,7 +58,7 @@ export interface EntityRegistryEntry extends RegistryEntry {
   config_subentry_id: string | null;
   device_id: string | null;
   area_id: string | null;
-  context_source?: ContextSource | null;
+  next_name_part?: NextNamePart | null;
   labels: string[];
   disabled_by: "user" | "device" | "integration" | "config_entry" | null;
   hidden_by: Exclude<EntityRegistryEntry["disabled_by"], "config_entry">;
