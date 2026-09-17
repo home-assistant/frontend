@@ -13,7 +13,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/item/ha-row-item";
+import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
@@ -57,7 +57,7 @@ class HaConfigSubEntryRow extends LitElement {
     const entities = this._getEntities();
 
     return html`<div class="sub-entry-card">
-      <ha-row-item
+      <ha-list-item-base
         class="sub-entry"
         data-entry-id=${configEntry.entry_id}
         .configEntry=${configEntry}
@@ -190,12 +190,11 @@ class HaConfigSubEntryRow extends LitElement {
             )}
           </ha-dropdown-item>
         </ha-dropdown>
-      </ha-row-item>
-      <ha-list-base>
-        ${
-          this._expanded
-            ? html`
-                ${groupDevicesByParent(devices).map(
+      </ha-list-item-base>
+      ${
+        this._expanded
+          ? html`
+              ${groupDevicesByParent(devices).map(
                   ({ device, isChild, isLastChild }) =>
                     html`<ha-config-entry-device-row
                       .hass=${this.hass}
@@ -207,7 +206,7 @@ class HaConfigSubEntryRow extends LitElement {
                       .isLastChild=${isLastChild}
                     ></ha-config-entry-device-row>`
                 )}
-                ${services.map(
+              ${services.map(
                   (service) =>
                     html`<ha-config-entry-device-row
                       .hass=${this.hass}
@@ -217,10 +216,9 @@ class HaConfigSubEntryRow extends LitElement {
                       .entities=${this.entities}
                     ></ha-config-entry-device-row>`
                 )}
-              `
-            : nothing
-        }
-      </ha-list-base>
+            `
+          : nothing
+      }
     </div>`;
   }
 
@@ -320,7 +318,7 @@ class HaConfigSubEntryRow extends LitElement {
     ha-svg-icon {
       color: var(--ha-color-fill-neutral-loud-resting);
     }
-    ha-row-item.has-subentries {
+    ha-list-item-base.has-subentries {
       border-bottom: 1px solid var(--divider-color);
     }
     ha-dropdown a {

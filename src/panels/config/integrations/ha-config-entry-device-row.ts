@@ -22,6 +22,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-tree-indicator";
+import "../../../components/item/ha-list-item-button";
 import {
   disableConfigEntry,
   type ConfigEntry,

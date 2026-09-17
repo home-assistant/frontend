@@ -1532,6 +1532,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
         }
+        ha-list-item-base.config_entry {
+          position: relative;
+        }
         ha-list-item-base.config_entry::after {
           position: absolute;
           top: 0;

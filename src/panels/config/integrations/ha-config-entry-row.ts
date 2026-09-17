@@ -894,6 +894,9 @@ export class HaConfigEntryRow extends LitElement {
         align-items: center;
         gap: var(--ha-space-2);
       }
+      .message div {
+        white-space: normal;
+      }
     `,
   ];
 }
