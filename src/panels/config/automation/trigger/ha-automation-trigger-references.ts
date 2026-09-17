@@ -1,10 +1,11 @@
 import { consume } from "@lit/context";
 import { mdiLinkVariantOff } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-trigger-icon";
 import type { TriggerCondition } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
@@ -32,6 +33,7 @@ export class HaAutomationTriggerReferences extends LitElement {
 
   protected render() {
     const options = this._triggers?.options ?? [];
+    const showIndices = this._triggers?.showIndices ?? false;
     const selectedIds = ensureArray(this.condition.id).filter(Boolean);
     const selectedTriggers = options.filter((option) =>
       selectedIds.includes(option.id)
@@ -52,7 +54,28 @@ export class HaAutomationTriggerReferences extends LitElement {
       selectedTriggers.map(
         (option) => html`
           <span class="trigger-reference">
-            <span class="trigger-index-badge">${option.index + 1}</span>
+            <span
+              id="trigger-index-badge-${option.index}"
+              tabindex=${showIndices ? "0" : "-1"}
+              class="trigger-index-badge ${showIndices ? "" : "hidden"}"
+              aria-label=${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.trigger_index_aria_label",
+                { number: option.index + 1 }
+              )}
+              aria-hidden=${showIndices ? "false" : "true"}
+              >${option.index + 1}</span
+            >
+            ${
+              showIndices
+                ? html`<ha-tooltip for="trigger-index-badge-${option.index}"
+                    ><p>
+                      ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.trigger_index_tooltip"
+                    )}
+                    </p></ha-tooltip
+                  >`
+                : nothing
+            }
             <ha-trigger-icon
               .trigger=${"trigger" in option.trigger ? option.trigger.trigger : ""}
             ></ha-trigger-icon>
@@ -132,6 +155,22 @@ export class HaAutomationTriggerReferences extends LitElement {
       line-height: 1;
       text-box-trim: both;
       text-box-edge: cap alphabetic;
+      overflow: hidden;
+      transition:
+        opacity 180ms ease-out,
+        transform 180ms ease-out,
+        width 180ms ease-out,
+        margin-inline-end 180ms ease-out,
+        border-width 180ms ease-out;
+    }
+
+    .trigger-index-badge.hidden {
+      opacity: 0;
+      transform: translateX(calc(-8px * var(--scale-direction)));
+      width: 0;
+      margin-inline-end: calc(var(--ha-space-2) * -1);
+      border-width: 0;
+      pointer-events: none;
     }
   `;
 }
