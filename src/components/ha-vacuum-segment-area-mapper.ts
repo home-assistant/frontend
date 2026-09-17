@@ -123,7 +123,8 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
             <ha-icon-button
               .path=${mdiDelete}
               .label=${this.hass.localize(
-                "ui.dialogs.vacuum_segment_mapping.orphaned_remove"
+                "ui.dialogs.vacuum_segment_mapping.orphaned_remove",
+                { name }
               )}
               data-area-id=${areaId}
               @click=${this._removeOrphanedArea}
