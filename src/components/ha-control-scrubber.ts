@@ -29,6 +29,11 @@ const A11Y_KEY_CODES = new Set([
 
 @customElement("ha-control-scrubber")
 export class HaControlScrubber extends LitElement {
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   @property({ attribute: false }) public locale?: FrontendLocaleData;
 
   @property({ type: Boolean, reflect: true })
@@ -209,7 +214,9 @@ export class HaControlScrubber extends LitElement {
     if (e.code === "Home") {
       this.value = this.min;
     } else if (e.code === "End") {
-      this.value = this.max;
+      this.value = this.wrap
+        ? this.steppedValue(this.max - this.step)
+        : this.max;
     } else if (e.code === "PageUp") {
       this.value = this.steppedValue(current + this._tenPercentStep);
     } else if (e.code === "PageDown") {
