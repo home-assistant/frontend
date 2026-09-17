@@ -5,6 +5,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -397,7 +398,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         name: this._computeName(),
         icon: this._icon || null,
         entityId: this._entityId,
-        areaId: this._areaId ?? null,
+        areaId: this._computeAreaId(),
         labels: this._labels ?? [],
         deviceClass: this._deviceClass,
         disabledBy: this._disabledBy,
@@ -1215,7 +1216,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${
         this.entry.device_id
           ? html`
-              <ha-row-item>
+              <ha-row-item class="device-area">
                 <span slot="headline"
                   >${this.hass.localize(
                     "ui.dialogs.entity_registry.editor.use_device_area"
@@ -1232,7 +1233,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <span slot="supporting-text"
                   >${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.change_device_settings",
+                    this._useDeviceArea
+                      ? "ui.dialogs.entity_registry.editor.use_device_area_required"
+                      : "ui.dialogs.entity_registry.editor.change_device_settings",
                     {
                       link: html`<button
                         class="link"
@@ -1247,13 +1250,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <ha-switch
                   slot="end"
-                  .checked=${!this._areaId || this._noDeviceArea}
-                  .disabled=${this.disabled}
+                  .checked=${live(
+                    this._useDeviceArea || !this._areaId || !!this._noDeviceArea
+                  )}
+                  .disabled=${this.disabled || this._useDeviceArea}
                   @change=${this._useDeviceAreaChanged}
                 ></ha-switch>
               </ha-row-item>
               ${
-                this._areaId || this._noDeviceArea
+                !this._useDeviceArea && (this._areaId || this._noDeviceArea)
                   ? html`<ha-area-picker
                       .value=${this._areaId}
                       .disabled=${this.disabled}
@@ -1267,10 +1272,26 @@ export class EntityRegistrySettingsEditor extends LitElement {
     `;
   }
 
-  public async updateEntry(): Promise<{
-    close: boolean;
-    entry: ExtEntityRegistryEntry;
-  }> {
+  public async updateEntry(): Promise<
+    { close: boolean; entry: ExtEntityRegistryEntry } | undefined
+  > {
+    if (this._useDeviceArea && this._areaId) {
+      const confirmed = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.use_device_area_confirm_title"
+        ),
+        text: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.use_device_area_confirm_text",
+          { area: this.hass.areas[this._areaId]?.name ?? this._areaId }
+        ),
+        confirmText: this.hass.localize("ui.common.save"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+      });
+      if (!confirmed) {
+        return undefined;
+      }
+    }
+
     let close = true;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let parent: HTMLElement = this;
@@ -1281,7 +1302,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     const params: Partial<EntityRegistryEntryUpdateParams> = {
       name: this._computeName(),
       icon: this._icon.trim() || null,
-      area_id: this._areaId || null,
+      area_id: this._computeAreaId(),
       labels: this._labels || [],
       new_entity_id: this._entityId.trim(),
     };
@@ -1730,6 +1751,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._useDeviceName = ev.currentTarget.checked;
   }
 
+  private get _useDeviceArea(): boolean {
+    return !!this._device && this._useDeviceName;
+  }
+
   private get _originalName(): string {
     return String(this.entry.original_name ?? "");
   }
@@ -1739,6 +1764,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (this._device && !this._originalName) {
       this._useDeviceName = true;
     }
+  }
+
+  private _computeAreaId(): string | null {
+    if (this._useDeviceArea) {
+      return null;
+    }
+    return this._areaId || null;
   }
 
   private _computeName(): string | null {
@@ -1866,6 +1898,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
+        ha-row-item.device-area::part(supporting-text) {
+          white-space: normal;
+        }
         ha-row-item {
           --ha-row-item-padding-inline: 0;
         }
