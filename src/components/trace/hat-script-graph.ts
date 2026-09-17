@@ -800,7 +800,7 @@ export class HatScriptGraph extends LitElement {
         justify-self: end;
         align-self: start;
         margin-top: var(--ha-space-2);
-        margin-inline-end: var(--ha-space-3);
+        margin-inline-end: var(--ha-space-5);
         z-index: 1;
         background-color: color-mix(
           in srgb,
