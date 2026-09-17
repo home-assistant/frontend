@@ -1,8 +1,8 @@
 import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import {
@@ -90,6 +90,10 @@ class HuiLightColorCardFeature
   @state() private _expanded: ColorAxis = "hue";
 
   @state() private _liveHue?: number;
+
+  @query(".axis.expanded > *") private _expandedControl?: HTMLElement;
+
+  private _focusExpanded = false;
 
   static getStubConfig(): LightColorCardFeatureConfig {
     return {
@@ -230,13 +234,23 @@ class HuiLightColorCardFeature
     `;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (this._focusExpanded && changedProps.has("_expanded")) {
+      this._focusExpanded = false;
+      this._expandedControl?.focus();
+    }
+  }
+
   private _expandHue = (ev: Event) => {
     ev.stopPropagation();
+    this._focusExpanded = true;
     this._expanded = "hue";
   };
 
   private _expandSaturation = (ev: Event) => {
     ev.stopPropagation();
+    this._focusExpanded = true;
     this._expanded = "saturation";
   };
 

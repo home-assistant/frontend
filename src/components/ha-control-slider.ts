@@ -36,6 +36,11 @@ type SliderMode = "start" | "end" | "cursor";
 
 @customElement("ha-control-slider")
 export class HaControlSlider extends LitElement {
+  static shadowRootOptions: ShadowRootInit = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   @property({ attribute: false }) public locale?: FrontendLocaleData;
 
   @property({ type: Boolean, reflect: true })
