@@ -18,7 +18,9 @@ import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { supportsWebGL2 } from "../../common/map/base-layer";
 import type {
   MapClusterIcon,
+  MapControlPosition,
   MapEngine,
+  MapFitPadding,
   MapItemHandle,
   MapLatLng,
   MapMarkerHandle,
@@ -37,6 +39,7 @@ import {
   ZONE_CIRCLE_SIZE,
   zoneMarkerStyles,
 } from "../../common/map/zone-marker";
+import { deepEqual } from "../../common/util/deep-equal";
 import { filterXSS } from "../../common/util/xss";
 import {
   configContext,
@@ -300,6 +303,12 @@ export class HaMap extends ReactiveElement {
 
   @property({ attribute: "fit-zones", type: Boolean }) public fitZones = false;
 
+  /** Part of the map an overlay covers; automatic fits keep clear of it */
+  @property({ attribute: false }) public fitPadding?: MapFitPadding;
+
+  @property({ attribute: "zoom-position" })
+  public zoomPosition: MapControlPosition = "topleft";
+
   private _zonePositions: Record<string, MapLatLng> = {};
 
   @property({ attribute: "theme-mode", type: String })
@@ -445,6 +454,18 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
       this._drawEntities();
+    }
+
+    // An overlay that grew or shrank may cover the fitted markers
+    if (
+      changedProps.has("fitPadding") &&
+      !deepEqual(changedProps.get("fitPadding"), this.fitPadding)
+    ) {
+      autoFitRequired = !this._pauseAutoFit;
+    }
+
+    if (changedProps.has("zoomPosition")) {
+      this._engine?.setZoomControlPosition(this.zoomPosition);
     }
 
     const oldConfig = changedProps.get("_config") as HassConfig | undefined;
@@ -597,7 +618,7 @@ export class HaMap extends ReactiveElement {
         darkMode: this._darkMode,
         token,
         rasterOnly: this._forceLeaflet,
-        zoomControlPosition: "topleft",
+        zoomControlPosition: this.zoomPosition,
         events: {
           click: (location) => this._handleEngineClick(location),
           zoomStart: () => {
@@ -692,6 +713,7 @@ export class HaMap extends ReactiveElement {
   public fitMap(options?: {
     zoom?: number;
     pad?: number;
+    padding?: MapFitPadding;
     unpause_autofit?: boolean;
   }): void {
     if (options?.unpause_autofit) {
@@ -735,6 +757,7 @@ export class HaMap extends ReactiveElement {
       this._engine!.fitBounds(points, {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
+        padding: options?.padding ?? this.fitPadding,
         animate: this._hasFitted,
       });
     });
@@ -782,8 +805,11 @@ export class HaMap extends ReactiveElement {
 
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number }
+    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
   ) {
+    // An explicit fit is user intent, even while it waits for the engine or
+    // a size; an auto-fit must not take its place in the meantime
+    this._pauseAutoFit = true;
     if (!this._engine) {
       // Engine still loading (see _loadMap); runs once it is
       this._pendingFit = () => this.fitBounds(boundingbox, options);
@@ -797,6 +823,7 @@ export class HaMap extends ReactiveElement {
         maxZoom: options?.zoom || this.zoom,
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
+        padding: options?.padding,
       });
     });
     this._hasFitted = true;
@@ -1426,12 +1453,19 @@ export class HaMap extends ReactiveElement {
     }
     #map {
       height: 100%;
+      /* A cluster bubble and its tail cast a single shadow around their
+         combined silhouette (drop-shadow on the wrapper), so no shadow seam
+         appears between the bubble and its tail. */
+      --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
     }
     #map.clickable {
       cursor: pointer;
     }
     #map.dark {
       background: #090909;
+      --ha-cluster-shadow: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
     }
     #map.forced-dark {
       color: #ffffff;
@@ -1453,6 +1487,7 @@ export class HaMap extends ReactiveElement {
       flex-direction: column;
       align-items: center;
       isolation: isolate;
+      filter: var(--ha-cluster-shadow);
     }
     .cluster-open-members {
       display: flex;
@@ -1464,7 +1499,6 @@ export class HaMap extends ReactiveElement {
       max-width: calc(6 * var(--ha-marker-size, 48px) + 5 * 4px + 12px);
       background: var(--card-background-color, #fff);
       border-radius: 14px;
-      box-shadow: var(--ha-box-shadow-s);
     }
     /* Both tails are a rotated square whose upper half sits under the bubble;
        drawn behind it, so it never covers a member's frame or selected ring */
@@ -1497,6 +1531,17 @@ export class HaMap extends ReactiveElement {
       position: absolute;
       top: 0;
       left: 0;
+    }
+    .maplibregl-ctrl-bottom-left,
+    .maplibregl-ctrl-bottom-right {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
+    .maplibregl-ctrl-bottom-left {
+      margin-left: var(--ha-map-left-inset, 0);
+    }
+    .maplibregl-ctrl-bottom-right {
+      margin-right: var(--ha-map-right-inset, 0);
     }
     .dark .maplibregl-ctrl.maplibregl-ctrl-group {
       background-color: #1c1c1c;
@@ -1551,6 +1596,12 @@ export class HaMap extends ReactiveElement {
       flex-direction: column;
       align-items: center;
       isolation: isolate;
+      filter: var(--ha-cluster-shadow);
+    }
+    /* The wrapper carries the shadow around the bubble-plus-tail outline, so
+       the bubble itself drops its own to avoid a seam at the tail. */
+    .cluster-marker .cluster-bubble {
+      filter: none;
     }
     .cluster-bubble-tail {
       width: ${CLUSTER_TAIL_SIZE}px;
@@ -1568,7 +1619,7 @@ export class HaMap extends ReactiveElement {
       box-sizing: border-box;
       background: var(--card-background-color, #fff);
       border-radius: 14px;
-      box-shadow: var(--ha-box-shadow-s);
+      filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
@@ -1599,6 +1650,16 @@ export class HaMap extends ReactiveElement {
       --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
+    .leaflet-bottom {
+      /* Lets a card keep the attribution and scale clear of an overlay */
+      margin-bottom: var(--ha-map-bottom-inset, 0);
+    }
+    .leaflet-bottom.leaflet-left {
+      margin-left: var(--ha-map-left-inset, 0);
+    }
+    .leaflet-bottom.leaflet-right {
+      margin-right: var(--ha-map-right-inset, 0);
+    }
     .leaflet-control,
     .leaflet-top,
     .leaflet-bottom {
