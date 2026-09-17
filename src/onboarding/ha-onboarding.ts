@@ -149,7 +149,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           href="https://www.home-assistant.io/getting-started/onboarding/"
           target="_blank"
           rel="noreferrer noopener"
-          >${this.localize("ui.panel.page-onboarding.help")}</a
+          >${this.localize("ui.panel.page-onboarding.help") || "Help"}</a
         >
       </div>`;
   }
