@@ -225,6 +225,7 @@ export class HaControlScrubber extends LitElement {
   private _handleKeyUp(e: KeyboardEvent) {
     if (this.disabled || !A11Y_KEY_CODES.has(e.code)) return;
     e.preventDefault();
+    fireEvent(this, "slider-moved", { value: undefined });
     fireEvent(this, "value-changed", { value: this.value });
   }
 
