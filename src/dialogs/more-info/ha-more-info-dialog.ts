@@ -141,6 +141,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
+  /**
+   * Render as a frameless page filling the viewport instead of a dialog, for
+   * an external app that embeds it in a native screen. Closing then sends
+   * `more_info/close` on the external bus instead of hiding a dialog.
+   */
+  @property({ type: Boolean, reflect: true }) public standalone = false;
+
   @state() private _fill = false;
 
   @state() private _open = false;
@@ -152,6 +159,11 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   @query("ha-adaptive-dialog") private _dialogElement?: HTMLElement;
 
   @state() private _entityId?: string | null;
+
+  /** The entity currently shown; the dialog may have followed a related one. */
+  public get entityId(): string | null | undefined {
+    return this._entityId;
+  }
 
   @state() private _data?: Record<string, any>;
 
@@ -219,6 +231,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   public closeDialog() {
+    if (this.standalone) {
+      this._requestExternalClose();
+      return;
+    }
     const dialog = this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
     if (dialog) {
       fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
@@ -375,8 +391,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   private _goToDevice(): void {
     const deviceId = this._getDeviceId();
     if (!deviceId) return;
-    navigate(`/config/devices/device/${deviceId}`);
-    this.closeDialog();
+    this._leaveTo(`/config/devices/device/${deviceId}`);
+  }
+
+  /**
+   * Navigate to a page of the app. The standalone page is replaced by the app
+   * at that route, so there is no dialog to close.
+   */
+  private _leaveTo(path: string) {
+    navigate(path);
+    if (!this.standalone) {
+      this.closeDialog();
+    }
   }
 
   private _goToEdit() {
@@ -393,8 +419,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       idToPassThroughUrl = this._entry.unique_id;
     }
 
-    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
-    this.closeDialog();
+    this._leaveTo(`/config/${domain}/edit/${idToPassThroughUrl}`);
   }
 
   private _toggleInfoEditMode() {
@@ -637,6 +662,31 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this.hass.translationMetadata.translations
     );
 
+    // Closing the standalone page asks the external app to dismiss it; the
+    // button would do nothing without one.
+    const canClose = !this.standalone || !!this.hass.auth.external;
+
+    const navigationIcon = !showCloseIcon
+      ? html`
+          <ha-icon-button-prev
+            slot="headerNavigationIcon"
+            @click=${this._goBack}
+            .label=${this.hass.localize(
+              "ui.dialogs.more_info_control.back_to_info"
+            )}
+          ></ha-icon-button-prev>
+        `
+      : canClose
+        ? html`
+            <ha-icon-button
+              slot="headerNavigationIcon"
+              @click=${this.closeDialog}
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+            ></ha-icon-button>
+          `
+        : nothing;
+
     const childViewContent = this._childView
       ? html`
           <div class="child-view">
@@ -652,6 +702,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
+        .standalone=${this.standalone}
         .width=${this._fill ? "full" : this.large ? "large" : "medium"}
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
@@ -663,26 +714,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         }
         flexcontent
       >
-        ${
-          showCloseIcon
-            ? html`
-                <ha-icon-button
-                  slot="headerNavigationIcon"
-                  @click=${this.closeDialog}
-                  .label=${this.hass.localize("ui.common.close")}
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              `
-            : html`
-                <ha-icon-button-prev
-                  slot="headerNavigationIcon"
-                  @click=${this._goBack}
-                  .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.back_to_info"
-                  )}
-                ></ha-icon-button-prev>
-              `
-        }
+        ${navigationIcon}
         <span slot="headerTitle" @click=${this._enlarge} class="title">
           ${
             breadcrumb.length > 0
@@ -1028,7 +1060,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     previousEntityId: string | null | undefined
   ) {
     const external = this.hass.auth.external;
-    if (!external) {
+    // The external app opened the standalone page itself, so it already knows.
+    if (!external || this.standalone) {
       return;
     }
     if (this._entityId) {
@@ -1044,11 +1077,24 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
   }
 
+  private _requestExternalClose() {
+    if (!this._entityId) {
+      return;
+    }
+    this.hass.auth.external?.fireMessage({
+      type: "more_info/close",
+      payload: { entity_id: this._entityId },
+    });
+  }
+
   private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
     this._entry = ev.detail;
   }
 
   private _enlarge() {
+    if (this.standalone) {
+      return;
+    }
     withViewTransition(() => {
       this._fill = !this._fill;
     });

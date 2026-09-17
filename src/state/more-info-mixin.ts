@@ -41,6 +41,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : currentUrl;
 
       replaceCurrentUrl(returnUrl);
+
+      // The app presents more-info natively (e.g. the standalone page in its
+      // own webview), so hand it the entity instead of opening the dialog.
+      // A null entity id would only close a dialog, and none is open.
+      const external = this.hass!.auth.external;
+      if (external?.config.hasNativeMoreInfo) {
+        if (ev.detail.entityId) {
+          external.fireMessage({
+            type: "more_info/open",
+            payload: { entity_id: ev.detail.entityId },
+          });
+        }
+        return;
+      }
+
       const shown = await showDialog(
         this,
         "ha-more-info-dialog",
