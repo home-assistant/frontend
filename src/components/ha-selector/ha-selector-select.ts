@@ -19,7 +19,6 @@ import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
 import "../ha-dropdown-item";
-import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
 import "../ha-select";
@@ -400,8 +399,7 @@ export class HaSelectSelector extends LitElement {
     :host {
       position: relative;
     }
-    ha-select,
-    ha-formfield {
+    ha-select {
       display: block;
     }
 

@@ -10,7 +10,6 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { apiContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
-import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
 import { getToggleAction } from "../../common/entity/get_toggle_action";
@@ -69,22 +68,15 @@ export class HaEntityToggle extends LitElement {
       `;
     }
 
-    const switchTemplate = html`<ha-switch
+    return html`<ha-switch
       aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
         this._isOn ? "off" : "on"
       }`}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
-    ></ha-switch>`;
-
-    if (!this.label) {
-      return switchTemplate;
-    }
-
-    return html`
-      <ha-formfield .label=${this.label}>${switchTemplate}</ha-formfield>
-    `;
+      >${this.label}</ha-switch
+    >`;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {

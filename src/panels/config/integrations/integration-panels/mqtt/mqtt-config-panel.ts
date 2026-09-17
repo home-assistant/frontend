@@ -13,7 +13,6 @@ import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-next";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-svg-icon";
@@ -276,14 +275,9 @@ export class MQTTConfigPanel extends LitElement {
               .options=${qosLevel}
             >
             </ha-select>
-            <ha-formfield
-              label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+            <ha-switch @change=${this._handleRetain} .checked=${this._retain}
+              >${this.hass!.localize("ui.panel.config.mqtt.retain")}</ha-switch
             >
-              <ha-switch
-                @change=${this._handleRetain}
-                .checked=${this._retain}
-              ></ha-switch>
-            </ha-formfield>
           </div>
           <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
           <ha-code-editor
