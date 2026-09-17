@@ -339,7 +339,14 @@ export class HatScriptGraph extends LitElement {
       if (!trackThen && trc.result?.choice === "then") {
         trackThen = true;
       }
-      if (!trackElse && trc.result?.choice === "else") {
+      // Core sets no result when the condition is false and no `else` is
+      // configured, so a result-less entry without an error is the implicit
+      // else bypass. A result-less entry with an error means the run aborted
+      // before choosing and must not mark anything taken.
+      if (
+        !trackElse &&
+        (trc.result?.choice === "else" || (!trc.result && !trc.error))
+      ) {
         trackElse = true;
       }
       if (trackElse && trackThen) {
