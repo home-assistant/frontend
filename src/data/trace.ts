@@ -60,6 +60,18 @@ export interface StopActionTraceStep extends BaseTraceStep {
   result?: { stop: string; error: boolean };
 }
 
+export interface WaitActionTraceStep extends BaseTraceStep {
+  result?: {
+    enabled?: boolean;
+    wait?: {
+      completed: boolean;
+      remaining: number | null;
+      trigger?: Record<string, unknown> | null;
+    };
+    timeout?: boolean;
+  };
+}
+
 export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
   result?: { result: boolean };
 }
@@ -70,6 +82,7 @@ export type ActionTraceStep =
   | ConditionTraceStep
   | CallServiceActionTraceStep
   | ChooseActionTraceStep
+  | WaitActionTraceStep
   | ChooseChoiceActionTraceStep;
 
 interface BaseTrace {

@@ -2,7 +2,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
 
 interface BranchConfig {
@@ -43,13 +42,12 @@ export class HatGraphBranch extends LitElement {
   // and nested nodes can change without the assigned elements changing.
   private _trackObserver = new MutationObserver((mutations) => {
     if (
-      this._slot &&
       mutations.some(
         (m) =>
           m.type === "childList" || (m.target as Element).parentElement === this
       )
     ) {
-      this._updateBranches(this._slot);
+      this._updateBranches();
     }
   });
 
@@ -72,33 +70,32 @@ export class HatGraphBranch extends LitElement {
     super.updated(changedProps);
     // The branches are read from the DOM, so they are refreshed on every
     // update to pick up size changes as well.
-    if (this._slot) {
-      this._updateBranches(this._slot);
+    this._updateBranches();
+  }
+
+  private _updateBranches() {
+    if (!this._slot) {
+      return;
     }
-  }
-
-  private _handleSlotChange(ev: HASSDomTargetEvent<HTMLSlotElement>) {
-    this._updateBranches(ev.target as HTMLSlotElement);
-  }
-
-  private _updateBranches(slot: HTMLSlotElement) {
     let total_width = 0;
     const heights: number[] = [];
     const branches: BranchConfig[] = [];
-    slot.assignedElements().forEach((c) => {
+    this._slot.assignedElements().forEach((c) => {
       const width = c.clientWidth;
       const height = c.clientHeight;
+      const track = c.hasAttribute("track");
       branches.push({
         x: width / 2 + total_width,
         height,
         start: c.hasAttribute("graph-start"),
         end: c.hasAttribute("graph-end"),
-        track: c.hasAttribute("track"),
-        trackEnd: c.hasAttribute("track") && !c.hasAttribute("unfinished"),
+        track,
+        trackEnd: track && !c.hasAttribute("unfinished"),
       });
       total_width += width;
       heights.push(height);
     });
+    const maxHeight = Math.max(...heights);
     // Tracked branches are drawn last, so they are never covered by the
     // untracked ones where the paths overlap.
     branches.sort(
@@ -108,14 +105,14 @@ export class HatGraphBranch extends LitElement {
     );
     if (
       total_width === this._totalWidth &&
-      Math.max(...heights) === this._maxHeight &&
+      maxHeight === this._maxHeight &&
       JSON.stringify(branches) === JSON.stringify(this._branches)
     ) {
       // Nothing changed, don't trigger another update.
       return;
     }
     this._totalWidth = total_width;
-    this._maxHeight = Math.max(...heights);
+    this._maxHeight = maxHeight;
     this._branches = branches;
   }
 
@@ -162,7 +159,7 @@ export class HatGraphBranch extends LitElement {
                   `;
           })}
         </svg>
-        <slot @slotchange=${this._handleSlotChange}></slot>
+        <slot @slotchange=${this._updateBranches}></slot>
       </div>
 
       ${

@@ -45,6 +45,7 @@ import type {
   ConditionTraceStep,
   IfActionTraceStep,
   TraceExtended,
+  WaitActionTraceStep,
 } from "../../data/trace";
 import "../ha-icon-button";
 import "../ha-condition-icon";
@@ -177,31 +178,29 @@ export class HatScriptGraph extends LitElement {
     );
   }
 
-  /**
-   * A branch is only finished if its last configured step was reached and did
-   * not stop the run. A run that raised part way through leaves the later
-   * steps untraced, so the paths leaving the branch must not be drawn as
-   * taken. An error on the last step still stops the run unless that step
-   * sets `continue_on_error`.
-   */
+  // Reaching the last step does not mean it completed or allowed continuation.
   private _branchFinished(pathPrefix: string, steps: Action[]) {
     if (steps.length === 0) {
       return true;
     }
     const lastPath = `${pathPrefix}${steps.length - 1}`;
-    if (!(lastPath in this.trace.trace)) {
+    const lastTrace = this.trace.trace[lastPath];
+    if (!lastTrace?.length) {
       return false;
     }
-    const lastStepError = this.trace.trace[lastPath]?.some((tr) => tr.error);
+    // Also covers an interrupted action nested inside the final building block.
+    if (
+      (this.trace.last_step === lastPath ||
+        this.trace.last_step?.startsWith(`${lastPath}/`)) &&
+      (this.trace.state !== "stopped" ||
+        this.trace.script_execution !== "finished")
+    ) {
+      return false;
+    }
     const lastStep = steps[steps.length - 1];
     if (
-      lastStepError &&
-      !(
-        typeof lastStep === "object" &&
-        lastStep !== null &&
-        "continue_on_error" in lastStep &&
-        lastStep.continue_on_error
-      )
+      lastTrace.some((tr) => tr.error) &&
+      !("continue_on_error" in lastStep && lastStep.continue_on_error)
     ) {
       return false;
     }
@@ -210,11 +209,20 @@ export class HatScriptGraph extends LitElement {
     }
     if (
       getAutomationActionType(lastStep) === "condition" &&
-      (this.trace.trace[lastPath] as ConditionTraceStep[]).some(
+      (lastTrace as ConditionTraceStep[]).some(
         (tr) => tr.result?.result === false
       )
     ) {
       return false;
+    }
+    if ("wait_template" in lastStep || "wait_for_trigger" in lastStep) {
+      return !(lastTrace as WaitActionTraceStep[]).some(
+        ({ result }) =>
+          result?.timeout ||
+          (result?.wait?.completed === false &&
+            (lastStep.continue_on_timeout === false ||
+              result.wait.remaining !== 0))
+      );
     }
     return true;
   }
@@ -354,28 +362,15 @@ export class HatScriptGraph extends LitElement {
     disabled = false
   ) {
     const trace = this.trace.trace[path] as IfActionTraceStep[] | undefined;
-    let trackThen = false;
-    let trackElse = false;
-    for (const trc of trace || []) {
-      if (!trackThen && trc.result?.choice === "then") {
-        trackThen = true;
-      }
-      // Core sets no result when the condition is false and no `else` is
-      // configured, so a result-less entry without an error is the implicit
-      // else bypass. A result-less entry with an error means the run aborted
-      // before choosing and must not mark anything taken.
-      if (
-        !trackElse &&
-        (trc.result?.choice === "else" || (!trc.result && !trc.error))
-      ) {
-        trackElse = true;
-      }
-      if (trackElse && trackThen) {
-        break;
-      }
-    }
-    trackThen = trackThen || this._hasTracedSteps(`${path}/then/`);
-    trackElse = trackElse || this._hasTracedSteps(`${path}/else/`);
+    const trackThen =
+      trace?.some((trc) => trc.result?.choice === "then") ||
+      this._hasTracedSteps(`${path}/then/`);
+    // Core sets no result for the implicit else bypass. An error instead
+    // means execution aborted before choosing a branch.
+    const trackElse =
+      trace?.some(
+        (trc) => trc.result?.choice === "else" || (!trc.result && !trc.error)
+      ) || this._hasTracedSteps(`${path}/else/`);
     return html`
       <hat-graph-branch
         tabindex=${trace === undefined ? "-1" : "0"}
@@ -731,27 +726,10 @@ export class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
         ${ensureArray<Action>(node.parallel).map((action, i) => {
-          if (!("sequence" in action)) {
-            const actionPath = `${path}/parallel/${i}/sequence/0`;
-            return html`<div
-              ?track=${actionPath in this.trace.trace}
-              ?unfinished=${
-                actionPath in this.trace.trace &&
-                !this._branchFinished(`${path}/parallel/${i}/sequence/`, [
-                  action,
-                ])
-              }
-            >
-              ${this._renderActionNode(
-                action,
-                actionPath,
-                false,
-                disabled || node.enabled === false
-              )}
-            </div>`;
-          }
           const branchSteps = ensureArray<Action>(
-            (action as ManualScriptConfig).sequence
+            "sequence" in action
+              ? (action as ManualScriptConfig).sequence
+              : action
           );
           const branchPrefix = `${path}/parallel/${i}/sequence/`;
           const started = this._hasTracedSteps(branchPrefix);
