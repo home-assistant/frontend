@@ -45,12 +45,14 @@ describe("localizeStateMessage", () => {
     ).toBe("<ui.components.logbook.messages.pressed>");
   });
 
-  it("does not treat a restored timestamp as a new action", () => {
+  it("does not treat a restored timestamp with inherited context as a new action", () => {
     const restoredState = "2026-09-15T10:55:25+00:00";
     expect(
       localizeStateMessage(fakeHass, restoredState, fakeStateObj, "button", {
         name: "Restart",
         when: Date.parse("2026-09-15T11:05:05+00:00") / 1000,
+        context_domain: "homeassistant",
+        context_service: "reload_config_entry",
       })
     ).toBe(`<state:${restoredState}>`);
   });

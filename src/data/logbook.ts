@@ -304,16 +304,6 @@ export const localizeStateMessage = (
   }
   const actionKey: LogbookActionMessage | undefined =
     STATE_ACTION_MESSAGES[domain as keyof typeof STATE_ACTION_MESSAGES];
-  const hasActionContext = Boolean(
-    entry?.context_user_id ||
-    entry?.context_event_type ||
-    entry?.context_domain ||
-    entry?.context_service ||
-    entry?.context_entity_id ||
-    entry?.context_state ||
-    entry?.context_source ||
-    entry?.context_message
-  );
   const stateTimestamp = Date.parse(state);
   const matchesEntryTime =
     entry === undefined ||
@@ -321,9 +311,7 @@ export const localizeStateMessage = (
       Math.abs(stateTimestamp - entry.when * 1000) < 1000);
   if (
     actionKey &&
-    (!RESTORABLE_BUTTON_DOMAINS.has(domain) ||
-      hasActionContext ||
-      matchesEntryTime)
+    (!RESTORABLE_BUTTON_DOMAINS.has(domain) || matchesEntryTime)
   ) {
     return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.${actionKey}`);
   }
