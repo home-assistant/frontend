@@ -189,6 +189,10 @@ export const getMyRedirects = (): Redirects => ({
     component: "radio_frequency",
     redirect: "/config/radio-frequency",
   },
+  config_serial: {
+    component: "usb",
+    redirect: "/config/serial",
+  },
   config_ssdp: {
     component: "ssdp",
     redirect: "/config/ssdp",
