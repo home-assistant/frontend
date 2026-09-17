@@ -109,11 +109,11 @@ export const rowStyles = css`
     text-box-edge: cap alphabetic;
     overflow: hidden;
     transition:
-      opacity 180ms ease-out,
-      transform 180ms ease-out,
-      width 180ms ease-out,
-      margin-inline-end 180ms ease-out,
-      border-width 180ms ease-out;
+      opacity var(--ha-animation-duration-fast) ease-out,
+      transform var(--ha-animation-duration-fast) ease-out,
+      width var(--ha-animation-duration-fast) ease-out,
+      margin-inline-end var(--ha-animation-duration-fast) ease-out,
+      border-width var(--ha-animation-duration-fast) ease-out;
   }
 
   .trigger-index-badge.hidden {
