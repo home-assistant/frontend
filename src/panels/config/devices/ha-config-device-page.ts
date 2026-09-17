@@ -94,7 +94,6 @@ import {
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
-  hasZWaveJSEntryForDevice,
   isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
@@ -515,11 +514,6 @@ export class HaConfigDevicePage extends LitElement {
           musicAssistantLoaded: isComponentLoaded(
             this.hass.config,
             "music_assistant"
-          ),
-          zwaveJsEntryExists: hasZWaveJSEntryForDevice(
-            this.deviceId,
-            this.hass.devices,
-            this.entries
           ),
           serialConfigured: this._esphomeSerialConfigured,
         })

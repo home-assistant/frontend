@@ -34,7 +34,6 @@ import {
   configContext,
   configEntriesContext,
   connectionContext,
-  devicesContext,
   entitiesContext,
   internationalizationContext,
 } from "../../data/context";
@@ -49,7 +48,6 @@ import {
   ESPHOME_CAPABILITY_ACCENTS,
   ESPHOME_SERIAL_INTEGRATIONS,
   getESPHomeSetupCapabilityIds,
-  hasZWaveJSEntryForDevice,
   isESPHomeSerialConfigured,
   MUSIC_ASSISTANT_ADDON_SLUG,
   MUSIC_ASSISTANT_DOCS_URL,
@@ -130,10 +128,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _hassConfig?: ContextType<typeof configContext>;
 
   @state()
-  @consume({ context: devicesContext, subscribe: true })
-  private _devices?: ContextType<typeof devicesContext>;
-
-  @state()
   @consume({ context: entitiesContext, subscribe: true })
   private _entities?: ContextType<typeof entitiesContext>;
 
@@ -171,8 +165,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this.params &&
       this._api &&
       this._i18n &&
-      this._hassConfig &&
-      this._devices
+      this._hassConfig
     ) {
       this._loaded = true;
       this._capabilities = this.params.capabilities;
@@ -497,7 +490,24 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _renderConnectivityActions(status: ESPHomeCapabilityStatus) {
     const localize = this._i18n!.localize;
     if (status === "completed") {
-      return nothing;
+      const entry = this._zwaveJSEntry();
+      if (!entry) {
+        return nothing;
+      }
+      return html`
+        <ul class="ports">
+          <li>
+            <span class="port-text">
+              <span class="port-name">${entry.title}</span>
+            </span>
+            <span class="chip active">
+              ${localize(
+                "ui.panel.config.devices.esphome.setup_zwave_configured"
+              )}
+            </span>
+          </li>
+        </ul>
+      `;
     }
     if (status === "not-started") {
       return html`
@@ -517,6 +527,14 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         </ha-button>
       </div>
     `;
+  }
+
+  private _zwaveJSEntry() {
+    const entryId = this._capabilities?.zwave_proxy.config_entry_id;
+    if (!entryId || !this._configEntries) {
+      return undefined;
+    }
+    return this._configEntries.find((entry) => entry.entry_id === entryId);
   }
 
   private _serialConsumers(url: string) {
@@ -675,12 +693,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   }
 
   private _status(): ESPHomeSetupStatus | undefined {
-    if (
-      !this.params ||
-      !this._capabilities ||
-      !this._hassConfig ||
-      !this._devices
-    ) {
+    if (!this.params || !this._capabilities || !this._hassConfig) {
       return undefined;
     }
     return deriveESPHomeSetupStatus(this._capabilities, {
@@ -696,13 +709,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
         this._hassConfig.config,
         "music_assistant"
       ),
-      zwaveJsEntryExists: this._configEntries
-        ? hasZWaveJSEntryForDevice(
-            this.params.deviceId,
-            this._devices,
-            this._configEntries
-          )
-        : false,
       serialConfigured: isESPHomeSerialConfigured(
         this._capabilities.serial_proxies,
         this._serialPorts

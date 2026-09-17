@@ -1,6 +1,4 @@
 import { computeDomain } from "../common/entity/compute_domain";
-import type { ConfigEntry } from "./config_entries";
-import type { DeviceRegistryEntry } from "./device/device_registry";
 import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
 import type { SerialPortUsage } from "./usb";
@@ -75,30 +73,6 @@ export const hasESPHomeSetupCapabilities = (
       capabilities.serial_proxies.length > 0)
   );
 
-export const hasZWaveJSEntryForDevice = (
-  deviceId: string,
-  devices: Record<string, DeviceRegistryEntry>,
-  entries: ConfigEntry[]
-): boolean => {
-  const zwaveEntryIds = new Set(
-    entries
-      .filter((entry) => entry.domain === "zwave_js" && !entry.disabled_by)
-      .map((entry) => entry.entry_id)
-  );
-  if (!zwaveEntryIds.size) {
-    return false;
-  }
-  const device = devices[deviceId];
-  if (device?.config_entries.some((entryId) => zwaveEntryIds.has(entryId))) {
-    return true;
-  }
-  return Object.values(devices).some(
-    (candidate) =>
-      candidate.via_device_id === deviceId &&
-      candidate.config_entries.some((entryId) => zwaveEntryIds.has(entryId))
-  );
-};
-
 export const isESPHomeSerialConfigured = (
   serialProxies: readonly Pick<ESPHomeSerialProxy, "url">[],
   ports: readonly Pick<SerialPortUsage, "device" | "consumers">[]
@@ -112,7 +86,6 @@ export const deriveESPHomeSetupStatus = (
   options: {
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
-    zwaveJsEntryExists: boolean;
     serialConfigured?: boolean;
   }
 ): ESPHomeSetupStatus => {
@@ -127,7 +100,7 @@ export const deriveESPHomeSetupStatus = (
   }
 
   if (capabilities.zwave_proxy.supported) {
-    if (options.zwaveJsEntryExists) {
+    if (capabilities.zwave_proxy.config_entry_id) {
       status.connectivity = "completed";
     } else if (capabilities.zwave_proxy.home_id !== 0) {
       status.connectivity = "detected";

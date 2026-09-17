@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { ConfigEntry } from "../../src/data/config_entries";
-import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
-import type { ESPHomeDeviceCapabilities } from "../../src/data/esphome";
+import type {
+  ESPHomeBluetoothProxyCapabilities,
+  ESPHomeDeviceCapabilities,
+  ESPHomeZWaveProxyCapabilities,
+} from "../../src/data/esphome";
 import {
   countRemainingESPHomeCapabilities,
   deriveESPHomeSetupStatus,
@@ -10,7 +12,6 @@ import {
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
-  hasZWaveJSEntryForDevice,
   isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
   withDeferredESPHomeDevice,
@@ -18,29 +19,37 @@ import {
 import type { SerialPortUsage } from "../../src/data/usb";
 
 const capabilities = (
-  overrides: Partial<ESPHomeDeviceCapabilities> = {}
+  overrides: Partial<
+    Omit<ESPHomeDeviceCapabilities, "bluetooth_proxy" | "zwave_proxy">
+  > & {
+    bluetooth_proxy?: Partial<ESPHomeBluetoothProxyCapabilities>;
+    zwave_proxy?: Partial<ESPHomeZWaveProxyCapabilities>;
+  } = {}
 ): ESPHomeDeviceCapabilities => ({
   available: true,
-  bluetooth_proxy: { supported: false },
+  serial_proxies: [],
+  ...overrides,
+  bluetooth_proxy: {
+    supported: false,
+    ...overrides.bluetooth_proxy,
+  },
   zwave_proxy: {
     supported: false,
     home_id: 0,
+    config_entry_id: null,
+    ...overrides.zwave_proxy,
   },
-  serial_proxies: [],
-  ...overrides,
 });
 
 const deriveOptions = (
   overrides: Partial<{
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
-    zwaveJsEntryExists: boolean;
     serialConfigured: boolean;
   }> = {}
 ) => ({
   mediaPlayerSupported: false,
   musicAssistantLoaded: false,
-  zwaveJsEntryExists: false,
   serialConfigured: false,
   ...overrides,
 });
@@ -68,39 +77,6 @@ const serialUsage = (
     slug: null,
   })),
 });
-
-const entry = (overrides: Partial<ConfigEntry>): ConfigEntry =>
-  ({
-    entry_id: "entry",
-    domain: "esphome",
-    title: "Device",
-    source: "user",
-    state: "loaded",
-    supports_options: true,
-    supports_remove_device: false,
-    supports_unload: true,
-    supports_reconfigure: false,
-    supported_subentry_types: {},
-    num_subentries: 0,
-    pref_disable_new_entities: false,
-    pref_disable_polling: false,
-    disabled_by: null,
-    reason: null,
-    error_reason_translation_key: null,
-    error_reason_translation_placeholders: null,
-    ...overrides,
-  }) as ConfigEntry;
-
-const device = (
-  id: string,
-  overrides: Partial<DeviceRegistryEntry> = {}
-): DeviceRegistryEntry =>
-  ({
-    id,
-    config_entries: [],
-    via_device_id: null,
-    ...overrides,
-  }) as DeviceRegistryEntry;
 
 describe("hasESPHomeSetupCapabilities", () => {
   it("is false when capabilities are missing", () => {
@@ -221,13 +197,14 @@ describe("deriveESPHomeSetupStatus", () => {
     ).toBeUndefined();
   });
 
-  it("derives connectivity from home_id and a zwave_js entry", () => {
-    const supported = capabilities({
-      zwave_proxy: { supported: true, home_id: 0 },
-    });
-
+  it("derives connectivity from home_id and a matching zwave_js entry", () => {
     expect(
-      deriveESPHomeSetupStatus(supported, deriveOptions()).connectivity
+      deriveESPHomeSetupStatus(
+        capabilities({
+          zwave_proxy: { supported: true, home_id: 0 },
+        }),
+        deriveOptions()
+      ).connectivity
     ).toBe("not-started");
 
     expect(
@@ -242,9 +219,13 @@ describe("deriveESPHomeSetupStatus", () => {
     expect(
       deriveESPHomeSetupStatus(
         capabilities({
-          zwave_proxy: { supported: true, home_id: 123456 },
+          zwave_proxy: {
+            supported: true,
+            home_id: 123456,
+            config_entry_id: "zwave-entry",
+          },
         }),
-        deriveOptions({ zwaveJsEntryExists: true })
+        deriveOptions()
       ).connectivity
     ).toBe("completed");
   });
@@ -377,58 +358,6 @@ describe("remaining capabilities and continue-setup", () => {
     expect(status.serial).toBe("completed");
     expect(countRemainingESPHomeCapabilities(status)).toBe(0);
     expect(hasStartedNonBluetoothESPHomeSetup(status)).toBe(true);
-  });
-});
-
-describe("hasZWaveJSEntryForDevice", () => {
-  it("detects a zwave_js entry on the ESPHome device itself", () => {
-    const devices = {
-      esphome: device("esphome", {
-        config_entries: ["esphome-entry", "zwave-entry"],
-      }),
-    };
-    const entries = [
-      entry({ entry_id: "esphome-entry", domain: "esphome" }),
-      entry({ entry_id: "zwave-entry", domain: "zwave_js" }),
-    ];
-
-    expect(hasZWaveJSEntryForDevice("esphome", devices, entries)).toBe(true);
-  });
-
-  it("detects a child device via this ESPHome device", () => {
-    const devices = {
-      esphome: device("esphome", { config_entries: ["esphome-entry"] }),
-      controller: device("controller", {
-        config_entries: ["zwave-entry"],
-        via_device_id: "esphome",
-      }),
-    };
-    const entries = [
-      entry({ entry_id: "esphome-entry", domain: "esphome" }),
-      entry({ entry_id: "zwave-entry", domain: "zwave_js" }),
-    ];
-
-    expect(hasZWaveJSEntryForDevice("esphome", devices, entries)).toBe(true);
-  });
-
-  it("ignores disabled zwave_js entries and unrelated devices", () => {
-    const devices = {
-      esphome: device("esphome", { config_entries: ["esphome-entry"] }),
-      other: device("other", {
-        config_entries: ["zwave-disabled"],
-        via_device_id: "someone-else",
-      }),
-    };
-    const entries = [
-      entry({ entry_id: "esphome-entry", domain: "esphome" }),
-      entry({
-        entry_id: "zwave-disabled",
-        domain: "zwave_js",
-        disabled_by: "user",
-      }),
-    ];
-
-    expect(hasZWaveJSEntryForDevice("esphome", devices, entries)).toBe(false);
   });
 });
 

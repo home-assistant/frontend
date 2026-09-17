@@ -7001,6 +7001,7 @@
             "setup_status_completed": "Completed",
             "setup_status_active": "Active",
             "setup_zwave": "Set up Z-Wave",
+            "setup_zwave_configured": "Configured",
             "setup_what_are_adapters": "What are these adapters?",
             "setup_adapters_title": "Add Zigbee or Z-Wave",
             "setup_adapters_intro": "Plug a Home Assistant Connect adapter into your proxy's USB port to add wireless radios:",

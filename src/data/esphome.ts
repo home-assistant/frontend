@@ -13,6 +13,7 @@ export interface ESPHomeBluetoothProxyCapabilities {
 export interface ESPHomeZWaveProxyCapabilities {
   supported: boolean;
   home_id: number;
+  config_entry_id: string | null;
 }
 
 export interface ESPHomeSerialProxy {
