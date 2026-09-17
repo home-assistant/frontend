@@ -107,6 +107,8 @@ export const handleExternalMessage = (
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
     fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
+  } else if (msg.command === "more_info/action") {
+    fireEvent(hassMainEl, "more-info-header-action", { id: msg.payload.id });
   } else {
     return false;
   }
@@ -126,6 +128,8 @@ declare global {
     "improv-discovered-device": ImprovDiscoveredDevice;
     "improv-device-setup-done": undefined;
     "matter-commission-finish": MatterCommissionFinish;
+    /** The app's `more_info/action`, for the standalone more-info page. */
+    "more-info-header-action": { id: string };
   }
 
   interface GlobalEventHandlersEventMap {
