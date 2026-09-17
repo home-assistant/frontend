@@ -22,7 +22,12 @@ import type {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { saveCoreConfig } from "../../../data/core";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import type {
   HomeZoneMutableParams,
   Zone,
@@ -47,6 +52,19 @@ import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
+interface PendingEdit {
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
+}
+
+// How close the saved value must come to a pending one to count as saved
+const PENDING_TOLERANCE: Record<keyof PendingEdit, number> = {
+  latitude: 1e-7,
+  longitude: 1e-7,
+  radius: 0.5,
+};
+
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -61,21 +79,36 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @state() private _stateItems?: HassEntity[];
 
+  // Values dragged on the map, shown until the saved data reflects them, so
+  // a re-render while the save is in flight does not move the marker back.
+  // A failed save drops them and the marker returns to the saved values.
+  @state() private _pendingEdits: Record<string, PendingEdit> = {};
+
   @state() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
 
   private _regEntities: string[] = [];
 
+  // Registry creation order decides the zone colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  // Storage zone id (its unique id) to entity id
+  @state() private _zoneEntityIds: Record<string, string> = {};
+
+  // Bumped when entity map colors change to recompute the memoized locations
+  @state() private _colorVersion = 0;
+
   private _getZones = memoizeOne(
-    (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
+    (
+      storageItems: Zone[],
+      stateItems: HassEntity[],
+      zoneEntityIds: Record<string, string>,
+      pendingEdits: Record<string, PendingEdit>,
+      entityReg: EntityRegistryEntry[],
+      _colorVersion: number
+    ): MarkerLocation[] => {
       const computedStyles = getComputedStyle(this);
-      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
-      const passiveRadiusColor = computedStyles.getPropertyValue(
-        "--secondary-text-color"
-      );
-      const homeRadiusColor =
-        computedStyles.getPropertyValue("--primary-color");
 
       const stateLocations: MarkerLocation[] = stateItems.map(
         (entityState) => ({
@@ -85,21 +118,28 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
-          radius_color:
-            entityState.entity_id === "zone.home"
-              ? homeRadiusColor
-              : entityState.attributes.passive
-                ? passiveRadiusColor
-                : zoneRadiusColor,
+          ...pendingEdits[entityState.entity_id],
+          radius_color: zoneColor(
+            entityState.entity_id,
+            !!entityState.attributes.passive,
+            entityReg,
+            computedStyles
+          ),
           location_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
           radius_editable:
-            entityState.entity_id === "zone.home" && this._canEditCore,
+            entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
-        radius_color: zone.passive ? passiveRadiusColor : zoneRadiusColor,
+        ...pendingEdits[zone.id],
+        radius_color: zoneColor(
+          zoneEntityIds[zone.id] ?? `zone.${zone.id}`,
+          !!zone.passive,
+          entityReg,
+          computedStyles
+        ),
         location_editable: true,
         radius_editable: true,
       }));
@@ -110,8 +150,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entityReg = entities;
         this._regEntities = entities.map(
           (registryEntry) => registryEntry.entity_id
+        );
+        this._zoneEntityIds = Object.fromEntries(
+          entities
+            .filter((registryEntry) => registryEntry.platform === "zone")
+            .map((registryEntry) => [
+              registryEntry.unique_id,
+              registryEntry.entity_id,
+            ])
         );
         this._filterStates();
       }),
@@ -265,7 +314,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   <ha-locations-editor
                     .locations=${this._getZones(
                       this._storageItems,
-                      this._stateItems
+                      this._stateItems,
+                      this._zoneEntityIds,
+                      this._pendingEdits,
+                      this._entityReg,
+                      this._colorVersion
                     )}
                     @location-updated=${this._locationUpdated}
                     @radius-updated=${this._radiusUpdated}
@@ -295,7 +348,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
     if (
       !this.route.path.startsWith("/edit/") ||
       !this._stateItems ||
@@ -313,10 +367,98 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   public willUpdate(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
+    super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
+    }
+    // Zone colors come from theme variables
+    if (oldHass && oldHass.themes !== this.hass.themes) {
+      this._colorVersion++;
+    }
+    this._settlePendingEdits();
+  }
+
+  // A pending edit is done once the saved data carries its values
+  private _settlePendingEdits() {
+    for (const [id, pending] of Object.entries(this._pendingEdits)) {
+      const saved =
+        this._storageItems?.find((zone) => zone.id === id) ??
+        this.hass.states[id]?.attributes;
+      if (
+        saved &&
+        (Object.keys(pending) as (keyof PendingEdit)[]).every(
+          (key) =>
+            Math.abs((saved[key] as number) - pending[key]!) <
+            PENDING_TOLERANCE[key]
+        )
+      ) {
+        this._dropPendingEdit(id);
+      }
+    }
+  }
+
+  private _dropPendingEdit(id: string) {
+    const { [id]: _done, ...rest } = this._pendingEdits;
+    this._pendingEdits = rest;
+  }
+
+  // Saves for one zone run in order, so each sees the entry the previous one
+  // produced and a failure only drops the values its own request carried
+  private _saveQueue: Record<string, Promise<void>> = {};
+
+  private _saveEdit(id: string, pending: PendingEdit): Promise<void> {
+    this._pendingEdits = {
+      ...this._pendingEdits,
+      [id]: { ...this._pendingEdits[id], ...pending },
+    };
+    const save = (this._saveQueue[id] ?? Promise.resolve())
+      .then(() => this._performSave(id, pending))
+      .finally(() => {
+        // Only the last save in the chain removes the queue entry
+        if (this._saveQueue[id] === save) {
+          delete this._saveQueue[id];
+        }
+      });
+    this._saveQueue[id] = save;
+    return save;
+  }
+
+  private async _performSave(id: string, pending: PendingEdit) {
+    try {
+      if (id === HOME_ZONE_ENTITY_ID) {
+        await saveCoreConfig(this.hass, pending);
+        return;
+      }
+      const entry = this._storageItems!.find((item) => item.id === id);
+      if (entry) {
+        await this._updateEntry(entry, pending);
+      }
+    } catch (err: any) {
+      // The saved values are the truth again for what this request changed;
+      // a later edit of other values stays pending for its own save
+      this._dropPendingValues(id, pending);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
+        text: err.message,
+      });
+    }
+  }
+
+  private _dropPendingValues(id: string, failed: PendingEdit) {
+    const current = this._pendingEdits[id];
+    if (!current) {
+      return;
+    }
+    const rest = Object.fromEntries(
+      Object.entries(current).filter(
+        ([key, value]) => failed[key as keyof PendingEdit] !== value
+      )
+    ) as PendingEdit;
+    if (Object.keys(rest).length) {
+      this._pendingEdits = { ...this._pendingEdits, [id]: rest };
+    } else {
+      this._dropPendingEdit(id);
     }
   }
 
@@ -359,37 +501,19 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _locationUpdated(ev: CustomEvent) {
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        latitude: ev.detail.location[0],
-        longitude: ev.detail.location[1],
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
+  private _locationUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
       latitude: ev.detail.location[0],
       longitude: ev.detail.location[1],
     });
   }
 
-  private async _radiusUpdated(ev: CustomEvent) {
-    if (ev.detail.id === "zone.home" && this._canEditCore) {
-      await saveCoreConfig(this.hass, {
-        radius: Math.round(ev.detail.radius),
-      });
-      return;
-    }
-    const entry = this._storageItems!.find((item) => item.id === ev.detail.id);
-    if (!entry) {
-      return;
-    }
-    this._updateEntry(entry, {
-      radius: ev.detail.radius,
+  private _radiusUpdated(ev: CustomEvent) {
+    this._saveEdit(ev.detail.id, {
+      radius:
+        ev.detail.id === HOME_ZONE_ENTITY_ID
+          ? Math.round(ev.detail.radius)
+          : ev.detail.radius,
     });
   }
 
@@ -416,7 +540,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
     const entryId: string = (ev.currentTarget! as any).value;
 
-    if (this.narrow && entryId === "zone.home") {
+    if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);
       return;
     }
@@ -475,7 +599,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       longitude: values.longitude,
       radius: values.radius,
     });
-    this._zoomZone("zone.home");
+    this._zoomZone(HOME_ZONE_ENTITY_ID);
   }
 
   private async _updateEntry(

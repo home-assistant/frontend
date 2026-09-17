@@ -8,8 +8,13 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../common/color/colors";
+import type { ContextType } from "@lit/context";
+import { consume, ContextConsumer } from "@lit/context";
 import { resolveThemeColor } from "../../../common/color/compute-color";
+import {
+  entityMapColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -31,6 +36,10 @@ import type {
 import type { MapLatLng } from "../../../common/map/map-engine";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import type { Themes } from "../../../data/ws-themes";
+import { fullEntitiesContext, uiContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import {
@@ -58,6 +67,18 @@ interface GeoEntity {
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
+  constructor() {
+    super();
+    new ContextConsumer(this, {
+      context: fullEntitiesContext,
+      subscribe: true,
+      callback: (entries) => {
+        this._entityReg = entries;
+        this._mapEntities = this._getMapEntities();
+      },
+    });
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
@@ -76,11 +97,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _filteredMapEntities: HaMapEntity[] = [];
 
-  private _colorDict: Record<string, string> = {};
-
-  private _colorIndex = 0;
-
   @state() private _error?: { code: string; message: string };
+
+  // Registry creation order decides the palette colors
+  @state() private _entityReg: EntityRegistryEntry[] = [];
+
+  // Palette colors are read from the theme when the entities are built
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<ContextType<typeof uiContext>, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes?: Themes;
 
   @state() private _clusterMarkers = true;
 
@@ -213,7 +241,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           <ha-map
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
-            .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
+            .paths=${this._getHistoryPaths(
+              this._config,
+              this._stateHistory,
+              this._entityReg,
+              this._themes
+            )}
             .autoFit=${this._config.auto_fit || false}
             .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
@@ -319,6 +352,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         this._getSourceEntities(this.hass.states)
       )
     ) {
+      this._mapEntities = this._getMapEntities();
+    }
+    // Private state is not in keyof this
+    if ((changedProps as PropertyValues).has("_themes") && this.hasUpdated) {
       this._mapEntities = this._getMapEntities();
     }
 
@@ -432,18 +469,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._clusterMarkers = !this._clusterMarkers;
   }
 
+  // The same color for an entity on every map; a config color still wins
   private _getColor(entityId: string): string {
-    let color = this._colorDict[entityId];
-    if (color) {
-      return color;
-    }
     const computedStyles = getComputedStyle(this);
-    color = getColorByIndex(this._colorIndex, computedStyles);
-    if (color) {
-      this._colorIndex++;
-      this._colorDict[entityId] = color;
+    if (computeDomain(entityId) === "zone") {
+      const stateObj = this.hass?.states[entityId];
+      return zoneColor(
+        entityId,
+        !!stateObj?.attributes.passive,
+        this._entityReg,
+        computedStyles
+      );
     }
-    return color;
+    return entityMapColor(entityId, this._entityReg, computedStyles);
   }
 
   private _getSourceEntities(states?: HassEntities): GeoEntity[] {
@@ -503,7 +541,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getHistoryPaths = memoizeOne(
     (
       config: MapCardConfig,
-      history?: HistoryStates
+      history: HistoryStates | undefined,
+      // Trail colors follow the registry order and the theme like the markers
+      _entityReg: EntityRegistryEntry[],
+      _themes: Themes | undefined
     ): HaMapPaths[] | undefined => {
       if (!history || !(config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)) {
         return undefined;
