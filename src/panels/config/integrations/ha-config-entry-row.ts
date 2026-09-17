@@ -248,82 +248,89 @@ export class HaConfigEntryRow extends LitElement {
           ${
             allDevices.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${
                       allDevices.length === 1
                         ? `/config/devices/device/${allDevices[0].id}`
                         : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
                     }
-                    value="devices"
                   >
-                    <ha-svg-icon .path=${mdiDevices} slot="icon"></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.devices`,
-                      { count: allDevices.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="devices">
+                      <ha-svg-icon
+                        .path=${mdiDevices}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.devices`,
+                        { count: allDevices.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
           ${
             allServices.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${
                       allServices.length === 1
                         ? `/config/devices/device/${allServices[0].id}`
                         : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
                     }
-                    value="services"
                   >
-                    <ha-svg-icon
-                      .path=${mdiHandExtendedOutline}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.services`,
-                      { count: allServices.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="services">
+                      <ha-svg-icon
+                        .path=${mdiHandExtendedOutline}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.services`,
+                        { count: allServices.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
           ${
             entities.length
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
-                    value="entities"
                   >
-                    <ha-svg-icon
-                      .path=${mdiShapeOutline}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.entities`,
-                      { count: entities.length }
-                    )}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="entities">
+                      <ha-svg-icon
+                        .path=${mdiShapeOutline}
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.entities`,
+                        { count: entities.length }
+                      )}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
           ${
             ERROR_STATES.includes(item.state)
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${`/config/logs?filter=${encodeURIComponent(item.domain)}`}
-                    value="logs"
                   >
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiTextBoxOutline}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.panel.config.logs.caption")}
-                    <ha-icon-next slot="details"></ha-icon-next>
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="logs">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiTextBoxOutline}
+                      ></ha-svg-icon>
+                      ${this.hass.localize("ui.panel.config.logs.caption")}
+                      <ha-icon-next slot="details"></ha-icon-next>
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
@@ -372,18 +379,22 @@ export class HaConfigEntryRow extends LitElement {
           ${
             this.diagnosticHandler && item.state === "loaded"
               ? html`
-                  <ha-dropdown-item
+                  <a
                     href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                     target="_blank"
                     rel="noreferrer"
                     @click=${this._signUrl}
-                    value="diagnostics"
                   >
-                    <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.download_diagnostics"
-                    )}
-                  </ha-dropdown-item>
+                    <ha-dropdown-item value="diagnostics">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiDownload}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.download_diagnostics"
+                      )}
+                    </ha-dropdown-item>
+                  </a>
                 `
               : nothing
           }
