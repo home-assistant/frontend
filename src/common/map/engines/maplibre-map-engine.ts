@@ -131,6 +131,8 @@ interface ManagedMarker {
 interface ClusterGroup {
   /** Members are shown in a bubble at their spot instead of an icon */
   open?: boolean;
+  /** Grouped by key (a zone), so it bubbles even with a single member */
+  keyed?: boolean;
   members: ManagedMarker[];
   center: MapLatLng;
   iconMarker?: MapLibreMarker;
@@ -1223,6 +1225,7 @@ export class MapLibreMapEngine implements MapEngine {
       const groups: {
         seed: { x: number; y: number };
         members: ManagedMarker[];
+        keyed?: boolean;
       }[] = [];
 
       // Keyed groups first; one spread too wide falls through to proximity
@@ -1245,8 +1248,10 @@ export class MapLibreMapEngine implements MapEngine {
             Math.max(...xs) - Math.min(...xs),
             Math.max(...ys) - Math.min(...ys)
           );
-          if (members.length > 1 && spread <= (groupRadius ?? radius)) {
-            groups.push({ seed: points[0], members });
+          // A keyed group (a zone) bubbles even with a single member, so a lone
+          // person or device in a zone still shows in a bubble pinned to it.
+          if (members.length === 1 || spread <= (groupRadius ?? radius)) {
+            groups.push({ seed: points[0], members, keyed: true });
           } else {
             ungrouped.push(...members);
           }
@@ -1272,6 +1277,7 @@ export class MapLibreMapEngine implements MapEngine {
       }
       this._clusterGroups = groups.map((group) => ({
         members: group.members,
+        keyed: group.keyed,
         center: [
           group.members.reduce((sum, m) => sum + m.location[0], 0) /
             group.members.length,
@@ -1283,7 +1289,9 @@ export class MapLibreMapEngine implements MapEngine {
 
     for (const group of this._clusterGroups) {
       group.iconMarker = undefined;
-      if (group.members.length === 1) {
+      // A lone non-keyed marker shows plainly; a lone zone occupant falls
+      // through to the bubble path so it renders in a bubble at its zone.
+      if (group.members.length === 1 && !group.keyed) {
         this._showMarker(group.members[0]);
         continue;
       }
