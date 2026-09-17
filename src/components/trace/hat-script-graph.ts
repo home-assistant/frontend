@@ -205,6 +205,17 @@ export class HatScriptGraph extends LitElement {
     ) {
       return false;
     }
+    if ("stop" in lastStep) {
+      return false;
+    }
+    if (
+      getAutomationActionType(lastStep) === "condition" &&
+      (this.trace.trace[lastPath] as ConditionTraceStep[]).some(
+        (tr) => tr.result?.result === false
+      )
+    ) {
+      return false;
+    }
     return true;
   }
 
@@ -217,9 +228,10 @@ export class HatScriptGraph extends LitElement {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const tracePath = trace
       ? trace.map((trc) =>
-          trc.result === undefined || trc.result.choice === "default"
+          trc.result?.choice === "default" ||
+          (trc.result === undefined && !trc.error)
             ? "default"
-            : trc.result.choice
+            : trc.result?.choice
         )
       : [];
     const trackDefault =
@@ -306,7 +318,16 @@ export class HatScriptGraph extends LitElement {
               })
             : ""
         }
-        <div ?track=${trackDefault}>
+        <div
+          ?track=${trackDefault}
+          ?unfinished=${
+            trackDefault &&
+            !this._branchFinished(
+              `${path}/default/`,
+              ensureArray<Action>(config.default ?? [])
+            )
+          }
+        >
           <hat-graph-spacer ?track=${trackDefault}></hat-graph-spacer>
           ${
             config.default !== null
@@ -467,11 +488,11 @@ export class HatScriptGraph extends LitElement {
     let trackFailed = false;
     if (trace) {
       for (const trc of trace) {
-        if (trc.result) {
+        if (trc.result || trc.error) {
           track = true;
-          if (trc.result.result) {
+          if (trc.result?.result) {
             trackPass = true;
-          } else {
+          } else if (trc.result) {
             trackFailed = true;
           }
         }
@@ -648,7 +669,17 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${disabled || node.enabled === false}
       >
-        <div class="graph-container" ?track=${path in this.trace.trace}>
+        <div
+          class="graph-container"
+          ?track=${path in this.trace.trace}
+          ?unfinished=${
+            path in this.trace.trace &&
+            !this._branchFinished(
+              `${path}/sequence/`,
+              ensureArray<Action>(node.sequence ?? [])
+            )
+          }
+        >
           <hat-graph-node
             .graphStart=${graphStart}
             .iconPath=${mdiFormatListNumbered}
@@ -701,12 +732,23 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         ${ensureArray<Action>(node.parallel).map((action, i) => {
           if (!("sequence" in action)) {
-            return this._renderActionNode(
-              action,
-              `${path}/parallel/${i}/sequence/0`,
-              false,
-              disabled || node.enabled === false
-            );
+            const actionPath = `${path}/parallel/${i}/sequence/0`;
+            return html`<div
+              ?track=${actionPath in this.trace.trace}
+              ?unfinished=${
+                actionPath in this.trace.trace &&
+                !this._branchFinished(`${path}/parallel/${i}/sequence/`, [
+                  action,
+                ])
+              }
+            >
+              ${this._renderActionNode(
+                action,
+                actionPath,
+                false,
+                disabled || node.enabled === false
+              )}
+            </div>`;
           }
           const branchSteps = ensureArray<Action>(
             (action as ManualScriptConfig).sequence

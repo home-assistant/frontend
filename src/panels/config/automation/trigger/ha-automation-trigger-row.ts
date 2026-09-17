@@ -173,7 +173,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
-  @query("ha-automation-row-event-chip")
+  @query(".triggered-chip")
   private _eventChipElement?: HaAutomationRowEventChip;
 
   @storage({
@@ -362,7 +362,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       <ha-automation-row-event-chip
         .show=${this._triggered}
         slot="event"
-        class="event-chip"
+        class="event-chip triggered-chip"
         interactive
         aria-live="polite"
         @click=${this._showTriggeredInfo}

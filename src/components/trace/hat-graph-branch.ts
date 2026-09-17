@@ -101,7 +101,11 @@ export class HatGraphBranch extends LitElement {
     });
     // Tracked branches are drawn last, so they are never covered by the
     // untracked ones where the paths overlap.
-    branches.sort((a, b) => Number(a.track) - Number(b.track));
+    branches.sort(
+      (a, b) =>
+        Number(a.trackEnd) - Number(b.trackEnd) ||
+        Number(a.track) - Number(b.track)
+    );
     if (
       total_width === this._totalWidth &&
       Math.max(...heights) === this._maxHeight &&
