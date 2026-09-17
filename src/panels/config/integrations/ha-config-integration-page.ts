@@ -1338,7 +1338,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const configEntries = this._domainConfigEntries(
       this.domain,
       this._extraConfigEntries || this.configEntries
-    ).filter((entry) => entry.source !== "ignore");
+    ).filter(
+      (entry) =>
+        entry.source !== "ignore" && flowType in entry.supported_subentry_types
+    );
 
     if (!configEntries.length) {
       return;
