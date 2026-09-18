@@ -539,7 +539,7 @@ export class TraceTree {
       if (
         (trace as WaitActionTraceStep[]).some(
           ({ result }) =>
-            result?.timeout ||
+            (result?.timeout && action.continue_on_timeout === false) ||
             (result?.wait?.completed === false &&
               (action.continue_on_timeout === false ||
                 result.wait.remaining !== 0))

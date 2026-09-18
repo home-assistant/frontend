@@ -24,15 +24,16 @@ import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { Condition, Trigger } from "../../data/automation";
-import type {
-  ChooseAction,
-  IfAction,
-  ParallelAction,
-  RepeatAction,
-  SequenceAction,
-  ServiceAction,
-  WaitAction,
-  WaitForTriggerAction,
+import {
+  getActionType,
+  type ChooseAction,
+  type IfAction,
+  type ParallelAction,
+  type RepeatAction,
+  type SequenceAction,
+  type ServiceAction,
+  type WaitAction,
+  type WaitForTriggerAction,
 } from "../../data/script";
 import type { TraceExtended } from "../../data/trace";
 import { TraceTree } from "../../data/trace-tree";
@@ -428,11 +429,11 @@ export class HatScriptGraph extends LitElement {
   }
 
   private _renderOtherNode(model: TraceActionNode, graphStart = false) {
-    const { config: node, path, track, actionType } = model;
+    const { config: node, path, track } = model;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
-        .iconPath=${ACTION_ICONS[actionType] || mdiCodeBrackets}
+        .iconPath=${ACTION_ICONS[getActionType(node)] || mdiCodeBrackets}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}

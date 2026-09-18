@@ -291,6 +291,31 @@ describe("TraceTree branch completion", () => {
     expect(branch.unfinished).toBe(true);
   });
 
+  it.each<Action>([
+    { wait_template: "{{ false }}", continue_on_timeout: true },
+    { wait_for_trigger: [], continue_on_timeout: true },
+    { wait_template: "{{ false }}" },
+    { wait_for_trigger: [] },
+  ])(
+    "completes a timed-out wait when continuation is enabled: %j",
+    (action) => {
+      // Core reports `timeout: true` together with `wait.completed: false`;
+      // with `continue_on_timeout` true (or omitted, which defaults to
+      // continuing) the branch rejoins instead of stalling.
+      const branch = thenBranchOf(
+        [action],
+        [
+          {
+            ...step,
+            result: { wait: { completed: false, remaining: 0 }, timeout: true },
+          },
+        ]
+      );
+      expect(branch.finished).toBe(true);
+      expect(branch.unfinished).toBe(false);
+    }
+  );
+
   it.each([
     [true, 10, false, true],
     [false, 0, undefined, true],
