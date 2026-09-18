@@ -57,7 +57,7 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
-const DEFAULT_CHART_WIDTH = 500;
+export const DEFAULT_CHART_WIDTH = 500;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,

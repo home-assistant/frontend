@@ -11,7 +11,7 @@ import millisecondsToDuration from "../../common/datetime/milliseconds_to_durati
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { DEFAULT_CHART_WIDTH, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
@@ -323,6 +323,9 @@ export class StateHistoryChartTimeline extends LitElement {
       showNames: this.showNames,
       computedStyles: getComputedStyle(this),
       renderItem: this._renderItem,
+      // 0 while inside a hidden container, e.g. a section with a visibility condition
+      chartWidth:
+        (this.clientWidth || DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
     });
   }
 
@@ -340,6 +343,9 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     ha-chart-base {
       --chart-max-height: none;
     }
