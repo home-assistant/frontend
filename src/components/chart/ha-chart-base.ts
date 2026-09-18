@@ -58,6 +58,15 @@ const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 const DEFAULT_CHART_WIDTH = 500;
+// One viewport of slack keeps a chart up to date before a scroll can reach it.
+// _isVisible() mirrors this margin, so the two have to stay in step.
+const VISIBILITY_ROOT_MARGIN = "100%";
+const DEFERRED_PROPS = [
+  "options",
+  "data",
+  "_hiddenDatasets",
+  "_isZoomed",
+] as const;
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -189,13 +198,14 @@ export class HaChartBase extends LitElement {
       if (this.chart) {
         if (this._suspendResize) {
           this._shouldResizeChart = true;
-          return;
-        }
-        if (!this.chart.getZr().animation.isFinished()) {
+        } else if (!this.chart.getZr().animation.isFinished()) {
           this._shouldResizeChart = true;
         } else {
           this.chart.resize();
         }
+      }
+      if (!this._suspendResize) {
+        this._applyDeferredWork();
       }
     },
   });
@@ -210,10 +220,16 @@ export class HaChartBase extends LitElement {
 
   private _pendingSetup = false;
 
+  private _pendingUpdate?: Map<PropertyKey, unknown>;
+
+  private _pendingZoom?: [number, number, boolean];
+
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._legendPointerCancel();
     this._pendingSetup = false;
+    this._pendingUpdate = undefined;
+    this._pendingZoom = undefined;
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
@@ -227,13 +243,21 @@ export class HaChartBase extends LitElement {
     super.connectedCallback();
     if (this.hasUpdated) {
       this._pendingSetup = true;
-      afterNextRender(() => {
-        if (this.isConnected && this._pendingSetup) {
-          this._pendingSetup = false;
-          this._setupChart();
-        }
-      });
+      afterNextRender(() => this._applyDeferredWork());
     }
+
+    const handleVisibilityChange = () => this._applyDeferredWork();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    this._listeners.push(() =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    );
+
+    const intersectionObserver = new IntersectionObserver(
+      () => this._applyDeferredWork(),
+      { rootMargin: VISIBILITY_ROOT_MARGIN }
+    );
+    intersectionObserver.observe(this);
+    this._listeners.push(() => intersectionObserver.disconnect());
 
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
@@ -300,6 +324,7 @@ export class HaChartBase extends LitElement {
       this._suspendResize = this._layoutTransitionActive;
       if (!this._suspendResize) {
         this._resizeChartIfNeeded();
+        this._applyDeferredWork();
       }
     };
     window.addEventListener("hass-layout-transition", handleLayoutTransition);
@@ -312,24 +337,104 @@ export class HaChartBase extends LitElement {
   }
 
   protected firstUpdated() {
-    if (this.isConnected) {
-      this._setupChart();
+    if (!this.isConnected) {
+      return;
     }
+    if (this._isVisible()) {
+      this._setupChart();
+    } else {
+      this._pendingSetup = true;
+    }
+  }
+
+  private _isVisible() {
+    if (document.visibilityState === "hidden") {
+      return false;
+    }
+    const rect = this.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return false;
+    }
+    const marginX = window.innerWidth;
+    const marginY = window.innerHeight;
+    return (
+      rect.top < window.innerHeight + marginY &&
+      rect.bottom > -marginY &&
+      rect.left < window.innerWidth + marginX &&
+      rect.right > -marginX
+    );
+  }
+
+  private _deferUpdate(changedProps: PropertyValues) {
+    for (const prop of DEFERRED_PROPS) {
+      if (!changedProps.has(prop)) {
+        continue;
+      }
+      if (!this._pendingUpdate) {
+        this._pendingUpdate = new Map();
+      }
+      if (!this._pendingUpdate.has(prop)) {
+        // Only `options` has its previous value read on replay; keeping the
+        // others would pin whole datasets in memory while hidden.
+        this._pendingUpdate.set(
+          prop,
+          prop === "options" ? changedProps.get(prop) : undefined
+        );
+      }
+    }
+  }
+
+  private async _applyDeferredWork() {
+    if (!this._pendingSetup && !this._pendingUpdate) {
+      return;
+    }
+    if (!this.isConnected || !this._isVisible()) {
+      return;
+    }
+    if (this._pendingSetup) {
+      await this._setupChart();
+      return;
+    }
+    const pending = this._pendingUpdate!;
+    this._pendingUpdate = undefined;
+    this._applyChartUpdate(pending);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
     }
-    if (changedProps.has("_themes") && this.hasUpdated) {
-      this._setupChart();
+    const themeChanged = changedProps.has("_themes") && this.hasUpdated;
+    if (!themeChanged && !DEFERRED_PROPS.some((p) => changedProps.has(p))) {
       return;
     }
-    let chartOptions: ECOption = {};
+    const invisible = !this._isVisible();
+    if (themeChanged) {
+      if (invisible) {
+        this._pendingSetup = true;
+        this._pendingUpdate = undefined;
+      } else {
+        this._setupChart();
+      }
+      return;
+    }
     if (changedProps.has("options")) {
-      // Separate 'if' from below since this must updated before _getSeries()
+      // Separate 'if' from below since this must updated before _getSeries().
+      // It stays out of _applyChartUpdate so a replay cannot request another
+      // update and turn one catch-up render into two.
       this._updateHiddenStatsFromOptions(this.options);
     }
+    if (invisible) {
+      if (!this._pendingSetup) {
+        this._deferUpdate(changedProps);
+      }
+      return;
+    }
+    this._applyChartUpdate(changedProps);
+  }
+
+  private _applyChartUpdate(changedProps: Map<PropertyKey, unknown>) {
+    let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
       // New data, or a series shown again, may well be convertible where the
@@ -349,7 +454,7 @@ export class HaChartBase extends LitElement {
       chartOptions = { ...chartOptions, ...this._createOptions() };
       if (
         this._compareCustomLegendOptions(
-          changedProps.get("options"),
+          changedProps.get("options") as HaECOption | undefined,
           this.options
         )
       ) {
@@ -578,7 +683,11 @@ export class HaChartBase extends LitElement {
     // costs the user their place in the tab order, so stay programmatically
     // focusable for as long as we hold focus, however we stop being sonifiable.
     this._sonificationFocusHeld = true;
-    if (this._sonification || this._sonificationLoading || !this.chart) {
+    if (this._sonification || this._sonificationLoading) {
+      return;
+    }
+    await this._applyDeferredWork();
+    if (!this.chart) {
       return;
     }
     this._sonificationLoading = true;
@@ -635,14 +744,21 @@ export class HaChartBase extends LitElement {
     );
 
   private async _setupChart() {
-    if (this._loading) return;
+    if (this._loading) {
+      this._pendingSetup = true;
+      return;
+    }
     this._loading = true;
+    this._pendingSetup = false;
+    this._pendingUpdate = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
       if (this.chart) {
         this.chart.dispose();
+        this.chart = undefined;
+        this._originalZrFlush = undefined;
       }
       const echarts = (await import("../../resources/echarts/echarts")).default;
 
@@ -780,8 +896,14 @@ export class HaChartBase extends LitElement {
         series: this._getSeries(),
       });
       this._updateSankeyRoam();
+      if (this._pendingZoom) {
+        const [start, end, silent] = this._pendingZoom;
+        this._pendingZoom = undefined;
+        this.chart.dispatchAction({ type: "dataZoom", start, end, silent });
+      }
     } finally {
       this._loading = false;
+      this._applyDeferredWork();
     }
   }
 
@@ -1247,7 +1369,13 @@ export class HaChartBase extends LitElement {
   };
 
   public zoom(start: number, end: number, silent = false) {
-    this.chart?.dispatchAction({
+    if (!this.chart) {
+      // Sibling charts sync their zoom imperatively, so a range that arrives
+      // before a deferred setup has to be replayed rather than dropped.
+      this._pendingZoom = [start, end, silent];
+      return;
+    }
+    this.chart.dispatchAction({
       type: "dataZoom",
       start,
       end,
