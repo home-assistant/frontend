@@ -58,9 +58,10 @@ const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 const DEFAULT_CHART_WIDTH = 500;
-// One viewport of slack keeps a chart up to date before a scroll can reach it.
-// _isVisible() mirrors this margin, so the two have to stay in step.
-const VISIBILITY_ROOT_MARGIN = "100%";
+// Slack so a chart is up to date before a scroll can reach it. A phone screen
+// is short enough for a whole screenful; on a desktop that would cover the page.
+const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
+const VISIBILITY_ROOT_MARGIN = "300px";
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -192,9 +193,21 @@ export class HaChartBase extends LitElement {
 
   private _layoutTransitionActive = false;
 
+  // Both start visible so a chart on screen renders on its first update rather
+  // than waiting a frame for the observers. A chart that starts off screen is
+  // therefore still built once; only its later updates are gated.
+  private _intersecting = true;
+
+  private _hasSize = true;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
-    callback: () => {
+    callback: (entries) => {
+      // The controller also fires once with no entries when it starts observing.
+      const contentRect = entries[entries.length - 1]?.contentRect;
+      if (contentRect) {
+        this._hasSize = contentRect.width > 0 && contentRect.height > 0;
+      }
       if (this.chart) {
         if (this._suspendResize) {
           this._shouldResizeChart = true;
@@ -220,7 +233,9 @@ export class HaChartBase extends LitElement {
 
   private _pendingSetup = false;
 
-  private _pendingUpdate?: Map<PropertyKey, unknown>;
+  private _pendingUpdate?: Set<PropertyKey>;
+
+  private _pendingOptions?: HaECOption;
 
   private _pendingZoom?: [number, number, boolean];
 
@@ -229,7 +244,12 @@ export class HaChartBase extends LitElement {
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
+    this._pendingOptions = undefined;
     this._pendingZoom = undefined;
+    // The observers are about to be torn down, so nothing would correct a stale
+    // value if this element is reattached inside a hidden container.
+    this._intersecting = false;
+    this._hasSize = false;
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
@@ -253,8 +273,17 @@ export class HaChartBase extends LitElement {
     );
 
     const intersectionObserver = new IntersectionObserver(
-      () => this._applyDeferredWork(),
-      { rootMargin: VISIBILITY_ROOT_MARGIN }
+      (entries) => {
+        this._intersecting = entries[entries.length - 1].isIntersecting;
+        if (!this._suspendResize) {
+          this._applyDeferredWork();
+        }
+      },
+      {
+        rootMargin: window.matchMedia("(max-width: 870px)").matches
+          ? VISIBILITY_ROOT_MARGIN_NARROW
+          : VISIBILITY_ROOT_MARGIN,
+      }
     );
     intersectionObserver.observe(this);
     this._listeners.push(() => intersectionObserver.disconnect());
@@ -340,6 +369,10 @@ export class HaChartBase extends LitElement {
     if (!this.isConnected) {
       return;
     }
+    // The only measurement taken here: neither observer has reported yet, and a
+    // chart first rendered inside a hidden container has to defer its setup
+    // rather than build against a guessed width.
+    this._hasSize = this.clientWidth > 0 && this.clientHeight > 0;
     if (this._isVisible()) {
       this._setupChart();
     } else {
@@ -348,20 +381,10 @@ export class HaChartBase extends LitElement {
   }
 
   private _isVisible() {
-    if (document.visibilityState === "hidden") {
-      return false;
-    }
-    const rect = this.getBoundingClientRect();
-    if (!rect.width || !rect.height) {
-      return false;
-    }
-    const marginX = window.innerWidth;
-    const marginY = window.innerHeight;
     return (
-      rect.top < window.innerHeight + marginY &&
-      rect.bottom > -marginY &&
-      rect.left < window.innerWidth + marginX &&
-      rect.right > -marginX
+      document.visibilityState !== "hidden" &&
+      this._hasSize &&
+      this._intersecting
     );
   }
 
@@ -371,16 +394,14 @@ export class HaChartBase extends LitElement {
         continue;
       }
       if (!this._pendingUpdate) {
-        this._pendingUpdate = new Map();
+        this._pendingUpdate = new Set();
       }
-      if (!this._pendingUpdate.has(prop)) {
-        // Only `options` has its previous value read on replay; keeping the
-        // others would pin whole datasets in memory while hidden.
-        this._pendingUpdate.set(
-          prop,
-          prop === "options" ? changedProps.get(prop) : undefined
-        );
+      if (prop === "options" && !this._pendingUpdate.has(prop)) {
+        // The one previous value a replay reads, and it has to stay the options
+        // the chart currently renders, not those of a later deferred change.
+        this._pendingOptions = changedProps.get(prop) as HaECOption | undefined;
       }
+      this._pendingUpdate.add(prop);
     }
   }
 
@@ -396,8 +417,10 @@ export class HaChartBase extends LitElement {
       return;
     }
     const pending = this._pendingUpdate!;
+    const previousOptions = this._pendingOptions;
     this._pendingUpdate = undefined;
-    this._applyChartUpdate(pending);
+    this._pendingOptions = undefined;
+    this._applyChartUpdate(pending, previousOptions);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -413,6 +436,7 @@ export class HaChartBase extends LitElement {
       if (invisible) {
         this._pendingSetup = true;
         this._pendingUpdate = undefined;
+        this._pendingOptions = undefined;
       } else {
         this._setupChart();
       }
@@ -430,10 +454,16 @@ export class HaChartBase extends LitElement {
       }
       return;
     }
-    this._applyChartUpdate(changedProps);
+    this._applyChartUpdate(
+      changedProps,
+      changedProps.get("options") as HaECOption | undefined
+    );
   }
 
-  private _applyChartUpdate(changedProps: Map<PropertyKey, unknown>) {
+  private _applyChartUpdate(
+    changedProps: { has: (prop: string) => boolean },
+    previousOptions: HaECOption | undefined
+  ) {
     let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
@@ -452,12 +482,7 @@ export class HaChartBase extends LitElement {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
-      if (
-        this._compareCustomLegendOptions(
-          changedProps.get("options") as HaECOption | undefined,
-          this.options
-        )
-      ) {
+      if (this._compareCustomLegendOptions(previousOptions, this.options)) {
         // custom legend changes may require a resize to layout properly
         this._shouldResizeChart = true;
         this._resizeAnimationDuration = 250;
@@ -751,6 +776,7 @@ export class HaChartBase extends LitElement {
     this._loading = true;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
+    this._pendingOptions = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
@@ -1371,8 +1397,10 @@ export class HaChartBase extends LitElement {
   public zoom(start: number, end: number, silent = false) {
     if (!this.chart) {
       // Sibling charts sync their zoom imperatively, so a range that arrives
-      // before a deferred setup has to be replayed rather than dropped.
-      this._pendingZoom = [start, end, silent];
+      // before a deferred setup has to be replayed rather than dropped. A reset
+      // to the full range is what a fresh chart is built with, so it just clears.
+      this._pendingZoom =
+        start === 0 && end === 100 ? undefined : [start, end, silent];
       return;
     }
     this.chart.dispatchAction({
