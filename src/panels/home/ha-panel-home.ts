@@ -62,6 +62,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private _loadConfigPromise?: Promise<void>;
 
+  private _lovelaceGeneration = 0;
+
   private _securityConfigRevision = 0;
 
   public hassSubscribe() {
@@ -414,6 +416,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private async _setLovelace() {
+    const generation = ++this._lovelaceGeneration;
     if (this._loadConfigPromise) {
       await this._loadConfigPromise;
     }
@@ -421,6 +424,13 @@ class PanelHome extends SubscribeMixin(LitElement) {
       this._strategyConfig,
       this.hass
     );
+
+    if (generation !== this._lovelaceGeneration) {
+      // A newer call to _setLovelace() started (and may have already
+      // finished) while this one was still generating. Discard this
+      // stale result instead of overwriting a more recent one.
+      return;
+    }
 
     this._lovelace = {
       config: config,
