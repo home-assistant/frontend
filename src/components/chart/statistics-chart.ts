@@ -549,17 +549,26 @@ export class StatisticsChart extends LitElement {
     this.unit = data.unit;
     this._yAxisFractionDigits = data.yAxisFractionDigits;
     this._chartData = data.datasets;
-    if (data.legendData.length !== this._legendData?.length) {
+    const legendData =
+      data.legendData.length > 1
+        ? data.legendData.map(({ id, name, noLabelClick }) => ({
+            id,
+            name,
+            noLabelClick,
+          }))
+        : // if there is only one entity, let the base chart handle the legend
+          undefined;
+    if (
+      legendData?.length !== this._legendData?.length ||
+      legendData?.some(
+        (item, index) =>
+          item.id !== this._legendData?.[index]?.id ||
+          item.name !== this._legendData?.[index]?.name ||
+          item.noLabelClick !== this._legendData?.[index]?.noLabelClick
+      )
+    ) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData =
-        data.legendData.length > 1
-          ? data.legendData.map(({ id, name, noLabelClick }) => ({
-              id,
-              name,
-              noLabelClick,
-            }))
-          : // if there is only one entity, let the base chart handle the legend
-            undefined;
+      this._legendData = legendData;
     }
     this._statisticIds = data.statisticIds;
   }
