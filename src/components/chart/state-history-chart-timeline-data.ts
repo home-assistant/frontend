@@ -10,7 +10,7 @@ import { snapFrameSize } from "./down-sample";
 import { computeTimelineColor } from "./timeline-color";
 
 export interface StateHistoryChartTimelineDataParams {
-  hass: HomeAssistant;
+  hass: Pick<HomeAssistant, "states">;
   data: TimelineEntity[];
   startTime: Date;
   endTime: Date;
