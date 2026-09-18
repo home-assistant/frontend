@@ -9507,9 +9507,6 @@
           },
           "heading": {
             "default_heading": "Kitchen"
-          },
-          "date": {
-            "default_title": "Today"
           }
         },
         "unused_entities": {

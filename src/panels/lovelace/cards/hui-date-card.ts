@@ -24,10 +24,9 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-date-card-editor");
   }
 
-  public static getStubConfig(hass: HomeAssistant): DateCardConfig {
+  public static getStubConfig(): DateCardConfig {
     return {
       type: "date",
-      title: hass.localize("ui.panel.lovelace.cards.date.default_title"),
     };
   }
 
