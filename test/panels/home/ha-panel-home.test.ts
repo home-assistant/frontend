@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { HomeFrontendSystemData } from "../../../src/data/frontend";
 import type * as GetStrategyModule from "../../../src/panels/lovelace/strategies/get-strategy";
 import type { HomeAssistant } from "../../../src/types";
@@ -56,7 +56,16 @@ const deferred = <T>() => {
 
 describe("ha-panel-home stale strategy regeneration guard", () => {
   beforeEach(() => {
+    // _setPreviewConfig() schedules a real 200ms debounce internally. Fake
+    // timers keep it from ever firing on its own, since every test here
+    // controls _setLovelace() timing explicitly instead.
+    vi.useFakeTimers();
     mockedGenerateLovelaceDashboardStrategy.mockReset();
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
+    vi.useRealTimers();
   });
 
   const createPanel = () => {
