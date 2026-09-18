@@ -25,7 +25,10 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
+import {
+  ACTION_BUILDING_BLOCKS,
+  getAutomationActionType,
+} from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import { domainToName } from "../../../../data/integration";
@@ -37,11 +40,11 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
+import "../action/ha-automation-action-editor";
 
 @customElement("ha-automation-sidebar-action")
 export default class HaAutomationSidebarAction extends LitElement {

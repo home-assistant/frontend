@@ -69,7 +69,10 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false })
   public renderedNodes: Record<string, any> = {};
 
-  @property({ attribute: false }) public trackedNodes!: Record<string, any>;
+  @property({ attribute: false }) public trackedNodes!: Record<
+    string,
+    NodeInfo
+  >;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
 
@@ -192,11 +195,16 @@ export class HaTracePathDetails extends LitElement {
       const nestPath = curPath
         .substring(this.selected.path.length + 1)
         .split("/");
-      let currentDetail = this.selected.config;
+      let currentDetail: unknown = this.selected.config;
       for (const part of nestPath) {
-        if (!["undefined", "string"].includes(typeof currentDetail[part])) {
-          currentDetail = currentDetail[part];
+        if (typeof currentDetail !== "object" || currentDetail === null) {
+          break;
         }
+        const child = (currentDetail as Record<string, unknown>)[part];
+        if (child === undefined || typeof child === "string") {
+          break;
+        }
+        currentDetail = child;
       }
 
       parts.push(
@@ -282,6 +290,9 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
+              typeof currentDetail === "object" &&
+              currentDetail !== null &&
+              "entity_id" in currentDetail &&
               currentDetail.entity_id &&
               curPath
                 .substring(this.selected.path.length + 1)
