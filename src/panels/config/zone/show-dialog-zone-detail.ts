@@ -3,8 +3,6 @@ import type { Zone, ZoneMutableParams } from "../../../data/zone";
 
 export interface ZoneDetailDialogParams {
   entry?: Zone;
-  /** The zone's entity, when it exists, for its map color */
-  entityId?: string;
   createEntry: (values: ZoneMutableParams) => Promise<unknown>;
   updateEntry?: (updates: Partial<ZoneMutableParams>) => Promise<unknown>;
   removeEntry?: () => Promise<boolean>;

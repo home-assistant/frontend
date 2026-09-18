@@ -128,11 +128,11 @@ export class HaLocationSelector extends LitElement {
               : value.longitude,
           radius: selector.location?.radius ? value?.radius || 1000 : undefined,
           radius_color: selector.location?.color || zoneRadiusColor,
+          name: selector.location?.name,
           icon:
             selector.location?.icon ||
-            (selector.location?.radius
-              ? "mdi:map-marker-radius"
-              : "mdi:map-marker"),
+            // No icon: show the name's initials, else a default marker
+            (selector.location?.name ? undefined : "mdi:map-marker"),
           location_editable: true,
           radius_editable:
             !!selector.location?.radius && !selector.location?.radius_readonly,

@@ -368,6 +368,8 @@ export interface LocationSelector {
     radius?: boolean;
     radius_readonly?: boolean;
     icon?: string;
+    /** Name whose initials the marker shows when there is no icon */
+    name?: string;
     /** Marker and radius color; defaults to the theme's zone color */
     color?: string;
   } | null;

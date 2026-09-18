@@ -10,7 +10,7 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import type { ZoneMutableParams } from "../../../data/zone";
+import type { Zone, ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
@@ -98,6 +98,10 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
       !lngInvalid &&
       !radiusInvalid;
 
+    // Resolve the entity from the registry we already consume, so the color is
+    // correct even when the registry loads after the dialog opens (deep link)
+    const entityId = this._zoneEntityId(this._params.entry, this._entityReg);
+
     return html`
       <ha-dialog
         .open=${this._open}
@@ -116,14 +120,15 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
           .hass=${this.hass}
           .schema=${this._schema(
             this._data.icon,
-            this._params?.entityId
+            entityId
               ? zoneColor(
-                  this._params.entityId,
+                  entityId,
                   !!this._data.passive,
                   this._entityReg,
                   getComputedStyle(this)
                 )
-              : undefined
+              : undefined,
+            this._data.name
           )}
           .data=${this._formData(this._data)}
           .error=${this._error}
@@ -171,8 +176,18 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
     `;
   }
 
+  // Storage zones register their entity with the zone id as unique id
+  private _zoneEntityId = memoizeOne(
+    (entry: Zone | undefined, entityReg: EntityRegistryEntry[]) =>
+      entry
+        ? entityReg.find(
+            (ent) => ent.platform === "zone" && ent.unique_id === entry.id
+          )?.entity_id
+        : undefined
+  );
+
   private _schema = memoizeOne(
-    (icon?: string, color?: string) =>
+    (icon?: string, color?: string, name?: string) =>
       [
         {
           name: "name",
@@ -191,7 +206,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         {
           name: "location",
           required: true,
-          selector: { location: { radius: true, icon, color } },
+          selector: { location: { radius: true, icon, color, name } },
         },
         { name: "passive_note", type: "constant" },
         { name: "passive", selector: { boolean: {} } },
