@@ -268,11 +268,18 @@ class PanelHome extends SubscribeMixin(LitElement) {
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
-      previewConfig: (config) => {
-        this._previewConfig = config;
-        this._debounceRegenerateStrategy();
-      },
+      previewConfig: this._setPreviewConfig,
     });
+  };
+
+  private _setPreviewConfig = (config: HomeFrontendSystemData | undefined) => {
+    this._previewConfig = config;
+    // Invalidate any in-flight _setLovelace() call synchronously: without
+    // this, a stale generation started before this preview change (e.g. a
+    // draft edit right before Cancel) could still resolve and get applied
+    // before the debounced regeneration below even starts.
+    this._lovelaceGeneration++;
+    this._debounceRegenerateStrategy();
   };
 
   private _editArea = async () => {
