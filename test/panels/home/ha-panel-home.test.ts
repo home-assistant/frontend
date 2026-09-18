@@ -137,4 +137,47 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
 
     expect(el._lovelace?.config).toEqual({ views: [] });
   });
+
+  it("passes the previewed draft to strategy generation, then falls back to the saved config once the preview is cleared", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    setPreviewConfig(el, { hide_welcome_message: true });
+    await setLovelace(el);
+
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
+      {
+        strategy: {
+          type: "home",
+          alert_entities: undefined,
+          favorite_entities: undefined,
+          home_panel: true,
+          hide_welcome_message: true,
+          hide_suggested_entities: undefined,
+          shortcuts: undefined,
+        },
+      },
+      el.hass
+    );
+
+    setPreviewConfig(el, undefined);
+    await setLovelace(el);
+
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
+      {
+        strategy: {
+          type: "home",
+          alert_entities: undefined,
+          favorite_entities: undefined,
+          home_panel: true,
+          hide_welcome_message: undefined,
+          hide_suggested_entities: undefined,
+          shortcuts: undefined,
+        },
+      },
+      el.hass
+    );
+  });
 });

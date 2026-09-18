@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { HomeFrontendSystemData } from "../../../../src/data/frontend";
+import type { EditHomeDialogParams } from "../../../../src/panels/home/dialogs/show-dialog-edit-home";
+import type { HomeAssistant } from "../../../../src/types";
 import {
   buildHomeConfig,
   type EditorState,
 } from "../../../../src/panels/home/dialogs/dialog-edit-home";
+import { createMockHass } from "../../../fixtures/hass";
 
 describe("buildHomeConfig", () => {
   const emptyState: EditorState = {
@@ -65,5 +68,75 @@ describe("buildHomeConfig", () => {
     expect(
       buildHomeConfig(baseConfig, emptyState).welcome_banner_dismissed
     ).toBe(true);
+  });
+});
+
+interface TestDialogEditHome extends HTMLElement {
+  hass: HomeAssistant;
+  updateComplete: Promise<boolean>;
+  showDialog(params: EditHomeDialogParams): void;
+  connectedCallback(): void;
+  disconnectedCallback(): void;
+}
+
+const welcomeChanged = (el: TestDialogEditHome, showWelcomeMessage: boolean) =>
+  (
+    el as unknown as Record<"_welcomeChanged", (ev: CustomEvent) => void>
+  )._welcomeChanged(
+    new CustomEvent("value-changed", {
+      detail: { value: { show_welcome_message: showWelcomeMessage } },
+    })
+  );
+
+const dialogClosed = (el: TestDialogEditHome) =>
+  (el as unknown as Record<"_dialogClosed", () => void>)._dialogClosed();
+
+describe("<dialog-edit-home> live preview lifecycle", () => {
+  const createDialog = () => {
+    const el = document.createElement(
+      "dialog-edit-home"
+    ) as unknown as TestDialogEditHome;
+    el.hass = createMockHass();
+    el.connectedCallback();
+    return el;
+  };
+
+  it("does not preview the initial showDialog() state", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
+    await el.updateComplete;
+
+    expect(previewConfig).not.toHaveBeenCalled();
+
+    el.disconnectedCallback();
+  });
+
+  it("previews the transformed draft after an editor state change", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    expect(previewConfig).toHaveBeenCalledTimes(1);
+    expect(previewConfig).toHaveBeenCalledWith({ hide_welcome_message: true });
+
+    el.disconnectedCallback();
+  });
+
+  it("clears the preview when the dialog closes", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
+    await el.updateComplete;
+
+    dialogClosed(el);
+
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
+
+    el.disconnectedCallback();
   });
 });
