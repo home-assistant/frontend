@@ -173,7 +173,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
-  @query("ha-automation-row-event-chip")
+  @query(".triggered-chip")
   private _eventChipElement?: HaAutomationRowEventChip;
 
   @storage({
@@ -346,9 +346,23 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${
+          "enabled" in this.trigger &&
+          this.trigger.enabled === false &&
+          !this._triggered
+        }
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._triggered}
         slot="event"
-        class="event-chip"
+        class="event-chip triggered-chip"
         interactive
         aria-live="polite"
         @click=${this._showTriggeredInfo}
@@ -622,17 +636,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     return html`
       <ha-card outlined class=${this._selected ? "selected" : ""}>
-        ${
-          "enabled" in this.trigger && this.trigger.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row
