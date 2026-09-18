@@ -13,13 +13,14 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
-import type { SubEntryData } from "./ha-config-integration-page";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -27,6 +28,7 @@ import {
   showPromptDialog,
 } from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
+import type { SubEntryData } from "./ha-config-integration-page";
 
 @customElement("ha-config-sub-entry-row")
 class HaConfigSubEntryRow extends LitElement {
@@ -54,8 +56,8 @@ class HaConfigSubEntryRow extends LitElement {
     const services = this.data.services;
     const entities = this._getEntities();
 
-    return html`<ha-md-list>
-      <ha-md-list-item
+    return html`<div class="sub-entry-card">
+      <ha-list-item-base
         class="sub-entry"
         data-entry-id=${configEntry.entry_id}
         .configEntry=${configEntry}
@@ -188,7 +190,7 @@ class HaConfigSubEntryRow extends LitElement {
             )}
           </ha-dropdown-item>
         </ha-dropdown>
-      </ha-md-list-item>
+      </ha-list-item-base>
       ${
         this._expanded
           ? html`
@@ -217,7 +219,7 @@ class HaConfigSubEntryRow extends LitElement {
             `
           : nothing
       }
-    </ha-md-list>`;
+    </div>`;
   }
 
   private _toggleExpand() {
@@ -305,14 +307,18 @@ class HaConfigSubEntryRow extends LitElement {
     .expand-button.expanded {
       transform: rotate(180deg);
     }
-    ha-md-list {
+    .sub-entry-card {
       border: 1px solid var(--divider-color);
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      padding: 0;
       margin: 16px;
       margin-top: 0;
     }
-    ha-md-list-item.has-subentries {
+    ha-icon-button,
+    ha-icon-next,
+    ha-svg-icon {
+      color: var(--ha-color-fill-neutral-loud-resting);
+    }
+    ha-list-item-base.has-subentries {
       border-bottom: 1px solid var(--divider-color);
     }
     ha-dropdown a {
