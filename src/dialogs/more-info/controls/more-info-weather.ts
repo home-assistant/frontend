@@ -642,6 +642,7 @@ class MoreInfoWeather extends LitElement {
         .attribute {
           font-size: var(--ha-font-size-m);
           line-height: 1;
+          direction: ltr;
         }
 
         .name-state {
