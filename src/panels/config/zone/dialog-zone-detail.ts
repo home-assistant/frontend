@@ -16,7 +16,10 @@ import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mi
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
-import { zoneColor } from "../../../common/map/entity-map-colors";
+import {
+  nextZoneColor,
+  zoneColor,
+} from "../../../common/map/entity-map-colors";
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 
@@ -98,9 +101,21 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
       !lngInvalid &&
       !radiusInvalid;
 
-    // Resolve the entity from the registry we already consume, so the color is
-    // correct even when the registry loads after the dialog opens (deep link)
+    // From the registry context, so a deep link opening before the registry
+    // loads still resolves the color
     const entityId = this._zoneEntityId(this._params.entry, this._entityReg);
+    const color = entityId
+      ? zoneColor(
+          entityId,
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        )
+      : nextZoneColor(
+          !!this._data.passive,
+          this._entityReg,
+          getComputedStyle(this)
+        );
 
     return html`
       <ha-dialog
@@ -118,18 +133,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
         <ha-form
           autofocus
           .hass=${this.hass}
-          .schema=${this._schema(
-            this._data.icon,
-            entityId
-              ? zoneColor(
-                  entityId,
-                  !!this._data.passive,
-                  this._entityReg,
-                  getComputedStyle(this)
-                )
-              : undefined,
-            this._data.name
-          )}
+          .schema=${this._schema(this._data.icon, color, this._data.name)}
           .data=${this._formData(this._data)}
           .error=${this._error}
           .computeLabel=${this._computeLabel}
