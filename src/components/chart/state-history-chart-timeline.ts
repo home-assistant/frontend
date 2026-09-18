@@ -14,13 +14,11 @@ import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
-import { computeTimelineColor } from "./timeline-color";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
 import echarts from "../../resources/echarts/echarts";
-import { luminosity } from "../../common/color/rgb";
-import { hex2rgb } from "../../common/color/convert-color";
 import { measureTextWidth } from "../../util/text";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
+import { generateStateHistoryChartTimelineData } from "./state-history-chart-timeline-data";
 
 const ROW_HEIGHT = 30;
 // Taller rows when the name is drawn under the bar instead of in a column.
@@ -315,109 +313,17 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   private _generateData() {
-    const computedStyles = getComputedStyle(this);
-    let stateHistory = this.data;
-
-    if (!stateHistory) {
-      stateHistory = [];
-    }
-
     this._chartTime = new Date();
-    const startTime = this.startTime;
-    const endTime = this.endTime;
-    const datasets: CustomSeriesOption[] = [];
-    const names = this.names || {};
-    // stateHistory is a list of lists of sorted state objects
-    stateHistory.forEach((stateInfo) => {
-      let newLastChanged: Date;
-      let prevState: string | null = null;
-      let locState: string | null = null;
-      let prevLastChanged = startTime;
-      const entityDisplay: string = this.showNames
-        ? names[stateInfo.entity_id] || stateInfo.name || stateInfo.entity_id
-        : "";
-
-      const dataRow: unknown[] = [];
-      stateInfo.data.forEach((entityState) => {
-        let newState: string | null = entityState.state;
-        const timeStamp = new Date(entityState.last_changed);
-        if (!newState) {
-          newState = null;
-        }
-        if (timeStamp > endTime) {
-          // Drop datapoints that are after the requested endTime. This could happen if
-          // endTime is 'now' and client time is not in sync with server time.
-          return;
-        }
-        if (prevState === null) {
-          prevState = newState;
-          locState = entityState.state_localize;
-          prevLastChanged = new Date(entityState.last_changed);
-        } else if (newState !== prevState) {
-          newLastChanged = new Date(entityState.last_changed);
-
-          const color = computeTimelineColor(
-            prevState,
-            computedStyles,
-            this.hass.states[stateInfo.entity_id]
-          );
-          dataRow.push({
-            value: [
-              stateInfo.entity_id,
-              prevLastChanged,
-              newLastChanged,
-              locState,
-              color,
-              luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
-            ],
-            itemStyle: {
-              color,
-            },
-          });
-
-          prevState = newState;
-          locState = entityState.state_localize;
-          prevLastChanged = newLastChanged;
-        }
-      });
-
-      if (prevState !== null) {
-        const color = computeTimelineColor(
-          prevState,
-          computedStyles,
-          this.hass.states[stateInfo.entity_id]
-        );
-        dataRow.push({
-          value: [
-            stateInfo.entity_id,
-            prevLastChanged,
-            endTime,
-            locState,
-            color,
-            luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
-          ],
-          itemStyle: {
-            color,
-          },
-        });
-      }
-      datasets.push({
-        id: stateInfo.entity_id,
-        data: dataRow,
-        name: entityDisplay,
-        dimensions: ["id", "start", "end", "name", "color", "textColor"],
-        type: "custom",
-        encode: {
-          x: [1, 2],
-          y: 0,
-          itemName: 3,
-        },
-        renderItem: this._renderItem,
-        progressive: 0,
-      });
+    this._chartData = generateStateHistoryChartTimelineData({
+      hass: this.hass,
+      data: this.data,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      names: this.names,
+      showNames: this.showNames,
+      computedStyles: getComputedStyle(this),
+      renderItem: this._renderItem,
     });
-
-    this._chartData = datasets;
   }
 
   private _handleChartClick(
