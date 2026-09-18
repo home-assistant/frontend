@@ -2,15 +2,15 @@ import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
 } from "echarts/types/dist/shared";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { hex2rgb } from "../../common/color/convert-color";
 import { luminosity } from "../../common/color/rgb";
 import type { TimelineEntity } from "../../data/history";
-import type { HomeAssistant } from "../../types";
 import { snapFrameSize } from "./down-sample";
 import { computeTimelineColor } from "./timeline-color";
 
 export interface StateHistoryChartTimelineDataParams {
-  hass: Pick<HomeAssistant, "states">;
+  states: HassEntities;
   data: TimelineEntity[];
   startTime: Date;
   endTime: Date;
@@ -146,13 +146,13 @@ export function downSampleTimelineSegments(
 /**
  * Transforms processed history (`TimelineEntity[]`) into ECharts custom series
  * for `state-history-chart-timeline`. Pure data processing: all environment
- * inputs (theme style, hass, chart width, the render callback) are injected so
+ * inputs (theme style, entity states, chart width, the render callback) are injected so
  * the transform is deterministic and benchmarkable.
  */
 export function generateStateHistoryChartTimelineData(
   params: StateHistoryChartTimelineDataParams
 ): CustomSeriesOption[] {
-  const { hass, computedStyles, startTime, endTime, renderItem } = params;
+  const { states, computedStyles, startTime, endTime, renderItem } = params;
   const stateHistory = params.data ?? [];
   const startTimeMs = startTime.getTime();
   const endTimeMs = endTime.getTime();
@@ -214,7 +214,7 @@ export function generateStateHistoryChartTimelineData(
       });
     }
 
-    const stateObj = hass.states[stateInfo.entity_id];
+    const stateObj = states[stateInfo.entity_id];
     const dataRow = downSampleTimelineSegments(segments, frameMs).map(
       (segment) => {
         const color = computeTimelineColor(

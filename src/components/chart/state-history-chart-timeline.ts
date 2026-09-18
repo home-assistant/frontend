@@ -315,7 +315,7 @@ export class StateHistoryChartTimeline extends LitElement {
   private _generateData() {
     this._chartTime = new Date();
     this._chartData = generateStateHistoryChartTimelineData({
-      hass: this.hass,
+      states: this.hass.states,
       data: this.data,
       startTime: this.startTime,
       endTime: this.endTime,

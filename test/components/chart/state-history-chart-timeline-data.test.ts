@@ -183,7 +183,7 @@ describe("downSampleTimelineSegments", () => {
 
 describe("generateStateHistoryChartTimelineData", () => {
   const baseParams = {
-    hass: createMockHass(),
+    states: createMockHass().states,
     computedStyles: createMockComputedStyle(),
     showNames: true,
     renderItem: () => null,
