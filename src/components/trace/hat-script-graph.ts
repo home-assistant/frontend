@@ -18,32 +18,30 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { ensureArray } from "../../common/array/ensure-array";
+import type { PropertyValues } from "lit";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { Condition, Trigger } from "../../data/automation";
-import { flattenTriggers } from "../../data/automation";
-import type {
-  Action,
-  ChooseAction,
-  IfAction,
-  ManualScriptConfig,
-  ParallelAction,
-  RepeatAction,
-  SequenceAction,
-  ServiceAction,
-  WaitAction,
-  WaitForTriggerAction,
+import {
+  getActionType,
+  type ChooseAction,
+  type IfAction,
+  type ParallelAction,
+  type RepeatAction,
+  type SequenceAction,
+  type ServiceAction,
+  type WaitAction,
+  type WaitForTriggerAction,
 } from "../../data/script";
-import { getActionType } from "../../data/script";
+import type { TraceExtended } from "../../data/trace";
+import { TraceTree } from "../../data/trace-tree";
 import type {
-  ChooseActionTraceStep,
-  ConditionTraceStep,
-  IfActionTraceStep,
-  TraceExtended,
-} from "../../data/trace";
+  NodeInfo,
+  TraceActionNode,
+  TraceNode,
+} from "../../data/trace-tree";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
@@ -52,13 +50,7 @@ import "./hat-graph-node";
 import "./hat-graph-spacer";
 import { ACTION_ICONS } from "../../data/action";
 
-type NodeType = "trigger" | "condition" | "action" | "chooseOption" | undefined;
-
-export interface NodeInfo {
-  path: string;
-  config: any;
-  type?: NodeType;
-}
+export type { NodeInfo };
 
 declare global {
   interface HASSDomEvents {
@@ -75,57 +67,43 @@ export class HatScriptGraph extends LitElement {
   @query("hat-graph-node[active], hat-graph-branch[active]")
   private _activeNode?: HTMLElement;
 
-  public renderedNodes: Record<string, NodeInfo> = {};
+  private _buildTree = memoizeOne(
+    (trace: TraceExtended) => new TraceTree(trace)
+  );
 
-  public trackedNodes: Record<string, NodeInfo> = {};
+  public get renderedNodes(): Record<string, NodeInfo> {
+    return this._buildTree(this.trace).renderedNodes;
+  }
 
-  private _selectNode(config, path, type?) {
+  public get trackedNodes(): Record<string, NodeInfo> {
+    return this._buildTree(this.trace).trackedNodes;
+  }
+
+  private _selectNode(config: unknown, path: string, type?: NodeInfo["type"]) {
     return () => {
       fireEvent(this, "graph-node-selected", { config, path, type });
     };
   }
 
-  private _renderTrigger(config: Trigger, i: number) {
-    const path = `trigger/${i}`;
-    const tracked = this.trace && path in this.trace.trace;
-    // A not-triggered trace records the trigger that evaluated a change but
-    // decided not to fire. It is still selectable (to view the reason), but
-    // must not be shown as the path that ran.
-    const notTriggered = !!(tracked && this.trace.not_triggered);
-    const track = tracked && !notTriggered;
-    this.renderedNodes[path] = { config, path, type: "trigger" };
-    if (tracked) {
-      this.trackedNodes[path] = this.renderedNodes[path];
-    }
+  private _renderTrigger(node: TraceNode<Trigger>) {
+    const { config, path, track, hasTrace } = node;
     return html`
       <hat-graph-node
         graph-start
         ?track=${track}
-        ?not-triggered=${notTriggered}
+        ?not-triggered=${node.notTriggered}
         @focus=${this._selectNode(config, path, "trigger")}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
-        .notEnabled=${"enabled" in config && config.enabled === false}
-        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
-        tabindex=${tracked ? "0" : "-1"}
+        .notEnabled=${node.disabled}
+        .error=${node.error}
+        tabindex=${hasTrace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
 
-  private _renderCondition(config: Condition, i: number) {
-    const path = `condition/${i}`;
-    this.renderedNodes[path] = { config, path, type: "condition" };
-    if (this.trace && path in this.trace.trace) {
-      this.trackedNodes[path] = this.renderedNodes[path];
-    }
-    return this._renderConditionNode(config, path);
-  }
-
   private _typeRenderers = {
     condition: this._renderConditionNode,
-    and: this._renderConditionNode,
-    or: this._renderConditionNode,
-    not: this._renderConditionNode,
     service: this._renderServiceNode,
     wait_template: this._renderWaitNode,
     wait_for_trigger: this._renderWaitNode,
@@ -137,240 +115,142 @@ export class HatScriptGraph extends LitElement {
     other: this._renderOtherNode,
   };
 
-  private _renderActionNode(
-    node: Action,
-    path: string,
-    graphStart = false,
-    disabled = false
-  ) {
+  private _renderActionNode(node: TraceActionNode, graphStart = false) {
+    // The modern `action:` key has no dedicated renderer. The old
+    // `key in node` lookup fell through to the generic node for it, so keep
+    // that here for visual parity. The generic node still picks the service
+    // icon through the node's action type.
     const type =
-      Object.keys(this._typeRenderers).find((key) => key in node) || "other";
-    this.renderedNodes[path] = { config: node, path, type: "action" };
-    if (this.trace && path in this.trace.trace) {
-      this.trackedNodes[path] = this.renderedNodes[path];
-    }
-    return this._typeRenderers[type].bind(this)(
+      "action" in node.config ? "other" : (node.actionType ?? "other");
+    return (this._typeRenderers[type] ?? this._renderOtherNode).bind(this)(
       node,
-      path,
-      graphStart,
-      disabled
+      graphStart
     );
   }
 
   private _renderChooseNode(
-    config: ChooseAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    node: TraceActionNode<ChooseAction>,
+    graphStart = false
   ) {
-    const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
-    const tracePath = trace
-      ? trace.map((trc) =>
-          trc.result === undefined || trc.result.choice === "default"
-            ? "default"
-            : trc.result.choice
-        )
-      : [];
-    const trackDefault = tracePath.includes("default");
+    const { config, path, track } = node;
+    const defaultBranch = node.branches[node.branches.length - 1];
     return html`
       <hat-graph-branch
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${node.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(config, path, "action")}
-        ?track=${trace !== undefined}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || config.enabled === false}
+        .notEnabled=${node.disabled}
       >
         <hat-graph-node
           .graphStart=${graphStart}
           .iconPath=${mdiArrowDecision}
-          ?track=${trace !== undefined}
+          ?track=${track}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || config.enabled === false}
-          .error=${this.trace.trace[path]?.some((tr) => tr.error)}
+          .notEnabled=${node.disabled}
+          .error=${node.error}
           slot="head"
           nofocus
         ></hat-graph-node>
 
-        ${
-          config.choose
-            ? ensureArray(config.choose)?.map((branch, i) => {
-                const branchPath = `${path}/choose/${i}`;
-                const trackThis = tracePath.includes(i);
-                this.renderedNodes[branchPath] = {
-                  config: branch,
-                  path: branchPath,
-                  type: "chooseOption",
-                };
-                if (trackThis) {
-                  this.trackedNodes[branchPath] =
-                    this.renderedNodes[branchPath];
+        ${node.branches.slice(0, -1).map(
+          (branch) => html`
+            <div class="graph-container" ?track=${branch.hasTrace}>
+              <hat-graph-node
+                .iconPath=${
+                  !track || branch.hasTrace
+                    ? mdiCheckboxMarkedOutline
+                    : mdiCheckboxBlankOutline
                 }
-                return html`
-                  <div class="graph-container" ?track=${trackThis}>
-                    <hat-graph-node
-                      .iconPath=${
-                        !trace || trackThis
-                          ? mdiCheckboxMarkedOutline
-                          : mdiCheckboxBlankOutline
-                      }
-                      @focus=${this._selectNode(
-                        branch,
-                        branchPath,
-                        "chooseOption"
-                      )}
-                      ?track=${trackThis}
-                      ?active=${this.selected === branchPath}
-                      .notEnabled=${disabled || config.enabled === false}
-                    ></hat-graph-node>
-                    ${
-                      branch.sequence !== null
-                        ? ensureArray<Action>(branch.sequence).map(
-                            (action, j) =>
-                              this._renderActionNode(
-                                action,
-                                `${branchPath}/sequence/${j}`,
-                                false,
-                                disabled || config.enabled === false
-                              )
-                          )
-                        : ""
-                    }
-                  </div>
-                `;
-              })
-            : ""
-        }
-        <div ?track=${trackDefault}>
-          <hat-graph-spacer ?track=${trackDefault}></hat-graph-spacer>
-          ${
-            config.default !== null
-              ? ensureArray<Action | undefined>(config.default)?.map(
-                  (action, i) =>
-                    this._renderActionNode(
-                      action,
-                      `${path}/default/${i}`,
-                      false,
-                      disabled || config.enabled === false
-                    )
-                )
-              : ""
-          }
-        </div>
-      </hat-graph-branch>
-    `;
-  }
-
-  private _renderIfNode(
-    config: IfAction,
-    path: string,
-    graphStart = false,
-    disabled = false
-  ) {
-    const trace = this.trace.trace[path] as IfActionTraceStep[] | undefined;
-    let trackThen = false;
-    let trackElse = false;
-    for (const trc of trace || []) {
-      if (!trackThen && trc.result?.choice === "then") {
-        trackThen = true;
-      }
-      if ((!trackElse && trc.result?.choice === "else") || !trc.result) {
-        trackElse = true;
-      }
-      if (trackElse && trackThen) {
-        break;
-      }
-    }
-    return html`
-      <hat-graph-branch
-        tabindex=${trace === undefined ? "-1" : "0"}
-        @focus=${this._selectNode(config, path, "action")}
-        ?track=${trace !== undefined}
-        ?active=${this.selected === path}
-        .notEnabled=${disabled || config.enabled === false}
-      >
-        <hat-graph-node
-          .graphStart=${graphStart}
-          .iconPath=${mdiCallSplit}
-          ?track=${trace !== undefined}
-          ?active=${this.selected === path}
-          .notEnabled=${disabled || config.enabled === false}
-          slot="head"
-          nofocus
-        ></hat-graph-node>
-        ${
-          config.else
-            ? html`<div class="graph-container" ?track=${trackElse}>
-                <hat-graph-node
-                  .iconPath=${mdiCallMissed}
-                  ?track=${trackElse}
-                  ?active=${this.selected === path}
-                  .notEnabled=${disabled || config.enabled === false}
-                  nofocus
-                ></hat-graph-node
-                >${ensureArray<Action>(config.else).map((action, j) =>
-                  this._renderActionNode(
-                    action,
-                    `${path}/else/${j}`,
-                    false,
-                    disabled || config.enabled === false
-                  )
+                @focus=${this._selectNode(
+                  branch.option,
+                  branch.path,
+                  "chooseOption"
                 )}
-              </div>`
-            : html`<hat-graph-spacer ?track=${trackElse}></hat-graph-spacer>`
-        }
-        <div class="graph-container" ?track=${trackThen}>
-          <hat-graph-node
-            .iconPath=${mdiCallReceived}
-            ?track=${trackThen}
-            ?active=${this.selected === path}
-            .notEnabled=${disabled || config.enabled === false}
-            nofocus
-          ></hat-graph-node>
-          ${ensureArray<Action>(config.then ?? []).map((action, j) =>
-            this._renderActionNode(
-              action,
-              `${path}/then/${j}`,
-              false,
-              disabled || config.enabled === false
-            )
+                ?track=${branch.hasTrace}
+                ?active=${this.selected === branch.path}
+                .notEnabled=${branch.disabled}
+              ></hat-graph-node>
+              ${branch.children.map((action) => this._renderActionNode(action))}
+            </div>
+          `
+        )}
+        <div ?track=${defaultBranch.hasTrace}>
+          <hat-graph-spacer ?track=${defaultBranch.hasTrace}></hat-graph-spacer>
+          ${defaultBranch.children.map((action) =>
+            this._renderActionNode(action)
           )}
         </div>
       </hat-graph-branch>
     `;
   }
 
+  private _renderIfNode(node: TraceActionNode<IfAction>, graphStart = false) {
+    const { config, path, track } = node;
+    const [thenBranch, elseBranch] = node.branches;
+    return html`
+      <hat-graph-branch
+        tabindex=${node.hasTrace ? "0" : "-1"}
+        @focus=${this._selectNode(config, path, "action")}
+        ?track=${track}
+        ?active=${this.selected === path}
+        .notEnabled=${node.disabled}
+      >
+        <hat-graph-node
+          .graphStart=${graphStart}
+          .iconPath=${mdiCallSplit}
+          ?track=${track}
+          ?active=${this.selected === path}
+          .notEnabled=${node.disabled}
+          slot="head"
+          nofocus
+        ></hat-graph-node>
+        ${
+          config.else
+            ? html`<div class="graph-container" ?track=${elseBranch.hasTrace}>
+                <hat-graph-node
+                  .iconPath=${mdiCallMissed}
+                  ?track=${elseBranch.hasTrace}
+                  ?active=${this.selected === path}
+                  .notEnabled=${elseBranch.disabled}
+                  nofocus
+                ></hat-graph-node
+                >${elseBranch.children.map((action) =>
+                  this._renderActionNode(action)
+                )}
+              </div>`
+            : html`<hat-graph-spacer
+                ?track=${elseBranch.hasTrace}
+              ></hat-graph-spacer>`
+        }
+        <div class="graph-container" ?track=${thenBranch.hasTrace}>
+          <hat-graph-node
+            .iconPath=${mdiCallReceived}
+            ?track=${thenBranch.hasTrace}
+            ?active=${this.selected === path}
+            .notEnabled=${thenBranch.disabled}
+            nofocus
+          ></hat-graph-node>
+          ${thenBranch.children.map((action) => this._renderActionNode(action))}
+        </div>
+      </hat-graph-branch>
+    `;
+  }
+
   private _renderConditionNode(
-    node: Condition,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceNode<Condition>,
+    graphStart = false
   ) {
-    const trace = this.trace.trace[path] as ConditionTraceStep[] | undefined;
-    let track = false;
-    let trackPass = false;
-    let trackFailed = false;
-    if (trace) {
-      for (const trc of trace) {
-        if (trc.result) {
-          track = true;
-          if (trc.result.result) {
-            trackPass = true;
-          } else {
-            trackFailed = true;
-          }
-        }
-        if (trackPass && trackFailed) {
-          break;
-        }
-      }
-    }
+    const { config: node, path, track, hasTrace } = model;
+    const passed = model.condition?.passed ?? false;
+    const failed = model.condition?.failed ?? false;
     return html`
       <hat-graph-branch
         @focus=${this._selectNode(node, path, "condition")}
         ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
-        tabindex=${trace === undefined ? "-1" : "0"}
+        .notEnabled=${model.disabled}
+        tabindex=${hasTrace ? "0" : "-1"}
         short
       >
         <hat-graph-node
@@ -378,7 +258,7 @@ export class HatScriptGraph extends LitElement {
           slot="head"
           ?track=${track}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || node.enabled === false}
+          .notEnabled=${model.disabled}
           .iconPath=${mdiAbTesting}
           nofocus
         ></hat-graph-node>
@@ -387,81 +267,71 @@ export class HatScriptGraph extends LitElement {
           graph-start
           graph-end
         ></div>
-        <div ?track=${trackPass}></div>
+        <div ?track=${passed}></div>
         <hat-graph-node
           .iconPath=${mdiClose}
           nofocus
-          ?track=${trackFailed}
+          ?track=${failed}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || node.enabled === false}
+          .notEnabled=${model.disabled}
         ></hat-graph-node>
       </hat-graph-branch>
     `;
   }
 
   private _renderRepeatNode(
-    node: RepeatAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceActionNode<RepeatAction>,
+    graphStart = false
   ) {
-    const trace: any = this.trace.trace[path];
-    const repeats = this.trace?.trace[`${path}/repeat/sequence/0`]?.length;
+    const { config: node, path, track } = model;
+    const [branch] = model.branches;
     return html`
       <hat-graph-branch
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
+        .notEnabled=${model.disabled}
       >
         <hat-graph-node
           .graphStart=${graphStart}
           .iconPath=${mdiRefresh}
-          ?track=${path in this.trace.trace}
+          ?track=${track}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || node.enabled === false}
+          .notEnabled=${model.disabled}
           slot="head"
           nofocus
         ></hat-graph-node>
         <hat-graph-node
           .iconPath=${mdiArrowUp}
-          ?track=${repeats > 1}
+          ?track=${model.badge !== undefined}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || node.enabled === false}
+          .notEnabled=${model.disabled}
           nofocus
-          .badge=${repeats > 1 ? repeats : undefined}
+          .badge=${model.badge}
         ></hat-graph-node>
-        <div ?track=${trace}>
-          ${ensureArray<Action>(node.repeat.sequence).map((action, i) =>
-            this._renderActionNode(
-              action,
-              `${path}/repeat/sequence/${i}`,
-              false,
-              disabled || node.enabled === false
-            )
-          )}
+        <div ?track=${model.hasTrace}>
+          ${branch.children.map((action) => this._renderActionNode(action))}
         </div>
       </hat-graph-branch>
     `;
   }
 
   private _renderServiceNode(
-    node: ServiceAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceActionNode<ServiceAction>,
+    graphStart = false
   ) {
+    const { config: node, path, track } = model;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
         .iconPath=${node.action ? undefined : mdiRoomService}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
-        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
-        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
+        .notEnabled=${model.disabled}
+        .error=${model.error}
+        tabindex=${model.hasTrace ? "0" : "-1"}
       >
         ${
           node.action
@@ -476,145 +346,110 @@ export class HatScriptGraph extends LitElement {
   }
 
   private _renderWaitNode(
-    node: WaitAction | WaitForTriggerAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceActionNode<WaitAction | WaitForTriggerAction>,
+    graphStart = false
   ) {
+    const { config: node, path, track } = model;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
         .iconPath=${mdiCodeBraces}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
-        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
-        tabindex=${this.trace && path in this.trace.trace ? "0" : "-1"}
+        .notEnabled=${model.disabled}
+        .error=${model.error}
+        tabindex=${model.hasTrace ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
 
   private _renderSequenceNode(
-    node: SequenceAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceActionNode<SequenceAction>,
+    graphStart = false
   ) {
-    const trace: any = this.trace.trace[path];
+    const { config: node, path, track } = model;
+    const [branch] = model.branches;
     return html`
       <hat-graph-branch
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
+        .notEnabled=${model.disabled}
       >
-        <div class="graph-container" ?track=${path in this.trace.trace}>
+        <div class="graph-container" ?track=${branch.hasTrace}>
           <hat-graph-node
             .graphStart=${graphStart}
             .iconPath=${mdiFormatListNumbered}
-            ?track=${path in this.trace.trace}
+            ?track=${track}
             ?active=${this.selected === path}
-            .notEnabled=${disabled || node.enabled === false}
+            .notEnabled=${model.disabled}
             slot="head"
             nofocus
           ></hat-graph-node>
-          ${ensureArray(node.sequence ?? []).map((action, i) =>
-            this._renderActionNode(
-              action,
-              `${path}/sequence/${i}`,
-              false,
-              disabled || node.enabled === false
-            )
-          )}
+          ${branch.children.map((action) => this._renderActionNode(action))}
         </div>
       </hat-graph-branch>
     `;
   }
 
   private _renderParallelNode(
-    node: ParallelAction,
-    path: string,
-    graphStart = false,
-    disabled = false
+    model: TraceActionNode<ParallelAction>,
+    graphStart = false
   ) {
-    const trace: any = this.trace.trace[path];
+    const { config: node, path, track } = model;
     return html`
       <hat-graph-branch
-        tabindex=${trace === undefined ? "-1" : "0"}
+        tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .notEnabled=${disabled || node.enabled === false}
+        .notEnabled=${model.disabled}
       >
         <hat-graph-node
           .graphStart=${graphStart}
           .iconPath=${mdiShuffleDisabled}
-          ?track=${path in this.trace.trace}
+          ?track=${track}
           ?active=${this.selected === path}
-          .notEnabled=${disabled || node.enabled === false}
+          .notEnabled=${model.disabled}
           slot="head"
           nofocus
         ></hat-graph-node>
-        ${ensureArray<Action>(node.parallel).map((action, i) =>
-          "sequence" in action
-            ? html`<div ?track=${path in this.trace.trace}>
-                ${ensureArray<Action>(
-                  (action as ManualScriptConfig).sequence
-                ).map((sAction, j) =>
-                  this._renderActionNode(
-                    sAction,
-                    `${path}/parallel/${i}/sequence/${j}`,
-                    false,
-                    disabled || node.enabled === false
-                  )
-                )}
-              </div>`
-            : this._renderActionNode(
-                action,
-                `${path}/parallel/${i}/sequence/0`,
-                false,
-                disabled || node.enabled === false
-              )
+        ${model.branches.map(
+          (branch) =>
+            html`<div ?track=${branch.hasTrace}>
+              ${branch.children.map((sAction) =>
+                this._renderActionNode(sAction)
+              )}
+            </div>`
         )}
       </hat-graph-branch>
     `;
   }
 
-  private _renderOtherNode(
-    node: Action,
-    path: string,
-    graphStart = false,
-    disabled = false
-  ) {
+  private _renderOtherNode(model: TraceActionNode, graphStart = false) {
+    const { config: node, path, track } = model;
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
         .iconPath=${ACTION_ICONS[getActionType(node)] || mdiCodeBrackets}
         @focus=${this._selectNode(node, path, "action")}
-        ?track=${path in this.trace.trace}
+        ?track=${track}
         ?active=${this.selected === path}
-        .error=${this.trace.trace[path]?.some((tr) => tr.error)}
-        .notEnabled=${disabled || node.enabled === false}
+        .error=${model.error}
+        .notEnabled=${model.disabled}
       ></hat-graph-node>
     `;
   }
 
   protected render() {
-    const triggerKey = "triggers" in this.trace.config ? "triggers" : "trigger";
-    const conditionKey =
-      "conditions" in this.trace.config ? "conditions" : "condition";
-    const actionKey = "actions" in this.trace.config ? "actions" : "action";
-
-    const paths = Object.keys(this.trackedNodes);
-    const triggerNodes =
-      triggerKey in this.trace.config
-        ? flattenTriggers(ensureArray(this.trace.config[triggerKey])).map(
-            (trigger, i) => this._renderTrigger(trigger, i)
-          )
-        : undefined;
     try {
+      const tree = this._buildTree(this.trace);
+      const paths = tree.trackedPaths;
+      const triggerNodes = tree.triggers?.map((node) =>
+        this._renderTrigger(node)
+      );
       return html`
         <div class="graph-scroll ha-scrollbar">
           <div class="parent graph-container">
@@ -628,28 +463,11 @@ export class HatScriptGraph extends LitElement {
                   </hat-graph-branch>`
                 : ""
             }
-            ${
-              conditionKey in this.trace.config
-                ? html`${ensureArray(this.trace.config[conditionKey])?.map(
-                    (condition, i) => this._renderCondition(condition, i)
-                  )}`
-                : ""
-            }
-            ${
-              actionKey in this.trace.config
-                ? html`${ensureArray(this.trace.config[actionKey]).map(
-                    (action, i) => this._renderActionNode(action, `action/${i}`)
-                  )}`
-                : ""
-            }
-            ${
-              "sequence" in this.trace.config
-                ? html`${ensureArray<Action>(this.trace.config.sequence).map(
-                    (action, i) =>
-                      this._renderActionNode(action, `sequence/${i}`, i === 0)
-                  )}`
-                : ""
-            }
+            ${tree.conditions.map((node) => this._renderConditionNode(node))}
+            ${tree.actions.map((node) => this._renderActionNode(node))}
+            ${tree.sequence.map((node, i) =>
+              this._renderActionNode(node, i === 0)
+            )}
           </div>
         </div>
         <div class="actions">
@@ -681,14 +499,6 @@ export class HatScriptGraph extends LitElement {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues<this>) {
-    super.willUpdate(changedProps);
-    if (changedProps.has("trace")) {
-      this.renderedNodes = {};
-      this.trackedNodes = {};
-    }
-  }
-
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
@@ -709,52 +519,26 @@ export class HatScriptGraph extends LitElement {
     }
 
     // If trace changed and we have no or an invalid selection, select first option.
-    if (!this.selected || !(this.selected in this.trackedNodes)) {
-      const firstNode = this.trackedNodes[Object.keys(this.trackedNodes)[0]];
+    const tree = this._buildTree(this.trace);
+    if (!this.selected || !tree.trackedNodes[this.selected]) {
+      const firstNode = tree.firstTracked;
       if (firstNode) {
         fireEvent(this, "graph-node-selected", firstNode);
       }
     }
-
-    if (this.trace) {
-      const sortKeys = Object.keys(this.trace.trace);
-      const keys = Object.keys(this.renderedNodes).sort(
-        (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
-      );
-      const sortedTrackedNodes = {};
-      const sortedRenderedNodes = {};
-      for (const key of keys) {
-        sortedRenderedNodes[key] = this.renderedNodes[key];
-        if (key in this.trackedNodes) {
-          sortedTrackedNodes[key] = this.trackedNodes[key];
-        }
-      }
-      this.renderedNodes = sortedRenderedNodes;
-      this.trackedNodes = sortedTrackedNodes;
-    }
   }
 
   private _previousTrackedNode() {
-    const nodes = Object.keys(this.trackedNodes);
-    const prevIndex = nodes.indexOf(this.selected!) - 1;
-    if (prevIndex >= 0) {
-      fireEvent(
-        this,
-        "graph-node-selected",
-        this.trackedNodes[nodes[prevIndex]]
-      );
+    const prev = this._buildTree(this.trace).previousTracked(this.selected!);
+    if (prev) {
+      fireEvent(this, "graph-node-selected", prev);
     }
   }
 
   private _nextTrackedNode() {
-    const nodes = Object.keys(this.trackedNodes);
-    const nextIndex = nodes.indexOf(this.selected!) + 1;
-    if (nextIndex < nodes.length) {
-      fireEvent(
-        this,
-        "graph-node-selected",
-        this.trackedNodes[nodes[nextIndex]]
-      );
+    const next = this._buildTree(this.trace).nextTracked(this.selected!);
+    if (next) {
+      fireEvent(this, "graph-node-selected", next);
     }
   }
 
