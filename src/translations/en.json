@@ -10786,6 +10786,7 @@
                 "inline_description": "Displays features in two columns, starting next to the name"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
+              "hide_features_when_off": "Hide features when off",
               "content_layout": "Content layout",
               "content_layout_options": {
                 "horizontal": "Horizontal",

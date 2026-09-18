@@ -1,6 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, afterEach } from "vitest";
+
 import "../../../../src/panels/lovelace/cards/hui-tile-card";
 import type { LovelaceCardFeatureConfig } from "../../../../src/panels/lovelace/card-features/types";
+import type { HuiTileCard } from "../../../../src/panels/lovelace/cards/hui-tile-card";
+import type { HomeAssistant } from "../../../../src/types";
 import type {
   LovelaceCard,
   LovelaceGridOptions,
@@ -168,5 +171,62 @@ describe("hui-tile-card getGridOptions", () => {
       min_columns: 3,
       min_rows: 4,
     });
+  });
+});
+describe("hui-tile-card hide_features_when_off", () => {
+  const hassWith = (state: string) =>
+    ({
+      states: {
+        "light.test": {
+          entity_id: "light.test",
+          state,
+          attributes: {},
+          last_changed: "",
+          last_updated: "",
+          context: { id: "", parent_id: null, user_id: null },
+        },
+      },
+      formatEntityName: () => "Test",
+      formatEntityState: (stateObj: { state: string }) => stateObj.state,
+    }) as unknown as HomeAssistant;
+
+  const renderCard = async (
+    config: Partial<TileCardConfig>,
+    state: string
+  ): Promise<HuiTileCard> => {
+    const card = makeCard({ features: features(1), ...config }) as HuiTileCard;
+    card.hass = hassWith(state);
+    document.body.appendChild(card);
+    await card.updateComplete;
+    return card;
+  };
+
+  const hasFeatures = (card: HuiTileCard) =>
+    card.shadowRoot!.querySelector("hui-card-features") !== null;
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  it("shows features while off when the option is not set", async () => {
+    expect(hasFeatures(await renderCard({}, "off"))).toBe(true);
+  });
+
+  it("hides features while off when the option is enabled", async () => {
+    const card = await renderCard({ hide_features_when_off: true }, "off");
+    expect(hasFeatures(card)).toBe(false);
+  });
+
+  it("shows features while on when the option is enabled", async () => {
+    const card = await renderCard({ hide_features_when_off: true }, "on");
+    expect(hasFeatures(card)).toBe(true);
+  });
+
+  it("restores features after an off to on update", async () => {
+    const card = await renderCard({ hide_features_when_off: true }, "off");
+    expect(hasFeatures(card)).toBe(false);
+    card.hass = hassWith("on");
+    await card.updateComplete;
+    expect(hasFeatures(card)).toBe(true);
   });
 });

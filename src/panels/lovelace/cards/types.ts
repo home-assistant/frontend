@@ -700,6 +700,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
+  hide_features_when_off?: boolean;
   time_format?: TimestampRenderingFormat;
 }
 
