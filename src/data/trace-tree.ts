@@ -227,12 +227,13 @@ export class TraceTree {
     hasTrace = this._hasTracedSteps(prefix)
   ): TraceBranch {
     const children = this._actions(steps, prefix, parentDisabled);
+    const finished = hasTrace ? this._branchFinished(prefix, steps) : false;
     return {
       path,
       children,
       hasTrace,
-      finished: hasTrace && this._branchFinished(prefix, steps),
-      unfinished: hasTrace && !this._branchFinished(prefix, steps),
+      finished,
+      unfinished: hasTrace && !finished,
       disabled: parentDisabled,
     };
   }
@@ -364,11 +365,16 @@ export class TraceTree {
               ? ((branch as SequenceAction).sequence ?? [])
               : branch
           );
+          const prefix = `${branchPath}/sequence/`;
           return this._branch(
             branchPath,
-            `${branchPath}/sequence/`,
+            prefix,
             steps,
-            disabled
+            disabled,
+            // An empty branch has no step path for Core to record. It ran
+            // when the parent parallel action ran, matching the old graph
+            // which tracked the branch wrapper from the parent path.
+            steps.length === 0 ? node.hasTrace : this._hasTracedSteps(prefix)
           );
         });
         break;
@@ -523,6 +529,16 @@ export class TraceTree {
       return false;
     }
 
+    const lastRecord = trace[trace.length - 1];
+    // Disabled steps are skipped by Core and recorded generically with
+    // `result.enabled === false`, regardless of action type.
+    if (
+      (lastRecord as { result?: { enabled?: boolean } }).result?.enabled ===
+      false
+    ) {
+      return true;
+    }
+
     if ("stop" in action) {
       return false;
     }
@@ -534,7 +550,6 @@ export class TraceTree {
       return false;
     }
 
-    const lastRecord = trace[trace.length - 1];
     if ("wait_template" in action || "wait_for_trigger" in action) {
       if (
         (trace as WaitActionTraceStep[]).some(

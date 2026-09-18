@@ -572,6 +572,36 @@ describe("TraceTree branch completion", () => {
     ).toBe(true);
   });
 
+  it.each<Action>([
+    { action: "light.turn_on", enabled: false },
+    { stop: "Done", enabled: false },
+    { condition: "template", value_template: "{{ false }}", enabled: false },
+    { delay: 10, enabled: false },
+  ])("completes a disabled terminal action: %j", (action) => {
+    // A disabled final action is skipped by Core, so its branch is done even
+    // while a parallel sibling is still running.
+    const branch = thenBranchOf(
+      [action],
+      [{ ...step, result: { enabled: false } }],
+      { state: "running" }
+    );
+    expect(branch.finished).toBe(true);
+    expect(branch.unfinished).toBe(false);
+  });
+
+  it("tracks an empty parallel branch when the parent ran", () => {
+    const tree = new TraceTree(
+      createTrace(
+        [{ parallel: [{ sequence: [] }] }],
+        [{ path: "sequence/0", timestamp }]
+      )
+    );
+    const [branch] = tree.sequence[0].branches;
+    expect(branch.hasTrace).toBe(true);
+    expect(branch.finished).toBe(true);
+    expect(branch.unfinished).toBe(false);
+  });
+
   it("preserves empty, unreached, error, condition and stop handling", () => {
     const finishedIn = (steps: Action[], records: ActionTraceStep[]) => {
       const trace = createTrace([{ if: [], then: steps }], records, {
