@@ -19,6 +19,7 @@ import {
   getNumberFormatOptions,
 } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import { bidiIsolate } from "../../common/bidi";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -433,7 +434,7 @@ export class StatisticsChart extends LitElement {
       ],
       yAxis: {
         type: this.logarithmicScale ? "log" : "value",
-        name: this._formatYAxisNameLTR(this.unit),
+        name: bidiIsolate(this.unit),
         nameGap: 2,
         nameTextStyle: {
           align: "left",
@@ -564,9 +565,6 @@ export class StatisticsChart extends LitElement {
       minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
-
-  private _formatYAxisNameLTR = (value?: string) =>
-    value === undefined ? undefined : "\u202A" + value + "\u202C";
 
   static styles = css`
     :host {

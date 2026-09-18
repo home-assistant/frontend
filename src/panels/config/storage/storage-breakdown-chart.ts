@@ -14,7 +14,7 @@ import "../../../components/ha-spinner";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
 import type { HomeAssistant } from "../../../types";
 import { roundWithOneDecimal } from "../../../util/calculate";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { bidiIsolate } from "../../../common/bidi";
 
 @customElement("storage-breakdown-chart")
 export class StorageBreakdownChart extends LitElement {
@@ -41,21 +41,13 @@ export class StorageBreakdownChart extends LitElement {
 
     const hasChildren = Boolean(this.storageInfo?.children?.length);
     const heading = this.hass.localize("ui.panel.config.storage.used_space");
-
-    const baseDescription = this.hass.localize(
+    const description = this.hass.localize(
       "ui.panel.config.storage.detailed_description",
       {
-        used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
-        total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
+        used: this._formatGB(usedSpaceGB),
+        total: this._formatGB(totalSpaceGB),
       }
     );
-    const description = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
-    )
-      ? baseDescription.replaceAll(" GB", "GB")
-      : baseDescription;
-
     const showBarChart = this._chartType === "bar" || !hasChildren;
 
     return html`
@@ -159,7 +151,7 @@ export class StorageBreakdownChart extends LitElement {
                   child.id
                 }
                 <span style="color: var(--secondary-text-color)"
-                  >${this._roundWithOneDecimalString(space)}</span
+                  >${this._formatGB(space)}</span
                 >`,
             });
           }
@@ -172,7 +164,7 @@ export class StorageBreakdownChart extends LitElement {
               "ui.panel.config.storage.segments.used"
             )}
             <span style="color: var(--secondary-text-color)"
-              >${this._roundWithOneDecimalString(usedSpaceGB)}</span
+              >${this._formatGB(usedSpaceGB)}</span
             >`,
         });
       }
@@ -185,7 +177,7 @@ export class StorageBreakdownChart extends LitElement {
             "ui.panel.config.storage.segments.free"
           )}
           <span style="color: var(--secondary-text-color)"
-            >${this._roundWithOneDecimalString(freeSpaceGB)}</span
+            >${this._formatGB(freeSpaceGB)}</span
           >`,
       });
 
@@ -209,13 +201,13 @@ export class StorageBreakdownChart extends LitElement {
     }
   );
 
-  private _roundWithOneDecimalString(value: number): TemplateResult {
-    return html`<span dir="ltr">${roundWithOneDecimal(value)} GB</span>`;
-  }
-
-  private _formatBytes = (bytes: number): TemplateResult => {
+  private _formatBytes = (bytes: number): string => {
     const gb = this._bytesToGB(bytes);
-    return this._roundWithOneDecimalString(gb);
+    return this._formatGB(gb);
+  };
+
+  private _formatGB = (GB: number): string => {
+    return bidiIsolate(`${roundWithOneDecimal(GB)} GB`);
   };
 
   private _formatLabel = (id: string): string =>
