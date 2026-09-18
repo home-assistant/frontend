@@ -1395,10 +1395,11 @@ export class HaChartBase extends LitElement {
   };
 
   public zoom(start: number, end: number, silent = false) {
-    if (!this.chart) {
+    if (!this.chart || this._pendingSetup) {
       // Sibling charts sync their zoom imperatively, so a range that arrives
-      // before a deferred setup has to be replayed rather than dropped. A reset
-      // to the full range is what a fresh chart is built with, so it just clears.
+      // before a deferred setup or rebuild has to be replayed rather than
+      // dropped. A reset to the full range is what a fresh chart is built with,
+      // so it just clears.
       this._pendingZoom =
         start === 0 && end === 100 ? undefined : [start, end, silent];
       return;
