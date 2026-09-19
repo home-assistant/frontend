@@ -567,6 +567,7 @@ class MoreInfoWeather extends LitElement {
         .attribution {
           text-align: center;
           margin-top: var(--ha-space-4);
+          direction: ltr;
         }
 
         .time-ago,
