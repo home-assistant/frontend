@@ -1537,9 +1537,11 @@ export class HaMap extends ReactiveElement {
       /* Lets a card keep the attribution and scale clear of an overlay */
       margin-bottom: var(--ha-map-bottom-inset, 0);
     }
+    .maplibregl-ctrl-top-left,
     .maplibregl-ctrl-bottom-left {
       margin-left: var(--ha-map-left-inset, 0);
     }
+    .maplibregl-ctrl-top-right,
     .maplibregl-ctrl-bottom-right {
       margin-right: var(--ha-map-right-inset, 0);
     }
@@ -1654,10 +1656,10 @@ export class HaMap extends ReactiveElement {
       /* Lets a card keep the attribution and scale clear of an overlay */
       margin-bottom: var(--ha-map-bottom-inset, 0);
     }
-    .leaflet-bottom.leaflet-left {
+    .leaflet-left {
       margin-left: var(--ha-map-left-inset, 0);
     }
-    .leaflet-bottom.leaflet-right {
+    .leaflet-right {
       margin-right: var(--ha-map-right-inset, 0);
     }
     .leaflet-control,

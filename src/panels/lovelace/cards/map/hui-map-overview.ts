@@ -790,6 +790,8 @@ export class HuiMapOverview extends LitElement {
       pointer-events: auto;
       /* The tabs sit right under the handle */
       --ha-bottom-sheet-handle-padding: var(--ha-space-2);
+      --ha-bottom-sheet-inset-left: 0px;
+      --ha-bottom-sheet-inset-right: 0px;
     }
 
     .panel.sheet {
@@ -798,7 +800,9 @@ export class HuiMapOverview extends LitElement {
       border-radius: 0;
       box-shadow: none;
       padding-top: var(--ha-space-7);
-      padding-bottom: max(var(--ha-space-3), env(safe-area-inset-bottom));
+      padding-right: max(var(--ha-space-3), var(--safe-area-inset-right));
+      padding-bottom: max(var(--ha-space-3), var(--safe-area-inset-bottom));
+      padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
     }
 
     .tabs {
