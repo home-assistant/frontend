@@ -940,17 +940,37 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       z-index: 1;
     }
 
+    #root.panel-layout {
+      --map-bleed-left: var(--view-container-inset-left, 0px);
+      --map-bleed-right: var(--view-container-inset-right, 0px);
+      --map-bleed-bottom: var(--view-container-inset-bottom, 0px);
+    }
+    #card:has(#root.panel-layout) {
+      overflow: visible;
+    }
+    #root.panel-layout ha-map {
+      left: calc(-1 * var(--map-bleed-left));
+      right: calc(-1 * var(--map-bleed-right));
+      bottom: calc(-1 * var(--map-bleed-bottom));
+      width: auto;
+      height: auto;
+    }
+
     /* Keep the attribution and scale ruler clear of the drawer: beside it on
        wide layouts, above it on phones. The controls sit at physical corners. */
     #root.panel-layout ha-map {
       --ha-map-left-inset: calc(
-        var(--overview-width, 0px) + 2 * var(--ha-space-3)
+        var(--overview-width, 0px) + 2 * var(--ha-space-3) +
+          var(--map-bleed-left)
       );
+      --ha-map-right-inset: var(--map-bleed-right);
+      --ha-map-bottom-inset: var(--map-bleed-bottom);
     }
     #root.panel-layout.rtl ha-map {
-      --ha-map-left-inset: 0px;
+      --ha-map-left-inset: var(--map-bleed-left);
       --ha-map-right-inset: calc(
-        var(--overview-width, 0px) + 2 * var(--ha-space-3)
+        var(--overview-width, 0px) + 2 * var(--ha-space-3) +
+          var(--map-bleed-right)
       );
     }
 
@@ -966,10 +986,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       #root.panel-layout ha-map,
       #root.panel-layout.rtl ha-map {
-        --ha-map-left-inset: 0px;
-        --ha-map-right-inset: 0px;
+        --ha-map-left-inset: var(--map-bleed-left);
+        --ha-map-right-inset: var(--map-bleed-right);
         --ha-map-bottom-inset: calc(
-          var(--overview-height, 0px) + var(--ha-space-2)
+          var(--overview-height, 0px) + var(--ha-space-2) +
+            var(--map-bleed-bottom)
         );
       }
     }
