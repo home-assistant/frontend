@@ -39,6 +39,10 @@ export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
+export interface LightBrightnessFavoritesCardFeatureConfig {
+  type: "light-brightness-favorites";
+}
+
 export interface LightColorTempCardFeatureConfig {
   type: "light-color-temp";
 }
@@ -366,6 +370,7 @@ export type LovelaceCardFeatureConfig =
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
+  | LightBrightnessFavoritesCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
   | LightEffectCardFeatureConfig

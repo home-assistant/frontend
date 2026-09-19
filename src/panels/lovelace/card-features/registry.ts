@@ -24,6 +24,7 @@ import { supportsHumidifierModesCardFeature } from "./hui-humidifier-modes-card-
 import { supportsHumidifierToggleCardFeature } from "./hui-humidifier-toggle-card-feature";
 import { supportsLawnMowerCommandCardFeature } from "./hui-lawn-mower-commands-card-feature";
 import { supportsLightBrightnessCardFeature } from "./hui-light-brightness-card-feature";
+import { supportsLightBrightnessFavoritesCardFeature } from "./hui-light-brightness-favorites-card-feature";
 import { supportsLightColorFavoritesCardFeature } from "./hui-light-color-favorites-card-feature";
 import { supportsLightColorTempCardFeature } from "./hui-light-color-temp-card-feature";
 import { supportsLightEffectCardFeature } from "./hui-light-effect-card-feature";
@@ -89,6 +90,7 @@ export const UI_FEATURE_TYPES = [
   "humidifier-toggle",
   "lawn-mower-commands",
   "light-brightness",
+  "light-brightness-favorites",
   "light-color-temp",
   "light-color-favorites",
   "light-effect",
@@ -147,6 +149,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "humidifier-toggle": supportsHumidifierToggleCardFeature,
   "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
   "light-brightness": supportsLightBrightnessCardFeature,
+  "light-brightness-favorites": supportsLightBrightnessFavoritesCardFeature,
   "light-color-temp": supportsLightColorTempCardFeature,
   "light-color-favorites": supportsLightColorFavoritesCardFeature,
   "light-effect": supportsLightEffectCardFeature,

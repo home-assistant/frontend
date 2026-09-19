@@ -25,6 +25,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   light: [
     TILE_VARIANT,
     ["light-brightness"],
+    ["light-brightness-favorites"],
     TILE_TOGGLE_VARIANT,
     ["light-color-temp"],
     ["light-color-favorites"],
