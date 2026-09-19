@@ -63,7 +63,7 @@ export class HuiHomeSummaryCard
 
   @state() private _energyData?: EnergyData;
 
-  @state() private _maintenanceData: MaintenanceFrontendSystemData = {};
+  @state() private _maintenanceData?: MaintenanceFrontendSystemData;
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -135,8 +135,13 @@ export class HuiHomeSummaryCard
   }
 
   private _computeSecondaryLoading = memoizeOne(
-    (summary: HomeSummary, energyData: EnergyData | undefined): boolean =>
-      summary === "energy" && !energyData
+    (
+      summary: HomeSummary,
+      energyData: EnergyData | undefined,
+      maintenanceData: MaintenanceFrontendSystemData | undefined
+    ): boolean =>
+      (summary === "energy" && !energyData) ||
+      (summary === "maintenance" && !maintenanceData)
   );
 
   private _computeSummaryState(): string {
@@ -293,6 +298,9 @@ export class HuiHomeSummaryCard
           : this.hass.localize("ui.card.home-summary.no_media_playing");
       }
       case "maintenance": {
+        if (!this._maintenanceData) {
+          return "";
+        }
         const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
           (filter) => generateEntityFilter(this.hass!, filter)
         );
@@ -392,7 +400,8 @@ export class HuiHomeSummaryCard
     const secondary = this._computeSummaryState();
     const secondaryLoading = this._computeSecondaryLoading(
       summary,
-      this._energyData
+      this._energyData,
+      this._maintenanceData
     );
 
     const label = getSummaryLabel(this.hass.localize, summary);
