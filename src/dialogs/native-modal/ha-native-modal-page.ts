@@ -1,12 +1,19 @@
 import type { PropertyValues } from "lit";
-import { css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { css, nothing } from "lit";
+import { customElement } from "lit/decorators";
 import { mainWindow } from "../../common/dom/get_main_window";
 import { decodeNativeModalDialogUrl } from "../../common/url/native-modal-url";
-import "../../components/ha-alert";
 import type { HomeAssistant } from "../../types";
 import { NATIVE_MODAL_DIALOGS } from "./native-modal-dialogs";
 import { NativeModalHostPage } from "./native-modal-host-page";
+
+/** What a dialog has to accept to be shown as the whole of a native modal. */
+interface HostedDialog extends HTMLElement {
+  hass: HomeAssistant;
+  standalone: boolean;
+  withoutHeader: boolean;
+  showDialog: (params: unknown) => void;
+}
 
 /**
  * Frameless page showing the one dialog named in the URL, without the sidebar
@@ -16,18 +23,9 @@ import { NativeModalHostPage } from "./native-modal-host-page";
  */
 @customElement("ha-native-modal-page")
 export class HaNativeModalPage extends NativeModalHostPage {
-  @state() private _failed = false;
-
   private _shown = false;
 
   protected render() {
-    if (this._failed) {
-      return html`
-        <ha-alert alert-type="error">
-          ${this.hass.localize("ui.dialogs.more_info_control.no_entity")}
-        </ha-alert>
-      `;
-    }
     return nothing;
   }
 
@@ -48,17 +46,14 @@ export class HaNativeModalPage extends NativeModalHostPage {
     const request = decodeNativeModalDialogUrl(mainWindow.location.hash);
     const dialog = request && NATIVE_MODAL_DIALOGS[request.tag];
     if (!request || !dialog) {
-      this._failed = true;
+      // Only reachable if something other than the frontend built the URL; there
+      // is nothing to show, so the modal goes rather than sitting there empty.
+      this.hass.auth.external?.fireMessage({ type: "modal/close" });
       return;
     }
     this._shown = true;
     await dialog.load();
-    const element = document.createElement(dialog.tag) as HTMLElement & {
-      hass: HomeAssistant;
-      standalone: boolean;
-      withoutHeader: boolean;
-      showDialog: (params: unknown) => void;
-    };
+    const element = document.createElement(dialog.tag) as HostedDialog;
     element.hass = this.hass;
     element.standalone = true;
     element.withoutHeader =

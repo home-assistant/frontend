@@ -15,18 +15,14 @@ export const decideNativeModalDialog = (
   hasNativeModal: boolean,
   localize: LocalizeFunc
 ): NativeModalDialogDecision => {
-  const dialog = detail?.dialogTag
-    ? NATIVE_MODAL_DIALOGS[detail.dialogTag]
-    : undefined;
-  if (!dialog || !hasNativeModal) {
+  const tag = detail?.dialogTag;
+  const dialog = tag ? NATIVE_MODAL_DIALOGS[tag] : undefined;
+  if (!tag || !dialog || !hasNativeModal) {
     return { action: "grow" };
   }
   return {
     action: "open",
-    path: createNativeModalDialogUrl({
-      tag: detail!.dialogTag,
-      params: detail!.dialogParams,
-    }),
+    path: createNativeModalDialogUrl({ tag, params: detail?.dialogParams }),
     title: dialog.title(localize),
   };
 };
