@@ -464,6 +464,29 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     })
   );
 
+  private _helperEntityIds = memoizeOne(
+    (
+      entityReg: EntityRegistryEntry[],
+      entitySource: Record<string, string>,
+      helperManifests: Record<string, IntegrationManifest>
+    ) => {
+      const entityIds = new Set<string>();
+      //Entity registry entities have their source in the registry.
+      for (const entry of entityReg) {
+        if (entry.platform in helperManifests) {
+          entityIds.add(entry.entity_id);
+        }
+      }
+
+      //Entities without registry get their source from fetchEntitySources
+      for (const entityId of Object.keys(entitySource)) {
+        entityIds.add(entityId);
+      }
+
+      return entityIds;
+    }
+  );
+
   private _getItems = memoizeOne(
     (
       localize: LocalizeFunc,
@@ -500,7 +523,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             configEntry !== undefined || entityState.attributes.editable,
           type: configEntry
             ? configEntry.domain
-            : this._entitySource![entityState.entity_id] ||
+            : entityRegistryByEntityId(entityReg)[entityState.entity_id]
+                ?.platform ||
+              this._entitySource![entityState.entity_id] ||
               computeDomain(entityState.entity_id),
           configEntry,
           entity: entityState,
@@ -1235,7 +1260,12 @@ ${rejected
       this._setFiltersFromUrl();
     }
 
-    if (!this._entityReg || !this._configEntries || !this._entitySource) {
+    if (
+      !this._entityReg ||
+      !this._configEntries ||
+      !this._entitySource ||
+      !this._helperManifests
+    ) {
       return;
     }
 
@@ -1267,15 +1297,16 @@ ${rejected
       return;
     }
 
-    // Use a Set for O(1) lookups: this runs on every state change, and the
-    // filter scans every state, so an array `includes` here is O(states ×
-    // sources).
-    const entityIds = new Set(Object.keys(this._entitySource));
+    const entityIds = this._helperEntityIds(
+      this._entityReg,
+      this._entitySource,
+      this._helperManifests
+    );
 
     const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
-        entityIds.has(entity.entity_id) ||
-        isHelperDomain(computeStateDomain(entity))
+        isHelperDomain(computeStateDomain(entity)) ||
+        (entityIds.has(entity.entity_id) && !entity.attributes.restored)
     );
 
     if (
