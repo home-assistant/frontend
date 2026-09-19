@@ -1542,20 +1542,22 @@ class HUIRoot extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
+          --view-container-inset-left: 0px;
+          --view-container-inset-right: var(--safe-area-inset-right);
+          --view-container-inset-bottom: var(--safe-area-inset-bottom);
           padding-top: calc(
             var(--header-height) + var(--safe-area-inset-top) +
               var(--view-container-padding-top, 0px)
           );
-          padding-right: var(--safe-area-inset-right);
-          padding-inline-end: var(--safe-area-inset-right);
+          padding-right: var(--view-container-inset-right);
           padding-bottom: calc(
-            var(--safe-area-inset-bottom) +
+            var(--view-container-inset-bottom) +
               var(--view-container-padding-bottom, 0px)
           );
         }
         .narrow hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
+          --view-container-inset-left: var(--safe-area-inset-left);
+          padding-left: var(--view-container-inset-left);
         }
         hui-view-container > * {
           display: flex;
