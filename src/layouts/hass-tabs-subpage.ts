@@ -397,14 +397,13 @@ export class HassTabsSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
-          margin-right: var(--safe-area-inset-right);
-          margin-inline-end: var(--safe-area-inset-right);
+          box-sizing: border-box;
+          padding-right: var(--safe-area-inset-right);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
         :host([narrow]) .content {
-          margin-left: var(--safe-area-inset-left);
-          margin-inline-start: var(--safe-area-inset-left);
+          padding-left: var(--safe-area-inset-left);
         }
         :host([narrow][show-tabs]) .content {
           /* Bottom bar reuses header height */
