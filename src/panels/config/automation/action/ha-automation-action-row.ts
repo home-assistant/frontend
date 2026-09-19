@@ -56,8 +56,8 @@ import {
   ACTION_BUILDING_BLOCKS,
   ACTION_COMBINED_BLOCKS,
   ACTION_ICONS,
-  YAML_ONLY_ACTION_TYPES,
   getAutomationActionType,
+  YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
   ActionSidebarConfig,
@@ -426,6 +426,16 @@ export default class HaAutomationActionRow extends LitElement {
         }
       </h3>
       <ha-automation-row-event-chip
+        .show=${this.action.enabled === false && !this._running}
+        slot="event"
+        variant="neutral"
+        class="event-chip"
+        aria-live="polite"
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+      </ha-automation-row-event-chip>
+
+      <ha-automation-row-event-chip
         .show=${this._running}
         .variant=${this._runResult?.variant}
         slot="event"
@@ -732,17 +742,6 @@ export default class HaAutomationActionRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        ${
-          this.action.enabled === false
-            ? html`
-                <div class="disabled-bar">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disabled"
-                  )}
-                </div>
-              `
-            : nothing
-        }
         ${
           this.optionsInSidebar
             ? html`<ha-automation-row

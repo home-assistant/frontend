@@ -46,18 +46,6 @@ export const rowStyles = css`
   ha-card {
     transition: outline 0.2s;
   }
-  .disabled-bar {
-    background: var(--divider-color, #e0e0e0);
-    text-align: center;
-    border-top-right-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-    border-top-left-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-  }
   .warning ul {
     margin: 4px 0;
   }
