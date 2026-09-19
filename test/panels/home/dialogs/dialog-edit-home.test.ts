@@ -91,6 +91,9 @@ const welcomeChanged = (el: TestDialogEditHome, showWelcomeMessage: boolean) =>
 const dialogClosed = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_dialogClosed", () => void>)._dialogClosed();
 
+const save = (el: TestDialogEditHome) =>
+  (el as unknown as Record<"_save", () => Promise<void>>)._save();
+
 describe("<dialog-edit-home> live preview lifecycle", () => {
   const createDialog = () => {
     const el = document.createElement(
@@ -133,6 +136,55 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
     await el.updateComplete;
 
+    dialogClosed(el);
+
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
+
+    el.disconnectedCallback();
+  });
+
+  it("does not clear the preview again when the dialog closes after a successful save", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const saveConfig = vi.fn().mockResolvedValue(undefined);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+    expect(previewConfig).toHaveBeenCalledTimes(1);
+
+    await save(el);
+    // The dialog eventually closes once the save succeeds; simulate that.
+    dialogClosed(el);
+
+    // The panel's own post-save refresh already owns the regeneration, so
+    // closing must not schedule a second, redundant one.
+    expect(previewConfig).toHaveBeenCalledTimes(1);
+    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+
+    el.disconnectedCallback();
+  });
+
+  it("still clears the preview on a later cancel after a reused dialog previously saved", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const saveConfig = vi.fn().mockResolvedValue(undefined);
+
+    // First session on this dialog instance: save successfully.
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+    await save(el);
+    dialogClosed(el);
+    // Flush the resulting _state: undefined transition before reopening, so
+    // it doesn't coalesce with the next showDialog() into a single update
+    // (which would mask the very guard this test isolates).
+    await el.updateComplete;
+
+    // Second session, same reused instance: cancel instead of saving.
+    previewConfig.mockClear();
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
     dialogClosed(el);
 
     expect(previewConfig).toHaveBeenCalledWith(undefined);

@@ -64,8 +64,14 @@ export class DialogEditHome
 
   @state() private _submitting = false;
 
+  // Tracks whether _save() already succeeded for the current showDialog()
+  // session, so _dialogClosed() knows the panel's post-save refresh already
+  // owns the regeneration and doesn't need to clear the preview again.
+  private _saved = false;
+
   public showDialog(params: EditHomeDialogParams): void {
     this._params = params;
+    this._saved = false;
     this._state = {
       favorite_entities: params.config.favorite_entities
         ? [...params.config.favorite_entities]
@@ -101,7 +107,9 @@ export class DialogEditHome
   }
 
   private _dialogClosed(): void {
-    this._params?.previewConfig(undefined);
+    if (!this._saved) {
+      this._params?.previewConfig(undefined);
+    }
     this._params = undefined;
     this._state = undefined;
     this._submitting = false;
@@ -296,6 +304,7 @@ export class DialogEditHome
 
     try {
       await this._params.saveConfig(config);
+      this._saved = true;
       this._markDirtyStateClean();
       this.closeDialog();
     } finally {
