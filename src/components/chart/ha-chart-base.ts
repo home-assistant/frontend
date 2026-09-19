@@ -200,12 +200,17 @@ export class HaChartBase extends LitElement {
 
   private _hasSize = true;
 
+  // Reported by the ResizeObserver, so rendering and downsampling need not
+  // measure layout themselves once it has fired.
+  private _contentWidth?: number;
+
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: (entries) => {
       // The controller also fires once with no entries when it starts observing.
       const contentRect = entries[entries.length - 1]?.contentRect;
       if (contentRect) {
+        this._contentWidth = contentRect.width;
         this._hasSize = contentRect.width > 0 && contentRect.height > 0;
       }
       if (this.chart) {
@@ -250,6 +255,7 @@ export class HaChartBase extends LitElement {
     // value if this element is reattached inside a hidden container.
     this._intersecting = false;
     this._hasSize = false;
+    this._contentWidth = undefined;
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
@@ -443,7 +449,7 @@ export class HaChartBase extends LitElement {
       return;
     }
     if (changedProps.has("options")) {
-      // Separate 'if' from below since this must updated before _getSeries().
+      // Separate 'if' from below since this must be updated before _getSeries().
       // It stays out of _applyChartUpdate so a replay cannot request another
       // update and turn one catch-up render into two.
       this._updateHiddenStatsFromOptions(this.options);
@@ -1314,8 +1320,8 @@ export class HaChartBase extends LitElement {
             data: downSampleLineData(
               data as LineSeriesOption["data"],
               // 0 while inside a hidden container, e.g. a section with a visibility condition
-              (this.clientWidth || DEFAULT_CHART_WIDTH) *
-                window.devicePixelRatio,
+              ((this._contentWidth ?? this.clientWidth) ||
+                DEFAULT_CHART_WIDTH) * window.devicePixelRatio,
               minX,
               maxX
             ),
@@ -1328,7 +1334,7 @@ export class HaChartBase extends LitElement {
   }
 
   private _getDefaultHeight() {
-    return Math.max(this.clientWidth / 2, 200);
+    return Math.max((this._contentWidth ?? this.clientWidth) / 2, 200);
   }
 
   private _setChartOptions(options: ECOption) {
