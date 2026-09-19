@@ -988,8 +988,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       #root.panel-layout.rtl ha-map {
         --ha-map-left-inset: var(--map-bleed-left);
         --ha-map-right-inset: var(--map-bleed-right);
-        --ha-map-bottom-inset: calc(
-          var(--overview-height, 0px) + var(--ha-space-2)
+        --ha-map-bottom-inset: max(
+          calc(var(--overview-height, 0px) + var(--ha-space-2)),
+          var(--map-bleed-bottom)
         );
       }
     }
