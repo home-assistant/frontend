@@ -134,6 +134,9 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
     // Locale changed: regenerate to refresh translated content
     if (oldHass.localize !== this.hass.localize) {
+      // A pending preview debounce would otherwise still fire later and
+      // trigger a redundant second regeneration on top of this one.
+      this._debounceRegenerateStrategy.cancel();
       this._setLovelace();
       return;
     }
@@ -271,6 +274,13 @@ class PanelHome extends SubscribeMixin(LitElement) {
   };
 
   private _setPreviewConfig = (config: HomeFrontendSystemData | undefined) => {
+    if (config === this._previewConfig) {
+      // No-op: e.g. opening and cancelling the dialog without any edit
+      // still calls previewConfig(undefined) once, which was already the
+      // value here. Bumping the generation and regenerating for that would
+      // rebuild the whole dashboard for nothing.
+      return;
+    }
     this._previewConfig = config;
     // Invalidate any in-flight _setLovelace() call synchronously: without
     // this, a stale generation started before this preview change (e.g. a

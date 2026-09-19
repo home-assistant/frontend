@@ -299,8 +299,16 @@ export class DialogEditHome
   private async _save(): Promise<void> {
     if (!this._params || !this._state) return;
 
+    // Snapshot the session this save belongs to: _state is reassigned to a
+    // new object by every editor change and by a fresh showDialog() (this
+    // legacy dialog instance is reused, never destroyed, by the dialog
+    // manager). If either happens while saveConfig() is in flight, this
+    // completion is stale and must not close or mark clean a session that
+    // isn't the one it was started for.
+    const stateAtSave = this._state;
+
     this._submitting = true;
-    const config = buildHomeConfig(this._params.config, this._state);
+    const config = buildHomeConfig(this._params.config, stateAtSave);
 
     try {
       // On failure, stay open with the draft intact so the user can retry
@@ -308,7 +316,7 @@ export class DialogEditHome
       // closing anyway would leave this legacy dialog instance connected
       // and dirty with no editor left to act on it.
       const success = await this._params.saveConfig(config);
-      if (!success) {
+      if (!success || this._state !== stateAtSave) {
         return;
       }
       this._saved = true;

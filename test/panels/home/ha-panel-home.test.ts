@@ -41,7 +41,9 @@ const mockedSaveFrontendSystemData = vi.mocked(saveFrontendSystemData);
 
 interface TestPanelHome extends HTMLElement {
   hass: HomeAssistant;
+  hasUpdated: boolean;
   _lovelace?: { config: unknown };
+  willUpdate(changedProps: Map<string, unknown>): void;
 }
 
 const setPreviewConfig = (
@@ -268,5 +270,44 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
 
     expect(success).toBe(false);
     expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  it("does not regenerate when previewConfig is called with the already-current value", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+
+    // Opening and cancelling the dialog without any edit still calls
+    // previewConfig(undefined), which is already the current value.
+    setPreviewConfig(el, undefined);
+
+    // Nothing should have been scheduled: advancing past the debounce
+    // window must not trigger a regeneration.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).not.toHaveBeenCalled();
+  });
+
+  it("cancels a pending preview debounce before a locale-driven regeneration", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    (el as unknown as Record<"hasUpdated", boolean>).hasUpdated = true;
+
+    // A preview edit schedules the 200ms debounce...
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    // ...but the locale changes before it fires.
+    const oldHass = el.hass;
+    el.hass = { ...oldHass, localize: ((key: string) => key) as any };
+    el.willUpdate(new Map([["hass", oldHass]]));
+
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // Advancing past the debounce's original window must not add a second,
+    // now-redundant regeneration.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
   });
 });

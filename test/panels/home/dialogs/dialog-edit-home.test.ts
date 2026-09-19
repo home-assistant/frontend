@@ -89,11 +89,31 @@ const welcomeChanged = (el: TestDialogEditHome, showWelcomeMessage: boolean) =>
     })
   );
 
+const suggestedChanged = (
+  el: TestDialogEditHome,
+  showSuggestedEntities: boolean
+) =>
+  (
+    el as unknown as Record<"_suggestedChanged", (ev: CustomEvent) => void>
+  )._suggestedChanged(
+    new CustomEvent("value-changed", {
+      detail: { value: { show_suggested_entities: showSuggestedEntities } },
+    })
+  );
+
 const dialogClosed = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_dialogClosed", () => void>)._dialogClosed();
 
 const save = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_save", () => Promise<void>>)._save();
+
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
+  return { promise, resolve };
+};
 
 describe("<dialog-edit-home> live preview lifecycle", () => {
   // Tracked so afterEach() can always disconnect it, even when a test fails
@@ -169,6 +189,77 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     // closing must not schedule a second, redundant one.
     expect(previewConfig).toHaveBeenCalledTimes(1);
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+  });
+
+  it("does not close or discard a newer edit made while an earlier save from the same session is still in flight", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el); // captures the welcome-message-off draft
+
+    // While that save is in flight, the user makes another, unsaved edit.
+    suggestedChanged(el, false);
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    // The stale completion must not close the dialog or mark it clean: the
+    // newer edit is still live and dirty, not silently discarded.
+    expect(el.isDirtyState).toBe(true);
+
+    // The dialog is still usable: a fresh save with the current draft works.
+    const retrySave = deferred<boolean>();
+    saveConfig.mockImplementationOnce(() => retrySave.promise);
+    const retryPromise = save(el);
+    retrySave.resolve(true);
+    await retryPromise;
+    dialogClosed(el);
+
+    expect(saveConfig).toHaveBeenCalledTimes(2);
+    // The retry succeeded, so _saved is true: closing must not redundantly
+    // clear the preview (same guard as the successful-save-then-close case).
+    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+  });
+
+  it("does not let a stale save from a closed session mark a newly reopened, edited session as saved", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el); // session 1's save starts, still in flight
+
+    // The dialog closes and reopens as a new session before that resolves
+    // (the legacy dialog instance is reused, never destroyed).
+    dialogClosed(el);
+    await el.updateComplete;
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    // The user edits in the new session; this edit was never sent to save.
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    // The stale save from session 1 now resolves successfully.
+    pendingSave.resolve(true);
+    await savePromise;
+
+    // Session 2's edit must still be considered unsaved: the stale
+    // completion belongs to session 1 and must not mark session 2 clean.
+    expect(el.isDirtyState).toBe(true);
   });
 
   it("keeps the dialog open with the draft intact when a save fails, and allows retrying", async () => {
