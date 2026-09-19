@@ -1202,6 +1202,20 @@ export class HaDataTable extends LitElement {
           overflow: auto;
         }
 
+        :host([narrow]) .mdc-data-table {
+          overflow: visible;
+        }
+
+        :host([narrow]) .mdc-data-table__header-row {
+          width: calc(
+            100% + var(--safe-area-inset-left, 0px) +
+              var(--safe-area-inset-right, 0px)
+          );
+          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+          margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+          overflow: visible;
+        }
+
         /* Hide scrollbar for Chrome, Safari and Opera */
         .mdc-data-table__header-row::-webkit-scrollbar {
           display: none;

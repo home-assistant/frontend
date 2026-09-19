@@ -881,10 +881,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0 16px;
+      padding: 0 0 0 calc(16px + var(--safe-area-inset-left, 0px));
       box-sizing: border-box;
       overflow-x: scroll;
       scrollbar-width: none;
+    }
+
+    .narrow-header-row::after {
+      content: "";
+      flex: 0 0 var(--safe-area-inset-right, 0px);
     }
 
     .narrow-header-row .flex {
