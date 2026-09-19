@@ -65,6 +65,14 @@ export class DialogEditHome
 
   @state() private _submitting = false;
 
+  // Distinguishes _dialogClosed() firing because _save() itself just
+  // closed a successfully, non-stale-or-now-clean session (no preview
+  // clear needed: the panel already has the truth via its own
+  // regeneration) from every other close path (Cancel/scrim/Esc, or a
+  // save still pending when one of those fires), which must still revert
+  // an edited session's preview.
+  private _closedBySave = false;
+
   public showDialog(params: EditHomeDialogParams): void {
     this._params = params;
     const initial: EditorState = {
@@ -103,20 +111,23 @@ export class DialogEditHome
   }
 
   private _dialogClosed(): void {
-    if (this._session && this.isDirtyState) {
-      // Only revert when the screen still differs from what's actually
-      // persisted: a plain cancel/scrim/Esc close while dirty, or a stale
-      // save's rebase leaving a newer draft live. A successful, non-stale
-      // save already leaves isDirtyState false (and the panel already has
-      // the truth via its own regeneration), so this skips a redundant
-      // clear there, and also skips it entirely when nothing was ever
-      // edited (opening and immediately cancelling never pushed a preview
-      // to undo in the first place).
+    if (this._session && this._session.generation > 0 && !this._closedBySave) {
+      // Revert whenever this session ever pushed a draft to the panel,
+      // unless _save() itself already closed a session it just finished
+      // committing (see _closedBySave). Checking generation here rather
+      // than isDirtyState matters specifically when a save is still
+      // pending: an edit made during that await can make isDirtyState
+      // read false again (e.g. edited back to the original content)
+      // before the pending save resolves, but the panel's preview still
+      // needs reverting now — _save()'s own continuation is blocked from
+      // doing anything once this dialog is closed (see its params-identity
+      // guard), so this is the only chance to do it.
       this._params?.previewConfig(undefined);
     }
     this._params = undefined;
     this._session = undefined;
     this._submitting = false;
+    this._closedBySave = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -341,19 +352,28 @@ export class DialogEditHome
       );
 
       if (stale) {
-        // A newer edit exists: keep the dialog open on the updated session
-        // (draft untouched, baseline rebased to what was actually
-        // persisted) rather than reassigning it for the path below, which
-        // is about to close anyway and would otherwise trigger a redundant
-        // preview push.
-        this._session = updated;
+        // Rebase the clean baseline to what was actually persisted,
+        // keeping the live draft as current, so isDirtyState reflects the
+        // screen against what's now truly saved (not the session's
+        // original baseline).
         this._updateDirtyState(savedDraft);
         this._markDirtyStateClean();
         this._updateDirtyState(updated.draft);
-        return;
+
+        if (updated.isDirty) {
+          // A genuinely newer, unsaved draft exists: stay open on it.
+          this._session = updated;
+          return;
+        }
+        // The rebased draft happens to match what was just persisted (e.g.
+        // edited away and back to it): nothing left to revert, so fall
+        // through and close normally below instead of leaving the dialog
+        // open with Save disabled and nothing to do.
+      } else {
+        this._markDirtyStateClean();
       }
 
-      this._markDirtyStateClean();
+      this._closedBySave = true;
       this.closeDialog();
     } finally {
       if (this._params === paramsAtSave) {

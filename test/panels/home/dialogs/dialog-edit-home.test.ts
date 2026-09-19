@@ -394,4 +394,64 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
       (el as unknown as Record<"_session", unknown>)._session
     ).toBeUndefined();
   });
+
+  it("clears the preview when the dialog closes mid-save even if the screen matches the original baseline", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false); // draft differs from the original baseline
+    await el.updateComplete;
+
+    const savePromise = save(el); // captures that draft, save now in flight
+
+    // Edited back to the original content mid-save: isDirtyState reads
+    // false again here, so a scrim/Esc close is no longer blocked by
+    // preventScrimClose.
+    welcomeChanged(el, true);
+    await el.updateComplete;
+    previewConfig.mockClear();
+
+    // Simulate that scrim/Esc close slipping through while the save is
+    // still pending.
+    dialogClosed(el);
+
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
+
+    // The pending save resolves after the dialog already closed; the
+    // params-identity guard (tested above) keeps it from undoing this.
+    pendingSave.resolve(true);
+    await savePromise;
+  });
+
+  it("closes normally when a stale save's rebased draft matches what was actually persisted", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false); // draft = B
+    await el.updateComplete;
+
+    const savePromise = save(el); // captures B
+
+    suggestedChanged(el, false); // draft = C (B plus this change)
+    await el.updateComplete;
+    suggestedChanged(el, true); // back to B, matching what's being saved
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    // The rebased draft matches what was actually persisted: nothing left
+    // to save, so the dialog must close normally instead of staying open
+    // with Save disabled and nothing left to do.
+    expect((el as unknown as Record<"_open", boolean>)._open).toBe(false);
+    expect(el.isDirtyState).toBe(false);
+  });
 });
