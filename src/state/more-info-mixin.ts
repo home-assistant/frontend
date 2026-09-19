@@ -9,6 +9,7 @@ import {
   removeMoreInfoUrl,
 } from "../common/url/more-info-query-params";
 import { showDialog } from "../dialogs/make-dialog-manager";
+import { computeNativeModalOrigin } from "../external_app/native-modal-origin";
 import { computeMoreInfoHeader } from "../dialogs/more-info/compute-more-info-header";
 import { computeMoreInfoModalSize } from "../dialogs/more-info/more-info-modal-size";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
@@ -38,16 +39,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       ev: HASSDomEvent<HASSDomEvents["hass-more-info"]>
     ) {
       const view = ev.detail.view || ev.detail.tab || "info";
-      const currentUrl = `${mainWindow.location.pathname}${mainWindow.location.search}${mainWindow.location.hash}`;
-      const returnUrl = ev.detail.fromUrl
-        ? removeMoreInfoUrl(currentUrl)
-        : currentUrl;
 
-      replaceCurrentUrl(returnUrl);
-
-      // The app shows the frontend's route in a modal of its own, so hand it
-      // the standalone page instead of opening the dialog. A null entity id
-      // would only close a dialog, and none is open.
+      // The app shows the frontend's route in a modal of its own, so hand it the
+      // standalone page instead of opening the dialog. The modal carries the
+      // entity in its own URL, so this page keeps the one it has: a page already
+      // inside a modal would otherwise follow the entity it is asking for and
+      // change under the modal opening over it. A null entity id would only
+      // close a dialog, and none is open.
       const external = this.hass!.auth.external;
       if (external?.config.hasNativeModal) {
         const entityId = ev.detail.entityId;
@@ -59,11 +57,19 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
               path: createStandaloneMoreInfoUrl(entityId),
               ...computeMoreInfoHeader(this.hass!, entityId),
               size: computeMoreInfoModalSize(entityId),
+              origin: computeNativeModalOrigin(ev),
             },
           });
         }
         return;
       }
+
+      const currentUrl = `${mainWindow.location.pathname}${mainWindow.location.search}${mainWindow.location.hash}`;
+      const returnUrl = ev.detail.fromUrl
+        ? removeMoreInfoUrl(currentUrl)
+        : currentUrl;
+
+      replaceCurrentUrl(returnUrl);
 
       const shown = await showDialog(
         this,

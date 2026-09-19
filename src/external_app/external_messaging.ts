@@ -211,6 +211,19 @@ interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
 export type NativeModalSize = "compact" | "full";
 
 /**
+ * Where on screen the modal was asked for, in CSS pixels of the sending page's
+ * viewport, so an app can grow the modal out of what the user touched instead
+ * of having it appear from nowhere. Left out when nothing was touched, as when
+ * a deep link opens the modal.
+ */
+export interface NativeModalOrigin {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
  * Asks the app to show a frontend route in a modal of its own, instead of the
  * frontend showing it in a dialog. Sent when the app reports `hasNativeModal`.
  * The app loads `path` in a webview inside whatever a modal is on its platform,
@@ -226,6 +239,7 @@ interface EMOutgoingMessageModalOpen extends EMMessage {
     /** The breadcrumb above the title, when there is one. */
     subtitle?: string;
     size: NativeModalSize;
+    origin?: NativeModalOrigin;
   };
 }
 
