@@ -6185,6 +6185,8 @@
             "edit_automation": "Edit automation",
             "older_trace": "Older trace",
             "newer_trace": "Newer trace",
+            "previous_tracked_node": "Previous tracked node",
+            "next_tracked_node": "Next tracked node",
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
