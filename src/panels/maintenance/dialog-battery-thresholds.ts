@@ -118,6 +118,7 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
         .headerTitle=${hass.localize(
           "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
         )}
+        .preventScrimClose=${this._saving}
         @closed=${this.closeDialog}
       >
         ${
@@ -136,6 +137,7 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
           <ha-button
             appearance="plain"
             slot="secondaryAction"
+            ?disabled=${this._saving}
             @click=${this.closeDialog}
           >
             ${hass.localize("ui.common.cancel")}
@@ -156,6 +158,7 @@ class DialogBatteryThresholds extends DialogMixin<BatteryThresholdsDialogParams>
     const { hass } = this.params!;
     return html`
       <ha-input
+        autofocus
         type="number"
         min=${minFor(this._global, String(LOW_BATTERY_THRESHOLD))}
         max="100"
