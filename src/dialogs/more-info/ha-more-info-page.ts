@@ -11,6 +11,8 @@ import {
   decodeMoreInfoUrl,
   isMoreInfoStandalonePath,
 } from "../../common/url/more-info-query-params";
+import { createNativeModalDialogUrl } from "../../common/url/native-modal-url";
+import { NATIVE_MODAL_DIALOGS } from "../native-modal/native-modal-dialogs";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-alert";
 import type { HomeAssistant } from "../../types";
@@ -42,7 +44,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.addEventListener("popstate", this._readUrl);
     registerNavigationInterceptor(this._relayNavigation);
     this.addEventListener("native-modal-action", this._headerAction);
-    window.addEventListener("show-dialog", this._dialogOpened);
+    this.addEventListener("show-dialog", this._dialogOpened);
   }
 
   public disconnectedCallback() {
@@ -51,7 +53,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.removeEventListener("popstate", this._readUrl);
     unregisterNavigationInterceptor(this._relayNavigation);
     this.removeEventListener("native-modal-action", this._headerAction);
-    window.removeEventListener("show-dialog", this._dialogOpened);
+    this.removeEventListener("show-dialog", this._dialogOpened);
   }
 
   protected render() {
@@ -118,14 +120,36 @@ export class HaMoreInfoPage extends LitElement {
   };
 
   /**
-   * A dialog opened over this page needs the whole screen. The app may be showing
-   * the page in a modal only half the screen tall, which would clip it.
+   * A dialog asked for inside a native modal.
+   *
+   * The ones the app can show get a modal of their own, stacked over this one,
+   * the way a native app stacks its screens; the event is stopped so nothing is
+   * drawn in this page as well. The rest are drawn here, and the modal grows to
+   * the whole screen first, since a half-height one would clip them.
    */
-  private _dialogOpened = () => {
-    this.hass?.auth.external?.fireMessage({
-      type: "modal/size",
-      payload: { size: "full" },
-    });
+  private _dialogOpened = (ev: Event) => {
+    const external = this.hass?.auth.external;
+    if (!external) {
+      return;
+    }
+    const detail = (ev as CustomEvent).detail;
+    const dialog = detail?.dialogTag && NATIVE_MODAL_DIALOGS[detail.dialogTag];
+    if (dialog && external.config.hasNativeModal) {
+      ev.stopPropagation();
+      external.fireMessage({
+        type: "modal/open",
+        payload: {
+          path: createNativeModalDialogUrl({
+            tag: detail.dialogTag,
+            params: detail.dialogParams,
+          }),
+          title: dialog.title(this.hass.localize),
+          size: "full",
+        },
+      });
+      return;
+    }
+    external.fireMessage({ type: "modal/size", payload: { size: "full" } });
   };
 
   /** The app's native header was tapped; the dialog answers as if its own button was. */
