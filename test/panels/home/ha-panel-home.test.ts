@@ -204,44 +204,6 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     );
   });
 
-  it("commits the saved config, discarding a newer unsaved edit made while the save was in flight", async () => {
-    const el = createPanel();
-    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
-      views: [],
-    } as any);
-
-    const pendingSave = deferred<undefined>();
-    mockedSaveFrontendSystemData.mockReturnValueOnce(pendingSave.promise);
-
-    const savePromise = saveConfig(el, { hide_welcome_message: true });
-
-    // While the backend call above is still in flight, the dialog is still
-    // open and the user makes another, unsaved edit.
-    setPreviewConfig(el, { hide_welcome_message: false });
-
-    pendingSave.resolve(undefined);
-    const success = await savePromise;
-
-    expect(success).toBe(true);
-    // The regeneration triggered by the save must reflect exactly what was
-    // persisted (hide_welcome_message: true), not the newer draft made
-    // during the await (hide_welcome_message: false).
-    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenLastCalledWith(
-      {
-        strategy: {
-          type: "home",
-          alert_entities: undefined,
-          favorite_entities: undefined,
-          home_panel: true,
-          hide_welcome_message: true,
-          hide_suggested_entities: undefined,
-          shortcuts: undefined,
-        },
-      },
-      el.hass
-    );
-  });
-
   it("cancels a pending preview debounce so a fast save does not trigger a redundant extra regeneration", async () => {
     const el = createPanel();
     mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({

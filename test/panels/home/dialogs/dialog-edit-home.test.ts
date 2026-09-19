@@ -159,12 +159,52 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledWith({ hide_welcome_message: true });
   });
 
-  it("clears the preview when the dialog closes", async () => {
+  it("clears the preview when the dialog closes after an edit", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
     el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
     await el.updateComplete;
 
+    welcomeChanged(el, false);
+    await el.updateComplete;
+    previewConfig.mockClear();
+
+    dialogClosed(el);
+
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
+  });
+
+  it("does not call previewConfig when closing without any edit", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    el.showDialog({ config: {}, saveConfig: vi.fn(), previewConfig });
+    await el.updateComplete;
+
+    dialogClosed(el);
+
+    expect(previewConfig).not.toHaveBeenCalled();
+  });
+
+  it("still clears the preview on a later cancel after a reused, edited session", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const saveConfig = vi.fn().mockResolvedValue(true);
+
+    // First session: save successfully.
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+    welcomeChanged(el, false);
+    await el.updateComplete;
+    await save(el);
+    dialogClosed(el);
+    await el.updateComplete;
+
+    // Second session, same reused instance: edit, then cancel.
+    previewConfig.mockClear();
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+    welcomeChanged(el, false);
+    await el.updateComplete;
     dialogClosed(el);
 
     expect(previewConfig).toHaveBeenCalledWith(undefined);
@@ -182,84 +222,10 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).toHaveBeenCalledTimes(1);
 
     await save(el);
-    // The dialog eventually closes once the save succeeds; simulate that.
     dialogClosed(el);
 
-    // The panel's own post-save refresh already owns the regeneration, so
-    // closing must not schedule a second, redundant one.
     expect(previewConfig).toHaveBeenCalledTimes(1);
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
-  });
-
-  it("does not close or discard a newer edit made while an earlier save from the same session is still in flight", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-
-    const savePromise = save(el); // captures the welcome-message-off draft
-
-    // While that save is in flight, the user makes another, unsaved edit.
-    suggestedChanged(el, false);
-    await el.updateComplete;
-
-    pendingSave.resolve(true);
-    await savePromise;
-
-    // The stale completion must not close the dialog or mark it clean: the
-    // newer edit is still live and dirty, not silently discarded.
-    expect(el.isDirtyState).toBe(true);
-
-    // The dialog is still usable: a fresh save with the current draft works.
-    const retrySave = deferred<boolean>();
-    saveConfig.mockImplementationOnce(() => retrySave.promise);
-    const retryPromise = save(el);
-    retrySave.resolve(true);
-    await retryPromise;
-    dialogClosed(el);
-
-    expect(saveConfig).toHaveBeenCalledTimes(2);
-    // The retry succeeded, so _saved is true: closing must not redundantly
-    // clear the preview (same guard as the successful-save-then-close case).
-    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
-  });
-
-  it("does not let a stale save from a closed session mark a newly reopened, edited session as saved", async () => {
-    const el = createDialog();
-    const previewConfig = vi.fn();
-    const pendingSave = deferred<boolean>();
-    const saveConfig = vi.fn(() => pendingSave.promise);
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    welcomeChanged(el, false);
-    await el.updateComplete;
-
-    const savePromise = save(el); // session 1's save starts, still in flight
-
-    // The dialog closes and reopens as a new session before that resolves
-    // (the legacy dialog instance is reused, never destroyed).
-    dialogClosed(el);
-    await el.updateComplete;
-    el.showDialog({ config: {}, saveConfig, previewConfig });
-    await el.updateComplete;
-
-    // The user edits in the new session; this edit was never sent to save.
-    welcomeChanged(el, false);
-    await el.updateComplete;
-
-    // The stale save from session 1 now resolves successfully.
-    pendingSave.resolve(true);
-    await savePromise;
-
-    // Session 2's edit must still be considered unsaved: the stale
-    // completion belongs to session 1 and must not mark session 2 clean.
-    expect(el.isDirtyState).toBe(true);
   });
 
   it("keeps the dialog open with the draft intact when a save fails, and allows retrying", async () => {
@@ -278,42 +244,154 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
 
     await save(el);
 
-    // A failed save must not close the dialog: closeDialog() is never
-    // reached, so the draft and its live preview stay exactly as the user
-    // left them (no revert to the saved config) and the Save button stays
-    // enabled (isDirtyState still true) so the user can retry.
     expect(previewConfig).not.toHaveBeenCalled();
     expect(el.isDirtyState).toBe(true);
 
-    // Retrying with the same draft succeeds normally.
-    await save(el);
+    const retryPromise = save(el);
+    await retryPromise;
     dialogClosed(el);
 
     expect(saveConfig).toHaveBeenCalledTimes(2);
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
   });
 
-  it("still clears the preview on a later cancel after a reused dialog previously saved", async () => {
+  it("does not start a second save while one is already in flight", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
-    const saveConfig = vi.fn().mockResolvedValue(true);
-
-    // First session on this dialog instance: save successfully.
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
     el.showDialog({ config: {}, saveConfig, previewConfig });
     await el.updateComplete;
-    await save(el);
-    dialogClosed(el);
-    // Flush the resulting _state: undefined transition before reopening, so
-    // it doesn't coalesce with the next showDialog() into a single update
-    // (which would mask the very guard this test isolates).
+
+    welcomeChanged(el, false);
     await el.updateComplete;
 
-    // Second session, same reused instance: cancel instead of saving.
-    previewConfig.mockClear();
+    const firstSave = save(el);
+    const secondSave = save(el); // should be a no-op: already submitting
+
+    pendingSave.resolve(true);
+    await firstSave;
+    await secondSave;
+
+    expect(saveConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not close or discard a newer edit made while an earlier save from the same session is still in flight", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
     el.showDialog({ config: {}, saveConfig, previewConfig });
     await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el); // captures the welcome-message-off draft
+
+    suggestedChanged(el, false);
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    // The stale completion must not close the dialog or mark it clean: the
+    // newer edit is still live, and isDirtyState reflects it against what
+    // was actually persisted (welcome message off only), not the original
+    // baseline.
+    expect(el.isDirtyState).toBe(true);
+
+    const retrySave = deferred<boolean>();
+    saveConfig.mockImplementationOnce(() => retrySave.promise);
+    const retryPromise = save(el);
+    retrySave.resolve(true);
+    await retryPromise;
     dialogClosed(el);
 
-    expect(previewConfig).toHaveBeenCalledWith(undefined);
+    expect(saveConfig).toHaveBeenCalledTimes(2);
+    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
+  });
+
+  it("rebases the clean baseline to what was actually persisted when a stale save resolves after editing back to the original content", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false); // draft now differs from the original baseline
+    await el.updateComplete;
+
+    const savePromise = save(el); // captures the welcome-message-off draft
+
+    welcomeChanged(el, true); // edited back to the original content mid-save
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    // The backend now holds "welcome message off" (what was actually
+    // saved), but the screen shows "welcome message on" (the original
+    // baseline). isDirtyState must reflect that real mismatch, not the
+    // coincidence that the screen matches where editing started.
+    expect(el.isDirtyState).toBe(true);
+  });
+
+  it("does not let a stale save from a closed session mark a newly reopened, edited session as saved", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el); // session 1's save starts, still in flight
+
+    dialogClosed(el);
+    await el.updateComplete;
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    expect(el.isDirtyState).toBe(true);
+  });
+
+  it("does not let a stale save resurrect state after the dialog was fully closed (e.g. a scrim/Esc close)", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const pendingSave = deferred<boolean>();
+    const saveConfig = vi.fn(() => pendingSave.promise);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+
+    const savePromise = save(el);
+    // Simulate a scrim/Esc close slipping through while submitting:
+    // reachable because preventScrimClose only checks isDirtyState, which
+    // an edit made during the save's await can momentarily clear before
+    // this continuation resumes (see the "edit during save" test above for
+    // that exact sequence). _dialogClosed() already resets _params/_session
+    // to undefined here; the question is whether the stale completion puts
+    // them back.
+    dialogClosed(el);
+    await el.updateComplete;
+
+    pendingSave.resolve(true);
+    await savePromise;
+
+    expect(
+      (el as unknown as Record<"_session", unknown>)._session
+    ).toBeUndefined();
   });
 });

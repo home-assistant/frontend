@@ -479,14 +479,12 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showToast(this, {
       message: this.hass.localize("ui.common.successfully_saved"),
     });
-    // Commit directly rather than through _setPreviewConfig(): _config now
-    // holds exactly what was persisted, so any draft newer than it (made
-    // while this save was in flight, since the editors stay enabled during
-    // the await) must not keep being rendered as if it had been saved.
-    this._previewConfig = undefined;
-    // A preview edit made just before Save may still have a debounced
-    // regeneration pending; this immediate refresh below already covers it,
-    // so let it go to avoid a redundant regeneration once the timer fires.
+    // dialog-edit-home now owns exactly when to push or clear
+    // _previewConfig (via previewConfig()), so this method no longer
+    // touches it directly. A preview edit made just before Save may still
+    // have a debounced regeneration pending; the immediate refresh below
+    // already covers it, so cancel it to avoid a redundant one once the
+    // timer fires.
     this._debounceRegenerateStrategy.cancel();
     this._setLovelace();
     return true;
