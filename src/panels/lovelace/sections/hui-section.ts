@@ -1,8 +1,6 @@
-import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { storage } from "../../../common/decorators/storage";
 import { deepEqual } from "../../../common/util/deep-equal";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -20,11 +18,7 @@ import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-m
 import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
 import { createSectionElement } from "../create-element/create-section-element";
-import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { addCard, replaceCard } from "../editor/config-util";
-import { performDeleteCard } from "../editor/delete-card";
-import { parseLovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelacePath } from "../editor/lovelace-path";
 import {
   checkStrategyShouldRegenerate,
   generateLovelaceSectionStrategy,
@@ -53,23 +47,13 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
   @property({ type: Boolean, attribute: "import-only" })
   public importOnly = false;
 
-  @property({ type: Number }) public index!: number;
-
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   @state() private _cards: HuiCard[] = [];
 
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceSectionElement;
-
-  @storage({
-    key: "dashboardCardClipboard",
-    state: false,
-    subscribe: false,
-    storage: "sessionStorage",
-  })
-  protected _clipboard?: LovelaceCardConfig;
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -193,6 +177,9 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       if (changedProperties.has("importOnly")) {
         this._layoutElement.importOnly = this.importOnly;
       }
+      if (changedProperties.has("path")) {
+        this._layoutElement.path = this.path;
+      }
       if (changedProperties.has("_cards")) {
         this._layoutElement.cards = this._cards;
       }
@@ -251,8 +238,7 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._layoutElement!.isStrategy = isStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.lovelace = this.lovelace;
-    this._layoutElement!.index = this.index;
-    this._layoutElement!.viewIndex = this.viewIndex;
+    this._layoutElement!.path = this.path;
     this._layoutElement!.cards = this._cards;
 
     if (addLayoutElement) {
@@ -317,81 +303,6 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       config
     ) as LovelaceSectionElement;
     this._layoutElementType = config.type;
-    this._layoutElement.addEventListener("ll-create-card", (ev) => {
-      ev.stopPropagation();
-      if (!this.lovelace) return;
-      showCreateCardDialog(this, {
-        lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
-        path: [this.viewIndex, this.index],
-        suggestedCards: ev.detail?.suggested,
-      });
-    });
-    this._layoutElement.addEventListener("ll-edit-card", (ev) => {
-      ev.stopPropagation();
-      if (!this.lovelace) return;
-      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
-      if (isStrategySection(sectionConfig)) {
-        return;
-      }
-      const cardConfig = sectionConfig.cards![cardIndex];
-      showEditCardDialog(this, {
-        lovelaceConfig: this.lovelace.config,
-        saveCardConfig: async (newCardConfig) => {
-          const newConfig = replaceCard(
-            this.lovelace!.config,
-            [this.viewIndex, this.index, cardIndex],
-            newCardConfig
-          );
-          await this.lovelace!.saveConfig(newConfig);
-        },
-        sectionConfig,
-        cardConfig,
-      });
-    });
-    this._layoutElement.addEventListener("ll-delete-card", (ev) => {
-      ev.stopPropagation();
-      if (!this.lovelace) return;
-      performDeleteCard(this.hass, this.lovelace, ev.detail);
-    });
-    this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
-      ev.stopPropagation();
-      if (!this.lovelace) return;
-      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
-      if (isStrategySection(sectionConfig)) {
-        return;
-      }
-      const cardConfig = sectionConfig.cards![cardIndex];
-
-      showEditCardDialog(this, {
-        lovelaceConfig: this.lovelace!.config,
-        saveCardConfig: async (newCardConfig) => {
-          const newConfig = addCard(
-            this.lovelace!.config,
-            [this.viewIndex, this.index],
-            newCardConfig
-          );
-          await this.lovelace!.saveConfig(newConfig);
-        },
-        cardConfig,
-        sectionConfig,
-        isNew: true,
-      });
-    });
-    this._layoutElement.addEventListener("ll-copy-card", (ev) => {
-      ev.stopPropagation();
-      if (!this.lovelace) return;
-      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
-      const sectionConfig = this.config;
-
-      if (isStrategySection(sectionConfig)) {
-        return;
-      }
-      const cardConfig = sectionConfig.cards![cardIndex];
-      this._clipboard = deepClone(cardConfig);
-    });
   }
 
   private _createCards(config: LovelaceSectionConfig): void {

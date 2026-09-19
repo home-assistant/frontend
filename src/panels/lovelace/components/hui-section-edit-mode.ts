@@ -14,11 +14,13 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
+import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { deleteSection, duplicateSection } from "../editor/config-util";
-import { findLovelaceContainer } from "../editor/lovelace-path";
+import { duplicateSection } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { deleteAtPath, getAtPath } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
 
@@ -28,9 +30,7 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ attribute: false }) public index!: number;
-
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   protected render(): TemplateResult {
     return html`
@@ -98,26 +98,22 @@ export class HuiSectionEditMode extends LitElement {
       saveConfig: (newConfig) => {
         this.lovelace!.saveConfig(newConfig);
       },
-      viewIndex: this.viewIndex,
-      sectionIndex: this.index,
+      path: this.path,
     });
   }
 
   private _duplicateSection(): void {
-    const newConfig = duplicateSection(
-      this.lovelace!.config,
-      this.viewIndex,
-      this.index
-    );
+    const newConfig = duplicateSection(this.lovelace!.config, this.path);
     this.lovelace!.saveConfig(newConfig);
   }
 
   private async _deleteSection() {
-    const path = [this.viewIndex, this.index] as [number, number];
+    const section = getAtPath<LovelaceSectionRawConfig>(
+      this.lovelace!.config,
+      this.path
+    );
 
-    const section = findLovelaceContainer(this.lovelace!.config, path);
-
-    const cardCount = "cards" in section && section.cards?.length;
+    const cardCount = section && "cards" in section && section.cards?.length;
 
     if (cardCount) {
       const confirm = await showConfirmationDialog(this, {
@@ -134,11 +130,7 @@ export class HuiSectionEditMode extends LitElement {
       if (!confirm) return;
     }
 
-    const newConfig = deleteSection(
-      this.lovelace!.config,
-      this.viewIndex,
-      this.index
-    );
+    const newConfig = deleteAtPath(this.lovelace!.config, this.path);
     this.lovelace!.saveConfig(newConfig);
   }
 
