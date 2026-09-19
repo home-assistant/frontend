@@ -1520,12 +1520,17 @@ export class HaDataTable extends LitElement {
           );
           margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
           margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+          background-color: var(--data-table-background-color);
         }
 
         :host([narrow]) .mdc-data-table__row {
           box-sizing: border-box;
           padding-left: var(--safe-area-inset-left, 0px);
           padding-right: var(--safe-area-inset-right, 0px);
+        }
+
+        :host([narrow]) .mdc-data-table__row:has(.group-header) {
+          background-color: var(--primary-background-color);
         }
 
         .mdc-data-table__table.auto-height .scroller {
