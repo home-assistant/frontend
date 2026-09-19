@@ -849,12 +849,27 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         }
 
         .narrow-header-row {
+          --header-row-inset-start: var(--safe-area-inset-left, 0px);
+          --header-row-inset-end: var(--safe-area-inset-right, 0px);
           display: flex;
           align-items: center;
           gap: var(--ha-space-4);
-          padding: 0 var(--ha-space-4);
+          padding: 0;
+          padding-inline-start: calc(
+            var(--ha-space-4) + var(--header-row-inset-start)
+          );
           overflow-x: scroll;
           scrollbar-width: none;
+        }
+
+        .narrow-header-row:dir(rtl) {
+          --header-row-inset-start: var(--safe-area-inset-right, 0px);
+          --header-row-inset-end: var(--safe-area-inset-left, 0px);
+        }
+
+        .narrow-header-row::after {
+          content: "";
+          flex: 0 0 var(--header-row-inset-end);
         }
 
         .selection-bar {

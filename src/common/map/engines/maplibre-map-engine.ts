@@ -123,8 +123,6 @@ interface ManagedMarker {
   draggable?: boolean;
   onDragEnd?: (location: MapLatLng) => void;
   dragging?: boolean;
-  /** Pre-drag location; the next update echoing it is ignored (see setLocation) */
-  staleLocation?: MapLatLng;
   mlMarker?: MapLibreMarker;
   decoration?: MapItemHandle;
   removed?: boolean;
@@ -133,6 +131,8 @@ interface ManagedMarker {
 interface ClusterGroup {
   /** Members are shown in a bubble at their spot instead of an icon */
   open?: boolean;
+  /** Grouped by key (a zone), so it bubbles even with a single member */
+  keyed?: boolean;
   members: ManagedMarker[];
   center: MapLatLng;
   iconMarker?: MapLibreMarker;
@@ -518,13 +518,26 @@ export class MapLibreMapEngine implements MapEngine {
       options?.maxZoom !== undefined
         ? options.maxZoom - ZOOM_OFFSET
         : undefined;
+    // Passed per fit: easeTo's padding would stick to the map
+    const padding = {
+      top: options?.padding?.top ?? 0,
+      right: options?.padding?.right ?? 0,
+      bottom: options?.padding?.bottom ?? 0,
+      left: options?.padding?.left ?? 0,
+    };
     if (minLat === maxLat && minLng === maxLng) {
-      // Zero-area bounds: center on the point
-      this._map.easeTo({
-        center: [minLng, minLat],
-        zoom: maxZoom ?? this._map.getZoom(),
-        animate: options?.animate,
-      });
+      // Zero-area bounds: center on the point, keeping the zoom unless given
+      this._map.fitBounds(
+        [
+          [minLng, minLat],
+          [minLng, minLat],
+        ],
+        {
+          maxZoom: maxZoom ?? this._map.getZoom(),
+          animate: options?.animate,
+          padding,
+        }
+      );
       return;
     }
     const pad = options?.pad ?? 0.5;
@@ -535,7 +548,7 @@ export class MapLibreMapEngine implements MapEngine {
         [minLng - lngPad, minLat - latPad],
         [maxLng + lngPad, maxLat + latPad],
       ],
-      { maxZoom, animate: options?.animate }
+      { maxZoom, animate: options?.animate, padding }
     );
   }
 
@@ -600,17 +613,8 @@ export class MapLibreMapEngine implements MapEngine {
       },
       clusterData: options.clusterData,
       setLocation: (newLocation) => {
+        // The user's hand wins while dragging; the host is the truth otherwise
         if (managed.dragging) {
-          return;
-        }
-        // Skip one update echoing the pre-drag location (the save has not returned yet)
-        const stale = managed.staleLocation;
-        managed.staleLocation = undefined;
-        if (
-          stale &&
-          newLocation[0] === stale[0] &&
-          newLocation[1] === stale[1]
-        ) {
           return;
         }
         managed.location = newLocation;
@@ -663,7 +667,6 @@ export class MapLibreMapEngine implements MapEngine {
       if (managed.draggable) {
         managed.mlMarker.on("dragstart", () => {
           managed.dragging = true;
-          managed.staleLocation = managed.location;
         });
         managed.mlMarker.on("dragend", () => {
           managed.dragging = false;
@@ -801,10 +804,8 @@ export class MapLibreMapEngine implements MapEngine {
       resizeHandle?.setAttribute("aria-valuetext", radiusText);
     };
 
-    // Skip one update echoing the pre-edit values (the save has not returned yet)
+    // The user's hand wins while dragging; the host is the truth otherwise
     let dragging = false;
-    let staleCenter: MapLatLng | undefined;
-    let staleRadius: number | undefined;
 
     if (options.resizable) {
       const east = pointEastOf(center, options.radius);
@@ -847,8 +848,6 @@ export class MapLibreMapEngine implements MapEngine {
         if (keyboardRadius === undefined) {
           // Host updates treat a key resize like a drag
           dragging = true;
-          staleCenter = currentCenter;
-          staleRadius = currentRadius;
         }
         currentRadius = Math.max(
           1,
@@ -875,19 +874,11 @@ export class MapLibreMapEngine implements MapEngine {
     [centerMarker, resizeMarker].forEach((handleMarker) => {
       handleMarker?.on("dragstart", () => {
         dragging = true;
-        staleCenter = currentCenter;
-        staleRadius = currentRadius;
       });
       handleMarker?.on("dragend", () => {
         dragging = false;
       });
     });
-    const isStale = (candidateCenter: MapLatLng, candidateRadius: number) =>
-      staleCenter !== undefined &&
-      staleRadius !== undefined &&
-      candidateCenter[0] === staleCenter[0] &&
-      candidateCenter[1] === staleCenter[1] &&
-      candidateRadius === staleRadius;
 
     if (options.moveable) {
       centerMarker.on("drag", () => {
@@ -942,12 +933,6 @@ export class MapLibreMapEngine implements MapEngine {
       },
       update: (newCenter, newRadius) => {
         if (dragging) {
-          return;
-        }
-        const stale = isStale(newCenter, newRadius);
-        staleCenter = undefined;
-        staleRadius = undefined;
-        if (stale) {
           return;
         }
         currentCenter = newCenter;
@@ -1219,13 +1204,16 @@ export class MapLibreMapEngine implements MapEngine {
     const clusterable = this._markers.filter(
       (managed) => managed.options.cluster && !managed.removed
     );
-    // A member that had focus hands it to the icon replacing it; read before
-    // the open bubble holding it is removed
+    // A member or bubble that had focus hands it to the icon replacing it;
+    // read before the bubble holding it is removed
     const active = (
       this._map.getContainer().getRootNode() as Document | ShadowRoot
     ).activeElement;
     const focusedMember = active
-      ? clusterable.find((managed) => managed.element.contains(active))
+      ? (clusterable.find((managed) => managed.element.contains(active)) ??
+        this._clusterGroups.find((group) =>
+          group.iconMarker?.getElement().contains(active)
+        )?.members[0])
       : undefined;
     this._clusterGroups.forEach((group) => group.iconMarker?.remove());
 
@@ -1250,6 +1238,7 @@ export class MapLibreMapEngine implements MapEngine {
       const groups: {
         seed: { x: number; y: number };
         members: ManagedMarker[];
+        keyed?: boolean;
       }[] = [];
 
       // Keyed groups first; one spread too wide falls through to proximity
@@ -1272,8 +1261,10 @@ export class MapLibreMapEngine implements MapEngine {
             Math.max(...xs) - Math.min(...xs),
             Math.max(...ys) - Math.min(...ys)
           );
-          if (members.length > 1 && spread <= (groupRadius ?? radius)) {
-            groups.push({ seed: points[0], members });
+          // A keyed group (a zone) bubbles even with a single member, so a lone
+          // person or device in a zone still shows in a bubble pinned to it.
+          if (members.length === 1 || spread <= (groupRadius ?? radius)) {
+            groups.push({ seed: points[0], members, keyed: true });
           } else {
             ungrouped.push(...members);
           }
@@ -1299,6 +1290,7 @@ export class MapLibreMapEngine implements MapEngine {
       }
       this._clusterGroups = groups.map((group) => ({
         members: group.members,
+        keyed: group.keyed,
         center: [
           group.members.reduce((sum, m) => sum + m.location[0], 0) /
             group.members.length,
@@ -1310,7 +1302,9 @@ export class MapLibreMapEngine implements MapEngine {
 
     for (const group of this._clusterGroups) {
       group.iconMarker = undefined;
-      if (group.members.length === 1) {
+      // A lone non-keyed marker shows plainly; a lone zone occupant falls
+      // through to the bubble path so it renders in a bubble at its zone.
+      if (group.members.length === 1 && !group.keyed) {
         this._showMarker(group.members[0]);
         continue;
       }
@@ -1379,8 +1373,10 @@ export class MapLibreMapEngine implements MapEngine {
       const group = this._clusterGroups.find((candidate) =>
         candidate.members.includes(focusedMember)
       );
-      if (group?.iconMarker && !group.open) {
-        group.iconMarker.getElement().focus();
+      if (group && !group.open) {
+        // A singleton group has no bubble icon; the member shows on its own,
+        // so send focus back to that member rather than to the document.
+        (group.iconMarker?.getElement() ?? focusedMember.element).focus();
       }
     }
   }

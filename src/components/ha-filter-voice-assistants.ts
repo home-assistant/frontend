@@ -22,7 +22,6 @@ import "./ha-list";
 import "./ha-list-item";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
-import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {

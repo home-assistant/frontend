@@ -375,7 +375,7 @@ export class StateHistoryCharts extends LitElement {
         const chartBase =
           chartComponent.renderRoot?.querySelector("ha-chart-base");
 
-        if (chartBase && chartBase.chart) {
+        if (chartBase) {
           chartBase.zoom(0, 100);
         }
       });

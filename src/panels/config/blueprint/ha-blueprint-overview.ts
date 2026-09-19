@@ -27,7 +27,6 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
