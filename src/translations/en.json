@@ -207,6 +207,7 @@
       },
       "light": {
         "brightness": "Brightness",
+        "color": "[%key:ui::dialogs::more_info_control::light::color%]",
         "color_temperature": "Color temperature",
         "white_value": "White brightness",
         "color_brightness": "Color brightness",
@@ -1856,11 +1857,11 @@
           "graph_unit": "People in zone"
         },
         "light": {
-          "edit_mode": "Edit favorite colors",
-          "reset_favorites": "Reset favorite colors",
-          "reset_favorites_text": "Do you want to reset all favorite colors for this light back to default?",
+          "edit_mode": "Edit favorites",
+          "reset_favorites": "Reset favorites",
+          "reset_favorites_text": "Do you want to reset all favorites for this light back to default?",
           "copy_favorites": "Copy favorites to...",
-          "copy_favorites_helper": "Select one or more lights to receive the copied favorites from this light (must support same color modes).",
+          "copy_favorites_helper": "Select one or more lights to receive the copied favorites from this light. Lights must support the same favorite types as this light.",
           "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "toggle": "Toggle",
           "color": "Color",
@@ -1884,6 +1885,17 @@
             "add": "Add new favorite color",
             "edit_title": "Edit favorite color",
             "add_title": "Add favorite color"
+          },
+          "favorite_brightness": {
+            "set": "Set brightness to {value}",
+            "edit": "Set brightness to {value}",
+            "delete": "Delete favorite brightness {number}",
+            "delete_confirm_title": "Delete favorite brightness?",
+            "delete_confirm_text": "This favorite brightness will be permanently deleted.",
+            "delete_confirm_action": "Delete",
+            "add": "Add new favorite brightness",
+            "edit_title": "Edit favorite brightness",
+            "add_title": "Add favorite brightness"
           }
         },
         "fan": {
