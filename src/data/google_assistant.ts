@@ -4,7 +4,7 @@ export interface GoogleEntity {
   entity_id: string;
   traits: string[];
   might_2fa: boolean;
-  disable_2fa?: boolean;
+  disable_2fa?: boolean | null;
 }
 
 export const fetchCloudGoogleEntities = (hass: HomeAssistant) =>

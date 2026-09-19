@@ -79,7 +79,7 @@ export const subscribeItems = (
   entity_id: string,
   callback: (update: TodoItems) => void
 ) =>
-  hass.connection.subscribeMessage<any>(callback, {
+  hass.connection.subscribeMessage<TodoItems>(callback, {
     type: "todo/item/subscribe",
     entity_id,
   });

@@ -214,7 +214,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     const dongles = this._hardwareInfo?.hardware.filter(
       (hw) =>
         hw.dongle !== null &&
-        (!hw.config_entries.length ||
+        (!hw.config_entries?.length ||
           hw.config_entries.some(
             (entryId) =>
               this._configEntries?.[entryId] &&
@@ -223,19 +223,19 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     );
 
     if (boardData) {
-      boardConfigEntries = boardData.config_entries
+      boardConfigEntries = (boardData.config_entries ?? [])
         .map((id) => this._configEntries?.[id])
         .filter(
           (entry) => entry?.supports_options && !entry.disabled_by
         ) as ConfigEntry[];
-      boardId = boardData.board!.hassio_board_id;
-      boardName = boardData.name;
+      boardId = boardData.board!.hassio_board_id ?? undefined;
+      boardName = boardData.name ?? undefined;
       documentationURL = sanitizeHttpUrl(boardData.url);
       imageURL = hardwareBrandsUrl(
         {
           category: "boards",
           manufacturer: boardData.board!.manufacturer,
-          model: boardData.board!.model,
+          model: boardData.board!.model ?? undefined,
           darkOptimized: this.hass.themes?.darkMode,
         },
         this.hass.auth.data.hassUrl
@@ -355,7 +355,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
             dongles?.length
               ? html`<ha-card outlined>
                   ${dongles.map((dongle) => {
-                    const configEntry = dongle.config_entries
+                    const configEntry = (dongle.config_entries ?? [])
                       .map((id) => this._configEntries?.[id])
                       .filter(
                         (entry) => entry?.supports_options && !entry.disabled_by

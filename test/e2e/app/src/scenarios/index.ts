@@ -165,6 +165,7 @@ const quickSearchAssistScenario: Scenario = async (hass) => {
     tts_voice: null,
     wake_word_entity: null,
     wake_word_id: null,
+    prefer_local_intents: false,
   };
 
   hass.updateHass({

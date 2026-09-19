@@ -1,8 +1,6 @@
 import type { EntityDomainFilter } from "../common/entity/entity_domain_filter";
 import type { HomeAssistant } from "../types";
 
-type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
-
 export interface CloudAutoLogin {
   email: string;
   failed: string | null;
@@ -27,10 +25,11 @@ export interface CloudPreferences {
   alexa_enabled: boolean;
   remote_enabled: boolean;
   remote_allow_remote_enable: boolean;
-  strict_connection: StrictConnectionMode;
-  google_secure_devices_pin: string | undefined;
+  google_secure_devices_pin: string | null;
   cloudhooks: Record<string, CloudWebhook>;
+  alexa_default_expose: string[] | null;
   alexa_report_state: boolean;
+  google_default_expose: string[] | null;
   google_report_state: boolean;
   tts_default_voice: [string, string];
   cloud_ice_servers_enabled: boolean;
@@ -43,18 +42,19 @@ export type RemoteCertificateStatus =
 
 export interface CloudStatusLoggedIn {
   logged_in: true;
+  auto_login: null;
   cloud: "disconnected" | "connecting" | "connected";
   cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
+  google_local_connected: boolean;
   google_entities: EntityDomainFilter;
-  google_domains: string[];
   alexa_registered: boolean;
   alexa_entities: EntityDomainFilter;
   prefs: CloudPreferences;
-  remote_domain: string | undefined;
+  remote_domain: string | null;
   remote_connected: boolean;
-  remote_certificate: undefined | CertificateInformation;
+  remote_certificate: CertificateInformation | null;
   remote_certificate_status: RemoteCertificateStatus | null;
   http_use_ssl: boolean;
   active_subscription: boolean;
@@ -115,7 +115,7 @@ export interface CloudLoginMFA extends CloudLoginBase {
 
 export type CloudEvent =
   | { type: "login" | "logout" | "auto_login_cancelled" }
-  | { type: "auto_login_failed"; translation_key: string };
+  | { type: "auto_login_failed"; translation_key: string | null };
 
 export const cloudLogin = ({
   hass,
@@ -196,7 +196,6 @@ export const updateCloudPref = (
     google_secure_devices_pin?: CloudPreferences["google_secure_devices_pin"];
     tts_default_voice?: CloudPreferences["tts_default_voice"];
     remote_allow_remote_enable?: CloudPreferences["remote_allow_remote_enable"];
-    strict_connection?: CloudPreferences["strict_connection"];
     cloud_ice_servers_enabled?: CloudPreferences["cloud_ice_servers_enabled"];
   }
 ) =>

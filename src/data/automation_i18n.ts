@@ -829,7 +829,7 @@ const describeLegacyTrigger = (
 
     let offsetChoice = "other";
     let offset = "";
-    if (trigger.offset) {
+    if (typeof trigger.offset === "string" && trigger.offset) {
       offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
       const parts = trigger.offset.startsWith("-")
         ? trigger.offset.substring(1).split(":")

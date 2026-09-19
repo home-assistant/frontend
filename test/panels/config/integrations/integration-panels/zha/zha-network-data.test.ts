@@ -14,7 +14,7 @@ const device = (partial: Partial<ZHADevice>): ZHADevice =>
     available: true,
     name: partial.ieee!,
     lqi: 0,
-    rssi: "",
+    rssi: null,
     last_seen: "",
     manufacturer: "",
     model: "",

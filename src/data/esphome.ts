@@ -1,7 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export interface ESPHomeEncryptionKey {
-  encryption_key: string;
+  encryption_key: string | null;
 }
 
 export const fetchESPHomeEncryptionKey = (

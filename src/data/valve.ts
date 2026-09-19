@@ -68,8 +68,8 @@ export function canStop(stateObj: ValveEntity): boolean {
 }
 
 interface ValveEntityAttributes extends HassEntityAttributeBase {
-  current_position?: number;
-  position?: number;
+  is_closed?: boolean | null;
+  current_position?: number | null;
 }
 
 export interface ValveEntity extends HassEntityBase {

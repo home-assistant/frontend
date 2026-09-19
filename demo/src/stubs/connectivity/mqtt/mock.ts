@@ -1,5 +1,6 @@
 import type {
   MQTTDeviceDebugInfo,
+  MQTTLoggedMessage,
   MQTTMessage,
 } from "../../../../../src/data/mqtt";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
@@ -35,11 +36,11 @@ const resolveFilter = (filter: string): string =>
     })
     .join("/") || "homeassistant/status";
 
-const buildMessage = (topic: string, qos: number): MQTTMessage => ({
+const buildMessage = (topic: string, qos: number): MQTTLoggedMessage => ({
   topic,
   payload: (PAYLOADS[topic] ?? PAYLOADS.default)(),
   qos,
-  retain: 0,
+  retain: false,
   time: new Date().toISOString(),
 });
 
@@ -167,11 +168,11 @@ export const mockMqtt = (hass: MockHomeAssistant) => {
         ?.filter((action) => action.action === "mqtt.publish")
         .forEach((action) => {
           const topic = String(action.data?.topic ?? "");
-          const message: MQTTMessage = {
+          const message: MQTTLoggedMessage = {
             topic,
             payload: String(action.data?.payload ?? ""),
             qos: Number(action.data?.qos ?? 0),
-            retain: action.data?.retain ? 1 : 0,
+            retain: Boolean(action.data?.retain),
             time: new Date().toISOString(),
           };
           subscriptions.forEach((subscription) => {

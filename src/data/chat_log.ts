@@ -42,6 +42,7 @@ export interface ChatLogToolResultContent {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
+  result: { data: Record<string, any>; error: boolean };
   tool_result: any;
   created: Date;
 }
@@ -92,6 +93,7 @@ interface ChatLogToolResultContentWire {
   agent_id: string;
   tool_call_id: string;
   tool_name: string;
+  result: { data: Record<string, any>; error: boolean };
   tool_result: any;
   created: string;
 }
@@ -133,7 +135,7 @@ interface ChatLogIndexInitialStateEvent {
 interface ChatLogCreatedEvent {
   conversation_id: string;
   event_type: ChatLogEventType.CREATED;
-  data: ChatLogWire;
+  data: { chat_log: ChatLogWire };
 }
 
 interface ChatLogUpdatedEvent {
@@ -145,7 +147,7 @@ interface ChatLogUpdatedEvent {
 interface ChatLogDeletedEvent {
   conversation_id: string;
   event_type: ChatLogEventType.DELETED;
-  data: ChatLogWire;
+  data: Record<string, never>;
 }
 
 interface ChatLogContentAddedEvent {
@@ -210,7 +212,7 @@ export const subscribeChatLogIndex = (
         chatLogs = event.data.map(processChatLog);
         callback(chatLogs);
       } else if (event.event_type === ChatLogEventType.CREATED) {
-        chatLogs = [...chatLogs, processChatLog(event.data)];
+        chatLogs = [...chatLogs, processChatLog(event.data.chat_log)];
         callback(chatLogs);
       } else if (event.event_type === ChatLogEventType.DELETED) {
         chatLogs = chatLogs.filter(

@@ -425,7 +425,7 @@ class ZWaveJSNodeConfig extends LitElement {
 
     if (
       item.configuration_value_type === "enumerated" &&
-      Object.keys(item.metadata.states).length < 5
+      Object.keys(item.metadata.states ?? {}).length < 5
     ) {
       return html`
         ${labelAndDescription}
@@ -438,7 +438,7 @@ class ZWaveJSNodeConfig extends LitElement {
           .propertyKey=${item.property_key}
           @selected=${this._dropdownSelected}
           .helper=${defaultLabel}
-          .options=${Object.entries(item.metadata.states).map(
+          .options=${Object.entries(item.metadata.states ?? {}).map(
             ([key, entityState]) => ({
               value: key,
               label: entityState,
@@ -536,7 +536,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (item.configuration_value_type !== "enumerated") {
       return false;
     }
-    if (!("states" in item.metadata)) {
+    if (!item.metadata.states) {
       return false;
     }
     if (Object.keys(item.metadata.states).length !== 2) {

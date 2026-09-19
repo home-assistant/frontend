@@ -193,7 +193,7 @@ export class AssistPipelineDebug extends LitElement {
         messages.push({
           role: "assistant",
           content:
-            this.pipelineRun.intent.intent_output.response.speech.plain.speech,
+            this.pipelineRun.intent.intent_output.response.speech.plain?.speech,
         } as ChatLogAssistantContent);
       }
     }
@@ -321,7 +321,7 @@ export class AssistPipelineDebug extends LitElement {
                                       <div>
                                         ${
                                           this.pipelineRun.wake_word
-                                            .wake_word_output.ww_id
+                                            .wake_word_output.wake_word_id
                                         }
                                       </div>
                                     </div>

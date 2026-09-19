@@ -46,8 +46,8 @@ const OPTION_MIN_WIDTH = 30;
 
 type NumericFavoriteEntity = HassEntity & {
   attributes: HassEntity["attributes"] & {
-    current_position?: number;
-    current_tilt_position?: number;
+    current_position?: number | null;
+    current_tilt_position?: number | null;
   };
 };
 
