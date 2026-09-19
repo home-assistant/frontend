@@ -54,6 +54,11 @@ export interface EnergyFrontendSystemData {
   hidden_cards?: string[];
 }
 
+export interface MaintenanceFrontendSystemData {
+  battery_threshold?: number;
+  battery_thresholds?: Record<string, number>;
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -64,6 +69,7 @@ declare global {
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
     security: SecurityFrontendSystemData;
+    maintenance: MaintenanceFrontendSystemData;
   }
 }
 

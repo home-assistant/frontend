@@ -30,6 +30,10 @@ import type { HomeAssistant } from "../../../types";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
+  subscribeFrontendSystemData,
+  type MaintenanceFrontendSystemData,
+} from "../../../data/frontend";
+import {
   getSummaryLabel,
   HOME_SUMMARIES_COLORS,
   HOME_SUMMARIES_FILTERS,
@@ -59,9 +63,22 @@ export class HuiHomeSummaryCard
 
   @state() private _energyData?: EnergyData;
 
+  @state() private _maintenanceData: MaintenanceFrontendSystemData = {};
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
-  public hassSubscribe(): UnsubscribeFunc[] {
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    if (this._config?.summary === "maintenance") {
+      return [
+        subscribeFrontendSystemData(
+          this.hass!.connection,
+          "maintenance",
+          ({ value }) => {
+            this._maintenanceData = value ?? {};
+          }
+        ),
+      ];
+    }
     if (this._config?.summary !== "energy") {
       return [];
     }
@@ -287,7 +304,8 @@ export class HuiHomeSummaryCard
 
         const lowBatteryEntities = filterLowBatteryEntities(
           this.hass!,
-          maintenanceEntities
+          maintenanceEntities,
+          this._maintenanceData
         );
 
         const unavailableBatteryEntities = filterUnavailableBatteryEntities(

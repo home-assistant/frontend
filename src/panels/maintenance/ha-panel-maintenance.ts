@@ -1,3 +1,4 @@
+import { mdiBatteryAlert, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,6 +14,11 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-background";
 import "../lovelace/views/hui-view-container";
+import "../../components/ha-dropdown";
+import "../../components/ha-dropdown-item";
+import "../../components/ha-icon-button";
+import { showBatteryThresholdsDialog } from "./show-dialog-battery-thresholds";
+import "../../components/ha-svg-icon";
 
 const MAINTENANCE_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -90,6 +96,9 @@ class PanelMaintenance extends LitElement {
     this._setLovelace();
   };
 
+  private _openThresholds = () =>
+    showBatteryThresholdsDialog(this, { hass: this.hass });
+
   protected render() {
     return html`
       <ha-top-app-bar-fixed
@@ -97,6 +106,19 @@ class PanelMaintenance extends LitElement {
         .backButton=${this._searchParams.has("historyBack")}
       >
         <div slot="title">${this.hass.localize("panel.maintenance")}</div>
+        <ha-dropdown slot="actionItems" @wa-select=${this._openThresholds}>
+          <ha-icon-button
+            slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-dropdown-item>
+            <ha-svg-icon slot="icon" .path=${mdiBatteryAlert}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.lovelace.strategy.maintenance.battery_thresholds"
+            )}
+          </ha-dropdown-item>
+        </ha-dropdown>
         ${
           this._lovelace
             ? html`

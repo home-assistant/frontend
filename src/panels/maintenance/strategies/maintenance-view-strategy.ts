@@ -13,6 +13,7 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
+import type { MaintenanceFrontendSystemData } from "../../../data/frontend";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { getDeviceEntityDisplayLookup } from "../../../data/device/device_registry";
@@ -33,7 +34,7 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
 ];
 
-const LOW_BATTERY_THRESHOLD = 20;
+export const LOW_BATTERY_THRESHOLD = 20;
 
 const _deviceEntityLookup = memoizeOne((entities: HomeAssistant["entities"]) =>
   getDeviceEntityDisplayLookup(Object.values(entities))
@@ -41,7 +42,8 @@ const _deviceEntityLookup = memoizeOne((entities: HomeAssistant["entities"]) =>
 
 export const filterLowBatteryEntities = (
   hass: HomeAssistant,
-  entityIds: string[]
+  entityIds: string[],
+  data: MaintenanceFrontendSystemData = {}
 ): string[] => {
   return entityIds.filter((entityId) => {
     const state = hass.states[entityId]?.state ?? "";
@@ -51,7 +53,11 @@ export const filterLowBatteryEntities = (
     }
 
     const stateValue = parseFloat(state);
-    if (isNaN(stateValue) || stateValue > LOW_BATTERY_THRESHOLD) {
+    const threshold =
+      data.battery_thresholds?.[entityId] ??
+      data.battery_threshold ??
+      LOW_BATTERY_THRESHOLD;
+    if (isNaN(stateValue) || stateValue > threshold) {
       return false;
     }
 
