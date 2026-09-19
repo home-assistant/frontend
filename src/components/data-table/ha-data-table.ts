@@ -1203,16 +1203,16 @@ export class HaDataTable extends LitElement {
         }
 
         :host([narrow]) .mdc-data-table {
-          overflow: visible;
-        }
-
-        :host([narrow]) .mdc-data-table__header-row {
           width: calc(
             100% + var(--safe-area-inset-left, 0px) +
               var(--safe-area-inset-right, 0px)
           );
           margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
           margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+          overflow: visible;
+        }
+
+        :host([narrow]) .mdc-data-table__header-row {
           overflow: visible;
         }
 
@@ -1511,16 +1511,6 @@ export class HaDataTable extends LitElement {
         .scroller {
           height: calc(100% - 57px);
           overflow: overlay !important;
-        }
-
-        :host([narrow]) .scroller {
-          width: calc(
-            100% + var(--safe-area-inset-left, 0px) +
-              var(--safe-area-inset-right, 0px)
-          );
-          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
-          margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
-          background-color: var(--data-table-background-color);
         }
 
         :host([narrow]) .mdc-data-table__row {
