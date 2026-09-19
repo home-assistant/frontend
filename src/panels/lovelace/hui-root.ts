@@ -1542,7 +1542,6 @@ class HUIRoot extends LitElement {
               var(--view-container-padding-top, 0px)
           );
           padding-right: var(--view-container-inset-right);
-          padding-inline-end: var(--view-container-inset-right);
           padding-bottom: calc(
             var(--view-container-inset-bottom) +
               var(--view-container-padding-bottom, 0px)
@@ -1551,7 +1550,6 @@ class HUIRoot extends LitElement {
         .narrow hui-view-container {
           --view-container-inset-left: var(--safe-area-inset-left);
           padding-left: var(--view-container-inset-left);
-          padding-inline-start: var(--view-container-inset-left);
         }
         hui-view-container > * {
           display: flex;

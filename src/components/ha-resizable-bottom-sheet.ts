@@ -338,8 +338,12 @@ export class HaResizableBottomSheet extends LitElement {
         --ha-bottom-sheet-inset-right,
         var(--safe-area-inset-right)
       );
+      --sheet-border-width: var(--ha-bottom-sheet-border-width, 0px);
+      --sheet-side-borders: calc(2 * var(--sheet-border-width));
       width: calc(
-        100% - 4px - var(--sheet-inset-left) - var(--sheet-inset-right)
+        100% - var(--sheet-side-borders) - var(--sheet-inset-left) - var(
+            --sheet-inset-right
+          )
       );
       max-width: 100%;
       border: none;
@@ -361,9 +365,9 @@ export class HaResizableBottomSheet extends LitElement {
       );
       transform: translateY(100%);
       transition: transform ${BOTTOM_SHEET_ANIMATION_DURATION_MS}ms ease;
-      border-top-width: var(--ha-bottom-sheet-border-width);
-      border-right-width: var(--ha-bottom-sheet-border-width);
-      border-left-width: var(--ha-bottom-sheet-border-width);
+      border-top-width: var(--sheet-border-width);
+      border-right-width: var(--sheet-border-width);
+      border-left-width: var(--sheet-border-width);
       border-bottom-width: 0;
       border-style: var(--ha-bottom-sheet-border-style);
       border-color: var(--ha-bottom-sheet-border-color);
