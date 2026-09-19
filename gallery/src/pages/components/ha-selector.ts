@@ -656,11 +656,11 @@ const SCHEMAS: {
         selector: { tts_voice: { engineId: "tts.cloud", language: "en-US" } },
       },
       ui_action: { name: "UI action", selector: { ui_action: {} } },
-      ui_clock_date_format: {
-        name: "Clock date format",
-        selector: { ui_clock_date_format: {} },
-      },
       ui_color: { name: "UI color", selector: { ui_color: {} } },
+      ui_date_format_parts: {
+        name: "Date format",
+        selector: { ui_date_format_parts: {} },
+      },
       ui_state_content: {
         name: "State content",
         selector: { ui_state_content: { entity_id: "light.bedroom" } },
