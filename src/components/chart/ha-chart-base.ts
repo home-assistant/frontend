@@ -34,6 +34,7 @@ import type {
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
+import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
 import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
@@ -116,7 +117,7 @@ export type CustomLegendOption = ECOption["legend"] & {
 };
 
 @customElement("ha-chart-base")
-export class HaChartBase extends LitElement {
+export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -286,7 +287,7 @@ export class HaChartBase extends LitElement {
         }
       },
       {
-        rootMargin: window.matchMedia("(max-width: 870px)").matches
+        rootMargin: this._isMobileSize
           ? VISIBILITY_ROOT_MARGIN_NARROW
           : VISIBILITY_ROOT_MARGIN,
       }
@@ -599,10 +600,7 @@ export class HaChartBase extends LitElement {
       }
     }
 
-    const isMobile = window.matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    const overflowLimit = isMobile
+    const overflowLimit = this._isMobileSize
       ? LEGEND_OVERFLOW_LIMIT_MOBILE
       : LEGEND_OVERFLOW_LIMIT;
     return html`<div
@@ -1081,9 +1079,7 @@ export class HaChartBase extends LitElement {
     };
 
     if (options.tooltip) {
-      const isMobile = window.matchMedia(
-        "all and (max-width: 450px), all and (max-height: 500px)"
-      ).matches;
+      const isMobile = this._isMobileSize;
       // Shallow-copy each tooltip object so wrap/mobile mutations don't leak
       // back into the caller's options.tooltip reference (callers may cache the
       // options object via memoizeOne, in which case in-place mutation would
