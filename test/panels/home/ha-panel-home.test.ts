@@ -240,6 +240,26 @@ describe("ha-panel-home stale strategy regeneration guard", () => {
     );
   });
 
+  it("cancels a pending preview debounce so a fast save does not trigger a redundant extra regeneration", async () => {
+    const el = createPanel();
+    mockedGenerateLovelaceDashboardStrategy.mockResolvedValue({
+      views: [],
+    } as any);
+    mockedSaveFrontendSystemData.mockResolvedValueOnce(undefined);
+
+    // A preview edit schedules the 200ms debounce...
+    setPreviewConfig(el, { hide_welcome_message: true });
+
+    // ...but the user saves before it fires.
+    await saveConfig(el, { hide_welcome_message: true });
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+
+    // Advancing past the debounce's original window must not add a second,
+    // now-redundant regeneration.
+    await vi.advanceTimersByTimeAsync(200);
+    expect(mockedGenerateLovelaceDashboardStrategy).toHaveBeenCalledTimes(1);
+  });
+
   it("reports failure without touching the dashboard when the backend save rejects", async () => {
     const el = createPanel();
     mockedSaveFrontendSystemData.mockRejectedValueOnce(new Error("boom"));

@@ -474,6 +474,10 @@ class PanelHome extends SubscribeMixin(LitElement) {
     // while this save was in flight, since the editors stay enabled during
     // the await) must not keep being rendered as if it had been saved.
     this._previewConfig = undefined;
+    // A preview edit made just before Save may still have a debounced
+    // regeneration pending; this immediate refresh below already covers it,
+    // so let it go to avoid a redundant regeneration once the timer fires.
+    this._debounceRegenerateStrategy.cancel();
     this._setLovelace();
     return true;
   }

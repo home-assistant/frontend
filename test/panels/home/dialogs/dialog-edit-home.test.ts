@@ -171,10 +171,13 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
   });
 
-  it("still clears the preview and keeps the dirty state when a save fails", async () => {
+  it("keeps the dialog open with the draft intact when a save fails, and allows retrying", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
-    const saveConfig = vi.fn().mockResolvedValue(false);
+    const saveConfig = vi
+      .fn()
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true);
     el.showDialog({ config: {}, saveConfig, previewConfig });
     await el.updateComplete;
 
@@ -183,14 +186,20 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     previewConfig.mockClear();
 
     await save(el);
-    // ha-panel-home._saveConfig() already resolved this backend failure to
-    // false, then _save() closes the dialog anyway (unchanged behavior).
+
+    // A failed save must not close the dialog: closeDialog() is never
+    // reached, so the draft and its live preview stay exactly as the user
+    // left them (no revert to the saved config) and the Save button stays
+    // enabled (isDirtyState still true) so the user can retry.
+    expect(previewConfig).not.toHaveBeenCalled();
+    expect(el.isDirtyState).toBe(true);
+
+    // Retrying with the same draft succeeds normally.
+    await save(el);
     dialogClosed(el);
 
-    // A failed save must not be treated as committed: the preview reverts
-    // to the untouched saved config, and the edit is still considered dirty.
-    expect(previewConfig).toHaveBeenCalledWith(undefined);
-    expect(el.isDirtyState).toBe(true);
+    expect(saveConfig).toHaveBeenCalledTimes(2);
+    expect(previewConfig).not.toHaveBeenCalledWith(undefined);
   });
 
   it("still clears the preview on a later cancel after a reused dialog previously saved", async () => {
