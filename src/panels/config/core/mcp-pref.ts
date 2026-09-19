@@ -254,6 +254,7 @@ export class MCPPref extends LitElement {
     .card-header {
       display: flex;
       align-items: center;
+      line-height: var(--ha-line-height-condensed);
     }
     .card-header img {
       max-width: 28px;
