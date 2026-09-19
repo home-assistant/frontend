@@ -1,8 +1,7 @@
 /**
- * Route that shows one dialog as a frameless page, for a companion app that
- * puts it in a modal of its own. Which dialog, and what to show in it, travels
- * in the fragment: it never reaches the server, and it carries more than a
- * query string comfortably would.
+ * Route that shows one dialog as a frameless page, for a companion app that puts
+ * it in a modal of its own. Which dialog travels in the fragment, which never
+ * reaches the server.
  */
 export const NATIVE_MODAL_PATH = "/_modal";
 
@@ -18,12 +17,7 @@ export const isNativeModalPath = (path: string): boolean =>
 
 const SET_MARKER = "__set";
 
-/**
- * Dialog parameters are ordinary data, except that a `Set` is not something
- * JSON has. One left as it is arrives as an empty object, and the code reading
- * it calls `has` on something that has no such method, so it is marked on the
- * way out and rebuilt on the way in.
- */
+/** A `Set` left to JSON arrives as `{}`, and whatever calls `has` on it throws. */
 const encodeValue = (_key: string, value: unknown) =>
   value instanceof Set ? { [SET_MARKER]: Array.from(value) } : value;
 

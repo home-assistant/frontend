@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { css, html } from "lit";
+import { customElement, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import {
@@ -11,12 +11,8 @@ import {
   decodeMoreInfoUrl,
   isMoreInfoStandalonePath,
 } from "../../common/url/more-info-query-params";
-import { createNativeModalDialogUrl } from "../../common/url/native-modal-url";
-import { NATIVE_MODAL_DIALOGS } from "../native-modal/native-modal-dialogs";
-import { afterNextRender } from "../../common/util/render-status";
+import { NativeModalHostPage } from "../native-modal/native-modal-host-page";
 import "../../components/ha-alert";
-import type { HomeAssistant } from "../../types";
-import { removeLaunchScreen } from "../../util/launch-screen";
 import "./ha-more-info-dialog";
 import type { MoreInfoDialog } from "./ha-more-info-dialog";
 import type { MoreInfoView } from "./more-info-view";
@@ -28,9 +24,7 @@ import type { MoreInfoView } from "./more-info-view";
  * as the more-info deep link (`more-info-entity-id`, `more-info-view`).
  */
 @customElement("ha-more-info-page")
-export class HaMoreInfoPage extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaMoreInfoPage extends NativeModalHostPage {
   @state() private _entityId?: string;
 
   @state() private _view?: MoreInfoView;
@@ -44,7 +38,6 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.addEventListener("popstate", this._readUrl);
     registerNavigationInterceptor(this._relayNavigation);
     this.addEventListener("native-modal-action", this._headerAction);
-    this.addEventListener("show-dialog", this._dialogOpened);
   }
 
   public disconnectedCallback() {
@@ -53,7 +46,6 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.removeEventListener("popstate", this._readUrl);
     unregisterNavigationInterceptor(this._relayNavigation);
     this.removeEventListener("native-modal-action", this._headerAction);
-    this.removeEventListener("show-dialog", this._dialogOpened);
   }
 
   protected render() {
@@ -75,22 +67,7 @@ export class HaMoreInfoPage extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    // The main frontend is not rendered on this route, so the app's commands
-    // (navigate to another entity, restart the connection) are answered here.
-    if (this.hass.auth.external) {
-      import("../../external_app/external_app_entrypoint").then((mod) =>
-        mod.attachExternalToApp(this)
-      );
-    }
-    // There is no panel to wait for, so remove the launch screen once the page
-    // has painted. Native apps cover the frontend with their own splash screen
-    // until frontend/loaded, so they remove it without animation.
-    afterNextRender(() => {
-      const external = this.hass.auth?.external;
-      if (removeLaunchScreen(!!external?.config.hasSplashscreen)) {
-        external?.fireMessage({ type: "frontend/loaded" });
-      }
-    });
+    this.attachToApp();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -117,39 +94,6 @@ export class HaMoreInfoPage extends LitElement {
     }
     external.fireMessage({ type: "modal/navigate", payload: { path } });
     return true;
-  };
-
-  /**
-   * A dialog asked for inside a native modal.
-   *
-   * The ones the app can show get a modal of their own, stacked over this one,
-   * the way a native app stacks its screens; the event is stopped so nothing is
-   * drawn in this page as well. The rest are drawn here, and the modal grows to
-   * the whole screen first, since a half-height one would clip them.
-   */
-  private _dialogOpened = (ev: Event) => {
-    const external = this.hass?.auth.external;
-    if (!external) {
-      return;
-    }
-    const detail = (ev as CustomEvent).detail;
-    const dialog = detail?.dialogTag && NATIVE_MODAL_DIALOGS[detail.dialogTag];
-    if (dialog && external.config.hasNativeModal) {
-      ev.stopPropagation();
-      external.fireMessage({
-        type: "modal/open",
-        payload: {
-          path: createNativeModalDialogUrl({
-            tag: detail.dialogTag,
-            params: detail.dialogParams,
-          }),
-          title: dialog.title(this.hass.localize),
-          size: "full",
-        },
-      });
-      return;
-    }
-    external.fireMessage({ type: "modal/size", payload: { size: "full" } });
   };
 
   /** The app's native header was tapped; the dialog answers as if its own button was. */

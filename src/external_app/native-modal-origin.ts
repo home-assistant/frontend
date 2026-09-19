@@ -2,16 +2,9 @@ import type { NativeModalOrigin } from "./external_messaging";
 
 /**
  * Where an event asking for a native modal came from, for an app that grows the
- * modal out of it.
- *
- * The first entry of the composed path is the element the event was fired on,
- * which for a request to open something is the card, row or badge that decided
- * to open it, rather than whichever icon inside it the finger landed on. That
- * is the shape the modal should come from.
- *
- * Returns nothing when the event came from something with no box on screen, as
- * a deep link or a keyboard shortcut does, so the app falls back to its plain
- * presentation.
+ * modal out of it. The first entry of the composed path is the element the event
+ * was fired on: the card or row that decided to open it, not the icon under the
+ * finger. Nothing comes back for a deep link or a shortcut, which has no box.
  */
 export const computeNativeModalOrigin = (
   ev: Event

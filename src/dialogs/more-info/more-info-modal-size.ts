@@ -2,10 +2,9 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import type { NativeModalSize } from "../../external_app/external_messaging";
 
 /**
- * Domains whose more-info fits half a screen to begin with: a state row with
- * history and activity underneath, or a single small control. Everything else,
- * including a domain we do not know, gets the whole screen, because a light's
- * slider, a climate dial, a media player and a camera stream all need it.
+ * Domains whose more-info fits half a screen: a state row with history under it,
+ * or one small control. Everything else, a domain we do not know included, gets
+ * the whole screen.
  */
 const COMPACT_DOMAINS = new Set<string>([
   "ai_task",
@@ -49,10 +48,6 @@ const COMPACT_DOMAINS = new Set<string>([
   "zone",
 ]);
 
-/**
- * How much room an entity's more-info asks for when an app shows it in a modal
- * of its own. The app decides what that means on its platform; on iOS it picks
- * the sheet's detents.
- */
+/** How much room an entity's more-info asks for in a native modal. */
 export const computeMoreInfoModalSize = (entityId: string): NativeModalSize =>
   COMPACT_DOMAINS.has(computeDomain(entityId)) ? "compact" : "full";

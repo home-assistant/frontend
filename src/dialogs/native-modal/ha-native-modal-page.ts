@@ -1,13 +1,12 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
 import { mainWindow } from "../../common/dom/get_main_window";
 import { decodeNativeModalDialogUrl } from "../../common/url/native-modal-url";
-import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-alert";
 import type { HomeAssistant } from "../../types";
-import { removeLaunchScreen } from "../../util/launch-screen";
 import { NATIVE_MODAL_DIALOGS } from "./native-modal-dialogs";
+import { NativeModalHostPage } from "./native-modal-host-page";
 
 /**
  * Frameless page showing the one dialog named in the URL, without the sidebar
@@ -16,9 +15,7 @@ import { NATIVE_MODAL_DIALOGS } from "./native-modal-dialogs";
  * stacks its screens, instead of being drawn inside the page underneath.
  */
 @customElement("ha-native-modal-page")
-export class HaNativeModalPage extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaNativeModalPage extends NativeModalHostPage {
   @state() private _failed = false;
 
   private _shown = false;
@@ -36,25 +33,13 @@ export class HaNativeModalPage extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    if (this.hass.auth.external) {
-      import("../../external_app/external_app_entrypoint").then((mod) =>
-        mod.attachExternalToApp(this)
-      );
-    }
+    this.attachToApp();
     this._showDialog();
-    // No panel to wait for, so the launch screen goes once the page has painted.
-    afterNextRender(() => {
-      const external = this.hass.auth?.external;
-      if (removeLaunchScreen(!!external?.config.hasSplashscreen)) {
-        external?.fireMessage({ type: "frontend/loaded" });
-      }
-    });
   }
 
   /**
-   * The dialog is created here rather than through the dialog manager: it is the
-   * page, not something over it, and it is told to render frameless so the app's
-   * own modal is the only surface.
+   * Created here rather than through the dialog manager: it is the page, not
+   * something over it, so it renders frameless and leaves the header to the app.
    */
   private async _showDialog() {
     if (this._shown) {
