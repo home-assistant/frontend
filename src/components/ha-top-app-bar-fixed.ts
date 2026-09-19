@@ -52,10 +52,21 @@ export const haTopAppBarFixedStyles = css`
   .row {
     box-sizing: border-box;
     display: flex;
-    width: 100%;
+    width: calc(100% + var(--safe-area-inset-right, 0px));
+    padding-right: var(--safe-area-inset-right, 0px);
     align-items: center;
     height: var(--header-height);
     border-bottom: var(--app-header-border-bottom);
+  }
+
+  :host([narrow]) .row,
+  :host([narrow]) .sub-row {
+    width: calc(
+      100% + var(--safe-area-inset-left, 0px) +
+        var(--safe-area-inset-right, 0px)
+    );
+    margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+    padding-left: var(--safe-area-inset-left, 0px);
   }
 
   .top-app-bar.has-sub-row .row {
@@ -65,7 +76,8 @@ export const haTopAppBarFixedStyles = css`
   .sub-row {
     box-sizing: border-box;
     display: block;
-    width: 100%;
+    width: calc(100% + var(--safe-area-inset-right, 0px));
+    padding-right: var(--safe-area-inset-right, 0px);
     overflow: hidden;
     border-bottom: var(--app-header-border-bottom);
   }
