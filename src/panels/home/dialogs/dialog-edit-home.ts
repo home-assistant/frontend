@@ -303,9 +303,14 @@ export class DialogEditHome
     const config = buildHomeConfig(this._params.config, this._state);
 
     try {
-      await this._params.saveConfig(config);
-      this._saved = true;
-      this._markDirtyStateClean();
+      // The dialog closes either way (existing behavior), but only a
+      // confirmed success may mark the draft as saved: on failure the
+      // preview must still revert to the untouched saved config.
+      const success = await this._params.saveConfig(config);
+      if (success) {
+        this._saved = true;
+        this._markDirtyStateClean();
+      }
       this.closeDialog();
     } finally {
       this._submitting = false;

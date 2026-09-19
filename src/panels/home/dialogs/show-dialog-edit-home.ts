@@ -3,7 +3,7 @@ import type { HomeFrontendSystemData } from "../../../data/frontend";
 
 export interface EditHomeDialogParams {
   config: HomeFrontendSystemData;
-  saveConfig: (config: HomeFrontendSystemData) => Promise<void>;
+  saveConfig: (config: HomeFrontendSystemData) => Promise<boolean>;
   previewConfig: (config: HomeFrontendSystemData | undefined) => void;
 }
 

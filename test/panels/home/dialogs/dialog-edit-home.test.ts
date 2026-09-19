@@ -74,6 +74,7 @@ describe("buildHomeConfig", () => {
 interface TestDialogEditHome extends HTMLElement {
   hass: HomeAssistant;
   updateComplete: Promise<boolean>;
+  isDirtyState: boolean;
   showDialog(params: EditHomeDialogParams): void;
   connectedCallback(): void;
   disconnectedCallback(): void;
@@ -152,7 +153,7 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
   it("does not clear the preview again when the dialog closes after a successful save", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
-    const saveConfig = vi.fn().mockResolvedValue(undefined);
+    const saveConfig = vi.fn().mockResolvedValue(true);
     el.showDialog({ config: {}, saveConfig, previewConfig });
     await el.updateComplete;
 
@@ -170,10 +171,32 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
   });
 
+  it("still clears the preview and keeps the dirty state when a save fails", async () => {
+    const el = createDialog();
+    const previewConfig = vi.fn();
+    const saveConfig = vi.fn().mockResolvedValue(false);
+    el.showDialog({ config: {}, saveConfig, previewConfig });
+    await el.updateComplete;
+
+    welcomeChanged(el, false);
+    await el.updateComplete;
+    previewConfig.mockClear();
+
+    await save(el);
+    // ha-panel-home._saveConfig() already resolved this backend failure to
+    // false, then _save() closes the dialog anyway (unchanged behavior).
+    dialogClosed(el);
+
+    // A failed save must not be treated as committed: the preview reverts
+    // to the untouched saved config, and the edit is still considered dirty.
+    expect(previewConfig).toHaveBeenCalledWith(undefined);
+    expect(el.isDirtyState).toBe(true);
+  });
+
   it("still clears the preview on a later cancel after a reused dialog previously saved", async () => {
     const el = createDialog();
     const previewConfig = vi.fn();
-    const saveConfig = vi.fn().mockResolvedValue(undefined);
+    const saveConfig = vi.fn().mockResolvedValue(true);
 
     // First session on this dialog instance: save successfully.
     el.showDialog({ config: {}, saveConfig, previewConfig });

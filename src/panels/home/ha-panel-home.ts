@@ -265,9 +265,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _editHome = () => {
     showEditHomeDialog(this, {
       config: this._config,
-      saveConfig: async (config) => {
-        await this._saveConfig(config);
-      },
+      saveConfig: (config) => this._saveConfig(config),
       previewConfig: this._setPreviewConfig,
     });
   };
@@ -454,7 +452,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     };
   }
 
-  private async _saveConfig(config: HomeFrontendSystemData): Promise<void> {
+  private async _saveConfig(config: HomeFrontendSystemData): Promise<boolean> {
     try {
       await saveFrontendSystemData(this.hass.connection, "home", config);
       this._config = config || {};
@@ -466,12 +464,18 @@ class PanelHome extends SubscribeMixin(LitElement) {
         duration: 0,
         dismissable: true,
       });
-      return;
+      return false;
     }
     showToast(this, {
       message: this.hass.localize("ui.common.successfully_saved"),
     });
+    // Commit directly rather than through _setPreviewConfig(): _config now
+    // holds exactly what was persisted, so any draft newer than it (made
+    // while this save was in flight, since the editors stay enabled during
+    // the await) must not keep being rendered as if it had been saved.
+    this._previewConfig = undefined;
     this._setLovelace();
+    return true;
   }
 
   static readonly styles: CSSResultGroup = css`
