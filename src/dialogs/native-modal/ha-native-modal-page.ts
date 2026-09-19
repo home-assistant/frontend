@@ -53,7 +53,7 @@ export class HaNativeModalPage extends NativeModalHostPage {
     }
     this._shown = true;
     await dialog.load();
-    const element = document.createElement(request.tag) as HTMLElement & {
+    const element = document.createElement(dialog.tag) as HTMLElement & {
       hass: HomeAssistant;
       standalone: boolean;
       withoutHeader: boolean;

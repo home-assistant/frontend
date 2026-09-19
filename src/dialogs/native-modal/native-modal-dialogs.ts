@@ -9,6 +9,8 @@ import type { LocalizeFunc } from "../../common/translations/localize";
  * `ha-adaptive-dialog`, and have parameters that survive JSON.
  */
 export interface NativeModalDialog {
+  /** Its own name, so the element is created from this list and never from the URL. */
+  tag: string;
   /** The modal showing it shares no code with the one asking. */
   load: () => Promise<unknown>;
   /** What the app's navigation bar is titled while the dialog loads. */
@@ -17,6 +19,7 @@ export interface NativeModalDialog {
 
 export const NATIVE_MODAL_DIALOGS: Record<string, NativeModalDialog> = {
   "dialog-logbook-detail": {
+    tag: "dialog-logbook-detail",
     load: () => import("../../panels/logbook/dialog-logbook-detail"),
     title: (localize) => localize("ui.dialogs.logbook_detail.title"),
   },
