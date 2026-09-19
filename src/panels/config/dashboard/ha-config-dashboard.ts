@@ -464,6 +464,15 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             border-width: 1px 0;
             border-radius: var(--ha-border-radius-square);
             box-shadow: unset;
+            box-sizing: border-box;
+            width: calc(
+              100% + var(--safe-area-inset-left, 0px) +
+                var(--safe-area-inset-right, 0px)
+            );
+            margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
+            margin-right: calc(-1 * var(--safe-area-inset-right, 0px));
+            padding-left: var(--safe-area-inset-left, 0px);
+            padding-right: var(--safe-area-inset-right, 0px);
           }
           ha-config-section {
             margin-top: -42px;
