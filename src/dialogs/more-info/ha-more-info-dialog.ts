@@ -87,7 +87,7 @@ import {
   computeNativeMoreInfoHeader,
   MORE_INFO_BREADCRUMB_NAME,
 } from "./compute-more-info-header";
-import type { MoreInfoNativeHeader } from "../../external_app/external_messaging";
+import type { NativeModalHeader } from "../../external_app/external_messaging";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
 import { getFavoritesDialogHandler } from "./favorites";
@@ -141,13 +141,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   /**
    * Render as a frameless page filling the viewport instead of a dialog, for
    * an external app that embeds it in a native screen. Closing then sends
-   * `more_info/close` on the external bus instead of hiding a dialog.
+   * `modal/close` on the external bus instead of hiding a dialog.
    */
   @property({ type: Boolean, reflect: true }) public standalone = false;
 
   /**
    * Leave out the header in standalone mode: the app draws the title and the
-   * close button in its own screen chrome, from the `more_info/open` payload.
+   * close button in its own chrome, from the `modal/open` payload.
    */
   @property({ type: Boolean, attribute: "hide-header" }) public hideHeader =
     false;
@@ -475,8 +475,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   /**
-   * Answers a tap on the app's native header (`more_info/action`) with what the
-   * dialog's own button or menu item would do; ids are those `more_info/header`
+   * Answers a tap on the app's native header (`modal/action`) with what the
+   * dialog's own button or menu item would do; ids are those `modal/header`
    * named. See `computeNativeMoreInfoHeader`.
    */
   public performHeaderAction(id: string) {
@@ -698,10 +698,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   /**
    * The header the page leaves out, described for the app that draws it
-   * (`hasNativeMoreInfoHeader`), from the same state and conditions as the
+   * (`hasNativeModalHeader`), from the same state and conditions as the
    * header `render` would show.
    */
-  private _computeNativeHeader(): MoreInfoNativeHeader | undefined {
+  private _computeNativeHeader(): NativeModalHeader | undefined {
     if (!this.standalone || !this.hideHeader || !this._entityId) {
       return undefined;
     }
@@ -722,7 +722,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     );
     return computeNativeMoreInfoHeader({
       localize: this.hass.localize,
-      entityId,
       domain,
       title,
       subtitle: breadcrumb.length
@@ -1204,15 +1203,14 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       return;
     }
     this._sentNativeHeader = serialized;
-    external.fireMessage({ type: "more_info/header", payload: header });
+    external.fireMessage({ type: "modal/header", payload: header });
   }
 
   private _reportShownEntityToExternalApp(
     previousEntityId: string | null | undefined
   ) {
     const external = this.hass.auth.external;
-    // The external app opened the standalone page itself, so it already knows.
-    if (!external || this.standalone) {
+    if (!external) {
       return;
     }
     if (this._entityId) {
@@ -1232,10 +1230,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (!this._entityId) {
       return;
     }
-    this.hass.auth.external?.fireMessage({
-      type: "more_info/close",
-      payload: { entity_id: this._entityId },
-    });
+    this.hass.auth.external?.fireMessage({ type: "modal/close" });
   }
 
   private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {

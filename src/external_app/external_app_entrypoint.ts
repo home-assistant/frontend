@@ -27,10 +27,9 @@ const barCodeListeners = new Set<
 >();
 
 /**
- * The element that answers the app's commands: the main frontend, or the
- * standalone more-info page when the app shows it in a screen of its own.
- * Events for chrome it does not have (the sidebar, notifications) bubble away
- * unanswered there.
+ * The element that answers the app's commands: the main frontend, or the page
+ * the app is showing in a native modal. Events for chrome it does not have
+ * (the sidebar, notifications) bubble away unanswered there.
  */
 export type ExternalAppHost = HTMLElement & { hass: HomeAssistant };
 
@@ -107,8 +106,8 @@ export const handleExternalMessage = (
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
     fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
-  } else if (msg.command === "more_info/action") {
-    fireEvent(hassMainEl, "more-info-header-action", { id: msg.payload.id });
+  } else if (msg.command === "modal/action") {
+    fireEvent(hassMainEl, "native-modal-action", { id: msg.payload.id });
   } else {
     return false;
   }
@@ -128,8 +127,8 @@ declare global {
     "improv-discovered-device": ImprovDiscoveredDevice;
     "improv-device-setup-done": undefined;
     "matter-commission-finish": MatterCommissionFinish;
-    /** The app's `more_info/action`, for the standalone more-info page. */
-    "more-info-header-action": { id: string };
+    /** The app's `modal/action`, for the page inside its native modal. */
+    "native-modal-action": { id: string };
   }
 
   interface GlobalEventHandlersEventMap {

@@ -13,7 +13,6 @@ const kitchenLight = (
   overrides: Partial<NativeMoreInfoHeaderContext> = {}
 ): NativeMoreInfoHeaderContext => ({
   localize,
-  entityId: "light.kitchen",
   domain: "light",
   title: "Light",
   subtitle: "Kitchen ▸ Smart Device",

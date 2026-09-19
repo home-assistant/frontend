@@ -207,49 +207,51 @@ interface EMOutgoingMessageMoreInfoClosed extends EMMessage {
   };
 }
 
+/** How much of the screen the modal asks for; the app maps it to its own presentation. */
+export type NativeModalSize = "compact" | "full";
+
 /**
- * Sent instead of opening the more-info dialog when the app reports
- * `hasNativeMoreInfo`. The app then shows the entity in a native screen, for
- * example by loading the standalone page (`/more-info`) in its own webview.
+ * Asks the app to show a frontend route in a modal of its own, instead of the
+ * frontend showing it in a dialog. Sent when the app reports `hasNativeModal`.
+ * The app loads `path` in a webview inside whatever a modal is on its platform,
+ * for example a sheet on iOS.
  */
-interface EMOutgoingMessageMoreInfoOpen extends EMMessage {
-  type: "more_info/open";
+interface EMOutgoingMessageModalOpen extends EMMessage {
+  type: "modal/open";
   payload: {
-    entity_id: string;
-    /** What the dialog's header would show, for the app's own header. */
+    /** Frontend route the modal's webview loads. */
+    path: string;
+    /** What the page's own header would show, for the app's header. */
     title: string;
-    /** The area and device breadcrumb above the title, when there is one. */
+    /** The breadcrumb above the title, when there is one. */
     subtitle?: string;
+    size: NativeModalSize;
   };
 }
 
 /**
- * Sent by the standalone more-info page (`/more-info`) when the user asks to
- * close it. The page has no dialog to hide, so the app owning the native
- * screen dismisses it.
+ * Sent from inside a native modal when the user asks to close it. The page has
+ * no dialog to hide, so the app dismisses the modal around it.
  */
-interface EMOutgoingMessageMoreInfoClose extends EMMessage {
-  type: "more_info/close";
-  payload: {
-    entity_id: string;
-  };
+interface EMOutgoingMessageModalClose extends EMMessage {
+  type: "modal/close";
 }
 
 /**
- * Sent by the standalone more-info page instead of navigating to another page
- * (device page, entity editor, related items). The screen shows one entity, so
- * the app shows the destination in its main frontend and dismisses the screen.
+ * Sent from inside a native modal instead of navigating. A modal shows one
+ * thing, so the app dismisses it and sends its main frontend to the
+ * destination.
  */
-interface EMOutgoingMessageMoreInfoNavigate extends EMMessage {
-  type: "more_info/navigate";
+interface EMOutgoingMessageModalNavigate extends EMMessage {
+  type: "modal/navigate";
   payload: {
     path: string;
   };
 }
 
-/** An icon button in the more-info header, or an item of its overflow menu. */
-export interface MoreInfoHeaderAction {
-  /** Sent back in `more_info/action` when the user picks it. */
+/** An icon button in a native modal's header, or an item of its overflow menu. */
+export interface NativeModalHeaderAction {
+  /** Sent back in `modal/action` when the user picks it. */
   id: string;
   /** Translated, for the button's accessibility label or the menu item. */
   label: string;
@@ -257,39 +259,37 @@ export interface MoreInfoHeaderAction {
   icon: string;
 }
 
-export interface MoreInfoHeaderMenuItem extends MoreInfoHeaderAction {
+export interface NativeModalHeaderMenuItem extends NativeModalHeaderAction {
   disabled?: boolean;
   /** A separator follows this item. */
   divider_after?: boolean;
 }
 
-export interface MoreInfoNativeHeader {
-  entity_id: string;
+export interface NativeModalHeader {
   title: string;
-  /** The area and device breadcrumb above the title, when there is one. */
+  /** The breadcrumb above the title, when there is one. */
   subtitle?: string;
-  /** What the leading button does: dismiss the screen, or return to the previous view. */
+  /** What the leading button does: dismiss the modal, or return to the previous view. */
   navigation: "close" | "back";
   /** Translated accessibility label of the leading button. */
   navigation_label: string;
   /** Translated accessibility label of the overflow menu button. */
   menu_label: string;
   /** Icon buttons, in order, before the overflow menu. */
-  actions: MoreInfoHeaderAction[];
+  actions: NativeModalHeaderAction[];
   /** Items of the overflow menu; empty means no menu button. */
-  menu: MoreInfoHeaderMenuItem[];
+  menu: NativeModalHeaderMenuItem[];
 }
 
 /**
- * Sent by the standalone more-info page whenever the header it leaves out
- * (`hasNativeMoreInfoHeader`) would change: on open, when the view changes,
- * when the dialog follows a related entity. The app draws exactly this and
- * answers a tap with the `more_info/action` command, so what the header offers
- * is decided by the frontend alone.
+ * Sent from inside a native modal whenever the header it leaves out
+ * (`hasNativeModalHeader`) would change. The app draws exactly this and answers
+ * a tap with the `modal/action` command, so what the header offers is decided
+ * by the frontend alone.
  */
-interface EMOutgoingMessageMoreInfoHeader extends EMMessage {
-  type: "more_info/header";
-  payload: MoreInfoNativeHeader;
+interface EMOutgoingMessageModalHeader extends EMMessage {
+  type: "modal/header";
+  payload: NativeModalHeader;
 }
 
 interface EMOutgoingMessageFocusElement extends EMMessage {
@@ -324,12 +324,12 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageHaptic
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
-  | EMOutgoingMessageMoreInfoOpen
+  | EMOutgoingMessageModalOpen
+  | EMOutgoingMessageModalClose
+  | EMOutgoingMessageModalNavigate
+  | EMOutgoingMessageModalHeader
   | EMOutgoingMessageMoreInfoOpened
   | EMOutgoingMessageMoreInfoClosed
-  | EMOutgoingMessageMoreInfoClose
-  | EMOutgoingMessageMoreInfoNavigate
-  | EMOutgoingMessageMoreInfoHeader
   | EMOutgoingMessageSidebarShow
   | EMOutgoingMessageTagWrite
   | EMOutgoingMessageThemeUpdate
@@ -445,11 +445,11 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
-/** The user picked an item of the native more-info header; `id` is from `more_info/header`. */
-export interface EMIncomingMessageMoreInfoAction {
+/** The user picked an item of a native modal's header; `id` is from `modal/header`. */
+export interface EMIncomingMessageModalAction {
   id: number;
   type: "command";
-  command: "more_info/action";
+  command: "modal/action";
   payload: {
     id: string;
   };
@@ -480,7 +480,7 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageImprovDeviceSetupDone
   | EMIncomingMessageMatterCommissionFinish
   | EMIncomingMessageKioskModeSet
-  | EMIncomingMessageMoreInfoAction;
+  | EMIncomingMessageModalAction;
 
 type EMIncomingMessage =
   EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
@@ -501,8 +501,8 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
-  hasNativeMoreInfo?: boolean; // Shows more-info in a native screen: the frontend sends more_info/open instead of opening the dialog
-  hasNativeMoreInfoHeader?: boolean; // The native more-info screen draws the header from more_info/header (title, buttons, menu) and sends more_info/action, so the standalone page leaves its own out
+  hasNativeModal?: boolean; // Shows a frontend route in a native modal: the frontend sends modal/open instead of opening its own dialog
+  hasNativeModalHeader?: boolean; // The native modal draws its header from modal/header (title, buttons, menu) and sends modal/action, so the page inside leaves its own out
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }

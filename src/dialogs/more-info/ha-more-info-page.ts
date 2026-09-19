@@ -41,7 +41,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.addEventListener("location-changed", this._readUrl);
     mainWindow.addEventListener("popstate", this._readUrl);
     registerNavigationInterceptor(this._relayNavigation);
-    this.addEventListener("more-info-header-action", this._headerAction);
+    this.addEventListener("native-modal-action", this._headerAction);
   }
 
   public disconnectedCallback() {
@@ -49,7 +49,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.removeEventListener("location-changed", this._readUrl);
     mainWindow.removeEventListener("popstate", this._readUrl);
     unregisterNavigationInterceptor(this._relayNavigation);
-    this.removeEventListener("more-info-header-action", this._headerAction);
+    this.removeEventListener("native-modal-action", this._headerAction);
   }
 
   protected render() {
@@ -63,7 +63,7 @@ export class HaMoreInfoPage extends LitElement {
     return html`
       <ha-more-info-dialog
         standalone
-        .hideHeader=${!!this.hass.auth.external?.config.hasNativeMoreInfoHeader}
+        .hideHeader=${!!this.hass.auth.external?.config.hasNativeModalHeader}
         .hass=${this.hass}
       ></ha-more-info-dialog>
     `;
@@ -111,13 +111,13 @@ export class HaMoreInfoPage extends LitElement {
     ) {
       return false;
     }
-    external.fireMessage({ type: "more_info/navigate", payload: { path } });
+    external.fireMessage({ type: "modal/navigate", payload: { path } });
     return true;
   };
 
   /** The app's native header was tapped; the dialog answers as if its own button was. */
   private _headerAction = (
-    ev: HASSDomEvent<HASSDomEvents["more-info-header-action"]>
+    ev: HASSDomEvent<HASSDomEvents["native-modal-action"]>
   ) => {
     this._dialog?.performHeaderAction(ev.detail.id);
   };
@@ -163,8 +163,6 @@ declare global {
   }
 
   interface HTMLElementEventMap {
-    "more-info-header-action": HASSDomEvent<
-      HASSDomEvents["more-info-header-action"]
-    >;
+    "native-modal-action": HASSDomEvent<HASSDomEvents["native-modal-action"]>;
   }
 }

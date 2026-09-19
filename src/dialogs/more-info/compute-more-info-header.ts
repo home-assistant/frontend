@@ -9,9 +9,9 @@ import type {
 } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type {
-  MoreInfoHeaderAction,
-  MoreInfoHeaderMenuItem,
-  MoreInfoNativeHeader,
+  NativeModalHeader,
+  NativeModalHeaderAction,
+  NativeModalHeaderMenuItem,
 } from "../../external_app/external_messaging";
 import type { HomeAssistant } from "../../types";
 import type { MoreInfoView } from "./more-info-view";
@@ -64,7 +64,6 @@ export const computeMoreInfoHeader = (
 /** What the more-info dialog's header would offer, without how it renders it. */
 export interface NativeMoreInfoHeaderContext {
   localize: LocalizeFunc;
-  entityId: string;
   domain: string;
   title: string;
   subtitle?: string;
@@ -92,17 +91,17 @@ export interface NativeMoreInfoHeaderContext {
 }
 
 /**
- * The header of the standalone more-info page as `more_info/header` describes
- * it to the app: the same buttons and menu items the dialog renders, in the
- * same order and under the same conditions, named by the ids the dialog
- * answers in `performHeaderAction`.
+ * The header of the standalone more-info page as `modal/header` describes it to
+ * the app: the same buttons and menu items the dialog renders, in the same
+ * order and under the same conditions, named by the ids the dialog answers in
+ * `performHeaderAction`.
  */
 export const computeNativeMoreInfoHeader = (
   ctx: NativeMoreInfoHeaderContext
-): MoreInfoNativeHeader => {
+): NativeModalHeader => {
   const { localize } = ctx;
-  const actions: MoreInfoHeaderAction[] = [];
-  const menu: MoreInfoHeaderMenuItem[] = [];
+  const actions: NativeModalHeaderAction[] = [];
+  const menu: NativeModalHeaderMenuItem[] = [];
   const addToLabel = localize("ui.dialogs.more_info_control.add_to.item");
 
   if (ctx.isDefaultView) {
@@ -207,7 +206,6 @@ export const computeNativeMoreInfoHeader = (
   }
 
   return {
-    entity_id: ctx.entityId,
     title: ctx.title,
     subtitle: ctx.subtitle,
     navigation: ctx.canGoBack ? "back" : "close",

@@ -297,20 +297,15 @@ describe("more-info query params", () => {
   });
 
   it("creates a standalone page link the page can decode", () => {
-    const url = createStandaloneMoreInfoUrl({
-      entityId: "light.kitchen",
-      view: "history",
-    });
+    const url = createStandaloneMoreInfoUrl("light.kitchen");
 
-    expect(url).toBe(
-      "/more-info?more-info-entity-id=light.kitchen&more-info-view=history"
-    );
+    expect(url).toBe("/more-info?more-info-entity-id=light.kitchen");
     expect(isMoreInfoStandalonePath(new URL(url, "http://x").pathname)).toBe(
       true
     );
     expect(decodeMoreInfoUrl(new URL(url, "http://x").search)).toEqual({
       entityId: "light.kitchen",
-      view: "history",
+      view: undefined,
     });
   });
 

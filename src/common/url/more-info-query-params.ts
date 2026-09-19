@@ -57,9 +57,11 @@ export const createMoreInfoUrl = (
   return `${url.pathname}${url.search}${url.hash}`;
 };
 
-export const createStandaloneMoreInfoUrl = (
-  data: CreateMoreInfoUrlData
-): string => createMoreInfoUrl(MORE_INFO_STANDALONE_PATH, data);
+/** The standalone route for an entity, opening on its default view. */
+export const createStandaloneMoreInfoUrl = (entityId: string): string => {
+  const params = new URLSearchParams({ [ENTITY_ID_PARAM]: entityId });
+  return `${MORE_INFO_STANDALONE_PATH}?${params}`;
+};
 
 export const removeMoreInfoUrl = (base: string): string => {
   const url = new URL(base, window.location.origin);
