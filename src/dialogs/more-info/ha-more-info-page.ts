@@ -42,6 +42,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.addEventListener("popstate", this._readUrl);
     registerNavigationInterceptor(this._relayNavigation);
     this.addEventListener("native-modal-action", this._headerAction);
+    window.addEventListener("show-dialog", this._dialogOpened);
   }
 
   public disconnectedCallback() {
@@ -50,6 +51,7 @@ export class HaMoreInfoPage extends LitElement {
     mainWindow.removeEventListener("popstate", this._readUrl);
     unregisterNavigationInterceptor(this._relayNavigation);
     this.removeEventListener("native-modal-action", this._headerAction);
+    window.removeEventListener("show-dialog", this._dialogOpened);
   }
 
   protected render() {
@@ -113,6 +115,17 @@ export class HaMoreInfoPage extends LitElement {
     }
     external.fireMessage({ type: "modal/navigate", payload: { path } });
     return true;
+  };
+
+  /**
+   * A dialog opened over this page needs the whole screen. The app may be showing
+   * the page in a modal only half the screen tall, which would clip it.
+   */
+  private _dialogOpened = () => {
+    this.hass?.auth.external?.fireMessage({
+      type: "modal/size",
+      payload: { size: "full" },
+    });
   };
 
   /** The app's native header was tapped; the dialog answers as if its own button was. */

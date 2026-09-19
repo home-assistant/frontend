@@ -244,6 +244,18 @@ interface EMOutgoingMessageModalOpen extends EMMessage {
 }
 
 /**
+ * Asks the app to change how much room the modal takes, after it is already up.
+ * A dialog opened inside a modal needs the whole screen: a half-height one
+ * would clip it.
+ */
+interface EMOutgoingMessageModalSize extends EMMessage {
+  type: "modal/size";
+  payload: {
+    size: NativeModalSize;
+  };
+}
+
+/**
  * Sent from inside a native modal when the user asks to close it. The page has
  * no dialog to hide, so the app dismisses the modal around it.
  */
@@ -339,6 +351,7 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageImportThreadCredentials
   | EMOutgoingMessageMatterCommission
   | EMOutgoingMessageModalOpen
+  | EMOutgoingMessageModalSize
   | EMOutgoingMessageModalClose
   | EMOutgoingMessageModalNavigate
   | EMOutgoingMessageModalHeader
