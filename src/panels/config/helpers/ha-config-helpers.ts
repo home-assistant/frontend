@@ -267,7 +267,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg: EntityRegistryEntry[] = [];
+  _entityReg?: EntityRegistryEntry[];
 
   @state() private _filteredHelperEntityIds?: string[] | null;
 
@@ -483,7 +483,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
       const states = stateItems.map((entityState) => {
         const configEntry = getConfigEntry(
-          entityRegistryByEntityId(this._entityReg),
+          entityRegistryByEntityId(entityReg),
           configEntries,
           entityState.entity_id
         );
@@ -509,7 +509,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
       const entries = Object.values(configEntriesCopy)
         .map((configEntry) => {
-          const entityEntry = this._entityReg.find(
+          const entityEntry = entityReg.find(
             (entry) => entry.config_entry_id === configEntry.entry_id
           );
           return {
@@ -592,7 +592,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _labelsForEntity(entityId: string): string[] {
     return (
       this.hass.entities[entityId]?.labels ||
-      entityRegistryByEntityId(this._entityReg)[entityId]?.labels ||
+      entityRegistryByEntityId(this._entityReg || [])[entityId]?.labels ||
       []
     );
   }
@@ -869,7 +869,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         const labelItems = new Set<string>();
         this._helperEntities
           .filter((stateItem) =>
-            entityRegistryByEntityId(this._entityReg)[
+            entityRegistryByEntityId(this._entityReg || [])[
               stateItem.entity_id
             ]?.labels.some((lbl) => filter.includes(lbl))
           )
@@ -896,8 +896,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .filter(
             (stateItem) =>
               filter[0] ===
-              entityRegistryByEntityId(this._entityReg)[stateItem.entity_id]
-                ?.categories.helpers
+              entityRegistryByEntityId(this._entityReg || [])[
+                stateItem.entity_id
+              ]?.categories.helpers
           )
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
@@ -921,16 +922,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         this._helperEntities
           .filter((stateItem) =>
             getEntityVoiceAssistantsIds(
-              this._entityReg,
+              this._entityReg || [],
               stateItem.entity_id
             ).some((va) => (filter as string[]).includes(va))
           )
           .forEach((stateItem) => assistItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
           .filter((entry) =>
-            getEntityVoiceAssistantsIds(this._entityReg, entry.entity_id).some(
-              (va) => (filter as string[]).includes(va)
-            )
+            getEntityVoiceAssistantsIds(
+              this._entityReg || [],
+              entry.entity_id
+            ).some((va) => (filter as string[]).includes(va))
           )
           .forEach((entry) => assistItems.add(entry.entity_id));
         if (!items) {
@@ -1008,7 +1010,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _editCategory(helper: any) {
-    const entityReg = entityRegistryByEntityId(this._entityReg)[
+    const entityReg = entityRegistryByEntityId(this._entityReg || [])[
       helper.entity_id
     ];
     if (!entityReg) {
@@ -1371,7 +1373,7 @@ ${rejected
     try {
       // For old-style helpers (input_boolean, etc.), use HELPERS_CRUD
       if (isHelperDomain(helper.type)) {
-        const entityReg = this._entityReg.find(
+        const entityReg = this._entityReg?.find(
           (e) => e.entity_id === helper.entity_id
         );
         if (
