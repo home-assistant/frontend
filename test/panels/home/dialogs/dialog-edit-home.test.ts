@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { HomeFrontendSystemData } from "../../../../src/data/frontend";
 import type { EditHomeDialogParams } from "../../../../src/panels/home/dialogs/show-dialog-edit-home";
 import type { HomeAssistant } from "../../../../src/types";
@@ -95,14 +95,26 @@ const save = (el: TestDialogEditHome) =>
   (el as unknown as Record<"_save", () => Promise<void>>)._save();
 
 describe("<dialog-edit-home> live preview lifecycle", () => {
+  // Tracked so afterEach() can always disconnect it, even when a test fails
+  // an assertion before reaching its own cleanup: DirtyStateProviderMixin
+  // registers the connected instance in a module-level map that only
+  // disconnectedCallback() clears, and that leak is visible globally via
+  // window.isDirtyState for the rest of this file's run otherwise.
+  let activeDialog: TestDialogEditHome | undefined;
+
   const createDialog = () => {
-    const el = document.createElement(
+    activeDialog = document.createElement(
       "dialog-edit-home"
     ) as unknown as TestDialogEditHome;
-    el.hass = createMockHass();
-    el.connectedCallback();
-    return el;
+    activeDialog.hass = createMockHass();
+    activeDialog.connectedCallback();
+    return activeDialog;
   };
+
+  afterEach(() => {
+    activeDialog?.disconnectedCallback();
+    activeDialog = undefined;
+  });
 
   it("does not preview the initial showDialog() state", async () => {
     const el = createDialog();
@@ -111,8 +123,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     await el.updateComplete;
 
     expect(previewConfig).not.toHaveBeenCalled();
-
-    el.disconnectedCallback();
   });
 
   it("previews the transformed draft after an editor state change", async () => {
@@ -126,8 +136,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
 
     expect(previewConfig).toHaveBeenCalledTimes(1);
     expect(previewConfig).toHaveBeenCalledWith({ hide_welcome_message: true });
-
-    el.disconnectedCallback();
   });
 
   it("clears the preview when the dialog closes", async () => {
@@ -139,8 +147,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     dialogClosed(el);
 
     expect(previewConfig).toHaveBeenCalledWith(undefined);
-
-    el.disconnectedCallback();
   });
 
   it("does not clear the preview again when the dialog closes after a successful save", async () => {
@@ -162,8 +168,6 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     // closing must not schedule a second, redundant one.
     expect(previewConfig).toHaveBeenCalledTimes(1);
     expect(previewConfig).not.toHaveBeenCalledWith(undefined);
-
-    el.disconnectedCallback();
   });
 
   it("still clears the preview on a later cancel after a reused dialog previously saved", async () => {
@@ -188,7 +192,5 @@ describe("<dialog-edit-home> live preview lifecycle", () => {
     dialogClosed(el);
 
     expect(previewConfig).toHaveBeenCalledWith(undefined);
-
-    el.disconnectedCallback();
   });
 });
