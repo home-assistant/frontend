@@ -9332,7 +9332,9 @@
             "other_devices": "Other devices",
             "battery_thresholds": "Battery thresholds",
             "default_threshold": "Default low battery threshold (%)",
-            "reset_threshold": "Reset threshold of {name} to default"
+            "reset_threshold": "Reset threshold of {name} to default",
+            "discard_title": "Discard changes?",
+            "discard_text": "Your threshold changes have not been saved."
           },
           "home_media_players": {
             "media_players": "Media players",

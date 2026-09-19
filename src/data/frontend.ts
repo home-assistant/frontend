@@ -56,6 +56,7 @@ export interface EnergyFrontendSystemData {
 
 export interface MaintenanceFrontendSystemData {
   battery_threshold?: number;
+  // device_id (or entity_id when the battery has no device) -> threshold (%)
   battery_thresholds?: Record<string, number>;
 }
 

@@ -35,6 +35,8 @@ export const maintenanceEntityFilters: EntityFilter[] = [
 ];
 
 export const LOW_BATTERY_THRESHOLD = 20;
+export const batteryThresholdKey = (hass: HomeAssistant, entityId: string) =>
+  hass.entities[entityId]?.device_id ?? entityId;
 
 const _deviceEntityLookup = memoizeOne((entities: HomeAssistant["entities"]) =>
   getDeviceEntityDisplayLookup(Object.values(entities))
@@ -54,7 +56,7 @@ export const filterLowBatteryEntities = (
 
     const stateValue = parseFloat(state);
     const threshold =
-      data.battery_thresholds?.[entityId] ??
+      data.battery_thresholds?.[batteryThresholdKey(hass, entityId)] ??
       data.battery_threshold ??
       LOW_BATTERY_THRESHOLD;
     if (isNaN(stateValue) || stateValue > threshold) {

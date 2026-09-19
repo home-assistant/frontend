@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { filterLowBatteryEntities } from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
+import {
+  filterLowBatteryEntities,
+  batteryThresholdKey,
+} from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
 import { mockEntity } from "../../../common/entity/context/context-mock";
 import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
 import type { HomeAssistant } from "../../../../src/types";
@@ -156,6 +159,16 @@ const hass = {
 } as unknown as HomeAssistant;
 
 const ids = Object.keys(hass.states);
+
+describe("batteryThresholdKey", () => {
+  it("keys by device, falling back to the entity", () => {
+    const h = {
+      entities: { "sensor.a": { device_id: "dev1" } },
+    } as unknown as HomeAssistant;
+    expect(batteryThresholdKey(h, "sensor.a")).toBe("dev1");
+    expect(batteryThresholdKey(h, "sensor.b")).toBe("sensor.b");
+  });
+});
 
 describe("filterLowBatteryEntities", () => {
   it("uses 20% by default", () => {

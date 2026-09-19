@@ -69,15 +69,17 @@ export class HuiHomeSummaryCard
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     if (this._config?.summary === "maintenance") {
-      return [
-        subscribeFrontendSystemData(
-          this.hass!.connection,
-          "maintenance",
-          ({ value }) => {
-            this._maintenanceData = value ?? {};
-          }
-        ),
-      ];
+      const unsub = subscribeFrontendSystemData(
+        this.hass!.connection,
+        "maintenance",
+        ({ value }) => {
+          this._maintenanceData = value ?? {};
+        }
+      );
+      unsub.catch(() => {
+        this._maintenanceData = {};
+      });
+      return [unsub];
     }
     if (this._config?.summary !== "energy") {
       return [];
