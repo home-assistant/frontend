@@ -8,6 +8,7 @@ import {
   removeMoreInfoUrl,
 } from "../common/url/more-info-query-params";
 import { showDialog } from "../dialogs/make-dialog-manager";
+import { computeMoreInfoHeader } from "../dialogs/more-info/compute-more-info-header";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
@@ -41,6 +42,25 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : currentUrl;
 
       replaceCurrentUrl(returnUrl);
+
+      // The app presents more-info natively (e.g. the standalone page in its
+      // own webview), so hand it the entity instead of opening the dialog.
+      // A null entity id would only close a dialog, and none is open.
+      const external = this.hass!.auth.external;
+      if (external?.config.hasNativeMoreInfo) {
+        if (ev.detail.entityId) {
+          // The app draws the header itself, so it gets what the dialog would show.
+          external.fireMessage({
+            type: "more_info/open",
+            payload: {
+              entity_id: ev.detail.entityId,
+              ...computeMoreInfoHeader(this.hass!, ev.detail.entityId),
+            },
+          });
+        }
+        return;
+      }
+
       const shown = await showDialog(
         this,
         "ha-more-info-dialog",

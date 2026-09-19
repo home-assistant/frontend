@@ -10,7 +10,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { navigate } from "../common/navigate";
 import { showAutomationEditor } from "../data/automation";
-import type { HomeAssistantMain } from "../layouts/home-assistant-main";
+import type { HomeAssistant } from "../types";
 import type {
   EMIncomingMessageBarCodeScanAborted,
   EMIncomingMessageBarCodeScanResult,
@@ -26,7 +26,15 @@ const barCodeListeners = new Set<
   ) => boolean
 >();
 
-export const attachExternalToApp = (hassMainEl: HomeAssistantMain) => {
+/**
+ * The element that answers the app's commands: the main frontend, or the
+ * standalone more-info page when the app shows it in a screen of its own.
+ * Events for chrome it does not have (the sidebar, notifications) bubble away
+ * unanswered there.
+ */
+export type ExternalAppHost = HTMLElement & { hass: HomeAssistant };
+
+export const attachExternalToApp = (hassMainEl: ExternalAppHost) => {
   window.addEventListener("haptic", (ev) =>
     hassMainEl.hass.auth.external!.fireMessage({
       type: "haptic",
@@ -52,7 +60,7 @@ export const addExternalBarCodeListener = (
 };
 
 export const handleExternalMessage = (
-  hassMainEl: HomeAssistantMain,
+  hassMainEl: ExternalAppHost,
   msg: EMIncomingMessageCommands
 ): boolean => {
   const bus = hassMainEl.hass.auth.external!;
@@ -99,6 +107,8 @@ export const handleExternalMessage = (
     barCodeListeners.forEach((listener) => listener(msg));
   } else if (msg.command === "kiosk_mode/set") {
     fireEvent(window, "hass-kiosk-mode", { enable: msg.payload.enable });
+  } else if (msg.command === "more_info/action") {
+    fireEvent(hassMainEl, "more-info-header-action", { id: msg.payload.id });
   } else {
     return false;
   }
@@ -118,6 +128,8 @@ declare global {
     "improv-discovered-device": ImprovDiscoveredDevice;
     "improv-device-setup-done": undefined;
     "matter-commission-finish": MatterCommissionFinish;
+    /** The app's `more_info/action`, for the standalone more-info page. */
+    "more-info-header-action": { id: string };
   }
 
   interface GlobalEventHandlersEventMap {
