@@ -39,6 +39,11 @@ export const cardFeatureStyles = css`
     --control-slider-thickness: var(--feature-height);
     --control-slider-border-radius: var(--feature-border-radius);
   }
+  ha-control-scrubber {
+    --control-scrubber-color: var(--feature-color);
+    --control-scrubber-thickness: var(--feature-height);
+    --control-scrubber-border-radius: var(--feature-border-radius);
+  }
   ha-control-switch {
     --control-switch-on-color: var(--feature-color);
     --control-switch-off-color: var(--feature-color);

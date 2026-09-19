@@ -164,6 +164,7 @@ class HuiLightColorTempCardFeature
             var(--gradient)
           );
           --control-slider-background-opacity: 1;
+          --control-slider-inset-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
         }
       `,
     ];

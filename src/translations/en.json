@@ -208,6 +208,8 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
+        "hue": "Hue",
+        "saturation": "Saturation",
         "white_value": "White brightness",
         "color_brightness": "Color brightness",
         "cold_white_value": "Cold white brightness",
@@ -10921,6 +10923,15 @@
               },
               "light-brightness": {
                 "label": "Light brightness"
+              },
+              "light-color": {
+                "label": "Light color",
+                "controls": "Controls",
+                "controls_list": {
+                  "hue": "Hue",
+                  "saturation": "Saturation",
+                  "hue_saturation": "Hue and saturation"
+                }
               },
               "light-color-favorites": {
                 "label": "Light color favorites",
