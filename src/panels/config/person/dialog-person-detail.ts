@@ -492,7 +492,9 @@ class DialogPersonDetail
           },
           ...eligibleUsers.map((user) => ({
             iconPath: mdiAccount,
-            label: `${user.name} (${user.username})`,
+            label: user.username
+              ? `${user.name} (${user.username})`
+              : user.name,
             action: () => this._linkUser(user, false),
           })),
         ],
