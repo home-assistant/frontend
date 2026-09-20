@@ -56,8 +56,7 @@ export class HaNativeModalPage extends NativeModalHostPage {
     const element = document.createElement(dialog.tag) as HostedDialog;
     element.hass = this.hass;
     element.standalone = true;
-    element.withoutHeader =
-      !!this.hass.auth.external?.config.hasNativeModalHeader;
+    element.withoutHeader = !!this.hass.auth.external?.config.hasNativeModal;
     this.shadowRoot!.appendChild(element);
     element.showDialog(request.params);
   }

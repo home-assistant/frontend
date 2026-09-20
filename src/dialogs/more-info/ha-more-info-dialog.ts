@@ -698,7 +698,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   /**
    * The header the page leaves out, described for the app that draws it
-   * (`hasNativeModalHeader`), from the same state and conditions as the
+   * (`hasNativeModal`), from the same state and conditions as the
    * header `render` would show.
    */
   private _computeNativeHeader(): NativeModalHeader | undefined {

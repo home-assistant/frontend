@@ -522,8 +522,7 @@ export interface ExternalConfig {
   canSetupImprov?: boolean;
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
-  hasNativeModal?: boolean; // Shows a frontend route in a native modal: the frontend sends modal/open instead of opening its own dialog
-  hasNativeModalHeader?: boolean; // The native modal draws its header from modal/update (title, buttons, menu) and sends modal/action, so the page inside leaves its own out
+  hasNativeModal?: boolean; // Shows a frontend route in a native modal and draws its header: the frontend sends modal/open instead of opening its own dialog, describes the header in modal/update, and the page inside leaves its own out
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
 }

@@ -59,7 +59,7 @@ export class HaMoreInfoPage extends NativeModalHostPage {
     return html`
       <ha-more-info-dialog
         standalone
-        .hideHeader=${!!this.hass.auth.external?.config.hasNativeModalHeader}
+        .hideHeader=${!!this.hass.auth.external?.config.hasNativeModal}
         .hass=${this.hass}
       ></ha-more-info-dialog>
     `;
