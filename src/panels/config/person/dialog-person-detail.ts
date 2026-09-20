@@ -462,7 +462,7 @@ class DialogPersonDetail
       );
       const eligibleUsers = users.filter(
         (u) =>
-          !currentLinkedUsers.has(u.id) && !u.system_generated && u.username
+          !currentLinkedUsers.has(u.id) && !u.system_generated
       );
       const addUserDialog = () =>
         showAddUserDialog(this, {
