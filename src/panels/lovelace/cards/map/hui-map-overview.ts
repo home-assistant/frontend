@@ -799,9 +799,15 @@ export class HuiMapOverview extends LitElement {
       min-height: 0;
       border-radius: 0;
       box-shadow: none;
+      /* The collapsed sheet keeps this below the tabs; an expanded one lends it
+         to the list, which scrolls through it. */
+      --sheet-bottom-space: max(
+        var(--ha-space-3),
+        var(--safe-area-inset-bottom)
+      );
       padding-top: var(--ha-space-7);
       padding-right: max(var(--ha-space-3), var(--safe-area-inset-right));
-      padding-bottom: max(var(--ha-space-3), var(--safe-area-inset-bottom));
+      padding-bottom: var(--sheet-bottom-space);
       padding-left: max(var(--ha-space-3), var(--safe-area-inset-left));
     }
 
@@ -895,6 +901,11 @@ export class HuiMapOverview extends LitElement {
       padding: 0;
       margin-top: var(--ha-space-2);
       background: none;
+      /* Rows scroll through the panel's bottom padding rather than stopping
+         above it, and the end of the list clears the safe area again so the
+         last row is never left under it. */
+      margin-bottom: calc(-1 * var(--sheet-bottom-space, 0px));
+      padding-bottom: var(--sheet-bottom-space, 0px);
       --md-list-item-leading-space: var(--ha-space-2);
       --md-list-item-trailing-space: var(--ha-space-2);
       --md-list-item-one-line-container-height: 56px;
