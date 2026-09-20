@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Action, RepeatAction } from "../../src/data/script";
+import type { Action } from "../../src/data/script";
 import type {
   ActionTraceStep,
   AutomationTraceExtended,
@@ -624,39 +624,6 @@ describe("TraceTree branch completion", () => {
       ]
     );
     expect(entered.hasTrace).toBe(true);
-  });
-
-  it("infers entry for an empty repeat body", () => {
-    const emptyBody = (
-      repeat: RepeatAction["repeat"],
-      records: ActionTraceStep[] = [{ path: "sequence/0", timestamp }]
-    ) =>
-      new TraceTree(createTrace([{ repeat }], records)).sequence[0].branches[0]
-        .hasTrace;
-
-    // No step path exists for an empty body, so entry is inferred from the
-    // config and the repeat's own record.
-    expect(emptyBody({ count: 2, sequence: [] })).toBe(true);
-    expect(emptyBody({ count: "{{ iterations }}", sequence: [] })).toBe(true);
-    expect(emptyBody({ for_each: ["a"], sequence: [] })).toBe(true);
-    expect(emptyBody({ while: [], sequence: [] })).toBe(true);
-
-    expect(emptyBody({ count: 0, sequence: [] })).toBe(false);
-    expect(emptyBody({ for_each: [], sequence: [] })).toBe(false);
-    expect(emptyBody({ count: 2, sequence: [] }, [])).toBe(false);
-    expect(
-      emptyBody({ count: 2, sequence: [] }, [
-        { path: "sequence/0", timestamp, error: "TemplateError" },
-      ])
-    ).toBe(false);
-    expect(
-      new TraceTree(
-        createTrace(
-          [{ repeat: { count: 2, sequence: [] }, enabled: false }],
-          [{ path: "sequence/0", timestamp, result: { enabled: false } }]
-        )
-      ).sequence[0].branches[0].hasTrace
-    ).toBe(false);
   });
 
   it("preserves empty, unreached, error, condition and stop handling", () => {

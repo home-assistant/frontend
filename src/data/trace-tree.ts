@@ -334,19 +334,15 @@ export class TraceTree {
           node.iterations !== undefined && node.iterations > 1
             ? node.iterations
             : undefined;
-        const steps = ensureArray<Action>(repeat.repeat.sequence);
+        // The body is tracked by its own traced steps. An empty body has no
+        // step path for Core to record and nothing to show as executed, so
+        // it stays untracked rather than being guessed from the repeat.
         node.branches = [
           this._branch(
             `${path}/repeat`,
             prefix,
-            steps,
-            disabled,
-            // A non-empty body that was entered has traced steps. An empty
-            // body has no step path for Core to record, so entry has to be
-            // inferred from the repeat itself.
-            steps.length === 0
-              ? this._emptyRepeatEntered(repeat.repeat, node)
-              : this._hasTracedSteps(prefix)
+            ensureArray<Action>(repeat.repeat.sequence),
+            disabled
           ),
         ];
         break;
@@ -387,26 +383,6 @@ export class TraceTree {
         break;
     }
     return node;
-  }
-
-  // Without a body step to look for, only the config and the repeat's own
-  // record can tell whether an iteration started. `while` conditions and
-  // templated values resolve at run time, so those count as entered.
-  private _emptyRepeatEntered(
-    repeat: RepeatAction["repeat"],
-    node: TraceActionNode
-  ): boolean {
-    if (!node.hasTrace || node.disabled || node.error) {
-      return false;
-    }
-    if ("count" in repeat) {
-      const count = Number(repeat.count);
-      return Number.isNaN(count) || count > 0;
-    }
-    if ("for_each" in repeat) {
-      return !Array.isArray(repeat.for_each) || repeat.for_each.length > 0;
-    }
-    return true;
   }
 
   private _indexNodes() {
